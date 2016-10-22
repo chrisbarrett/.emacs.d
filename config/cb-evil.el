@@ -11,6 +11,15 @@
 (eval-when-compile
   (require 'use-package))
 
+(use-package evil-leader
+  :demand t
+  :config
+  (progn
+    (evil-leader/set-leader "<SPC>")
+    (global-evil-leader-mode +1))
+  :functions (global-evil-leader-mode evil-leader/set-leader))
+
+
 (use-package evil
   :preface
   (defun cb-evil--sp-delete-and-join-compat (fn &rest args)
@@ -44,15 +53,6 @@
                 :around #'cb-evil--sp-delete-and-join-compat))
 
   :functions (evil-mode evil-delay evil-delete-backward-char-and-join))
-
-
-(use-package evil-leader
-  :after evil
-  :config
-  (progn
-    (global-evil-leader-mode +1)
-    (evil-leader/set-leader "<SPC>"))
-  :functions (global-evil-leader-mode evil-leader/set-leader))
 
 (provide 'cb-evil)
 
