@@ -13,24 +13,10 @@
 
 ;;; Code:
 
-(unless noninteractive
-  (message "Loading %s..." load-file-name))
-
-
-;; Print overall startup time.
-
 (defconst emacs-start-time (current-time))
 
-(when window-system
-  (let ((elapsed (float-time (time-subtract (current-time) emacs-start-time))))
-    (message "Loading %s...done (%.3fs)" load-file-name elapsed))
-  (add-hook 'after-init-hook
-            `(lambda ()
-               (let ((elapsed (float-time (time-subtract (current-time)
-                                                         emacs-start-time))))
-                 (message "Loading %s...done (%.3fs) [after-init]"
-                          ,load-file-name elapsed)))
-            t))
+(unless noninteractive
+  (message "Loading %s..." load-file-name))
 
 
 ;; Bootstrap use-package.
@@ -57,6 +43,22 @@
 (use-package cb-emacs)
 (use-package cb-basic-settings)
 (use-package cb-evil)
+
+
+;;; Print overall startup time.
+
+(unless noninteractive
+  (let ((elapsed (float-time (time-subtract (current-time) emacs-start-time))))
+    (message "Loading %s...done (%.3fs)" load-file-name elapsed))
+
+  (add-hook 'after-init-hook
+            `(lambda ()
+               (let ((elapsed (float-time (time-subtract (current-time)
+                                                         emacs-start-time))))
+                 (message "Loading %s...done (%.3fs) [after-init]"
+                          ,load-file-name elapsed)))
+            t))
+
 
 (provide 'init)
 
