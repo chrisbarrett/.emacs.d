@@ -8,7 +8,9 @@
 
 ;;; Code:
 
-(require 'use-package)
+(eval-when-compile
+  (require 'use-package))
+
 
 (autoload '-map "dash") ; needed for macro-expansion of `noflet'.
 (require 'noflet)
