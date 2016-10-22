@@ -27,6 +27,12 @@
   (window-numbering-mode -1))
 
 
+;; Disable menu bar
+
+(when (fboundp 'menu-bar-mode)
+  (menu-bar-mode -1))
+
+
 ;; Show file or buffer name in the title bar.
 
 (defun cb-basic-settings--frame-title-string ()
