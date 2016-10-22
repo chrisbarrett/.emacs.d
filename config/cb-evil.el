@@ -11,15 +11,6 @@
 (eval-when-compile
   (require 'use-package))
 
-(use-package evil-leader
-  :demand t
-  :config
-  (progn
-    (evil-leader/set-leader "<SPC>")
-    (global-evil-leader-mode +1))
-  :functions (global-evil-leader-mode evil-leader/set-leader))
-
-
 (use-package evil
   :preface
   (defun cb-evil--sp-delete-and-join-compat (fn &rest args)
