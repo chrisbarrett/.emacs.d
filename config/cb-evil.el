@@ -25,6 +25,14 @@
     (defconst evil-want-Y-yank-to-eol t)
     (setq-default evil-shift-width 2)
 
+    ;; Configure cursors.
+
+    (setq evil-motion-state-cursor '("plum3" box))
+    (setq evil-visual-state-cursor '("gray" (hbar . 2)))
+    (setq evil-normal-state-cursor '("DarkGoldenrod2" box))
+    (setq evil-insert-state-cursor '("chartreuse3" (bar . 2)))
+    (setq evil-emacs-state-cursor  '("SkyBlue2" hbar))
+
     ;; Motion keys for help buffers.
 
     (evil-define-key 'motion help-mode-map (kbd "<escape>") #'quit-window)
@@ -44,6 +52,12 @@
                 :around #'cb-evil--sp-delete-and-join-compat))
 
   :functions (evil-mode evil-delay evil-delete-backward-char-and-join))
+
+(use-package evil-terminal-cursor-changer
+  :if (not (display-graphic-p))
+  :config
+  (evil-terminal-cursor-changer-activate)
+  :functions (evil-terminal-cursor-changer-activate))
 
 (provide 'cb-evil)
 
