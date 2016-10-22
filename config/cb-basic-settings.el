@@ -21,6 +21,9 @@
 (autoload 'ansi-color-apply-on-region "ansi-color")
 
 
+(defalias #'yes-or-no-p #'y-or-n-p)
+
+
 ;; Disable window numbering.
 
 (when (fboundp 'window-numbering-mode)
@@ -31,7 +34,6 @@
 
 (when (fboundp 'menu-bar-mode)
   (menu-bar-mode -1))
-
 
 ;; Show file or buffer name in the title bar.
 
