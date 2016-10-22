@@ -45,6 +45,15 @@
 
   :functions (evil-mode evil-delay evil-delete-backward-char-and-join))
 
+
+(use-package evil-leader
+  :after evil
+  :config
+  (progn
+    (global-evil-leader-mode +1)
+    (evil-leader/set-leader "<SPC>"))
+  :functions (global-evil-leader-mode evil-leader/set-leader))
+
 (provide 'cb-evil)
 
 ;;; cb-evil.el ends here
