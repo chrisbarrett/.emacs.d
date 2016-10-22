@@ -23,17 +23,8 @@
 
 (defalias #'yes-or-no-p #'y-or-n-p)
 
+(global-unset-key (kbd "C-z"))
 
-;; Disable window numbering.
-
-(when (fboundp 'window-numbering-mode)
-  (window-numbering-mode -1))
-
-
-;; Disable menu bar
-
-(when (fboundp 'menu-bar-mode)
-  (menu-bar-mode -1))
 
 ;; Show file or buffer name in the title bar.
 
@@ -129,15 +120,36 @@
   :config
   (setq abbrev-file-name (concat cb-emacs-cache-directory "abbrev_defs")))
 
+(use-package window-numbering
+  :defer t
+  :commands (window-numbering-mode)
+  :config
+  (window-numbering-mode -1))
+
+(use-package menu-bar
+  :bind (("C-c e e" . toggle-debug-on-error))
+  :config
+  (menu-bar-mode -1))
+
+(use-package align
+  :bind (("C-x a a" . align-regexp)))
+
+(use-package simple
+  :bind (("M-SPC" . cycle-spacing)))
+
 (use-package recentf
   :defer t
   :config
-  (setq recentf-save-file (concat cb-emacs-cache-directory "recentf")))
+  (progn
+    (setq recentf-max-saved-items 1000)
+    (setq recentf-save-file (concat cb-emacs-cache-directory "recentf"))))
 
 (use-package bookmark
   :defer t
   :config
-  (setq bookmark-default-file (concat cb-emacs-cache-directory "bookmarks")))
+  (progn
+    (setq bookmark-save-flag nil)
+    (setq bookmark-default-file (concat cb-emacs-cache-directory "bookmarks"))))
 
 (use-package files
   :config
