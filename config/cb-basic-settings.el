@@ -107,7 +107,8 @@
 
 (setq sentence-end-double-space nil)
 (setq delete-by-moving-to-trash nil)
-
+(setq initial-scratch-message nil)
+(setq initial-major-mode 'text-mode)
 
 (use-package abbrev
   :defer t
@@ -146,10 +147,6 @@
   :defer t
   :config
   (setq comint-prompt-read-only t))
-
-(use-package startup
-  :config
-  (setq initial-major-mode 'org-mode))
 
 
 (provide 'cb-basic-settings)
