@@ -14,7 +14,8 @@
 
 (use-package ivy
   :bind
-  (("C-c C-r" . ivy-resume))
+  (("C-c C-r" . ivy-resume)
+   ("C-x b" . ivy-switch-buffer))
 
   :leader-bind
   (("r" . ivy-resume)
@@ -32,8 +33,11 @@
 
 
 (use-package counsel
-  :after ivy
-  :bind (("M-x" . counsel-M-x))
+  :bind
+  (("M-x" . counsel-M-x)
+   ("C-x C-f" . counsel-find-file)
+   ("C-h v" . counsel-describe-variable)
+   ("C-h f" . counsel-describe-function))
 
   :leader-bind
   (("<SPC>" . counsel-M-x)
@@ -43,6 +47,8 @@
 
   :config
   (define-key read-expression-map (kbd "C-r") #'counsel-expression-history)
+
+  :demand t
   :functions (counsel-expression-history))
 
 (provide 'cb-ivy)
