@@ -65,8 +65,8 @@
 ;;
 ;; 2. `:leader-bind'
 ;;
-;;    `:leader-bind' provides a way to declare leader key bindings. It takes a
-;;    list of conses, similar to `:evil-bind'.
+;;    `:leader-bind' provides a way to declare Spacemacs leader key bindings. It
+;;    takes a list of conses, similar to `:evil-bind'.
 ;;
 ;;      (use-package foo
 ;;        :leader-bind (("a" . foo)
@@ -85,6 +85,9 @@
 
 (require 'use-package)
 (require 'dash)
+
+(autoload 'spacemacs-keys-set-leader-keys "spacemacs-keys")
+(autoload 'spacemacs-keys-set-leader-keys-for-major-mode "spacemacs-keys")
 
 (defun use-package-normalize/:evil-bind (name keyword args)
   (use-package-as-one (symbol-name keyword) args
@@ -180,11 +183,11 @@
 
                ((and mode (consp fst))
                 (-let [(k . fn) fst]
-                  `(evil-leader/set-key-for-mode ',mode ,k #',fn)))
+                  `(spacemacs-keys-set-leader-keys-for-major-mode ',mode ,k #',fn)))
 
                ((consp fst)
                 (-let [(k . fn) fst]
-                  `(evil-leader/set-key ,k #',fn)))
+                  `(spacemacs-keys-set-leader-keys ,k #',fn)))
 
                ;; A symbol is presumed to be the value of a previous kvp.
 
