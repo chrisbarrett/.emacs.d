@@ -120,6 +120,11 @@
   :config
   (setq abbrev-file-name (concat cb-emacs-cache-directory "abbrev_defs")))
 
+(use-package recentf
+  :defer t
+  :config
+  (setq recentf-save-file (concat cb-emacs-cache-directory "recentf")))
+
 (use-package bookmark
   :defer t
   :config
