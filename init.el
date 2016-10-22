@@ -42,10 +42,10 @@
                   (expand-file-name path user-emacs-directory))
                 '("config" "lisp")))
       (git-subtrees
-       (seq-remove #'file-directory-p
+       (seq-filter #'file-directory-p
                    (directory-files "lisp" t "^[^.]"))))
 
-  (dolist (path (concat toplevel-dirs git-subtrees))
+  (dolist (path (append toplevel-dirs git-subtrees))
     (add-to-list 'load-path path)))
 
 (defconst use-package-verbose t)
