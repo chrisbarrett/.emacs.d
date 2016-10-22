@@ -56,6 +56,7 @@
 
 (use-package cb-emacs)
 (use-package cb-basic-settings)
+(use-package cb-evil)
 
 (provide 'init)
 
