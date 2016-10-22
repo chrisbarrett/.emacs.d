@@ -19,7 +19,7 @@
 
   :leader-bind
   (("r" . ivy-resume)
-   ("b b" . ivy-switch-buffer))
+   ("bb" . ivy-switch-buffer))
 
   :config
   (progn
@@ -40,10 +40,10 @@
    ("C-h f" . counsel-describe-function))
 
   :leader-bind
-  (("<SPC>" . counsel-M-x)
-   ("f f" . counsel-find-file)
-   ("h d f" . counsel-describe-function)
-   ("h d v" . counsel-describe-variable))
+  (("SPC" . counsel-M-x)
+   ("ff" . counsel-find-file)
+   ("hdf" . counsel-describe-function)
+   ("hdv" . counsel-describe-variable))
 
   :config
   (define-key read-expression-map (kbd "C-r") #'counsel-expression-history)
