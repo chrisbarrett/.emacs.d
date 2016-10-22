@@ -12,9 +12,6 @@
   (require 'use-package))
 
 (use-package evil
-  :functions (evil-mode evil-delay evil-delete-backward-char-and-join)
-  :demand t
-
   :preface
   (defun cb-evil--sp-delete-and-join-compat (fn &rest args)
     (if (bound-and-true-p smartparens-strict-mode)
@@ -44,7 +41,9 @@
     ;; TODO: Move to SP config.
 
     (advice-add #'evil-delete-backward-char-and-join
-                :around #'cb-evil--sp-delete-and-join-compat)))
+                :around #'cb-evil--sp-delete-and-join-compat))
+
+  :functions (evil-mode evil-delay evil-delete-backward-char-and-join))
 
 (provide 'cb-evil)
 
