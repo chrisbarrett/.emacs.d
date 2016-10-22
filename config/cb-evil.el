@@ -8,11 +8,12 @@
 
 ;;; Code:
 
-(require 'use-package)
-(require 'evil nil t)
-(require 'evil-vars nil t)
+(eval-when-compile
+  (require 'use-package))
 
 (use-package evil
+  :functions (evil-mode evil-delay evil-delete-backward-char-and-join)
+  :demand t
 
   :preface
   (defun cb-evil--sp-delete-and-join-compat (fn &rest args)
