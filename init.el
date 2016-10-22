@@ -46,6 +46,7 @@
 (use-package cb-ivy)
 (use-package cb-which-key)
 (use-package cb-darwin :if (equal system-type 'darwin))
+(use-package cb-ag)
 
 
 ;;; Print overall startup time.
