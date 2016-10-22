@@ -24,6 +24,13 @@
   :functions
   (exec-path-from-shell-initialize))
 
+(use-package osx-trash
+  :config
+  (osx-trash-setup)
+  :functions
+  (osx-trash-setup))
+
+
 (provide 'cb-darwin)
 
 ;;; cb-darwin.el ends here
