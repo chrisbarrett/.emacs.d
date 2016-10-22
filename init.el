@@ -43,6 +43,7 @@
 (use-package cb-emacs)
 (use-package cb-basic-settings)
 (use-package cb-evil)
+(use-package cb-ivy)
 
 
 ;;; Print overall startup time.
