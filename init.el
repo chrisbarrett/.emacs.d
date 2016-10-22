@@ -44,6 +44,7 @@
 (use-package cb-basic-settings)
 (use-package cb-evil)
 (use-package cb-ivy)
+(use-package cb-which-key)
 
 
 ;;; Print overall startup time.
