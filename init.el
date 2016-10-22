@@ -29,9 +29,12 @@
                 '("config" "lisp")))
       (git-subtrees
        (seq-filter #'file-directory-p
-                   (directory-files "lisp" t "^[^.]"))))
+                   (directory-files "lisp" t "^[^.]")))
+      (config-subtrees
+       (seq-filter #'file-directory-p
+                   (directory-files "config" t "^[^.]"))))
 
-  (dolist (path (append toplevel-dirs git-subtrees))
+  (dolist (path (append toplevel-dirs config-subtrees git-subtrees))
     (add-to-list 'load-path path)))
 
 (defconst use-package-verbose t)
