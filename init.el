@@ -45,6 +45,8 @@
 
 (use-package cb-emacs)
 (use-package cb-basic-settings)
+(use-package cb-modeline)
+(use-package cb-ui)
 (use-package cb-evil)
 (use-package cb-ivy)
 (use-package cb-which-key)
