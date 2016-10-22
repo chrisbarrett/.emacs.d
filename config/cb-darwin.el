@@ -18,7 +18,7 @@
 (global-set-key (kbd "s-w") 'delete-frame)
 
 (use-package exec-path-from-shell
-  :if (memq window-system '(mac ns))
+  :if window-system
   :config
   (exec-path-from-shell-initialize)
   :functions
