@@ -9,7 +9,10 @@
 ;;; Code:
 
 (require 'use-package)
+
+(autoload '-map "dash") ; needed for macro-expansion of `noflet'.
 (require 'noflet)
+
 (require 'cb-emacs)
 
 (autoload 'thing-at-point-looking-at "thingatpt")
