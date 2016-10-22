@@ -120,6 +120,7 @@
 (setq delete-by-moving-to-trash nil)
 (setq initial-scratch-message nil)
 (setq initial-major-mode 'text-mode)
+(setq initial-buffer-choice t)
 
 (use-package abbrev
   :defer t
