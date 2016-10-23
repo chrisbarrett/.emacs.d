@@ -60,6 +60,7 @@
 (use-package cb-ws-butler)
 (use-package cb-yasnippet)
 (use-package cb-flycheck)
+(use-package cb-aggressive-indent)
 
 
 ;;; Print overall startup time.
