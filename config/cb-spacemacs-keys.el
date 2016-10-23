@@ -9,13 +9,19 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'use-package))
+  (require 'use-package)
+  (require 'cb-use-package-extensions))
 
 (use-package cb-alternate-buffer
   :commands (cb/alternate-buffer))
 
 (use-package cb-copy-buffer-path
   :commands (cb/copy-buffer-path))
+
+(use-package cb-goto
+  :leader-bind
+  (("g i" . cb-goto-init-file)
+   ("g m" . cb-goto-messages)))
 
 (use-package cb-delete-current-buffer-and-file
   :commands (cb/delete-current-buffer-and-file)
