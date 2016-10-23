@@ -59,8 +59,7 @@
 (use-package evil-terminal-cursor-changer
   :after evil
   :if (not (display-graphic-p))
-  :config
-  (evil-terminal-cursor-changer-activate)
+  :config (evil-terminal-cursor-changer-activate)
   :functions (evil-terminal-cursor-changer-activate))
 
 (use-package evil-surround
