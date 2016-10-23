@@ -14,6 +14,11 @@
 (defconst cb-emacs-autosave-directory
   (concat user-emacs-directory "autosave/"))
 
+(defconst cb-emacs-lisp-directory
+  (concat user-emacs-directory "lisp/"))
+
+(defconst cb-emacs-config-directory
+  (concat user-emacs-directory "config/"))
 
 (provide 'cb-emacs)
 
