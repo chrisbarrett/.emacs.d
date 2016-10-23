@@ -56,6 +56,7 @@
 (use-package cb-magit)
 (use-package cb-company)
 (use-package cb-autoinsert)
+(use-package cb-undo-tree)
 
 
 ;;; Print overall startup time.
