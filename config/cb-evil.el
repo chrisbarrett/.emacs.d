@@ -11,6 +11,8 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'spacemacs-keys)
+
 (use-package evil
   :preface
   (defun cb-evil--sp-delete-and-join-compat (fn &rest args)
@@ -80,6 +82,22 @@
                   (?t . surround-read-tag)
                   (?< . surround-read-tag)
                   (?f . surround-function))))
+
+
+(use-package evil-iedit-state
+  :commands (evil-iedit-state evil-iedit-state/iedit-mode)
+  :init
+  (spacemacs-keys-set-leader-keys "se" 'evil-iedit-state/iedit-mode)
+
+  :config
+  (progn
+    (setq iedit-current-symbol-default t)
+    (setq iedit-only-at-symbol-boundaries t)
+    (setq iedit-toggle-key-default nil)
+
+    ;; Enable leader key in iedit and iedit-insert states
+    (define-key evil-iedit-state-map (kbd "SPC") spacemacs-keys-default-map)))
+
 
 (provide 'cb-evil)
 
