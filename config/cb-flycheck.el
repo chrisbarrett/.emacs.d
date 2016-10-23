@@ -23,6 +23,7 @@
     (setq flycheck-display-errors-delay 0.5)
 
     (spacemacs-keys-declare-prefix "e" "errors")
+    (setq flycheck-emacs-lisp-load-path 'inherit)
 
     (spacemacs-keys-set-leader-keys
       "ec" #'flycheck-clear
