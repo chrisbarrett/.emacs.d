@@ -31,8 +31,6 @@
 
   :init
   (progn
-    (bind-key "s-l" #'projectile-switch-project)
-
     (spacemacs-keys-set-leader-keys
       "p!" #'projectile-run-shell-command-in-root
       "p&" #'projectile-run-async-shell-command-in-root
@@ -45,6 +43,7 @@
 
   :config
   (progn
+    (setq projectile-completion-system 'ivy)
     (setq projectile-switch-project-action #'magit-status)
     (setq projectile-cache-file (concat cb-emacs-cache-directory "projectile.cache"))
     (setq projectile-enable-caching t)
@@ -62,6 +61,7 @@
   :init
   (progn
     (bind-key "s-f" #'counsel-projectile-find-file)
+    (bind-key "s-l" #'counsel-switch-project)
 
     (spacemacs-keys-set-leader-keys
       "pf" #'counsel-projectile-find-file
