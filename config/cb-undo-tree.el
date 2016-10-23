@@ -10,7 +10,10 @@
 
 (use-package undo-tree
   :config
-  (global-undo-tree-mode)) 
+  (progn
+    (setq undo-tree-visualizer-timestamps t)
+    (setq undo-tree-visualizer-diff t)
+    (global-undo-tree-mode)))
 
 (provide 'cb-undo-tree)
 
