@@ -24,6 +24,11 @@
 
   :config
   (progn
+    (setq company-idle-delay 0.3)
+    (setq company-require-match nil)
+    (setq company-dabbrev-ignore-case nil)
+    (setq company-dabbrev-downcase nil)
+
     (dolist (map (list company-active-map company-search-map company-filter-map))
       (define-key map (kbd "C-n") #'company-select-next)
       (define-key map (kbd "C-p") #'company-select-previous)
