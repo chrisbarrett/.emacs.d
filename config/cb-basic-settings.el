@@ -27,6 +27,12 @@
 
 (global-unset-key (kbd "C-z"))
 
+;; Scroll smoothly.
+
+(setq scroll-preserve-screen-position t)
+(setq scroll-margin 0)
+(setq scroll-conservatively 101)
+
 
 ;; Enable hideshow in all programming buffers.
 
