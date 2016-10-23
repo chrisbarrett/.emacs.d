@@ -21,10 +21,10 @@ current window."
     ;; switch to first buffer previously shown in this window that matches
     ;; frame-parameter `buffer-predicate'
     (switch-to-buffer
-     (or (seq-filter (lambda (buffer)
-                       (and (not (eq buffer current-buffer))
-                            (or (null buffer-predicate) (funcall buffer-predicate buffer))))
-                     (seq-map #'car (window-prev-buffers window)))
+     (or (car (seq-filter (lambda (buffer)
+                            (and (not (eq buffer current-buffer))
+                                 (or (null buffer-predicate) (funcall buffer-predicate buffer))))
+                          (seq-map #'car (window-prev-buffers window))))
          ;; `other-buffer' honors `buffer-predicate' so no need to filter
          (other-buffer current-buffer t)))))
 
