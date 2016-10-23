@@ -12,13 +12,17 @@
   (require 'use-package)
   (require 'cb-use-package-extensions))
 
+(require 'spacemacs-keys)
+
 (use-package ivy
   :leader-bind
   (("r" . ivy-resume)
    ("b b" . ivy-switch-buffer))
 
   :preface
-  (autoload 'ivy-mode "ivy")
+  (progn
+    (autoload 'ivy-mode "ivy")
+    (use-package cb-ivy-continue-with-input :commands (cb-ivy-continue-with-input)))
 
   :init
   (progn
@@ -30,6 +34,7 @@
     (setq ivy-use-virtual-buffers t)
     (setq ivy-count-format "(%d/%d) ")
     (define-key ivy-minibuffer-map (kbd "ESC") #'keyboard-escape-quit)
+    (define-key ivy-minibuffer-map (kbd "S-<return>") #'cb-ivy-continue-with-input)
     (ivy-mode))
 
   :defines (ivy-use-virtual-buffers ivy-count-format))
@@ -37,7 +42,9 @@
 
 (use-package counsel
   :preface
-  (autoload 'counsel-mode "counsel")
+  (progn
+    (autoload 'ivy-immediate-done "ivy")
+    (autoload 'counsel-mode "counsel"))
 
   :leader-bind
   (("SPC" . counsel-M-x)
@@ -53,7 +60,9 @@
     (bind-key "C-h f" #'counsel-describe-function))
 
   :config
-  (counsel-mode +1)
+  (progn
+    (define-key counsel-find-file-map (kbd "C-M-j") #'ivy-immediate-done)
+    (counsel-mode +1))
 
   :functions (counsel-expression-history))
 
