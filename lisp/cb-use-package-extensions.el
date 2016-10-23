@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2016  Chris Barrett
 
-;; Author: Chris Barrett <chris.d.barrett@me.com>
+;; Author: Chris Barrett <chris+emacs@walrus.cool>
 ;; Package-Requires: ((use-package "20160706.1520") (dash "20160619.611"))
 
 ;; This program is free software; you can redistribute it and/or modify
