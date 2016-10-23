@@ -15,7 +15,10 @@
   :commands (global-aggressive-indent-mode)
   :defer 1
   :config
-  (global-aggressive-indent-mode +1))
+  (progn
+    (add-to-list 'aggressive-indent-excluded-modes 'diff-auto-refine-mode)
+
+    (global-aggressive-indent-mode +1)))
 
 (provide 'cb-aggressive-indent)
 
