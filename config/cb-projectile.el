@@ -36,7 +36,8 @@
       "pd" #'counsel-projectile-find-dir
       "pb" #'counsel-projectile-switch-to-buffer
       "pp" #'counsel-projectile-switch-project
-      "pa" #'counsel-projectile-ag))
+      "pa" #'counsel-projectile-ag
+      "/"  #'counsel-projectile-ag))
 
   :config
   (counsel-projectile-on))
