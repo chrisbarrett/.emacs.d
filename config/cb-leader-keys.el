@@ -52,7 +52,13 @@
     "f F" #'find-file-other-window
     "f s" #'save-buffer
     "f D" #'cb/delete-current-buffer-and-file
-    "f y" #'cb/copy-buffer-path))
+    "f y" #'cb/copy-buffer-path
+
+    "w =" #'balance-windows
+    "w w" #'evil-window-next
+    "w o" #'delete-other-windows
+    "w -" #'evil-window-split
+    "w /" #'evil-window-vsplit))
 
 (provide 'cb-leader-keys)
 

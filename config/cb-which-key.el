@@ -40,6 +40,7 @@
       "SPC f"   "files"
       "SPC h"   "help"
       "SPC p"   "project"
+      "SPC w"   "window"
       "SPC t"   "toggles"
       "SPC SPC" "M-x"
       "SPC m"   '("major-mode-cmd" . "Major mode commands"))
