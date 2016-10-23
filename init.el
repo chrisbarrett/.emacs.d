@@ -47,9 +47,9 @@
 (use-package cb-basic-settings)
 (use-package cb-modeline)
 (use-package cb-ui)
+(use-package cb-which-key)
 (use-package cb-evil)
 (use-package cb-ivy)
-(use-package cb-which-key)
 (use-package cb-darwin :if (equal system-type 'darwin))
 (use-package cb-ag)
 
