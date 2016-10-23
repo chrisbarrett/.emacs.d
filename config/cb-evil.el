@@ -27,6 +27,7 @@
     (setq-default evil-shift-width 2)
 
     (setq evil-want-Y-yank-to-eol t)
+    (setq evil-symbol-word-search t)
 
     ;; Configure cursors.
 
