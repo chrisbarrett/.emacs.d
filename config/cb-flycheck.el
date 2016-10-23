@@ -11,9 +11,14 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'spacemacs-keys)
+
 (use-package flycheck
   :defer 1
   :commands (global-flycheck-mode)
+
+  :init
+  (spacemacs-keys-declare-prefix "e" "errors")
 
   :config
   (progn
@@ -21,8 +26,6 @@
 
     (setq flycheck-display-errors-function 'flycheck-display-error-messages-unless-error-list)
     (setq flycheck-display-errors-delay 0.5)
-
-    (spacemacs-keys-declare-prefix "e" "errors")
     (setq flycheck-emacs-lisp-load-path 'inherit)
 
     (spacemacs-keys-set-leader-keys
@@ -39,7 +42,19 @@
 
     (with-eval-after-load 'evil
       (bind-key "M-n" #'flycheck-next-error flycheck-mode-map)
-      (bind-key "M-p" #'flycheck-previous-error flycheck-mode-map))))
+      (bind-key "M-p" #'flycheck-previous-error flycheck-mode-map)))
+
+  :functions
+  (flycheck-clear
+   flycheck-describe-checker
+   flycheck-list-errors
+   flycheck-explain-error-at-point
+   flycheck-next-error
+   flycheck-next-error
+   flycheck-previous-error
+   flycheck-select-checker
+   flycheck-set-checker-executable
+   flycheck-verify-setup))
 
 
 (provide 'cb-flycheck)
