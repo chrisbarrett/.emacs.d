@@ -10,8 +10,12 @@
 
 ;;; Code:
 
+(autoload 'evil-normalize-keymaps "evil-core")
 (autoload 'which-key-declare-prefixes "which-key")
 (autoload 'which-key-declare-prefixes-for-mode "which-key")
+(autoload 'evil-global-set-key "evil-core")
+
+(require 'bind-map)
 
 (defgroup spacemacs-keys nil
   "Ports the core Spacemacs key binding utilities."
@@ -113,8 +117,7 @@ MAP is the keymap to prepare.
 
 If MODE is a minor mode, MINOR should be non-nil."
   ;; Checks for MAP-prefix.  If it doesn't exist yet, use `bind-map'
-  ;; to create it and bind it to `spacemacs-keys-major-mode-leader-key'
-  ;; and `dotspacemacs-major-mode-emacs-leader-key'.
+  ;; to create it and bind it to `spacemacs-keys-major-mode-leader-key'.
   (let* ((prefix (intern (format "%s-prefix" map)))
          (leader1 (when (spacemacs-keys--acceptable-leader-p
                          spacemacs-keys-major-mode-leader-key)
@@ -138,6 +141,7 @@ If MODE is a minor mode, MINOR should be non-nil."
               :evil-states (normal motion visual evilified)))
           (boundp prefix)))))
 
+;;;###autoload
 (defun spacemacs-keys-set-leader-keys-for-major-mode (mode key def &rest bindings)
   "Define key bindings available for a certain major mode.
 
@@ -148,7 +152,7 @@ KEY is the key to bind under `spacemacs-keys-major-mode-leader-key'.
 DEF is the command to call.
 
 BINDINGS are additional key and def pairs to bind."
-  (let* ((map (intern (format "spacemacs-%s-map" mode))))
+  (let ((map (intern (format "spacemacs-keys-%s-map" mode))))
     (when (spacemacs-keys--init-leader-mode-map mode map)
       (while key
         (define-key (symbol-value map) (kbd key) def)
@@ -159,6 +163,7 @@ BINDINGS are additional key and def pairs to bind."
   'evil-leader/set-key-for-mode
   'spacemacs-keys-set-leader-keys-for-major-mode)
 
+;;;###autoload
 (defun spacemacs-keys-set-leader-keys-for-minor-mode (mode key def &rest bindings)
   "Add leader keys for a minor mode.
 
@@ -169,12 +174,20 @@ KEY is the key to bind under the major mode leader.
 DEF is the command to be called.
 
 BINDINGS is a list of more KEY and DEF pairs."
-  (let* ((map (intern (format "spacemacs-%s-map" mode))))
+  (let ((map (intern (format "spacemacs-keys-%s-map" mode))))
     (when (spacemacs-keys--init-leader-mode-map mode map t)
       (while key
         (define-key (symbol-value map) (kbd key) def)
         (setq key (pop bindings) def (pop bindings))))))
 (put 'spacemacs-keys-set-leader-keys-for-minor-mode 'lisp-indent-function 'defun)
+
+(bind-map spacemacs-keys-default-map
+  :prefix-cmd spacemacs-keys-cmds
+  :keys (spacemacs-keys-emacs-leader-key)
+  :evil-keys (spacemacs-keys-leader-key)
+  :override-minor-modes t
+  :override-mode-name spacemacs-keys-leader-override-mode)
+
 
 (provide 'spacemacs-keys)
 
