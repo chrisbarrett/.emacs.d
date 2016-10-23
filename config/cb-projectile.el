@@ -18,20 +18,24 @@
   (projectile-mode))
 
 (use-package counsel-projectile
-  :leader-bind
-  (("p f" . counsel-projectile-find-file)
-   ("p d" . counsel-projectile-find-dir)
-   ("p b" . counsel-projectile-switch-to-buffer)
-   ("p p" . counsel-projectile-switch-project)
-   ("p a" . counsel-projectile-ag))
-
-  :preface
-  (autoload 'counsel-projectile-on "counsel-projectile")
-
+  :defer t
+  :commands (counsel-projectile-on
+             counsel-projectile-find-file
+             counsel-projectile-find-dir
+             counsel-projectile-switch-project
+             counsel-projectile-switch-to-buffer
+             counsel-projectile-ag)
   :init
   (progn
     (bind-key "s-l" #'counsel-projectile-ag)
-    (bind-key "s-f" #'counsel-projectile-find-file))
+    (bind-key "s-f" #'counsel-projectile-find-file)
+
+    (spacemacs-keys-set-leader-keys
+      "pf" #'counsel-projectile-find-file
+      "pd" #'counsel-projectile-find-dir
+      "pb" #'counsel-projectile-switch-to-buffer
+      "pp" #'counsel-projectile-switch-project
+      "pa" #'counsel-projectile-ag))
 
   :config
   (counsel-projectile-on))
