@@ -67,6 +67,7 @@
 (use-package cb-volatile-highlights)
 (use-package cb-info)
 (use-package cb-highlight-todo)
+(use-package cb-neotree)
 
 
 ;;; Print overall startup time.
