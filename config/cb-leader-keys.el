@@ -20,6 +20,10 @@
 (use-package cb-copy-buffer-path
   :commands (cb/copy-buffer-path))
 
+(use-package cb-rename-file-and-buffer
+  :leader-bind
+  (("f R" . cb/rename-file-and-buffer)))
+
 (use-package cb-goto
   :leader-bind
   (("g i" . cb-goto-init-file)
