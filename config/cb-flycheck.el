@@ -37,9 +37,8 @@
       "ev" #'flycheck-verify-setup)
 
     (with-eval-after-load 'evil
-      (evil-define-key 'normal flycheck-mode-map
-        "M-n" #'flycheck-next-error
-        "M-p" #'flycheck-previous-error))))
+      (bind-key "M-n" #'flycheck-next-error flycheck-mode-map)
+      (bind-key "M-p" #'flycheck-previous-error flycheck-mode-map))))
 
 
 (provide 'cb-flycheck)
