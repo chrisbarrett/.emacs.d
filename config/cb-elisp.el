@@ -99,7 +99,7 @@
 ;; Checkdoc configuration
 
 (use-package flycheck
-  :preface
+  :defer t
   :config
   (setq flycheck-emacs-lisp-checkdoc-form
         (flycheck-prepare-emacs-lisp-form
