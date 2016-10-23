@@ -86,6 +86,12 @@
     (sp-local-pair "(" ")"   :post-handlers '(:add cb-elisp-sp-just-one-space))
     (sp-local-pair "'" nil   :actions nil)))
 
+(use-package cb-elisp-autoinsert
+  :defer t
+  :after autoinsert
+  :config
+  (add-to-list 'auto-insert-alist cb-elisp-autoinsert-form))
+
 (provide 'cb-elisp)
 
 ;;; cb-elisp.el ends here

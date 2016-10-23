@@ -55,6 +55,7 @@
 (use-package cb-smartparens)
 (use-package cb-magit)
 (use-package cb-company)
+(use-package cb-autoinsert)
 
 
 ;;; Print overall startup time.
