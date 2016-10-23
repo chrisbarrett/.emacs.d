@@ -22,6 +22,8 @@
 
 (advice-add #'eval-buffer :after #'cb-elisp--message-on-eval-buffer)
 
+(spacemacs-keys-declare-prefix-for-mode 'emacs-lisp-mode "m e" "Eval")
+
 (spacemacs-keys-set-leader-keys-for-major-mode 'emacs-lisp-mode
   "eb" #'eval-buffer
   "ee" #'eval-expression)
