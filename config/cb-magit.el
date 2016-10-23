@@ -13,14 +13,16 @@
 
 (use-package magit
   :defer t
-  :commands (magit-status) 
+  :commands (magit-status)
   :init
   (spacemacs-keys-set-leader-keys
-    "gs" #'magit-status))
+    "gs" #'magit-status)
+  :config
+  (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
 
 (use-package evil-magit
   :defer t
-  :after magit) 
+  :after magit)
 
 (provide 'cb-magit)
 
