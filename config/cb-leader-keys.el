@@ -46,7 +46,7 @@
     "SPC" #'execute-extended-command
     "TAB" #'cb/alternate-buffer
 
-	"b d" #'kill-this-buffer
+    "b d" #'kill-this-buffer
 
     "f f" #'find-file
     "f F" #'find-file-other-window
