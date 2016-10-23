@@ -8,7 +8,12 @@
 
 ;;; Code:
 
+(eval-when-compile
+  (require 'use-package))
+
 (use-package undo-tree
+  :demand t
+  :commands (global-undo-tree-mode)
   :config
   (progn
     (setq undo-tree-visualizer-timestamps t)
