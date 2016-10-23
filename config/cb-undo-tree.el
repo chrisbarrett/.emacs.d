@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2016  Chris Barrett
 
-;; Author: Chris Barrett <chrisb@Chris-MacBook-Pro.local>
+;; Author: Chris Barrett <chris+emacs@walrus.cool>
 
 ;;; Commentary:
 
