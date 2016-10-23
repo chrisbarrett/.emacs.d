@@ -52,6 +52,7 @@
 (use-package cb-ivy)
 (use-package cb-darwin :if (equal system-type 'darwin))
 (use-package cb-ag)
+(use-package cb-projectile)
 
 
 ;;; Print overall startup time.
