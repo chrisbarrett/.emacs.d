@@ -110,6 +110,7 @@
 
 (setq-default fill-column 80)
 (setq-default tab-width 4)
+(setq-default indent-tabs-mode nil) 
 
 (setq sentence-end-double-space nil)
 (setq delete-by-moving-to-trash nil)
