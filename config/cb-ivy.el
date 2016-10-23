@@ -32,11 +32,13 @@
     (define-key ivy-minibuffer-map (kbd "ESC") #'keyboard-escape-quit)
     (ivy-mode))
 
-  :demand t
   :defines (ivy-use-virtual-buffers ivy-count-format))
 
 
 (use-package counsel
+  :preface
+  (autoload 'counsel-mode "counsel")
+
   :leader-bind
   (("SPC" . counsel-M-x)
    ("f f" . counsel-find-file)
@@ -48,10 +50,11 @@
     (bind-key "M-x" #'counsel-M-x)
     (bind-key "C-x C-f" #'counsel-find-file)
     (bind-key "C-h v" #'counsel-describe-variable)
-    (bind-key "C-h f" #'counsel-describe-function)
-    (define-key read-expression-map (kbd "C-r") #'counsel-expression-history))
+    (bind-key "C-h f" #'counsel-describe-function))
 
-  :demand t
+  :config
+  (counsel-mode +1)
+
   :functions (counsel-expression-history))
 
 (provide 'cb-ivy)
