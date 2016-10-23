@@ -23,6 +23,8 @@
 
 (defalias #'yes-or-no-p #'y-or-n-p)
 
+(define-key minibuffer-local-map (kbd "ESC") #'keyboard-escape-quit)
+
 (global-unset-key (kbd "C-z"))
 
 
