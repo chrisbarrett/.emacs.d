@@ -9,21 +9,47 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'use-package)
-  (require 'cb-use-package-extensions))
+  (require 'use-package))
+
+(require 'cb-emacs)
+(require 'spacemacs-keys)
 
 (use-package projectile
-  :commands (projectile-mode projectile-switch-project)
+  :commands (projectile-ag
+             projectile-compile-project
+             projectile-invalidate-cache
+             projectile-mode
+             projectile-replace
+             projectile-run-async-shell-command-in-root
+             projectile-run-project
+             projectile-run-shell-command-in-root
+             projectile-switch-project
+             projectile-test-project)
+
+  :preface
+  (autoload 'magit-status "magit")
+
   :init
   (progn
     (bind-key "s-l" #'projectile-switch-project)
 
     (spacemacs-keys-set-leader-keys
-      "pr" #'projectile-replace))
+      "p!" #'projectile-run-shell-command-in-root
+      "p&" #'projectile-run-async-shell-command-in-root
+      "pI" #'projectile-invalidate-cache
+      "pa" #'projectile-ag
+      "pc" #'projectile-compile-project
+      "pr" #'projectile-replace
+      "pt" #'projectile-test-project
+      "pu" #'projectile-run-project))
+
   :config
   (progn
     (setq projectile-switch-project-action #'magit-status)
+    (setq projectile-cache-file (concat cb-emacs-cache-directory "projectile.cache"))
+    (setq projectile-enable-caching t)
     (projectile-mode)))
+
 
 (use-package counsel-projectile
   :defer t
