@@ -54,10 +54,31 @@
   :functions (evil-mode evil-delay evil-delete-backward-char-and-join))
 
 (use-package evil-terminal-cursor-changer
+  :after evil
   :if (not (display-graphic-p))
   :config
   (evil-terminal-cursor-changer-activate)
   :functions (evil-terminal-cursor-changer-activate))
+
+(use-package evil-surround
+  :after evil
+  :config
+  (setq-default evil-surround-pairs-alist
+                '((?\( . ("(" . ")"))
+                  (?\[ . ("[" . "]"))
+                  (?\{ . ("{" . "}"))
+
+                  (?\) . ("(" . ")"))
+                  (?\] . ("[" . "]"))
+                  (?\} . ("{" . "}"))
+
+                  (?# . ("#{" . "}"))
+                  (?b . ("(" . ")"))
+                  (?B . ("{" . "}"))
+                  (?> . ("<" . ">"))
+                  (?t . surround-read-tag)
+                  (?< . surround-read-tag)
+                  (?f . surround-function))))
 
 (provide 'cb-evil)
 
