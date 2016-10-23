@@ -54,6 +54,7 @@
 (use-package cb-ag)
 (use-package cb-projectile)
 (use-package cb-elisp)
+(use-package cb-smartparens)
 
 
 ;;; Print overall startup time.

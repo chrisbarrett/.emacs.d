@@ -35,6 +35,7 @@
             which-key-description-replacement-alist))
 
     (which-key-add-key-based-replacements
+      "SPC ,"   "smartparens"
       "SPC b"   "buffers"
       "SPC f"   "files"
       "SPC h"   "help"
