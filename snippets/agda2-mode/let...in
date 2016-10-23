@@ -1,0 +1,6 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: let...in
+# key: l
+# binding: direct-keybinding
+# --
+let ${1:name} = ${2:value} in $0

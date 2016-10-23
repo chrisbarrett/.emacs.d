@@ -1,0 +1,7 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: Console.WriteLine
+# key: cw
+# binding: direct-keybinding
+# condition: (yas/bol?)
+# --
+Console.WriteLine($0);

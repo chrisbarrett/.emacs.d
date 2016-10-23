@@ -1,0 +1,9 @@
+# key: ns
+# name: namespace
+# condition: (yas/bol?)
+# --
+namespace ${1:Name} {
+
+$0
+
+}

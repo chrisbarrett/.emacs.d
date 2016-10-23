@@ -58,6 +58,7 @@
 (use-package cb-autoinsert)
 (use-package cb-undo-tree)
 (use-package cb-ws-butler)
+(use-package cb-yasnippet)
 
 
 ;;; Print overall startup time.

@@ -1,0 +1,6 @@
+# key: ex
+# name: EXPOSE
+# condition: (yas/bol?)
+# --
+EXPOSE ${1:port}
+$0

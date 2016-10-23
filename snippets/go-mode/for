@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# key: for
+# name: for
+# condition: (yas/bol?)
+# --
+for ${1:${2:i} := ${3:initial}; $2 < ${4:limit}; $2++} {
+  $0
+}

@@ -1,0 +1,7 @@
+# key: f
+# name: function
+# condition: (yas/bol?)
+# --
+${1:void} ${2:fname}(${3:/* args */}) {
+  $0
+}

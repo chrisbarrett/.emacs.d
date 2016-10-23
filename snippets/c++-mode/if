@@ -1,0 +1,5 @@
+# key: i
+# name: if
+# condition: (yas/bol?)
+# --
+if ($1) { $0 }

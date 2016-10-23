@@ -1,0 +1,6 @@
+# key: do
+# name: do
+# condition: (not (yas/bol?))
+# --
+do
+  $0

@@ -1,0 +1,7 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: tag
+# key: t
+# binding: direct-keybinding
+# condition: (yas/bol?)
+# --
+<$0 />

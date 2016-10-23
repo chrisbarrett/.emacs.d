@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: main
+# key: main
+# condition: (yas/bol?)
+# --
+func main() {
+    $0
+}

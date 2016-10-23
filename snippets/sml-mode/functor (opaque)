@@ -1,0 +1,8 @@
+# key: functor
+# name: functor (opaque)
+# expand-env: ((yas-indent-line (quote fixed)) (yas-wrap-around-region (quote t)))
+# condition: (yas/bol?)
+# --
+functor ${1:Name}(${2:decls}) :> ${3:SIG$(s-upcase yas/text)} = struct
+  $0
+end

@@ -1,0 +1,7 @@
+# key: mod
+# name: module
+# condition: (yas/rust-bol-or-after-accessibility-modifier?)
+# --
+mod ${1:name} {
+    $0
+}
