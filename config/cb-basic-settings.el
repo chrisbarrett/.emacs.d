@@ -28,6 +28,12 @@
 (global-unset-key (kbd "C-z"))
 
 
+;; Enable hideshow in all programming buffers.
+
+(autoload 'hs-minor-mode "hideshow")
+(add-hook 'prog-mode-hook 'hs-minor-mode)
+
+
 ;; Show file or buffer name in the title bar.
 
 (defun cb-basic-settings--frame-title-string ()

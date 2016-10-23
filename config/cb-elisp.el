@@ -33,7 +33,6 @@
       "ee" #'eval-expression))
 
   :config
-  (add-hook 'emacs-lisp-mode-hook #'hs-minor-mode)
   (advice-add #'eval-buffer :after #'cb-elisp--message-on-eval-buffer))
 
 
