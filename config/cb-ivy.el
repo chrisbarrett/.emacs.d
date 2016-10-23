@@ -13,13 +13,17 @@
   (require 'cb-use-package-extensions))
 
 (use-package ivy
-  :bind
-  (("C-c C-r" . ivy-resume)
-   ("C-x b" . ivy-switch-buffer))
-
   :leader-bind
   (("r" . ivy-resume)
-   ("bb" . ivy-switch-buffer))
+   ("b b" . ivy-switch-buffer))
+
+  :preface
+  (autoload 'ivy-mode "ivy")
+
+  :init
+  (progn
+    (bind-key "C-c C-r" #'ivy-resume)
+    (bind-key "C-x b" #'ivy-switch-buffer))
 
   :config
   (progn
@@ -28,25 +32,23 @@
     (ivy-mode))
 
   :demand t
-  :functions (ivy-mode)
   :defines (ivy-use-virtual-buffers ivy-count-format))
 
 
 (use-package counsel
-  :bind
-  (("M-x" . counsel-M-x)
-   ("C-x C-f" . counsel-find-file)
-   ("C-h v" . counsel-describe-variable)
-   ("C-h f" . counsel-describe-function))
-
   :leader-bind
   (("SPC" . counsel-M-x)
-   ("ff" . counsel-find-file)
-   ("hdf" . counsel-describe-function)
-   ("hdv" . counsel-describe-variable))
+   ("f f" . counsel-find-file)
+   ("h d f" . counsel-describe-function)
+   ("h d v" . counsel-describe-variable))
 
-  :config
-  (define-key read-expression-map (kbd "C-r") #'counsel-expression-history)
+  :init
+  (progn
+    (bind-key "M-x" #'counsel-M-x)
+    (bind-key "C-x C-f" #'counsel-find-file)
+    (bind-key "C-h v" #'counsel-describe-variable)
+    (bind-key "C-h f" #'counsel-describe-function)
+    (define-key read-expression-map (kbd "C-r") #'counsel-expression-history))
 
   :demand t
   :functions (counsel-expression-history))

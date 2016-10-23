@@ -86,6 +86,7 @@ LONG-NAME is an optional longer name for the prefix."
       (when (and is-major-mode-prefix spacemacs-keys-major-mode-leader-key)
         (which-key-declare-prefixes-for-mode mode major-mode-prefix prefix-name)))))
 
+;;;###autoload
 (defun spacemacs-keys-set-leader-keys (key def &rest bindings)
   "Define key bindings under the leader prefix.
 Bindings defined with this routine will be available under

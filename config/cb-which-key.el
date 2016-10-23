@@ -27,6 +27,7 @@
     (defconst cb-which-key--substitutions
       `(
         ;; Trim package prefixes.
+        (,(rx "cb/" (group (+ nonl))) . "\\1")
         (,(rx "cb-" (+? nonl) "-" (group (+ nonl))) . "\\1")))
 
     (dolist (sub cb-which-key--substitutions)
@@ -34,8 +35,12 @@
             which-key-description-replacement-alist))
 
     (which-key-add-key-based-replacements
+      "SPC b"   "buffers"
+      "SPC f"   "files"
+      "SPC h"   "help"
+      "SPC t"   "toggles"
       "SPC SPC" "M-x"
-      "SPC m" '("major-mode-cmd" . "Major mode commands"))
+      "SPC m"   '("major-mode-cmd" . "Major mode commands"))
 
     (which-key-mode +1))
 
