@@ -48,6 +48,7 @@
 (use-package cb-leader-keys)
 (use-package cb-evil)
 (use-package cb-ivy)
+(use-package cb-avy)
 (use-package cb-darwin :if (equal system-type 'darwin))
 (use-package cb-ag)
 (use-package cb-projectile)
