@@ -27,11 +27,6 @@
   :group 'spacemacs-keys
   :type 'string)
 
-(defcustom spacemacs-keys-emacs-leader-key "M-m"
-  "The leader key accessible in `emacs state' and `insert state'."
-  :group 'spacemacs-keys
-  :type 'string)
-
 (defcustom spacemacs-keys-major-mode-leader-key ","
   "Major mode leader key is a shortcut equivalent to `<leader> m`."
   :group 'spacemacs-keys
@@ -53,14 +48,10 @@ NAME is a string used as the prefix command.
 LONG-NAME if given is stored in `spacemacs-keys-prefix-titles'."
   (let* ((command name)
          (full-prefix (concat spacemacs-keys-leader-key " " prefix))
-         (full-prefix-emacs (concat spacemacs-keys-emacs-leader-key " " prefix))
-         (full-prefix-lst (listify-key-sequence (kbd full-prefix)))
-         (full-prefix-emacs-lst (listify-key-sequence
-                                 (kbd full-prefix-emacs))))
+         (full-prefix-lst (listify-key-sequence (kbd full-prefix))))
     ;; define the prefix command only if it does not already exist
     (unless long-name (setq long-name name))
     (which-key-declare-prefixes
-      full-prefix-emacs (cons name long-name)
       full-prefix (cons name long-name))))
 
 (defun spacemacs-keys-declare-prefix-for-mode (mode prefix name &optional long-name)
@@ -75,13 +66,11 @@ NAME is a symbol name used as the prefix command.
 LONG-NAME is an optional longer name for the prefix."
   (let ((command (intern (concat (symbol-name mode) name)))
         (full-prefix (concat spacemacs-keys-leader-key " " prefix))
-        (full-prefix-emacs (concat spacemacs-keys-emacs-leader-key " " prefix))
         (is-major-mode-prefix (string-prefix-p "m" prefix))
         (major-mode-prefix (concat spacemacs-keys-major-mode-leader-key " " (substring prefix 1))))
     (unless long-name (setq long-name name))
     (let ((prefix-name (cons name long-name)))
       (which-key-declare-prefixes-for-mode mode
-        full-prefix-emacs prefix-name
         full-prefix prefix-name)
       (when (and is-major-mode-prefix spacemacs-keys-major-mode-leader-key)
         (which-key-declare-prefixes-for-mode mode major-mode-prefix prefix-name)))))
@@ -90,8 +79,7 @@ LONG-NAME is an optional longer name for the prefix."
 (defun spacemacs-keys-set-leader-keys (key def &rest bindings)
   "Define key bindings under the leader prefix.
 Bindings defined with this routine will be available under
-`spacemacs-keys-leader-key' and
-`spacemacs-keys-emacs-leader-key'.
+`spacemacs-keys-leader-key'.
 
 KEY is the key to bind under the leader.  It is a string that will
 be used as an argument to `kbd'.
@@ -126,10 +114,6 @@ If MODE is a minor mode, MINOR should be non-nil."
          (leader2 (when (spacemacs-keys--acceptable-leader-p
                          spacemacs-keys-leader-key)
                     (concat spacemacs-keys-leader-key (unless minor " m"))))
-         (emacs-leader (when (spacemacs-keys--acceptable-leader-p
-                              spacemacs-keys-emacs-leader-key)
-                         (concat spacemacs-keys-emacs-leader-key
-                                 (unless minor " m"))))
          (leaders (delq nil (list leader1 leader2))))
     (or (boundp prefix)
         (progn
@@ -137,7 +121,6 @@ If MODE is a minor mode, MINOR should be non-nil."
            `(bind-map ,map
               :prefix-cmd ,prefix
               ,(if minor :minor-modes :major-modes) (,mode)
-              :keys ,emacs-leader
               :evil-keys ,leaders
               :evil-states (normal motion visual evilified)))
           (boundp prefix)))))
@@ -182,9 +165,9 @@ BINDINGS is a list of more KEY and DEF pairs."
         (setq key (pop bindings) def (pop bindings))))))
 (put 'spacemacs-keys-set-leader-keys-for-minor-mode 'lisp-indent-function 'defun)
 
+
 (bind-map spacemacs-keys-default-map
   :prefix-cmd spacemacs-keys-cmds
-  :keys (spacemacs-keys-emacs-leader-key)
   :evil-keys (spacemacs-keys-leader-key)
   :override-minor-modes t
   :override-mode-name spacemacs-keys-leader-override-mode)
