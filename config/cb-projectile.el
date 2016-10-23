@@ -13,7 +13,9 @@
   (require 'cb-use-package-extensions))
 
 (use-package projectile
-  :commands (projectile-mode)
+  :commands (projectile-mode projectile-switch-project)
+  :init
+  (bind-key "s-l" #'projectile-switch-project)
   :config
   (projectile-mode))
 
@@ -27,7 +29,6 @@
              counsel-projectile-ag)
   :init
   (progn
-    (bind-key "s-l" #'counsel-projectile-ag)
     (bind-key "s-f" #'counsel-projectile-find-file)
 
     (spacemacs-keys-set-leader-keys
