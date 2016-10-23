@@ -64,6 +64,7 @@
 (use-package cb-aggressive-indent)
 (use-package cb-server)
 (use-package cb-hexl)
+(use-package cb-volatile-highlights)
 
 
 ;;; Print overall startup time.
