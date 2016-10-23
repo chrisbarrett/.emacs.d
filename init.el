@@ -59,6 +59,7 @@
 (use-package cb-undo-tree)
 (use-package cb-ws-butler)
 (use-package cb-yasnippet)
+(use-package cb-flycheck)
 
 
 ;;; Print overall startup time.
