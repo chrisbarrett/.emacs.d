@@ -134,6 +134,11 @@
   :config
   (menu-bar-mode -1))
 
+(use-package tool-bar
+  :if (display-graphic-p)
+  :config
+  (tool-bar-mode -1))
+
 (use-package align
   :bind (("C-x a a" . align-regexp)))
 
