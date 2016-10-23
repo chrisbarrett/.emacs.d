@@ -12,10 +12,14 @@
   (require 'use-package))
 
 (use-package magit
-  :leader-bind
-  (("gs" . magit-status))) 
+  :defer t
+  :commands (magit-status) 
+  :init
+  (spacemacs-keys-set-leader-keys
+    "gs" #'magit-status))
 
 (use-package evil-magit
+  :defer t
   :after magit) 
 
 (provide 'cb-magit)
