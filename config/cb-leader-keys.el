@@ -12,6 +12,8 @@
   (require 'use-package)
   (require 'cb-use-package-extensions))
 
+(require 'spacemacs-keys)
+
 (use-package cb-alternate-buffer
   :commands (cb/alternate-buffer))
 
@@ -39,7 +41,10 @@
 
 (use-package spacemacs-keys
   :preface
-  (autoload 'spacemacs-keys-set-leader-keys "spacemacs-keys")
+  (progn
+    (autoload 'evil-window-next "evil-commands")
+    (autoload 'evil-window-split "evil-commands")
+    (autoload 'evil-window-vsplit "evil-commands"))
 
   :config
   (spacemacs-keys-set-leader-keys
