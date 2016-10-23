@@ -47,7 +47,7 @@
 (use-package cb-basic-settings)
 (use-package cb-modeline)
 (use-package cb-which-key)
-(use-package cb-spacemacs-keys)
+(use-package cb-leader-keys)
 (use-package cb-evil)
 (use-package cb-ivy)
 (use-package cb-darwin :if (equal system-type 'darwin))
