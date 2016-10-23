@@ -12,6 +12,7 @@
   (require 'use-package))
 
 (require 'spacemacs-keys)
+(require 'evil-transient-state)
 
 (use-package evil
   :preface
@@ -57,36 +58,46 @@
   :defines (evil-want-Y-yank-to-eol))
 
 (use-package evil-terminal-cursor-changer
-  :after evil
   :if (not (display-graphic-p))
-  :config (evil-terminal-cursor-changer-activate)
-  :functions (evil-terminal-cursor-changer-activate))
+  :commands (evil-terminal-cursor-changer-activate)
+  :config (evil-terminal-cursor-changer-activate))
 
 (use-package evil-surround
   :after evil
+  :commands (global-evil-surround-mode
+             evil-surround-region)
+
+  :preface
+  (autoload 'evil-substitute "evil-commands")
+
   :config
-  (setq-default evil-surround-pairs-alist
-                '((?\( . ("(" . ")"))
-                  (?\[ . ("[" . "]"))
-                  (?\{ . ("{" . "}"))
+  (progn
+    (setq-default evil-surround-pairs-alist
+                  '((?\( . ("(" . ")"))
+                    (?\[ . ("[" . "]"))
+                    (?\{ . ("{" . "}"))
 
-                  (?\) . ("(" . ")"))
-                  (?\] . ("[" . "]"))
-                  (?\} . ("{" . "}"))
+                    (?\) . ("(" . ")"))
+                    (?\] . ("[" . "]"))
+                    (?\} . ("{" . "}"))
 
-                  (?# . ("#{" . "}"))
-                  (?b . ("(" . ")"))
-                  (?B . ("{" . "}"))
-                  (?> . ("<" . ">"))
-                  (?t . surround-read-tag)
-                  (?< . surround-read-tag)
-                  (?f . surround-function))))
+                    (?# . ("#{" . "}"))
+                    (?b . ("(" . ")"))
+                    (?B . ("{" . "}"))
+                    (?> . ("<" . ">"))
+                    (?t . surround-read-tag)
+                    (?< . surround-read-tag)
+                    (?f . surround-function)))
+
+    (global-evil-surround-mode)
+    (evil-define-key 'visual evil-surround-mode-map "s" #'evil-surround-region)
+    (evil-define-key 'visual evil-surround-mode-map "S" #'evil-substitute)))
 
 
 (use-package evil-iedit-state
   :commands (evil-iedit-state evil-iedit-state/iedit-mode)
   :init
-  (spacemacs-keys-set-leader-keys "se" 'evil-iedit-state/iedit-mode)
+  (spacemacs-keys-set-leader-keys "se" #'evil-iedit-state/iedit-mode)
 
   :config
   (progn
@@ -96,6 +107,105 @@
 
     ;; Enable leader key in iedit and iedit-insert states
     (define-key evil-iedit-state-map (kbd "SPC") spacemacs-keys-default-map)))
+
+(use-package evil-ediff
+  :after ediff)
+
+(use-package evil-args
+  :after evil
+  :config
+  (progn
+    (define-key evil-inner-text-objects-map "a" 'evil-inner-arg)
+    (define-key evil-outer-text-objects-map "a" 'evil-outer-arg)))
+
+(use-package evil-indent-plus
+  :after evil
+  :commands (evil-indent-plus-default-bindings)
+  :config (evil-indent-plus-default-bindings))
+
+(use-package evil-nerd-commenter
+  :commands (evilnc-comment-operator)
+  :preface
+  (require 'cb-evil-nerd-commenter)
+  :init
+  (progn
+    ;; Double all the commenting functions so that the inverse operations
+    ;; can be called without setting a flag
+    (define-key evil-normal-state-map "gc" 'evilnc-comment-operator)
+    (define-key evil-normal-state-map "gy" 'spacemacs/copy-and-comment-lines)
+
+    (spacemacs-keys-set-leader-keys
+      ";"  #'evilnc-comment-operator
+      "cl" #'cb-evil-nerd-commenter/comment-or-uncomment-lines
+      "cL" #'cb-evil-nerd-commenter/comment-or-uncomment-lines-inverse
+      "cp" #'cb-evil-nerd-commenter/comment-or-uncomment-paragraphs
+      "cP" #'cb-evil-nerd-commenter/comment-or-uncomment-paragraphs-inverse
+      "ct" #'cb-evil-nerd-commenter/quick-comment-or-uncomment-to-the-line
+      "cT" #'cb-evil-nerd-commenter/quick-comment-or-uncomment-to-the-line-inverse
+      "cy" #'cb-evil-nerd-commenter/copy-and-comment-lines
+      "cY" #'cb-evil-nerd-commenter/copy-and-comment-lines-inverse)))
+
+(use-package evil-matchit
+  :after evil)
+
+(use-package evil-numbers
+  :commands (evil-numbers/inc-at-pt
+             evil-numbers/dec-at-pt)
+
+  :preface
+  (evil-transient-state-define evil-numbers
+    :title "Evil Numbers Transient State"
+    :doc "\n[_+_/_=_] increase number  [_-_] decrease  [0..9] prefix  [_q_] quit"
+    :bindings
+    ("+" evil-numbers/inc-at-pt)
+    ("=" evil-numbers/inc-at-pt)
+    ("-" evil-numbers/dec-at-pt)
+    ("q" nil :exit t))
+
+  :init
+  (progn
+    (spacemacs-keys-declare-prefix "n" "numbers")
+    (spacemacs-keys-set-leader-keys
+      "n+" #'evil-numbers-transient-state/evil-numbers/inc-at-pt
+      "n=" #'evil-numbers-transient-state/evil-numbers/inc-at-pt
+      "n-" #'evil-numbers-transient-state/evil-numbers/dec-at-pt)))
+
+(use-package evil-search-highlight-persist
+  :after evil
+  :commands (global-evil-search-highlight-persist
+             evil-search-highlight-persist-remove-all)
+
+  :preface
+  (autoload 'evil-ex-define-cmd "evil-ex")
+
+  :config
+  (progn
+    (global-evil-search-highlight-persist)
+    (evil-ex-define-cmd "noh" #'evil-search-highlight-persist-remove-all)))
+
+(use-package evil-visual-mark-mode
+  :after evil
+  :commands (evil-visual-mark-mode)
+  :config (evil-visual-mark-mode))
+
+(use-package vi-tilde-fringe
+  :after evil
+  :commands (vi-tilde-fringe-mode global-vi-tilde-fringe-mode)
+
+  :preface
+  (progn
+    (defun cb-evil--vi-tilde-fringe-off ()
+      (vi-tilde-fringe-mode -1))
+
+    (defun cb-evil--vi-tilde-fringe-off-if-readonly ()
+      (when buffer-read-only
+        (vi-tilde-fringe-mode -1))))
+
+  :config
+  (progn
+    (add-hook 'which-key-init-buffer-hook #'cb-evil--vi-tilde-fringe-off)
+    (add-hook 'after-change-major-mode-hook #'cb-evil--vi-tilde-fringe-off-if-readonly)
+    (global-vi-tilde-fringe-mode)))
 
 
 (provide 'cb-evil)
