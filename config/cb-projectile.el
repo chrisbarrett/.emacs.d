@@ -15,7 +15,11 @@
 (use-package projectile
   :commands (projectile-mode projectile-switch-project)
   :init
-  (bind-key "s-l" #'projectile-switch-project)
+  (progn
+    (bind-key "s-l" #'projectile-switch-project)
+
+    (spacemacs-keys-set-leader-keys
+      "pr" #'projectile-replace))
   :config
   (progn
     (setq projectile-switch-project-action #'magit-status)
