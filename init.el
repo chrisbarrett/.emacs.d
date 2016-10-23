@@ -62,6 +62,7 @@
 (use-package cb-flycheck)
 (use-package cb-aggressive-indent)
 (use-package cb-server)
+(use-package cb-hexl)
 
 
 ;;; Print overall startup time.
