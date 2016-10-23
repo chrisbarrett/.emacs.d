@@ -66,7 +66,7 @@
 (use-package cb-hexl)
 (use-package cb-volatile-highlights)
 (use-package cb-info)
-
+(use-package cb-highlight-todo)
 
 
 ;;; Print overall startup time.
