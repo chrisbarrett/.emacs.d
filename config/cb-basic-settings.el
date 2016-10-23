@@ -196,8 +196,10 @@
 (use-package hippie-exp
   :init
   (progn
-    (global-set-key (kbd "M-/") 'hippie-expand)
-    (define-key evil-insert-state-map [remap evil-complete-previous] 'hippie-expand))
+    (global-set-key (kbd "M-/") #'hippie-expand)
+    (with-eval-after-load 'evil
+      (define-key evil-insert-state-map [remap evil-complete-previous] #'hippie-expand)))
+
   :config
   (setq hippie-expand-try-functions-list
         '(
