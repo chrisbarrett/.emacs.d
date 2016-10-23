@@ -10,23 +10,31 @@
 
 (eval-when-compile
   (require 'use-package)
-  (require 'cb-use-package-extensions))
+  (require 'cb-use-package-extensions)
+  (require 'flycheck))
 
 (require 'spacemacs-keys)
+(autoload 'evil-define-key "evil-core")
 
 ;; Print a message on `eval-buffer'.
 
-(defun cb-elisp--message-on-eval-buffer (&rest _)
-  (when (called-interactively-p nil)
-    (message "Buffer evaluated.")))
+(use-package elisp-mode
+  :preface
+  (defun cb-elisp--message-on-eval-buffer (&rest _)
+    (when (called-interactively-p nil)
+      (message "Buffer evaluated.")))
 
-(advice-add #'eval-buffer :after #'cb-elisp--message-on-eval-buffer)
+  :init
+  (progn
+    (spacemacs-keys-declare-prefix-for-mode 'emacs-lisp-mode "m e" "Eval")
 
-(spacemacs-keys-declare-prefix-for-mode 'emacs-lisp-mode "m e" "Eval")
+    (spacemacs-keys-set-leader-keys-for-major-mode 'emacs-lisp-mode
+      "eb" #'eval-buffer
+      "ee" #'eval-expression))
 
-(spacemacs-keys-set-leader-keys-for-major-mode 'emacs-lisp-mode
-  "eb" #'eval-buffer
-  "ee" #'eval-expression)
+  :config
+  (add-hook 'emacs-lisp-mode-hook #'hs-minor-mode)
+  (advice-add #'eval-buffer :after #'cb-elisp--message-on-eval-buffer))
 
 
 (use-package find-func
