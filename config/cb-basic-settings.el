@@ -140,6 +140,11 @@
   :config
   (tool-bar-mode -1))
 
+(use-package scroll-bar-mode
+  :if (display-graphic-p)
+  :config
+  (scroll-bar-mode -1))
+
 (use-package align
   :bind (("C-x a a" . align-regexp)))
 
