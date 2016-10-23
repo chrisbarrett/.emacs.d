@@ -11,6 +11,15 @@
 (eval-when-compile
   (require 'use-package))
 
+(defun cb-yasnippet-bol? ()
+  "Non-nil if point is on an empty line or at the first word.
+The rest of the line must be blank."
+  (s-matches? (rx bol (* space) (* word) (* space) eol)
+              (buffer-substring (line-beginning-position) (line-end-position))))
+
+(defalias 'yas/bol? #'cb-yasnippet-bol?)
+
+
 (use-package yasnippet
   :commands (yas-global-mode yas-expand yas-new-snippet yas-insert-snippet)
 
