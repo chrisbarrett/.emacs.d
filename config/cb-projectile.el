@@ -17,7 +17,9 @@
   :init
   (bind-key "s-l" #'projectile-switch-project)
   :config
-  (projectile-mode))
+  (progn
+    (setq projectile-switch-project-action #'magit-status)
+    (projectile-mode)))
 
 (use-package counsel-projectile
   :defer t
