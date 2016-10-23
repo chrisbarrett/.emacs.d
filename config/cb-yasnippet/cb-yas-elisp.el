@@ -8,6 +8,8 @@
 
 ;;; Code:
 
+(require 'dash)
+(require 'dash-functional)
 (require 'subr-x)
 (require 's)
 
@@ -20,7 +22,6 @@ The rest of the line must be blank."
   (s-matches? (rx bol (* space) (* word) (* space) eol)
               (buffer-substring (line-beginning-position) (line-end-position))))
 
-
 (defun yas/find-group-for-snippet ()
   "Find the first group defined in the current file.
 Fall back to the file name sans extension."
@@ -32,11 +33,28 @@ Fall back to the file name sans extension."
                   (buffer-string)))
    (file-name-sans-extension (file-name-nondirectory buffer-file-name))))
 
-
 (defun yas/autoload-file-for-function (sym)
   (if-let (file (symbol-file (if (stringp sym) (intern sym) sym)))
       (file-name-sans-extension (file-name-nondirectory file))
     ""))
+
+(defun yas/find-identifier-prefix ()
+  "Find the commonest identifier prefix in use in this buffer."
+  (let ((ns-separators (rx (or ":" "--" "/"))))
+    (->> (buffer-string)
+         ;; Extract the identifiers from declarations.
+         (s-match-strings-all
+          (rx bol (* space)
+              "(" (? "cl-") (or "defun" "defmacro" "defvar" "defconst")
+              (+ space)
+              (group (+ (not space)))))
+         ;; Find the commonest prefix.
+         (-map #'cadr)
+         (--filter (s-matches? ns-separators it))
+         (--map (car (s-match (rx (group (* nonl) (or ":" "--" "/"))) it)))
+         (-group-by #'identity)
+         (-max-by (-on #'>= #'length))
+         (car))))
 
 (defun yas/at-line-above-decl? ()
   (save-excursion
@@ -47,7 +65,6 @@ Fall back to the file name sans extension."
                                        "define-minor-mode"
                                        "define-globalized-minor-mode"
                                        "define-derived-mode")))))
-
 
 (provide 'cb-yas-elisp)
 

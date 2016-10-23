@@ -17,12 +17,10 @@
 
 
 (use-package yasnippet
-  :commands (yas-global-mode yas-expand yas-new-snippet yas-insert-snippet)
-
   :preface
   (progn
-    (autoload 'yas--field-contains-point-p "yasnippet")
-    (autoload 'yas--field-text-for-display "yasnippet")
+    (autoload 'sp-backward-delete-char "smartparens")
+    (autoload 'evil-define-key "evil-core")
 
     (defun cb-yasnippet-preserve-indentation (f &rest args)
       (let ((col
@@ -75,7 +73,42 @@
                  (str (cb-yasnippet--current-field-text)))
         (when (s-matches? (rx bos (+ space) eos) str)
           (delete-region beg end)
-          t))))
+          t)))
+
+
+    (defun cb-yasnippet-space ()
+      "Clear and skip this field if it is unmodified.  Otherwise insert a space."
+      (interactive "*")
+      (let ((field (cb-yasnippet--current-field))
+            ;; (sp-mode? (and (boundp 'smartparens-mode) smartparens-mode))
+            )
+        (cond ((and field
+                    (not (yas--field-modified-p field))
+                    (eq (point) (marker-position (yas--field-start field))))
+               (yas--skip-and-clear field)
+               (yas-next-field 1))
+              ;; (sp-mode?
+              ;;  (sp-generic-prog-space))
+              (t
+               (call-interactively #'self-insert-command)))))
+
+    (defun cb-yasnippet-backspace ()
+      "Clear the current field if the current snippet is unmodified.
+Otherwise delete backwards."
+      (interactive "*")
+      (let ((field (cb-yasnippet--current-field))
+            (sp-mode? (and (boundp 'smartparens-mode) smartparens-mode)))
+        (cond ((and field
+                    (not (yas--field-modified-p field))
+                    (eq (point) (marker-position (yas--field-start field))))
+               (yas--skip-and-clear field)
+               (yas-next-field 1))
+              ;; ((and sp-mode? (derived-mode-p 'prog-mode))
+              ;;  (sp-generic-prog-backspace))
+              (sp-mode?
+               (call-interactively #'sp-backward-delete-char))
+              (t
+               (call-interactively #'backward-delete-char))))))
 
   :init
   (progn
@@ -96,6 +129,14 @@
 
     (yas-global-mode +1)
 
+    ;; Define key binding sfor fancy snippet navigation.
+
+    (bind-key (kbd "TAB") #'yas-expand yas-minor-mode-map)
+    (evil-define-key 'insert yas-minor-mode-map (kbd "TAB") #'yas-expand)
+
+    (evil-define-key 'insert yas-keymap (kbd "SPC") #'cb-yasnippet-space)
+    (bind-key (kbd "<backspace>") #'cb-yasnippet-backspace yas-keymap)
+
     ;; Advise editing commands.
     ;;
     ;; Pressing SPC in an unmodified field will clear it and switch to the next.
@@ -114,12 +155,19 @@
     (advice-add 'yas--expand-or-prompt-for-template :around #'cb-yasnippet-preserve-indentation))
 
   :commands
-  (yas-visit-snippet-file
-   yas-expand
-   yas-new-snippet
+  (yas-expand
+   yas-global-mode
    yas-insert-snippet
+   yas-new-snippet
    yas-next-field
-   yas-prev-field))
+   yas-prev-field
+   yas-visit-snippet-file)
+
+  :functions
+  (yas--skip-and-clear
+   yas--field-contains-point-p
+   yas--field-text-for-display))
+
 
 (provide 'cb-yasnippet)
 
