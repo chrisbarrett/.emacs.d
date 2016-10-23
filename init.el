@@ -23,19 +23,17 @@
 
 (require 'seq)
 
-(let ((toplevel-dirs
-       (seq-map (lambda (path)
-                  (expand-file-name path user-emacs-directory))
-                '("config" "lisp")))
-      (git-subtrees
-       (seq-filter #'file-directory-p
-                   (directory-files "lisp" t "^[^.]")))
-      (config-subtrees
-       (seq-filter #'file-directory-p
-                   (directory-files "config" t "^[^.]"))))
-
-  (dolist (path (append toplevel-dirs config-subtrees git-subtrees))
-    (add-to-list 'load-path path)))
+(let* ((lisp-dir (expand-file-name "lisp" user-emacs-directory))
+       (config-dir (expand-file-name "config" user-emacs-directory))
+       (git-subtrees
+        (seq-filter #'file-directory-p
+                    (directory-files lisp-dir t "^[^.]")))
+       (config-subtrees
+        (seq-filter #'file-directory-p
+                    (directory-files config-dir t "^[^.]"))))
+  (dolist (path (append (list lisp-dir config-dir) config-subtrees git-subtrees))
+    (add-to-list 'load-path path)
+    (add-to-list 'load-path (concat path "/lisp"))))
 
 (defconst use-package-verbose t)
 (require 'use-package)
