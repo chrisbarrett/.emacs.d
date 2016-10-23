@@ -8,6 +8,9 @@
 
 ;;; Code:
 
+(eval-when-compile
+  (require 'use-package))
+
 (use-package yasnippet
   :commands (yas-global-mode yas-expand yas-new-snippet yas-insert-snippet)
 
@@ -31,11 +34,13 @@
         (evil-insert-state))))
 
   :init
-  (spacemacs-keys-set-leader-keys
-    "yf" #'yas-visit-snippet-file
-    "ye" #'yas-expand
-    "yn" #'yas-new-snippet
-    "yy" #'yas-insert-snippet)
+  (progn
+    (spacemacs-keys-declare-prefix "y" "yasnippet")
+    (spacemacs-keys-set-leader-keys
+      "yf" #'yas-visit-snippet-file
+      "ye" #'yas-expand
+      "yn" #'yas-new-snippet
+      "yy" #'yas-insert-snippet))
 
   :config
   (progn
