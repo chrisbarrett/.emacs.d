@@ -21,9 +21,9 @@
   :config
   (progn
     (evil-mode +1)
-
-    (defconst evil-want-Y-yank-to-eol t)
     (setq-default evil-shift-width 2)
+
+    (setq evil-want-Y-yank-to-eol t)
 
     ;; Configure cursors.
 
@@ -51,7 +51,8 @@
     (advice-add #'evil-delete-backward-char-and-join
                 :around #'cb-evil--sp-delete-and-join-compat))
 
-  :functions (evil-mode evil-delay evil-delete-backward-char-and-join))
+  :functions (evil-mode evil-delay evil-delete-backward-char-and-join)
+  :defines (evil-want-Y-yank-to-eol))
 
 (use-package evil-terminal-cursor-changer
   :after evil
