@@ -7,3 +7,4 @@
 # Internal
 elpa
 .cache
+/projectile-bookmarks.eld
