@@ -23,7 +23,8 @@
 (advice-add #'eval-buffer :after #'cb-elisp--message-on-eval-buffer)
 
 (spacemacs-keys-set-leader-keys-for-major-mode 'emacs-lisp-mode
-  "C-c C-f" #'eval-buffer)
+  "eb" #'eval-buffer
+  "ee" #'eval-expression)
 
 
 (use-package find-func
