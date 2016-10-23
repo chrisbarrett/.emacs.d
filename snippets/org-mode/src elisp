@@ -1,6 +1,6 @@
 # key: el
 # name: src elisp
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 #+begin_src emacs-lisp
 $0

@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: logger warn
 # key: lw
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 't))
 # --
 logger.warn(s"$0")

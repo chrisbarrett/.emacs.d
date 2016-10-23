@@ -2,6 +2,6 @@
 # name: Contract.Ensures not null
 # key: cen
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 Contract.Ensures($0 != null);

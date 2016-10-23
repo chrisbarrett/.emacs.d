@@ -1,5 +1,5 @@
 # key: e
 # name: Eval
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 Eval ${1:compute} in $0.

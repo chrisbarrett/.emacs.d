@@ -2,7 +2,7 @@
 # name: struct
 # key: st
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 struct ${1:Typename} {
   $0

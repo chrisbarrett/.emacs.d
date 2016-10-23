@@ -2,6 +2,6 @@
 # name: structure (alias)
 # key: st
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 structure ${1:alias} = ${2:definition}

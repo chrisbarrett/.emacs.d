@@ -2,6 +2,6 @@
 # name: bind-instrument
 # key: bi
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 (bind-instrument $0)

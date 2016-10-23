@@ -2,6 +2,6 @@
 # name: static_assert
 # key: sa
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 static_assert($0, "");

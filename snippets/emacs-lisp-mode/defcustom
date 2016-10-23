@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: defcustom
 # key: dc
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 (defcustom ${1:name} ${2:value}
   "$3"

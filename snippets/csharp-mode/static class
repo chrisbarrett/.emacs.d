@@ -2,7 +2,7 @@
 # name: static class
 # key: sc
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 static class ${1:Name} {
   $0

@@ -2,7 +2,7 @@
 # name: VOLUME
 # key: v
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 VOLUME [${1:path}]
 $0

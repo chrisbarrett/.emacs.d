@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: defprotocol
 # key: dp
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 (defprotocol ${1:Name}
   "$2"

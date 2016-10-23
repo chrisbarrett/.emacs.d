@@ -2,7 +2,7 @@
 # name: interface
 # key: in
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 interface ${1:Name} {
   $0

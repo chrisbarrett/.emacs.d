@@ -2,7 +2,7 @@
 # name: for-in
 # key: fi
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 for $1 in $2 {
     $0

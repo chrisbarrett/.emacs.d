@@ -1,5 +1,5 @@
 # key: u
 # name: use
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 use ${1:ident};

@@ -1,6 +1,6 @@
 # key: i
 # name: if
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 if $1; then
     $0

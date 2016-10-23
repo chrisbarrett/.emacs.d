@@ -2,7 +2,7 @@
 # name: static method (public)
 # key: sm
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 public static ${3:T} ${1:Mthd}(${2:args...}) {
   $0

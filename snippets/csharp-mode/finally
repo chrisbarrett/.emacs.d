@@ -2,7 +2,7 @@
 # name: finally
 # key: finally
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 finally {
   $0

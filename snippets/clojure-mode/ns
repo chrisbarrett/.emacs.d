@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: ns
 # key: ns
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 (ns ${1:`(cbclj:ns-for-current-buf)`}
   "$2"${3:

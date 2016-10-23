@@ -1,6 +1,6 @@
 # key: m
 # name: method
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 def ${1:$$(s-downcase yas/text)} (self${2:, $3}):
     ${4:"""$5

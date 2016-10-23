@@ -2,7 +2,7 @@
 # name: class
 # key: cl
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 class ${1:Name}
   $0

@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: method
 # key: me
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 method $1 =
   $0

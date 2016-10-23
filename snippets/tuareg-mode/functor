@@ -1,6 +1,6 @@
 # key: fu
 # name: functor
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 module ${1:FunctorName} (${2:M} : ${3:Sig}) = struct
   $0

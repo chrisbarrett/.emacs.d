@@ -2,6 +2,6 @@
 # name: include
 # key: inc
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 #include <$0>

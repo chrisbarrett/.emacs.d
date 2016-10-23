@@ -2,7 +2,7 @@
 # name: data
 # key: d
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 't))
 # --
 data ${1:Name} : ${2:Set} where

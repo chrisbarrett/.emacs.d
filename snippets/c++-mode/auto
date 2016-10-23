@@ -2,6 +2,6 @@
 # name: auto
 # key: a
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 auto ${1:name} = $0;

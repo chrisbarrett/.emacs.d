@@ -2,6 +2,6 @@
 # name: require_relative
 # key: rr
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 require_relative '$0'

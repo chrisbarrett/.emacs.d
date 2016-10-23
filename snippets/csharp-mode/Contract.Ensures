@@ -2,6 +2,6 @@
 # name: Contract.Ensures
 # key: ce
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 Contract.Ensures($0);

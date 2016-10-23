@@ -2,7 +2,7 @@
 # name: else
 # key: e
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 else {
   $0

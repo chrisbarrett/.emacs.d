@@ -2,7 +2,7 @@
 # name: main
 # key: main
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 static int Main(string[] argv) {
   $0

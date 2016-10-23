@@ -2,6 +2,6 @@
 # name: catch
 # key: catch
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 catch (${1:type}) { $0 }

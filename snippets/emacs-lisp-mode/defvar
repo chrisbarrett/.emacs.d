@@ -1,5 +1,5 @@
 # key: v
 # name: defvar
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 (defvar `(yas/find-identifier-prefix)`$0)

@@ -1,6 +1,6 @@
 # key: cl
 # name: class
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 class ${1:Name} {
 public:

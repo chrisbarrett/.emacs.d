@@ -1,6 +1,6 @@
 # key: d
 # name: def
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 def ${1:$$(s-downcase yas/text)} ($2):
     ${3:"""$4

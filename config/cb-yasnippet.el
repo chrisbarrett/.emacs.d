@@ -169,6 +169,9 @@ Otherwise delete backwards."
    yas--field-text-for-display))
 
 
+(use-package cb-yas-elisp
+  :after yasnippet)
+
 (provide 'cb-yasnippet)
 
 ;;; cb-yasnippet.el ends here

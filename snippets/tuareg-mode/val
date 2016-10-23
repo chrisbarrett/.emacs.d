@@ -1,5 +1,5 @@
 # key: v
 # name: val
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 val ${1:ident} : $0

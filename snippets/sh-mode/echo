@@ -2,6 +2,6 @@
 # name: echo
 # key: e
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 echo $0

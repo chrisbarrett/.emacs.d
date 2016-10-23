@@ -1,5 +1,5 @@
 # key: r
 # name: record
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 record $0

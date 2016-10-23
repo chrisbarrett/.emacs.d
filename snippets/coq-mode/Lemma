@@ -1,7 +1,7 @@
 # key: lm
 # name: Lemma
 # expand-env: ((yas-indent-line (quote fixed)))
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 Lemma ${1:name} :
   forall $0.

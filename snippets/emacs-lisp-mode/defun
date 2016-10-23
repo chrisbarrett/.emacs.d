@@ -1,6 +1,6 @@
 # key: d
 # name: defun
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 (defun ${1:`(yas/find-identifier-prefix)`$2} ($3)
   $0)

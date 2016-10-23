@@ -1,5 +1,5 @@
 # key: l
 # name: let (top-level)
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 let ${1:binding} = $0

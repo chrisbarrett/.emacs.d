@@ -2,7 +2,7 @@
 # name: define-loop
 # key: dl
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 (define (${1:fname} beat dur)
   $0

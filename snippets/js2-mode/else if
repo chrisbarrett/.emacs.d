@@ -2,7 +2,7 @@
 # name: else if
 # key: ei
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 else if (${1:test}) {
     $0

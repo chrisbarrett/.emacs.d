@@ -1,6 +1,6 @@
 # key: ns
 # name: namespace
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 namespace ${1:Name} {
 

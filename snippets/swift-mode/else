@@ -2,7 +2,7 @@
 # name: else
 # key: e
 # binding: direct-keybinding
-# condition: (or (yas/bol?) (thing-at-point-looking-at (rx "}" (* space) "e")))
+# condition: (or (cb-yas/bol?) (thing-at-point-looking-at (rx "}" (* space) "e")))
 # --
 else {
   $0

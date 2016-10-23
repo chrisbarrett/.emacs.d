@@ -2,6 +2,6 @@
 # name: import
 # key: im
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 import $0

@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # key: ca
 # name: case
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 case $1:
   $0

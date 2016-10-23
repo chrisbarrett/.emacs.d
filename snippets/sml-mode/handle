@@ -2,6 +2,6 @@
 # name: handle
 # key: h
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 handle ${1:err} => $0

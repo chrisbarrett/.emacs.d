@@ -2,7 +2,7 @@
 # name: try...catch
 # key: try
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 try {
   $0

@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: def
 # key: v
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 (def ${1:name} ${2:value})

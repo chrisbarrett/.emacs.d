@@ -2,6 +2,6 @@
 # name: ONBUILD
 # key: ob
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 ONBUILD $0

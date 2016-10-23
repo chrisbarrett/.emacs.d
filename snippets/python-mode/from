@@ -1,5 +1,5 @@
 # key: fr
 # name: from
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 from $1 import ${2:*}

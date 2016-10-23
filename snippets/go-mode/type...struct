@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # key: ts
 # name: type...struct
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 type ${1:name} struct {
   $0

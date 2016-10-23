@@ -3,4 +3,4 @@
 # key: c
 # binding: direct-keybinding
 # --
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)

@@ -2,7 +2,7 @@
 # name: ENV
 # key: e
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 ENV ${1:name} ${2:value}
 $0

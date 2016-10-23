@@ -2,6 +2,6 @@
 # name: println
 # key: p
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 println $0

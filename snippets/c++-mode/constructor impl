@@ -2,6 +2,6 @@
 # name: constructor impl
 # key: ctor
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 ${1:class}::$1(${2:/* args... */}): ${3:/* fields... */} {$0}

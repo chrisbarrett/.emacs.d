@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: setq
 # key: s
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 (setq $0)

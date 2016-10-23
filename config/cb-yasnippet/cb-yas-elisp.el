@@ -16,7 +16,7 @@
 (autoload 'thing-at-point-looking-at "thingatpt")
 
 
-(defun yas/bol? ()
+(defun cb-yas/bol? ()
   "Non-nil if point is on an empty line or at the first word.
 The rest of the line must be blank."
   (s-matches? (rx bol (* space) (* word) (* space) eol)

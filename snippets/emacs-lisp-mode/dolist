@@ -2,7 +2,7 @@
 # name: dolist
 # key: dl
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 (dolist (${1:var} ${2:coll})
   $0)

@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: import
 # key: im
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 't))
 # --
 import (

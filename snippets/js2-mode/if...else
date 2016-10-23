@@ -2,7 +2,7 @@
 # name: if...else
 # key: i
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 if (${1:test}) {
     ${2:then}

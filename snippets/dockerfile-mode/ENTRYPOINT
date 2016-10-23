@@ -1,6 +1,6 @@
 # key: ep
 # name: ENTRYPOINT
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 ENTRYPOINT ["${1:bin}"]
 $0

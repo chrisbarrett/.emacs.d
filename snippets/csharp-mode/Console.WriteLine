@@ -2,6 +2,6 @@
 # name: Console.WriteLine
 # key: cw
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 Console.WriteLine($0);

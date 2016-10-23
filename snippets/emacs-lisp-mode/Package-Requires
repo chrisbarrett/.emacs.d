@@ -1,5 +1,5 @@
 # key: pr
 # name: Package-Requires
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 ;; Package-Requires: ((s "1.10.0") (f "0.17.2") (dash "2.12.1"))

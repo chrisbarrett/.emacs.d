@@ -1,5 +1,5 @@
 # key: tt
 # name: tag (with closing)
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 <${1:tag}>$0</$1>

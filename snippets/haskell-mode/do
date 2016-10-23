@@ -1,6 +1,6 @@
 # key: do
 # name: do
-# condition: (not (yas/bol?))
+# condition: (not (cb-yas/bol?))
 # --
 do
   $0

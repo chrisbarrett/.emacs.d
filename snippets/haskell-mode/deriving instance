@@ -2,6 +2,6 @@
 # name: deriving instance
 # key: di
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 deriving instance $0

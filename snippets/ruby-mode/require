@@ -2,6 +2,6 @@
 # name: require
 # key: r
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 require '$0'

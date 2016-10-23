@@ -1,5 +1,5 @@
 # key: inc
 # name: include
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 include $0

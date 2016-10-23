@@ -2,6 +2,6 @@
 # name: define
 # key: d
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 (define $0)

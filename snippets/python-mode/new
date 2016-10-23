@@ -1,6 +1,6 @@
 # key: new
 # name: new
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 def __new__(mcs, name, bases, dict):
     $0

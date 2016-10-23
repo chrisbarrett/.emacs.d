@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: while
 # key: wh
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 while (${1:condition})
 {

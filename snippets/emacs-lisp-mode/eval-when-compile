@@ -2,7 +2,7 @@
 # name: eval-when-compile
 # key: ewc
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 (eval-when-compile
   $0)

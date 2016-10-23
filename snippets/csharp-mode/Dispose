@@ -2,7 +2,7 @@
 # name: Dispose
 # key: dispose
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 #region IDisposable
 

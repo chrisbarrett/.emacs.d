@@ -2,6 +2,6 @@
 # name: logger error
 # key: le
 # expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 't))
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 logger.error(s"$0", ex)

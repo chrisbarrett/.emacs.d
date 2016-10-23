@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: defmulti
 # key: dmul
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 (defmulti ${1:name}
   "$2"
