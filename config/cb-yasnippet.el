@@ -17,6 +17,8 @@
 
 
 (use-package yasnippet
+  :defer 1
+
   :preface
   (progn
     (autoload 'sp-backward-delete-char "smartparens")
