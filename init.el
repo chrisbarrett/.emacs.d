@@ -54,6 +54,7 @@
 (use-package cb-elisp)
 (use-package cb-smartparens)
 (use-package cb-magit)
+(use-package cb-company)
 
 
 ;;; Print overall startup time.
