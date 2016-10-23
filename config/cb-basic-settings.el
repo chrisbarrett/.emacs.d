@@ -117,6 +117,7 @@
 (setq initial-scratch-message nil)
 (setq initial-major-mode 'text-mode)
 (setq initial-buffer-choice t)
+(setq ring-bell-function #'ignore)
 
 (use-package abbrev
   :defer t
