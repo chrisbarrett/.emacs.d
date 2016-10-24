@@ -55,8 +55,8 @@
     (autoload 'evil-window-split "evil-commands")
     (autoload 'evil-window-vsplit "evil-commands")
 
-    (defun cb-leader-keys--reload-buffer ()
-      "Revisit the current buffer."
+    (defun cb-leader-keys--reload-file ()
+      "Revisit the current file."
       (interactive)
       (when-let (path (buffer-file-name))
         (find-alternate-file path))))
@@ -68,7 +68,7 @@
 
     "b d" #'kill-this-buffer
     "b b" #'bury-buffer
-    "b r" #'cb-leader-keys--reload-buffer
+    "b v" #'cb-leader-keys--reload-file
 
     "f f" #'find-file
     "f F" #'find-file-other-window
