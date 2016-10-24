@@ -237,6 +237,24 @@
           ;; Try to complete word as an Emacs Lisp symbol.
           try-complete-lisp-symbol)))
 
+(use-package winner
+  :preface
+  (defvar cb-basic-settings-winner-boring-buffers
+    '("*Completions*"
+      "*Compile-Log*"
+      "*inferior-lisp*"
+      "*Fuzzy Completions*"
+      "*Apropos*"
+      "*Help*"
+      "*cvs*"
+      "*Buffer List*"
+      "*Ibuffer*"
+      "*esh command on file*"))
+  :config
+  (progn
+    (winner-mode t)
+    (setq winner-boring-buffers (append winner-boring-buffers cb-basic-settings-winner-boring-buffers))))
+
 
 (provide 'cb-basic-settings)
 
