@@ -55,7 +55,7 @@
     (autoload 'evil-window-split "evil-commands")
     (autoload 'evil-window-vsplit "evil-commands")
 
-    (defun cb-leader-keys--reload-file ()
+    (defun cb-leader-keys/reload-file ()
       "Revisit the current file."
       (interactive)
       (when-let (path (buffer-file-name))
@@ -68,13 +68,14 @@
 
     "b d" #'kill-this-buffer
     "b b" #'bury-buffer
-    "b v" #'cb-leader-keys--reload-file
+    "b v" #'cb-leader-keys/reload-file
 
     "f f" #'find-file
     "f F" #'find-file-other-window
     "f s" #'save-buffer
     "f D" #'cb/delete-current-buffer-and-file
     "f y" #'cb/copy-buffer-path
+    "f v" #'cb-leader-keys/reload-file
 
     "w =" #'balance-windows
     "w w" #'evil-window-next
