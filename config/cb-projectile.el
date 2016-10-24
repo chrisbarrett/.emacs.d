@@ -59,17 +59,13 @@
              counsel-projectile-switch-to-buffer
              counsel-projectile-ag)
   :init
-  (progn
-    (bind-key "s-f" #'counsel-projectile-find-file)
-    (bind-key "s-l" #'counsel-switch-project)
-
-    (spacemacs-keys-set-leader-keys
-      "pf" #'counsel-projectile-find-file
-      "pd" #'counsel-projectile-find-dir
-      "pb" #'counsel-projectile-switch-to-buffer
-      "pp" #'counsel-projectile-switch-project
-      "pa" #'counsel-projectile-ag
-      "/"  #'counsel-projectile-ag))
+  (spacemacs-keys-set-leader-keys
+    "pf" #'counsel-projectile-find-file
+    "pd" #'counsel-projectile-find-dir
+    "pb" #'counsel-projectile-switch-to-buffer
+    "pp" #'counsel-projectile-switch-project
+    "pa" #'counsel-projectile-ag
+    "/"  #'counsel-projectile-ag)
 
   :config
   (counsel-projectile-on))
