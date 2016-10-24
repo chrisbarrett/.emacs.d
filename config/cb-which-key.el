@@ -41,6 +41,7 @@
 
     (which-key-add-key-based-replacements
       "SPC ,"   "smartparens"
+      "SPC a"   "applications"
       "SPC b"   "buffers"
       "SPC c"   "comments"
       "SPC f"   "files"
