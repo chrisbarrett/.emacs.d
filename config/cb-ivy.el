@@ -17,7 +17,7 @@
 (use-package ivy
   :leader-bind
   (("r" . ivy-resume)
-   ("b b" . ivy-switch-buffer))
+   ("b s" . ivy-switch-buffer))
 
   :preface
   (progn

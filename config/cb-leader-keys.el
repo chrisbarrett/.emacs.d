@@ -48,7 +48,13 @@
   (progn
     (autoload 'evil-window-next "evil-commands")
     (autoload 'evil-window-split "evil-commands")
-    (autoload 'evil-window-vsplit "evil-commands"))
+    (autoload 'evil-window-vsplit "evil-commands")
+
+    (defun cb-leader-keys--reload-buffer ()
+      "Revisit the current buffer."
+      (interactive)
+      (when-let (path (buffer-file-name))
+        (find-alternate-file path))))
 
   :config
   (spacemacs-keys-set-leader-keys
@@ -56,6 +62,8 @@
     "TAB" #'cb/alternate-buffer
 
     "b d" #'kill-this-buffer
+    "b b" #'bury-buffer
+    "b r" #'cb-leader-keys--reload-buffer
 
     "f f" #'find-file
     "f F" #'find-file-other-window
