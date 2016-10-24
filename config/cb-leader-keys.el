@@ -62,26 +62,30 @@
         (find-alternate-file path))))
 
   :config
-  (spacemacs-keys-set-leader-keys
-    "SPC" #'execute-extended-command
-    "TAB" #'cb/alternate-buffer
+  (progn
+    (define-key universal-argument-map (kbd (concat "SPC u")) #'universal-argument-more)
 
-    "b d" #'kill-this-buffer
-    "b b" #'bury-buffer
-    "b v" #'cb-leader-keys/reload-file
+    (spacemacs-keys-set-leader-keys
+      "u"   #'universal-argument
+      "SPC" #'execute-extended-command
+      "TAB" #'cb/alternate-buffer
 
-    "f f" #'find-file
-    "f F" #'find-file-other-window
-    "f s" #'save-buffer
-    "f D" #'cb/delete-current-buffer-and-file
-    "f y" #'cb/copy-buffer-path
-    "f v" #'cb-leader-keys/reload-file
+      "b d" #'kill-this-buffer
+      "b b" #'bury-buffer
+      "b v" #'cb-leader-keys/reload-file
 
-    "w =" #'balance-windows
-    "w w" #'evil-window-next
-    "w o" #'delete-other-windows
-    "w -" #'evil-window-split
-    "w /" #'evil-window-vsplit))
+      "f f" #'find-file
+      "f F" #'find-file-other-window
+      "f s" #'save-buffer
+      "f D" #'cb/delete-current-buffer-and-file
+      "f y" #'cb/copy-buffer-path
+      "f v" #'cb-leader-keys/reload-file
+
+      "w =" #'balance-windows
+      "w w" #'evil-window-next
+      "w o" #'delete-other-windows
+      "w -" #'evil-window-split
+      "w /" #'evil-window-vsplit)))
 
 (provide 'cb-leader-keys)
 
