@@ -148,7 +148,7 @@ Return a plist with the following keys:
   :file    -- The path to the intermediate ODT file
   :delete? -- Whether the intermediate file will be deleted after upload."
   (interactive)
-  (run-exporter #'ignore subtreep visible-only ext-plist))
+  (cb-org-gdrive--run-exporter #'ignore subtreep visible-only ext-plist))
 
 (defun cb-org-gdrive--run-exporter (callback &optional subtreep visible-only _ext-plist)
   (-if-let (file (save-excursion (org-odt-export-to-odt nil subtreep visible-only)))
