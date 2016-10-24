@@ -66,6 +66,9 @@
 
   :functions (counsel-expression-history))
 
+(use-package swiper
+  :bind (("C-s" . swiper)))
+
 (provide 'cb-ivy)
 
 ;;; cb-ivy.el ends here
