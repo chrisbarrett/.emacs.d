@@ -69,6 +69,9 @@
 (use-package cb-highlight-todo)
 (use-package cb-neotree)
 
+(use-package personal-config
+  :load-path "~/Dropbox/emacs")
+
 
 ;;; Print overall startup time.
 

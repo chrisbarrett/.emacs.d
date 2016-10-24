@@ -31,7 +31,8 @@
 (use-package cb-goto
   :leader-bind
   (("g i" . cb-goto-init-file)
-   ("g m" . cb-goto-messages)))
+   ("g m" . cb-goto-messages)
+   ("g p" . cb-goto-personal-config)))
 
 (use-package cb-delete-current-buffer-and-file
   :commands (cb/delete-current-buffer-and-file)

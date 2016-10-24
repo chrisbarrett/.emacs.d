@@ -13,6 +13,11 @@
   (interactive)
   (find-file (concat user-emacs-directory "init.el")))
 
+(defun cb-goto-personal-config ()
+  "Open the personal configuration file."
+  (interactive)
+  (find-file "~/Dropbox/emacs/personal-config.el"))
+
 (defun cb-goto-messages ()
   "Open the messages buffer."
   (interactive)
