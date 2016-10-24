@@ -37,6 +37,11 @@
   :after magit
   :bind (:map magit-status-mode-map ("&" . magit-browse-repo)))
 
+(use-package git-auto-commit-mode
+  :diminish git-auto-commit-mode
+  :init
+  (add-to-list 'safe-local-variable-values '(gac-automatically-push-p . t)))
+
 (provide 'cb-magit)
 
 ;;; cb-magit.el ends here
