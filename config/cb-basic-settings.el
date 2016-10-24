@@ -152,7 +152,7 @@
   :config
   (tool-bar-mode -1))
 
-(use-package scroll-bar-mode
+(use-package scroll-bar
   :if (display-graphic-p)
   :config
   (scroll-bar-mode -1))
