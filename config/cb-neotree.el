@@ -58,6 +58,8 @@
     (setq neo-modern-sidebar t)
     (setq neo-vc-integration nil)
 
+    ;; Enable leader key in neotree
+    (define-key neotree-mode-map (kbd "SPC") spacemacs-keys-default-map)
 
     (evilified-state-evilify-map neotree-mode-map
       :mode neotree-mode
