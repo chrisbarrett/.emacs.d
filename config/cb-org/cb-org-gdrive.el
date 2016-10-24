@@ -150,7 +150,7 @@ Return a plist with the following keys:
   (interactive)
   (run-exporter #'ignore subtreep visible-only ext-plist))
 
-(defun cb-org-gdrive--run-exporter (callback &optional subtreep visible-only ext-plist)
+(defun cb-org-gdrive--run-exporter (callback &optional subtreep visible-only _ext-plist)
   (-if-let (file (save-excursion (org-odt-export-to-odt nil subtreep visible-only)))
       (let ((delete? (not cb-org-gdrive-leave-source-after-import)))
         (list :proc (cb-org-gdrive-import file callback delete?)
@@ -165,7 +165,20 @@ Return a plist with the following keys:
     (concat cb-org-gdrive--document-url-base id)))
 
 (defun cb-org-gdrive--export-to-odt-and-open (&optional _async subtreep visible-only ext-plist)
-  "See `cb-org-gdrive--export-to-odt-and-import'."
+  "Export to ODT and open in the default browser.
+
+When optional argument SUBTREEP is non-nil, export the sub-tree
+at point, extracting information from the headline properties
+first.
+
+When optional argument VISIBLE-ONLY is non-nil, don't export
+contents of hidden elements.
+
+EXT-PLIST, when provided, is a property list with external
+parameters overriding Org default settings, but still inferior to
+file-local settings.
+
+See `cb-org-gdrive--export-to-odt-and-import' for more details."
   (interactive)
   (let ((cont (lambda (file)
                 (-if-let (url (cb-org-gdrive--find-file-url file))
