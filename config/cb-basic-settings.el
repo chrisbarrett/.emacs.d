@@ -41,6 +41,9 @@
 (setq scroll-margin 0)
 (setq scroll-conservatively 101)
 
+;; Instantly display current keystrokes in mini buffer
+(setq echo-keystrokes 0.02)
+
 ;; Auto-indent on RET
 (define-key global-map (kbd "RET") #'comment-indent-new-line)
 
