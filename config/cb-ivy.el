@@ -80,7 +80,8 @@
   :functions (counsel-expression-history))
 
 (use-package swiper
-  :bind (("C-s" . swiper)))
+  :bind (("C-s" . swiper))
+  :evil-bind (:state normal ("/" . swiper)))
 
 (provide 'cb-ivy)
 
