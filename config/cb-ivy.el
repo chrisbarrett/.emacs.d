@@ -22,6 +22,7 @@
   :preface
   (progn
     (autoload 'ivy-mode "ivy")
+    (use-package cb-ivy-occur-then-wgrep :commands (cb-ivy-occur-then-wgrep))
     (use-package cb-ivy-continue-with-input :commands (cb-ivy-continue-with-input)))
 
   :init
@@ -33,11 +34,13 @@
   (progn
     (setq ivy-use-virtual-buffers t)
     (setq ivy-count-format "(%d/%d) ")
+    (define-key ivy-occur-mode-map (kbd "C-x C-w") #'ivy-wgrep-change-to-wgrep-mode)
     (define-key ivy-minibuffer-map (kbd "C-l") #'ivy-partial-or-done)
+    (define-key ivy-minibuffer-map (kbd "C-c C-e") #'cb-ivy-occur-then-wgrep)
     (define-key ivy-minibuffer-map (kbd "S-<return>") #'cb-ivy-continue-with-input)
     (ivy-mode))
 
-  :functions (ivy-partial-or-done)
+  :functions (ivy-partial-or-done ivy-wgrep-change-to-wgrep-mode)
   :defines (ivy-use-virtual-buffers ivy-count-format))
 
 
