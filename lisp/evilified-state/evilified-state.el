@@ -48,6 +48,9 @@
 
 (autoload 'evil-surround-mode "evil-surround")
 
+(defvar evilified-state-verbose nil
+  "Emit extra diagnostic warnings if non-nil.")
+
 (defvar evilified-state--evil-surround nil
   "Evil surround mode variable backup.")
 (make-variable-buffer-local 'evilified-state--evil-surround)
@@ -263,7 +266,7 @@ Each pair KEYn FUNCTIONn is defined in MAP after the evilification of it."
                          map map-symbol evil-map
                          (evilified-state--find-new-event event) nil
                          processed pending-funcs)))
-    (when pending-funcs
+    (when (and evilified-state-verbose pending-funcs)
       (warn
        (concat (format (concat "Auto-evilication could not remap these "
                                "functions in map `%s':\n")
