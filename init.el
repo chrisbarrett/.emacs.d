@@ -13,6 +13,8 @@
 
 ;;; Code:
 
+(setq gc-cons-threshold 20000000)
+
 (defconst emacs-start-time (current-time))
 
 (unless noninteractive
@@ -70,6 +72,7 @@
 (use-package cb-neotree)
 (use-package cb-mu4e)
 (use-package cb-ahs)
+(use-package cb-org)
 
 (use-package personal-config
   :load-path "~/Dropbox/emacs")
