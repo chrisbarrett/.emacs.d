@@ -17,6 +17,11 @@
   :group 'emulations
   :prefix "evil-transient-state-")
 
+(defface evil-transient-state-title-face
+  `((t :inherit mode-line))
+  "Face for title of transient states."
+  :group 'evil-transient-state)
+
 (defun evil-transient-state--transient-state-func-name (name)
   "Return the name of the transient state function.
 
@@ -140,10 +145,6 @@ TRANSIENT-STATE is the name of the state."
                          :before-exit ,prop-exit-sexp))))
     'append))
 
-(defface evil-transient-state-title-face
-  `((t :inherit mode-line))
-  "Face for title of transient states."
-  :group 'evil-transient-state)
 
 (defmacro evil-transient-state-define (name &rest props)
   "Define a transient state called NAME.
