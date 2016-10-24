@@ -41,6 +41,9 @@
 (setq scroll-margin 0)
 (setq scroll-conservatively 101)
 
+;; Auto-indent on RET
+(define-key global-map (kbd "RET") #'comment-indent-new-line)
+
 
 ;; Enable hideshow in all programming buffers.
 
