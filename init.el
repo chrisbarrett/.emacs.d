@@ -69,6 +69,7 @@
 (use-package cb-highlight-todo)
 (use-package cb-neotree)
 (use-package cb-mu4e)
+(use-package cb-ahs)
 
 (use-package personal-config
   :load-path "~/Dropbox/emacs")
