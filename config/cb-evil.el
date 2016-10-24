@@ -136,6 +136,7 @@
     (define-key evil-normal-state-map "gc" 'evilnc-comment-operator)
     (define-key evil-normal-state-map "gy" 'spacemacs/copy-and-comment-lines)
 
+    (spacemacs-keys-declare-prefix "c" "comment")
     (spacemacs-keys-set-leader-keys
       ";"  #'evilnc-comment-operator
       "cl" #'cb-evil-nerd-commenter/comment-or-uncomment-lines
