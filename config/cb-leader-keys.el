@@ -93,6 +93,16 @@
   (spacemacs-keys-set-leader-keys
     "zx" #'cb-scale-font-transient-state/body))
 
+(use-package cb-buffer-transient-state
+  :commands (cb-buffer-transient-state/body
+             cb-buffer-transient-state/next-buffer
+             cb-buffer-transient-state/previous-buffer)
+  :init
+  (spacemacs-keys-set-leader-keys
+    "bn" #'cb-buffer-transient-state/next-buffer
+    "bN" #'cb-buffer-transient-state/previous-buffer
+    "bp" #'cb-buffer-transient-state/previous-buffer))
+
 
 (provide 'cb-leader-keys)
 
