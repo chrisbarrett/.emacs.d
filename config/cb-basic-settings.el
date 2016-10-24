@@ -23,14 +23,17 @@
 
 (defalias #'yes-or-no-p #'y-or-n-p)
 
+(global-unset-key (kbd "C-z"))
+
+
 ;; Make <escape> quit as much as possible
+
 (define-key minibuffer-local-map (kbd "<escape>") #'keyboard-escape-quit)
 (define-key minibuffer-local-ns-map (kbd "<escape>") #'keyboard-escape-quit)
 (define-key minibuffer-local-completion-map (kbd "<escape>") #'keyboard-escape-quit)
 (define-key minibuffer-local-must-match-map (kbd "<escape>") #'keyboard-escape-quit)
 (define-key minibuffer-local-isearch-map (kbd "<escape>") #'keyboard-escape-quit)
 
-(global-unset-key (kbd "C-z"))
 
 ;; Scroll smoothly.
 
