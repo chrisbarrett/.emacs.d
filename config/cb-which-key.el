@@ -12,6 +12,11 @@
   (require 'use-package))
 
 (use-package which-key
+  :preface
+  (progn
+    (autoload 'which-key-mode "which-key")
+    (autoload 'which-key-add-key-based-replacements "which-key"))
+
   :config
   (progn
     (setq which-key-special-keys nil)
@@ -48,9 +53,7 @@
       "SPC SPC" "M-x"
       "SPC m"   '("major-mode-cmd" . "Major mode commands"))
 
-    (which-key-mode +1))
-
-  :functions (which-key-mode which-key-add-key-based-replacements))
+    (which-key-mode +1)))
 
 (provide 'cb-which-key)
 
