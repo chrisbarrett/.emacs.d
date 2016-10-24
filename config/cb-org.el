@@ -554,6 +554,16 @@ Do not scheduled items or repeating todos."
 (use-package cb-diary-utils
   :after org)
 
+(use-package evil-org
+  :evil-bind
+  (:map evil-org-mode-map
+        :state normal
+        ("M-l" . nil)
+        ("M-h" . nil)
+        :state insert
+        ("M-l" . nil)
+        ("M-h" . nil)))
+
 
 (provide 'cb-org)
 
