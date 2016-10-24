@@ -81,9 +81,15 @@
       "f y" #'cb/copy-buffer-path
       "f v" #'cb-leader-keys/reload-file
 
+      "k b" #'kill-this-buffer
+      "k w" #'delete-window
+
+      "q" #'delete-window
+
       "w =" #'balance-windows
       "w w" #'evil-window-next
       "w o" #'delete-other-windows
+      "w q" #'delete-window
       "w -" #'evil-window-split
       "w /" #'evil-window-vsplit)))
 

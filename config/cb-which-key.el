@@ -47,6 +47,7 @@
       "SPC f"   "files"
       "SPC g"   "git/goto"
       "SPC h"   "help"
+      "SPC k"   "kill"
       "SPC p"   "project"
       "SPC w"   "window"
       "SPC s"   "symbols"

@@ -67,6 +67,7 @@
    ("?"   . counsel-descbinds)
    ("f f" . counsel-find-file)
    ("f r" . counsel-recentf)
+   ("k r" . counsel-yank-pop)
    ("i"   . counsel-imenu)
    ("h d f" . counsel-describe-function)
    ("h d v" . counsel-describe-variable))
