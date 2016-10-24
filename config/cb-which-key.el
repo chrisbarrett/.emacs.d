@@ -37,7 +37,9 @@
     (which-key-add-key-based-replacements
       "SPC ,"   "smartparens"
       "SPC b"   "buffers"
+      "SPC c"   "comments"
       "SPC f"   "files"
+      "SPC g"   "git/goto"
       "SPC h"   "help"
       "SPC p"   "project"
       "SPC w"   "window"
