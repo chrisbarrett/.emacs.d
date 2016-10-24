@@ -134,7 +134,7 @@
 (use-package abbrev
   :defer t
   :config
-  (setq abbrev-file-name (concat cb-emacs-cache-directory "abbrev_defs")))
+  (setq abbrev-file-name (concat cb-emacs-cache-directory "/abbrev_defs")))
 
 (use-package window-numbering
   :defer t
@@ -168,14 +168,14 @@
   :config
   (progn
     (setq recentf-max-saved-items 1000)
-    (setq recentf-save-file (concat cb-emacs-cache-directory "recentf"))))
+    (setq recentf-save-file (concat cb-emacs-cache-directory "/recentf"))))
 
 (use-package bookmark
   :defer t
   :config
   (progn
     (setq bookmark-save-flag nil)
-    (setq bookmark-default-file (concat cb-emacs-cache-directory "bookmarks"))))
+    (setq bookmark-default-file (concat cb-emacs-cache-directory "/bookmarks"))))
 
 (use-package files
   :config

@@ -45,7 +45,7 @@
   (progn
     (setq projectile-completion-system 'ivy)
     (setq projectile-switch-project-action #'magit-status)
-    (setq projectile-cache-file (concat cb-emacs-cache-directory "projectile.cache"))
+    (setq projectile-cache-file (concat cb-emacs-cache-directory "/projectile.cache"))
     (setq projectile-enable-caching t)
     (projectile-mode)))
 
