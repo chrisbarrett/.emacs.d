@@ -87,6 +87,13 @@
       "w -" #'evil-window-split
       "w /" #'evil-window-vsplit)))
 
+(use-package cb-scale-font-transient-state
+  :commands (cb-scale-font-transient-state/body)
+  :init
+  (spacemacs-keys-set-leader-keys
+    "zx" #'cb-scale-font-transient-state/body))
+
+
 (provide 'cb-leader-keys)
 
 ;;; cb-leader-keys.el ends here
