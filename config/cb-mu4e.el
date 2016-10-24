@@ -26,9 +26,8 @@
   :preface
   (progn
     (autoload 'message-insert-formatted-citation-line "message")
-
     (use-package cb-mu4e-utils
-      :defer t
+      :after mu4e
       :functions (cb-mu4e-utils-view-in-external-browser-action
                   cb-mu4e-utils-read-and-archive-action
                   mu4e-headers-mark-for-read-and-archive
