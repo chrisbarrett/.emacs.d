@@ -551,6 +551,10 @@ Do not scheduled items or repeating todos."
   :after org
   :evil-bind (:map org-mode-map :state normal ("C-c C-k" . cb-org-ctrl-c-ctrl-k)))
 
+(use-package cb-diary-utils
+  :after org)
+
+
 (provide 'cb-org)
 
 ;;; cb-org.el ends here
