@@ -575,7 +575,10 @@ Do not scheduled items or repeating todos."
         ("M-h" . nil)
         :state insert
         ("M-l" . nil)
-        ("M-h" . nil)))
+        ("M-h" . nil))
+  :config
+  ;; Fix keybinding that clobbers join.
+  (evil-define-key 'normal evil-org-mode-map (kbd "J") nil))
 
 
 (provide 'cb-org)
