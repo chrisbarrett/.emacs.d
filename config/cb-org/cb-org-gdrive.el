@@ -189,11 +189,10 @@ See `cb-org-gdrive--export-to-odt-and-import' for more details."
 ;;;###autoload
 (defun cb-org-gdrive-init ()
   (org-export-define-derived-backend 'gdrive 'odt
-                                     :export-block '("GDRIVE" "GOOGLE DRIVE")
-                                     :menu-entry
-                                     '(?d "Import to Google Drive"
-                                          ((?d "Import" cb-org-gdrive--export-to-odt-and-import)
-                                           (?o "Import and open" cb-org-gdrive--export-to-odt-and-open))))
+    :menu-entry
+    '(?d "Import to Google Drive"
+         ((?d "Import" cb-org-gdrive--export-to-odt-and-import)
+          (?o "Import and open" cb-org-gdrive--export-to-odt-and-open))))
   (add-to-list 'org-export-backends 'gdrive))
 
 (provide 'cb-org-gdrive)
