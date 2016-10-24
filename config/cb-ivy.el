@@ -13,6 +13,7 @@
   (require 'cb-use-package-extensions))
 
 (require 'spacemacs-keys)
+(require 'subr-x)
 
 (use-package ivy
   :leader-bind
@@ -53,7 +54,12 @@
   (progn
     (autoload 'ivy-immediate-done "ivy")
     (autoload 'counsel-up-directory "counsel")
-    (autoload 'counsel-mode "counsel"))
+    (autoload 'counsel-mode "counsel")
+
+    (defun cb-ivy--ag-populate-with-symbol-at-point (f &rest args)
+      (if-let ((sym (symbol-at-point)))
+          (apply f (symbol-name sym) (cdr args))
+        (apply f args))))
 
   :leader-bind
   (("SPC" . counsel-M-x)
@@ -75,6 +81,10 @@
   (progn
     (define-key counsel-find-file-map (kbd "C-M-j") #'ivy-immediate-done)
     (define-key counsel-find-file-map (kbd "C-h") #'counsel-up-directory)
+
+    ;; Prefill counsel-ag with the symbol at point.
+    (advice-add 'counsel-ag :around #'cb-ivy--ag-populate-with-symbol-at-point)
+
     (counsel-mode +1))
 
   :functions (counsel-expression-history))
