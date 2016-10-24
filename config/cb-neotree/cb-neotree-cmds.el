@@ -14,7 +14,7 @@
 
 (defvar cb-neotree-cmds--auto-indent-point t)
 
-(defun cb-neotree-neotree-expand-or-open ()
+(defun cb-neotree-expand-or-open ()
   "Expand or open a neotree node."
   (interactive)
   (let ((node (neo-buffer--get-filename-current-line)))
@@ -28,7 +28,7 @@
               (neo-point-auto-indent)))
         (call-interactively 'neotree-enter)))))
 
-(defun cb-neotree-neotree-collapse ()
+(defun cb-neotree-collapse ()
   "Collapse a neotree node."
   (interactive)
   (let ((node (neo-buffer--get-filename-current-line)))
@@ -39,18 +39,18 @@
       (when cb-neotree-cmds--auto-indent-point
         (neo-point-auto-indent)))))
 
-(defun cb-neotree-neotree-collapse-or-up ()
+(defun cb-neotree-collapse-or-up ()
   "Collapse an expanded directory node or go to the parent node."
   (interactive)
   (let ((node (neo-buffer--get-filename-current-line)))
     (when node
       (if (file-directory-p node)
           (if (neo-buffer--expanded-node-p node)
-              (cb-neotree-neotree-collapse)
+              (cb-neotree-collapse)
             (neotree-select-up-node))
         (neotree-select-up-node)))))
 
-(defun cb-neotree-neotree-find-project-root ()
+(defun cb-neotree-find-project-root ()
   "Go to the root of the current project in neotree."
   (interactive)
   (if (neo-global--window-exists-p)

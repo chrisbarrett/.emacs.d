@@ -39,10 +39,10 @@
   :preface
   (progn
     (use-package cb-neotree-cmds
-      :commands (cb-neotree-neotree-expand-or-open
-                 cb-neotree-neotree-collapse
-                 cb-neotree-neotree-collapse-or-up
-                 cb-neotree-neotree-find-project-root)))
+      :commands (cb-neotree-expand-or-open
+                 cb-neotree-collapse
+                 cb-neotree-collapse-or-up
+                 cb-neotree-find-project-root)))
 
   :config
   (progn
@@ -50,12 +50,12 @@
     (setq neo-create-file-auto-open t)
     (setq neo-banner-message "Press ? for neotree help")
     (setq neo-show-updir-line nil)
-    (setq neo-mode-line-type 'neotree)
+    (setq neo-mode-line-type 'nerd)
     (setq neo-smart-open t)
+    (setq neo-theme 'ascii)
     (setq neo-dont-be-alone t)
     (setq neo-persist-show nil)
     (setq neo-show-hidden-files nil)
-    (setq neo-modern-sidebar t)
     (setq neo-vc-integration nil)
 
     ;; Enable leader key in neotree
@@ -71,13 +71,13 @@
       (kbd "c")   #'neotree-create-node
       (kbd "d")   #'neotree-delete-node
       (kbd "gr")  #'neotree-refresh
-      (kbd "h")   #'cb-neotree-neotree-collapse-or-up
+      (kbd "h")   #'cb-neotree-collapse-or-up
       (kbd "H")   #'neotree-select-previous-sibling-node
       (kbd "j")   #'next-line
       (kbd "J")   #'neotree-select-down-node
       (kbd "k")   #'previous-line
       (kbd "K")   #'neotree-select-up-node
-      (kbd "l")   #'cb-neotree-neotree-expand-or-open
+      (kbd "l")   #'cb-neotree-expand-or-open
       (kbd "L")   #'neotree-select-next-sibling-node
       (kbd "q")   #'neotree-hide
       (kbd "r")   #'neotree-rename-node
@@ -89,9 +89,9 @@
   (progn
     (spacemacs-keys-set-leader-keys
       "ft" #'neotree-toggle
-      "pt" #'cb-neotree-neotree-find-project-root)
+      "pt" #'cb-neotree-find-project-root)
 
-    (evil-transient-state-define neotree
+    (evil-transient-state-define cb-neotree
       :title "NeoTree Key Hints"
       :doc "
 Navigation^^^^             Actions^^         Visual actions/config^^^
@@ -115,13 +115,13 @@ Navigation^^^^             Actions^^         Visual actions/config^^^
         ("c" neotree-create-node)
         ("d" neotree-delete-node)
         ("gr" neotree-refresh)
-        ("h" cb-neotree-neotree-collapse-or-up)
+        ("h" cb-neotree-collapse-or-up)
         ("H" neotree-select-previous-sibling-node)
         ("j" next-line)
         ("J" neotree-select-down-node)
         ("k" previous-line)
         ("K" neotree-select-up-node)
-        ("l" cb-neotree-neotree-expand-or-open)
+        ("l" cb-neotree-expand-or-open)
         ("L" neotree-select-next-sibling-node)
         ("r" neotree-rename-node)
         ("R" neotree-change-root)
