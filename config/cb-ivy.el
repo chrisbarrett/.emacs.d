@@ -38,11 +38,13 @@
     (setq ivy-use-virtual-buffers t)
     (setq ivy-count-format "(%d/%d) ")
     (setq ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
+
     (define-key ivy-occur-mode-map (kbd "C-x C-w") #'ivy-wgrep-change-to-wgrep-mode)
     (define-key ivy-minibuffer-map (kbd "<escape>") 'minibuffer-keyboard-quit)
     (define-key ivy-minibuffer-map (kbd "C-l") #'ivy-partial-or-done)
     (define-key ivy-minibuffer-map (kbd "C-c C-e") #'cb-ivy-occur-then-wgrep)
     (define-key ivy-minibuffer-map (kbd "S-<return>") #'cb-ivy-continue-with-input)
+
     (ivy-mode))
 
   :functions (ivy-partial-or-done ivy-wgrep-change-to-wgrep-mode)
