@@ -2,5 +2,5 @@
 # name: when-let
 # key: wl
 # --
-(-when-let ($0)
+(when-let ($0)
 )

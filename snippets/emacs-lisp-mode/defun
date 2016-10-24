@@ -2,5 +2,5 @@
 # name: defun
 # condition: (cb-yas/bol?)
 # --
-(defun ${1:`(yas/find-identifier-prefix)`$2} ($3)
+(defun ${1:name} ($2)
   $0)
