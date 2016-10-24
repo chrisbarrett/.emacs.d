@@ -22,28 +22,28 @@
   "Face for title of transient states."
   :group 'evil-transient-state)
 
-(defun evil-transient-state--transient-state-func-name (name)
+(defun evil-transient-state--func-name (name)
   "Return the name of the transient state function.
 
 NAME is the name of the transient STATE."
   (intern (format "%S-transient-state" name)))
 
-(defun evil-transient-state--transient-state-props-var-name (name)
+(defun evil-transient-state--props-var-name (name)
   "Return the name of the variable use to store the transient state properties.
 NAME is the name of the transient STATE."
   (intern (format "evil-transient-state--%S-transient-state-props" name)))
 
-(defun evil-transient-state--transient-state-body-func-name (name)
+(defun evil-transient-state--body-func-name (name)
   "Return the name of the transient state function.
 NAME is the name of the transient STATE."
   (intern (format "evil-transient-state-%S-transient-state/body" name)))
 
-(defun evil-transient-state--transient-state-heads-name (name)
+(defun evil-transient-state--heads-name (name)
   "Return the name of the transient state heads var containing the key bindings.
 NAME is the name of the transient STATE."
   (intern (format "evil-transient-state-%S-transient-state/heads" name)))
 
-(defun evil-transient-state--transient-state-adjust-bindings (bindings to-remove to-add)
+(defun evil-transient-state--adjust-bindings (bindings to-remove to-add)
   (append
    (cl-remove-if
     (lambda (bnd)
@@ -114,11 +114,14 @@ Supported properties:
        `((dolist (val ',def-key)
            (define-key (eval (car val)) (kbd (cdr val)) ',func)))))))
 
-(defun evil-transient-state--transient-state-make-doc
+(defun evil-transient-state-make-doc
     (transient-state docstring &optional body)
-  "Use `hydra' internal function to format and apply DOCSTRING.
+  "Use `hydra' to process a docstring.
+
+DOCSTRING is the docstring to process.
+
 TRANSIENT-STATE is the name of the state."
-  (let ((heads (evil-transient-state--transient-state-heads-name transient-state)))
+  (let ((heads (evil-transient-state--heads-name transient-state)))
     (setq body (if body body '(nil nil :hint nil :foreign-keys nil)))
     (eval
      (hydra--format nil body docstring (symbol-value heads)))))
@@ -126,14 +129,14 @@ TRANSIENT-STATE is the name of the state."
 (defmacro evil-transient-state-format-hint (name var hint)
   "Format HINT and store the result in VAR for transient state NAME."
   (declare (indent 1))
-  (let* ((props-var (evil-transient-state--transient-state-props-var-name name))
+  (let* ((props-var (evil-transient-state--props-var-name name))
          (prop-hint (cadr (assq 'hint props-var)))
          (prop-columns (cadr (assq 'columns props-var)))
          (prop-foreign-keys (cadr (assq 'foreign-keys props-var)))
          (prop-entry-sexp (cadr (assq 'entry-sexp props-var)))
          (prop-exit-sexp (cadr (assq 'exit-sexp props-var))))
 
-    (eval `(setq ,var (evil-transient-state--transient-state-make-doc
+    (eval `(setq ,var (evil-transient-state-make-doc
                        ',name
                        ,hint
                        '(nil
@@ -144,7 +147,6 @@ TRANSIENT-STATE is the name of the state."
                          :body-pre ,prop-entry-sexp
                          :before-exit ,prop-exit-sexp))))
     'append))
-
 
 (defmacro evil-transient-state-define (name &rest props)
   "Define a transient state called NAME.
@@ -191,9 +193,9 @@ Available PROPS:
 All properties supported by `evil-transient-state--create-key-binding-form' can be
 used."
   (declare (indent 1))
-  (let* ((func (evil-transient-state--transient-state-func-name name))
-         (props-var (evil-transient-state--transient-state-props-var-name name))
-         (body-func (evil-transient-state--transient-state-body-func-name name))
+  (let* ((func (evil-transient-state--func-name name))
+         (props-var (evil-transient-state--props-var-name name))
+         (body-func (evil-transient-state--body-func-name name))
 
          (add-bindings    (intern (format "evil-transient-state-%s-transient-state-add-bindings" name)))
          (remove-bindings (intern (format "evil-transient-state-%s-transient-state-remove-bindings" name)))
@@ -232,7 +234,7 @@ used."
               :body-pre ,entry-sexp
               :before-exit ,exit-sexp)
          ,doc
-         ,@(evil-transient-state--transient-state-adjust-bindings
+         ,@(evil-transient-state--adjust-bindings
             bindings remove-bindings add-bindings))
 
        (when ,title
