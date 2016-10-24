@@ -64,6 +64,17 @@
 (setq frame-title-format `(:eval (cb-basic-settings--frame-title-string)))
 
 
+;; This should really be a thing out-of-the-box.
+
+(defun indent-buffer ()
+  "Indent the entire buffer."
+  (interactive "*")
+  (save-excursion
+    (delete-trailing-whitespace)
+    (indent-region (point-min) (point-max) nil)
+    (untabify (point-min) (point-max))))
+
+
 ;;; Convenience aliases
 
 (defalias 'bb  'bury-buffer)
