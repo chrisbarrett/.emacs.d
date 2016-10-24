@@ -24,6 +24,10 @@
   :leader-bind
   (("f R" . cb/rename-file-and-buffer)))
 
+(use-package cb-toggle-window-split
+  :leader-bind
+  (("|" . cb/toggle-window-split)))
+
 (use-package cb-goto
   :leader-bind
   (("g i" . cb-goto-init-file)
