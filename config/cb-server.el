@@ -10,7 +10,8 @@
 
 (require 'server)
 
-(server-start)
+(unless (server-running-p)
+  (server-start))
 
 (provide 'cb-server)
 
