@@ -31,17 +31,17 @@ NAME is the name of the transient STATE."
 (defun evil-transient-state--props-var-name (name)
   "Return the name of the variable use to store the transient state properties.
 NAME is the name of the transient STATE."
-  (intern (format "evil-transient-state--%S-transient-state-props" name)))
+  (intern (format "%S-transient-state-props" name)))
 
 (defun evil-transient-state--body-func-name (name)
   "Return the name of the transient state function.
 NAME is the name of the transient STATE."
-  (intern (format "evil-transient-state-%S-transient-state/body" name)))
+  (intern (format "%S-transient-state/body" name)))
 
 (defun evil-transient-state--heads-name (name)
   "Return the name of the transient state heads var containing the key bindings.
 NAME is the name of the transient STATE."
-  (intern (format "evil-transient-state-%S-transient-state/heads" name)))
+  (intern (format "%S-transient-state/heads" name)))
 
 (defun evil-transient-state--adjust-bindings (bindings to-remove to-add)
   (append
