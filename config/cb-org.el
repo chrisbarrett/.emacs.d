@@ -369,17 +369,43 @@ Do not scheduled items or repeating todos."
     (add-to-list 'org-tags-exclude-from-inheritance "crypt")))
 
 (use-package org-drill
+  :after (org cb-org-directory)
+  :commands (org-drill
+             org-drill-strip-all-data
+             org-drill-cram
+             org-drill-tree
+             org-drill-resume
+             org-drill-merge-buffers
+             org-drill-entry
+             org-drill-directory
+             org-drill-again)
+  :config
+  (progn
+    (defconst cb-org-drill-file (f-join (cb-org-directory) "drill" "drill.org"))
+
+    (defun cb-org/org-drill-files ()
+      (f-files (f-join (cb-org-directory) "drill")))
+
+    (setq org-drill-scope (cb-org/org-drill-files))
+
+    (add-to-list 'org-refile-targets '(cb-org/org-drill-files :maxlevel . 3))
+
+    (setq org-drill-learn-fraction 0.25)
+    (setq org-drill-adjust-intervals-for-early-and-late-repetitions-p t)
+    (setq org-drill-add-random-noise-to-intervals-p t)
+    (setq org-drill-save-buffers-after-drill-sessions-p nil)))
+
+(use-package org-capture
   :after org
   :load-path cb-org-load-path
   :preface
   (defun cb-org--capture-template-entry (key label form template &rest kws)
-    (-concat
+    (append
      (list key label 'entry form template
            :clock-keep t
            :empty-lines 1
            :prepend t)
      kws))
-
   :config
   (setq org-capture-templates
         (list
