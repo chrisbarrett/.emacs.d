@@ -177,8 +177,12 @@ Do not scheduled items or repeating todos."
       (kbd "gr") 'org-agenda-redo
       (kbd "M-RET") 'org-agenda-show-and-scroll-up)
 
+
     (define-key org-agenda-mode-map (kbd "C-f" ) #'evil-scroll-page-down)
     (define-key org-agenda-mode-map (kbd "C-b") #'evil-scroll-page-up)
+
+    ;; Enable leader key in agenda.
+    (define-key org-agenda-mode-map (kbd "SPC") spacemacs-keys-default-map)
 
     (setq org-agenda-include-diary nil)
     (setq org-agenda-start-on-weekday nil)
@@ -524,6 +528,40 @@ Do not scheduled items or repeating todos."
   :load-path cb-org-load-path
   :config (setq org-present-text-scale 4))
 
+(use-package ox
+  :after org
+  :config
+  (progn
+    (require 'ox-gfm)
+    (setq org-export-backends '(ascii html latex odt gfm koma-letter))
+    (setq org-export-exclude-tags '("noexport" "crypt"))
+    (setq org-export-coding-system 'utf-8)
+    (setq org-html-html5-fancy t)
+    (setq org-html-postamble nil)
+    (setq org-html-table-row-tags
+          (cons
+           '(cond
+             (top-row-p "<tr class=\"tr-top\">")
+             (bottom-row-p "<tr class=\"tr-bottom\">")
+             (t
+              (if
+                  (=
+                   (mod row-number 2)
+                   1)
+                  "<tr class=\"tr-odd\">" "<tr class=\"tr-even\">")))
+           "</tr>"))
+    (setq org-html-head-extra
+          "
+<style type=\"text/css\">
+table tr.tr-odd td {
+      background-color: #FCF6CF;
+}
+table tr.tr-even td {
+      background-color: #FEFEF2;
+}
+</style>
+")))
+
 (use-package cb-org-clock-cascade
   :after org
   :config (add-hook 'org-mode-hook #'cb-org-clock-cascade-init))
@@ -577,8 +615,10 @@ Do not scheduled items or repeating todos."
         ("M-l" . nil)
         ("M-h" . nil))
   :config
-  ;; Fix keybinding that clobbers join.
-  (evil-define-key 'normal evil-org-mode-map (kbd "J") nil))
+  (progn
+    ;; Remove weird keybindings.
+    (evil-define-key 'normal evil-org-mode-map (kbd "J") nil)
+    (evil-define-key 'normal evil-org-mode-map (kbd "O") nil)))
 
 
 (provide 'cb-org)
