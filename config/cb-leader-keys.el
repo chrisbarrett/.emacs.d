@@ -81,6 +81,8 @@
       "f y" #'cb/copy-buffer-path
       "f v" #'cb-leader-keys/reload-file
 
+      "h d k" #'describe-key
+
       "k b" #'kill-this-buffer
       "k w" #'delete-window
 
