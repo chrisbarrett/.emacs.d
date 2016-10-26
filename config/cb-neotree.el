@@ -58,6 +58,8 @@
     (setq neo-show-hidden-files nil)
     (setq neo-vc-integration nil)
 
+    (add-to-list 'neo-hidden-regexp-list "target$")
+
     ;; Enable leader key in neotree
     (define-key neotree-mode-map (kbd "SPC") spacemacs-keys-default-map)
 
