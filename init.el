@@ -73,6 +73,7 @@
 (use-package cb-mu4e)
 (use-package cb-ahs)
 (use-package cb-org)
+(use-package cb-scala)
 
 (use-package personal-config
   :load-path "~/Dropbox/emacs")

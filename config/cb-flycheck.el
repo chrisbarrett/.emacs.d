@@ -28,6 +28,9 @@
     (setq flycheck-display-errors-delay 0.5)
     (setq flycheck-emacs-lisp-load-path 'inherit)
 
+    (setq flycheck-global-modes
+          '(not sbt-file-mode))
+
     (spacemacs-keys-set-leader-keys
       "ec" #'flycheck-clear
       "eh" #'flycheck-describe-checker

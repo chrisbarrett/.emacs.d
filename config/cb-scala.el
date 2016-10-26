@@ -18,11 +18,15 @@
 
 (use-package scala-mode
   :defer t
-  :mode ("\\.\\(scala\\|sbt\\)\\'" . scala-mode)
+  :mode (("\\.scala\\'" . scala-mode)
+         ("\\.sbt\\'" . sbt-file-mode))
   :interpreter
   ("scala" . scala-mode)
   :config
   (progn
+    (define-derived-mode sbt-file-mode scala-mode "Scala(SBT)"
+      "Major mode for editing SBT files.\n\n \\{sbt-file-mode-map}")
+
     (setq scala-indent:align-forms t)
     (setq scala-indent:align-parameters t)
     (setq scala-indent:default-run-on-strategy scala-indent:operator-strategy)))
