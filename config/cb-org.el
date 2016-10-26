@@ -23,6 +23,7 @@
 
 (defvar org-directory "~/org")
 
+(defconst cb-org-work-file (concat org-directory "/work_movio.org"))
 
 (use-package org
   :load-path cb-org-load-path
@@ -272,7 +273,7 @@ Do not scheduled items or repeating todos."
              ((org-agenda-tag-filter-preset
                '("-drill" "-gtd" "-ignore"))
               (org-agenda-include-inactive-timestamps t)
-              (org-agenda-files (list org-default-notes-file (cb-org-work-file) org-agenda-diary-file))
+              (org-agenda-files (list org-default-notes-file cb-org-work-file org-agenda-diary-file))
               (org-agenda-archives-mode nil)
               (org-agenda-dim-blocked-tasks nil)))
 
@@ -287,7 +288,7 @@ Do not scheduled items or repeating todos."
                     ((org-agenda-overriding-header "Standup"))))
              ((org-agenda-tag-filter-preset '("-ignore"))
               (org-agenda-use-tag-inheritance nil)
-              (org-agenda-files (list (cb-org-work-file) org-agenda-diary-file))
+              (org-agenda-files (list cb-org-work-file org-agenda-diary-file))
               (org-agenda-dim-blocked-tasks nil)
               (org-agenda-archives-mode nil)
               (org-agenda-ignore-drawer-properties '(effort appt))))))))
@@ -415,7 +416,7 @@ Do not scheduled items or repeating todos."
 
          (cb-org--capture-template-entry
           "T" "Todo (work)"
-          `(file ,(cb-org-work-file)) "* TODO %?")
+          `(file ,cb-org-work-file) "* TODO %?")
 
          (cb-org--capture-template-entry
           "n" "Next"
@@ -423,7 +424,7 @@ Do not scheduled items or repeating todos."
 
          (cb-org--capture-template-entry
           "N" "Next (work)"
-          `(file (cb-org-work-file)) "* NEXT %?")
+          `(file cb-org-work-file) "* NEXT %?")
 
          (cb-org--capture-template-entry
           "d" "Diary"
@@ -431,7 +432,7 @@ Do not scheduled items or repeating todos."
 
          (cb-org--capture-template-entry
           "D" "Diary (work)"
-          `(file+datetree (cb-org-work-file)) "* %?\n%^t")
+          `(file+datetree cb-org-work-file) "* %?\n%^t")
 
          (cb-org--capture-template-entry
           "l" "Link"
@@ -441,7 +442,7 @@ Do not scheduled items or repeating todos."
 
          (cb-org--capture-template-entry
           "L" "Link (work)"
-          `(file+olp (cb-org-work-file) "Links")
+          `(file+olp cb-org-work-file "Links")
           '(function cb-org-capture-url-read-url)
           :immediate-finish t)
 
@@ -507,7 +508,7 @@ Do not scheduled items or repeating todos."
 
          (cb-org--capture-template-entry
           "E" "Email task (work)"
-          `(file (cb-org-work-file)) "* TODO %?\n%a"))))
+          `(file cb-org-work-file) "* TODO %?\n%a"))))
 
 (use-package org-download
   :after org
