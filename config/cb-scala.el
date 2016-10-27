@@ -12,6 +12,7 @@
   (require 'use-package)
   (require 'cb-use-package-extensions))
 
+(require 'cb-emacs)
 (require 'spacemacs-keys)
 
 (autoload 'evil-define-key "evil-core")
