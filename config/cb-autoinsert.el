@@ -8,9 +8,12 @@
 
 ;;; Code:
 
+(eval-when-compile
+  (require 'use-package))
+
 (use-package autoinsert
   :init
-  (setq auto-insert-alist nil)
+  (defvar auto-insert-alist nil)
   :config
   (progn
     (setq auto-insert-query nil)
