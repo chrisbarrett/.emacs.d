@@ -76,6 +76,9 @@
     (org-meta-line
      ((t (:weight light))))
 
+    (org-agenda-structure
+     ((t (:weight demibold))))
+
     (outline-1
      ((t (:weight demibold))))
     (outline-2
