@@ -35,7 +35,9 @@
                     (directory-files config-dir t "^[^.]"))))
   (dolist (path (append (list lisp-dir config-dir) config-subtrees git-subtrees))
     (add-to-list 'load-path path)
-    (add-to-list 'load-path (concat path "/lisp"))))
+    (add-to-list 'load-path (concat path "/lisp")))
+
+  (add-to-list 'load-path (concat lisp-dir "/org-mode/contrib/lisp")))
 
 (defconst use-package-verbose t)
 (require 'use-package)

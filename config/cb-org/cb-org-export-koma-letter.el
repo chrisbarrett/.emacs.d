@@ -28,6 +28,7 @@
 (require 'f)
 (require 'org)
 (require 'ox-latex)
+(require 'ox-koma-letter)
 
 (autoload 'cb-org-subtree-content "cb-org-subtree")
 (autoload 'cb-org-subtree-write-content "cb-org-subtree")

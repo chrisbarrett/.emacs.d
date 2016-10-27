@@ -17,6 +17,7 @@
   (defconst cb-org-contrib-load-path (concat cb-emacs-lisp-directory "/org-mode/contrib/lisp")))
 
 (require 'spacemacs-keys)
+(require 'evilified-state)
 (require 'f)
 (require 's)
 (require 'dash)
@@ -369,7 +370,7 @@ Do not scheduled items or repeating todos."
     (add-to-list 'org-tags-exclude-from-inheritance "crypt")))
 
 (use-package org-drill
-  :after (org cb-org-directory)
+  :after org
   :commands (org-drill
              org-drill-strip-all-data
              org-drill-cram
@@ -379,16 +380,16 @@ Do not scheduled items or repeating todos."
              org-drill-entry
              org-drill-directory
              org-drill-again)
+  :preface
+  (defconst cb-org-drill-files (f-files (concat org-directory "/drill")))
+
   :config
   (progn
-    (defconst cb-org-drill-file (f-join (cb-org-directory) "drill" "drill.org"))
+    (defconst cb-org-drill-file (f-join org-directory "drill" "drill.org"))
 
-    (defun cb-org/org-drill-files ()
-      (f-files (f-join (cb-org-directory) "drill")))
+    (setq org-drill-scope cb-org-drill-files)
 
-    (setq org-drill-scope (cb-org/org-drill-files))
-
-    (add-to-list 'org-refile-targets '(cb-org/org-drill-files :maxlevel . 3))
+    (add-to-list 'org-refile-targets '(cb-org-drill-files :maxlevel . 3))
 
     (setq org-drill-learn-fraction 0.25)
     (setq org-drill-adjust-intervals-for-early-and-late-repetitions-p t)
@@ -550,9 +551,9 @@ Do not scheduled items or repeating todos."
     (advice-add 'org-insert-todo-heading :after #'cb-org--add-blank-line-after-heading)))
 
 (use-package org-present
-  :after org
-  :load-path cb-org-load-path
-  :config (setq org-present-text-scale 4))
+  :commands (org-present)
+  :config
+  (setq org-present-text-scale 4))
 
 (use-package ox
   :after org
@@ -561,21 +562,26 @@ Do not scheduled items or repeating todos."
     (require 'ox-gfm)
     (setq org-export-backends '(ascii html latex odt gfm koma-letter))
     (setq org-export-exclude-tags '("noexport" "crypt"))
-    (setq org-export-coding-system 'utf-8)
+    (setq org-export-coding-system 'utf-8)))
+
+(use-package ox-html
+  :after org
+  :preface
+  (defun cb-org-html-open-tags-setup
+      (number _group-number _start-group-p _end-group-p topp bottomp)
+    (cond (topp "<tr class=\"tr-top\">")
+          (bottomp "<tr class=\"tr-bottom\">")
+          (t (if (= (mod number 2) 1)
+                 "<tr class=\"tr-odd\">"
+               "<tr class=\"tr-even\">"))))
+  :config
+  (progn
     (setq org-html-html5-fancy t)
     (setq org-html-postamble nil)
-    (setq org-html-table-row-tags
-          (cons
-           '(cond
-             (top-row-p "<tr class=\"tr-top\">")
-             (bottom-row-p "<tr class=\"tr-bottom\">")
-             (t
-              (if
-                  (=
-                   (mod row-number 2)
-                   1)
-                  "<tr class=\"tr-odd\">" "<tr class=\"tr-even\">")))
-           "</tr>"))
+
+    ;; Highlight alternating rows in HTML tables.
+
+    (setq org-html-table-row-open-tag #'cb-org-html-open-tags-setup)
     (setq org-html-head-extra
           "
 <style type=\"text/css\">
@@ -590,23 +596,26 @@ table tr.tr-even td {
 
 (use-package cb-org-clock-cascade
   :after org
-  :config (add-hook 'org-mode-hook #'cb-org-clock-cascade-init))
+  :functions (cb-org-clock-cascade-init)
+  :init (add-hook 'org-mode-hook #'cb-org-clock-cascade-init))
 
 (use-package cb-org-export-koma-letter
   :after org
-  :config (add-hook 'org-mode-hook #'cb-org-export-koma-letter-init))
+  :functions (cb-org-export-koma-letter-init)
+  :init (add-hook 'org-mode-hook #'cb-org-export-koma-letter-init))
 
 (use-package cb-org-pgp-decrpyt
   :after org
-  :config (add-hook 'org-mode-hook #'cb-org-pgp-decrpyt-init))
+  :functions (cb-org-pgp-decrpyt-init)
+  :init (add-hook 'org-mode-hook #'cb-org-pgp-decrpyt-init))
 
 (use-package cb-org-capture-url
   :after org)
 
 (use-package cb-org-gdrive
-  :after ox
-  :config
-  (add-hook 'org-mode-hook #'cb-org-gdrive-init))
+  :after org
+  :functions (cb-org-gdrive-init)
+  :init (add-hook 'org-mode-hook #'cb-org-gdrive-init))
 
 (use-package cb-org-goto
   :after org
@@ -632,6 +641,7 @@ table tr.tr-even td {
   :after org)
 
 (use-package evil-org
+  :after org
   :evil-bind
   (:map evil-org-mode-map
         :state normal
@@ -645,7 +655,6 @@ table tr.tr-even td {
     ;; Remove weird keybindings.
     (evil-define-key 'normal evil-org-mode-map (kbd "J") nil)
     (evil-define-key 'normal evil-org-mode-map (kbd "O") nil)))
-
 
 (provide 'cb-org)
 
