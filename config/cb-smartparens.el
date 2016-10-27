@@ -9,11 +9,13 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'use-package))
+  (require 'use-package)
+  (require 'cb-use-package-extensions))
+
+(require 'spacemacs-keys)
 
 (use-package smartparens
   :defer t
-  :config
 
   :preface
   (progn
