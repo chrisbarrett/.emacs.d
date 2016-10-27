@@ -662,6 +662,13 @@ table tr.tr-even td {
     (evil-define-key 'normal evil-org-mode-map (kbd "J") nil)
     (evil-define-key 'normal evil-org-mode-map (kbd "O") nil)))
 
+(use-package org-indent
+  :after org
+  :commands (org-indent-mode)
+  :init
+  (add-hook 'org-mode-hook #'org-indent-mode))
+
+
 (provide 'cb-org)
 
 ;;; cb-org.el ends here
