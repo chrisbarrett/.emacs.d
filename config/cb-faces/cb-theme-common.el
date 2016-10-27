@@ -41,7 +41,13 @@
 
     (font-lock-comment-face
      ((t (:weight demibold))))
-    ))
+
+    ;; Magit
+    (magit-diff-file-heading
+     ((t (:weight normal))))
+
+    (magit-section-heading
+     ((t (:weight demibold))))))
 
 (provide 'cb-theme-common)
 
