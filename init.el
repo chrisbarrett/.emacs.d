@@ -76,6 +76,7 @@
 (use-package cb-scala)
 (use-package cb-groovy)
 (use-package cb-rust)
+(use-package cb-ibuffer)
 
 (use-package personal-config
   :load-path "~/Dropbox/emacs")
