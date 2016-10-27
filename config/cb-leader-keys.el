@@ -82,6 +82,7 @@
       "f v" #'cb-leader-keys/reload-file
 
       "h d k" #'describe-key
+      "h d m" #'describe-mode
 
       "k b" #'kill-this-buffer
       "k w" #'delete-window

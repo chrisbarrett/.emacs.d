@@ -51,10 +51,6 @@
   :defines (ivy-use-virtual-buffers ivy-count-format))
 
 
-(spacemacs-keys-declare-prefix "h d" "describe")
-(spacemacs-keys-set-leader-keys
-  "h d m" #'describe-mode)
-
 (use-package counsel
   :preface
   (progn

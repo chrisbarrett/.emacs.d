@@ -95,7 +95,6 @@ Do not scheduled items or repeating todos."
     (add-hook 'org-after-todo-state-change-hook #'cb-org--set-next-todo-state)
     (add-hook 'org-after-todo-statistics-hook #'cb-org--children-done-parent-done)
 
-    (spacemacs-keys-declare-prefix "o" "org")
     (spacemacs-keys-set-leader-keys
       "ok" #'org-capture
       "ol" #'org-store-link
