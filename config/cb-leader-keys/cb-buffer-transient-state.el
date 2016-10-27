@@ -16,7 +16,7 @@
   ("n" next-buffer "next")
   ("N" previous-buffer "previous")
   ("p" previous-buffer "previous")
-  ("K" kill-this-buffer "kill")
+  ("k" kill-this-buffer "kill")
   ("q" nil "quit" :exit t))
 
 (provide 'cb-buffer-transient-state)
