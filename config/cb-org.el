@@ -618,14 +618,20 @@ table tr.tr-even td {
   :init (add-hook 'org-mode-hook #'cb-org-gdrive-init))
 
 (use-package cb-org-goto
-  :after org
-  :leader-bind
-  (("oa" . cb-org-goto-agenda)
-   ("od" . cb-org-goto-diary)
-   ("on" . cb-org-goto-notes)
-   ("ow" . cb-org-goto-work)
-   ("ot" . cb-org-goto-todo-list)
-   ("ov" . cb-org-goto-tags-list)))
+  :commands (cb-org-goto-agenda
+             cb-org-goto-diary
+             cb-org-goto-notes
+             cb-org-goto-work
+             cb-org-goto-todo-list
+             cb-org-goto-tags-list)
+  :init
+  (spacemacs-keys-set-leader-keys
+    "oa" #'cb-org-goto-agenda
+    "od" #'cb-org-goto-diary
+    "on" #'cb-org-goto-notes
+    "ow" #'cb-org-goto-work
+    "ot" #'cb-org-goto-todo-list
+    "ov" #'cb-org-goto-tags-list))
 
 (use-package cb-org-ctrl-c-ret
   :after org
