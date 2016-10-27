@@ -74,6 +74,7 @@
 (use-package cb-ahs)
 (use-package cb-org)
 (use-package cb-scala)
+(use-package cb-groovy)
 
 (use-package personal-config
   :load-path "~/Dropbox/emacs")
@@ -97,3 +98,4 @@
 (provide 'init)
 
 ;;; init.el ends here
+(put 'narrow-to-region 'disabled nil)
