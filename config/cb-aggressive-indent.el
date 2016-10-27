@@ -17,6 +17,7 @@
   :config
   (progn
     (add-to-list 'aggressive-indent-excluded-modes 'diff-auto-refine-mode)
+    (add-to-list 'aggressive-indent-excluded-modes 'rust-mode)
 
     (global-aggressive-indent-mode +1)))
 
