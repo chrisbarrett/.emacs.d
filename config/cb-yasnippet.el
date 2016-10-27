@@ -131,7 +131,7 @@ Otherwise delete backwards."
 
     (yas-global-mode +1)
 
-    ;; Define key binding sfor fancy snippet navigation.
+    ;; Define key bindings for fancy snippet navigation.
 
     (bind-key (kbd "TAB") #'yas-expand yas-minor-mode-map)
     (evil-define-key 'insert yas-minor-mode-map (kbd "TAB") #'yas-expand)

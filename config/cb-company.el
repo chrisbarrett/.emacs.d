@@ -8,6 +8,9 @@
 
 ;;; Code:
 
+(eval-when-compile
+  (require 'use-package))
+
 (use-package company
   :commands (global-company-mode)
 
@@ -19,6 +22,10 @@
     (setq company-minimum-prefix-length 3)
     (setq company-tooltip-align-annotations t))
 
+  :commands (company-select-next
+             company-select-previous
+             company-show-doc-buffer)
+
   :init
   (add-hook 'after-init-hook #'global-company-mode)
 
@@ -26,8 +33,6 @@
   (progn
     (setq company-idle-delay 0.3)
     (setq company-require-match nil)
-    (setq company-dabbrev-ignore-case nil)
-    (setq company-dabbrev-downcase nil)
 
     (dolist (map (list company-active-map company-search-map company-filter-map))
       (define-key map (kbd "C-n") #'company-select-next)
@@ -36,6 +41,13 @@
       (define-key map (kbd "C-w") nil))
 
     (add-hook 'company-mode-hook #'cb-company--set-company-vars)))
+
+(use-package company-dabbrev
+  :after company
+  :config
+  (progn
+    (setq company-dabbrev-ignore-case nil)
+    (setq company-dabbrev-downcase nil)))
 
 (provide 'cb-company)
 

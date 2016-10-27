@@ -8,11 +8,14 @@
 
 ;;; Code:
 
+(eval-when-compile
+  (require 'use-package))
+
 (use-package ws-butler
-  :commands (ws-butler-global-mode) 
+  :commands (ws-butler-global-mode)
   :defer 1
   :config
-  (ws-butler-global-mode)) 
+  (ws-butler-global-mode))
 
 (provide 'cb-ws-butler)
 
