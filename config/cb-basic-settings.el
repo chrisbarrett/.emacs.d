@@ -280,6 +280,12 @@
     (winner-mode t)
     (setq winner-boring-buffers (append winner-boring-buffers cb-basic-settings-winner-boring-buffers))))
 
+(use-package saveplace
+  :config
+  (progn
+    (setq save-place-file (concat cb-emacs-cache-directory "/saveplace"))
+    (save-place-mode +1)))
+
 
 (provide 'cb-basic-settings)
 
