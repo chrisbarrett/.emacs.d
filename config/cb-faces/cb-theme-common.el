@@ -1,4 +1,4 @@
-;;; cb-theme-common.el --- <enter description here>  -*- lexical-binding: t; -*-
+;;; cb-theme-common.el --- Common configuration for light and dark themes.  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2016  Chris Barrett
 
