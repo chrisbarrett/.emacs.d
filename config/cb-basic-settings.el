@@ -288,9 +288,10 @@
     (save-place-mode +1)))
 
 (use-package savehist
+  :init
+  (defconst savehist-file (concat cb-emacs-cache-directory "/savehist"))
   :config
   (progn
-    (setq savehist-file (concat cb-emacs-cache-directory "/savehist"))
     (setq savehist-additional-variables '(kill-ring search-ring regexp-search-ring))
     (savehist-mode +1)))
 
