@@ -61,7 +61,9 @@
 (use-package eldoc
   :defer t
   :init
-  (add-hook 'emacs-lisp-mode-hook #'eldoc-mode))
+  (add-hook 'emacs-lisp-mode-hook #'eldoc-mode)
+  :config
+  (setq eldoc-idle-delay 0.2))
 
 (use-package nameless
   :commands nameless-mode
