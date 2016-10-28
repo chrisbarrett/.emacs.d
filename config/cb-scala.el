@@ -10,12 +10,12 @@
 
 (eval-when-compile
   (require 'use-package)
-  (require 'cb-use-package-extensions))
+  (require 'cb-use-package-extensions)
+  (autoload 'evil-define-key "evil-core"))
 
 (require 'cb-emacs)
 (require 'spacemacs-keys)
 
-(autoload 'evil-define-key "evil-core")
 
 (use-package scala-mode
   :defer t
@@ -50,9 +50,13 @@
     (sp-local-pair 'scala-mode"(" nil :post-handlers '(("||\n[i]" "RET")))
     (sp-local-pair 'scala-mode "{" nil :post-handlers '(("||\n[i]" "RET") ("| " "SPC")))))
 
+(eval-when-compile
+  (defconst cb-scala-ensime-load-path (concat cb-emacs-lisp-directory "/ensime-emacs")))
 
 (use-package ensime
+  :load-path cb-scala-ensime-load-path
   :defer t
+  :commands (ensime)
 
   :leader-bind
   (:mode scala-mode
@@ -152,19 +156,23 @@
    ("N" . backward-button))
 
   :init
-  (dolist (prefix '(("mb" . "build")
-                    ("mc" . "check")
-                    ("md" . "debug")
-                    ("me" . "errors")
-                    ("mg" . "goto")
-                    ("mh" . "docs")
-                    ("mi" . "inspect")
-                    ("mn" . "ensime")
-                    ("mr" . "refactor")
-                    ("mt" . "test")
-                    ("ms" . "repl")
-                    ("my" . "yank")))
-    (spacemacs-keys-declare-prefix-for-mode 'scala-mode (car prefix) (cdr prefix)))
+  (progn
+    (spacemacs-keys-set-leader-keys-for-major-mode 'scala-mode
+      "ns" #'ensime)
+
+    (dolist (prefix '(("mb" . "build")
+                      ("mc" . "check")
+                      ("md" . "debug")
+                      ("me" . "errors")
+                      ("mg" . "goto")
+                      ("mh" . "docs")
+                      ("mi" . "inspect")
+                      ("mn" . "ensime")
+                      ("mr" . "refactor")
+                      ("mt" . "test")
+                      ("ms" . "repl")
+                      ("my" . "yank")))
+      (spacemacs-keys-declare-prefix-for-mode 'scala-mode (car prefix) (cdr prefix))))
 
   :config
   (progn
