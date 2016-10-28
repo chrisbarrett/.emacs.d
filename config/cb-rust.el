@@ -60,6 +60,9 @@
   (with-eval-after-load 'rust-mode
     (evil-define-key 'normal rust-mode-map (kbd "M-.") #'racer-find-definition)))
 
+(use-package toml-mode
+  :mode ("\\.toml\\'" . toml-mode))
+
 
 ;; Snippet Utilities
 
