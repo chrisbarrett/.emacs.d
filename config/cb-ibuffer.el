@@ -18,7 +18,7 @@
   :commands (ibuffer ibuffer-forward-line ibuffer-backward-line)
   :bind ("C-x C-b" . ibuffer-other-window)
   :init
-  (spacemacs-keys-set-leader-keys "b SPC" #'ibuffer)
+  (spacemacs-keys-set-leader-keys "b l" #'ibuffer)
   :config
   (progn
     (setq ibuffer-expert t)
