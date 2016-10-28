@@ -83,6 +83,7 @@
 
       "h d k" #'describe-key
       "h d m" #'describe-mode
+      "h d c" #'describe-face
 
       "k b" #'kill-this-buffer
       "k w" #'delete-window
