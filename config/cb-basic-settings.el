@@ -63,6 +63,8 @@
 
 (setq frame-title-format `(:eval (cb-basic-settings--frame-title-string)))
 
+;; Don't prompt when following symlinks to vc files.
+(setq vc-follow-symlinks t)
 
 ;; This should really be a thing out-of-the-box.
 
