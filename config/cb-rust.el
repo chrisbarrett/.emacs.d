@@ -11,6 +11,7 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'spacemacs-keys)
 (require 's)
 
 (autoload 'cb-yas/bol? "cb-yas-elisp")
@@ -48,20 +49,69 @@
     (add-hook 'rust-mode-hook (lambda ()
                                 (setq company-minimum-prefix-length 2)))))
 
-(use-package flycheck
-  :defer t
-  :config
-  (setq flycheck-rust-cargo-executable "~/.cargo/bin/cargo"))
+(use-package flycheck-rust
+  :commands (flycheck-rust-setup)
+  :init
+  (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+
 
 (use-package racer
-  :after rust-mode
-  :commands (racer-find-definition)
+  :defer t
+  :commands (racer-find-definition racer-mode)
+  :init
+  (progn
+    (add-hook 'racer-mode-hook #'eldoc-mode)
+    (add-hook 'rust-mode-hook #'racer-mode))
   :config
-  (with-eval-after-load 'rust-mode
-    (evil-define-key 'normal rust-mode-map (kbd "M-.") #'racer-find-definition)))
+  (progn
+    (unless (getenv "RUST_SRC_PATH")
+      (setenv "RUST_SRC_PATH" racer-rust-src-path))
+
+    (with-eval-after-load 'rust-mode
+      (evil-define-key 'normal rust-mode-map (kbd "M-.") #'racer-find-definition))))
 
 (use-package toml-mode
-  :mode ("\\.toml\\'" . toml-mode))
+  :mode (("\\.toml\\'" . toml-mode)
+         ("\\.Cargo\\.lock\\'" . toml-mode)
+         ("\\.cargo/config\\'" . toml-mode)))
+
+(use-package cargo
+  :defer t
+  :commands
+  (cargo-process-repeat
+   cargo-process-clean
+   cargo-process-run-example
+   cargo-process-build
+   cargo-process-doc
+   cargo-process-bench
+   cargo-process-current-test
+   cargo-process-fmt
+   cargo-process-init
+   cargo-process-new
+   cargo-process-current-file-tests
+   cargo-process-search
+   cargo-process-update
+   cargo-process-run
+   cargo-process-test)
+  :init
+  (progn
+    (spacemacs-keys-declare-prefix-for-mode 'rust-mode "mc" "cargo")
+    (spacemacs-keys-set-leader-keys-for-major-mode 'rust-mode
+      "c." #'cargo-process-repeat
+      "cC" #'cargo-process-clean
+      "cX" #'cargo-process-run-example
+      "cc" #'cargo-process-build
+      "cd" #'cargo-process-doc
+      "ce" #'cargo-process-bench
+      "cf" #'cargo-process-current-test
+      "cf" #'cargo-process-fmt
+      "ci" #'cargo-process-init
+      "cn" #'cargo-process-new
+      "co" #'cargo-process-current-file-tests
+      "cs" #'cargo-process-search
+      "cu" #'cargo-process-update
+      "cx" #'cargo-process-run
+      "t"  #'cargo-process-test)))
 
 
 ;; Snippet Utilities
