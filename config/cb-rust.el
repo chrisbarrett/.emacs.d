@@ -23,6 +23,8 @@
     (autoload 'thing-at-point-looking-at "thingatpt")
     (autoload 'evil-join "evil-commands")
 
+    (setq rust-format-on-save (executable-find "rustfmt"))
+
     (defun cb-rust-join-line ()
       "Join lines, deleting intermediate spaces for chained function calls."
       (interactive)
