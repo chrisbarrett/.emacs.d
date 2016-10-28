@@ -37,7 +37,7 @@
      ((t (:weight light))))
 
     (font-lock-variable-name-face
-     ((t (:weight demibold))))
+     ((t (:weight normal))))
 
     (font-lock-function-name-face
      ((t (:weight demibold))))
