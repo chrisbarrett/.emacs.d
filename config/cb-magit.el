@@ -19,10 +19,23 @@
   :defer t
   :commands (magit-status magit-blame)
   :functions (magit-display-buffer-fullframe-status-v1)
+  :preface
+  (evil-transient-state-define git-blame
+    :title "Git Blame Transient State"
+    :doc "
+Press [_b_] again to blame further in the history, [_q_] to go up or quit."
+    :on-enter (unless (bound-and-true-p magit-blame-mode)
+                (call-interactively 'magit-blame))
+    :foreign-keys run
+    :bindings
+    ("b" magit-blame)
+    ("q" nil :exit (progn (when (bound-and-true-p magit-blame-mode)
+                            (magit-blame-quit))
+                          (not (bound-and-true-p magit-blame-mode)))))
   :init
   (spacemacs-keys-set-leader-keys
     "gs" #'magit-status
-    "gb" #'magit-blame)
+    "gb" #'git-blame-transient-state/body)
   :config
   (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
 
