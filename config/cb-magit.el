@@ -16,11 +16,12 @@
 
 (use-package magit
   :defer t
-  :commands (magit-status)
+  :commands (magit-status magit-blame)
   :functions (magit-display-buffer-fullframe-status-v1)
   :init
   (spacemacs-keys-set-leader-keys
-    "gs" #'magit-status)
+    "gs" #'magit-status
+    "gb" #'magit-blame)
   :config
   (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
 
