@@ -8,7 +8,12 @@
 
 ;;; Code:
 
+(eval-when-compile
+  (require 'use-package))
+
 (require 'spacemacs-keys)
+
+;; Load themes.
 
 (defvar cb-faces-dark-mode-p nil)
 
@@ -26,6 +31,17 @@
   (add-to-list 'custom-theme-load-path (concat this-dir "cb-faces/")))
 
 (load-theme 'cb-light t)
+
+;; Configure packages
+
+(use-package cb-ligatures
+  :if (display-graphic-p)
+  :functions (cb-ligatures-init)
+  :config
+  (progn
+    (add-hook 'prog-mode-hook #'cb-ligatures-init)
+    (add-hook 'text-mode-hook #'cb-ligatures-init)
+    (global-prettify-symbols-mode +1)))
 
 (provide 'cb-faces)
 
