@@ -8,6 +8,17 @@
 
 ;;; Code:
 
+;; Colours taken from the Solarized palette.
+
+(defconst cb-theme-common-yellow "#b58900")
+(defconst cb-theme-common-orange "#cb4b16")
+(defconst cb-theme-common-red "#dc322f")
+(defconst cb-theme-common-magenta "#d33682")
+(defconst cb-theme-common-violet "#6c71c4")
+(defconst cb-theme-common-blue "#268bd2")
+(defconst cb-theme-common-cyan "#2aa198")
+(defconst cb-theme-common-green "#859900")
+
 (defun cb-theme-common-make-theme (default-foreground default-background)
   `((default
       ((t
@@ -59,10 +70,19 @@
     (org-done
      ((t (:inherit default :weight bold :foreground "grey60"))))
 
+    (org-document-info-keyword
+     ((t (:weight light))))
+
     (org-date
      ((t (:weight light))))
     (org-sexp-date
      ((t (:weight light))))
+
+    (org-date
+     ((t (:underline t))))
+
+    (org-agenda-date-today
+     ((t (:underline ,cb-theme-common-magenta :weight semibold))))
 
     (org-formula
      ((t (:weight light))))
@@ -73,11 +93,17 @@
     (org-table
      ((t (:inherit default))))
 
+    (org-scheduled
+     ((t (:inherit default))))
+
     (org-meta-line
      ((t (:weight light))))
 
     (org-agenda-structure
      ((t (:weight demibold))))
+
+    (org-document-title
+     ((t (:weight bold))))
 
     (outline-1
      ((t (:weight demibold))))
