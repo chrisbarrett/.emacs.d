@@ -82,24 +82,15 @@
 
     ;; Faces and font-locking
 
-    (defface ledger-date
-      `((t :inherit org-date))
-      "Face for dates at start of transactions."
-      :group 'ledger-faces)
-
     (defface ledger-report-negative-amount
       `((t (:foreground "red")))
       "Face for negative amounts in ledger reports."
       :group 'ledger-faces)
 
     (font-lock-add-keywords
-     'ledger-mode
-     `((,(rx bol (+ (any digit "=" "/"))) . 'ledger-date)))
-
-    (font-lock-add-keywords
      'ledger-report-mode
      `((,(rx "$" (* space) "-" (+ digit) (? "." (+ digit))) . 'ledger-report-negative-amount)
-       (,(rx (+ digit) "-" (= 3 alpha) "-" (+ digit)) . 'ledger-date)))
+       (,(rx (+ digit) "-" (= 3 alpha) "-" (+ digit)) . 'ledger-font-posting-date-face)))
 
     ;; Fix font lock issue in ledger reports
     (add-hook 'ledger-report-mode-hook 'font-lock-fontify-buffer)
