@@ -112,6 +112,9 @@
   :config
   (setq cb-ledger-reports-income-payee-name "Income:Movio"))
 
+(use-package flycheck-ledger
+  :after ledger-mode)
+
 (provide 'cb-ledger)
 
 ;;; cb-ledger.el ends here
