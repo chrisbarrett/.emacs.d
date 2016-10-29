@@ -127,32 +127,26 @@
     ;; Ledger
 
     (ledger-font-comment-face
-     ((t
-       (:weight light))))
+     ((t (:weight light))))
 
     (ledger-font-posting-date-face
-     ((t
-       (:inherit default))))
+     ((t (:inherit default))))
 
     (ledger-font-posting-account-face
-     ((t
-       (:inherit default))))
+     ((t (:inherit default))))
 
     (ledger-font-xact-highlight-face
-     ((t
-       nil)))
+     ((t nil)))
 
     (ledger-font-other-face
-     ((t
-       (:inherit default :weight demibold))))
+     ((t (:inherit default :weight demibold))))
 
     (ledger-font-directive-face
-     ((t
-       (:inherit default))))
+     ((t (:inherit default))))
 
     (ledger-font-posting-amount-face
-     ((t
-       (:inherit default))))
+     ((t (:inherit default))))
+
 
     ;; Misc faces
 
