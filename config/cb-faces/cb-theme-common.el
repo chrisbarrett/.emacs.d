@@ -8,11 +8,9 @@
 
 ;;; Code:
 
-;; Colours taken from the Solarized palette.
-
 (defconst cb-theme-common-yellow "#b58900")
 (defconst cb-theme-common-orange "#cb4b16")
-(defconst cb-theme-common-red "#dc322f")
+(defconst cb-theme-common-red "pink")
 (defconst cb-theme-common-magenta "#d33682")
 (defconst cb-theme-common-violet "#6c71c4")
 (defconst cb-theme-common-blue "#268bd2")
@@ -72,6 +70,9 @@
 
     (org-document-info-keyword
      ((t (:weight light))))
+
+    (org-scheduled-today
+     ((t (:inherit default))))
 
     (org-date
      ((t (:weight light))))
@@ -147,6 +148,16 @@
     (ledger-font-posting-amount-face
      ((t (:inherit default))))
 
+    ;; Mu4e
+
+    (mu4e-title-face
+     ((t (:weight demibold))))
+
+    (mu4e-header-key-face
+     ((t (:weight demibold))))
+
+    (mu4e-highlight-face
+     ((t (:weight demibold :foreground ,cb-theme-common-red))))
 
     ;; Misc faces
 
