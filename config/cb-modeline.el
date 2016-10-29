@@ -20,9 +20,14 @@
 
 (setq-default mode-line-format "")
 
+;; Hide the modeline, but ensure the header-line still works.
+
 (custom-set-faces
  `(mode-line
-   ((t (:foreground "white" :background "gray40" :height 20)))))
+   ((t (:foreground "white" :background "gray40" :height 20))))
+ `(header-line
+   ((default
+      :inherit default))))
 
 (provide 'cb-modeline)
 
