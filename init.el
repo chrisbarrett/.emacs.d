@@ -20,6 +20,16 @@
 (unless noninteractive
   (message "Loading %s..." load-file-name))
 
+;; Initialize package.el
+;;
+;; Most packages are installed using git subtrees, but some packages (such as
+;; flycheck) break unless installed via package.el.
+
+(require 'package)
+(add-to-list 'package-archives '("MELPA Stable" . "https://stable.melpa.org/packages/"))
+(package-initialize)
+(unless package-archive-contents
+  (package-refresh-contents))
 
 ;; Bootstrap use-package.
 
