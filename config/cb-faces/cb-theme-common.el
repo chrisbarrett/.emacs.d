@@ -10,7 +10,8 @@
 
 (defconst cb-theme-common-yellow "#b58900")
 (defconst cb-theme-common-orange "#cb4b16")
-(defconst cb-theme-common-red "pink")
+(defconst cb-theme-common-red "red1")
+(defconst cb-theme-common-pink "pink")
 (defconst cb-theme-common-magenta "#d33682")
 (defconst cb-theme-common-violet "#6c71c4")
 (defconst cb-theme-common-blue "#268bd2")
@@ -83,7 +84,8 @@
      ((t (:underline t))))
 
     (org-agenda-date-today
-     ((t (:underline ,cb-theme-common-magenta :weight semibold))))
+     ((((background light)) (:foreground ,cb-theme-common-red :weight demibold))
+      (((background dark)) (:foreground ,cb-theme-common-pink :weight demibold))))
 
     (org-formula
      ((t (:weight light))))
@@ -157,9 +159,14 @@
      ((t (:weight demibold))))
 
     (mu4e-highlight-face
-     ((t (:weight demibold :foreground ,cb-theme-common-red))))
+     ((((background light)) (:foreground ,cb-theme-common-red :weight demibold))
+      (((background dark)) (:foreground ,cb-theme-common-pink :weight demibold))))
 
     ;; Misc faces
+
+    (hl-todo
+     ((((background light)) (:foreground ,cb-theme-common-red :weight bold))
+      (((background dark)) (:foreground ,cb-theme-common-pink :weight bold))))
 
     (parenthesis
      ((t (:weight light))))
