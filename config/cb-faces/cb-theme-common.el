@@ -24,10 +24,6 @@
       ((t
         (:background ,default-background :foreground ,default-foreground :weight normal :family "Hasklig" :height 130))))
 
-
-    (link
-     ((t (:inherit default :underline t))))
-
     ;; General font-lock faces.
 
     (font-lock-keyword-face
@@ -122,7 +118,17 @@
     (outline-8
      ((t (:inherit outline-1))))
     (outline-9
-     ((t (:inherit outline-1))))))
+     ((t (:inherit outline-1))))
+
+    ;; Smartparens
+
+    ;; Misc faces
+
+    (parenthesis
+     ((t (:weight light))))
+
+    (link
+     ((t (:inherit default :underline t))))))
 
 (provide 'cb-theme-common)
 

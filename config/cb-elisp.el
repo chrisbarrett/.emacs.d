@@ -120,12 +120,6 @@
     (setq checkdoc-force-docstrings-flag nil)
     (setq checkdoc-arguments-in-order-flag nil)))
 
-(use-package paren-face
-  :commands (paren-face-mode)
-  :init
-  (add-hook 'emacs-lisp-mode-hook #'paren-face-mode))
-
-
 (provide 'cb-elisp)
 
 ;;; cb-elisp.el ends here

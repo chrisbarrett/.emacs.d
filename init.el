@@ -88,6 +88,7 @@ If argument INTERACTIVE-P is set, log additional information."
 (use-package cb-undo-tree)
 (use-package cb-ws-butler)
 (use-package cb-yasnippet)
+(use-package cb-parentheses)
 (use-package cb-flycheck)
 (use-package cb-aggressive-indent)
 (use-package cb-server)
