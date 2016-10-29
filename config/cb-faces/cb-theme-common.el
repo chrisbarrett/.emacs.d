@@ -24,6 +24,10 @@
       ((t
         (:background ,default-background :foreground ,default-foreground :weight normal :family "Hasklig" :height 130))))
 
+    (fringe
+     ((t
+       (:background ,default-background))))
+
     ;; General font-lock faces.
 
     (font-lock-keyword-face
