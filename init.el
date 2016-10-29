@@ -100,6 +100,7 @@ If argument INTERACTIVE-P is set, log additional information."
 (use-package cb-mu4e)
 (use-package cb-ahs)
 (use-package cb-org)
+(use-package cb-ledger)
 (use-package cb-scala)
 (use-package cb-groovy)
 (use-package cb-rust)
