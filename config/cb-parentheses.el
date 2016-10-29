@@ -17,7 +17,25 @@
   :config
   (progn
     (add-to-list 'paren-face-modes 'scala-mode)
-    (setq paren-face-regexp "[{}()]")
+    (add-to-list 'paren-face-modes 'rust-mode)
+    (setq paren-face-regexp (rx (any "{}();,")))
+
+    (font-lock-add-keywords 'rust-mode
+                    `(;; Type assertions
+                      (,(rx (any ":")) 0 'parenthesis)
+                      ;; Generic type parameters
+                      (,(rx (group "<") symbol-start) 1 'parenthesis)
+                      (,(rx symbol-end (group (+ ">"))) 1 'parenthesis)
+                      ;; Lambda parameter delimiters
+                      (,(rx (group "|") (not (any "|"))) 1 'parenthesis)))
+
+    (font-lock-add-keywords 'scala-mode
+                    `(;; Type assertions
+                      (,(rx (any ":")) 0 'parenthesis)
+                      ;; Generic type parameters
+                      (,(rx (group "[") symbol-start) 1 'parenthesis)
+                      (,(rx symbol-end (group (+ "]"))) 1 'parenthesis)))
+
     (global-paren-face-mode +1)))
 
 
