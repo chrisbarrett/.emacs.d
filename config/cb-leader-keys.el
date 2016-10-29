@@ -70,6 +70,8 @@
       "SPC" #'execute-extended-command
       "TAB" #'cb/alternate-buffer
 
+      "!"   #'shell-command
+
       "b d" #'kill-this-buffer
       "b b" #'bury-buffer
       "b v" #'cb-leader-keys/reload-file
