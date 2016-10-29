@@ -34,6 +34,9 @@
 (define-key minibuffer-local-must-match-map (kbd "<escape>") #'keyboard-escape-quit)
 (define-key minibuffer-local-isearch-map (kbd "<escape>") #'keyboard-escape-quit)
 
+;; Write custom settings outside init.el
+
+(setq custom-file (concat user-emacs-directory "custom.el"))
 
 ;; Scroll smoothly.
 
