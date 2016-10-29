@@ -46,7 +46,15 @@
 
     (with-eval-after-load 'evil
       (bind-key "M-n" #'flycheck-next-error flycheck-mode-map)
-      (bind-key "M-p" #'flycheck-previous-error flycheck-mode-map)))
+      (bind-key "M-p" #'flycheck-previous-error flycheck-mode-map))
+
+    (add-to-list 'display-buffer-alist
+                 `(,(rx bos "*Flycheck errors*" eos)
+                   (display-buffer-reuse-window
+                    display-buffer-in-side-window)
+                   (reusable-frames . visible)
+                   (side            . bottom)
+                   (window-height   . 0.4))))
 
   :functions
   (flycheck-clear
