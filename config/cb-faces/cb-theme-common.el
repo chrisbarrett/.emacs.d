@@ -164,6 +164,12 @@
 
     ;; Misc faces
 
+    (cb-rust-faces-macro
+     ((t (:weight normal))))
+
+    (cb-rust-faces-bool
+     ((t (:weight normal))))
+
     (hl-todo
      ((((background light)) (:foreground ,cb-theme-common-red :weight bold))
       (((background dark)) (:foreground ,cb-theme-common-pink :weight bold))))

@@ -113,6 +113,9 @@
       "cx" #'cargo-process-run
       "t"  #'cargo-process-test)))
 
+(use-package cb-rust-faces
+  :after rust-mode)
+
 
 ;; Snippet Utilities
 
