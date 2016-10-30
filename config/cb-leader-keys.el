@@ -76,6 +76,8 @@
       "b b" #'bury-buffer
       "b v" #'cb-leader-keys/reload-file
 
+      "C" #'compile
+
       "f f" #'find-file
       "f F" #'find-file-other-window
       "f s" #'save-buffer
