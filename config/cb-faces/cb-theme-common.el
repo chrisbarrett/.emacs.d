@@ -162,6 +162,14 @@
      ((((background light)) (:foreground ,cb-theme-common-red :weight demibold))
       (((background dark)) (:foreground ,cb-theme-common-pink :weight demibold))))
 
+    ;; Neotree
+
+    (neo-file-link-face
+     ((t (:weight light))))
+
+    (neo-dir-link-face
+     ((t (:weight normal))))
+
     ;; Misc faces
 
     (cb-rust-faces-macro
