@@ -170,13 +170,31 @@
     (neo-dir-link-face
      ((t (:weight normal))))
 
-    ;; Misc faces
+    ;; Cargo & Rust
+
+    (cargo-process--ok-face
+     ((t (:inherit success))))
+
+    (cargo-process--warning-face
+     ((t (:inherit warning))))
+
+    (cargo-process--error-face
+     ((t (:inherit error))))
+
+    (cargo-process--standard-face
+     ((t (:weight demibold))))
+
+    (cargo-process--standard-face
+     ((t (:weight demibold))))
 
     (cb-rust-faces-macro
      ((t (:weight normal))))
 
     (cb-rust-faces-bool
      ((t (:weight normal))))
+
+
+    ;; Misc faces
 
     (hl-todo
      ((((background light)) (:foreground ,cb-theme-common-red :weight bold))
