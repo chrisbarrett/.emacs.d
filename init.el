@@ -105,6 +105,7 @@ If argument INTERACTIVE-P is set, log additional information."
 (use-package cb-groovy)
 (use-package cb-rust)
 (use-package cb-ibuffer)
+(use-package cb-yaml)
 
 (use-package personal-config
   :load-path "~/Dropbox/emacs")
