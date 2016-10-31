@@ -105,6 +105,10 @@ Do not scheduled items or repeating todos."
   (progn
     (setq org-default-notes-file (f-join org-directory "notes.org"))
 
+    (spacemacs-keys-set-leader-keys-for-major-mode
+      'org-mode
+      "r" #'org-refile)
+
     (add-to-list 'org-refile-targets '(nil :maxlevel . 3))
     (add-to-list 'org-refile-targets '(org-default-notes-file :maxlevel . 3))
     (add-to-list 'org-refile-targets `(,org-directory :maxlevel . 3))
