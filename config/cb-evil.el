@@ -12,7 +12,6 @@
   (require 'use-package))
 
 (require 'spacemacs-keys)
-(require 'evil-transient-state)
 
 (use-package evil
   :preface
@@ -154,23 +153,10 @@
   :commands (evil-numbers/inc-at-pt
              evil-numbers/dec-at-pt)
 
-  :preface
-  (evil-transient-state-define evil-numbers
-    :title "Evil Numbers Transient State"
-    :doc "\n[_+_/_=_] increase number  [_-_] decrease  [0..9] prefix  [_q_] quit"
-    :bindings
-    ("+" evil-numbers/inc-at-pt)
-    ("=" evil-numbers/inc-at-pt)
-    ("-" evil-numbers/dec-at-pt)
-    ("q" nil :exit t))
-
   :init
   (progn
-    (spacemacs-keys-declare-prefix "n" "numbers")
-    (spacemacs-keys-set-leader-keys
-      "n+" #'evil-numbers-transient-state/evil-numbers/inc-at-pt
-      "n=" #'evil-numbers-transient-state/evil-numbers/inc-at-pt
-      "n-" #'evil-numbers-transient-state/evil-numbers/dec-at-pt)))
+    (evil-global-set-key 'normal (kbd "+") #'evil-numbers/inc-at-pt)
+    (evil-global-set-key 'normal (kbd "-") #'evil-numbers/dec-at-pt)))
 
 (use-package evil-search-highlight-persist
   :after evil
