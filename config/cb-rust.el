@@ -92,6 +92,7 @@
    cargo-process-search
    cargo-process-update
    cargo-process-run
+   cargo-process--project-root
    cargo-process-test)
   :init
   (progn
@@ -110,9 +111,16 @@
       "t" #'cargo-process-test
       "u" #'cargo-process-update
       "x" #'cargo-process-run))
+  :preface
+  (defun cb-rust--run-in-project-root (f &rest args)
+    (let ((default-directory (or (cargo-process--project-root) default-directory)))
+      (apply f args)))
   :config
-  ;; Enable backtraces in Cargo processes started by Emacs.
-  (setenv "RUST_BACKTRACE" "1"))
+  (progn
+    ;; Enable backtraces in Cargo processes started by Emacs.
+    (setenv "RUST_BACKTRACE" "1")
+
+    (advice-add 'cargo-process-run :around #'cb-rust--run-in-project-root)))
 
 (use-package cb-rust-faces
   :after rust-mode)
