@@ -79,6 +79,8 @@
     (indent-region (point-min) (point-max) nil)
     (untabify (point-min) (point-max))))
 
+(define-key prog-mode-map (kbd "M-q") #'indent-buffer)
+
 
 ;;; Convenience aliases
 
