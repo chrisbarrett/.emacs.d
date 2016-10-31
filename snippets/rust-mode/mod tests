@@ -1,0 +1,11 @@
+# key: test
+# name: mod tests
+# condition: (cb-yas/bol?)
+# --
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_${1:feature}() {$0}
+}
