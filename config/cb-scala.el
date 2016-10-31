@@ -236,6 +236,11 @@
     (add-to-list 'aggressive-indent-excluded-modes 'scala-mode)
     (add-to-list 'aggressive-indent-excluded-modes 'sbt-file-mode)))
 
+(use-package cb-scala-autoinsert
+  :after autoinsert
+  :functions (cb-scala-autoinsert-init)
+  :config (cb-scala-autoinsert-init))
+
 ;; Snippet utilities
 
 
