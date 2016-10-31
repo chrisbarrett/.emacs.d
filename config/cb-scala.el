@@ -124,7 +124,7 @@
    :state normal
    ("M-." . ensime-edit-definition)
    ("M-," . ensime-pop-find-definition-stack)
-   ("RET" . ensime-inspect-type-at-point)
+   ("K" . ensime-inspect-type-at-point)
 
    :map ensime-popup-buffer-map
    :state normal
