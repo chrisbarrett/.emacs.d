@@ -180,24 +180,7 @@
     (setq ensime-auto-generate-config t)
     (setq ensime-implicit-gutter-icons nil)
     (setq ensime-startup-dirname (concat cb-emacs-cache-directory "/ensime"))
-
-    ;; (setq ensime-sem-high-faces
-    ;;       `((var . scala-font-lock:var-face)
-    ;;         ;; (val . (:inherit font-lock-constant-face :slant italic))
-    ;;         (varField . scala-font-lock:var-face)
-    ;;         ;; (valField . (:inherit font-lock-constant-face :slant italic))
-    ;;         (functionCall . font-lock-function-name-face)
-    ;;         (operator . font-lock-keyword-face)
-    ;;         (param . (:slant italic))
-    ;;         (class . font-lock-type-face)
-    ;;         (trait .  (:inherit font-lock-type-face :slant italic))
-    ;;         (object . font-lock-constant-face)
-    ;;         (package . font-lock-preprocessor-face)
-    ;;         (implicitConversion . (:underline ,(with-no-warnings cb-vars-solarized-hl-cyan)))
-    ;;         (implicitParams . (:underline ,(with-no-warnings cb-vars-solarized-hl-cyan)))
-    ;;         (deprecated . (:strike-through "dark gray"))))
-
-    ))
+    (setq ensime-sem-high-enabled-p nil)))
 
 (use-package ensime-company
   :after ensime
