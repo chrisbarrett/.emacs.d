@@ -57,7 +57,7 @@
 
 (use-package racer
   :defer t
-  :commands (racer-find-definition racer-mode)
+  :commands (racer-find-definition racer-mode racer-describe)
   :init
   (progn
     (add-hook 'racer-mode-hook #'eldoc-mode)
@@ -68,6 +68,7 @@
       (setenv "RUST_SRC_PATH" racer-rust-src-path))
 
     (with-eval-after-load 'rust-mode
+      (evil-define-key 'normal rust-mode-map (kbd "K") #'racer-describe)
       (evil-define-key 'normal rust-mode-map (kbd "M-.") #'racer-find-definition))))
 
 (use-package toml-mode
