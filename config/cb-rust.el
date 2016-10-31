@@ -111,7 +111,10 @@
       "cs" #'cargo-process-search
       "cu" #'cargo-process-update
       "cx" #'cargo-process-run
-      "t"  #'cargo-process-test)))
+      "t"  #'cargo-process-test))
+  :config
+  ;; Enable backtraces in Cargo processes started by Emacs.
+  (setenv "RUST_BACKTRACE" "1"))
 
 (use-package cb-rust-faces
   :after rust-mode)
