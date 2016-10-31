@@ -95,23 +95,21 @@
    cargo-process-test)
   :init
   (progn
-    (spacemacs-keys-declare-prefix-for-mode 'rust-mode "mc" "cargo")
     (spacemacs-keys-set-leader-keys-for-major-mode 'rust-mode
-      "c." #'cargo-process-repeat
-      "cC" #'cargo-process-clean
-      "cX" #'cargo-process-run-example
-      "cc" #'cargo-process-build
-      "cd" #'cargo-process-doc
-      "ce" #'cargo-process-bench
-      "cf" #'cargo-process-current-test
-      "cf" #'cargo-process-fmt
-      "ci" #'cargo-process-init
-      "cn" #'cargo-process-new
-      "co" #'cargo-process-current-file-tests
-      "cs" #'cargo-process-search
-      "cu" #'cargo-process-update
-      "cx" #'cargo-process-run
-      "t"  #'cargo-process-test))
+      "." #'cargo-process-repeat
+      "C" #'cargo-process-clean
+      "X" #'cargo-process-run-example
+      "c" #'cargo-process-build
+      "d" #'cargo-process-doc
+      "e" #'cargo-process-bench
+      "f" #'cargo-process-current-test
+      "i" #'cargo-process-init
+      "n" #'cargo-process-new
+      "o" #'cargo-process-current-file-tests
+      "s" #'cargo-process-search
+      "t" #'cargo-process-test
+      "u" #'cargo-process-update
+      "x" #'cargo-process-run))
   :config
   ;; Enable backtraces in Cargo processes started by Emacs.
   (setenv "RUST_BACKTRACE" "1"))
