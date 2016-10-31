@@ -40,6 +40,7 @@
     (setq ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
 
     (define-key ivy-occur-mode-map (kbd "C-x C-w") #'ivy-wgrep-change-to-wgrep-mode)
+    (define-key ivy-minibuffer-map (kbd "C-z") #'ivy-dispatching-done)
     (define-key ivy-minibuffer-map (kbd "<escape>") 'minibuffer-keyboard-quit)
     (define-key ivy-minibuffer-map (kbd "C-l") #'ivy-partial-or-done)
     (define-key ivy-minibuffer-map (kbd "C-c C-e") #'cb-ivy-occur-then-wgrep)
