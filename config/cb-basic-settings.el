@@ -71,7 +71,7 @@
 
 ;; This should really be a thing out-of-the-box.
 
-(defun indent-buffer ()
+(defun cb-indent-buffer ()
   "Indent the entire buffer."
   (interactive "*")
   (save-excursion
@@ -79,7 +79,37 @@
     (indent-region (point-min) (point-max) nil)
     (untabify (point-min) (point-max))))
 
-(define-key prog-mode-map (kbd "M-q") #'indent-buffer)
+(defun cb-indent-dwim (&optional justify)
+  "Indent the thing at point.
+
+Knows how to fill strings and comments, or indent code.
+
+Optional arg JUSTIFY will justify comments and strings."
+  (interactive "*P")
+  (-let [(_ _ _ string-p comment-p) (syntax-ppss)]
+    (cond
+     (string-p
+      (let ((progress (make-progress-reporter "Filling paragraph")))
+        (fill-paragraph justify)
+        (progress-reporter-done progress)))
+     (comment-p
+      (let ((progress (make-progress-reporter "Filling comment")))
+        (fill-comment-paragraph justify)
+        (progress-reporter-done progress)))
+     ((region-active-p)
+      (indent-region (region-beginning) (region-end)))
+     (t
+      (let ((progress (make-progress-reporter "Indenting buffer")))
+        (cb-indent-buffer)
+        (progress-reporter-done progress))))))
+
+(define-key prog-mode-map (kbd "M-q") #'cb-indent-dwim)
+
+
+;; 2-window scrolling is never useful, but an emergency window switch command
+;; sure is.
+
+(global-set-key (kbd "<f2>") #'other-window)
 
 
 ;;; Convenience aliases
