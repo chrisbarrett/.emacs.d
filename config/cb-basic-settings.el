@@ -11,8 +11,8 @@
 (eval-when-compile
   (require 'use-package))
 
-
-(autoload '-map "dash") ; needed for macro-expansion of `noflet'.
+(require 'f)
+(require 's)
 (require 'noflet)
 
 (require 'cb-emacs)
@@ -198,10 +198,39 @@
 
 (use-package recentf
   :defer t
+  :preface
+  (progn
+    (defun cb-basic-settings-boring-extension-p (f)
+      (seq-intersection (f-ext f)
+                        '("gz" "zip" "tar")))
+
+    (defun cb-basic-settings-child-of-boring-relative-dir-p (f)
+      (seq-intersection (f-split f)
+                        '(".git"
+                          ".ensime_cache"
+                          ".cargo"
+                          ".stack_work"
+                          "target"
+                          "build"
+                          "dist")))
+
+    (defun cb-basic-settings-child-of-boring-abs-dir-p (f)
+      (let ((ignore-case (eq system-type 'darwin)))
+        (seq-find (lambda (d)
+                    (s-starts-with? d f ignore-case))
+                  (list "/var/folders/"
+                        "/usr/local/Cellar/"
+                        "/tmp/"
+                        (f-expand (concat user-emacs-directory "snippets/")))))))
+
   :config
   (progn
     (setq recentf-max-saved-items 1000)
-    (setq recentf-save-file (concat cb-emacs-cache-directory "/recentf"))))
+    (setq recentf-save-file (concat cb-emacs-cache-directory "/recentf"))
+    (setq recentf-exclude
+          '(cb-basic-settings-boring-extension-p
+            cb-basic-settings-child-of-boring-relative-dir-p
+            cb-basic-settings-child-of-boring-abs-dir-p))))
 
 (use-package bookmark
   :defer t
