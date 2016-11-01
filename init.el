@@ -55,6 +55,7 @@ If argument INTERACTIVE-P is set, log additional information."
       (add-to-list 'load-path (concat path "/lisp")))
 
     (add-to-list 'load-path (concat lisp-dir "/org-mode/contrib/lisp"))
+    (add-to-list 'load-path (concat lisp-dir "/gocode/emacs-company"))
 
     (when interactive-p
       (if-let (added (seq-difference load-path before))
@@ -106,6 +107,7 @@ If argument INTERACTIVE-P is set, log additional information."
 (use-package cb-rust)
 (use-package cb-ibuffer)
 (use-package cb-yaml)
+(use-package cb-go)
 
 (use-package personal-config
   :load-path "~/Dropbox/emacs")
