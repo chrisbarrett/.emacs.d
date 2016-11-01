@@ -98,6 +98,7 @@
       "w w" #'evil-window-next
       "w o" #'delete-other-windows
       "w q" #'delete-window
+      "w r" #'evil-window-rotate-downwards
       "w -" #'evil-window-split
       "w /" #'evil-window-vsplit)))
 
