@@ -75,33 +75,6 @@
   :after go-mode
   :config (add-hook 'go-mode-hook 'go-eldoc-setup))
 
-(use-package flycheck-gometalinter
-  :after go-mode
-  :preface
-  (progn
-    (autoload 'flycheck-gometalinter-setup "flycheck-gometalinter")
-
-    (defun cb-go--configure-metalinter ()
-      "Enable `flycheck-gometalinter' and disable overlapping `flycheck' linters."
-      (with-no-warnings
-        (setq flycheck-disabled-checkers '(go-gofmt
-                                           go-golint
-                                           go-vet
-                                           go-build
-                                           go-test
-                                           go-errcheck)))
-      (flycheck-gometalinter-setup)))
-
-  :init
-  (add-hook 'go-mode-hook #'cb-go--configure-metalinter t))
-
-(use-package cb-go-flycheck-metalinter-unique-errors
-  :after flycheck-gometalinter
-  :preface
-  (autoload 'cb-go-flycheck-metalinter-unique-errors-init
-    "cb-go-flycheck-metalinter-unique-errors")
-  :config (cb-go-flycheck-metalinter-unique-errors-init))
-
 (use-package cb-go-run
   :after go-mode
   :init
