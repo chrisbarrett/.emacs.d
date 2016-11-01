@@ -177,6 +177,9 @@
      ((((background light)) (:foreground ,cb-theme-common-red :weight demibold))
       (((background dark)) (:foreground ,cb-theme-common-pink :weight demibold))))
 
+    (mu4e-header-highlight-face
+     ((t :inherit region)))
+
     ;; Neotree
 
     (neo-file-link-face
