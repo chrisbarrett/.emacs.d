@@ -24,7 +24,6 @@
   (progn
     (autoload 'ivy-mode "ivy")
     (use-package cb-ivy-occur-then-wgrep :commands (cb-ivy-occur-then-wgrep))
-    (use-package cb-ivy-continue-with-input :commands (cb-ivy-continue-with-input)))
 
   :init
   (progn
@@ -44,7 +43,7 @@
     (define-key ivy-minibuffer-map (kbd "<escape>") 'minibuffer-keyboard-quit)
     (define-key ivy-minibuffer-map (kbd "C-l") #'ivy-partial-or-done)
     (define-key ivy-minibuffer-map (kbd "C-c C-e") #'cb-ivy-occur-then-wgrep)
-    (define-key ivy-minibuffer-map (kbd "S-<return>") #'cb-ivy-continue-with-input)
+    (define-key ivy-minibuffer-map (kbd "S-<return>") #'ivy-immediate-done)
 
     (ivy-mode))
 
