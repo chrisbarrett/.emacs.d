@@ -39,6 +39,7 @@
   :preface
   (defun cb-go--set-local-vars ()
     (setq-local tab-width 4)
+    (setq-local indent-tabs-mode t)
     (with-no-warnings
       (setq-local evil-shift-width 4)))
 
