@@ -23,7 +23,15 @@
   :preface
   (progn
     (autoload 'ivy-mode "ivy")
+    (autoload 'ivy-help "ivy")
+
     (use-package cb-ivy-occur-then-wgrep :commands (cb-ivy-occur-then-wgrep))
+
+    (defun cb-ivy-help ()
+      (interactive)
+      (let ((org-startup-folded 'nofold))
+        (ivy-help)
+        (pop-to-buffer (get-buffer "*Ivy Help*")))))
 
   :init
   (progn
@@ -38,6 +46,7 @@
     (setq ivy-count-format "(%d/%d) ")
     (setq ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
 
+    (define-key ivy-minibuffer-map (kbd "<f1>") #'cb-ivy-help)
     (define-key ivy-occur-mode-map (kbd "C-x C-w") #'ivy-wgrep-change-to-wgrep-mode)
     (define-key ivy-minibuffer-map (kbd "C-z") #'ivy-dispatching-done)
     (define-key ivy-minibuffer-map (kbd "<escape>") 'minibuffer-keyboard-quit)
