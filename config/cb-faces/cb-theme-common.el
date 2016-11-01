@@ -87,6 +87,21 @@
      ((((background light)) (:foreground ,cb-theme-common-red :weight demibold))
       (((background dark)) (:foreground ,cb-theme-common-pink :weight demibold))))
 
+    (org-agenda-date-weekend
+     ((t (:inherit org-agenda-date))))
+
+    (org-warning
+     ((((background light)) (:foreground ,cb-theme-common-red :weight normal))
+      (((background dark)) (:foreground ,cb-theme-common-pink :weight normal))))
+
+    (org-upcoming-deadline
+     ((((background light)) (:foreground ,cb-theme-common-yellow :weight normal))
+      (((background dark)) (:foreground ,cb-theme-common-yellow :weight normal))))
+
+    (org-scheduled-previously
+     ((((background light)) (:foreground ,cb-theme-common-red :weight normal))
+      (((background dark)) (:foreground ,cb-theme-common-pink :weight normal))))
+
     (org-formula
      ((t (:weight light))))
 
