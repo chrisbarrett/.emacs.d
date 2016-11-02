@@ -170,6 +170,36 @@ Optional arg JUSTIFY will justify comments and strings."
 (advice-add #'display-message-or-buffer :before #'cb-basic-settings--display-ansi-codes)
 
 
+;; Line transposition
+
+(autoload 'org-move-item-down "org-list")
+(autoload 'org-move-item-up "org-list")
+
+(defun cb-transpose-line-up ()
+  "Move the current line up."
+  (interactive)
+  (if (derived-mode-p 'org-mode)
+      (org-move-item-up)
+
+    (transpose-lines 1)
+    (forward-line -2)
+    (indent-according-to-mode)))
+
+(defun cb-transpose-line-down ()
+  "Move the current line up."
+  (interactive)
+  (if (derived-mode-p 'org-mode)
+      (org-move-item-down)
+
+    (forward-line 1)
+    (transpose-lines 1)
+    (forward-line -1)
+    (indent-according-to-mode)))
+
+(global-set-key (kbd "C-<up>") #'cb-transpose-line-up)
+(global-set-key (kbd "C-<down>") #'cb-transpose-line-down)
+
+
 ;;; Hide DOS EOL
 
 (defun cb-basic-settings--hide-dos-eol ()
