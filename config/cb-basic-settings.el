@@ -141,7 +141,7 @@ Optional arg JUSTIFY will justify comments and strings."
 
 ;; Insert a leading space after comment start for new comment lines.
 
-(defun cb-basic-settings--comment-insert-space ()
+(defun cb-basic-settings--comment-insert-space (&rest _)
   (when (and comment-start
              (thing-at-point-looking-at (regexp-quote comment-start)))
     (unless (or (thing-at-point-looking-at (rx (+ space))))
