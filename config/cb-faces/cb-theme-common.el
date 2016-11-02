@@ -56,6 +56,11 @@
     (font-lock-comment-face
      ((t (:weight demibold))))
 
+    ;; Info
+
+    (info-double-quoted-name
+     ((t (:weight normal))))
+
     ;; Magit
 
     (magit-diff-file-heading
