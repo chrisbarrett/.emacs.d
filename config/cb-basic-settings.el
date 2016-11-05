@@ -228,6 +228,7 @@ Optional arg JUSTIFY will justify comments and strings."
 
 (add-hook 'after-change-major-mode-hook #'cb-basic-settings--hide-dos-eol)
 
+
 ;;; General variables
 
 (setq-default fill-column 80)
