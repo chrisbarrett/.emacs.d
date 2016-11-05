@@ -42,6 +42,8 @@
 
   :config
   (progn
+    (put 'dired-find-alternate-file 'disabled nil)
+
     (setq-default dired-listing-switches "-alhv")
     (setq dired-dwim-target t)
     (advice-add 'dired-readin :after #'cb-dired--sort-directories-first)
