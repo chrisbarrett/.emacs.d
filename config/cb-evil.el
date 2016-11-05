@@ -109,6 +109,26 @@
     ;; Enable leader key in iedit and iedit-insert states
     (define-key evil-iedit-state-map (kbd "SPC") spacemacs-keys-default-map)))
 
+(use-package evil-ex
+  :defer t
+  :functions (evil-ex-define-cmd)
+  :preface
+  (progn
+    (defun cb-evil-flyspell-on ()
+      "Enable flyspell."
+      (interactive)
+      (turn-on-flyspell))
+
+    (defun cb-evil-flyspell-off ()
+      "Disable flyspell."
+      (interactive)
+      (turn-off-flyspell)))
+
+  :config
+  (progn
+    (evil-ex-define-cmd "nospell" #'cb-evil-flyspell-off)
+    (evil-ex-define-cmd "spell" #'cb-evil-flyspell-on)))
+
 (use-package evil-ediff
   :after ediff)
 
