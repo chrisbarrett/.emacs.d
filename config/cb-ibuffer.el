@@ -16,12 +16,24 @@
 
 (use-package ibuffer
   :commands (ibuffer ibuffer-forward-line ibuffer-backward-line)
+  :defines (ibuffer-show-empty-filter-groups
+            ibuffer-never-show-predicates)
   :bind ("C-x C-b" . ibuffer-other-window)
   :init
   (spacemacs-keys-set-leader-keys "b l" #'ibuffer)
   :config
   (progn
     (setq ibuffer-expert t)
+    (setq ibuffer-show-empty-filter-groups nil)
+    (setq ibuffer-never-show-predicates
+          (list (rx (or "*Messages*"
+                        "*magit-"
+                        "*git-auto-push*"
+                        "*Backtrace*"
+                        "*new*"
+                        "*Org"
+                        "*Flycheck error messages*"
+                        "*Help*"))))
     (define-key ibuffer-mode-map (kbd "SPC") spacemacs-keys-default-map)
     (define-key ibuffer-mode-map (kbd "j") #'ibuffer-forward-line)
     (define-key ibuffer-mode-map (kbd "k") #'ibuffer-backward-line)))
@@ -39,6 +51,7 @@
   :preface
   (defun cb-ibuffer--setup-buffer ()
     (ibuffer-projectile-set-filter-groups)
+    (add-to-list 'ibuffer-filter-groups '("Dired" (mode . dired-mode)))
     (unless (eq ibuffer-sorting-mode 'alphabetic)
       (ibuffer-do-sort-by-alphabetic)))
   :init
