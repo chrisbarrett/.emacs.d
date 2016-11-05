@@ -423,6 +423,11 @@ Optional arg JUSTIFY will justify comments and strings."
     (setq auto-revert-verbose nil)
     (global-auto-revert-mode 1)))
 
+(use-package goto-addr
+  :defer t
+  :init
+  (add-hook 'prog-mode-hook #'goto-address-prog-mode))
+
 (use-package ffap
   :defer t
   :config
