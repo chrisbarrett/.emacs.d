@@ -73,6 +73,7 @@ If argument INTERACTIVE-P is set, log additional information."
 (use-package cb-emacs)
 (use-package cb-basic-settings)
 (use-package cb-modeline)
+(use-package cb-auto-save)
 (use-package cb-which-key)
 (use-package cb-leader-keys)
 (use-package cb-evil)
