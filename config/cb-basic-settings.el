@@ -131,6 +131,12 @@ Optional arg JUSTIFY will justify comments and strings."
 
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
 
+;; Enable commands.
+
+(put 'narrow-to-region 'disabled nil)
+(put 'upcase-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
+(put 'erase-buffer 'disabled nil)
 
 ;;; Core advice
 
