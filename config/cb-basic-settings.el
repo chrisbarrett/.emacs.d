@@ -112,7 +112,7 @@ Optional arg JUSTIFY will justify comments and strings."
 ;; 2-window scrolling is never useful, but an emergency window switch command
 ;; sure is.
 
-(global-set-key (kbd "<f2>") #'other-window)
+(global-set-key (kbd "<f2>") #'next-multiframe-window)
 
 
 ;;; Convenience aliases
