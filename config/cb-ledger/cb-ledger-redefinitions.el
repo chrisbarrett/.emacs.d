@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2016  Chris Barrett
 
-;; Author: Chris Barrett <admiral@walrus.cool>
+;; Author: Chris Barrett <chris+emacs@walrus.cool>
 
 ;;; Commentary:
 
