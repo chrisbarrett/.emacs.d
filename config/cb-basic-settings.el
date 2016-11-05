@@ -423,6 +423,12 @@ Optional arg JUSTIFY will justify comments and strings."
     (setq auto-revert-verbose nil)
     (global-auto-revert-mode 1)))
 
+(use-package ffap
+  :defer t
+  :config
+  ;; Don't try to ping things that look like domain names
+  (setq ffap-machine-p-known 'reject))
+
 (use-package help
   :defer t
   :config
