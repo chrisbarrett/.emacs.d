@@ -11,6 +11,7 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'cb-emacs)
 (require 'spacemacs-keys)
 
 (autoload 'evil-define-key "evil-core")
@@ -26,7 +27,10 @@
       'dired-mode
       "si" 'dired-insert-subdir
       "sd" 'dired-kill-subdir)
-    (add-hook 'dired-mode-hook #'dired-hide-details-mode)))
+    (add-hook 'dired-mode-hook #'dired-hide-details-mode))
+  :config
+  (unless (bound-and-true-p diredp-loaded-p)
+    (load-file (concat cb-emacs-lisp-directory "/dired-plus/dired+.el"))))
 
 (use-package dired-x
   :commands (dired-omit-mode)
