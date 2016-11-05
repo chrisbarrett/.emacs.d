@@ -423,6 +423,12 @@ Optional arg JUSTIFY will justify comments and strings."
     (setq auto-revert-verbose nil)
     (global-auto-revert-mode 1)))
 
+(use-package help
+  :defer t
+  :config
+  ;; Always focus on help windows
+  (setq help-window-select t))
+
 
 (provide 'cb-basic-settings)
 
