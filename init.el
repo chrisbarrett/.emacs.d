@@ -108,6 +108,7 @@ If argument INTERACTIVE-P is set, log additional information."
 (use-package cb-ibuffer)
 (use-package cb-yaml)
 (use-package cb-go)
+(use-package cb-dired)
 
 (use-package personal-config
   :load-path "~/Dropbox/emacs")

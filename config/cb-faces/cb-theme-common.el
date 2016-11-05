@@ -56,6 +56,11 @@
     (font-lock-comment-face
      ((t (:weight demibold))))
 
+    ;; Dired
+
+    (dired-header
+     ((t (:weight demibold))))
+
     ;; Info
 
     (info-double-quoted-name
