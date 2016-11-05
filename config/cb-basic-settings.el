@@ -416,6 +416,13 @@ Optional arg JUSTIFY will justify comments and strings."
   :config
   (setq tramp-persistency-file-name (concat cb-emacs-cache-directory "/tramp")))
 
+(use-package autorevert
+  :config
+  (progn
+    (setq global-auto-revert-non-file-buffers t)
+    (setq auto-revert-verbose nil)
+    (global-auto-revert-mode 1)))
+
 
 (provide 'cb-basic-settings)
 
