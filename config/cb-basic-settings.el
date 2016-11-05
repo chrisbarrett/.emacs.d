@@ -116,6 +116,9 @@ Optional arg JUSTIFY will justify comments and strings."
 
 (global-set-key (kbd "<f2>") #'next-multiframe-window)
 
+;; Unlimited print length for eval-expression.
+(setq eval-expression-print-length nil)
+(setq eval-expression-print-level nil)
 
 ;;; Convenience aliases
 
