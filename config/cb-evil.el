@@ -44,10 +44,10 @@
     (evil-define-key 'motion help-mode-map (kbd "S-<tab>") #'backward-button)
     (evil-define-key 'motion help-mode-map (kbd "]") #'help-go-forward)
     (evil-define-key 'motion help-mode-map (kbd "gf") #'help-go-forward)
+    (evil-define-key 'motion help-mode-map (kbd "^") #'help-go-back)
     (evil-define-key 'motion help-mode-map (kbd "[") #'help-go-back)
     (evil-define-key 'motion help-mode-map (kbd "gb") #'help-go-back)
     (evil-define-key 'motion help-mode-map (kbd "gh") #'help-follow-symbol)
-
 
     ;; Better compat with smartparens-strict mode.
     ;; TODO: Move to SP config.
