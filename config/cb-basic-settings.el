@@ -71,6 +71,10 @@
 
 (setq frame-title-format `(:eval (cb-basic-settings--frame-title-string)))
 
+
+;; Copy system clipboard to the kill-ring if an Emacs kill would overwrite it.
+(setq save-interprogram-paste-before-kill t)
+
 ;; Don't prompt when following symlinks to vc files.
 (setq vc-follow-symlinks t)
 
