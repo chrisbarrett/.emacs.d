@@ -50,6 +50,8 @@
 ;; Auto-indent on RET
 (define-key global-map (kbd "RET") #'comment-indent-new-line)
 
+;; Disable backup files
+(setq make-backup-files nil)
 
 ;; Enable hideshow in all programming buffers.
 
