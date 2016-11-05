@@ -46,6 +46,8 @@
     (setq dired-dwim-target t)
     (advice-add 'dired-readin :after #'cb-dired--sort-directories-first)
 
+    (add-hook 'dired-mode-hook #'auto-revert-mode)
+
     (unless (bound-and-true-p diredp-loaded-p)
       (load-file (concat cb-emacs-lisp-directory "/dired-plus/dired+.el")))))
 
