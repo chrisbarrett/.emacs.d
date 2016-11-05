@@ -64,6 +64,7 @@
   :config
   (progn
     (evil-define-key 'normal dired-mode-map (kbd "h") #'dired-omit-mode)
+    (setq dired-omit-verbose nil)
     (setq dired-clean-up-buffers-too t)
     (setq dired-omit-files (rx bol (+ ".")))))
 
