@@ -18,6 +18,8 @@
 (defconst cb-theme-common-cyan "#2aa198")
 (defconst cb-theme-common-green "#859900")
 
+(defconst cb-theme-common-gray "grey60")
+
 (defun cb-theme-common-make-theme (default-foreground default-background)
   `((default
       ((t
@@ -59,7 +61,40 @@
     ;; Dired
 
     (dired-header
-     ((t (:weight demibold))))
+     ((t (:weight bold))))
+
+    (diredp-dir-heading
+     ((t (:inherit dired-header))))
+
+    (diredp-dir-name
+     ((t (:inherit default :foreground ,cb-theme-common-blue))))
+
+    (diredp-file-name
+     ((t (:inherit default))))
+
+    (diredp-file-suffix
+     ((t (:foreground ,cb-theme-common-gray))))
+
+    (diredp-number
+     ((t (:weight light))))
+
+    (diredp-date-time
+     ((t (:foreground ,cb-theme-common-gray :weight light))))
+
+    (diredp-dir-priv
+     ((t (:weight light :foreground ,cb-theme-common-gray))))
+
+    (diredp-no-priv
+     ((t (:weight light :foreground ,cb-theme-common-gray))))
+
+    (diredp-exec-priv
+     ((t (:weight light :foreground ,cb-theme-common-gray))))
+
+    (diredp-read-priv
+     ((t (:weight light :foreground ,cb-theme-common-gray))))
+
+    (diredp-write-priv
+     ((t (:weight light :foreground ,cb-theme-common-gray))))
 
     ;; Info
 
@@ -77,7 +112,7 @@
     ;; Outline, Org
 
     (org-done
-     ((t (:inherit default :weight bold :foreground "grey60"))))
+     ((t (:inherit default :weight bold :foreground ,cb-theme-common-gray))))
 
     (org-document-info-keyword
      ((t (:weight light))))
