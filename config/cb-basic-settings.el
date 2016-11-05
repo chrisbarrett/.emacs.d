@@ -56,6 +56,9 @@
 (autoload 'hs-minor-mode "hideshow")
 (add-hook 'prog-mode-hook 'hs-minor-mode)
 
+;; Make files executable on save.
+
+(add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
 
 ;; Show file or buffer name in the title bar.
 
