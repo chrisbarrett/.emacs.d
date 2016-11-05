@@ -405,6 +405,11 @@ Optional arg JUSTIFY will justify comments and strings."
     (setq savehist-additional-variables '(kill-ring search-ring regexp-search-ring))
     (savehist-mode +1)))
 
+(use-package tramp-cache
+  :defer t
+  :config
+  (setq tramp-persistency-file-name (concat cb-emacs-cache-directory "/tramp")))
+
 
 (provide 'cb-basic-settings)
 
