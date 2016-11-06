@@ -109,6 +109,12 @@
     (magit-section-heading
      ((t (:weight demibold))))
 
+    (magit-popup-disabled-argument
+     ((t (:foreground ,cb-theme-common-gray))))
+
+    (magit-popup-option-value
+     ((t (:weight normal))))
+
     ;; Outline, Org
 
     (org-done
