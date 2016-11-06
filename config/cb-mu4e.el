@@ -34,7 +34,11 @@
                   mu4e-view-mark-for-read-and-archive)))
 
   :init
-  (spacemacs-keys-set-leader-keys "am" #'mu4e)
+  (progn
+    (with-eval-after-load 'org
+      (require 'org-mu4e))
+
+    (spacemacs-keys-set-leader-keys "am" #'mu4e))
 
   :config
   (progn
