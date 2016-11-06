@@ -111,6 +111,7 @@ If argument INTERACTIVE-P is set, log additional information."
 (use-package cb-go)
 (use-package cb-dired)
 (use-package cb-spelling)
+(use-package cb-diff)
 
 (use-package personal-config
   :load-path "~/Dropbox/emacs")
