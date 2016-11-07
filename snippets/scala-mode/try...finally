@@ -1,6 +1,6 @@
 # key: tf
 # name: try...finally
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 try {
   $1$0

@@ -2,7 +2,7 @@
 # name: play-json formatter object
 # key: o
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 object ${1:Name} {
   implicit val ${1:$(s-lower-camel-case yas/text)}Format: Format[$1] = (

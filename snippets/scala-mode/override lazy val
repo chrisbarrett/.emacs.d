@@ -2,6 +2,6 @@
 # name: override lazy val
 # key: olv
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 override lazy val ${1:ident} = $0

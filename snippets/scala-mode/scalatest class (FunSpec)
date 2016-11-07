@@ -1,6 +1,6 @@
 # key: cl
 # name: scalatest class (FunSpec)
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 import org.scalatest.{ FunSpec, Matchers }
 

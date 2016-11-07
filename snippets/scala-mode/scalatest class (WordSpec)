@@ -1,6 +1,6 @@
 # key: cl
 # name: scalatest class (WordSpec)
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 import org.scalatest.{ Inspectors, Matchers, WordSpec }
 

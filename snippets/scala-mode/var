@@ -2,6 +2,6 @@
 # name: var
 # key: var
 # binding: direct-keybinding
-# condition: (yas/bol?)
+# condition: (cb-yas/bol?)
 # --
 var ${1:ident} = $0
