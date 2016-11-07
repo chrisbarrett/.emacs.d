@@ -131,9 +131,12 @@ Insert leading padding unless at start of line or after an open round paren."
 (use-package emmet-mode
   :defer t
   :defines (emmet-expand-jsx-className?)
+  :commands (emmet-mode)
   :preface
   (defun cb-web--set-jsx-classname-on ()
     (setq-local emmet-expand-jsx-className? t))
+  :init
+  (add-hook 'web-mode-hook #'emmet-mode)
   :config
   (add-hook 'cb-web-js-mode-hook #'cb-web--set-jsx-classname-on))
 
