@@ -39,6 +39,9 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
   :config
   (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
 
+(use-package magithub
+  :after magit)
+
 (use-package git-commit-jira-prefix
   :after git-commit
   :commands git-commit-jira-prefix-init
