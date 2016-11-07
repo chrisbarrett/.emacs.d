@@ -39,7 +39,7 @@
     (autoload 'thing-at-point-looking-at "thingatpt")
     (autoload 's-matches? "s")
 
-    (defun cb-web--format-after-paren (_id action context)
+    (defun cb-web--format-paren-after-keyword (_id action context)
       "Insert a space after some keywords."
       (when (and (equal action 'insert)
                  (equal context 'code)
@@ -102,7 +102,7 @@ Insert leading padding unless at start of line or after an open round paren."
 
   :config
   (progn
-    (sp-local-pair 'cb-web-js-mode "(" ")" :post-handlers '(:add cb-web--format-after-paren))
+    (sp-local-pair 'cb-web-js-mode "(" ")" :post-handlers '(:add cb-web--format-paren-after-keyword))
     (sp-local-pair '(cb-web-js-mode cb-web-json-mode) "{" "}" :post-handlers '(:add cb-web--sp-braces-external-padding))
     (sp-local-pair 'web-mode "<" nil :when '(cb-web--sp-web-mode-is-code-context))))
 
