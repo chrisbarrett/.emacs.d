@@ -1,0 +1,90 @@
+Revision history for coffee-mode.el
+
+Revision v0.6.3 2016/03/29
+   - Refactoring attributes(#345)
+   - Improve package comment and meta comment(#344 Thanks Steve Purcell)
+   - Fix coffee-compile command if buffer/region don't end with newline case(#343)
+   - Implement auto-fill function(#337, #342 Thanks Danny McClanahan)
+   - Better indentation(#335, #338)
+   - Set '--no-header' by default in compiling commands
+   - Add custom variable for switching compile buffer(#331 Thanks Danny McClanahan)
+   - Fix lambda expression regexp(#330 Thanks Danny McClanahan)
+
+Revision v0.6.2 2015/12/10
+   - Implement python like indentation(#323)
+   - Fix assignment highlight issue(#326)
+   - Add toggle arrow function command(#329 Thanks jasonm23)
+
+Revision v0.6.1 2015/10/01
+   - Fix byte-compile warning(#308)
+   - Improve sending multiple lines to REPL(#316, #318 Thanks Danny McClanaha)
+   - Fix version comparison issue(#321 Reported by crackhopper)
+
+Revision v0.6.0 2015/03/19
+   - Fix highlighting regexp literal issue(#302)
+   - Fix highlighting class member issue(#304)
+
+Revision v0.5.9 2015/02/23
+   - Implement highlighting multiple lines regexp literal(Experimental)
+   - Re-implement string interpolation for string nested string interpolation
+   - Implement indent region command
+   - Fix indent command for 'unless' block
+   - Fix #287, #289(slash after string interpolation breaks syntax highlighting)
+   - Fix #285(double quote in string interpolation breaks syntax highlighting)
+
+Revision v0.5.8 2015/01/04
+   - Fix highlighting boolean keyword(#281 Thanks Wilfred)
+   - Fix first line indentation
+
+Revision v0.5.7 2014/12/07
+   - Improve for tramp
+   - Fix coffee-comment-dwim same as other major-mode
+   - Fix highlighting class attribute issue(#272 Thanks no0)
+   - Fix highlighting issue similar to #272
+
+Revision v0.5.6 2014/11/06
+   - Fix not pop-up compiled buffer issue
+   - Support sending multiple line to REPL
+   - Improve else, catch, finally indentation
+   - Support newer coffeescript sourmap generation
+   - Fix passing parameter to sourcemap.el
+   - Heighlight 'yield' as keyword
+   - Correct '_'(underscore) syntax property and remove work-around(Thanks dotemacs)
+
+Revision v0.5.5 2014/08/04
+   - Improve compiling command(Thanks Gunnar Wrobel)
+
+Revision v0.5.4 2014-07-14
+  - Fix js2coffee-replace-region issue(Thanks Mihir Rege)
+
+Revision v0.5.3 2014-06-27
+  - Support CSON file
+
+Revision v0.5.2 2014-05-25
+  - Fix new line and indentation issue
+
+Revision v0.5.1 2014-05-19
+  - Many bug fixes
+    - Fix highlighting issues
+    - Fix defun command
+    - Fix indentation issue
+
+Revision v0.5.0 2013-12-14
+  - Drop Emacs 23 support
+  - Support block comment and triple quote
+  - Many bug fix
+
+Revision v0.4.0 2013-04-21
+  - Bug fix
+
+Revision v0.3.0 2013-03-07
+  - Bug fix
+  - Add compile command
+  - Documentation
+
+Revision v0.2.0 2013-03-07
+  - Bug fix
+  - Support imenu
+
+Revision v0.1.0 2013-03-07
+  - Initial implements
