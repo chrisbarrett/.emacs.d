@@ -101,6 +101,11 @@
     (info-double-quoted-name
      ((t (:weight normal))))
 
+    ;; web-mode
+
+    (web-mode-function-call-face
+     ((t (:weight normal))))
+
     ;; Magit
 
     (magit-diff-file-heading

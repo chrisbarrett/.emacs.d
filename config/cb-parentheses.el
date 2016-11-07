@@ -17,6 +17,7 @@
   :config
   (progn
     (add-to-list 'paren-face-modes 'scala-mode)
+    (add-to-list 'paren-face-modes 'web-mode)
     (add-to-list 'paren-face-modes 'rust-mode)
     (setq paren-face-regexp (rx (any "{}();,")))
 
