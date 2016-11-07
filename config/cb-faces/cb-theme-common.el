@@ -25,6 +25,10 @@
       ((t
         (:background ,default-background :foreground ,default-foreground :weight normal :family "Hasklig" :height 130))))
 
+    (link
+     ((t
+       (:weight light :underline t))))
+
     (fringe
      ((t
        (:background ,default-background))))
@@ -124,6 +128,9 @@
      ((t (:weight normal))))
 
     ;; Outline, Org
+
+    (org-link
+     ((t (:inherit link :weight normal))))
 
     (org-done
      ((t (:inherit default :weight bold :foreground ,cb-theme-common-gray))))
