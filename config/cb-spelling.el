@@ -17,6 +17,7 @@
   (progn
     (setq ispell-program-name "aspell")
     (setq ispell-dictionary "british")
+    (setq ispell-dictionary-alist (ispell-find-aspell-dictionaries))
     (setq ispell-silently-savep t)))
 
 (use-package cb-evil-ispell
