@@ -4,4 +4,4 @@
 # binding: direct-keybinding
 # condition: (cb-yas/bol?)
 # --
-sealed trait $0
+sealed trait ${1:Name}
