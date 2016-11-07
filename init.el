@@ -113,6 +113,7 @@ If argument INTERACTIVE-P is set, log additional information."
 (use-package cb-spelling)
 (use-package cb-diff)
 (use-package cb-coffeescript)
+(use-package cb-web-mode)
 
 (use-package personal-config
   :load-path "~/Dropbox/emacs")
