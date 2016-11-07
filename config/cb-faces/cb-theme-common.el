@@ -106,6 +106,9 @@
     (web-mode-function-call-face
      ((t (:weight normal))))
 
+    (web-mode-json-key-face
+     ((t (:weight normal))))
+
     ;; Magit
 
     (magit-diff-file-heading
