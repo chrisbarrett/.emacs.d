@@ -20,14 +20,17 @@
   :defer t
   :commands (dired dired-hide-details-mode)
   :preface
+  (progn
+    (autoload 'diredp-next-line "dired+")
+    (autoload 'diredp-previous-line "dired+")
 
-  (defun cb-dired--sort-directories-first (&rest _)
-    "Sort dired listings with directories first."
-    (save-excursion
-      (let (buffer-read-only)
-        (forward-line 2) ;; beyond dir. header
-        (sort-regexp-fields t "^.*$" "[ ]*." (point) (point-max)))
-      (set-buffer-modified-p nil)))
+    (defun cb-dired--sort-directories-first (&rest _)
+      "Sort dired listings with directories first."
+      (save-excursion
+        (let (buffer-read-only)
+          (forward-line 2) ;; beyond dir. header
+          (sort-regexp-fields t "^.*$" "[ ]*." (point) (point-max)))
+        (set-buffer-modified-p nil))))
 
   :init
   (progn
@@ -38,6 +41,7 @@
       "d"  'dired-hide-details-mode
       "si" 'dired-insert-subdir
       "sd" 'dired-kill-subdir)
+
     (add-hook 'dired-mode-hook #'dired-hide-details-mode))
 
   :config
@@ -49,7 +53,10 @@
     (advice-add 'dired-readin :after #'cb-dired--sort-directories-first)
 
     (unless (bound-and-true-p diredp-loaded-p)
-      (load-file (concat cb-emacs-lisp-directory "/dired-plus/dired+.el")))))
+      (load-file (concat cb-emacs-lisp-directory "/dired-plus/dired+.el")))
+
+    (evil-define-key 'normal dired-mode-map (kbd "j") #'diredp-next-line)
+    (evil-define-key 'normal dired-mode-map (kbd "k") #'diredp-previous-line)))
 
 (use-package dired-x
   :commands (dired-omit-mode)
