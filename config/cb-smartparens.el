@@ -19,6 +19,8 @@
 
   :preface
   (progn
+    (defun cb-smartparens--this-command-is-eval-expression (&rest _)
+      (equal this-command 'eval-expression))
     (defun cb-smartparens--sp-for-eval-expression ()
       (when (eq this-command 'eval-expression)
         (smartparens-mode)))
@@ -84,7 +86,6 @@
     (require 'smartparens-rust)
     (require 'cb-sp-utils)
 
-    (sp-local-pair 'minibuffer-inactive-mode "'" nil :actions nil)
 
     (sp-pair "(" ")"   :bind "M-(")
     (sp-pair "{" "}"   :bind "M-{")
@@ -98,6 +99,16 @@
              '(:add (cb-smartparens-newline-post-handler "RET")))
     (sp-pair "(" nil :post-handlers
              '(:add (cb-smartparens-newline-post-handler "RET")))
+    (sp-with-modes 'minibuffer-inactive-mode
+      (sp-local-pair "'" nil :actions nil)
+      (sp-local-pair "(" nil
+                     :when (cb-smartparens--this-command-is-eval-expression)
+                     :pre-handlers '(cb-smartparens-add-space-before-sexp-insertion)
+                     :post-handlers '(cb-smartparens-add-space-after-sexp-insertion))
+      (sp-local-pair "\"" nil
+                     :when (cb-smartparens--this-command-is-eval-expression)
+                     :pre-handlers '(cb-smartparens-add-space-before-sexp-insertion)
+                     :post-handlers '(cb-smartparens-add-space-after-sexp-insertion)))
 
     (sp-with-modes sp-lisp-modes
       (sp-local-pair "\"" "\"" :post-handlers '(:add cb-sp-utils-just-one-space))
