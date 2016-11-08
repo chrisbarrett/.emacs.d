@@ -21,6 +21,13 @@
   (progn
     (defun cb-smartparens--this-command-is-eval-expression (&rest _)
       (equal this-command 'eval-expression))
+
+    (defun cb-smartparens--org-skip-asterisk (_ mb me)
+      (or (and (= (line-beginning-position) mb)
+               (eq 32 (char-after (1+ mb))))
+          (and (= (1+ (line-beginning-position)) me)
+               (eq 32 (char-after me)))))
+
     (defun cb-smartparens--sp-for-eval-expression ()
       (when (eq this-command 'eval-expression)
         (smartparens-mode)))
@@ -125,6 +132,14 @@
     (sp-with-modes '(scala-mode cb-web-js-mode cb-web-json-mode)
       (sp-local-pair "\"" "\"" :post-handlers '(:add cb-sp-utils-just-one-space))
       (sp-local-pair "{" "}"   :post-handlers '(:add cb-sp-utils-just-one-space)))
+    (sp-with-modes 'org-mode
+      (sp-local-pair "*" "*" :actions '(insert wrap) :unless '(sp-point-after-word-p sp-point-at-bol-p) :wrap "C-*" :skip-match 'cb-smartparens--org-skip-asterisk)
+      (sp-local-pair "_" "_" :unless '(sp-point-after-word-p) :wrap "C-_")
+      (sp-local-pair "/" "/" :unless '(sp-point-after-word-p) :post-handlers '(("[d1]" "SPC")))
+      (sp-local-pair "~" "~" :unless '(sp-point-after-word-p) :post-handlers '(("[d1]" "SPC")))
+      (sp-local-pair "=" "=" :unless '(sp-point-after-word-p) :post-handlers '(("[d1]" "SPC")))
+      (sp-local-pair "«" "»"))
+
 
     (smartparens-global-strict-mode +1)
     (show-smartparens-global-mode +1))
