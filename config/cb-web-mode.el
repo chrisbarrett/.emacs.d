@@ -33,7 +33,6 @@
 
 (use-package smartparens
   :defer t
-  :functions (sp-get-pair)
   :preface
   (progn
     (autoload 'thing-at-point-looking-at "thingatpt")
@@ -65,8 +64,7 @@ Insert leading padding unless at start of line or after an open round paren."
       (when (and (equal action 'insert)
                  (equal ctx 'code))
         (save-excursion
-          (when (search-backward (sp-get-pair id :open)
-                                 (line-beginning-position) t)
+          (when (search-backward id (line-beginning-position) t)
             (let ((bol-to-point (buffer-substring (line-beginning-position) (point))))
               (cond
                ((s-matches? (rx bol (* space) eol) bol-to-point))
@@ -81,8 +79,7 @@ Insert leading padding unless at start of line or after an open round paren."
                  (equal ctx 'code))
         (-when-let* ((end (point))
                      (beg (save-excursion
-                            (search-backward (sp-get-pair id :open)
-                                             (line-beginning-position) t))))
+                            (search-backward id (line-beginning-position) t))))
           (cond
            ((s-matches? (rx bol (* space) "<" (*? nonl) "=" (* space) eol)
                         (buffer-substring (line-beginning-position) beg))
