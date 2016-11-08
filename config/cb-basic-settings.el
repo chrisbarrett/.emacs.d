@@ -229,6 +229,38 @@ Optional arg JUSTIFY will justify comments and strings."
 (add-hook 'after-change-major-mode-hook #'cb-basic-settings--hide-dos-eol)
 
 
+;; Offer to open large files in fundamental mode.
+
+(defvar cb-basic-settings--large-file-size (* 1024 1024)
+  "Size in bytes above which a file is considered 'large'.")
+
+(defconst cb-basic-settings--large-file-modes-list
+  '(archive-mode
+    doc-view-mode
+    doc-view-mode-maybe
+    ebrowse-tree-mode
+    git-commit-mode
+    image-mode
+    pdf-view-mode
+    tar-mode)
+  "A list of modes that should not prompt for literal file editing.")
+
+(defun cb-basic-settings--large-file? (size)
+  (unless (memq major-mode cb-basic-settings--large-file-modes-list)
+    (and size (> size cb-basic-settings--large-file-size))))
+
+(defun cb-basic-settings--prompt-to-open-large-files-in-fundamental-mode ()
+  (let* ((filename (buffer-file-name))
+         (size (nth 7 (file-attributes filename))))
+    (when (and (cb-basic-settings--large-file? size)
+               (y-or-n-p (format "`%s' is a large file.  Open in fundamental mode? " (file-name-nondirectory filename))))
+      (setq buffer-read-only t)
+      (buffer-disable-undo)
+      (fundamental-mode))))
+
+(add-hook 'find-file-hook #'cb-basic-settings--prompt-to-open-large-files-in-fundamental-mode)
+
+
 ;;; General variables
 
 (setq-default fill-column 80)
