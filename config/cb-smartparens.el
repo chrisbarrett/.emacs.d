@@ -86,6 +86,8 @@
     (require 'smartparens-rust)
     (require 'cb-sp-utils)
 
+    (bind-key [remap c-electric-backspace] 'sp-backward-delete-char smartparens-strict-mode-map)
+
 
     (sp-pair "(" ")"   :bind "M-(")
     (sp-pair "{" "}"   :bind "M-{")
