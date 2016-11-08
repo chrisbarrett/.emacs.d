@@ -94,8 +94,8 @@
     (setq message-citation-line-function #'message-insert-formatted-citation-line)
     (setq message-citation-line-format "On %a, %b %d %Y, %f wrote:\n")
 
-    ;; Update every 5 minutes.
-    (setq mu4e-update-interval (* 60 5))
+    ;; Update every 2 minutes.
+    (setq mu4e-update-interval (* 60 2))
 
     ;; Use word wrap instead of auto-fill.
     (add-hook 'mu4e-compose-mode-hook #'turn-off-auto-fill)
