@@ -24,6 +24,10 @@
   :leader-bind
   (("f R" . cb/rename-file-and-buffer)))
 
+(use-package cb-sudo-edit
+  :leader-bind
+  (("f e" . cb/sudo-edit)))
+
 (use-package cb-toggle-window-split
   :leader-bind
   (("|" . cb/toggle-window-split)))
