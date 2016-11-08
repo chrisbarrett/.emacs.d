@@ -19,6 +19,9 @@
 
   :preface
   (progn
+    (autoload 'thing-at-point-looking-at "thingatpt")
+    (autoload 's-matches? "s")
+
     (defun cb-smartparens--this-command-is-eval-expression (&rest _)
       (equal this-command 'eval-expression))
 
@@ -39,6 +42,26 @@
           (when (or (eq (char-syntax (following-char)) ?w)
                     (looking-at (sp--get-opening-regexp)))
             (insert " ")))))
+
+    (defun cb-smartparens-web-mode-is-code-context (_id action _context)
+      (and (eq action 'insert)
+           (not (or (get-text-property (point) 'part-side)
+                    (get-text-property (point) 'block-side)))))
+
+    (defun cb-smartparens--web-mode-format-paren-after-keyword (_id action context)
+      "Insert a space after some keywords."
+      (when (and (equal action 'insert)
+                 (equal context 'code)
+                 (thing-at-point-looking-at
+                  (rx symbol-start (or "=" "for" "of" "in"
+                                       "if" "else" "while"
+                                       "return"
+                                       "yield" "yield*"
+                                       "function" "function*")
+                      (* space) "(")))
+        (save-excursion
+          (search-backward "(")
+          (just-one-space))))
 
     (defun cb-smartparens-add-space-before-sexp-insertion (id action _context)
       (when (eq action 'insert)
@@ -153,6 +176,11 @@
       (sp-local-pair "{" nil
                      :pre-handlers '(cb-smartparens-add-space-before-sexp-insertion)
                      :post-handlers '(cb-smartparens-add-space-after-sexp-insertion)))
+
+    (sp-with-modes 'web-mode
+      (sp-local-pair "<" nil :when '(cb-smartparens-web-mode-is-code-context)))
+
+    (sp-local-pair 'cb-web-js-mode "(" ")" :pre-handlers '(:add cb-smartparens--web-mode-format-paren-after-keyword))
 
     (sp-with-modes 'org-mode
       (sp-local-pair "*" "*" :actions '(insert wrap) :unless '(sp-point-after-word-p sp-point-at-bol-p) :wrap "C-*" :skip-match 'cb-smartparens--org-skip-asterisk)
