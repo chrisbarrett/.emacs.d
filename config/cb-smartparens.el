@@ -32,11 +32,6 @@
       (when (eq this-command 'eval-expression)
         (smartparens-mode)))
 
-    (defun cb-smartparens-newline-post-handler (_id _action _context)
-      (save-excursion
-        (newline)
-        (indent-according-to-mode))
-      (indent-according-to-mode)))
 
   :leader-bind
   ((",A" . sp-add-to-previous-sexp)
@@ -102,12 +97,15 @@
     (sp-pair "\"" "\"" :bind "M-\"")
     (sp-pair "`" "`"   :bind "M-`")
 
-    (sp-pair "{" nil :post-handlers
-             '(:add (cb-smartparens-newline-post-handler "RET")))
-    (sp-pair "[" nil :post-handlers
-             '(:add (cb-smartparens-newline-post-handler "RET")))
-    (sp-pair "(" nil :post-handlers
-             '(:add (cb-smartparens-newline-post-handler "RET")))
+    (sp-pair "{" "}"
+             :post-handlers '(("||\n[i]" "RET") ("| " "SPC")))
+    (sp-pair "[" "]"
+             :post-handlers '(("||\n[i]" "RET") ("| " "SPC")))
+    (sp-pair "(" ")"
+             :post-handlers '(("||\n[i]" "RET") ("| " "SPC")))
+
+    ;; Configure local pairs.
+
     (sp-with-modes 'minibuffer-inactive-mode
       (sp-local-pair "'" nil :actions nil)
       (sp-local-pair "(" nil
