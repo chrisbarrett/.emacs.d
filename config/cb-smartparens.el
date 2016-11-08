@@ -32,6 +32,22 @@
       (when (eq this-command 'eval-expression)
         (smartparens-mode)))
 
+    (defun cb-smartparens-add-space-after-sexp-insertion (id action _context)
+      (when (eq action 'insert)
+        (save-excursion
+          (forward-char (sp-get-pair id :cl-l))
+          (when (or (eq (char-syntax (following-char)) ?w)
+                    (looking-at (sp--get-opening-regexp)))
+            (insert " ")))))
+
+    (defun cb-smartparens-add-space-before-sexp-insertion (id action _context)
+      (when (eq action 'insert)
+        (save-excursion
+          (backward-char (length id))
+          (when (or (eq (char-syntax (preceding-char)) ?w)
+                    (and (looking-back (sp--get-closing-regexp) (line-beginning-position))
+                         (not (eq (char-syntax (preceding-char)) ?'))))
+            (insert " "))))))
 
   :leader-bind
   ((",A" . sp-add-to-previous-sexp)
@@ -90,19 +106,26 @@
 
     (bind-key [remap c-electric-backspace] 'sp-backward-delete-char smartparens-strict-mode-map)
 
+    (with-eval-after-load 'evil
+      (define-key (with-no-warnings evil-insert-state-map) ")" #'sp-up-sexp))
 
-    (sp-pair "(" ")"   :bind "M-(")
-    (sp-pair "{" "}"   :bind "M-{")
-    (sp-pair "[" "]"   :bind "M-[")
-    (sp-pair "\"" "\"" :bind "M-\"")
-    (sp-pair "`" "`"   :bind "M-`")
+    ;; Configure global pairs.
 
+    (sp-pair "`" "`"
+             :bind "M-`")
     (sp-pair "{" "}"
+             :bind "M-{"
+             :pre-handlers '(cb-smartparens-add-space-before-sexp-insertion)
              :post-handlers '(("||\n[i]" "RET") ("| " "SPC")))
     (sp-pair "[" "]"
+             :bind "M-["
              :post-handlers '(("||\n[i]" "RET") ("| " "SPC")))
     (sp-pair "(" ")"
+             :bind "M-("
              :post-handlers '(("||\n[i]" "RET") ("| " "SPC")))
+    (sp-pair "\"" "\""
+             :bind "M-\""
+             :pre-handlers '(:add (cb-smartparens-add-space-before-sexp-insertion)))
 
     ;; Configure local pairs.
 
@@ -118,18 +141,19 @@
                      :post-handlers '(cb-smartparens-add-space-after-sexp-insertion)))
 
     (sp-with-modes sp-lisp-modes
-      (sp-local-pair "\"" "\"" :post-handlers '(:add cb-sp-utils-just-one-space))
-      (sp-local-pair "{" "}"   :post-handlers '(:add cb-sp-utils-just-one-space))
-      (sp-local-pair "[" "]"   :post-handlers '(:add cb-sp-utils-just-one-space))
-      (sp-local-pair "(" ")"   :post-handlers '(:add cb-sp-utils-just-one-space)))
+      (sp-local-pair "(" nil
+                     :pre-handlers '(cb-smartparens-add-space-before-sexp-insertion)
+                     :post-handlers '(cb-smartparens-add-space-after-sexp-insertion))
+      (sp-local-pair "[" nil
+                     :pre-handlers '(cb-smartparens-add-space-before-sexp-insertion)
+                     :post-handlers '(cb-smartparens-add-space-after-sexp-insertion))
+      (sp-local-pair "\"" nil
+                     :pre-handlers '(cb-smartparens-add-space-before-sexp-insertion)
+                     :post-handlers '(cb-smartparens-add-space-after-sexp-insertion))
+      (sp-local-pair "{" nil
+                     :pre-handlers '(cb-smartparens-add-space-before-sexp-insertion)
+                     :post-handlers '(cb-smartparens-add-space-after-sexp-insertion)))
 
-    (sp-with-modes 'scala-mode
-      (sp-local-pair "(" nil :post-handlers '(("||\n[i]" "RET")))
-      (sp-local-pair "{" nil :post-handlers '(("||\n[i]" "RET") ("| " "SPC"))))
-
-    (sp-with-modes '(scala-mode cb-web-js-mode cb-web-json-mode)
-      (sp-local-pair "\"" "\"" :post-handlers '(:add cb-sp-utils-just-one-space))
-      (sp-local-pair "{" "}"   :post-handlers '(:add cb-sp-utils-just-one-space)))
     (sp-with-modes 'org-mode
       (sp-local-pair "*" "*" :actions '(insert wrap) :unless '(sp-point-after-word-p sp-point-at-bol-p) :wrap "C-*" :skip-match 'cb-smartparens--org-skip-asterisk)
       (sp-local-pair "_" "_" :unless '(sp-point-after-word-p) :wrap "C-_")
@@ -138,12 +162,18 @@
       (sp-local-pair "=" "=" :unless '(sp-point-after-word-p) :post-handlers '(("[d1]" "SPC")))
       (sp-local-pair "«" "»"))
 
+    ;; Enable modes.
 
     (smartparens-global-strict-mode +1)
     (show-smartparens-global-mode +1))
 
-  :functions (sp-local-pair sp-pair)
+  :functions (sp-local-pair
+              sp-pair
+              sp-get-pair
+              sp--get-opening-regexp
+              sp--get-closing-regexp)
   :commands (smartparens-mode
+             sp-up-sexp
              smartparens-strict-mode
              smartparens-global-strict-mode
              show-smartparens-global-mode))
