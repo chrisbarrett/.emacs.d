@@ -83,20 +83,6 @@
   :config
   (add-hook 'emacs-lisp-mode-hook #'cb-elisp--init-evil-surround-pairs))
 
-(use-package cb-elisp-sp
-  :after smartparens
-  :preface
-  (progn
-    (autoload 'sp-local-pair "smartparens")
-    (autoload 'sp-with-modes "smartparens"))
-  :config
-  (sp-with-modes '(emacs-lisp-mode)
-    (sp-local-pair "\"" "\"" :post-handlers '(:add cb-elisp-sp-just-one-space))
-    (sp-local-pair "{" "}"   :post-handlers '(:add cb-elisp-sp-just-one-space))
-    (sp-local-pair "[" "]"   :post-handlers '(:add cb-elisp-sp-just-one-space))
-    (sp-local-pair "(" ")"   :post-handlers '(:add cb-elisp-sp-just-one-space))
-    (sp-local-pair "'" nil   :actions nil)))
-
 (use-package cb-elisp-autoinsert
   :defer t
   :after autoinsert

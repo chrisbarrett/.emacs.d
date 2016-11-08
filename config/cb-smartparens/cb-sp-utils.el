@@ -1,4 +1,4 @@
-;;; cb-elisp-sp.el --- Smartparens utils for Elisp.  -*- lexical-binding: t; -*-
+;;; cb-sp-utils.el --- Smartparens utils.  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2016  Chris Barrett
 
@@ -16,16 +16,16 @@
 (autoload 'sp-in-code-p "smartparens")
 (autoload 'sp-in-string-p "smartparens")
 
-(defun cb-elisp-sp--just-inserted-double-quotes? (id action ctx)
+(defun cb-sp-utils--just-inserted-double-quotes? (id action ctx)
   (and (sp-in-string-p id action ctx)
        (s-matches? (rx (not (any "\\")) "\"" eol)
                    (buffer-substring (line-beginning-position) (point)))))
 
 ;;;###autoload
-(defun cb-elisp-sp-just-one-space (id action ctx)
+(defun cb-sp-utils-just-one-space (id action ctx)
   (when (and (equal 'insert action)
              (or (sp-in-code-p id action ctx)
-                 (cb-elisp-sp--just-inserted-double-quotes? id action ctx)))
+                 (cb-sp-utils--just-inserted-double-quotes? id action ctx)))
     ;; Insert a leading space, unless
     ;; 1. this is a quoted form
     ;; 2. this is the first position of another list
@@ -48,6 +48,6 @@
       (unless (seq-contains '(")" "]" "}") (char-to-string (char-after)))
         (just-one-space)))))
 
-(provide 'cb-elisp-sp)
+(provide 'cb-sp-utils)
 
-;;; cb-elisp-sp.el ends here
+;;; cb-sp-utils.el ends here

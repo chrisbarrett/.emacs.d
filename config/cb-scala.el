@@ -43,15 +43,6 @@
                              'self-insert-command
                              minibuffer-local-completion-map))
 
-(use-package smartparens
-  :defer t
-  :preface
-  (autoload 'sp-local-pair "smartparens")
-  :config
-  (progn
-    (sp-local-pair 'scala-mode"(" nil :post-handlers '(("||\n[i]" "RET")))
-    (sp-local-pair 'scala-mode "{" nil :post-handlers '(("||\n[i]" "RET") ("| " "SPC")))))
-
 (eval-when-compile
   (defconst cb-scala-ensime-load-path (concat cb-emacs-lisp-directory "/ensime-emacs")))
 

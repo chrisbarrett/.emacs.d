@@ -80,6 +80,9 @@
     (setq sp-message-width nil)
 
     (require 'smartparens-config)
+    (require 'smartparens-scala)
+    (require 'smartparens-rust)
+    (require 'cb-sp-utils)
 
     (sp-local-pair 'minibuffer-inactive-mode "'" nil :actions nil)
 
@@ -93,6 +96,22 @@
              '(:add (cb-smartparens-newline-post-handler "RET")))
     (sp-pair "[" nil :post-handlers
              '(:add (cb-smartparens-newline-post-handler "RET")))
+    (sp-pair "(" nil :post-handlers
+             '(:add (cb-smartparens-newline-post-handler "RET")))
+
+    (sp-with-modes sp-lisp-modes
+      (sp-local-pair "\"" "\"" :post-handlers '(:add cb-sp-utils-just-one-space))
+      (sp-local-pair "{" "}"   :post-handlers '(:add cb-sp-utils-just-one-space))
+      (sp-local-pair "[" "]"   :post-handlers '(:add cb-sp-utils-just-one-space))
+      (sp-local-pair "(" ")"   :post-handlers '(:add cb-sp-utils-just-one-space)))
+
+    (sp-with-modes 'scala-mode
+      (sp-local-pair "(" nil :post-handlers '(("||\n[i]" "RET")))
+      (sp-local-pair "{" nil :post-handlers '(("||\n[i]" "RET") ("| " "SPC"))))
+
+    (sp-with-modes '(scala-mode cb-web-js-mode cb-web-json-mode)
+      (sp-local-pair "\"" "\"" :post-handlers '(:add cb-sp-utils-just-one-space))
+      (sp-local-pair "{" "}"   :post-handlers '(:add cb-sp-utils-just-one-space)))
 
     (smartparens-global-strict-mode +1)
     (show-smartparens-global-mode +1))
