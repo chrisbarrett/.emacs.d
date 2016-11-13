@@ -276,6 +276,13 @@ Optional arg JUSTIFY will justify comments and strings."
 (setq initial-buffer-choice t)
 (setq ring-bell-function #'ignore)
 
+
+;; Use conf mode for puppet templated conf files
+
+(add-to-list 'auto-mode-alist '("\\.env\\.erb\\'" . conf-mode))
+(add-to-list 'auto-mode-alist '("\\.conf\\.erb\\'" . conf-mode))
+
+
 (use-package abbrev
   :defer t
   :config
