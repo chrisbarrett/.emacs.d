@@ -227,9 +227,6 @@ Do not scheduled items or repeating todos."
           (list :hours "%d" :require-hours t
                 :minutes ":%02d" :require-minutes t))
 
-    (setq appt-message-warning-time 60)
-    (setq appt-display-interval 5)
-
     (add-hook 'org-finalize-agenda-hook #'org-agenda-to-appt)
 
     (setq org-agenda-custom-commands
@@ -299,6 +296,13 @@ Do not scheduled items or repeating todos."
               (org-agenda-dim-blocked-tasks nil)
               (org-agenda-archives-mode nil)
               (org-agenda-ignore-drawer-properties '(effort appt))))))))
+
+(use-package appt
+  :defer t
+  :config
+  (progn
+    (setq appt-message-warning-time 60)
+    (setq appt-display-interval 5)))
 
 (use-package org-archive
   :after org
