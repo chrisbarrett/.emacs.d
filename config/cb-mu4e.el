@@ -26,6 +26,8 @@
   :preface
   (progn
     (autoload 'message-insert-formatted-citation-line "message")
+    (autoload 'message-send-mail-with-sendmail "message")
+
     (use-package cb-mu4e-utils
       :after mu4e
       :functions (cb-mu4e-utils-view-in-external-browser-action
@@ -76,13 +78,38 @@
     (setq message-kill-buffer-on-exit t)
     (setq mu4e-compose-signature-auto-include t)
 
+    (setq mu4e-maildir (f-expand "~/Maildir"))
+    (setq mu4e-headers-date-format "%d-%m-%y %k:%M")
+    (setq sendmail-program "msmtp")
+    (setq message-send-mail-function #'message-send-mail-with-sendmail)
+
+    (setq mu4e-bookmarks
+          '(("flag:unread AND ((s:JIRA AND b:chrisb) OR (NOT (s:JIRA OR s:jenkins))) AND (NOT (m:/walrus/trash OR m:/movio/trash))"
+             "Unread messages" ?u)
+            ("d:today..now AND NOT (s:JIRA OR s:jenkins)"
+             "Today's messages" ?t)
+            ("d:7d..now AND NOT (s:JIRA OR s:jenkins)"
+             "Last 7 days" ?w)
+            ("d:30d..now AND NOT (s:JIRA OR s:jenkins)"
+             "Last 30 days" ?m)
+            ("m:/walrus/inbox OR m:/movio/inbox"
+             "All Inboxes" ?i)
+            ("m:/walrus/sent OR m:/movio/sent"
+             "Sent messages" ?s)
+            ("bitbucket OR github"
+             "Code & PRs" ?c)
+            ("d:7d..now AND s:JIRA AND b:chrisb AND m:/movio/jira"
+             "JIRA - mentions" ?j)
+            ("d:7d..now AND m:/movio/jira"
+             "JIRA - all" ?J)))
+
     ;; All my mailservers use IMAP. Use mbsync to synchronise mail between the
     ;; server and my local machine.
     (setq mu4e-get-mail-command "mbsync -V -q -a")
     (setq mu4e-change-filenames-when-moving t)
 
     (setq smtpmail-queue-mail nil)
-    (setq smtpmail-queue-dir (f-join mu4e-maildir "/queue/cur"))
+    (setq smtpmail-queue-dir (concat mu4e-maildir "/queue/cur"))
 
     ;; Save attachments to Downloads dir.
     (setq mu4e-attachment-dir (f-expand "~/Downloads"))
