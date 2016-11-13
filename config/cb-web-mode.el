@@ -25,6 +25,9 @@
     (setq web-mode-markup-indent-offset 2)
     (setq web-mode-enable-auto-quoting nil)
 
+    ;; Disable web-mode-reload binding
+    (define-key web-mode-map (kbd "C-c C-r") nil)
+
     ;; Treat es6 files as JS files.
 
     (add-to-list 'web-mode-content-types '("javascript" . "\\.es6\\'"))
