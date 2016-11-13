@@ -21,6 +21,7 @@
 (require 'f)
 (require 's)
 (require 'dash)
+(require 'subr-x)
 
 (defvar org-directory "~/org")
 
@@ -42,8 +43,19 @@
 
   :preface
   (progn
-    (autoload 's-matches? "s")
+    (autoload 'org-entry-get "org")
+    (autoload 'org-get-scheduled-time "org")
+    (autoload 'org-get-todo-state "org")
     (autoload 'org-heading-components "org")
+    (autoload 'org-todo "org")
+    (autoload 'org-up-heading-safe "org")
+    (autoload 'outline-forward-same-level "outline")
+    (autoload 's-matches? "s")
+
+    ;; KLUDGE: Pre-declare dynamic variables used by orgmode.
+    (defvar org-state)
+    (defvar org-log-states)
+    (defvar org-log-done)
 
     (defun cb-org--exit-minibuffer (&rest _)
       "Exit minibuffer before adding notes."
@@ -58,15 +70,13 @@
 
     (defun cb-org--mark-next-parent-tasks-todo ()
       "Visit each parent task and change state to TODO."
-      (let ((mystate (or (and (fboundp 'org-state)
-                              state)
-                         (nth 2 (org-heading-components)))))
-        (when mystate
-          (save-excursion
-            (while (org-up-heading-safe)
-              (when (-contains? '("NEXT" "WAITING" "MAYBE")
-                                (nth 2 (org-heading-components)))
-                (org-todo "TODO")))))))
+      (when-let (mystate (or (bound-and-true-p 'org-state)
+                             (nth 2 (org-heading-components))))
+        (save-excursion
+          (while (org-up-heading-safe)
+            (when (-contains? '("NEXT" "WAITING" "MAYBE")
+                              (nth 2 (org-heading-components)))
+              (org-todo "TODO"))))))
 
     (defun cb-org--add-local-hooks ()
       "Set buffer-local hooks for orgmode."
@@ -85,10 +95,13 @@ Do not scheduled items or repeating todos."
                         (org-get-scheduled-time (point)))
               (org-todo "NEXT"))))))
 
-    (defun cb-org--children-done-parent-done (n-done n-todo)
+    (defun cb-org--children-done-parent-done (_n-done n-todo)
       "Mark the parent task as done when all children are completed."
       (let (org-log-done org-log-states) ; turn off logging
         (org-todo (if (zerop n-todo) "DONE" "TODO")))))
+
+  :commands
+  (org-refile)
 
   :init
   (progn
@@ -117,13 +130,10 @@ Do not scheduled items or repeating todos."
     (setf (cdr (assoc 'file org-link-frame-setup)) #'find-file-other-window)
 
     (setq org-M-RET-may-split-line nil)
-    (setq org-attach-directory (f-join org-directory "data"))
     (setq org-catch-invisible-edits 'smart)
-    (setq org-clock-persist-file (f-join org-directory ".org-clock-save"))
     (setq org-cycle-separator-lines 1)
     (setq org-enforce-todo-dependencies t)
     (setq org-footnote-auto-adjust t)
-    (setq org-id-locations-file (f-join cb-emacs-cache-directory "org-id-locations"))
     (setq org-indirect-buffer-display 'current-window)
     (setq org-insert-heading-respect-content t)
     (setq org-link-abbrev-alist '(("att" . org-attach-expand-link)))
@@ -141,12 +151,6 @@ Do not scheduled items or repeating todos."
     (setq org-confirm-elisp-link-function nil)
     (setq org-startup-indented t)
     (setq org-startup-with-inline-images t)
-
-    ;; Match projects that do not have a scheduled action or NEXT action.
-    (setq org-stuck-projects '("+project-ignore-maybe-done"
-                               ("NEXT") nil
-                               "SCHEDULED:"))
-
     (setq org-hierarchical-todo-statistics nil)
     (setq org-checkbox-hierarchical-statistics t)
     (setq org-log-repeat nil)
@@ -157,6 +161,17 @@ Do not scheduled items or repeating todos."
 
     (advice-add 'org-add-log-note :before #'cb-org--exit-minibuffer)
     (advice-add 'org-toggle-heading :after #'cb-org--toggle-heading-goto-eol)))
+
+(use-package org-id
+  :after org
+  :config
+  (setq org-id-locations-file (f-join cb-emacs-cache-directory "org-id-locations")))
+
+
+(use-package org-attach
+  :after org
+  :config
+  (setq org-attach-directory (f-join org-directory "data")))
 
 (use-package org-agenda
   :load-path cb-org-load-path
@@ -188,6 +203,11 @@ Do not scheduled items or repeating todos."
 
     (define-key org-agenda-mode-map (kbd "C-f" ) #'evil-scroll-page-down)
     (define-key org-agenda-mode-map (kbd "C-b") #'evil-scroll-page-up)
+
+    ;; Match projects that do not have a scheduled action or NEXT action.
+    (setq org-stuck-projects '("+project-ignore-maybe-done"
+                               ("NEXT") nil
+                               "SCHEDULED:"))
 
     ;; Enable leader key in agenda.
     (define-key org-agenda-mode-map (kbd "SPC") spacemacs-keys-default-map)
@@ -307,8 +327,13 @@ Do not scheduled items or repeating todos."
 (use-package org-archive
   :after org
   :load-path cb-org-load-path
+  :functions (org-archive-subtree)
   :preface
   (progn
+    (autoload 'org-map-entries "org")
+    (autoload 'org-set-tags-to "org")
+    (autoload 'org-get-tags-at "org")
+
     (defun cb-org--archive-done-tasks ()
       (interactive)
       (atomic-change-group
@@ -353,11 +378,14 @@ Do not scheduled items or repeating todos."
   :load-path cb-org-load-path
 
   :preface
-  (defun cb-org--remove-empty-clock-drawers ()
-    "Remove empty clock drawers at point."
-    (save-excursion
-      (beginning-of-line 0)
-      (org-remove-empty-drawer-at (point))))
+  (progn
+    (autoload 'org-remove-empty-drawer-at "org")
+
+    (defun cb-org--remove-empty-clock-drawers ()
+      "Remove empty clock drawers at point."
+      (save-excursion
+        (beginning-of-line 0)
+        (org-remove-empty-drawer-at (point)))))
 
   :config
   (progn
@@ -367,6 +395,7 @@ Do not scheduled items or repeating todos."
     (setq org-clock-in-resume t)
     (setq org-clock-report-include-clocking-task t)
     (setq org-clock-out-remove-zero-time-clocks t)
+    (setq org-clock-persist-file (f-join org-directory ".org-clock-save"))
 
     (org-clock-persistence-insinuate)
     (add-hook 'org-clock-out-hook #'cb-org--remove-empty-clock-drawers t)))
@@ -374,10 +403,15 @@ Do not scheduled items or repeating todos."
 (use-package org-crypt
   :after org
   :load-path cb-org-load-path
+  :functions (org-encrypt-entries)
+  :preface
+  (defun cb-org--encrypt-on-save ()
+    (add-hook 'before-save-hook #'org-encrypt-entries nil t))
+  :init
+  (add-hook 'org-mode-hook #'cb-org--encrypt-on-save)
   :config
   (progn
     (setq org-crypt-disable-auto-save 'encypt)
-    (org-crypt-use-before-save-magic)
     (add-to-list 'org-tags-exclude-from-inheritance "crypt")))
 
 (use-package org-drill
@@ -538,6 +572,8 @@ Do not scheduled items or repeating todos."
   :defer t
   :preface
   (progn
+    (autoload 'org-at-heading-p "org")
+
     (defun cb-org--evil-insert-state (&rest _)
       "Enter evil insert state when creating new headings."
       (when (called-interactively-p nil)
