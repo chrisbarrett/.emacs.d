@@ -394,6 +394,13 @@ Do not scheduled items or repeating todos."
   :preface
   (defconst cb-org-drill-files (f-files (concat org-directory "/drill")))
 
+  :defines
+  (org-drill-scope
+   org-drill-learn-fraction
+   org-drill-adjust-intervals-for-early-and-late-repetitions-p
+   org-drill-add-random-noise-to-intervals-p
+   org-drill-save-buffers-after-drill-sessions-p)
+
   :config
   (progn
     (defconst cb-org-drill-file (f-join org-directory "drill" "drill.org"))
