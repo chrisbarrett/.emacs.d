@@ -443,6 +443,14 @@ Optional arg JUSTIFY will justify comments and strings."
     (setq savehist-additional-variables '(kill-ring search-ring regexp-search-ring))
     (savehist-mode +1)))
 
+(use-package tramp
+  :config
+  (progn
+    (setq tramp-default-method "ssh")
+    (setq tramp-auto-save-directory (concat cb-emacs-cache-directory "/tramp-backups"))
+    (unless (file-directory-p tramp-auto-save-directory)
+      (mkdir tramp-auto-save-directory t))))
+
 (use-package tramp-cache
   :defer t
   :config
