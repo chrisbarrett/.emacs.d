@@ -167,6 +167,9 @@ Do not scheduled items or repeating todos."
   (defun cb-org--exclude-tasks-on-hold (tag)
     (and (equal tag "hold") (concat "-" tag)))
 
+  :bind
+  ("C-c a" . org-agenda)
+
   :config
   (progn
     (evilified-state-evilify-map org-agenda-mode-map
