@@ -109,6 +109,9 @@ Do not scheduled items or repeating todos."
     (add-hook 'org-after-todo-state-change-hook #'cb-org--set-next-todo-state)
     (add-hook 'org-after-todo-statistics-hook #'cb-org--children-done-parent-done)
 
+    (dolist (dir (f-directories "~/org/lisp/"))
+      (add-to-list 'load-path (f-slash dir)))
+
     (spacemacs-keys-set-leader-keys
       "ok" #'org-capture
       "ol" #'org-store-link
