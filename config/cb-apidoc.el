@@ -15,7 +15,9 @@
   :preface
   (autoload 'yaml-mode "yaml-mode")
   :init
-  (add-to-list 'auto-mode-alist (cons "\\.apidoc$" #'yaml-mode)))
+  (progn
+    (add-to-list 'auto-mode-alist (cons "api\\.json$" #'cb-web-json-mode))
+    (add-to-list 'auto-mode-alist (cons "\\.apidoc$" #'yaml-mode))))
 
 (use-package apidoc-checker
   :load-path "~/Projects/apidoc-checker/elisp/"
@@ -23,7 +25,6 @@
   (autoload 'flycheck-add-mode "flycheck")
   :config
   (flycheck-add-mode 'apidoc 'cb-web-json-mode))
-
 
 (provide 'cb-apidoc)
 
