@@ -37,6 +37,8 @@
 ;; Write custom settings outside init.el
 
 (setq custom-file (concat user-emacs-directory "custom.el"))
+(when (file-exists-p custom-file)
+  (load-file custom-file))
 
 ;; Scroll smoothly.
 
