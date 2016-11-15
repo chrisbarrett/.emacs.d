@@ -61,6 +61,8 @@
   (defun cb-ibuffer--setup-buffer ()
     (ibuffer-projectile-set-filter-groups)
     (add-to-list 'ibuffer-filter-groups '("Dired" (mode . dired-mode)))
+    (add-to-list 'ibuffer-filter-groups '("Ensime" (predicate . (s-matches? "Ensime" (buffer-name)))))
+    (add-to-list 'ibuffer-filter-groups '("System" (predicate . (-contains? '("*Messages*" "*scratch*") (buffer-name)))))
     (unless (eq ibuffer-sorting-mode 'alphabetic)
       (ibuffer-do-sort-by-alphabetic)))
   :init
