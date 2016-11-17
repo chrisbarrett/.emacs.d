@@ -373,6 +373,7 @@ Do not scheduled items or repeating todos."
   :config
   (progn
     (setq org-src-fontify-natively t)
+    (setq org-src-window-setup 'current-window)
     (add-hook 'org-src-mode-hook #'cb-org--suppress-final-newline)
     (advice-add 'org-edit-src-exit :before #'cb-org--org-src-delete-trailing-space)))
 
