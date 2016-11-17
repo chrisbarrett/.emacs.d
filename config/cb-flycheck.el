@@ -30,7 +30,9 @@
     (setq flycheck-emacs-lisp-load-path 'inherit)
 
     (setq flycheck-global-modes
-          '(not sbt-file-mode))
+          '(not sbt-file-mode
+                ;; restclient buffers
+                js-mode))
 
     (spacemacs-keys-set-leader-keys
       "ec" #'flycheck-clear
