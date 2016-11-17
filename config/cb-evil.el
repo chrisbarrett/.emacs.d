@@ -192,6 +192,7 @@
     (evil-ex-define-cmd "noh" #'evil-search-highlight-persist-remove-all)))
 
 (use-package evil-visual-mark-mode
+  :disabled t
   :after evil
   :commands (evil-visual-mark-mode)
   :config (evil-visual-mark-mode))
