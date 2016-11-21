@@ -24,7 +24,7 @@
 
 (custom-set-faces
  `(mode-line
-   ((t (:foreground "white" :background "gray40" :height 20))))
+   ((t (:foreground "gray40" :background "gray40" :height 20))))
  `(header-line
    ((default
       :inherit default))))
