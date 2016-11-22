@@ -153,6 +153,15 @@
       (evil-define-key 'normal intero-mode-map (kbd "M-,") #'pop-tag-mark))))
 
 
+(use-package stack-hoogle
+  :after haskell-mode
+  :commands (stack-hoogle stack-hoogle-info-at-pt)
+  :bind
+  (:map haskell-mode-map ("C-c C-h" . stack-hoogle))
+  :config
+  (evil-define-key 'normal haskell-mode-map (kbd "K") #'stack-hoogle-info-at-pt))
+
+
 (provide 'cb-haskell)
 
 ;;; cb-haskell.el ends here
