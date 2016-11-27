@@ -119,6 +119,7 @@ Do not scheduled items or repeating todos."
 
   :config
   (progn
+
     (setq org-default-notes-file (f-join org-directory "notes.org"))
 
     (spacemacs-keys-set-leader-keys-for-major-mode
@@ -169,6 +170,17 @@ Do not scheduled items or repeating todos."
   :after org
   :config
   (setq org-id-locations-file (f-join cb-emacs-cache-directory "org-id-locations")))
+
+(use-package org-table
+  :after org
+  :config
+  (add-to-list 'display-buffer-alist
+               `(,(rx bos "*Edit Formulas*" eos)
+                 (display-buffer-reuse-window
+                  display-buffer-pop-up-window)
+                 (reusable-frames . visible)
+                 (side            . bottom)
+                 (window-height   . 0.2))))
 
 
 (use-package org-attach
