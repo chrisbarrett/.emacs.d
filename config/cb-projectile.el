@@ -47,6 +47,23 @@
     (setq projectile-switch-project-action #'magit-status)
     (setq projectile-cache-file (concat cb-emacs-cache-directory "/projectile.cache"))
     (setq projectile-enable-caching t)
+
+    (setq projectile-globally-ignored-file-suffixes '("gz" "zip" "tar" "elc"))
+    (setq projectile-globally-ignored-directories
+          '(".bzr"
+            ".ensime_cache"
+            ".eunit"
+            ".fslckout"
+            ".g8"
+            ".git"
+            ".hg"
+            ".idea"
+            ".stack-work"
+            ".svn"
+            "build"
+            "dist"
+            "target"))
+
     (projectile-mode)))
 
 
