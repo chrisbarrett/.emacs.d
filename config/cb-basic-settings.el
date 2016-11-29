@@ -331,6 +331,7 @@ Optional arg JUSTIFY will justify comments and strings."
                           ".ensime_cache"
                           ".cargo"
                           ".stack_work"
+                          ".g8"
                           "target"
                           "build"
                           "dist")))
