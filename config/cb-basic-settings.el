@@ -189,6 +189,13 @@ Optional arg JUSTIFY will justify comments and strings."
 
 (advice-add #'display-message-or-buffer :before #'cb-basic-settings--display-ansi-codes)
 
+;; Generate random passwords.
+
+(defun cb-generate-password ()
+  "Generate a random password and copy it to the kill ring."
+  (interactive)
+  (kill-new (s-trim (shell-command-to-string "gpg --gen-random --armor 1 30")))
+  (message "Password copied to kill-ring."))
 
 ;; Line transposition
 
