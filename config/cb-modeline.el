@@ -14,8 +14,7 @@
 (require 'spacemacs-keys)
 
 (use-package hidden-mode-line
-  :commands (global-hidden-mode-line-mode)
-  :config (global-hidden-mode-line-mode))
+  :commands (hidden-mode-line-mode global-hidden-mode-line-mode))
 
 (setq-default mode-line-format nil)
 
