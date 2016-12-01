@@ -124,6 +124,7 @@ If argument INTERACTIVE-P is set, log additional information."
 (use-package cb-restclient)
 (use-package cb-calc)
 (use-package cb-haskell)
+(use-package cb-shell)
 
 (use-package personal-config
   :load-path "~/Dropbox/emacs")
