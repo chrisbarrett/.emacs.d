@@ -131,6 +131,8 @@ Otherwise delete backwards."
 
     (yas-global-mode +1)
 
+    (add-to-list 'yas-dont-activate-functions (lambda () (derived-mode-p 'term-mode)))
+
     ;; Define key bindings for fancy snippet navigation.
 
     (bind-key (kbd "TAB") #'yas-expand yas-minor-mode-map)
