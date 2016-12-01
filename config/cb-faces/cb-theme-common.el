@@ -281,6 +281,38 @@
     (cb-rust-faces-bool
      ((t (:weight normal))))
 
+    ;; Term
+
+    (term-color-black
+     ((t (:foreground ,default-foreground))))
+
+    (term-color-blue
+     ((t (:foreground ,cb-theme-common-blue))))
+
+    (term-color-bold
+     ((t (:weight demibold))))
+
+    (term-color-cyan
+     ((t (:foreground ,cb-theme-common-cyan))))
+
+    (term-color-green
+     ((t (:foreground ,cb-theme-common-green))))
+
+    (term-color-magenta
+     ((t (:foreground ,cb-theme-common-magenta))))
+
+    (term-color-red
+     ((t (:foreground ,cb-theme-common-red))))
+
+    (term-color-underline
+     ((t (:underline t))))
+
+    (term-color-white
+     ((t (:foreground ,default-foreground))))
+
+    (term-color-yellow
+     ((t (:foreground ,cb-theme-common-yellow))))
+
 
     ;; Misc faces
 
