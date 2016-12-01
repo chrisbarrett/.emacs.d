@@ -22,8 +22,6 @@
 
 (defconst cb-header-line-format " %3l %* %[%b%] %n")
 
-(defvar-local header-line-format nil)
-
 (defun cb-toggle-header-line ()
   "Toggle the header line on or off."
   (interactive)
