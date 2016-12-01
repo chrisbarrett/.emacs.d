@@ -25,13 +25,19 @@
       ((t
         (:background ,default-background :foreground ,default-foreground :weight normal :family "Hasklig" :height 130))))
 
+    (header-line
+     ((t (:inherit mode-line))))
+
     (link
-     ((t
-       (:weight light :underline t))))
+     ((t (:weight light :underline t))))
 
     (fringe
-     ((t
-       (:background ,default-background))))
+     ((t (:background ,default-background))))
+
+    (mode-line
+     ((t (:background ,cb-theme-common-blue :foreground ,default-background :weight bold))))
+    (mode-line-inactive
+     ((t (:background ,cb-theme-common-gray :foreground ,default-background))))
 
     ;; General font-lock faces.
 
