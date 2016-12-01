@@ -32,7 +32,6 @@
   :config
   (add-hook 'term-mode-hook #'cb-shell--hl-line-off))
 
-
 (provide 'cb-shell)
 
 ;;; cb-shell.el ends here
