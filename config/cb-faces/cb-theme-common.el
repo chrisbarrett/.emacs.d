@@ -35,7 +35,7 @@
      ((t (:background ,default-background))))
 
     (mode-line
-     ((t (:background ,cb-theme-common-blue :foreground ,default-background :weight bold))))
+     ((t (:background ,cb-theme-common-blue :foreground "white" :weight bold))))
     (mode-line-inactive
      ((t (:background ,cb-theme-common-gray :foreground ,default-background))))
 

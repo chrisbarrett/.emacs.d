@@ -11,23 +11,29 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'spacemacs-keys)
+
 (use-package hidden-mode-line
-  :disabled t
-  :config
-  (global-hidden-mode-line-mode))
+  :commands (global-hidden-mode-line-mode)
+  :config (global-hidden-mode-line-mode))
 
-;; Turn the modeline into a thin grey strip.
+(setq-default mode-line-format nil)
 
-(setq-default mode-line-format "")
+;; Command to toggle the display of the mode-line as a header
 
-;; Hide the modeline, but ensure the header-line still works.
+(defconst cb-header-line-format " %3l %* %[%b%] %n")
 
-(custom-set-faces
- `(mode-line
-   ((t (:foreground "gray40" :background "gray40" :height 20))))
- `(header-line
-   ((default
-      :inherit default))))
+(defvar-local header-line-format nil)
+
+(defun cb-toggle-header-line ()
+  "Toggle the header line on or off."
+  (interactive)
+  (if header-line-format
+      (setq header-line-format nil)
+    (setq header-line-format cb-header-line-format))
+  (set-window-buffer nil (current-buffer)))
+
+(spacemacs-keys-set-leader-keys "tm" #'cb-toggle-header-line)
 
 (provide 'cb-modeline)
 
