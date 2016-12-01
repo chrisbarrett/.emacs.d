@@ -16,7 +16,7 @@
 (use-package hidden-mode-line
   :commands (hidden-mode-line-mode global-hidden-mode-line-mode))
 
-(setq-default mode-line-format nil)
+(setq-default mode-line-format " ")
 
 ;; Command to toggle the display of the mode-line as a header
 
