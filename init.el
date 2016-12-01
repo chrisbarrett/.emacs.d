@@ -13,7 +13,7 @@
 
 ;;; Code:
 
-(setq gc-cons-threshold 20000000)
+(setq gc-cons-threshold (* 800 1024))
 
 (defconst emacs-start-time (current-time))
 
