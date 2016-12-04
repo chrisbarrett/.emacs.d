@@ -151,7 +151,7 @@ been inserted immediately prior to the point."
          (type-info (get-text-property 0 'type-info candidate))
          (is-callable (plist-get type-info :arrow-type))
          (name-start-point (- (point) (length name)))
-         (is-scala (ensime-scala-file-p buffer-file-name))
+         (is-scala (ensime-scala-file-p (buffer-file-name-with-indirect)))
 
          (param-sections
           ;; ignore implicit sections

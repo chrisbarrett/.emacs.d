@@ -175,11 +175,13 @@
   "Kill the current buffer and delete the corresponding file!"
   (interactive)
   (ensime-assert-buffer-saved-interactive
-   (let ((f buffer-file-name))
-     (ensime-rpc-remove-file f)
-     (delete-file f)
-     (kill-buffer nil)
-     )))
+   (with-current-buffer (or (buffer-base-buffer) (current-buffer))
+     (let ((f (buffer-file-name-with-indirect)))
+       (ensime-rpc-remove-file f)
+       (delete-file f)
+       (kill-buffer nil)
+       ))
+   ))
 
 (easy-menu-define ensime-mode-menu ensime-mode-map
   "Menu for ENSIME mode"
@@ -448,7 +450,7 @@
        ((and ident ensime-tooltip-type-hints)
         (progn
           (ensime-eval-async
-           `(swank:type-at-point ,buffer-file-name ,external-pos)
+           `(swank:type-at-point ,(buffer-file-name-with-indirect) ,external-pos)
            #'(lambda (type)
                (when type
                  (let ((msg (ensime-type-full-name-with-args type)))
@@ -476,7 +478,7 @@ include connection-name, and possibly some state information."
      (condition-case err
          (let ((conn (ensime-connection-or-nil)))
            (cond ((not conn)
-                  (if (ensime-owning-server-process-for-source-file buffer-file-name)
+                  (if (ensime-owning-server-process-for-source-file (buffer-file-name-with-indirect))
                       "ENSIME: Starting"
                     "ENSIME: Disconnected"))
                  ((ensime-connected-p conn)

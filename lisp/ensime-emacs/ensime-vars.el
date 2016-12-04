@@ -71,10 +71,7 @@ works for sbt projects."
 
 (defcustom ensime-server-version
   (or (getenv "ENSIME_SERVER_VERSION") "2.0.0-SNAPSHOT")
-  "Distributed version of the server to upgrade and start.
-This is primarily useful for ENSIME developers (or bug reporters)
-to test against. The client is designed to work with the default
-version."
+  "Used to determine if this is a Developer install."
   :type 'string
   :group 'ensime-server)
 

@@ -138,7 +138,7 @@
 
        (message "Already in ensime-search buffer")
 
-     (when buffer-file-name
+     (when (buffer-file-name-with-indirect)
        (setq ensime-search-originating-buffer (current-buffer)))
 
      (setq ensime-search-window-config (current-window-configuration))

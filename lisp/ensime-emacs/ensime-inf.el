@@ -63,7 +63,11 @@
   :group 'ensime
   :prefix "ensime-inf-")
 
-(defcustom ensime-inf-cmd-template '(:java :java-flags "-classpath" :classpath "-Dscala.usejavacp=true" "scala.tools.nsc.MainGenericRunner" "-Xnojline")
+(defcustom ensime-inf-cmd-template
+  '(:java :java-flags
+          "-Djline.terminal=jline.UnsupportedTerminal"
+          "-Dscala.usejavacp=true"
+          "scala.tools.nsc.MainGenericRunner")
   "The command to launch the scala interpreter. Keywords will be replaced
 with data loaded from server."
   :type 'string
@@ -81,6 +85,8 @@ with data loaded from server."
 Caches the last pair used in the last ensime-inf-load-file.
 Used for determining the default in the next one.")
 
+(defvar ensime-inf-overlay-marker nil)
+
 
 (define-derived-mode ensime-inf-mode comint-mode "Scala REPL"
   "Major mode for interacting with a Scala interpreter."
@@ -95,7 +101,6 @@ Used for determining the default in the next one.")
        '(ansi-color-process-output
          comint-postoutput-scroll-to-bottom
          ensime-inf-postoutput-filter))
-  (setq ensime-inf-overlay-marker nil)
 
   (if ensime-inf-ansi-support
       (set (make-local-variable 'ansi-color-for-comint-mode) t)
@@ -115,13 +120,16 @@ Used for determining the default in the next one.")
     (error "Scala interpreter not running")))
 
 (defun ensime-inf-run-scala ()
-  "Run a Scala interpreter in an Emacs buffer"
+  "Start a Scala REPL in an interactive buffer."
   (interactive)
-
-  (let ((conn (or (ensime-connection-or-nil)
-		  (ensime-prompt-for-connection)))
-	(root-path (or (ensime-configured-project-root) "."))
-	(cmd-and-args (ensime-inf-get-repl-cmd-line)))
+  (let* ((conn (or (ensime-connection-or-nil)
+                   (ensime-prompt-for-connection)))
+         (root-path (or (ensime-configured-project-root) "."))
+         (hack (ensime-inf-repl-config))
+         (cmd-and-args (ensime-replace-keywords ensime-inf-cmd-template hack))
+         (classpath (plist-get hack :classpath))
+         (process-environment (append (list (concat "CLASSPATH=" classpath))
+                                      process-environment)))
 
     (switch-to-buffer-other-window
      (get-buffer-create ensime-inf-buffer-name))
@@ -132,9 +140,9 @@ Used for determining the default in the next one.")
     (ensime-assert-executable-on-path (car cmd-and-args))
     (comint-exec (current-buffer)
                  ensime-inf-buffer-name
-		 (car cmd-and-args)
-		 nil
-		 (cdr cmd-and-args))
+                 (car cmd-and-args)
+                 nil
+                 (cdr cmd-and-args))
 
     (setq ensime-buffer-connection conn)
 
@@ -162,42 +170,24 @@ Used for determining the default in the next one.")
   (let ((config (ensime-config (ensime-connection))))
     (or (plist-get config :root-dir) ".")))
 
-(defun ensime-inf-get-repl-cmd-line ()
-  "Get the command needed to launch a repl, including all
-the current project's dependencies. Returns list of form (cmd [arg]*)"
-  (ensime-replace-keywords ensime-inf-cmd-template (ensime-inf-repl-config)))
-
 (defun ensime-inf-repl-config (&optional config)
-  (let ((config (or config
-                    (if (ensime-connected-p)
-                        (ensime-config)
-                      (let ((f (ensime-config-find)))
-                        (when f (ensime-config-load f))))))
-        (get-deps (lambda (c)
-                    (append (plist-get c :targets)
-                            (plist-get c :test-targets)
-                            (plist-get c :compile-deps)
-                            (plist-get c :runtime-deps)
-                            (plist-get c :test-deps))))
-        (get-repl-jars (lambda (config)
-                         (-filter (lambda (p)
-                                    (string-match "\\(scala-compiler\\|scala-reflect\\)\\(-[.[:digit:]]+\\)?\\.jar$" p))
-                                  (if (plist-member config :scala-compiler-jars)
-                                      (plist-get config :scala-compiler-jars)
-                                    (split-string
-                                     (ensime-read-from-file
-                                      (ensime-startup-classpath-filename (plist-get config :scala-version)))
-                                     ensime--classpath-separator t))))))
-    (if config
-        (list
-         :java (expand-file-name "bin/java" (plist-get config :java-home))
-         :java-flags (or (plist-get config :java-flags) ensime-default-java-flags)
-         :classpath (ensime--build-classpath
-                     (delete-dups (apply #'append
-                                         (funcall get-repl-jars config)
-                                         (funcall get-deps config)
-                                         (mapcar get-deps (plist-get config :subprojects))))))
-      (error "No ensime config available"))))
+  "Return a plist of values to use in the template, extracted from CONFIG."
+  (cl-flet
+      ((get-deps (c) (append (plist-get c :targets)
+                             (plist-get c :test-targets)
+                             (plist-get c :compile-deps)
+                             (plist-get c :runtime-deps)
+                             (plist-get c :test-deps))))
+    (let ((config (or config (ensime-config-for-buffer))))
+      (list
+       ;; this is a hacky approach to multiple return values
+       :java (expand-file-name "bin/java" (plist-get config :java-home))
+       :java-flags (or (plist-get config :java-flags) ensime-default-java-flags)
+       :classpath (ensime--build-classpath
+                   (delete-dups (append (plist-get config :scala-compiler-jars)
+                                        (get-deps config)
+                                        (-flatten
+                                         (mapcar #'get-deps (plist-get config :subprojects))))))))))
 
 (defun ensime-inf-switch ()
   "Switch to buffer containing the interpreter"
@@ -421,3 +411,5 @@ the current project's dependencies. Returns list of form (cmd [arg]*)"
 
 ;; Local Variables:
 ;; End:
+
+;;; ensime-inf.el ends here

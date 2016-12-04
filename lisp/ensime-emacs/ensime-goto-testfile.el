@@ -14,7 +14,7 @@ filled with a stub test class.
 With an argument, open the test file in another window."
   (interactive "P")
   (block nil
-    (when (ensime-is-test-file buffer-file-name)
+    (when (ensime-is-test-file (buffer-file-name-with-indirect))
       (message "This isn't an implementation file")
       (return))
     (let* ((impl-class
@@ -36,7 +36,7 @@ With an argument, open the test file in another window."
 implementation class. With an argument, open the test file in another window."
   (interactive "P")
   (block nil
-    (unless (ensime-is-test-file buffer-file-name)
+    (unless (ensime-is-test-file (buffer-file-name-with-indirect))
       (message "This isn't a test file")
       (return))
     (let ((test-class (ensime-top-level-class-closest-to-point)))
@@ -180,8 +180,8 @@ the file with stub code. if the file already exists, simply visit it."
   "Return the name of the file that should contain the test class
 TEST-CLASS-NAME. The current buffer must be the file that contains the
 implementation class."
-  (let* ((impl-base-dir (ensime-source-base-dir-for-file buffer-file-name))
-         (impl-extension (file-name-extension buffer-file-name t))
+  (let* ((impl-base-dir (ensime-source-base-dir-for-file (buffer-file-name-with-indirect)))
+         (impl-extension (file-name-extension (buffer-file-name-with-indirect) t))
          (test-relative-path
           (concat
            (replace-regexp-in-string "\\." "/" test-class-name)
