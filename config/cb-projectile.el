@@ -48,6 +48,7 @@
     (setq projectile-cache-file (concat cb-emacs-cache-directory "/projectile.cache"))
     (setq projectile-enable-caching t)
 
+    (setq projectile-globally-ignored-files '("TAGS" ".DS_Store"))
     (setq projectile-globally-ignored-file-suffixes '("gz" "zip" "tar" "elc"))
     (setq projectile-globally-ignored-directories
           '(".bzr"

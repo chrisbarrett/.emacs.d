@@ -328,6 +328,11 @@ Optional arg JUSTIFY will justify comments and strings."
   :defer t
   :preface
   (progn
+
+    (defun cb-basic-settings-boring-filename-p (f)
+      (memq (f-filename f)
+            '("TAGS" ".DS_Store")))
+
     (defun cb-basic-settings-boring-extension-p (f)
       (seq-intersection (f-ext f)
                         '("gz" "zip" "tar")))
@@ -357,7 +362,8 @@ Optional arg JUSTIFY will justify comments and strings."
     (setq recentf-max-saved-items 1000)
     (setq recentf-save-file (concat cb-emacs-cache-directory "/recentf"))
     (setq recentf-exclude
-          '(cb-basic-settings-boring-extension-p
+          '(cb-basic-settings-boring-filename-p
+            cb-basic-settings-boring-extension-p
             cb-basic-settings-child-of-boring-relative-dir-p
             cb-basic-settings-child-of-boring-abs-dir-p))))
 
