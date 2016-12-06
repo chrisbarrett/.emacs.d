@@ -117,6 +117,14 @@
     (web-mode-json-key-face
      ((t (:weight normal))))
 
+    ;; Pairs
+
+    (show-paren-match
+     ((t (:weight bold :foreground ,cb-theme-common-cyan :underline ,cb-theme-common-cyan))))
+
+    (show-paren-mismatch
+     ((t (:weight bold :foreground ,cb-theme-common-red :underline ,cb-theme-common-red))))
+
     ;; Magit
 
     (magit-diff-file-heading
