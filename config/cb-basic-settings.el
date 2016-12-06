@@ -346,6 +346,7 @@ Optional arg JUSTIFY will justify comments and strings."
                           ".g8"
                           "target"
                           "build"
+                          "Maildir"
                           "dist")))
 
     (defun cb-basic-settings-child-of-boring-abs-dir-p (f)
