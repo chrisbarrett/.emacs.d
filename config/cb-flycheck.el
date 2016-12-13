@@ -48,7 +48,9 @@
 
     (with-eval-after-load 'evil
       (bind-key "M-n" #'flycheck-next-error flycheck-mode-map)
-      (bind-key "M-p" #'flycheck-previous-error flycheck-mode-map))
+      (bind-key "M-p" #'flycheck-previous-error flycheck-mode-map)
+      (bind-key "M-j" #'flycheck-next-error flycheck-mode-map)
+      (bind-key "M-k" #'flycheck-previous-error flycheck-mode-map))
 
     (add-to-list 'display-buffer-alist
                  `(,(rx bos "*Flycheck errors*" eos)
