@@ -67,10 +67,16 @@
       (when (eq action 'insert)
         (save-excursion
           (backward-char (length id))
-          (when (or (eq (char-syntax (preceding-char)) ?w)
-                    (and (looking-back (sp--get-closing-regexp) (line-beginning-position))
-                         (not (eq (char-syntax (preceding-char)) ?'))))
-            (insert " "))))))
+          (cond
+           ((and (eq (preceding-char) ?$)
+                 (equal id "{")))
+
+           ((eq (char-syntax (preceding-char)) ?w)
+            (just-one-space))
+
+           ((and (looking-back (sp--get-closing-regexp) (line-beginning-position))
+                 (not (eq (char-syntax (preceding-char)) ?')))
+            (just-one-space)))))))
 
   :leader-bind
   ((",A" . sp-add-to-previous-sexp)
