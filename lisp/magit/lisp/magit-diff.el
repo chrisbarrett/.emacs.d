@@ -55,25 +55,29 @@
 
 (defgroup magit-diff nil
   "Inspect and manipulate Git diffs."
+  :link '(info-link "(magit)Diffing")
   :group 'magit-modes)
-
-(custom-add-to-group 'magit-diff 'smerge-refine-ignore-whitespace
-                     'custom-variable)
 
 (defcustom magit-diff-mode-hook nil
   "Hook run after entering Magit-Diff mode."
   :group 'magit-diff
   :type 'hook)
 
+(defcustom magit-diff-arguments '("--stat" "--no-ext-diff")
+  "The diff arguments used in buffers whose mode derives from `magit-diff-mode'."
+  :group 'magit-git-arguments
+  :group 'magit-diff
+  :type '(repeat (string :tag "Argument")))
+
 (defcustom magit-diff-sections-hook
   '(magit-insert-diff
     magit-insert-xref-buttons)
   "Hook run to insert sections into a `magit-diff-mode' buffer."
   :package-version '(magit . "2.3.0")
-  :group 'magit-revision
+  :group 'magit-diff
   :type 'hook)
 
-(defcustom magit-diff-expansion-threshold 1.0
+(defcustom magit-diff-expansion-threshold 60
   "After how many seconds not to expand anymore diffs.
 
 Except in status buffers, diffs are usually start out fully
@@ -86,8 +90,8 @@ to be collapsed.  So you should not pick a very low value here.
 
 The hook function `magit-diff-expansion-threshold' has to be a
 member of `magit-section-set-visibility-hook' for this option
-to have any effect"
-  :package-version '(magit . "2.1.0")
+to have any effect."
+  :package-version '(magit . "2.9.0")
   :group 'magit-diff
   :type 'float)
 
@@ -224,7 +228,7 @@ visits the file in the working tree."
 ;;;; File Diff
 
 (defcustom magit-diff-buffer-file-locked t
-  "Whether `magit-diff-buffer-file' uses a decicated buffer."
+  "Whether `magit-diff-buffer-file' uses a dedicated buffer."
   :package-version '(magit . "2.7.0")
   :group 'magit-commands
   :group 'magit-diff
@@ -234,6 +238,7 @@ visits the file in the working tree."
 
 (defgroup magit-revision nil
   "Inspect and manipulate Git commits."
+  :link '(info-link "(magit)Revision Buffer")
   :group 'magit-modes)
 
 (defcustom magit-revision-mode-hook nil
@@ -312,6 +317,15 @@ and https://debbugs.gnu.org/cgi/bugreport.cgi?bug=7847."
   :package-version '(magit . "2.3.0")
   :group 'magit-revision
   :type 'boolean)
+
+;;;; Diff Sections
+
+(defcustom magit-diff-section-arguments '("--no-ext-diff")
+  "The diff arguments used in buffers that show other things besides diffs."
+  :group 'magit-git-arguments
+  :group 'magit-diff
+  :group 'magit-status
+  :type '(repeat (string :tag "Argument")))
 
 ;;; Faces
 
@@ -586,18 +600,6 @@ and `:slant'."
 (magit-define-popup-keys-deferred 'magit-diff-refresh-popup)
 (magit-define-popup-keys-deferred 'magit-diff-mode-refresh-popup)
 (magit-define-popup-keys-deferred 'magit-revision-mode-refresh-popup)
-
-(defcustom magit-diff-arguments '("--stat" "--no-ext-diff")
-  "The diff arguments used in buffers whose mode derives from `magit-diff-mode'."
-  :group 'magit-diff
-  :group 'magit-commands
-  :type '(repeat (string :tag "Argument")))
-
-(defcustom magit-diff-section-arguments '("--no-ext-diff")
-  "The diff arguments used in buffers that show other things besides diffs."
-  :group 'magit-diff
-  :group 'magit-status
-  :type '(repeat (string :tag "Argument")))
 
 (defvar magit-diff-section-file-args nil)
 (put 'magit-diff-section-file-args 'permanent-local t)
@@ -890,7 +892,7 @@ be committed."
 
 ;;;###autoload
 (defun magit-show-commit (rev &optional args files module)
-  "Show the revision at point.
+  "Visit the revision at point in another buffer.
 If there is no revision at point or with a prefix argument prompt
 for a revision."
   (interactive
@@ -1414,31 +1416,31 @@ is set in `magit-mode-setup'."
 
 (defvar magit-file-section-map
   (let ((map (make-sparse-keymap)))
+    (unless (featurep 'jkl)
+      (define-key map (kbd "C-j") 'magit-diff-visit-file-worktree))
     (define-key map [C-return] 'magit-diff-visit-file-worktree)
-    (define-key map "\C-j"     'magit-diff-visit-file-worktree)
     (define-key map [remap magit-visit-thing]      'magit-diff-visit-file)
     (define-key map [remap magit-delete-thing]     'magit-discard)
     (define-key map [remap magit-revert-no-commit] 'magit-reverse)
-    (define-key map "a"  'magit-apply)
-    (define-key map "C"  'magit-commit-add-log)
-    (define-key map "K"  'magit-file-untrack)
-    (define-key map "R"  'magit-file-rename)
-    (define-key map "s"  'magit-stage)
-    (define-key map "u"  'magit-unstage)
+    (define-key map "a" 'magit-apply)
+    (define-key map "C" 'magit-commit-add-log)
+    (define-key map "s" 'magit-stage)
+    (define-key map "u" 'magit-unstage)
     map)
   "Keymap for `file' sections.")
 
 (defvar magit-hunk-section-map
   (let ((map (make-sparse-keymap)))
+    (unless (featurep 'jkl)
+      (define-key map (kbd "C-j") 'magit-diff-visit-file-worktree))
     (define-key map [C-return] 'magit-diff-visit-file-worktree)
-    (define-key map "\C-j"     'magit-diff-visit-file-worktree)
     (define-key map [remap magit-visit-thing]      'magit-diff-visit-file)
     (define-key map [remap magit-delete-thing]     'magit-discard)
     (define-key map [remap magit-revert-no-commit] 'magit-reverse)
-    (define-key map "a"  'magit-apply)
-    (define-key map "C"  'magit-commit-add-log)
-    (define-key map "s"  'magit-stage)
-    (define-key map "u"  'magit-unstage)
+    (define-key map "a" 'magit-apply)
+    (define-key map "C" 'magit-commit-add-log)
+    (define-key map "s" 'magit-stage)
+    (define-key map "u" 'magit-unstage)
     map)
   "Keymap for `hunk' sections.")
 
@@ -2074,7 +2076,7 @@ actually a `diff' but a `diffstat' section."
     t))
 
 (defun magit-diff-highlight (section selection)
-  "Highlight the diff-related SECTION and return t.
+  "Highlight the diff-related SECTION.
 If SECTION is not a diff-related section, then do nothing and
 return nil.  If SELECTION is non-nil then it is a list of sections
 selected by the region, including SECTION.  All of these sections
@@ -2235,7 +2237,9 @@ are highlighted."
              (goto-char (magit-section-start section))
              ;; `diff-refine-hunk' does not handle combined diffs.
              (unless (looking-at "@@@")
-               (diff-refine-hunk))))
+               ;; Avoid fsyncing many small temp files
+               (let ((write-region-inhibit-fsync t))
+                 (diff-refine-hunk)))))
           ((or `(nil t ,_) `(t t nil))
            (setf (magit-section-refined section) nil)
            (remove-overlays (magit-section-start section)
@@ -2260,6 +2264,7 @@ are highlighted."
                   (line-end-position)))
 
 (defun magit-diff-update-hunk-region (section)
+  "Highlight the hunk-internal region if any."
   (when (eq (magit-diff-scope section t) 'region)
     (magit-diff--make-hunk-overlay
      (magit-section-start section)

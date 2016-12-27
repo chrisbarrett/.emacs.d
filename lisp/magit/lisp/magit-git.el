@@ -33,6 +33,7 @@
 (require 'magit-utils)
 (require 'magit-section)
 
+(declare-function magit-maybe-make-margin-overlay 'magit-log)
 (declare-function magit-process-buffer 'magit-process)
 (declare-function magit-process-file 'magit-process)
 (declare-function magit-process-insert-section 'magit-process)
@@ -99,7 +100,7 @@
   `("--no-pager" "--literal-pathspecs" "-c" "core.preloadindex=true"
     ,@(and (eq system-type 'windows-nt)
            (list "-c" "i18n.logOutputEncoding=UTF-8")))
-  "Global git arguments.
+  "Global Git arguments.
 
 The arguments set here are used every time the git executable is
 run as a subprocess.  They are placed right after the executable
@@ -113,11 +114,11 @@ know what you are doing.  And think very hard before adding
 something; it will be used every time Magit runs Git for any
 purpose."
   :package-version '(magit . "2.9.0")
-  :group 'magit
+  :group 'magit-git-arguments
   :group 'magit-process
   :type '(repeat string))
 
-(defcustom magit-git-debug nil
+(defvar magit-git-debug nil
   "Whether to enable additional reporting of git errors.
 
 Magit basically calls git for one of these two reasons: for
@@ -133,10 +134,7 @@ option is non-nil and git returns with a non-zero exit status,
 then at least its standard error is inserted into this buffer.
 
 This is only intended for debugging purposes.  Do not enable this
-permanently, that would negatively affect performance"
-  :group 'magit
-  :group 'magit-process
-  :type 'boolean)
+permanently, that would negatively affect performance.")
 
 (defcustom magit-ref-namespaces
   '(("^@$"                       magit-head nil)
@@ -163,7 +161,7 @@ font FONT.  If FORMATTER is non-nil it should be a function that
 takes two arguments, the full ref and the face.  It is supposed
 to return a propertized label that represents the ref."
   :package-version '(magit . "2.1.0")
-  :group 'magit-modes
+  :group 'magit-miscellanous
   :type '(repeat
           (list regexp
                 face
@@ -357,7 +355,8 @@ call function WASHER with no argument."
         (funcall washer args))
       (when (or (= (point) beg)
                 (= (point) (1+ beg)))
-        (magit-cancel-section)))))
+        (magit-cancel-section))
+      (magit-maybe-make-margin-overlay))))
 
 (defun magit-git-version (&optional raw)
   (--when-let (let (magit-git-global-arguments)
@@ -873,15 +872,20 @@ which is different from the current branch and still exists."
                (concat "refs/remotes/" remote "/" (substring merge 11))))))))
 
 (cl-defun magit-get-upstream-branch
-    (&optional (branch (magit-get-current-branch)))
-  (when branch
-    (let ((remote (magit-get "branch" branch "remote"))
-          (merge  (magit-get "branch" branch "merge")))
-      (when (and remote merge (string-prefix-p "refs/heads/" merge))
-        (setq merge (substring merge 11))
-        (if (string-equal remote ".")
-            (propertize merge 'face 'magit-branch-local)
-          (propertize (concat remote "/" merge) 'face 'magit-branch-remote))))))
+    (&optional (branch (magit-get-current-branch)) verify)
+  (and branch
+       (-when-let* ((remote (magit-get "branch" branch "remote"))
+                    (merge  (magit-get "branch" branch "merge")))
+         (and (string-prefix-p "refs/heads/" merge)
+              (let* ((upstream (substring merge 11))
+                     (upstream
+                      (if (string-equal remote ".")
+                          (propertize upstream 'face 'magit-branch-local)
+                        (propertize (concat remote "/" upstream)
+                                    'face 'magit-branch-remote))))
+                (and (or (not verify)
+                         (magit-rev-verify upstream))
+                     upstream))))))
 
 (defun magit-get-indirect-upstream-branch (branch &optional force)
   (let ((remote (magit-get "branch" branch "remote")))
@@ -913,9 +917,13 @@ which is different from the current branch and still exists."
       (magit-get "remote.pushDefault")))
 
 (cl-defun magit-get-push-branch
-    (&optional (branch (magit-get-current-branch)))
-  (-when-let (remote (and branch (magit-get-push-remote branch)))
-    (concat remote "/" branch)))
+    (&optional (branch (magit-get-current-branch)) verify)
+  (and branch
+       (-when-let* ((remote (magit-get-push-remote branch))
+                    (push-branch (concat remote "/" branch)))
+         (and (or (not verify)
+                  (magit-rev-verify push-branch))
+              push-branch))))
 
 (defun magit-get-@{push}-branch (&optional branch)
   (let ((ref (magit-rev-parse "--symbolic-full-name"
@@ -1127,7 +1135,9 @@ Return a list of two integers: (A>B B>A)."
                         "\t")))
 
 (defun magit-abbrev-length ()
-  (string-to-number (or (magit-get "core.abbrev") "7")))
+  (--if-let (magit-get "core.abbrev")
+      (string-to-number it)
+    (length (magit-rev-parse "--short" "HEAD"))))
 
 (defun magit-abbrev-arg (&optional arg)
   (format "--%s=%d" (or arg "abbrev") (magit-abbrev-length)))
@@ -1226,7 +1236,8 @@ Return a list of two integers: (A>B B>A)."
 (defmacro magit-with-temp-index (tree arg &rest body)
   (declare (indent 2) (debug (form form body)))
   (let ((file (cl-gensym "file")))
-    `(let ((,file (magit-convert-filename-for-git
+    `(let ((magit--refresh-cache nil)
+           (,file (magit-convert-filename-for-git
                    (make-temp-name (magit-git-dir "index.magit.")))))
        (unwind-protect
            (progn (--when-let ,tree

@@ -37,11 +37,9 @@
 
 (defgroup magit-ediff nil
   "Ediff support for Magit."
+  :link '(info-link "(magit)Ediffing")
   :group 'magit-extensions)
 
-(unless (find-lisp-object-file-name 'magit-ediff-quit-hook 'defvar)
-  (add-hook 'magit-ediff-quit-hook 'magit-ediff-restore-previous-winconf)
-  (add-hook 'magit-ediff-quit-hook 'magit-ediff-cleanup-auxiliary-buffers))
 (defcustom magit-ediff-quit-hook
   '(magit-ediff-cleanup-auxiliary-buffers
     magit-ediff-restore-previous-winconf)
@@ -53,6 +51,7 @@ invoked using Magit."
   :package-version '(magit . "2.2.0")
   :group 'magit-ediff
   :type 'hook
+  :get 'magit-hook-custom-get
   :options '(magit-ediff-cleanup-auxiliary-buffers
              magit-ediff-restore-previous-winconf))
 
@@ -103,7 +102,6 @@ tree at the time of stashing."
 ;;;###autoload (autoload 'magit-ediff-popup "magit-ediff" nil t)
 (magit-define-popup magit-ediff-popup
   "Popup console for ediff commands."
-  'magit-diff nil nil
   :actions '((?E "Dwim"          magit-ediff-dwim)
              (?u "Show unstaged" magit-ediff-show-unstaged)
              (?s "Stage"         magit-ediff-stage)

@@ -11,7 +11,7 @@
 ;;	Marius Vollmer <marius.vollmer@gmail.com>
 ;; Maintainer: Jonas Bernoulli <jonas@bernoul.li>
 
-;; Package-Requires: ((emacs "24.4") (dash "20160820.501") (with-editor "20160929.734"))
+;; Package-Requires: ((emacs "24.4") (dash "20160820.501") (with-editor "20161201.925"))
 ;; Keywords: git tools vc
 ;; Homepage: https://github.com/magit/magit
 
@@ -113,6 +113,7 @@
 
 (require 'dash)
 (require 'log-edit)
+(require 'magit-utils nil t)
 (require 'ring)
 (require 'server)
 (require 'with-editor)
@@ -133,6 +134,7 @@
 (defgroup git-commit nil
   "Edit Git commit messages."
   :prefix "git-commit-"
+  :link '(info-link "(magit)Editing Commit Messages")
   :group 'tools)
 
 ;;;###autoload
@@ -162,12 +164,6 @@ The major mode configured here is turned on by the minor mode
   :type '(choice (function-item text-mode)
                  (const :tag "No major mode")))
 
-(unless (find-lisp-object-file-name 'git-commit-setup-hook 'defvar)
-  (add-hook 'git-commit-setup-hook 'with-editor-usage-message)
-  (add-hook 'git-commit-setup-hook 'git-commit-propertize-diff)
-  (add-hook 'git-commit-setup-hook 'git-commit-turn-on-auto-fill)
-  (add-hook 'git-commit-setup-hook 'git-commit-setup-changelog-support)
-  (add-hook 'git-commit-setup-hook 'git-commit-save-message))
 (defcustom git-commit-setup-hook
   '(git-commit-save-message
     git-commit-setup-changelog-support
@@ -177,6 +173,7 @@ The major mode configured here is turned on by the minor mode
   "Hook run at the end of `git-commit-setup'."
   :group 'git-commit
   :type 'hook
+  :get (and (featurep 'magit-utils) 'magit-hook-custom-get)
   :options '(git-commit-save-message
              git-commit-setup-changelog-support
              git-commit-turn-on-auto-fill
@@ -203,7 +200,7 @@ usually honor this wish and return non-nil."
 
 (defcustom git-commit-style-convention-checks '(non-empty-second-line)
   "List of checks performed by `git-commit-check-style-conventions'.
-Valid members are `non-empty-second-line' and `overlong-first-line'.
+Valid members are `non-empty-second-line' and `overlong-summary-line'.
 That function is a member of `git-commit-finish-query-functions'."
   :options '(non-empty-second-line overlong-summary-line)
   :type '(list :convert-widget custom-hook-convert-widget)
@@ -222,11 +219,21 @@ to consider doing so."
   :safe 'numberp
   :type 'number)
 
-(defcustom git-commit-fill-column 72
-  "Automatically wrap commit message lines beyond this column."
+(defcustom git-commit-fill-column nil
+  "Override `fill-column' in commit message buffers.
+
+If this is non-nil, then it should be an integer.  If that is the
+case and the buffer-local value of `fill-column' is not already
+set by the time `git-commit-turn-on-auto-fill' is called as a
+member of `git-commit-setup-hook', then that function sets the
+buffer-local value of `fill-column' to the value of this option.
+
+This option exists mostly for historic reasons.  If you are not
+already using it, then you probably shouldn't start doing so."
   :group 'git-commit
   :safe 'numberp
-  :type 'number)
+  :type '(choice (const :tag "use regular fill-column")
+                 number))
 
 (defcustom git-commit-known-pseudo-headers
   '("Signed-off-by" "Acked-by" "Cc"
@@ -239,7 +246,7 @@ to consider doing so."
 ;;;; Faces
 
 (defgroup git-commit-faces nil
-  "Faces for highlighting Git commit messages."
+  "Faces used for highlighting Git commit messages."
   :prefix "git-commit-"
   :group 'git-commit
   :group 'faces)
@@ -303,23 +310,28 @@ to consider doing so."
 
 (defvar git-commit-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "C-c C-s") 'git-commit-signoff)
+    (cond ((featurep 'jkl)
+           (define-key map (kbd "M-i") 'git-commit-prev-message)
+           (define-key map (kbd "M-k") 'git-commit-next-message))
+          (t
+           (define-key map (kbd "M-p") 'git-commit-prev-message)
+           (define-key map (kbd "M-n") 'git-commit-next-message)
+           ;; Old bindings to avoid confusion
+           (define-key map (kbd "C-c C-x a") 'git-commit-ack)
+           (define-key map (kbd "C-c C-x i") 'git-commit-suggested)
+           (define-key map (kbd "C-c C-x o") 'git-commit-cc)
+           (define-key map (kbd "C-c C-x p") 'git-commit-reported)
+           (define-key map (kbd "C-c C-x r") 'git-commit-review)
+           (define-key map (kbd "C-c C-x s") 'git-commit-signoff)
+           (define-key map (kbd "C-c C-x t") 'git-commit-test)))
     (define-key map (kbd "C-c C-a") 'git-commit-ack)
-    (define-key map (kbd "C-c C-t") 'git-commit-test)
-    (define-key map (kbd "C-c C-r") 'git-commit-review)
+    (define-key map (kbd "C-c C-i") 'git-commit-suggested)
     (define-key map (kbd "C-c C-o") 'git-commit-cc)
     (define-key map (kbd "C-c C-p") 'git-commit-reported)
-    (define-key map (kbd "C-c C-i") 'git-commit-suggested)
+    (define-key map (kbd "C-c C-r") 'git-commit-review)
+    (define-key map (kbd "C-c C-s") 'git-commit-signoff)
+    (define-key map (kbd "C-c C-t") 'git-commit-test)
     (define-key map (kbd "C-c M-s") 'git-commit-save-message)
-    (define-key map (kbd "M-p")     'git-commit-prev-message)
-    (define-key map (kbd "M-n")     'git-commit-next-message)
-    ;; Old bindings to avoid confusion
-    (define-key map (kbd "C-c C-x s") 'git-commit-signoff)
-    (define-key map (kbd "C-c C-x a") 'git-commit-ack)
-    (define-key map (kbd "C-c C-x t") 'git-commit-test)
-    (define-key map (kbd "C-c C-x r") 'git-commit-review)
-    (define-key map (kbd "C-c C-x o") 'git-commit-cc)
-    (define-key map (kbd "C-c C-x p") 'git-commit-reported)
     map)
   "Key map used by `git-commit-mode'.")
 
@@ -391,7 +403,11 @@ to consider doing so."
     (when (file-accessible-directory-p (file-name-directory it))
       (find-alternate-file it)))
   (when git-commit-major-mode
-    (funcall git-commit-major-mode))
+    (let ((auto-mode-alist (list (cons (concat "\\`"
+                                               (regexp-quote buffer-file-name)
+                                               "\\'")
+                                       git-commit-major-mode))))
+      (normal-mode)))
   (setq with-editor-show-usage nil)
   (with-editor-mode 1)
   (add-hook 'with-editor-finish-query-functions
@@ -451,8 +467,12 @@ Don't use it directly, instead enable `global-git-commit-mode'."
 
 (defun git-commit-turn-on-auto-fill ()
   "Unconditionally turn on Auto Fill mode.
-And set `fill-column' to `git-commit-fill-column'."
-  (setq fill-column git-commit-fill-column)
+If `git-commit-fill-column' is non-nil, and `fill-column'
+doesn't already have a buffer-local value, then set that
+to `git-commit-fill-column'."
+  (when (and (numberp git-commit-fill-column)
+             (not (local-variable-p 'fill-column)))
+    (setq fill-column git-commit-fill-column))
   (turn-on-auto-fill))
 
 (defun git-commit-turn-on-flyspell ()

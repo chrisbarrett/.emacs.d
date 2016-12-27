@@ -29,12 +29,58 @@
 
 (require 'magit)
 
+;;; Options
+
+(defgroup magit-stash nil
+  "List stashes and show stash diffs."
+  :group 'magit-modes)
+
+;;;; Diff options
+
+(defcustom magit-stash-sections-hook
+  '(magit-insert-stash-worktree
+    magit-insert-stash-index
+    magit-insert-stash-untracked)
+  "Hook run to insert sections into stash diff buffers."
+  :package-version '(magit . "2.1.0")
+  :group 'magit-stash
+  :type 'hook)
+
+;;;; Log options
+
+(defcustom magit-stashes-margin
+  (list (nth 0 magit-log-margin)
+        (nth 1 magit-log-margin)
+        'magit-log-margin-width nil
+        (nth 4 magit-log-margin))
+  "Format of the margin in `magit-stashes-mode' buffers.
+
+The value has the form (INIT STYLE WIDTH AUTHOR AUTHOR-WIDTH).
+
+If INIT is non-nil, then the margin is shown initially.
+STYLE controls how to format the committer date.  It can be one
+  of `age' (to show the age of the commit), `age-abbreviated' (to
+  abbreviate the time unit to a character), or a string (suitable
+  for `format-time-string') to show the actual date.
+WIDTH controls the width of the margin.  This exists for forward
+  compatibility and currently the value should not be changed.
+AUTHOR controls whether the name of the author is also shown by
+  default.
+AUTHOR-WIDTH has to be an integer.  When the name of the author
+  is shown, then this specifies how much space is used to do so."
+  :package-version '(magit . "2.9.0")
+  :group 'magit-stash
+  :group 'magit-margin
+  :type magit-log-margin--custom-type
+  :initialize 'magit-custom-initialize-reset
+  :set-after '(magit-log-margin)
+  :set (apply-partially #'magit-margin-set-variable 'magit-stashes-mode))
+
 ;;; Commands
 
 ;;;###autoload (autoload 'magit-stash-popup "magit-stash" nil t)
 (magit-define-popup magit-stash-popup
   "Popup console for stash commands."
-  'magit-commands
   :man-page "git-stash"
   :switches '((?u "Also save untracked files" "--include-untracked")
               (?a "Also save untracked and ignored files" "--all"))
@@ -303,7 +349,7 @@ instead of \"Stashes:\"."
     (magit-insert-section (stashes ref (not magit-status-expand-stashes))
       (magit-insert-heading heading)
       (magit-git-wash (apply-partially 'magit-log-wash-log 'stash)
-        "reflog" "--format=%gd %at %gs" ref))))
+        "reflog" "--format=%gd%x00%aN%x00%at%x00%gs" ref))))
 
 ;;; List Stashes
 
@@ -324,18 +370,9 @@ instead of \"Stashes:\"."
                               "Stashes:"
                             (format "Stashes [%s]:" ref)))
     (magit-git-wash (apply-partially 'magit-log-wash-log 'stash)
-      "reflog" "--format=%gd %at %gs" ref)))
+      "reflog" "--format=%gd%x00%aN%x00%at%x00%gs" ref)))
 
 ;;; Show Stash
-
-(defcustom magit-stash-sections-hook
-  '(magit-insert-stash-worktree
-    magit-insert-stash-index
-    magit-insert-stash-untracked)
-  "Hook run to insert sections into stash buffers."
-  :package-version '(magit . "2.1.0")
-  :group 'magit-log
-  :type 'hook)
 
 ;;;###autoload
 (defun magit-stash-show (stash &optional args files)
