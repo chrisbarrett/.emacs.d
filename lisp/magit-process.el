@@ -67,13 +67,18 @@ If t, use ptys: this enables Magit to prompt for passphrases when needed."
                  (const :tag "pty" t)))
 
 (defcustom magit-need-cygwin-noglob
-  (equal "x0\n" (with-temp-buffer
-                  (let ((process-environment
-                         (append magit-git-environment process-environment)))
-                    (process-file magit-git-executable
-                                  nil (current-buffer) nil
-                                  "-c" "alias.echo=!echo" "echo" "x{0}"))
-                  (buffer-string)))
+  (and (eq system-type 'windows-nt)
+       (with-temp-buffer
+         (let ((process-environment
+                (append magit-git-environment process-environment)))
+           (condition-case e
+               (process-file magit-git-executable
+                             nil (current-buffer) nil
+                             "-c" "alias.echo=!echo" "echo" "x{0}")
+             (file-error
+              (lwarn 'magit-process :warning
+                     "Could not run Git: %S" e))))
+         (equal "x0\n" (buffer-string))))
   "Whether to use a workaround for Cygwin's globbing behavior.
 
 If non-nil, add environment variables to `process-environment' to
@@ -590,7 +595,7 @@ Magit status buffer."
   "Special sentinel used by `magit-run-git-sequencer'."
   (when (memq (process-status process) '(exit signal))
     (magit-process-sentinel process event)
-    (-when-let (process-buf (process-get process 'process-buf))
+    (-when-let (process-buf (process-buffer process))
       (when (buffer-live-p process-buf)
         (-when-let (status-buf (with-current-buffer process-buf
                                  (magit-mode-get-buffer 'magit-status-mode)))

@@ -37,7 +37,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Magit-Popup User Manual
-@subtitle for version 2.8
+@subtitle for version 2.9
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -55,7 +55,7 @@ General Public License for more details.
 @menu
 * Introduction::
 * Usage::
-* Defining prefix and suffix commands::
+* Defining Prefix and Suffix Commands::
 
 @detailmenu
 --- The Detailed Node Listing ---
@@ -63,15 +63,15 @@ General Public License for more details.
 
 Usage
 
-* Customizing existing popups::
-* Other options::
+* Customizing Existing Popups::
+* Other Options::
 
 
 
-Defining prefix and suffix commands
+Defining Prefix and Suffix Commands
 
-* Defining prefix commands::
-* Defining suffix commands::
+* Defining Prefix Commands::
+* Defining Suffix Commands::
 @end detailmenu
 @end menu
 
@@ -194,10 +194,12 @@ a chance to notice them.
 
 @defopt magit-popup-show-common-commands
 
-This option controls whether the section which lists the commands
-that are common to all popups is initially show.  We recommend you
-set this to @code{nil} - after you have memorized that it can be shown on
-demand using @code{C-t}.
+This option controls whether the section that lists the commands
+that are common to all popups is initially shown.
+
+By default this is not the case, but note that you can temporarily
+show this section using @code{C-t}, which therefore is the only common
+command you actually have to memorize.
 @end defopt
 
 @table @asis
@@ -246,7 +248,7 @@ prefix argument is used in which case the popup remains open.
 
 It is also possible to add additional arguments and commands to an
 existing popup, but that cannot be done directly from the popup (or
-the Custom interface).  See @ref{Customizing existing popups,Customizing existing popups}.
+the Custom interface).  See @ref{Customizing Existing Popups,Customizing Existing Popups}.
 
 Documentation about a popup's arguments and commands can be shown
 directly from the popup.
@@ -285,12 +287,12 @@ key bindings instead, so these commands are not listed in popup
 buffers along with the other common commands.
 
 @menu
-* Customizing existing popups::
-* Other options::
+* Customizing Existing Popups::
+* Other Options::
 @end menu
 
-@node Customizing existing popups
-@section Customizing existing popups
+@node Customizing Existing Popups
+@section Customizing Existing Popups
 
 It is possible to define additional infix arguments and suffix
 commands to an existing popup using the following functions.
@@ -408,7 +410,7 @@ is to be unbound.
 @end defun
 
 It is also possible to change other aspects of a popup by setting a
-property using @code{plist-put}.  See @ref{Defining prefix commands,Defining prefix commands} for valid
+property using @code{plist-put}.  See @ref{Defining Prefix Commands,Defining Prefix Commands} for valid
 properties.  The most likely change Magit users might want to make
 is:
 
@@ -416,26 +418,15 @@ is:
 (plist-put magit-show-refs-popup :use-prefix nil)
 @end lisp
 
-@node Other options
-@section Other options
+@node Other Options
+@section Other Options
 
 @defopt magit-popup-use-prefix-argument
 
 This option controls the effect that the use of a prefix argument
-before entering a popup has.  The @strong{intended} default is @code{default}, but
-the @strong{actual} default is @code{disabled}.  This is necessary because the old
-popup implementation did simply forward such a pre-popup prefix
-argument to the suffix command invoked from the popup, and changing
-that without users being aware of it could lead to tears.
+before entering a popup has.
 
 @itemize
-@item
-@code{disabled}
-
-Bring up a Custom option buffer so that the user reads
-this and then makes an informed choice.
-
-
 @item
 @code{default}
 
@@ -459,7 +450,7 @@ Ignore prefix arguments.
 This option can be overridden for individual popups.
 @code{magit-show-refs-popup} for example defaults to invoking the default
 action directly.  It only shows the popup buffer when a prefix
-argument is used.  See @ref{Customizing existing popups,Customizing existing popups}.
+argument is used.  See @ref{Customizing Existing Popups,Customizing Existing Popups}.
 @end defopt
 
 @defopt magit-popup-manpage-package
@@ -481,8 +472,8 @@ To emphasize the default action by making it bold use this:
 (button-type-put 'magit-popup-action-button 'format " %k %D")
 @end lisp
 
-@node Defining prefix and suffix commands
-@chapter Defining prefix and suffix commands
+@node Defining Prefix and Suffix Commands
+@chapter Defining Prefix and Suffix Commands
 
 If you write an extension for Magit then you should use this library
 now and later when @code{transient} is released port to that.
@@ -510,29 +501,29 @@ infix arguments, and then also one of its suffix commands.
   'magit-commands
   :man-page "git-tag"
   :switches '((?a "Annotate" "--annotate")
-	      (?s "Sign"     "--sign")
-	      (?f "Force"    "--force"))
+              (?s "Sign"     "--sign")
+              (?f "Force"    "--force"))
   :actions  '((?t "Create"   magit-tag)
-	      (?k "Delete"   magit-tag-delete)
-	      (?p "Prune"    magit-tag-prune))
+              (?k "Delete"   magit-tag-delete)
+              (?p "Prune"    magit-tag-prune))
   :default-action 'magit-tag)
 
 ;;;###autoload
 (defun magit-tag (name rev &optional args)
   "Create a new tag with the given NAME at REV."
   (interactive (list (magit-read-tag "Tag name")
-		     (magit-read-branch-or-commit "Place tag on")
-		     (magit-tag-arguments)))
+                     (magit-read-branch-or-commit "Place tag on")
+                     (magit-tag-arguments)))
   (magit-run-git-with-editor "tag" args name rev))
 @end lisp
 
 @menu
-* Defining prefix commands::
-* Defining suffix commands::
+* Defining Prefix Commands::
+* Defining Suffix Commands::
 @end menu
 
-@node Defining prefix commands
-@section Defining prefix commands
+@node Defining Prefix Commands
+@section Defining Prefix Commands
 
 Prefix commands and their infix arguments are defined using the macro
 @code{magit-define-popup}.  The key bindings and descriptions of suffix
@@ -567,10 +558,11 @@ The function @code{SHORTNAME-arguments} returns the currently effective
 value of the variable by the same name.  See below for more
 information.
 
-The optional argument GROUP specifies the Custom group in which the
-option is placed.  If omitted then the option is placed in some
+Optional argument GROUP specifies the Custom group into which the
+option is placed.  If omitted then the option is placed into some
 group the same way it is done when directly using @code{defcustom} and
-omitting the group.
+omitting the group, except when NAME begins with "magit-", in
+which case the group @code{magit-git-arguments} is used.
 
 The optional argument MODE specifies the mode used by the popup
 buffer.  If it is omitted or @code{nil} then @code{magit-popup-mode} is used.
@@ -587,12 +579,6 @@ usually specified in that order):
 The actions which can be invoked from the popup.  VALUE is a list
 whose members have the form (KEY DESC COMMAND), see
 @code{magit-define-popup-action} for details.
-
-How the actions are split into rows and columns currently depends
-on the available space and @code{:max-action-columns}.
-
-WARNING: This will likely be change to use a more explicit format
-(((KEY DESC COMMAND)@dots{})@dots{}) before the release.
 
 Actions are regular Emacs commands, which usually have an
 @code{interactive} form setup to consume the values of the popup
@@ -631,6 +617,16 @@ specified, should be one of @code{default} or @code{prefix}.
 
 
 @item
+@code{:max-action-columns}
+
+The maximum number of actions to display on a single line, a
+number or a function that return a number and takes the name of
+the section currently being inserted as argument.  If there isn't
+enough room to display as many columns as specified here, then
+fewer are used.
+
+
+@item
 @code{:switches}
 
 The popup arguments which can be toggled on and off.  VALUE is a
@@ -642,16 +638,8 @@ list whose members have the form @code{(KEY DESC SWITCH)}, see
 @code{:options}
 
 The popup arguments which take a value, as in "--opt~OPTVAL".
-VALUE is a list whose members have the form (KEY DESC OPTION
-READER), see @code{magit-define-popup-option} for details.
-
-
-@item
-@code{:variables}
-
-Git variables which can be set from the popup.  VALUE is a list
-whose members have the form (KEY DESC COMMAND FORMATTER), see
-@code{magit-define-popup-variable} for details.
+VALUE is a list whose members have the form @code{(KEY DESC OPTION
+    READER)}, see @code{magit-define-popup-option} for details.
 
 
 @item
@@ -659,7 +647,15 @@ whose members have the form (KEY DESC COMMAND FORMATTER), see
 
 The default arguments, a list of switches (which are then enabled
 by default) and options with there default values, as in
-"--OPT~OPTVAL\".
+@code{"--OPT=OPTVAL"}.
+
+
+@item
+@code{:variables}
+
+Git variables which can be set from the popup.  VALUE is a list
+whose members have the form @code{(KEY DESC COMMAND FORMATTER)}, see
+@code{magit-define-popup-variable} for details.
 
 
 @item
@@ -701,8 +697,8 @@ help for an argument.
 @end itemize
 @end defmac
 
-@node Defining suffix commands
-@section Defining suffix commands
+@node Defining Suffix Commands
+@section Defining Suffix Commands
 
 Commands intended to be invoked from a particular popup should
 determine the currently effective arguments by calling the function

@@ -1,5 +1,4 @@
-<p align="center"><img src="https://magit.vc/img/magit.png"/></p>
-<h1 align="center">It's Magit!</h1>
+<div align="center"><img src="https://magit.vc/assets/magit-168x200px.png"/></div>
 <h2 align="center">A Git Porcelain inside Emacs</h2>
 <p align="center">
   <a href="https://magit.vc"><b>homepage</b></a> |
@@ -27,17 +26,41 @@
 </p>
 ***
 
-<p align="center">
-  <br>
-  <img width="16" height="16" src="https://assets-cdn.github.com/images/icons/emoji/unicode/2764.png">
-  <b>
-    Please consider supporting development by
-    <a href="https://magit.vc/donations/">making a donation</a>.
-  </b>
-  <img width="16" height="16" src="https://assets-cdn.github.com/images/icons/emoji/unicode/2764.png">
-  <br>
-  <br>
-</p>
+<div align="center">
+  Keeping its user <a href= "https://magit.vc/quotes">this excited</a> is
+  <a href="https://magit.vc/stats/authors.html#cumulated_added_lines_of_code_per_author">
+    a lot of work
+  </a>.
+  If Magit makes you <br> more productive too,
+  then <b>please consider making a donation</b>.
+</div>
+<div align="center">
+  <em>Thank you! &mdash; Jonas Bernoulli</em>
+</div>
+<br>
+<div align="center">
+  <a href="https://www.paypal.me/JonasBernoulli/20">
+    <img title="Donate using PayPal"
+         alt="Donate using PayPal"
+		 style="height: 50px; width: auto;"
+         src="https://magit.vc/assets/paypal.png"></a>
+  &nbsp;&nbsp;
+  <a href="https://www.patreon.com/tarsius">
+    <img title="Donate monthly using Patreon"
+         alt="Donate monthly using Patreon"
+		 style="height: 50px; width: auto;"
+         src="https://magit.vc/assets/patreon-50px.png"></a>
+  &nbsp;&nbsp;
+  <a href="https://salt.bountysource.com/teams/magit">
+    <img title="Donate monthly using Bountysource"
+         alt="Donate monthly using Bountysource"
+		 style="height: 50px; width: auto;"
+         src="https://magit.vc/assets/bountysource-50px.png"></a>
+</div>
+<br>
+<div align="center">
+  Some alternative donation methods are <a href="https://magit.vc/donate">available</a>.
+</div>
 ***
 
 Support
@@ -51,10 +74,8 @@ search engine.
 
 If that doesn't answer your question, then ask for help on the
 **[Emacs Stackexchange site][forum]**, the [mailing list][list], or
-the [Gitter chat][chat].
-
-**Please do NOT use the GitHub issue tracker for support requests.**
-**We only use it for feature requests and bug reports.**
+the [Gitter chat][chat].  We only use the GitHub issue tracker for
+feature requests and bug reports, so please don't ask for help there.
 
 Contributing
 ============
