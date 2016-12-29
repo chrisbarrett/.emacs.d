@@ -69,13 +69,10 @@ to combine these two types that cannot be satisfied.%s"
   (-let [(_ method) (s-match (rx "`" (group (+ (not (any "`"))))) method-desc)]
     (format "Method `%s' called with value that could be null or undefined.
 
-As I parse your program I find an attempt to call a method with a
-value that could be null or undefined. This is an error because
-the method's type signature specifies that this argument cannot
-be null.
+I see this method's type signature specifies that this argument
+cannot be null.
 
 To prove that the value is defined
-
   - check it explicitly using `if', or
   - use it as the first argument to a ternary expression."
             method)))
@@ -151,7 +148,7 @@ value." type))
 (defun cb-flow-checker--missing-annotation-error-message (_)
   "Destructuring site lacks type annotations.
 
-As I parse your program I find a destructuring site missing type
+As I parse your program I find a destructuring site lacking type
 annotations.
 
 Add type annotations so that I can collect type information for
@@ -195,8 +192,7 @@ The error is near the marked location." tok)))
 As I parse your program I encounter a type name that I cannot
 find the definition for.
 
-Import the type if it exists or write a suitable type
-definition." msg))
+Import the type if it exists or write a type definition." msg))
 
 (defun cb-flow-checker--unresolved-identifier-error-message (desc)
   (-let [(_ identifier) (s-match (rx "identifier `" (group (+ (not (any "`")))))
