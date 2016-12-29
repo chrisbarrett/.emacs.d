@@ -266,6 +266,16 @@ level.
 
 Did you forget to use `typeof'?")
 
+(defun cb-flow-checker--incompatible-property-variance-error-message (prop)
+  (format "Covariant property `%s' used contravariantly.
+
+As I typecheck your program, I find a variance conflict with a
+property's declaration and its usage.
+
+The property was used covariantly, but the property is defined to
+be contravariant."
+          prop))
+
 ;;; Error parsers
 
 (defun cb-flow-checker--type-error (level msg checker msgs)
@@ -412,6 +422,19 @@ Did you forget to use `typeof'?")
                             :checker checker
                             :filename source))))
 
+(defun cb-flow-checker--incompatible-property-variance-error (level checker msgs)
+  (-let* (([(&alist 'descr prop-descr
+                    'loc (&alist 'start (&alist 'line line-expected 'column col-expected)
+                                 'source source))]
+           msgs)
+          ((_ prop) (s-match (rx "property `" (group (+ (not (any "`")))))
+                             prop-descr)))
+    (list
+     (flycheck-error-new-at line-expected col-expected level
+                            (cb-flow-checker--incompatible-property-variance-error-message prop)
+                            :checker checker
+                            :filename source))))
+
 
 (defun cb-flow-checker--single-message-error-parser (level checker msgs msg-format-fn)
   (cb-flow-checker--indexed-error-and-message-parser level checker msgs 0 0 msg-format-fn))
@@ -539,6 +562,11 @@ Did you forget to use `typeof'?")
 
      ((--any? (s-starts-with? "Named import from module" it) comments)
       (cb-flow-checker--named-import-from-module-error level checker msgs))
+
+     ((--any? (and (s-starts-with? "Covariant property " it)
+                   (s-ends-with? "incompatible with contravariant use in" it))
+              comments)
+      (cb-flow-checker--incompatible-property-variance-error level checker msgs))
 
      (t
       (when (<= 1 cb-flow-checker--logging-verbosity)
