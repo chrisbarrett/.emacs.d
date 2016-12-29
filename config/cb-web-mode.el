@@ -11,6 +11,8 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'spacemacs-keys)
+
 (use-package web-mode
   :defines (web-mode-markup-indent-offset
             web-mode-css-indent-offset)
@@ -69,6 +71,22 @@
     (define-key emmet-mode-keymap (kbd "TAB") #'emmet-expand-line)
     (add-hook 'cb-web-js-mode-hook #'cb-web--set-jsx-classname-on)))
 
+(use-package cb-flow-checker
+  :defer t
+  :after flycheck
+  :config
+  (progn
+    (add-hook 'cb-web-js-mode-hook (lambda ()
+                               (flycheck-select-checker 'javascript-flow)))
+    (flycheck-add-next-checker 'javascript-flow 'javascript-eslint)))
+
+(use-package cb-flow
+  :after cb-web-modes
+  :init
+  (spacemacs-keys-set-leader-keys-for-major-mode 'cb-web-js-mode
+    "if" #'cb-flow-insert-flow-annotation)
+  :bind (:map cb-web-js-mode-map
+              ("C-c C-t" . cb-flow-type-at)))
 
 (provide 'cb-web-mode)
 
