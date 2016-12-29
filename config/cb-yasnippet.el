@@ -176,6 +176,9 @@ Otherwise delete backwards."
 (use-package cb-yas-elisp
   :after yasnippet)
 
+(use-package cb-yas-js
+  :after yasnippet)
+
 (provide 'cb-yasnippet)
 
 ;;; cb-yasnippet.el ends here

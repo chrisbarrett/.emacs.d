@@ -3,5 +3,6 @@
 # key: ctor
 # --
 constructor($1) {
-  ${1:$(js-yasnippet--ctor-body yas-text)}
+  super();
+  ${1:$(cb-yas-js--ctor-body yas-text)}
 }
