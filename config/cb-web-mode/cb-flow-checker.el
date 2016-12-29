@@ -444,15 +444,15 @@ is not exported by name.%s"
      ((member "name is already bound" comments)
       (cb-flow-checker--ident-already-bound-error level checker msgs))
 
+     ((member "Could not resolve name" comments)
+      (cb-flow-checker--could-not-resolve-name-error level checker msgs))
+
      ((--any? (s-starts-with? "Application of polymorphic type needs" it) comments)
       (cb-flow-checker--indexed-error-and-message-parser level checker msgs 1 0
                                           #'cb-flow-checker--type-application-args-error-message))
 
      ((--any? (s-starts-with? "Named import from module" it) comments)
       (cb-flow-checker--named-import-from-module-error level checker msgs))
-
-     ((member "Could not resolve name" comments)
-      (cb-flow-checker--could-not-resolve-name-error level checker msgs))
 
      (t
       (when (<= 1 cb-flow-checker--logging-verbosity)
