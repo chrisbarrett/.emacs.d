@@ -64,7 +64,10 @@
   :init
   (add-hook 'web-mode-hook #'emmet-mode)
   :config
-  (add-hook 'cb-web-js-mode-hook #'cb-web--set-jsx-classname-on))
+  (progn
+    (setq emmet-move-cursor-between-quotes t)
+    (define-key emmet-mode-keymap (kbd "TAB") #'emmet-expand-line)
+    (add-hook 'cb-web-js-mode-hook #'cb-web--set-jsx-classname-on)))
 
 
 (provide 'cb-web-mode)
