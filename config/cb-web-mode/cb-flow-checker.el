@@ -237,6 +237,20 @@ is not exported by name.%s"
               (concat "\n\n" suggestion)
             "")))
 
+(defun cb-flow-checker--property-cannot-be-accessed-error-message (property target)
+  (format "Property `%s' cannot accessed on %s.
+
+As I analyse your program I see an attempt to access a property
+on an object, but this access is illegal." property target))
+
+(defun cb-flow-checker--jsx-attribute-empty-expression-error-message ()
+  "Empty expression in attribute assignment.
+
+As I compile JSX snippets in your program I see an empty
+expression being assigned to an attribute, which is illegal.
+
+You could supply a literal value or call a function to fix this
+error.")
 
 ;;; Error parsers
 
@@ -338,6 +352,33 @@ is not exported by name.%s"
                             (cb-flow-checker--named-import-from-module-error-message element suggestion)
                             :checker checker
                             :filename source))))
+
+(defun cb-flow-checker--property-cannot-be-accessed-error (level checker msgs)
+  (-let* (([(&alist 'descr prop-descr
+                    'loc (&alist 'start (&alist 'line line-expected 'column col-expected)
+                                 'source source))
+            _
+            (&alist 'descr target)]
+           msgs)
+          ((_ prop) (s-match (rx "property `" (group (+ (not (any "`")))))
+                             prop-descr)))
+    (list
+     (flycheck-error-new-at line-expected col-expected level
+                            (cb-flow-checker--property-cannot-be-accessed-error-message prop target)
+                            :checker checker
+                            :filename source))))
+
+(defun cb-flow-checker--jsx-attribute-empty-expression-error (level checker msgs)
+  (-let* (([(&alist 'descr prop-descr
+                    'loc (&alist 'start (&alist 'line line-expected 'column col-expected)
+                                 'source source))]
+           msgs))
+    (list
+     (flycheck-error-new-at line-expected col-expected level
+                            (cb-flow-checker--jsx-attribute-empty-expression-error-message)
+                            :checker checker
+                            :filename source))))
+
 
 (defun cb-flow-checker--single-message-error-parser (level checker msgs msg-format-fn)
   (cb-flow-checker--indexed-error-and-message-parser level checker msgs 0 0 msg-format-fn))
@@ -446,6 +487,12 @@ is not exported by name.%s"
 
      ((member "Could not resolve name" comments)
       (cb-flow-checker--could-not-resolve-name-error level checker msgs))
+
+     ((member "Property cannot be accessed on" comments)
+      (cb-flow-checker--property-cannot-be-accessed-error level checker msgs))
+
+     ((member "JSX attributes must only be assigned a non-empty expression" comments)
+      (cb-flow-checker--jsx-attribute-empty-expression-error level checker msgs))
 
      ((--any? (s-starts-with? "Application of polymorphic type needs" it) comments)
       (cb-flow-checker--indexed-error-and-message-parser level checker msgs 1 0
