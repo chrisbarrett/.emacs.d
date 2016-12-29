@@ -28,7 +28,11 @@
 (require 'dash)
 (require 'flycheck)
 (require 'json)
+(require 'f)
 (require 's)
+
+(autoload 'projectile-project-p "projectile")
+(autoload 'projectile-current-project-files "projectile")
 
 (defvar cb-flow-checker--logging-verbosity 2
   "Set how much additional info gets logged after type-checking.
@@ -214,6 +218,25 @@ to access a property which I cannot prove to be defined.
 Since I cannot prove that values of type `%s' have this property,
 I must consider this an error." property type type))
 
+(defun cb-flow-checker--could-not-resolve-name-error-message (property)
+  (format "React element `%s' could not be resolved.
+
+As I compile JSX snippets in your program, I see a reference to
+an element or component that is not defined.
+
+Ensure this component is defined and is exported by its
+containing module." property))
+
+(defun cb-flow-checker--named-import-from-module-error-message (module suggestion)
+  (format "Illegal named import from module `%s'.
+
+As I parse your imports, I see a reference to an identifier that
+is not exported by name.%s"
+          module
+          (if suggestion
+              (concat "\n\n" suggestion)
+            "")))
+
 
 ;;; Error parsers
 
@@ -286,6 +309,33 @@ I must consider this an error." property type type))
     (list
      (flycheck-error-new-at line-expected col-expected level
                             (cb-flow-checker--property-not-found-error-message prop type)
+                            :checker checker
+                            :filename source))))
+
+(defun cb-flow-checker--could-not-resolve-name-error (level checker msgs)
+  (-let* (([(&alist 'descr element-descr
+                    'loc (&alist 'start (&alist 'line line-expected 'column col-expected)
+                                 'source source))]
+           msgs)
+          ((_ element) (s-match (rx "React element `" (group (+ (not (any "`")))))
+                                element-descr)))
+    (list
+     (flycheck-error-new-at line-expected col-expected level
+                            (cb-flow-checker--could-not-resolve-name-error-message element)
+                            :checker checker
+                            :filename source))))
+
+(defun cb-flow-checker--named-import-from-module-error (level checker msgs)
+  (-let* (([(&alist 'descr element-descr
+                    'loc (&alist 'start (&alist 'line line-expected 'column col-expected)
+                                 'source source))]
+           msgs)
+          ((_ element) (s-match (rx "Named import from module `" (group (+ (not (any "`")))))
+                                element-descr))
+          ((&alist 'descr suggestion) (ignore-errors (elt msgs 1))))
+    (list
+     (flycheck-error-new-at line-expected col-expected level
+                            (cb-flow-checker--named-import-from-module-error-message element suggestion)
                             :checker checker
                             :filename source))))
 
@@ -397,6 +447,12 @@ I must consider this an error." property type type))
      ((--any? (s-starts-with? "Application of polymorphic type needs" it) comments)
       (cb-flow-checker--indexed-error-and-message-parser level checker msgs 1 0
                                           #'cb-flow-checker--type-application-args-error-message))
+
+     ((--any? (s-starts-with? "Named import from module" it) comments)
+      (cb-flow-checker--named-import-from-module-error level checker msgs))
+
+     ((member "Could not resolve name" comments)
+      (cb-flow-checker--could-not-resolve-name-error level checker msgs))
 
      (t
       (when (<= 1 cb-flow-checker--logging-verbosity)
