@@ -266,15 +266,22 @@ level.
 
 Did you forget to use `typeof'?")
 
-(defun cb-flow-checker--incompatible-property-variance-error-message (prop)
-  (format "Covariant property `%s' used contravariantly.
+(defun cb-flow-checker--incompatible-property-variance-error-message (prop target)
+  (format "Covariant property `%s' used contravariantly in assignment of `%s'.
 
 As I typecheck your program, I find a variance conflict with a
 property's declaration and its usage.
 
-The property was used covariantly, but the property is defined to
-be contravariant."
-          prop))
+The property was used contravariantly, but the property is defined to
+be covariant."
+          prop target))
+
+(defun cb-flow-checker--type-coerce-error-message (t1 t2)
+  (format "Type `%s' cannot be coerced to `%s'.
+
+As I typecheck your program, I find an illegal attempt to coerce
+one type to another."
+          t1 t2))
 
 ;;; Error parsers
 
@@ -290,6 +297,25 @@ be contravariant."
     (list
      (flycheck-error-new-at line-expected col-expected level
                             (cb-flow-checker--type-error-message msg type-expected type-actual)
+                            :checker checker
+                            :filename source-expected)
+     (flycheck-error-new-at line-actual col-actual 'info
+                            "A type error I detected arose from the type constraint here."
+                            :checker checker
+                            :filename source-actual))))
+
+(defun cb-flow-checker--type-coerce-error (level checker msgs)
+  (-let [[(&alist 'descr type-expected
+                  'loc (&alist 'start (&alist 'line line-expected 'column col-expected)
+                               'source source-expected))
+          _
+          (&alist 'descr type-actual
+                  'loc (&alist 'start (&alist 'line line-actual 'column col-actual)
+                               'source source-actual))]
+         msgs]
+    (list
+     (flycheck-error-new-at line-expected col-expected level
+                            (cb-flow-checker--type-coerce-error-message type-expected type-actual)
                             :checker checker
                             :filename source-expected)
      (flycheck-error-new-at line-actual col-actual 'info
@@ -425,13 +451,17 @@ be contravariant."
 (defun cb-flow-checker--incompatible-property-variance-error (level checker msgs)
   (-let* (([(&alist 'descr prop-descr
                     'loc (&alist 'start (&alist 'line line-expected 'column col-expected)
-                                 'source source))]
+                                 'source source))
+            _
+            (&alist 'descr target-descr)]
            msgs)
           ((_ prop) (s-match (rx "property `" (group (+ (not (any "`")))))
-                             prop-descr)))
+                             prop-descr))
+          ((_ target) (s-match (rx "property `" (group (+ (not (any "`")))))
+                               target-descr)))
     (list
      (flycheck-error-new-at line-expected col-expected level
-                            (cb-flow-checker--incompatible-property-variance-error-message prop)
+                            (cb-flow-checker--incompatible-property-variance-error-message prop target)
                             :checker checker
                             :filename source))))
 
@@ -478,6 +508,9 @@ be contravariant."
 
      ((member "This type is incompatible with the expected return type of" comments)
       (cb-flow-checker--type-error level "Type error with expected return type" checker msgs))
+
+     ((member "This type cannot be coerced to" comments)
+      (cb-flow-checker--type-coerce-error level checker msgs))
 
      ((member "This type is incompatible with an implicitly-returned undefined." comments)
       (cb-flow-checker--single-message-error-parser level checker msgs
