@@ -90,6 +90,13 @@
   :bind (:map cb-web-js-mode-map
               ("C-c C-t" . cb-flow-type-at)))
 
+(use-package cb-js-autoinsert
+  :defer t
+  :after autoinsert
+  :config
+  (add-to-list 'auto-insert-alist cb-js-autoinsert-form)
+  :defines (auto-insert-alist))
+
 (provide 'cb-web-mode)
 
 ;;; cb-web-mode.el ends here
