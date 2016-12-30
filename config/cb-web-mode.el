@@ -94,7 +94,8 @@
   :defer t
   :after autoinsert
   :config
-  (add-to-list 'auto-insert-alist cb-js-autoinsert-form)
+  (add-to-list 'auto-insert-alist
+               '((cb-web-js-mode . "JavaScript") . cb-js-autoinsert-template-string))
   :defines (auto-insert-alist))
 
 (provide 'cb-web-mode)

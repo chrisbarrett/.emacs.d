@@ -31,13 +31,14 @@ import React from 'react';
 
 type props = {}
 
-const ${1:%s} = (props: props) => (
+const ${1:%s} = ({}: props) => (
   $0
 )
 
 export default $1;
 
 " (cb-js-autoinsert--component-name file)))
+
 
 (defun cb-js-autoinsert--react-component (file)
   (format "
@@ -55,7 +56,7 @@ export default $1;
 
 ;; Expansion function
 
-(defun cb-js-autoinsert--template-string ()
+(defun cb-js-autoinsert-template-string ()
   (let ((file (buffer-file-name)))
     (when-let (snippet
                (cond
@@ -66,9 +67,6 @@ export default $1;
                 ((member "components" (f-split file))
                  (cb-js-autoinsert--react-component file))))
       (yas-expand-snippet (s-trim snippet)))))
-
-(defconst cb-js-autoinsert-form
-  '((cb-web-js-mode . "JavaScript") . cb-js-autoinsert--template-string))
 
 (provide 'cb-js-autoinsert)
 
