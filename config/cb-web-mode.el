@@ -47,8 +47,8 @@
 
 
 (use-package flycheck
-  :defer t
-  :functions (flycheck-add-mode)
+  :commands (flycheck-select-checker)
+  :functions (flycheck-add-next-checker flycheck-add-mode)
   :config
   (progn
     (add-to-list 'flycheck-disabled-checkers 'javascript-jshint)
@@ -59,7 +59,7 @@
 (use-package emmet-mode
   :defer t
   :defines (emmet-expand-jsx-className?)
-  :commands (emmet-mode)
+  :commands (emmet-mode emmet-expand-line)
   :preface
   (defun cb-web--set-jsx-classname-on ()
     (setq-local emmet-expand-jsx-className? t))
@@ -82,6 +82,8 @@
 
 (use-package cb-flow
   :after cb-web-modes
+  :commands (cb-flow-insert-flow-annotation
+             cb-flow-type-at)
   :init
   (spacemacs-keys-set-leader-keys-for-major-mode 'cb-web-js-mode
     "if" #'cb-flow-insert-flow-annotation)
