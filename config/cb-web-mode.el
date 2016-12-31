@@ -12,6 +12,7 @@
   (require 'use-package))
 
 (require 'spacemacs-keys)
+(autoload 'evil-define-key "evil-core")
 
 (use-package web-mode
   :defines (web-mode-markup-indent-offset
@@ -107,8 +108,13 @@
 (use-package tern
   :defer t
   :functions (tern-mode)
+  :commands (tern-find-definition tern-pop-find-definition)
   :init
-  (add-hook 'cb-web-js-mode-hook #'tern-mode))
+  (add-hook 'cb-web-js-mode-hook #'tern-mode)
+  :config
+  (evil-define-key 'normal tern-mode-keymap
+    (kbd "M-.") #'tern-find-definition
+    (kbd "M-,") #'tern-pop-find-definition))
 
 (use-package company-tern
   :after cb-web-modes
