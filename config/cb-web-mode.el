@@ -112,9 +112,13 @@
   :init
   (add-hook 'cb-web-js-mode-hook #'tern-mode)
   :config
-  (evil-define-key 'normal tern-mode-keymap
-    (kbd "M-.") #'tern-find-definition
-    (kbd "M-,") #'tern-pop-find-definition))
+  (progn
+    (unless (getenv "NODE_PATH")
+      (setenv "NODE_PATH" "/usr/local/lib/node_modules"))
+
+    (evil-define-key 'normal tern-mode-keymap
+      (kbd "M-.") #'tern-find-definition
+      (kbd "M-,") #'tern-pop-find-definition)))
 
 (use-package company-tern
   :after cb-web-modes
