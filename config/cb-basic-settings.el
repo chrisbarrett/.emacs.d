@@ -226,6 +226,8 @@ Optional arg JUSTIFY will justify comments and strings."
 (global-set-key (kbd "C-<up>") #'cb-transpose-line-up)
 (global-set-key (kbd "C-<down>") #'cb-transpose-line-down)
 
+(global-set-key (kbd "s-<up>") #'cb-transpose-line-up)
+(global-set-key (kbd "s-<down>") #'cb-transpose-line-down)
 
 ;;; Hide DOS EOL
 
