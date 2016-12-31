@@ -620,6 +620,9 @@ export, but the module does not declare a default export."
       (cb-flow-checker--single-message-error-parser level checker msgs
                                      #'cb-flow-checker--module-not-found-error-message))
 
+     ((member "Unexpected end of input" comments)
+      (cb-flow-checker--single-message-error-parser level checker msgs #'identity))
+
      ((and (member "Could not resolve name" comments)
            (--any? (s-starts-with? "type " it) comments))
       (cb-flow-checker--single-message-error-parser level checker msgs
