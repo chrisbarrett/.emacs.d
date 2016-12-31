@@ -243,6 +243,19 @@ is not exported by name.%s"
 As I analyse your program I see an attempt to access a property
 on an object, but this access is illegal." property target))
 
+(defun cb-flow-checker--property-cannot-be-assigned-error-message (property target)
+  (format "Property `%s' cannot be assigned on %s.
+
+As I analyse your program I see an attempt to assign a property
+to an object, but this assignment is illegal." property target))
+
+(defun cb-flow-checker--property-cannot-be-assigned-on-possibly-null-value-error-message (property)
+  (format "Property `%s' cannot be assigned on possibly null or undefined value.
+
+As I analyse your program I see an attempt to assign a property
+to an object, but this assignment is illegal because that object
+could be null or undefined." property))
+
 (defun cb-flow-checker--jsx-attribute-empty-expression-error-message ()
   "Empty expression in attribute assignment.
 
@@ -282,6 +295,18 @@ be covariant."
 As I typecheck your program, I find an illegal attempt to coerce
 one type to another."
           t1 t2))
+
+
+(defun cb-flow-checker--default-import-from-module-error-message (suggestion)
+  (format "Module has no default export.
+
+Suggested fix:
+
+  %s
+
+As I analyse your program, I see an import binding a default
+export, but the module does not declare a default export."
+          suggestion))
 
 ;;; Error parsers
 
@@ -418,6 +443,34 @@ one type to another."
                             :checker checker
                             :filename source))))
 
+(defun cb-flow-checker--property-cannot-be-assigned-error (level checker msgs)
+  (-let* (([(&alist 'descr prop-descr
+                    'loc (&alist 'start (&alist 'line line-expected 'column col-expected)
+                                 'source source))
+            _
+            (&alist 'descr target)]
+           msgs)
+          ((_ prop) (s-match (rx "property `" (group (+ (not (any "`")))))
+                             prop-descr)))
+    (list
+     (flycheck-error-new-at line-expected col-expected level
+                            (cb-flow-checker--property-cannot-be-assigned-error-message prop target)
+                            :checker checker
+                            :filename source))))
+
+(defun cb-flow-checker--property-cannot-be-assigned-on-possibly-null-or-undefined-value-error (level checker msgs)
+  (-let* (([(&alist 'descr prop-descr
+                    'loc (&alist 'start (&alist 'line line-expected 'column col-expected)
+                                 'source source))]
+           msgs)
+          ((_ prop) (s-match (rx "property `" (group (+ (not (any "`")))))
+                             prop-descr)))
+    (list
+     (flycheck-error-new-at line-expected col-expected level
+                            (cb-flow-checker--property-cannot-be-assigned-on-possibly-null-value-error-message prop)
+                            :checker checker
+                            :filename source))))
+
 (defun cb-flow-checker--jsx-attribute-empty-expression-error (level checker msgs)
   (-let [[(&alist 'loc (&alist 'start (&alist 'line line-expected 'column col-expected)
                                'source source))]
@@ -465,6 +518,19 @@ one type to another."
                             :checker checker
                             :filename source))))
 
+(defun cb-flow-checker--default-import-from-module-error (level checker msgs)
+  (-let* (([(&alist
+             'loc (&alist 'start (&alist 'line line 'column col)
+                          'source source))
+            (&alist 'descr sugg-descr)]
+           msgs)
+          ((_ prop) (s-match (rx "Did you mean `" (group (+ (not (any "`")))))
+                             sugg-descr)))
+    (list
+     (flycheck-error-new-at line col level
+                            (cb-flow-checker--default-import-from-module-error-message prop)
+                            :checker checker
+                            :filename source))))
 
 (defun cb-flow-checker--single-message-error-parser (level checker msgs msg-format-fn)
   (cb-flow-checker--indexed-error-and-message-parser level checker msgs 0 0 msg-format-fn))
@@ -580,6 +646,15 @@ one type to another."
      ((member "Property cannot be accessed on" comments)
       (cb-flow-checker--property-cannot-be-accessed-error level checker msgs))
 
+     ((member "Property cannot be assigned on" comments)
+      (cb-flow-checker--property-cannot-be-assigned-error level checker msgs))
+
+     ((member "Property cannot be assigned on possibly null value" comments)
+      (cb-flow-checker--property-cannot-be-assigned-on-possibly-null-or-undefined-value-error level checker msgs))
+
+     ((member "Property cannot be assigned on possibly undefined value" comments)
+      (cb-flow-checker--property-cannot-be-assigned-on-possibly-null-or-undefined-value-error level checker msgs))
+
      ((member "JSX attributes must only be assigned a non-empty expression" comments)
       (cb-flow-checker--jsx-attribute-empty-expression-error level checker msgs))
 
@@ -595,6 +670,9 @@ one type to another."
 
      ((--any? (s-starts-with? "Named import from module" it) comments)
       (cb-flow-checker--named-import-from-module-error level checker msgs))
+
+     ((--any? (s-starts-with? "Default import from `" it) comments)
+      (cb-flow-checker--default-import-from-module-error level checker msgs))
 
      ((--any? (and (s-starts-with? "Covariant property " it)
                    (s-ends-with? "incompatible with contravariant use in" it))
