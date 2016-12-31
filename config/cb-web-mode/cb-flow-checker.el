@@ -249,12 +249,15 @@ on an object, but this access is illegal." property target))
 As I analyse your program I see an attempt to assign a property
 to an object, but this assignment is illegal." property target))
 
-(defun cb-flow-checker--property-cannot-be-assigned-on-possibly-null-value-error-message (property)
+(defun cb-flow-checker--property-cannot-be-assigned-on-possibly-null-value-error-message (property suggestion)
   (format "Property `%s' cannot be assigned on possibly null or undefined value.
-
+%s
 As I analyse your program I see an attempt to assign a property
 to an object, but this assignment is illegal because that object
-could be null or undefined." property))
+could be null or undefined." property
+(if suggestion
+    (format "\n%s\n" suggestion)
+  "")))
 
 (defun cb-flow-checker--jsx-attribute-empty-expression-error-message (_)
   "Empty expression in attribute assignment.
@@ -460,13 +463,16 @@ export, but the module does not declare a default export."
 (defun cb-flow-checker--property-cannot-be-assigned-on-possibly-null-or-undefined-value-error (level checker msgs)
   (-let* (([(&alist 'descr prop-descr
                     'loc (&alist 'start (&alist 'line line-expected 'column col-expected)
-                                 'source source))]
+                                 'source source))
+            _
+            (&alist 'descr descr-suggestion)]
            msgs)
+          ((_ suggestion) (s-match (rx (*? nonl) "." (* space) (group (+ nonl))) descr-suggestion))
           ((_ prop) (s-match (rx "property `" (group (+ (not (any "`")))))
                              prop-descr)))
     (list
      (flycheck-error-new-at line-expected col-expected level
-                            (cb-flow-checker--property-cannot-be-assigned-on-possibly-null-value-error-message prop)
+                            (cb-flow-checker--property-cannot-be-assigned-on-possibly-null-value-error-message prop suggestion)
                             :checker checker
                             :filename source))))
 
