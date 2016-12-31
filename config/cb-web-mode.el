@@ -40,9 +40,15 @@
   :mode (("\\.json\\'" . cb-web-json-mode)
          ("\\.es6\\'"  . cb-web-js-mode)
          ("\\.jsx?\\'" . cb-web-js-mode)
+         ("\\.css\\'"  . cb-web-css-mode)
          ("\\.html\\'" . cb-web-html-mode))
   :config
   (with-eval-after-load 'flycheck
+    (flycheck-add-mode 'javascript-eslint 'cb-web-js-mode)
+    (flycheck-add-mode 'javascript-gjslint 'cb-web-js-mode)
+    (flycheck-add-mode 'javascript-jscs 'cb-web-js-mode)
+    (flycheck-add-mode 'javascript-jshint 'cb-web-js-mode)
+    (flycheck-add-mode 'css-csslint 'cb-web-css-mode)
     (flycheck-add-mode 'json-jsonlint 'cb-web-json-mode)))
 
 

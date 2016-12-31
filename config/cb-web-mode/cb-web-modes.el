@@ -22,6 +22,10 @@
 (define-derived-mode cb-web-html-mode web-mode "HTML"
   "Derived mode for editing HTML files.")
 
+;;;###autoload
+(define-derived-mode cb-web-css-mode web-mode "CSS"
+  "Derived mode for editing CSS files.")
+
 (provide 'cb-web-modes)
 
 ;;; cb-web-modes.el ends here
