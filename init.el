@@ -53,6 +53,7 @@ If argument INTERACTIVE-P is set, log additional information."
     (dolist (path (append (list lisp-dir config-dir) config-subtrees git-subtrees))
       (add-to-list 'load-path path)
       (add-to-list 'Info-default-directory-list path)
+      (add-to-list 'load-path (concat path "/emacs"))
       (add-to-list 'load-path (concat path "/elisp"))
       (add-to-list 'load-path (concat path "/lisp")))
 

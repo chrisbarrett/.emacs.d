@@ -98,6 +98,22 @@
                '((cb-web-js-mode . "JavaScript") . cb-js-autoinsert-template-string))
   :defines (auto-insert-alist))
 
+(use-package tern
+  :defer t
+  :functions (tern-mode)
+  :init
+  (add-hook 'cb-web-js-mode-hook #'tern-mode))
+
+(use-package company-tern
+  :after cb-web-modes
+  :config
+  (progn
+    (setq company-tern-meta-as-single-line t)
+    (setq company-tern-property-marker " <p>")
+
+    (with-eval-after-load 'company
+      (add-to-list 'company-backends 'company-tern))))
+
 (provide 'cb-web-mode)
 
 ;;; cb-web-mode.el ends here
