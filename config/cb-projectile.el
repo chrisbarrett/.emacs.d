@@ -63,6 +63,7 @@
             ".svn"
             "build"
             "dist"
+            "node_modules"
             "target"))
 
     (projectile-mode)))
