@@ -120,6 +120,15 @@
     (with-eval-after-load 'company
       (add-to-list 'company-backends 'company-tern))))
 
+(use-package web-beautify
+  :commands (web-beautify-js web-beautify-html web-beautify-css)
+  :init
+  (progn
+    (spacemacs-keys-set-leader-keys-for-major-mode 'cb-web-js-mode  "=" #'web-beautify-js)
+    (spacemacs-keys-set-leader-keys-for-major-mode 'cb-web-json-mode "=" #'web-beautify-js)
+    (spacemacs-keys-set-leader-keys-for-major-mode 'cb-web-html-mode  "=" #'web-beautify-html)
+    (spacemacs-keys-set-leader-keys-for-major-mode 'cb-web-css-mode "=" #'web-beautify-css)))
+
 (provide 'cb-web-mode)
 
 ;;; cb-web-mode.el ends here
