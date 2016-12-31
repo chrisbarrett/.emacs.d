@@ -256,7 +256,7 @@ As I analyse your program I see an attempt to assign a property
 to an object, but this assignment is illegal because that object
 could be null or undefined." property))
 
-(defun cb-flow-checker--jsx-attribute-empty-expression-error-message ()
+(defun cb-flow-checker--jsx-attribute-empty-expression-error-message (_)
   "Empty expression in attribute assignment.
 
 As I compile JSX snippets in your program I see an empty
@@ -265,13 +265,13 @@ expression being assigned to an attribute, which is illegal.
 You could supply a literal value or call a function to fix this
 error.")
 
-(defun cb-flow-checker--unreachable-code-error-message ()
+(defun cb-flow-checker--unreachable-code-error-message (_)
   "Unreachable code here.
 
 As I analyse the control flow of your program, I infer that the
 program fragment here can never be executed.")
 
-(defun cb-flow-checker--ineligible-value-in-type-annotation-error-message ()
+(defun cb-flow-checker--ineligible-value-in-type-annotation-error-message (_)
   "Value used in a type annotation.
 
 As I typecheck your program, I find a value used at the type
@@ -295,7 +295,6 @@ be covariant."
 As I typecheck your program, I find an illegal attempt to coerce
 one type to another."
           t1 t2))
-
 
 (defun cb-flow-checker--default-import-from-module-error-message (suggestion)
   (format "Module has no default export.
@@ -471,36 +470,6 @@ export, but the module does not declare a default export."
                             :checker checker
                             :filename source))))
 
-(defun cb-flow-checker--jsx-attribute-empty-expression-error (level checker msgs)
-  (-let [[(&alist 'loc (&alist 'start (&alist 'line line-expected 'column col-expected)
-                               'source source))]
-         msgs]
-    (list
-     (flycheck-error-new-at line-expected col-expected level
-                            (cb-flow-checker--jsx-attribute-empty-expression-error-message)
-                            :checker checker
-                            :filename source))))
-
-(defun cb-flow-checker--unreachable-code-error (level checker msgs)
-  (-let [[(&alist 'loc (&alist 'start (&alist 'line line-expected 'column col-expected)
-                               'source source))]
-         msgs]
-    (list
-     (flycheck-error-new-at line-expected col-expected level
-                            (cb-flow-checker--unreachable-code-error-message)
-                            :checker checker
-                            :filename source))))
-
-(defun cb-flow-checker--ineligible-value-in-type-annotation-error (level checker msgs)
-  (-let [[(&alist 'loc (&alist 'start (&alist 'line line-expected 'column col-expected)
-                               'source source))]
-         msgs]
-    (list
-     (flycheck-error-new-at line-expected col-expected level
-                            (cb-flow-checker--ineligible-value-in-type-annotation-error-message)
-                            :checker checker
-                            :filename source))))
-
 (defun cb-flow-checker--incompatible-property-variance-error (level checker msgs)
   (-let* (([(&alist 'descr prop-descr
                     'loc (&alist 'start (&alist 'line line-expected 'column col-expected)
@@ -659,13 +628,16 @@ export, but the module does not declare a default export."
       (cb-flow-checker--property-cannot-be-assigned-on-possibly-null-or-undefined-value-error level checker msgs))
 
      ((member "JSX attributes must only be assigned a non-empty expression" comments)
-      (cb-flow-checker--jsx-attribute-empty-expression-error level checker msgs))
+      (cb-flow-checker--single-message-error-parser level checker msgs
+                                     #'cb-flow-checker--jsx-attribute-empty-expression-error-message))
 
      ((member "unreachable code" comments)
-      (cb-flow-checker--unreachable-code-error level checker msgs))
+      (cb-flow-checker--single-message-error-parser level checker msgs
+                                     #'cb-flow-checker--unreachable-code-error-message))
 
      ((member "Ineligible value used in/as type annotation (did you forget 'typeof'?)" comments)
-      (cb-flow-checker--ineligible-value-in-type-annotation-error level checker msgs))
+      (cb-flow-checker--single-message-error-parser level checker msgs
+                                     #'cb-flow-checker--ineligible-value-in-type-annotation-error-message))
 
      ((--any? (s-starts-with? "Application of polymorphic type needs" it) comments)
       (cb-flow-checker--indexed-error-and-message-parser level checker msgs 1 0
