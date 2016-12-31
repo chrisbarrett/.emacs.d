@@ -29,9 +29,9 @@
 // @flow
 import React from 'react';
 
-type props = {}
+type Props = {}
 
-const ${1:%s} = ({}: props) => (
+const ${1:%s} = ({}: Props) => (
   $0
 )
 
