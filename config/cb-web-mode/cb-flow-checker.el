@@ -299,6 +299,23 @@ As I typecheck your program, I find an illegal attempt to coerce
 one type to another."
           t1 t2))
 
+(defun cb-flow-checker--inexact-type-error-message (context type)
+  (format "Inexact type is incompatible with exact type.
+
+Expected:
+
+  %s
+
+In context:
+
+  %s
+
+As I typecheck your program, I find an illegal attempt to use an
+inexact type where an exact type is required.
+
+To resolve this, try adding more type annotations to constrain
+the types in your program." type context))
+
 (defun cb-flow-checker--default-import-from-module-error-message (suggestion)
   (format "Module has no default export.
 
@@ -493,6 +510,22 @@ export, but the module does not declare a default export."
                             :checker checker
                             :filename source))))
 
+(defun cb-flow-checker--inexact-type-error (level checker msgs)
+  (-let* (([(&alist
+             'loc (&alist 'start (&alist 'line line-expected 'column col-expected)
+                          'source source))
+            _
+            (&alist 'descr descr 'context context)]
+           msgs)
+          (context (s-trim context))
+          ((_ type) (s-match (rx "exact type:" (+ space) (group (+ nonl)))
+                             descr)))
+    (list
+     (flycheck-error-new-at line-expected col-expected level
+                            (cb-flow-checker--inexact-type-error-message context type)
+                            :checker checker
+                            :filename source))))
+
 (defun cb-flow-checker--default-import-from-module-error (level checker msgs)
   (-let* (([(&alist
              'loc (&alist 'start (&alist 'line line 'column col)
@@ -610,6 +643,9 @@ export, but the module does not declare a default export."
 
      ((member "This type cannot be added to" comments)
       (cb-flow-checker--intersection-type-error level checker msgs))
+
+     ((member "Inexact type is incompatible with exact type" comments)
+      (cb-flow-checker--inexact-type-error level checker msgs))
 
      ((member "type referenced from value position" comments)
       (cb-flow-checker--single-message-error-parser level checker msgs
