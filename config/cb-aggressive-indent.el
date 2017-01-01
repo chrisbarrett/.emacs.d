@@ -20,6 +20,7 @@
     (add-to-list 'aggressive-indent-excluded-modes 'rust-mode)
     (add-to-list 'aggressive-indent-excluded-modes 'toml-mode)
     (add-to-list 'aggressive-indent-excluded-modes 'restclient-mode)
+    (add-to-list 'aggressive-indent-excluded-modes 'stylus-mode)
 
     (global-aggressive-indent-mode +1)))
 
