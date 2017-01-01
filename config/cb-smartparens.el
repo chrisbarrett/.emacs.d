@@ -185,7 +185,10 @@
     (sp-with-modes 'web-mode
       (sp-local-pair "<" nil :when '(cb-smartparens-web-mode-is-code-context)))
 
-    (sp-local-pair 'cb-web-js-mode "(" ")" :pre-handlers '(:add cb-smartparens--web-mode-format-paren-after-keyword))
+    (sp-with-modes 'cb-web-js-mode
+      ;; Flow strict types
+      (sp-local-pair "{|" "|}" :post-handlers '(("||\n[i]" "RET") ("| " "SPC")))
+      (sp-local-pair "(" ")" :pre-handlers '(:add cb-smartparens--web-mode-format-paren-after-keyword)))
 
     (sp-with-modes 'org-mode
       (sp-local-pair "*" "*" :actions '(insert wrap) :unless '(sp-point-after-word-p sp-point-at-bol-p) :wrap "C-*" :skip-match 'cb-smartparens--org-skip-asterisk)
