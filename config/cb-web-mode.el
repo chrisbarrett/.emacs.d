@@ -139,6 +139,9 @@
     (spacemacs-keys-set-leader-keys-for-major-mode 'cb-web-html-mode  "=" #'web-beautify-html)
     (spacemacs-keys-set-leader-keys-for-major-mode 'cb-web-css-mode "=" #'web-beautify-css)))
 
+(use-package stylus-mode
+  :mode ("\\.styl\\'" . stylus-mode))
+
 (provide 'cb-web-mode)
 
 ;;; cb-web-mode.el ends here
