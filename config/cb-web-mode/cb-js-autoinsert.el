@@ -53,6 +53,14 @@ export default $1;
 
 " (cb-js-autoinsert--component-name file)))
 
+(defun cb-js-autoinsert--flow-standard-source ()
+  "
+// @flow
+
+$0
+
+")
+
 
 ;; Expansion function
 
@@ -65,7 +73,11 @@ export default $1;
                  (cb-js-autoinsert--flow-react-component file))
 
                 ((member "components" (f-split file))
-                 (cb-js-autoinsert--react-component file))))
+                 (cb-js-autoinsert--react-component file))
+
+                ((locate-dominating-file file ".flowconfig")
+                 (cb-js-autoinsert--flow-standard-source))))
+
       (yas-expand-snippet (s-trim snippet)))))
 
 (provide 'cb-js-autoinsert)
