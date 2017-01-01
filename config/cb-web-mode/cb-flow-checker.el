@@ -34,7 +34,7 @@
 (autoload 'projectile-project-p "projectile")
 (autoload 'projectile-current-project-files "projectile")
 
-(defvar cb-flow-checker--logging-verbosity 2
+(defvar cb-flow-checker--logging-verbosity 0
   "Set how much additional info gets logged after type-checking.
 
 0 = disabled
@@ -217,6 +217,15 @@ to access a property which I cannot prove to be defined.
 
 Since I cannot prove that values of type `%s' have this property,
 I must consider this an error." property type type))
+
+(defun cb-flow-checker--prop-not-supplied-error-message (property type)
+  (format "Missing required prop `%s'.
+
+The property is required for components of type `%s'.
+
+As I infer the types of values in this program, I see a value
+construction which does not specify a required property."
+          property type))
 
 (defun cb-flow-checker--could-not-resolve-name-error-message (property)
   (format "React element `%s' could not be resolved.
@@ -404,6 +413,29 @@ export, but the module does not declare a default export."
                             "An identifier was already bound here."
                             :checker checker
                             :filename source-2))))
+
+(defun cb-flow-checker--prop-not-supplied-error (level checker msgs)
+  (-let* (([(&alist 'descr prop-descr
+                    'loc (&alist 'start (&alist 'line line-def 'column col-def)
+                                 'source source-def))
+            _
+            (&alist 'descr type
+                    'loc (&alist 'start (&alist 'line line-usage 'column col-usage)
+                                 'source source-usage))]
+           msgs)
+          ((_ type) (s-match (rx "React element `" (group (+ (not (any "`")))))
+                             type))
+          ((_ prop) (s-match (rx "property `" (group (+ (not (any "`")))))
+                             prop-descr)))
+    (list
+     (flycheck-error-new-at line-usage col-usage level
+                            (cb-flow-checker--prop-not-supplied-error-message prop type)
+                            :checker checker
+                            :filename source-usage)
+     (flycheck-error-new-at line-def col-def 'info
+                            (format "A missing property error in `%s' arose from this constraint." (f-filename source-usage))
+                            :checker checker
+                            :filename source-def))))
 
 (defun cb-flow-checker--property-not-found-error (level checker msgs)
   (-let* (([(&alist 'descr prop-descr
@@ -601,6 +633,10 @@ export, but the module does not declare a default export."
       (cb-flow-checker--single-message-error-parser level checker msgs
                                      #'cb-flow-checker--method-call-on-null-or-undefined-error-message))
 
+     ((and (member "Property not found in" comments)
+           (--any? (s-starts-with? "props of React element " it) comments))
+      (cb-flow-checker--prop-not-supplied-error level checker msgs))
+
      ((member "Property not found in" comments)
       (cb-flow-checker--property-not-found-error level checker msgs))
 
@@ -696,12 +732,11 @@ export, but the module does not declare a default export."
               comments)
       (cb-flow-checker--incompatible-property-variance-error level checker msgs))
 
+     ((<= 1 cb-flow-checker--logging-verbosity)
+      (display-warning "Unknown Flow error" (pp-to-string msgs))
+      nil)
      (t
-      (when (<= 1 cb-flow-checker--logging-verbosity)
-        ;; If this branch gets used, a new handler should be implemented.
-        (display-warning "Unknown Flow error" (pp-to-string msgs)))
-
-      nil))))
+      (cb-flow-checker--single-message-error-parser level checker msgs #'identity)))))
 
 
 ;;; Logger utilities
