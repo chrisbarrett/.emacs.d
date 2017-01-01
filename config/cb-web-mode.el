@@ -140,7 +140,12 @@
     (spacemacs-keys-set-leader-keys-for-major-mode 'cb-web-css-mode "=" #'web-beautify-css)))
 
 (use-package stylus-mode
-  :mode ("\\.styl\\'" . stylus-mode))
+  :mode ("\\.styl\\'" . stylus-mode)
+  :preface
+  (defun cb-web--set-stylus-vars ()
+    (setq-local tab-width 2))
+  :config
+  (add-hook 'stylus-mode-hook #'cb-web--set-stylus-vars))
 
 (provide 'cb-web-mode)
 
