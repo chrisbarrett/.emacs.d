@@ -44,7 +44,8 @@
   :config
   (progn
     (setq projectile-completion-system 'ivy)
-    (setq projectile-switch-project-action #'magit-status)
+    (setq projectile-switch-project-action (lambda ()
+                                             (dired (projectile-project-p))))
     (setq projectile-cache-file (concat cb-emacs-cache-directory "/projectile.cache"))
     (setq projectile-enable-caching t)
 
