@@ -414,6 +414,12 @@ export, but the module does not declare a default export."
                             :checker checker
                             :filename source-2))))
 
+(defun cb-flow-checker--missing-property-def-note (source-def source-usage line-usage)
+  (format "A missing property error %s arose from the inferred type here."
+          (if (equal source-usage source-def)
+              (format "at line %s" line-usage)
+            (format "in %s" (f-filename source-usage)))))
+
 (defun cb-flow-checker--prop-not-supplied-error (level checker msgs)
   (-let* (([(&alist 'descr prop-descr
                     'loc (&alist 'start (&alist 'line line-def 'column col-def)
@@ -433,24 +439,45 @@ export, but the module does not declare a default export."
                             :checker checker
                             :filename source-usage)
      (flycheck-error-new-at line-def col-def 'info
-                            (format "A missing property error in `%s' arose from this constraint." (f-filename source-usage))
+                            (cb-flow-checker--missing-property-def-note source-def source-usage line-usage)
                             :checker checker
                             :filename source-def))))
 
-(defun cb-flow-checker--property-not-found-error (level checker msgs)
+(defun cb-flow-checker--property-not-found-in-literal-error (level checker msgs)
   (-let* (([(&alist 'descr prop-descr
-                    'loc (&alist 'start (&alist 'line line-expected 'column col-expected)
-                                 'source source))
+                    'loc (&alist 'start (&alist 'line line-def 'column col-def)
+                                 'source source-def))
+            _
+            (&alist 'descr type
+                    'loc (&alist 'start (&alist 'line line-usage 'column col-usage)
+                                 'source source-usage))]
+           msgs)
+          ((_ prop) (s-match (rx "property `" (group (+ (not (any "`")))))
+                             prop-descr)))
+    (list
+     (flycheck-error-new-at line-usage col-usage level
+                            (cb-flow-checker--property-not-found-error-message prop type)
+                            :checker checker
+                            :filename source-usage)
+     (flycheck-error-new-at line-def col-def 'info
+                            (cb-flow-checker--missing-property-def-note source-def source-usage line-usage)
+                            :checker checker
+                            :filename source-def))))
+
+(defun cb-flow-checker--property-not-found-in-error (level checker msgs)
+  (-let* (([(&alist 'descr prop-descr
+                    'loc (&alist 'start (&alist 'line line-usage 'column col-usage)
+                                 'source source-usage))
             _
             (&alist 'descr type)]
            msgs)
           ((_ prop) (s-match (rx "property `" (group (+ (not (any "`")))))
                              prop-descr)))
     (list
-     (flycheck-error-new-at line-expected col-expected level
+     (flycheck-error-new-at line-usage col-usage level
                             (cb-flow-checker--property-not-found-error-message prop type)
                             :checker checker
-                            :filename source))))
+                            :filename source-usage))))
 
 (defun cb-flow-checker--could-not-resolve-name-error (level checker msgs)
   (-let* (([(&alist 'descr element-descr
@@ -637,8 +664,12 @@ export, but the module does not declare a default export."
            (--any? (s-starts-with? "props of React element " it) comments))
       (cb-flow-checker--prop-not-supplied-error level checker msgs))
 
+     ((and (member "Property not found in" comments)
+           (member "object literal" comments))
+      (cb-flow-checker--property-not-found-in-literal-error level checker msgs))
+
      ((member "Property not found in" comments)
-      (cb-flow-checker--property-not-found-error level checker msgs))
+      (cb-flow-checker--property-not-found-in-error level checker msgs))
 
      ((member "Property cannot be accessed on possibly null value" comments)
       (cb-flow-checker--single-message-error-parser level checker msgs
