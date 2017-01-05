@@ -105,6 +105,14 @@
                '((cb-web-js-mode . "JavaScript") . cb-js-autoinsert-template-string))
   :defines (auto-insert-alist))
 
+(use-package cb-html-autoinsert
+  :defer t
+  :after autoinsert
+  :config
+  (add-to-list 'auto-insert-alist
+               '((cb-web-html-mode . "HTML") . cb-html-autoinsert-template-string))
+  :defines (auto-insert-alist))
+
 (use-package tern
   :defer t
   :functions (tern-mode)
