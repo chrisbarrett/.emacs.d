@@ -45,6 +45,10 @@
          ("\\.html\\'" . cb-web-html-mode))
   :config
   (with-eval-after-load 'flycheck
+    (let ((tidy-bin "/usr/local/Cellar/tidy-html5/5.2.0/bin/tidy"))
+      (when (file-exists-p tidy-bin)
+        (setq flycheck-html-tidy-executable tidy-bin)))
+
     (flycheck-add-mode 'javascript-eslint 'cb-web-js-mode)
     (flycheck-add-mode 'javascript-gjslint 'cb-web-js-mode)
     (flycheck-add-mode 'javascript-jscs 'cb-web-js-mode)
