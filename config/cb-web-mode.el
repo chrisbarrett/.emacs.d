@@ -50,8 +50,8 @@
     (flycheck-add-mode 'javascript-jscs 'cb-web-js-mode)
     (flycheck-add-mode 'javascript-jshint 'cb-web-js-mode)
     (flycheck-add-mode 'css-csslint 'cb-web-css-mode)
-    (flycheck-add-mode 'json-jsonlint 'cb-web-json-mode)))
-
+    (flycheck-add-mode 'json-jsonlint 'cb-web-json-mode)
+    (flycheck-add-mode 'html-tidy 'cb-web-html-mode)))
 
 (use-package flycheck
   :commands (flycheck-select-checker)
