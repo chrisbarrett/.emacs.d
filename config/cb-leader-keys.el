@@ -92,6 +92,7 @@
       "h d k" #'describe-key
       "h d m" #'describe-mode
       "h d c" #'describe-face
+      "h i"   #'info
 
       "k b" #'kill-this-buffer
       "k w" #'delete-window
