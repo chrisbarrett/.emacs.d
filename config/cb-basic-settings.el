@@ -508,6 +508,11 @@ Optional arg JUSTIFY will justify comments and strings."
   ;; Always focus on help windows
   (setq help-window-select t))
 
+(use-package time
+  :defer t
+  :config
+  (setq display-time-default-load-average nil))
+
 (use-package world-time-mode
   :commands (world-time-list)
   :init
