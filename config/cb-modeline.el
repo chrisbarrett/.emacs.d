@@ -19,10 +19,13 @@
   (setq-default mode-line-format " "))
 
 (use-package cb-header-line-mode
-  :commands (cb-header-line-mode cb-header-line-mode-on)
+  :commands (cb-header-line-global-mode cb-header-line-mode cb-header-line-mode-on)
   :init
   (progn
-    (spacemacs-keys-set-leader-keys "tm" #'cb-header-line-mode)
+    (spacemacs-keys-set-leader-keys
+      "tM" #'cb-header-line-mode
+      "tm" #'cb-header-line-global-mode)
+
     (add-hook 'term-mode-hook #'cb-header-line-mode-on)))
 
 (provide 'cb-modeline)

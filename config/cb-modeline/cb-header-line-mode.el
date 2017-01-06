@@ -24,6 +24,10 @@
   (interactive)
   (cb-header-line-mode +1))
 
+;;;###autoload
+(define-globalized-minor-mode cb-header-line-global-mode cb-header-line-mode
+  cb-header-line-mode-on)
+
 (provide 'cb-header-line-mode)
 
 ;;; cb-header-line-mode.el ends here
