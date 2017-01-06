@@ -1,0 +1,49 @@
+= Display the world clock as a day =
+
+Emacs can store your interesting timezones in the
+{{{display-time-world-list}}}. Customize that list to where you're
+interested in and then do:
+
+{{{
+M-x world-time-list [RET]
+}}}
+
+and you will get:
+
+{{{
+America/Los Angeles  America/New York     Europe/London        Europe/Berlin
+17:18 PST            20:18 EST            01:18 GMT            02:18 CET        
+18:18 PST            21:18 EST            02:18 GMT            03:18 CET        
+19:18 PST            22:18 EST            03:18 GMT            04:18 CET        
+20:18 PST            23:18 EST            04:18 GMT            05:18 CET        
+21:18 PST            00:18 EST            05:18 GMT            06:18 CET        
+22:18 PST            01:18 EST            06:18 GMT            07:18 CET        
+23:18 PST            02:18 EST            07:18 GMT            08:18 CET        
+00:18 PST            03:18 EST            08:18 GMT            09:18 CET        
+01:18 PST            04:18 EST            09:18 GMT            10:18 CET        
+02:18 PST            05:18 EST            10:18 GMT            11:18 CET        
+03:18 PST            06:18 EST            11:18 GMT            12:18 CET        
+04:18 PST            07:18 EST            12:18 GMT            13:18 CET        
+05:18 PST            08:18 EST            13:18 GMT            14:18 CET        
+06:18 PST            09:18 EST            14:18 GMT            15:18 CET        
+07:18 PST            10:18 EST            15:18 GMT            16:18 CET        
+08:18 PST            11:18 EST            16:18 GMT            17:18 CET        
+09:18 PST            12:18 EST            17:18 GMT            18:18 CET        
+10:18 PST            13:18 EST            18:18 GMT            19:18 CET        
+11:18 PST            14:18 EST            19:18 GMT            20:18 CET        
+12:18 PST            15:18 EST            20:18 GMT            21:18 CET        
+13:18 PST            16:18 EST            21:18 GMT            22:18 CET        
+14:18 PST            17:18 EST            22:18 GMT            23:18 CET        
+15:18 PST            18:18 EST            23:18 GMT            00:18 CET        
+16:18 PST            19:18 EST            00:18 GMT            01:18 CET        
+}}}
+
+Each column is the days times in one of the timezones listed in your
+{{{display-time-world-list}}}.
+
+== Enhancements ==
+
+It's pretty cool as is. Here are some possibles though:
+
+* a keypress to go to the customize for the world time alist
+* displaying the time from now but then at every half hour increment
