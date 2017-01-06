@@ -16,9 +16,11 @@
 (require 'noflet)
 
 (require 'cb-emacs)
+(require 'spacemacs-keys)
 
 (autoload 'thing-at-point-looking-at "thingatpt")
 (autoload 'ansi-color-apply-on-region "ansi-color")
+(autoload 'evil-define-key "evil-core")
 
 
 (defalias #'yes-or-no-p #'y-or-n-p)
@@ -506,6 +508,25 @@ Optional arg JUSTIFY will justify comments and strings."
   ;; Always focus on help windows
   (setq help-window-select t))
 
+(use-package world-time-mode
+  :commands (world-time-list)
+  :init
+  (spacemacs-keys-set-leader-keys "aw" 'world-time-list)
+  :config
+  (progn
+    (setq display-time-world-list '(("Pacific/Auckland" "NZT")
+                                    ("UTC" "UTC")
+                                    ("Europe/Berlin" "Germany")
+                                    ("America/Los_Angeles" "Los Angeles")
+                                    ("America/New_York" "New York")
+                                    ("America/Denver" "Mountain Time")
+                                    ("Australia/Sydney" "Sydney")))
+    (with-eval-after-load 'evil
+      (evil-define-key 'normal world-time-table-mode-map (kbd "q") #'quit-window))
+
+    (add-hook 'world-time-table-mode-hook 'hl-line-mode))
+
+  :defines (display-time-world-list world-time-table-mode-map))
 
 (provide 'cb-basic-settings)
 
