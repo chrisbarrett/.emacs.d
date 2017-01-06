@@ -8,7 +8,32 @@
 
 ;;; Code:
 
-(defconst cb-header-line-format " %3l %* %[%b%] %n")
+(defconst cb-header-line-format '(
+                    ;; Print error on low memory
+                    "%e"
+                    mode-line-front-space
+
+                    ;; Emacsclient info
+                    mode-line-client
+
+                    ;; Current line, padded
+                    "%2l "
+
+                    ;; Modification indicator.
+                    mode-line-modified
+
+                    ;; Buffer name, with braces on recursive edit
+                    " %[%b%] "
+
+                    ;; Narrowing
+                    (:eval (if (buffer-narrowed-p)
+                               "%n "
+                             ""))
+
+                    ;; Global mode string, etc.
+                    mode-line-misc-info
+                    mode-line-end-spaces
+                    ))
 
 ;;;###autoload
 (define-minor-mode cb-header-line-mode
