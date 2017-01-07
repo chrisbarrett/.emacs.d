@@ -9,6 +9,7 @@
 ;;; Code:
 
 (require 'dash)
+(require 's)
 (require 'subr-x)
 
 (autoload 'magit-get-current-branch "magit-git")
@@ -36,6 +37,7 @@
      (:inherit header-line)))
   "Face for git branch in header line."
   :group 'cb-header-line-mode)
+
 
 ;;; Cache modeline variable lookup to improve speed
 
@@ -93,6 +95,12 @@
 
 ;;; Mode line construction functions
 
+(defun cb-header-line--access-mode-info ()
+  (let ((str (concat
+              (if buffer-read-only "%" "")
+              (if (buffer-modified-p) "M" ""))))
+    (propertize (s-pad-right 2 " " str) 'face 'cb-header-line-nonemphased-element)))
+
 (defun cb-header-line--narrowing-info ()
   (if (buffer-narrowed-p) "%n " ""))
 
@@ -114,7 +122,6 @@
        (t
         "")))))
 
-
 (defconst cb-header-line-format '(
                     ;; Print error on low memory
                     "%e"
@@ -128,7 +135,7 @@
                     (:propertize "%6p " face cb-header-line-nonemphased-element)
 
                     ;; Modification indicator.
-                    (:propertize mode-line-modified)
+                    (:eval (cb-header-line--access-mode-info))
 
                     ;; Buffer name, with braces on recursive edit
                     "  %[%b%] "
