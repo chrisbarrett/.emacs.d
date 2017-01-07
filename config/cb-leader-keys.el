@@ -14,6 +14,8 @@
 
 (require 'spacemacs-keys)
 
+(autoload 'evil-window-rotate-downwards "evil-commands")
+
 (use-package cb-alternate-buffer
   :commands (cb/alternate-buffer))
 
@@ -81,6 +83,8 @@
       "b v" #'cb-leader-keys/reload-file
 
       "C" #'compile
+
+      "c r" #'comment-or-uncomment-region
 
       "f f" #'find-file
       "f F" #'find-file-other-window
