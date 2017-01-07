@@ -217,6 +217,13 @@
     (global-vi-tilde-fringe-mode)))
 
 
+(use-package cb-evil-shift
+  :preface
+  (autoload 'evil-visual-state-map "evil-states")
+  :bind (:map evil-visual-state-map
+              ("<" . cb-evil-shift-left)
+              (">" . cb-evil-shift-right)))
+
 (provide 'cb-evil)
 
 ;;; cb-evil.el ends here
