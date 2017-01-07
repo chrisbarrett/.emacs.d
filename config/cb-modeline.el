@@ -13,6 +13,11 @@
 
 (require 'spacemacs-keys)
 
+(use-package cb-header-line-format
+  :defines cb-header-line-format
+  :config
+  (setq-default header-line-format cb-header-line-format))
+
 (use-package hidden-mode-line
   :commands (hidden-mode-line-mode global-hidden-mode-line-mode)
   :init
