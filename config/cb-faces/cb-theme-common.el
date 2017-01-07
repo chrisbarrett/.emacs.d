@@ -37,6 +37,9 @@
     (header-line
      ((t (:background ,cb-theme-common-blue :foreground "white" :weight bold))))
 
+    (cb-header-line-nonemphased-element
+     ((t (:weight light))))
+
     ;; General font-lock faces.
 
     (font-lock-keyword-face
