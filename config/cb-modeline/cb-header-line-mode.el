@@ -8,7 +8,7 @@
 
 ;;; Code:
 
-(defconst cb-header-line-mode-format-string "")
+(defconst cb-header-line-mode-format-string header-line-format)
 
 ;;;###autoload
 (define-minor-mode cb-header-line-mode

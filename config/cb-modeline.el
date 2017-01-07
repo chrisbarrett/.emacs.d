@@ -31,7 +31,7 @@
       "tM" #'cb-header-line-mode
       "tm" #'cb-header-line-global-mode)
 
-    (add-hook 'term-mode-hook #'cb-header-line-mode-on)))
+    (add-hook 'after-init-hook #'cb-header-line-global-mode)))
 
 (provide 'cb-modeline)
 
