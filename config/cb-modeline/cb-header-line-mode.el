@@ -11,19 +11,19 @@
 (defconst cb-header-line-format '(
                     ;; Print error on low memory
                     "%e"
-                    mode-line-front-space
+                    " "
 
                     ;; Emacsclient info
                     mode-line-client
 
                     ;; Current line, padded
-                    "%2l "
+                    "%2l  %6p "
 
                     ;; Modification indicator.
                     mode-line-modified
 
                     ;; Buffer name, with braces on recursive edit
-                    " %[%b%] "
+                    "  %[%b%] "
 
                     ;; Narrowing
                     (:eval (if (buffer-narrowed-p)
@@ -31,9 +31,7 @@
                              ""))
 
                     ;; Global mode string, etc.
-                    mode-line-misc-info
-                    mode-line-end-spaces
-                    ))
+                    mode-line-misc-info))
 
 ;;;###autoload
 (define-minor-mode cb-header-line-mode
