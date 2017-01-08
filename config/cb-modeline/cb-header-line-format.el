@@ -84,8 +84,7 @@
 
 (defun cb-header-line-format--update-project ()
   (let ((key (cb-header-line-format--make-cache-key))
-        (project (when-let (p (projectile-project-p))
-                   (file-name-nondirectory (directory-file-name p)))))
+        (project (projectile-project-p)))
     (setq cb-header-line-format--project (cons key project))
     project))
 
@@ -113,18 +112,22 @@
 (defun cb-header-line-format--project-info ()
   (cl-flet ((nonemphasised (str) (propertize str 'face 'cb-header-line-format-nonemphased-element)))
     (let* ((project (cb-header-line-format--current-project))
-           (branch (when project (cb-header-line-format--current-branch))))
+           (project (when project (directory-file-name project)))
+           (project-root-name (when project (file-name-nondirectory project)))
+           (branch (when project (cb-header-line-format--current-branch)))
+           (subdir (when project (s-chop-prefix project (directory-file-name default-directory)))))
       (cond
        ((and project branch)
-        (concat (nonemphasised " <")
-                (propertize project 'face 'cb-header-line-format-project-name)
+        (concat (nonemphasised " (in ")
+                (propertize project-root-name 'face 'cb-header-line-format-project-name)
+                (nonemphasised subdir)
                 (nonemphasised " on ")
                 (propertize branch 'face 'cb-header-line-format-branch-name)
-                (nonemphasised "> ")))
+                (nonemphasised ") ")))
        (project
-        (concat (nonemphasised " <")
-                (propertize project 'face 'cb-header-line-format-project-name)
-                (nonemphasised "> ")))
+        (concat (nonemphasised " (in ")
+                (propertize project-root-name 'face 'cb-header-line-format-project-name)
+                (nonemphasised ") ")))
        (t
         "")))))
 
