@@ -70,6 +70,7 @@
     (setq mu4e-use-fancy-chars t)
     (setq mu4e-headers-attach-mark (purecopy '("a" . "A")))
     (setq mu4e-headers-unread-mark (purecopy '("u" . "●")))
+    (setq mu4e-headers-seen-mark (purecopy '(" " . " ")))
     (setq mu4e-hide-index-messages t)
 
     (setq mu4e-view-prefer-html t)
