@@ -8,14 +8,15 @@
 
 ;;; Code:
 
-(defconst cb-header-line-mode-format-string header-line-format)
+(defconst cb-header-line-function #'ignore
+  "0-argument function returning the header line format string.")
 
 ;;;###autoload
 (define-minor-mode cb-header-line-mode
   "Minor mode to show or hide the header line."
   nil nil nil
   (if cb-header-line-mode
-      (setq header-line-format cb-header-line-mode-format-string)
+      (setq header-line-format (funcall cb-header-line-function))
     (setq header-line-format nil)))
 
 ;;;###autoload

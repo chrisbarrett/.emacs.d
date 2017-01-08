@@ -30,8 +30,9 @@
     (spacemacs-keys-set-leader-keys
       "tM" #'cb-header-line-mode
       "tm" #'cb-header-line-global-mode)
-
-    (add-hook 'after-init-hook #'cb-header-line-global-mode)))
+    (add-hook 'after-init-hook #'cb-header-line-global-mode))
+  :config
+  (setq cb-header-line-function (lambda () cb-header-line-format)))
 
 (provide 'cb-modeline)
 
