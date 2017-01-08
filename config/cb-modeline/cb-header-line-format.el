@@ -43,26 +43,32 @@
 
 (defconst cb-header-line--cache-duration-seconds 10)
 
-(defun cb-header-line--cache-expired? (ts)
-  (let ((expiry-time (time-add ts cb-header-line--cache-duration-seconds)))
-    (time-less-p expiry-time (current-time))))
+(defun cb-header-line-format--make-cache-key ()
+  (cons (current-time) default-directory))
+
+(defun cb-header-line--cache-expired? (key)
+  (-let* (((time . key-directory) key)
+          (expiry-time (time-add time cb-header-line--cache-duration-seconds)))
+
+    (or (time-less-p expiry-time (current-time))
+        (not (equal default-directory key-directory)))))
 
 ;; Cache the git branch.
 
 (defvar-local cb-header-line--branch nil
-  "A cons of (write-time . branch-name) or nil")
+  "A cons of (cache-key . branch-name) or nil")
 
 (defun cb-header-line--update-branch ()
-  (let ((time (current-time))
+  (let ((key (cb-header-line-format--make-cache-key))
         (branch (magit-get-current-branch)))
-    (setq cb-header-line--branch (cons time branch))
+    (setq cb-header-line--branch (cons key branch))
     branch))
 
 (defun cb-header-line--current-branch ()
   (require 'magit)
-  (-if-let ((ts . branch) cb-header-line--branch)
+  (-if-let ((key . branch) cb-header-line--branch)
       (cond
-       ((cb-header-line--cache-expired? ts)
+       ((cb-header-line--cache-expired? key)
         (cb-header-line--update-branch))
        (t
         branch))
@@ -74,19 +80,19 @@
 ;; as part of its checks.
 
 (defvar-local cb-header-line--project nil
-  "A cons of (write-time . project-name) or nil")
+  "A cons of (cache-key . project-name) or nil")
 
 (defun cb-header-line--update-project ()
-  (let ((time (current-time))
+  (let ((key (cb-header-line-format--make-cache-key))
         (project (when-let (p (projectile-project-p))
                    (file-name-nondirectory (directory-file-name p)))))
-    (setq cb-header-line--project (cons time project))
+    (setq cb-header-line--project (cons key project))
     project))
 
 (defun cb-header-line--current-project ()
-  (-if-let ((ts . project) cb-header-line--project)
+  (-if-let ((key . project) cb-header-line--project)
       (cond
-       ((cb-header-line--cache-expired? ts)
+       ((cb-header-line--cache-expired? key)
         (cb-header-line--update-project))
        (t
         project))
