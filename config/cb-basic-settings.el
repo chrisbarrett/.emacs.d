@@ -472,23 +472,10 @@ Optional arg JUSTIFY will justify comments and strings."
     (savehist-mode +1)))
 
 (use-package tramp
-
-  :preface
-  (defun cb-basic-settings--ensure-user-defined-for-tramp (args)
-    "Process the path that tramp will dissect, to ensure it has a
-user name set on localhost."
-    (-let* (((name . rest) args)
-            (name (if (s-starts-with? "/@" name)
-                      (format "/%s@%s" (getenv "USER") (s-chop-prefix "/@" name))
-                    name)))
-      (cons name rest)))
-
   :config
   (progn
     (setq tramp-default-method "ssh")
     (setq tramp-auto-save-directory (concat cb-emacs-cache-directory "/tramp-backups"))
-
-    (advice-add 'tramp-dissect-file-name :filter-args #'cb-basic-settings--ensure-user-defined-for-tramp)
     (unless (file-directory-p tramp-auto-save-directory)
       (mkdir tramp-auto-save-directory t))))
 
