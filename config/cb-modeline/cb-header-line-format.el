@@ -115,7 +115,7 @@
            (project (when project (directory-file-name project)))
            (project-root-name (when project (file-name-nondirectory project)))
            (branch (when project (cb-header-line-format--current-branch)))
-           (subdir (when project (s-chop-prefix project (directory-file-name default-directory)))))
+           (subdir (when project (s-chop-prefix project (directory-file-name (file-truename default-directory))))))
       (cond
        ((and project branch)
         (concat (nonemphasised " (in ")
