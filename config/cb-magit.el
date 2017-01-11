@@ -15,9 +15,11 @@
 (require 'spacemacs-keys)
 (require 'evil-transient-state)
 
+(autoload 'evil-define-key "evil-core")
+
 (use-package magit
   :defer t
-  :commands (magit-status magit-blame)
+  :commands (magit-status magit-blame magit-branch-and-checkout)
   :functions (magit-display-buffer-fullframe-status-v1)
   :preface
   (evil-transient-state-define git-blame
@@ -37,7 +39,9 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
     "gs" #'magit-status
     "gb" #'git-blame-transient-state/body)
   :config
-  (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
+  (progn
+    (evil-define-key 'normal magit-refs-mode-map (kbd ".") #'magit-branch-and-checkout)
+    (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)))
 
 (use-package magithub
   :after magit)
