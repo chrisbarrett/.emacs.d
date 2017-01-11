@@ -153,6 +153,8 @@
     (:eval (cb-header-line-format--narrowing-info))
     (:eval (cb-header-line-format--project-info))
 
+    " "
+
     ;; Global mode string, etc.
     mode-line-misc-info))
 
