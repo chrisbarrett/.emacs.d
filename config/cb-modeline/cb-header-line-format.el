@@ -98,10 +98,26 @@
     (cb-header-line-format--update-project)))
 
 
+;;; Helper for testing if window selected.
+
+(defvar cb-header-line-format--window-for-redisplay nil
+  "The window currently being redisplayed.")
+
+(defun cb-header-line-format--set-window-for-redisplay (_)
+  (when (not (minibuffer-window-active-p (frame-selected-window)))
+    (setq cb-header-line-format--window-for-redisplay (selected-window))))
+
+(add-function :before pre-redisplay-function #'cb-header-line-format--set-window-for-redisplay)
+
+(defun cb-header-line-format--window-selected? ()
+  (eq cb-header-line-format--window-for-redisplay (get-buffer-window)))
+
+
 ;;; Construction functions
 
 (defun cb-header-line-format--access-mode-info ()
   (let ((str (concat
+              (if (and (buffer-file-name) (file-remote-p (buffer-file-name))) "@" "")
               (if buffer-read-only "%" "")
               (if (buffer-modified-p) "M" ""))))
     (propertize (s-pad-right 2 " " str) 'face 'cb-header-line-format-nonemphased-element)))
@@ -117,6 +133,8 @@
            (branch (when project (cb-header-line-format--current-branch)))
            (subdir (when project (s-chop-prefix project (directory-file-name (file-truename default-directory))))))
       (cond
+       ((not (cb-header-line-format--window-selected?))
+        "")
        ((and project branch)
         (concat (nonemphasised " (in ")
                 (propertize project-root-name 'face 'cb-header-line-format-project-name)
@@ -131,6 +149,17 @@
        (t
         "")))))
 
+(defun cb-header-line-format--buffer-name ()
+  (if (cb-header-line-format--window-selected?)
+      (buffer-name)
+    (propertize (buffer-name) 'face 'cb-header-line-format-nonemphased-element)))
+
+(defun cb-header-line-format--line-info ()
+  (let ((str (format "Line %2s" (line-number-at-pos))))
+    (if (cb-header-line-format--window-selected?)
+        str
+      (propertize str 'face 'cb-header-line-format-nonemphased-element))))
+
 (defconst cb-header-line-format
   '(
     ;; Print error on low memory
@@ -141,14 +170,15 @@
     mode-line-client
 
     ;; Current line, padded
-    "Line %2l  "
+    (:eval (cb-header-line-format--line-info))
+    "  "
     (:propertize "%6p " face cb-header-line-format-nonemphased-element)
 
     ;; Modification indicator.
     (:eval (cb-header-line-format--access-mode-info))
 
     ;; Buffer name, with braces on recursive edit
-    "  %[%b%] "
+    "  %[" (:eval (cb-header-line-format--buffer-name)) "%] "
 
     (:eval (cb-header-line-format--narrowing-info))
     (:eval (cb-header-line-format--project-info))
@@ -156,7 +186,7 @@
     " "
 
     ;; Global mode string, etc.
-    mode-line-misc-info))
+    (:eval (if (cb-header-line-format--window-selected?) mode-line-misc-info ""))))
 
 (provide 'cb-header-line-format)
 
