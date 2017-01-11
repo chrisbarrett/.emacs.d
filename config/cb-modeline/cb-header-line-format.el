@@ -119,7 +119,7 @@
   (let ((str (concat
               (if (and (buffer-file-name) (file-remote-p (buffer-file-name))) "@" "")
               (if buffer-read-only "%" "")
-              (if (buffer-modified-p) "M" ""))))
+              (if (buffer-modified-p) "*" ""))))
     (propertize (s-pad-right 2 " " str) 'face 'cb-header-line-format-nonemphased-element)))
 
 (defun cb-header-line-format--narrowing-info ()
