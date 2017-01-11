@@ -264,8 +264,10 @@ Optional arg JUSTIFY will justify comments and strings."
 
 (defun cb-basic-settings--prompt-to-open-large-files-in-fundamental-mode ()
   (let* ((filename (buffer-file-name))
-         (size (nth 7 (file-attributes filename))))
+         (size (nth 7 (file-attributes filename)))
+         (tags-file? (when filename (equal "TAGS" (file-name-nondirectory filename)))))
     (when (and (cb-basic-settings--large-file? size)
+               (not tags-file?)
                (y-or-n-p (format "`%s' is a large file.  Open in fundamental mode? " (file-name-nondirectory filename))))
       (setq buffer-read-only t)
       (buffer-disable-undo)
