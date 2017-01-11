@@ -10,7 +10,6 @@
 
 (eval-when-compile
   (require 'use-package)
-  (require 'cb-use-package-extensions)
   (autoload 'evil-define-key "evil-core"))
 
 (require 'cb-emacs)
@@ -50,103 +49,82 @@
   :load-path cb-scala-ensime-load-path
   :defer t
   :commands (ensime)
+  :config
+  (progn
+    (spacemacs-keys-set-leader-keys-for-major-mode 'scala-mode
+      (kbd "/") 'ensime-search
+      (kbd "'") 'ensime-inf-switch
+      (kbd "bc") 'ensime-sbt-do-compile
+      (kbd "bC") 'ensime-sbt-do-clean
+      (kbd "bi") 'ensime-sbt-switch
+      (kbd "bp") 'ensime-sbt-do-package
+      (kbd "br") 'ensime-sbt-do-run
+      (kbd "ct") 'ensime-typecheck-current-buffer
+      (kbd "cT") 'ensime-typecheck-all
+      (kbd "ee") 'ensime-print-errors-at-point
+      (kbd "el") 'ensime-show-all-errors-and-warnings
+      (kbd "es") 'ensime-stacktrace-switch
+      (kbd "gg") 'ensime-edit-definition
+      (kbd "gp") 'ensime-pop-find-definition-stack
+      (kbd "gi") 'ensime-goto-impl
+      (kbd "gt") 'ensime-goto-test
+      (kbd "hh") 'ensime-show-doc-for-symbol-at-point
+      (kbd "hT") 'ensime-type-at-point-full-name
+      (kbd "ht") 'ensime-type-at-point
+      (kbd "hu") 'ensime-show-uses-of-symbol-at-point
+      (kbd "ii") 'ensime-import-type-at-point
+      (kbd "iI") 'ensime-inspect-type-at-point-other-frame
+      (kbd "ip") 'ensime-inspect-project-package
+      (kbd "nF") 'ensime-reload-open-files
+      (kbd "ns") 'ensime
+      (kbd "ra") 'ensime-refactor-add-type-annotation
+      (kbd "rd") 'ensime-refactor-diff-inline-local
+      (kbd "rD") 'ensime-undo-peek
+      (kbd "rf") 'ensime-format-source
+      (kbd "ri") 'ensime-refactor-diff-organize-imports
+      (kbd "rm") 'ensime-refactor-diff-extract-method
+      (kbd "rr") 'ensime-refactor-diff-rename
+      (kbd "rt") 'ensime-import-type-at-point
+      (kbd "rv") 'ensime-refactor-diff-extract-local
+      (kbd "ta") 'ensime-sbt-do-test-dwim
+      (kbd "tr") 'ensime-sbt-do-test-quick-dwim
+      (kbd "tt") 'ensime-sbt-do-test-only-dwim
+      (kbd "sa") 'ensime-inf-load-file
+      (kbd "sb") 'ensime-inf-eval-buffer
+      (kbd "si") 'ensime-inf-switch
+      (kbd "sr") 'ensime-inf-eval-region
+      (kbd "z") 'ensime-expand-selection-command)
 
-  :leader-bind
-  (:mode scala-mode
-         ("/" . ensime-search)
-         ("'" . ensime-inf-switch)
+    (dolist (state '(normal insert))
+      (eval `(evil-define-key ',state ensime-mode-map
+               (kbd "M-.") 'ensime-edit-definition
+               (kbd "M-,") 'ensime-pop-find-definition-stack)))
+    
+    (evil-define-key 'normal ensime-popup-buffer-map
+      (kbd "q") 'ensime-popup-buffer-quit-function)
 
-         ("bc" . ensime-sbt-do-compile)
-         ("bC" . ensime-sbt-do-clean)
-         ("bi" . ensime-sbt-switch)
-         ("bp" . ensime-sbt-do-package)
-         ("br" . ensime-sbt-do-run)
-
-         ("ct" . ensime-typecheck-current-buffer)
-         ("cT" . ensime-typecheck-all)
-
-         ("ee" . ensime-print-errors-at-point)
-         ("el" . ensime-show-all-errors-and-warnings)
-         ("es" . ensime-stacktrace-switch)
-
-         ("gg" . ensime-edit-definition)
-         ("gp" . ensime-pop-find-definition-stack)
-         ("gi" . ensime-goto-impl)
-         ("gt" . ensime-goto-test)
-
-         ("hh" . ensime-show-doc-for-symbol-at-point)
-         ("hT" . ensime-type-at-point-full-name)
-         ("ht" . ensime-type-at-point)
-         ("hu" . ensime-show-uses-of-symbol-at-point)
-
-         ("ii" . ensime-import-type-at-point)
-         ("iI" . ensime-inspect-type-at-point-other-frame)
-         ("ip" . ensime-inspect-project-package)
-
-         ("nF" . ensime-reload-open-files)
-         ("ns" . ensime)
-
-         ("ra" . ensime-refactor-add-type-annotation)
-         ("rd" . ensime-refactor-diff-inline-local)
-         ("rD" . ensime-undo-peek)
-         ("rf" . ensime-format-source)
-         ("ri" . ensime-refactor-diff-organize-imports)
-         ("rm" . ensime-refactor-diff-extract-method)
-         ("rr" . ensime-refactor-diff-rename)
-         ("rt" . ensime-import-type-at-point)
-         ("rv" . ensime-refactor-diff-extract-local)
-
-         ("ta" . ensime-sbt-do-test-dwim)
-         ("tr" . ensime-sbt-do-test-quick-dwim)
-         ("tt" . ensime-sbt-do-test-only-dwim)
-
-         ("sa" . ensime-inf-load-file)
-         ("sb" . ensime-inf-eval-buffer)
-         ("si" . ensime-inf-switch)
-         ("sr" . ensime-inf-eval-region)
-
-         ("z" . ensime-expand-selection-command))
+    (evil-define-key ensime-inspector-mode-map
+      (kbd "M-.") 'ensime-inspector-browse-source
+      (kbd "K") 'ensime-inspector-browse-doc
+      (kbd "q") 'ensime-popup-buffer-quit-function
+      (kbd ",") 'ensime-inspector-backward-page
+      (kbd ".") 'ensime-inspector-forward-page
+      (kbd "^") 'ensime-inspector-backward-page)
 
 
-  :evil-bind
-  (:map
-   ensime-mode-map
-   :state insert
-   ("M-." . ensime-edit-definition)
-   ("M-," . ensime-pop-find-definition-stack)
-   :state normal
-   ("M-." . ensime-edit-definition)
-   ("M-," . ensime-pop-find-definition-stack)
-   ("K" . ensime-inspect-type-at-point)
+    (evil-define-key 'normal ensime-refactor-info-map
+      (kbd "q") 'cb-scala/ensime-refactor-cancel
+      (kbd "c") 'cb-scala/ensime-refactor-accept
+      (kbd "RET") 'cb-scala/ensime-refactor-accept)
 
-   :map ensime-popup-buffer-map
-   :state normal
-   ("q" . ensime-popup-buffer-quit-function)
-
-   :map ensime-inspector-mode-map
-   :state normal
-   ("M-." . ensime-inspector-browse-source)
-   ("K" . ensime-inspector-browse-doc)
-   ("q" . ensime-popup-buffer-quit-function)
-   ("," . ensime-inspector-backward-page)
-   ("." . ensime-inspector-forward-page)
-   ("^" . ensime-inspector-backward-page)
-
-   :map ensime-refactor-info-map
-   :state normal
-   ("q" . cb-scala/ensime-refactor-cancel)
-   ("c" . cb-scala/ensime-refactor-accept)
-   ("RET" . cb-scala/ensime-refactor-accept)
-
-   :map ensime-compile-result-map
-   :state normal
-   ("g" . ensime-show-all-errors-and-warnings)
-   ("TAB" . forward-button)
-   ("<backtab>" . backward-button)
-   ("M-n" . forward-button)
-   ("M-p" . backward-button)
-   ("n" . forward-button)
-   ("N" . backward-button))
+    (evil-define-key 'normal ensime-compile-result-map
+      (kbd "g") 'ensime-show-all-errors-and-warnings
+      (kbd "TAB") 'forward-button
+      (kbd "<backtab>") 'backward-button
+      (kbd "M-n") 'forward-button
+      (kbd "M-p") 'backward-button
+      (kbd "n") 'forward-button
+      (kbd "N") 'backward-button))
 
   :init
   (progn
@@ -172,7 +150,6 @@
     (setq ensime-startup-snapshot-notification nil)
     (setq ensime-auto-generate-config t)
     (setq ensime-implicit-gutter-icons nil)
-    (setq ensime-startup-dirname (concat cb-emacs-cache-directory "/ensime"))
     (setq ensime-sem-high-enabled-p nil)))
 
 (use-package ensime-company
@@ -229,7 +206,7 @@
 
 (use-package cb-scala-autoinsert
   :after autoinsert
-  :functions (cb-scala-autoinsert-init)
+  :preface (autoload 'cb-scala-autoinsert-init "cb-scala-autoinsert")
   :config (cb-scala-autoinsert-init))
 
 ;; Snippet utilities

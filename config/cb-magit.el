@@ -9,8 +9,7 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'use-package)
-  (require 'cb-use-package-extensions))
+  (require 'use-package))
 
 (require 'spacemacs-keys)
 (require 'evil-transient-state)

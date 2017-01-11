@@ -9,10 +9,11 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'use-package)
-  (require 'cb-use-package-extensions))
+  (require 'use-package))
 
 (use-package ispell
+  :preface
+  (autoload 'ispell-find-aspell-dictionaries "ispell")
   :config
   (progn
     (setq ispell-program-name "aspell")
@@ -27,7 +28,9 @@
              cb-evil-ispell-mark-word-as-locally-good
              cb-evil-ispell-correct-word)
   :preface
-  (autoload 'flyspell-auto-correct-word "flyspell")
+  (progn
+    (autoload 'evil-global-set-key "evil-core")
+    (autoload 'flyspell-auto-correct-word "flyspell"))
   :init
   (with-eval-after-load 'evil
     (evil-global-set-key 'normal (kbd "z u") #'flyspell-auto-correct-word)

@@ -9,9 +9,9 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'use-package)
-  (require 'cb-use-package-extensions))
+  (require 'use-package))
 
+(require 'dash)
 (require 'spacemacs-keys)
 
 (autoload 'evil-insert-state "evil-states")
@@ -56,18 +56,14 @@
    ("M-RET" . ledger-toggle-current-transaction)
    ("C-c C-." . cb-ledger-insert-timestamp))
 
-  :evil-bind
-  (:state
-   normal
-   :map
-   ledger-report-mode-map
-   ("q" . kill-buffer-and-window))
-
   :init
   (spacemacs-keys-set-leader-keys "o$" #'cb-ledger-goto-ledger-file)
 
   :config
   (progn
+
+    (evil-define-key 'normal ledger-report-mode-map (kbd "q") 'kill-buffer-and-window)
+
     (setq ledger-post-account-alignment-column 2)
     (setq ledger-post-use-completion-engine :ido)
     (setq ledger-fontify-xact-state-overrides nil)

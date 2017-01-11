@@ -9,8 +9,7 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'use-package)
-  (require 'cb-use-package-extensions))
+  (require 'use-package))
 
 (require 'spacemacs-keys)
 (autoload 'evil-define-key "evil-core")
@@ -35,26 +34,18 @@
   (advice-add #'eval-buffer :after #'cb-elisp--message-on-eval-buffer))
 
 
-(use-package find-func
-  :leader-bind
-  (("hfl" . find-library)
-   ("hff" . find-function)
-   ("hfv" . find-variable)
-   ("hfc" . find-face-definition)))
-
 (use-package elisp-slime-nav
+  :commands (elisp-slime-nav-find-elisp-thing-at-point
+             elisp-slime-nav-describe-elisp-thing-at-point)
   :bind
-  (:map emacs-lisp-mode-map
-        ("M-." . elisp-slime-nav-find-elisp-thing-at-point))
-
-  :evil-bind
-  (:map emacs-lisp-mode-map
-        :state normal
-        ("M-." . elisp-slime-nav-find-elisp-thing-at-point)
-        ("K" . elisp-slime-nav-describe-elisp-thing-at-point))
-
+  (:map emacs-lisp-mode-map ("M-." . elisp-slime-nav-find-elisp-thing-at-point))
   :init
-  (add-hook 'emacs-lisp-mode-hook #'turn-on-elisp-slime-nav-mode)
+  (progn
+    (evil-define-key 'normal emacs-lisp-mode-map
+      (kbd "M-.") #'elisp-slime-nav-find-elisp-thing-at-point
+      (kbd "K") #'elisp-slime-nav-describe-elisp-thing-at-point)
+
+    (add-hook 'emacs-lisp-mode-hook #'turn-on-elisp-slime-nav-mode))
 
   :commands (turn-on-elisp-slime-nav-mode))
 
