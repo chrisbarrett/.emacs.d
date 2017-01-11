@@ -92,12 +92,10 @@
 
 ;; Checkdoc configuration
 
-(use-package flycheck
+(use-package cb-flycheck-checkdoc
   :after flycheck
   :config
-  (progn
-    (use-package cb-flycheck-checkdoc)
-    (setq flycheck-emacs-lisp-checkdoc-form cb-flycheck-checkdoc-form)))
+  (setq flycheck-emacs-lisp-checkdoc-form cb-flycheck-checkdoc-form))
 
 (use-package checkdoc
   :defer t

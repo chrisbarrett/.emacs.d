@@ -311,11 +311,12 @@ Optional arg JUSTIFY will justify comments and strings."
 
 (use-package menu-bar
   :bind (("C-c e e" . toggle-debug-on-error))
+  :if (bound-and-true-p menu-bar-mode)
   :config
   (menu-bar-mode -1))
 
 (use-package tool-bar
-  :if (display-graphic-p)
+  :if (bound-and-true-p tool-bar-mode)
   :config
   (tool-bar-mode -1))
 
@@ -474,12 +475,14 @@ Optional arg JUSTIFY will justify comments and strings."
     (savehist-mode +1)))
 
 (use-package tramp
-  :config
+  :defer t
+  :preface
   (progn
     (setq tramp-default-method "ssh")
-    (setq tramp-auto-save-directory (concat cb-emacs-cache-directory "/tramp-backups"))
-    (unless (file-directory-p tramp-auto-save-directory)
-      (mkdir tramp-auto-save-directory t))))
+    (setq tramp-auto-save-directory (concat cb-emacs-cache-directory "/tramp-backups")))
+  :config
+  (unless (file-directory-p tramp-auto-save-directory)
+    (mkdir tramp-auto-save-directory t)))
 
 (use-package tramp-cache
   :defer t

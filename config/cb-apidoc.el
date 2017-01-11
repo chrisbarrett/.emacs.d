@@ -21,8 +21,11 @@
 
 (use-package apidoc-checker
   :load-path "~/Projects/apidoc-checker/elisp/"
+  :after flycheck
   :preface
-  (autoload 'flycheck-add-mode "flycheck")
+  (progn
+    (autoload 'cb-web-json-mode "cb-web-modes")
+    (autoload 'flycheck-add-mode "flycheck"))
   :config
   (flycheck-add-mode 'apidoc 'cb-web-json-mode))
 

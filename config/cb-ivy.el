@@ -9,23 +9,27 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'use-package)
-  (require 'cb-use-package-extensions))
+  (require 'use-package))
 
 (require 'spacemacs-keys)
 (require 'subr-x)
 
 (use-package ivy
-  :leader-bind
-  (("r" . ivy-resume)
-   ("b s" . ivy-switch-buffer))
+  :commands (ivy-dispatching-done
+             ivy-help
+             ivy-immediate-done
+             ivy-mode
+             ivy-partial-or-done
+             ivy-resume
+             ivy-switch-buffer
+             ivy-wgrep-change-to-wgrep-mode)
 
   :preface
   (progn
-    (autoload 'ivy-mode "ivy")
-    (autoload 'ivy-help "ivy")
+    (autoload 'cb-ivy-occur-then-wgrep "cb-ivy-occur-then-wgrep")
 
-    (use-package cb-ivy-occur-then-wgrep :commands (cb-ivy-occur-then-wgrep))
+    ;; KLUDGE: Declare dynamic var.
+    (defvar org-startup-folded)
 
     (defun cb-ivy-help ()
       (interactive)
@@ -35,6 +39,10 @@
 
   :init
   (progn
+    (spacemacs-keys-set-leader-keys
+      "r" #'ivy-resume
+      "b s" #'ivy-switch-buffer)
+
     (bind-key "C-c C-r" #'ivy-resume)
     (bind-key "C-x b" #'ivy-switch-buffer))
 
@@ -56,11 +64,18 @@
 
     (ivy-mode))
 
-  :functions (ivy-partial-or-done ivy-wgrep-change-to-wgrep-mode)
   :defines (ivy-use-virtual-buffers ivy-count-format))
 
-
 (use-package counsel
+  :commands (counsel-M-x
+             counsel-descbinds
+             counsel-describe-function
+             counsel-describe-variable
+             counsel-expression-history
+             counsel-find-file
+             counsel-imenu
+             counsel-recentf
+             counsel-yank-pop)
   :preface
   (progn
     (autoload 'ivy-immediate-done "ivy")
@@ -72,18 +87,18 @@
           (apply f (symbol-name sym) (cdr args))
         (apply f args))))
 
-  :leader-bind
-  (("SPC" . counsel-M-x)
-   ("?"   . counsel-descbinds)
-   ("f f" . counsel-find-file)
-   ("f r" . counsel-recentf)
-   ("k r" . counsel-yank-pop)
-   ("i"   . counsel-imenu)
-   ("h d f" . counsel-describe-function)
-   ("h d v" . counsel-describe-variable))
-
   :init
   (progn
+    (spacemacs-keys-set-leader-keys
+      "SPC" #'counsel-M-x
+      "?"   #'counsel-descbinds
+      "f f" #'counsel-find-file
+      "f r" #'counsel-recentf
+      "k r" #'counsel-yank-pop
+      "i"   #'counsel-imenu
+      "h d f" #'counsel-describe-function
+      "h d v" #'counsel-describe-variable)
+
     (bind-key "M-x" #'counsel-M-x)
     (bind-key "C-x C-f" #'counsel-find-file)
     (bind-key "C-h v" #'counsel-describe-variable)
@@ -97,13 +112,12 @@
     ;; Prefill counsel-ag with the symbol at point.
     (advice-add 'counsel-ag :around #'cb-ivy--ag-populate-with-symbol-at-point)
 
-    (counsel-mode +1))
-
-  :functions (counsel-expression-history))
+    (counsel-mode +1)))
 
 (use-package swiper
   :bind (("C-s" . swiper))
-  :evil-bind (:state normal ("/" . swiper)))
+  :init
+  (evil-global-set-key 'normal "/" #'swiper))
 
 (provide 'cb-ivy)
 

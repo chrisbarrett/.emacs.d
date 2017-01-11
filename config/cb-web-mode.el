@@ -18,6 +18,8 @@
   :defines (web-mode-markup-indent-offset
             web-mode-css-indent-offset)
 
+  :defer t
+
   :preface
   (autoload 'sp-local-pair "smartparens")
 
@@ -58,6 +60,7 @@
     (flycheck-add-mode 'html-tidy 'cb-web-html-mode)))
 
 (use-package flycheck
+  :defer t
   :commands (flycheck-select-checker)
   :functions (flycheck-add-next-checker flycheck-add-mode)
   :config
