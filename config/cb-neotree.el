@@ -59,6 +59,7 @@
     (setq neo-vc-integration nil)
 
     (add-to-list 'neo-hidden-regexp-list "target$")
+    (add-to-list 'neo-hidden-regexp-list "scala-2\\.11$")
 
     ;; Enable leader key in neotree
     (define-key neotree-mode-map (kbd "SPC") spacemacs-keys-default-map)
