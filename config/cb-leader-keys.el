@@ -38,6 +38,49 @@
   :config
   (add-hook 'cb-delete-current-buffer-and-file-functions #'cb-leader-keys--invalidate-cache))
 
+(use-package which-key
+  :preface
+  (progn
+    (autoload 'which-key-mode "which-key")
+    (autoload 'which-key-add-key-based-replacements "which-key"))
+
+  :config
+  (progn
+    (setq which-key-special-keys nil)
+    (setq which-key-use-C-h-commands t)
+    (setq which-key-echo-keystrokes 0.02)
+    (setq which-key-max-description-length 32)
+    (setq which-key-sort-order 'which-key-key-order-alpha)
+    (setq which-key-idle-delay 0.4)
+    (setq which-key-allow-evil-operators t)
+
+    ;; Rename functions shown by which-key for legibility.
+
+    (add-to-list 'which-key-description-replacement-alist
+                 (cons (rx bos "cb" (* (not (any "/"))) "/" (group (+ nonl)) eos) "\\1"))
+
+    (which-key-add-key-based-replacements
+      "SPC ,"   "smartparens"
+      "SPC a"   "applications"
+      "SPC b"   "buffers"
+      "SPC c"   "comments"
+      "SPC f"   "files"
+      "SPC g"   "git/goto"
+      "SPC h"   "help"
+      "SPC h d" "describe"
+      "SPC h f" "find"
+      "SPC k"   "kill"
+      "SPC n"   "narrow"
+      "SPC o"   "org"
+      "SPC p"   "project"
+      "SPC w"   "window"
+      "SPC s"   "symbols"
+      "SPC t"   "toggles"
+      "SPC SPC" "M-x"
+      "SPC m"   '("major-mode-cmd" . "Major mode commands"))
+
+    (which-key-mode +1)))
+
 (use-package spacemacs-keys
   :preface
   (progn
@@ -61,23 +104,16 @@
       "TAB" #'cb/alternate-buffer
       "|"   #'cb/toggle-window-split
 
-      "!"   #'shell-command)
+      "!"   #'shell-command
 
-    (spacemacs-keys-declare-prefix "b" "buffer")
-    (spacemacs-keys-set-leader-keys
       "b d" #'kill-this-buffer
       "b b" #'bury-buffer
-      "b v" #'cb-leader-keys/reload-file)
+      "b v" #'cb-leader-keys/reload-file
 
-    (spacemacs-keys-set-leader-keys
-      "C" #'compile)
+      "C" #'compile
 
-    (spacemacs-keys-declare-prefix "c" "comment")
-    (spacemacs-keys-set-leader-keys
-      "c r" #'comment-or-uncomment-region)
+      "c r" #'comment-or-uncomment-region
 
-    (spacemacs-keys-declare-prefix "f" "file")
-    (spacemacs-keys-set-leader-keys
       "f D" #'cb/delete-current-buffer-and-file
       "f F" #'find-file-other-window
       "f R" #'cb/rename-file-and-buffer
@@ -85,16 +121,12 @@
       "f f" #'find-file
       "f s" #'save-buffer
       "f v" #'cb-leader-keys/reload-file
-      "f y" #'cb/copy-buffer-path)
+      "f y" #'cb/copy-buffer-path
 
-    (spacemacs-keys-declare-prefix "g" "goto")
-    (spacemacs-keys-set-leader-keys
       "g i" #'cb-goto-init-file
       "g m" #'cb-goto-messages
-      "g p" #'cb-goto-personal-config)
+      "g p" #'cb-goto-personal-config
 
-    (spacemacs-keys-declare-prefix "h" "help")
-    (spacemacs-keys-set-leader-keys
       "h d c" #'describe-face
       "h d k" #'describe-key
       "h d m" #'describe-mode
@@ -102,21 +134,15 @@
       "h f f" #'find-function
       "h f l" #'find-library
       "h f v" #'find-variable
-      "h i"   #'info)
+      "h i"   #'info
 
-    (spacemacs-keys-declare-prefix "k" "kill")
-    (spacemacs-keys-set-leader-keys
       "k b" #'kill-this-buffer
-      "k w" #'delete-window)
+      "k w" #'delete-window
 
-    (spacemacs-keys-declare-prefix "n" "narrow")
-    (spacemacs-keys-set-leader-keys
       "n w" #'widen
       "n r" #'narrow-to-region
-      "n f" #'narrow-to-defun)
+      "n f" #'narrow-to-defun
 
-    (spacemacs-keys-declare-prefix "w" "window")
-    (spacemacs-keys-set-leader-keys
       "q" #'delete-window
 
       "w =" #'balance-windows
