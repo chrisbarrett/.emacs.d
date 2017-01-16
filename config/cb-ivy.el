@@ -60,7 +60,7 @@
     (define-key ivy-minibuffer-map (kbd "<escape>") 'minibuffer-keyboard-quit)
     (define-key ivy-minibuffer-map (kbd "C-l") #'ivy-partial-or-done)
     (define-key ivy-minibuffer-map (kbd "C-c C-e") #'cb-ivy-occur-then-wgrep)
-    (define-key ivy-minibuffer-map (kbd "S-<return>") #'ivy-immediate-done)
+    (define-key ivy-minibuffer-map (kbd "C-<return>") #'ivy-immediate-done)
 
     (ivy-mode))
 
