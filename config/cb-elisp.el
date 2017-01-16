@@ -95,6 +95,17 @@
     (setq checkdoc-force-docstrings-flag nil)
     (setq checkdoc-arguments-in-order-flag nil)))
 
+(use-package ert
+  :commands (ert)
+  :preface
+  (defun cb/ert-run-all-tests ()
+    (interactive)
+    (ert t))
+  :init
+  (spacemacs-keys-set-leader-keys-for-major-mode 'emacs-lisp-mode
+    "t" #'cb/ert-run-all-tests))
+
+
 (provide 'cb-elisp)
 
 ;;; cb-elisp.el ends here
