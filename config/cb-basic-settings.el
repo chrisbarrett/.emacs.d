@@ -514,7 +514,9 @@ Optional arg JUSTIFY will justify comments and strings."
   (setq help-window-select t))
 
 (use-package time
-  :defer t
+  :commands (display-time-mode)
+  :init
+  (add-hook 'after-init-hook #'display-time-mode)
   :config
   (setq display-time-default-load-average nil))
 
