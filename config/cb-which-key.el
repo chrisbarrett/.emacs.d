@@ -29,15 +29,8 @@
 
     ;; Rename functions shown by which-key for legibility.
 
-    (defconst cb-which-key--substitutions
-      `(
-        ;; Trim package prefixes.
-        (,(rx "cb/" (group (+ nonl))) . "\\1")
-        (,(rx "cb-" (+? nonl) "-" (group (+ nonl))) . "\\1")))
-
-    (dolist (sub cb-which-key--substitutions)
-      (push (cons (concat "\\`" (car sub) "\\'") (cdr sub))
-            which-key-description-replacement-alist))
+    (add-to-list 'which-key-description-replacement-alist
+                 (cons (rx bos "cb" (* (not (any "/"))) "/" (group (+ nonl)) eos) "\\1"))
 
     (which-key-add-key-based-replacements
       "SPC ,"   "smartparens"
