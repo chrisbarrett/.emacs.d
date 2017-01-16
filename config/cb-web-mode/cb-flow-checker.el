@@ -798,10 +798,10 @@ export, but the module does not declare a default export."
   "Flycheck checker for Facebook's Flow type checker for JavaScript."
   :command ("flow" "--json")
   :error-parser cb-flow-checker--error-parser
-  :modes (js-mode js2-mode cb-web-js-mode)
+  :modes (js-mode js2-mode js3-mode)
+  :next-checkers ((t . javascript-eslint))
   :predicate (lambda ()
-               (or (locate-dominating-file default-directory ".flowconfig")
-                   (warn "No flow configuration file in project. Run `flow init'."))))
+               (string-match-p (rx bol "//" (* space) "@flow") (buffer-string))))
 
 (add-to-list 'flycheck-checkers 'javascript-flow)
 

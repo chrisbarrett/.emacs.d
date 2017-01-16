@@ -51,6 +51,7 @@
       (when (file-exists-p tidy-bin)
         (setq flycheck-html-tidy-executable tidy-bin)))
 
+    (flycheck-add-mode 'javascript-flow 'cb-web-js-mode)
     (flycheck-add-mode 'javascript-eslint 'cb-web-js-mode)
     (flycheck-add-mode 'javascript-gjslint 'cb-web-js-mode)
     (flycheck-add-mode 'javascript-jscs 'cb-web-js-mode)
@@ -87,12 +88,7 @@
 
 (use-package cb-flow-checker
   :defer t
-  :after flycheck
-  :config
-  (progn
-    (add-hook 'cb-web-js-mode-hook (lambda ()
-                               (flycheck-select-checker 'javascript-flow)))
-    (flycheck-add-next-checker 'javascript-flow 'javascript-eslint)))
+  :after flycheck)
 
 (use-package cb-flow
   :after cb-web-modes
