@@ -71,7 +71,7 @@
     (setq ledger-reports
           `(("assets" "ledger -f %(ledger-file) bal assets")
             ("liabilities" "ledger -f %(ledger-file) bal liabilities")
-            ("balance" "ledger -f %(ledger-file) bal")
+            ("balance" "ledger -f %(ledger-file) bal not ^Equity")
             ("reg this week" "ledger -f %(ledger-file) reg checking -p 'this week' --invert")
             ("reg this month" "ledger -f %(ledger-file) reg checking -p 'this month' --invert")
             ("reg since payday" "ledger -f %(ledger-file) reg checking -b %(last-payday) --invert")
