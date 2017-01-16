@@ -72,10 +72,10 @@
           `(("assets" "ledger -f %(ledger-file) bal assets")
             ("liabilities" "ledger -f %(ledger-file) bal liabilities")
             ("balance" "ledger -f %(ledger-file) bal not ^Equity")
-            ("reg this week" "ledger -f %(ledger-file) reg checking -p 'this week' --invert")
-            ("reg this month" "ledger -f %(ledger-file) reg checking -p 'this month' --invert")
-            ("reg since payday" "ledger -f %(ledger-file) reg checking -b %(last-payday) --invert")
-            ("reg previous pay period" "ledger -f %(ledger-file) reg checking -p %(prev-pay-period) --invert")))
+            ("reg this week" "ledger -f %(ledger-file) reg checking -p 'this week'")
+            ("reg this month" "ledger -f %(ledger-file) reg checking -p 'this month'")
+            ("reg since payday" "ledger -f %(ledger-file) reg checking -b %(last-payday)")
+            ("reg previous pay period" "ledger -f %(ledger-file) reg checking -p %(prev-pay-period)")))
 
     ;; Faces and font-locking
 
