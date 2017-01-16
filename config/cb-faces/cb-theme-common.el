@@ -69,6 +69,44 @@
     (font-lock-comment-face
      ((t (:weight demibold))))
 
+    ;; Info faces
+
+    (info-xref
+     ((t (:inherit link :weight normal))))
+
+    (info-xref-visited
+     ((t (:inherit link-visited :weight normal))))
+
+    (info-string
+     ((t (:inherit font-lock-string-face))))
+
+    (info-node
+     ((t (:weight demibold))))
+
+    (info-reference-item
+     ((t (:weight demibold))))
+
+    (info-function-ref-item
+     ((t (:weight demibold :foreground ,cb-theme-common-gray))))
+
+    (info-macro-ref-item
+     ((t (:weight demibold :foreground ,cb-theme-common-gray))))
+
+    (info-command-ref-item
+     ((t (:weight demibold :foreground ,cb-theme-common-gray))))
+
+    (info-special-form-ref-item
+     ((t (:weight demibold :foreground ,cb-theme-common-gray))))
+
+    (info-syntax-class-item
+     ((t (:weight demibold :foreground ,cb-theme-common-gray))))
+
+    (info-user-option-ref-item
+     ((t (:weight demibold :foreground ,cb-theme-common-gray))))
+
+    (info-variable-ref-item
+     ((t (:weight demibold :foreground ,cb-theme-common-gray))))
+
     ;; Dired
 
     (dired-header
