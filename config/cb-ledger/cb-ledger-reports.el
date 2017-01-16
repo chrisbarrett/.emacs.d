@@ -36,8 +36,11 @@
   (car (cb-ledger-reports-last-n-pay-dates 1)))
 
 (defun cb-ledger-reports-previous-pay-period ()
-  (-let [(prev cur) (cb-ledger-reports-last-n-pay-dates 2)]
-    (format "from %s to %s" prev (cb-ledger-reports--day-before cur))))
+  (-if-let ((prev cur) (cb-ledger-reports-last-n-pay-dates 2))
+      (format "from %s to %s" prev (cb-ledger-reports--day-before cur))
+    ;; Return empty results in degenerate case, where there is not at least one
+    ;; month of records.
+    "from 1970-01-01 to 1970-01-01"))
 
 (defun cb-ledger-reports--day-before (ledger-date-str)
   (-let* (((y m d) (-map 'string-to-number (s-split "[/-]" ledger-date-str)))
