@@ -13,6 +13,8 @@
 
 (require 'spacemacs-keys)
 (autoload 'evil-define-key "evil-core")
+(autoload 'projectile-project-p "projectile")
+(autoload 'f-join "f")
 
 (use-package web-mode
   :defines (web-mode-markup-indent-offset
@@ -46,6 +48,7 @@
          ("\\.jsx?\\'" . cb-web-js-mode)
          ("\\.css\\'"  . cb-web-css-mode)
          ("\\.html\\'" . cb-web-html-mode))
+  :defines (flycheck-html-tidy-executable)
   :config
   (with-eval-after-load 'flycheck
     (let ((tidy-bin "/usr/local/Cellar/tidy-html5/5.2.0/bin/tidy"))
