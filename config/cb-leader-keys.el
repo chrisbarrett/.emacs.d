@@ -23,6 +23,7 @@
 (autoload 'cb-goto-init-file "cb-goto")
 (autoload 'cb-goto-messages "cb-goto")
 (autoload 'cb-goto-personal-config "cb-goto")
+(autoload 'org-narrow-to-subtree "org")
 
 (use-package cb-delete-current-buffer-and-file
   :commands (cb/delete-current-buffer-and-file)
@@ -140,8 +141,9 @@
       "k w" #'delete-window
 
       "n w" #'widen
-      "n r" #'narrow-to-region
       "n f" #'narrow-to-defun
+      "n r" #'narrow-to-region
+      "n s" #'org-narrow-to-subtree
 
       "q" #'delete-window
 
