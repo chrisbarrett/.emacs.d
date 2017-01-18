@@ -19,7 +19,7 @@
   :commands (ansi-term)
   :preface
   (progn
-    (defun cb-shell-ansi-term ()
+    (defun cb-shell/ansi-term ()
       (interactive)
       (ansi-term (getenv "SHELL")))
 
@@ -28,7 +28,7 @@
         (hl-line-mode -1))))
 
   :init
-  (spacemacs-keys-set-leader-keys "at" #'cb-shell-ansi-term)
+  (spacemacs-keys-set-leader-keys "at" #'cb-shell/ansi-term)
   :config
   (add-hook 'term-mode-hook #'cb-shell--hl-line-off))
 
