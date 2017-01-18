@@ -121,6 +121,7 @@
       "f e" #'cb/sudo-edit
       "f f" #'find-file
       "f s" #'save-buffer
+      "f S" #'save-some-buffers
       "f v" #'cb-leader-keys/reload-file
       "f y" #'cb/copy-buffer-path
 
