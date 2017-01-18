@@ -38,6 +38,12 @@
   "Face for git branch in header line."
   :group 'cb-header-line-format)
 
+(defface cb-header-line-format-narrowing
+  '((t
+     (:inherit header-line :slant italic)))
+  "Face for git branch in header line."
+  :group 'cb-header-line-format)
+
 
 ;;; Cache variable lookups to improve speed
 
@@ -123,7 +129,9 @@
     (propertize (s-pad-right 2 " " str) 'face 'cb-header-line-format-nonemphased-element)))
 
 (defun cb-header-line-format--narrowing-info ()
-  (if (buffer-narrowed-p) "%n " ""))
+  (if (buffer-narrowed-p)
+      (propertize " (Narrowed) " 'face 'cb-header-line-format-narrowing)
+    ""))
 
 (defun cb-header-line-format--project-info ()
   (cl-flet ((nonemphasised (str) (propertize str 'face 'cb-header-line-format-nonemphased-element)))
