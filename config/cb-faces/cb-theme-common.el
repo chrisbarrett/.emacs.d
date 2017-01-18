@@ -293,8 +293,7 @@
      ((t (:weight demibold))))
 
     (mu4e-highlight-face
-     ((((background light)) (:foreground ,cb-theme-common-red :weight demibold))
-      (((background dark)) (:foreground ,cb-theme-common-pink :weight demibold))))
+     ((t (:foreground ,cb-theme-common-blue :weight demibold))))
 
     (mu4e-header-highlight-face
      ((t :inherit region)))
