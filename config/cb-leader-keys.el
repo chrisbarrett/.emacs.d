@@ -140,10 +140,11 @@
       "k b" #'kill-this-buffer
       "k w" #'delete-window
 
-      "n w" #'widen
+      "n d" #'narrow-to-defun
       "n f" #'narrow-to-defun
       "n r" #'narrow-to-region
       "n s" #'org-narrow-to-subtree
+      "n w" #'widen
 
       "q" #'delete-window
 
