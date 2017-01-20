@@ -152,6 +152,8 @@
   (add-hook 'cb-web-js-mode-hook #'tern-mode)
   :config
   (progn
+    (setq tern-command (add-to-list 'tern-command "--no-port-file" t))
+
     (unless (getenv "NODE_PATH")
       (setenv "NODE_PATH" "/usr/local/lib/node_modules"))
 
