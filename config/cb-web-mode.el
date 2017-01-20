@@ -91,10 +91,22 @@
   :defines (emmet-expand-jsx-className?)
   :commands (emmet-mode emmet-expand-line)
   :preface
-  (defun cb-web--set-jsx-classname-on ()
-    (setq-local emmet-expand-jsx-className? t))
+  (progn
+    (defun cb-web--set-jsx-classname-on ()
+      (setq-local emmet-expand-jsx-className? t))
+
+    (defun cb-web--maybe-emmet-mode ()
+      (cond
+       ((derived-mode-p 'cb-web-html-mode 'html-mode 'nxml-mode)
+        (emmet-mode +1))
+
+       ((and (derived-mode-p 'cb-web-js-mode)
+             (buffer-file-name)
+             (memq "components" (f-split (buffer-file-name))))
+        (emmet-mode +1)))))
+
   :init
-  (add-hook 'web-mode-hook #'emmet-mode)
+  (add-hook 'web-mode-hook #'cb-web--maybe-emmet-mode)
   :config
   (progn
     (setq emmet-move-cursor-between-quotes t)
