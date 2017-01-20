@@ -163,4 +163,3 @@ If argument INTERACTIVE-P is set, log additional information."
 (provide 'init)
 
 ;;; init.el ends here
-(put 'narrow-to-region 'disabled nil)
