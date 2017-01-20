@@ -60,7 +60,7 @@
                     display-buffer-in-side-window)
                    (reusable-frames . visible)
                    (side            . bottom)
-                   (window-height   . 0.4))))
+                   (window-height   . 0.2))))
 
   :functions
   (flycheck-clear
