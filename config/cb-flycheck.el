@@ -11,6 +11,8 @@
 (eval-when-compile
   (require 'use-package))
 
+(autoload 'evil-define-key "evil-core")
+
 (require 'spacemacs-keys)
 
 (use-package flycheck
@@ -35,24 +37,24 @@
                 js-mode))
 
     (spacemacs-keys-set-leader-keys
-      "ec" #'flycheck-clear
-      "eh" #'flycheck-describe-checker
-      "el" #'flycheck-list-errors
-      "ee" #'flycheck-explain-error-at-point
-      "en" #'flycheck-next-error
-      "eN" #'flycheck-next-error
-      "ep" #'flycheck-previous-error
-      "es" #'flycheck-select-checker
-      "eS" #'flycheck-set-checker-executable
-      "ev" #'flycheck-verify-setup)
+      "ec" 'flycheck-clear
+      "eh" 'flycheck-describe-checker
+      "el" 'flycheck-list-errors
+      "ee" 'flycheck-explain-error-at-point
+      "en" 'flycheck-next-error
+      "eN" 'flycheck-next-error
+      "ep" 'flycheck-previous-error
+      "es" 'flycheck-select-checker
+      "eS" 'flycheck-set-checker-executable
+      "ev" 'flycheck-verify-setup)
 
     (with-eval-after-load 'evil
       (evil-define-key 'normal flycheck-error-list-mode-map (kbd "q") #'quit-window))
 
-    (bind-key "M-n" #'flycheck-next-error flycheck-mode-map)
-    (bind-key "M-p" #'flycheck-previous-error flycheck-mode-map)
-    (bind-key "M-j" #'flycheck-next-error flycheck-mode-map)
-    (bind-key "M-k" #'flycheck-previous-error flycheck-mode-map)
+    (bind-key "M-n" 'flycheck-next-error flycheck-mode-map)
+    (bind-key "M-p" 'flycheck-previous-error flycheck-mode-map)
+    (bind-key "M-j" 'flycheck-next-error flycheck-mode-map)
+    (bind-key "M-k" 'flycheck-previous-error flycheck-mode-map)
 
     (add-to-list 'display-buffer-alist
                  `(,(rx bos "*Flycheck errors*" eos)
@@ -60,20 +62,7 @@
                     display-buffer-in-side-window)
                    (reusable-frames . visible)
                    (side            . bottom)
-                   (window-height   . 0.2))))
-
-  :functions
-  (flycheck-clear
-   flycheck-describe-checker
-   flycheck-list-errors
-   flycheck-explain-error-at-point
-   flycheck-next-error
-   flycheck-next-error
-   flycheck-previous-error
-   flycheck-select-checker
-   flycheck-set-checker-executable
-   flycheck-verify-setup))
-
+                   (window-height   . 0.2)))))
 
 (provide 'cb-flycheck)
 
