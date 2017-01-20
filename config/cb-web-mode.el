@@ -45,6 +45,7 @@
   :mode (("\\.json\\'" . cb-web-json-mode)
          ("\\.eslintrc\\'" . cb-web-json-mode)
          ("\\.es6\\'"  . cb-web-js-mode)
+         ("\\.tsx?\\'"  . cb-web-typescript-mode)
          ("\\.jsx?\\'" . cb-web-js-mode)
          ("\\.css\\'"  . cb-web-css-mode)
          ("\\.html\\'" . cb-web-html-mode))
@@ -55,6 +56,7 @@
       (when (file-exists-p tidy-bin)
         (setq flycheck-html-tidy-executable tidy-bin)))
 
+    (flycheck-add-mode 'typescript-tslint 'cb-web-typescript-mode)
     (flycheck-add-mode 'javascript-flow 'cb-web-js-mode)
     (flycheck-add-mode 'javascript-eslint 'cb-web-js-mode)
     (flycheck-add-mode 'javascript-gjslint 'cb-web-js-mode)
@@ -70,8 +72,8 @@
   :functions (flycheck-add-next-checker flycheck-add-mode)
   :preface
 
-  (defun cb-web--configure-eslint ()
-    "Use project-local eslint binary, where available."
+  (defun cb-web--add-node-modules-bin-to-path ()
+    "Use binaries from node_modules, where available."
     (when-let (root (projectile-project-p))
       (make-local-variable 'exec-path)
       (add-to-list 'exec-path (f-join root "node_modules" ".bin"))))
@@ -80,15 +82,9 @@
   (progn
     (add-to-list 'flycheck-disabled-checkers 'javascript-jshint)
     (add-to-list 'flycheck-disabled-checkers 'json-jsonlint)
-    (flycheck-add-mode 'javascript-eslint 'cb-web-js-mode)
 
-    (add-hook 'cb-web-js-mode-hook #'cb-web--configure-eslint)))
-
-(defun rk/configure-eslint ()
-  "Use project-local eslint binary, where available."
-  (when-let (root (projectile-project-p))
-    (make-local-variable 'exec-path)
-    (add-to-list 'exec-path (f-join root "node_modules" ".bin"))))
+    (add-hook 'cb-web-typescript-mode-hook #'cb-web--add-node-modules-bin-to-path)
+    (add-hook 'cb-web-js-mode-hook #'cb-web--add-node-modules-bin-to-path)))
 
 (use-package emmet-mode
   :defer t

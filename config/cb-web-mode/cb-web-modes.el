@@ -15,6 +15,10 @@
   "Derived mode for editing JavaScript files.")
 
 ;;;###autoload
+(define-derived-mode cb-web-typescript-mode web-mode "TS"
+  "Derived mode for editing JavaScript files.")
+
+;;;###autoload
 (define-derived-mode cb-web-json-mode web-mode "JSON"
   "Derived mode for editing JSON files."
   (setq-local web-mode-content-type "json"))
