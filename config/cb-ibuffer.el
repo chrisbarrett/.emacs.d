@@ -39,6 +39,7 @@
                         "*git-auto-push*"
                         "*Backtrace*"
                         "*new*"
+                        "*mu4e"
                         "*Org"
                         "*Flycheck error messages*"
                         "*Help*"))))
