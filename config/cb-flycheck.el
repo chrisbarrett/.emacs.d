@@ -23,6 +23,17 @@
   :init
   (spacemacs-keys-declare-prefix "e" "errors")
 
+
+  :preface
+  (defun cb-flycheck-toggle-error-list ()
+    "Show or hide the error list."
+    (interactive)
+    (if-let (window (--first (equal flycheck-error-list-buffer
+                                    (buffer-name (window-buffer it)))
+                             (window-list)))
+        (delete-window window)
+      (flycheck-list-errors)))
+
   :config
   (progn
     (global-flycheck-mode +1)
@@ -39,7 +50,7 @@
     (spacemacs-keys-set-leader-keys
       "ec" 'flycheck-clear
       "eh" 'flycheck-describe-checker
-      "el" 'flycheck-list-errors
+      "el" 'cb-flycheck-toggle-error-list
       "ee" 'flycheck-explain-error-at-point
       "en" 'flycheck-next-error
       "eN" 'flycheck-next-error
