@@ -47,7 +47,8 @@
     (evilified-state-evilify-map mu4e-main-mode-map
       :mode mu4e-main-mode
       :bindings
-      (kbd "j") #'mu4e~headers-jump-to-maildir)
+      (kbd "j") #'mu4e~headers-jump-to-maildir
+      (kbd "q") #'bury-buffer)
 
     (evilified-state-evilify-map mu4e-headers-mode-map
       :mode mu4e-headers-mode
