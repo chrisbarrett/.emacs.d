@@ -44,6 +44,7 @@
   :defer t
   :mode (("\\.json\\'" . cb-web-json-mode)
          ("\\.eslintrc\\'" . cb-web-json-mode)
+         ("\\.babelrc\\'" . cb-web-json-mode)
          ("\\.es6\\'"  . cb-web-js-mode)
          ("\\.tsx?\\'"  . cb-web-typescript-mode)
          ("\\.jsx?\\'" . cb-web-js-mode)
