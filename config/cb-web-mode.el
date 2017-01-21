@@ -15,6 +15,7 @@
 (autoload 'evil-define-key "evil-core")
 (autoload 'projectile-project-p "projectile")
 (autoload 'f-join "f")
+(autoload 'f-split "f")
 
 (use-package web-mode
   :defines (web-mode-markup-indent-offset
@@ -187,6 +188,21 @@
     (setq-local tab-width 2))
   :config
   (add-hook 'stylus-mode-hook #'cb-web--set-stylus-vars))
+
+(use-package aggressive-indent
+  :defer t
+  :preface
+  (defun cb-web--in-flow-strict-object-type? ()
+    (when (derived-mode-p 'cb-web-js-mode)
+      (-let [(depth start) (syntax-ppss)]
+        (and (plusp depth)
+             (eq (char-after start) ?{)
+             (eq (char-after (1+ start)) ?|)))))
+  :config
+  (progn
+    (add-to-list 'aggressive-indent-dont-indent-if '(cb-web--in-flow-strict-object-type?))
+    (add-hook 'aggressive-indent-stop-here-hook #'cb-web--in-flow-strict-object-type?)))
+
 
 (provide 'cb-web-mode)
 
