@@ -122,6 +122,7 @@
       "f f" #'find-file
       "f s" #'save-buffer
       "f S" #'save-some-buffers
+      "f W" #'write-file
       "f v" #'cb-leader-keys/reload-file
       "f y" #'cb/copy-buffer-path
 
