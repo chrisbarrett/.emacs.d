@@ -801,7 +801,11 @@ export, but the module does not declare a default export."
   :modes (js-mode js2-mode js3-mode)
   :next-checkers ((t . javascript-eslint))
   :predicate (lambda ()
-               (string-match-p (rx bol "//" (* space) "@flow") (buffer-string))))
+               (or
+                (string-match-p (rx bol "//" (* space) "@flow") (buffer-string))
+                (and
+                 (buffer-file-name)
+                 (string-match-p (rx "/flow-typed/") (buffer-file-name))))))
 
 (add-to-list 'flycheck-checkers 'javascript-flow)
 
