@@ -59,7 +59,6 @@
         (setq flycheck-html-tidy-executable tidy-bin)))
 
     (flycheck-add-mode 'typescript-tslint 'cb-web-typescript-mode)
-    (flycheck-add-mode 'javascript-flow 'cb-web-js-mode)
     (flycheck-add-mode 'javascript-eslint 'cb-web-js-mode)
     (flycheck-add-mode 'javascript-gjslint 'cb-web-js-mode)
     (flycheck-add-mode 'javascript-jscs 'cb-web-js-mode)
@@ -116,8 +115,16 @@
     (add-hook 'cb-web-js-mode-hook #'cb-web--set-jsx-classname-on)))
 
 (use-package cb-flow-checker
+  :disabled t
   :defer t
   :after flycheck)
+
+(use-package flycheck-flow
+  :after flycheck
+  :config
+  (progn
+    (flycheck-add-mode 'javascript-flow 'cb-web-js-mode)
+    (flycheck-add-next-checker 'javascript-flow 'javascript-eslint)))
 
 (use-package cb-flow
   :after cb-web-modes
