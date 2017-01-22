@@ -165,6 +165,9 @@
     (add-hook 'mu4e-compose-mode-hook #'turn-off-auto-fill)
     (add-hook 'mu4e-compose-mode-hook (lambda () (setq word-wrap t)))
 
+    ;; Wrap lines when viewing.
+    (add-hook 'mu4e-view-mode-hook #'visual-line-mode)
+
     ;; Put signature before quoted messages.
     (add-hook 'mu4e-compose-mode-hook #'cb-mu4e--insert-signature-before-quoted-message)
 
