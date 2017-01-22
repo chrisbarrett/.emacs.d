@@ -31,7 +31,11 @@
 
     (setq scala-indent:align-forms t)
     (setq scala-indent:align-parameters t)
-    (setq scala-indent:default-run-on-strategy scala-indent:operator-strategy)))
+    (setq scala-indent:default-run-on-strategy scala-indent:operator-strategy)
+
+    ;; KLUDGE: They expose the face, but don't apply it in their font lock keywords. :/
+    (font-lock-add-keywords 'scala-mode
+                    `((,(rx symbol-start "var" symbol-end) 0 'scala-font-lock:var-keyword-face)))))
 
 (use-package sbt-mode
   :commands (sbt-start sbt-command)

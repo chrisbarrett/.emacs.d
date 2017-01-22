@@ -361,6 +361,14 @@
     (term-color-yellow
      ((t (:foreground ,cb-theme-common-yellow))))
 
+    ;; Scala
+
+    (scala-font-lock:var-keyword-face
+     ((((background light)) (:foreground ,cb-theme-common-red :weight normal))
+      (((background dark)) (:foreground ,cb-theme-common-pink :weight normal))))
+
+    (scala-font-lock:var-face
+     ((t (:inherit font-lock-variable-name-face))))
 
     ;; Misc faces
 
