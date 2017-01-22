@@ -25,8 +25,43 @@
 
   :preface
   (progn
+    (autoload 'message-goto-body "message")
+    (autoload 'message-goto-signature "message")
     (autoload 'message-insert-formatted-citation-line "message")
+    (autoload 'message-insert-signature "message")
     (autoload 'message-send-mail-with-sendmail "message")
+
+    ;; Declare dynamic variables
+
+    (defvar message-signature)
+    (defvar mu4e-compose-signature)
+    (defvar mu4e-compose-signature-auto-include)
+
+    (defun cb-mu4e--insert-signature-before-quoted-message ()
+      (unless (member mu4e-compose-type '(edit resend))
+        (save-excursion
+          (save-restriction
+            (widen)
+            (cond
+             ((eq mu4e-compose-type 'new)
+              (message-goto-body)
+              (kill-region (point) (point-max)))
+             ((message-goto-signature)
+              (forward-line -2)
+              (kill-region (point) (point-max))))
+
+            (message-goto-body)
+            (insert "\n")
+            (narrow-to-region (point-min) (point))
+
+            (let ((message-signature t)
+                  (mu4e-compose-signature t)
+                  (mu4e-compose-signature-auto-include t))
+              (message-insert-signature))
+
+            (when (member mu4e-compose-type '(forward reply))
+              (goto-char (point-max))
+              (insert "\n"))))))
 
     (use-package cb-mu4e-utils
       :after mu4e
@@ -79,7 +114,6 @@
     (setq mu4e-view-show-images t)
     (setq mu4e-view-show-addresses t)
     (setq message-kill-buffer-on-exit t)
-    (setq mu4e-compose-signature-auto-include t)
 
     (setq mu4e-maildir (f-expand "~/Maildir"))
     (setq mu4e-headers-date-format "%d-%m-%y %k:%M")
@@ -131,6 +165,9 @@
     (add-hook 'mu4e-compose-mode-hook #'turn-off-auto-fill)
     (add-hook 'mu4e-compose-mode-hook (lambda () (setq word-wrap t)))
 
+    ;; Put signature before quoted messages.
+    (add-hook 'mu4e-compose-mode-hook #'cb-mu4e--insert-signature-before-quoted-message)
+
     ;; use imagemagick, if available
     (when (fboundp 'imagemagick-register-types)
       (imagemagick-register-types))
@@ -172,6 +209,6 @@
     (define-key mu4e-headers-mode-map (kbd "SPC") spacemacs-keys-default-map)))
 
 
-(provide 'cb-mu4e)
+  (provide 'cb-mu4e)
 
 ;;; cb-mu4e.el ends here
