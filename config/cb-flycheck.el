@@ -25,20 +25,34 @@
 
 
   :preface
-  (defun cb-flycheck-toggle-error-list ()
-    "Show or hide the error list."
-    (interactive)
-    (if-let (window (--first (equal flycheck-error-list-buffer
-                                    (buffer-name (window-buffer it)))
-                             (window-list)))
-        (delete-window window)
-      (flycheck-list-errors)))
+  (progn
+    (autoload 'flycheck-error-format-message-and-id "flycheck")
+    (autoload 'flycheck-get-error-list-window "flycheck")
+    (autoload 'flycheck-list-errors "flycheck")
+    (autoload 'flycheck-may-use-echo-area-p "flycheck")
+
+    (defun cb-flycheck-display-error-messages (errors)
+      (unless (flycheck-get-error-list-window 'current-frame)
+        (when (and errors (flycheck-may-use-echo-area-p))
+          (let ((messages (seq-map #'flycheck-error-format-message-and-id errors)))
+            (display-message-or-buffer (string-join messages "\n\n")
+                                       flycheck-error-message-buffer
+                                       'display-buffer-popup-window)))))
+
+    (defun cb-flycheck-toggle-error-list ()
+      "Show or hide the error list."
+      (interactive)
+      (if-let (window (--first (equal flycheck-error-list-buffer
+                                      (buffer-name (window-buffer it)))
+                               (window-list)))
+          (delete-window window)
+        (flycheck-list-errors))))
 
   :config
   (progn
     (global-flycheck-mode +1)
 
-    (setq flycheck-display-errors-function 'flycheck-display-error-messages-unless-error-list)
+    (setq flycheck-display-errors-function 'cb-flycheck-display-error-messages)
     (setq flycheck-display-errors-delay 0.5)
     (setq flycheck-emacs-lisp-load-path 'inherit)
 
