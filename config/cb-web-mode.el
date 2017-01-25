@@ -36,6 +36,10 @@
     ;; Disable web-mode-reload binding
     (define-key web-mode-map (kbd "C-c C-r") nil)
 
+    ;; Use line comments when commenting in JS.
+
+    (setf (cdr (assoc "javascript" web-mode-comment-formats)) "//")
+
     ;; Treat es6 files as JS files.
 
     (add-to-list 'web-mode-content-types '("javascript" . "\\.es6\\'"))

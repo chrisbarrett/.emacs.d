@@ -19,6 +19,7 @@
     (add-to-list 'aggressive-indent-excluded-modes 'diff-auto-refine-mode)
     (add-to-list 'aggressive-indent-excluded-modes 'rust-mode)
     (add-to-list 'aggressive-indent-excluded-modes 'toml-mode)
+    (add-to-list 'aggressive-indent-excluded-modes 'sql-mode)
     (add-to-list 'aggressive-indent-excluded-modes 'restclient-mode)
     (add-to-list 'aggressive-indent-excluded-modes 'stylus-mode)
 
