@@ -9,6 +9,7 @@
 ;;; Code:
 
 (require 'cb-emacs)
+(autoload 'f-join "f")
 
 (defconst cb-auto-save-dir (concat cb-emacs-cache-directory "/auto-save"))
 (defconst cb-auto-save-local-dir (concat cb-auto-save-dir "/local"))
@@ -21,11 +22,9 @@
 (setq auto-save-file-name-transforms
       `(
         ;; Tramp URLs got to remotes dir.
-        ("\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'" ,cb-auto-save-remotes-dir t)
+        ("\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'" ,(f-join cb-auto-save-remotes-dir "\\2") t)
         ;; Otherwise files go to local dir.
-        (".*" ,cb-auto-save-local-dir t)))
-
-
+        ("\\`/?\\([^/]*/\\)*\\([^/]*\\)\\'" ,(f-join cb-auto-save-local-dir "\\2") t)))
 
 (provide 'cb-auto-save)
 
