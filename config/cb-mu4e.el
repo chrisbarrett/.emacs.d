@@ -109,6 +109,7 @@
     (setq mu4e-headers-seen-mark (purecopy '(" " . " ")))
     (setq mu4e-hide-index-messages t)
     (setq mu4e-headers-skip-duplicates t)
+    (setq mu4e-compose-format-flowed t)
 
     (setq mu4e-view-prefer-html t)
     (setq mu4e-view-show-images t)
