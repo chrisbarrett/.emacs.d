@@ -54,6 +54,7 @@
          ("\\.tsx?\\'"  . cb-web-typescript-mode)
          ("\\.jsx?\\'" . cb-web-js-mode)
          ("\\.css\\'"  . cb-web-css-mode)
+         ("\\.scss\\'"  . cb-web-css-mode)
          ("\\.html\\'" . cb-web-html-mode))
   :defines (flycheck-html-tidy-executable)
   :config
