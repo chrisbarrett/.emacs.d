@@ -38,6 +38,12 @@
   "Face for git branch in header line."
   :group 'cb-header-line-format)
 
+(defface cb-header-line-format-host-name
+  '((t
+     (:inherit header-line)))
+  "Face for host-name in header line."
+  :group 'cb-header-line-format)
+
 (defface cb-header-line-format-narrowing
   '((t
      (:inherit header-line :slant italic)))
@@ -133,29 +139,44 @@
       (propertize " (Narrowed) " 'face 'cb-header-line-format-narrowing)
     ""))
 
+(defun cb-header-line-format--nonemphasised (str)
+  (propertize str 'face 'cb-header-line-format-nonemphased-element))
+
 (defun cb-header-line-format--project-info ()
-  (cl-flet ((nonemphasised (str) (propertize str 'face 'cb-header-line-format-nonemphased-element)))
-    (let* ((project (cb-header-line-format--current-project))
-           (project (when project (directory-file-name project)))
-           (project-root-name (when project (file-name-nondirectory project)))
-           (branch (when project (cb-header-line-format--current-branch)))
-           (subdir (when project (s-chop-prefix project (directory-file-name (file-truename default-directory))))))
-      (cond
-       ((not (cb-header-line-format--window-selected?))
-        "")
-       ((and project branch)
-        (concat (nonemphasised " (in ")
-                (propertize project-root-name 'face 'cb-header-line-format-project-name)
-                (nonemphasised subdir)
-                (nonemphasised " on ")
-                (propertize branch 'face 'cb-header-line-format-branch-name)
-                (nonemphasised ") ")))
-       (project
-        (concat (nonemphasised " (in ")
-                (propertize project-root-name 'face 'cb-header-line-format-project-name)
-                (nonemphasised ") ")))
-       (t
-        "")))))
+  (let* ((project (cb-header-line-format--current-project))
+         (project (when project (directory-file-name project)))
+         (project-root-name (when project (file-name-nondirectory project)))
+         (branch (when project (cb-header-line-format--current-branch)))
+         (subdir (when project (s-chop-prefix project (directory-file-name (file-truename default-directory))))))
+    (cond
+     ((and project branch)
+      (concat (cb-header-line-format--nonemphasised " (in ")
+              (propertize project-root-name 'face 'cb-header-line-format-project-name)
+              (cb-header-line-format--nonemphasised subdir)
+              (cb-header-line-format--nonemphasised " on ")
+              (propertize branch 'face 'cb-header-line-format-branch-name)
+              (cb-header-line-format--nonemphasised ") ")))
+     (project
+      (concat (cb-header-line-format--nonemphasised " (in ")
+              (propertize project-root-name 'face 'cb-header-line-format-project-name)
+              (cb-header-line-format--nonemphasised ") ")))
+     (t
+      ""))))
+
+(defun cb-header-line-format--host-info ()
+  (concat
+   (cb-header-line-format--nonemphasised " (at ")
+   (propertize (and (boundp 'tramp-current-host) tramp-current-host) 'face 'cb-header-line-format-host-name)
+   (cb-header-line-format--nonemphasised ") ")))
+
+(defun cb-header-line-format--context-info ()
+  (cond
+   ((not (cb-header-line-format--window-selected?))
+    "")
+   ((file-remote-p default-directory)
+    "")
+   (t
+    (cb-header-line-format--project-info))))
 
 (defun cb-header-line-format--buffer-name ()
   (if (cb-header-line-format--window-selected?)
@@ -163,7 +184,7 @@
     (propertize (buffer-name) 'face 'cb-header-line-format-nonemphased-element)))
 
 (defun cb-header-line-format--line-info ()
-  (let ((str (format "Line %2s" (line-number-at-pos))))
+  (let ((str "Line %2l"))
     (if (cb-header-line-format--window-selected?)
         str
       (propertize str 'face 'cb-header-line-format-nonemphased-element))))
@@ -189,7 +210,7 @@
     "  %[" (:eval (cb-header-line-format--buffer-name)) "%] "
 
     (:eval (cb-header-line-format--narrowing-info))
-    (:eval (cb-header-line-format--project-info))
+    (:eval (cb-header-line-format--context-info))
 
     " "
 
