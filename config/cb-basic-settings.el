@@ -479,10 +479,7 @@ Optional arg JUSTIFY will justify comments and strings."
   :preface
   (progn
     (setq tramp-default-method "ssh")
-    (setq tramp-auto-save-directory (concat cb-emacs-cache-directory "/tramp-backups")))
-  :config
-  (unless (file-directory-p tramp-auto-save-directory)
-    (mkdir tramp-auto-save-directory t)))
+    (setq tramp-auto-save-directory "/tmp")))
 
 (use-package tramp-cache
   :defer t
