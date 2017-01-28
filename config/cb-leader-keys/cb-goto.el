@@ -16,7 +16,7 @@
 (defun cb-goto-personal-config ()
   "Open the personal configuration file."
   (interactive)
-  (find-file "~/Dropbox/emacs/personal-config.el"))
+  (find-file "~/Sync/emacs/personal-config.el"))
 
 (defun cb-goto-messages ()
   "Open the messages buffer."

@@ -127,7 +127,7 @@ If argument INTERACTIVE-P is set, log additional information."
 (use-package cb-shell)
 
 (use-package personal-config
-  :load-path "~/Dropbox/emacs")
+  :load-path "~/Sync/emacs")
 
 
 ;;; Provide a convenience command to byte-compile parts of the config.
