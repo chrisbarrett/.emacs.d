@@ -40,6 +40,12 @@
 
     (setf (cdr (assoc "javascript" web-mode-comment-formats)) "//")
 
+    ;; Change default indentation behaviour.
+
+    (setf (cdr (assoc "lineup-args" web-mode-indentation-params)) nil)
+    (setf (cdr (assoc "lineup-concats" web-mode-indentation-params)) nil)
+    (setf (cdr (assoc "lineup-calls" web-mode-indentation-params)) nil)
+
     ;; Treat es6 files as JS files.
 
     (add-to-list 'web-mode-content-types '("javascript" . "\\.es6\\'"))
