@@ -77,25 +77,19 @@ PREFIX="lisp/$NAME"
 
 REMOTE=$(git remote | grep "/$NAME\$") || true
 
-if [ -z "$REMOTE" ];then
+if [ -z "$REMOTE" ]; then
     if [ -z "$URL" ]; then
         err "No corresponding remote has been added and no URL given."
         err
         err "Specify a remote URL explicitly."
         exit 1
     else
-        REPO="${$(basename "$URL")%.*}"
+        REPO="$(basename "$URL")"
+        REPO="${REPO%.*}"
         USER=$(basename "$(dirname "$URL")")
         REMOTE="$USER/$REPO"
     fi
 fi
-
-echo '--> Pulling...'
-(
-    set -x
-    git fetch -q "$REMOTE"
-    git subtree -q pull --prefix "$PREFIX" "$REMOTE" master --squash -m "Merge $REMOTE@master into $PREFIX"
-)
 
 if [ -n "$URL" ]; then
     echo '--> Adding remote...'
@@ -104,3 +98,10 @@ if [ -n "$URL" ]; then
         git remote add "$REMOTE" "$URL"
     )
 fi
+
+echo '--> Pulling...'
+(
+    set -x
+    git fetch -q "$REMOTE"
+    git subtree -q pull --prefix "$PREFIX" "$REMOTE" master --squash -m "Merge $REMOTE@master into $PREFIX"
+)
