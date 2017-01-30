@@ -29,7 +29,7 @@ ARGUMENTS
 
              The URL to the git remote to pull.
 
-EXAMPLE
+EXAMPLES
 
         Add the package 'magit' to 'lisp/magit':
 

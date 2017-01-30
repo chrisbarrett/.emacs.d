@@ -36,7 +36,7 @@ ARGUMENTS
              The URL to the git remote to pull. If the remote has not been
              configured before, it will be added.
 
-EXAMPLE
+EXAMPLES
 
         To update the package 'which-key' at 'lisp/emacs-which-key':
 
