@@ -11,7 +11,7 @@ NAME
         $PROG -- Add a git subtree to the 'lisp' directory.
 
 SYNOPSIS
-        $SHORT
+        $SHORT_USAGE
         $PROG [--help|-h]
 
 ARGUMENTS
