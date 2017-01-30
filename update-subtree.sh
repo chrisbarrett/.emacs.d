@@ -82,6 +82,7 @@ if [ -z "$REMOTE" ];then
         err "No corresponding remote has been added and no URL given."
         err
         err "Specify a remote URL explicitly."
+        exit 1
     else
         REPO="${$(basename "$URL")%.*}"
         USER=$(basename "$(dirname "$URL")")
