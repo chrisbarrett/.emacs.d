@@ -14,6 +14,15 @@ SYNOPSIS
         $SHORT_USAGE
         $PROG [--help|-h]
 
+DESCRIPTION
+
+        Adds a git subtree in the 'lisp' directory using the supplied URL, which
+        corresponds to a Git repository. A remote is added, as a GitHub-style
+        USER '/' REPO pair.
+
+        After the subtree has been added, it can be updated using the update
+        script in this directory.
+
 ARGUMENTS
 
         REMOTE-URL

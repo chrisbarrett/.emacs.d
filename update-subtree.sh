@@ -16,6 +16,15 @@ SYNOPSIS
         $SHORT_USAGE
         $PROG [--help|-h]
 
+DESCRIPTION
+
+        Updates a git subtree in the 'lisp' directory, using the corresponding
+        remote. The remote is assumed to be a GitHub-style USER '/' REPO pair.
+
+        If no remote has been configured yet for the subtree, the REMOTE-URL
+        argument should be supplied. The remote will be added so that it can be
+        omitted in the future.
+
 ARGUMENTS
 
         PACKAGE
@@ -32,6 +41,10 @@ EXAMPLE
         To update the package 'which-key' at 'lisp/emacs-which-key':
 
              $PROG emacs-which-key
+
+        To update the package 'magit' and configure a corresponding remote:
+
+             $PROG magit 'https://github.com/magit/magit.git'
 "
 
 set -e
