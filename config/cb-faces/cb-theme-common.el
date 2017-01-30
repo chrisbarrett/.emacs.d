@@ -136,6 +136,9 @@
     (diredp-no-priv
      ((t (:weight light :foreground ,cb-theme-common-gray))))
 
+    (diredp-rare-priv
+     ((t (:weight light :foreground ,cb-theme-common-gray))))
+
     (diredp-exec-priv
      ((t (:weight light :foreground ,cb-theme-common-gray))))
 
