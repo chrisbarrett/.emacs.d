@@ -1,6 +1,6 @@
 ;;; magit-apply.el --- apply Git diffs  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2010-2016  The Magit Project Contributors
+;; Copyright (C) 2010-2017  The Magit Project Contributors
 ;;
 ;; You should have received a copy of the AUTHORS.md file which
 ;; lists all contributors.  If not, see http://magit.vc/authors.
@@ -68,7 +68,7 @@ between the index and the working tree, not with committed
 changes.
 
 If this option is non-nil (the default), then typing \"u\"
-(`magit-unstage') on a committed change, causes it to be
+\(`magit-unstage') on a committed change, causes it to be
 reversed in the index but not the working tree.  For more
 information see command `magit-reverse-in-index'."
   :package-version '(magit . "2.4.1")
@@ -589,9 +589,5 @@ a separate commit.  A typical workflow would be:
   (interactive)
   (magit-reverse (cons "--cached" args)))
 
-;;; magit-apply.el ends soon
 (provide 'magit-apply)
-;; Local Variables:
-;; indent-tabs-mode: nil
-;; End:
 ;;; magit-apply.el ends here

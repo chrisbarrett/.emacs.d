@@ -1,6 +1,6 @@
 ;;; magit-blame.el --- blame support for Magit  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2012-2016  The Magit Project Contributors
+;; Copyright (C) 2012-2017  The Magit Project Contributors
 ;;
 ;; You should have received a copy of the AUTHORS.md file which
 ;; lists all contributors.  If not, see http://magit.vc/authors.
@@ -118,7 +118,7 @@ and then turned on again when turning off the latter."
   "Face for dates in blame headings."
   :group 'magit-faces)
 
-;;; Code
+;;; Mode
 
 (defvar magit-blame-mode-map
   (let ((map (make-sparse-keymap)))
@@ -197,6 +197,8 @@ and then turned on again when turning off the latter."
 (advice-add 'auto-revert-handler :before-until
             'auto-revert-handler--unless-magit-blame-mode)
 
+;;; Popup
+
 ;;;###autoload (autoload 'magit-blame-popup "magit-blame" nil t)
 (magit-define-popup magit-blame-popup
   "Popup console for blame commands."
@@ -208,6 +210,8 @@ and then turned on again when turning off the latter."
   :actions  '((?b "Blame" magit-blame))
   :default-arguments '("-w")
   :default-action 'magit-blame)
+
+;;; Process
 
 ;;;###autoload
 (defun magit-blame (revision file &optional args line)
@@ -361,6 +365,8 @@ This is intended for debugging purposes.")
     (kill-process process)
     (user-error "Buffer being blamed has been killed")))
 
+;;; Display
+
 (defun magit-blame-make-overlay (chunk)
   (let ((ov (save-excursion
               (save-restriction
@@ -423,6 +429,8 @@ This is intended for debugging purposes.")
 (defun magit-blame-format-time-string (format time tz)
   (format-time-string
    format (seconds-to-time (+ time (* (/ tz 100) 60 60) (* (% tz 100) 60)))))
+
+;;; Commands
 
 (defun magit-blame-quit ()
   "Turn off Magit-Blame mode.
@@ -502,6 +510,8 @@ like `kill-ring-save' would."
       (copy-region-as-kill nil nil 'region)
     (kill-new (message "%s" (magit-blame-chunk-get :hash)))))
 
+;;; Utilities
+
 (defun magit-blame-chunk-get (key &optional pos)
   (--when-let (magit-blame-overlay-at pos)
     (plist-get (overlay-get it 'magit-blame) key)))
@@ -525,9 +535,5 @@ like `kill-ring-save' would."
              (let ((magit-display-buffer-noselect t))
                (apply #'magit-show-commit rev (magit-diff-arguments))))))))))
 
-;;; magit-blame.el ends soon
 (provide 'magit-blame)
-;; Local Variables:
-;; indent-tabs-mode: nil
-;; End:
 ;;; magit-blame.el ends here

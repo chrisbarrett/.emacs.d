@@ -1,6 +1,6 @@
-;;; magit-utils.el --- various utilities  -*- lexical-binding: t -*-
+;;; magit-utils.el --- various utilities  -*- lexical-binding: t; coding: utf-8 -*-
 
-;; Copyright (C) 2010-2016  The Magit Project Contributors
+;; Copyright (C) 2010-2017  The Magit Project Contributors
 ;;
 ;; You should have received a copy of the AUTHORS.md file which
 ;; lists all contributors.  If not, see http://magit.vc/authors.
@@ -536,7 +536,14 @@ Unless optional argument KEEP-EMPTY-LINES is t, trim all empty lines."
       (insert-file-contents file)
       (split-string (buffer-string) "\n" (not keep-empty-lines)))))
 
-;;; Kludges
+;;; Missing from Emacs
+
+(defun magit-kill-this-buffer ()
+  "Kill the current buffer."
+  (interactive)
+  (kill-buffer (current-buffer)))
+
+;;; Kludges for Emacs Bugs
 
 (defun magit-file-accessible-directory-p (filename)
   "Like `file-accessible-directory-p' but work around an Apple bug.
@@ -545,13 +552,7 @@ and https://github.com/magit/magit/issues/2295."
   (and (file-directory-p filename)
        (file-accessible-directory-p filename)))
 
-(defun magit-message (format-string &rest args)
-  "Display a message at the bottom of the screen, or not.
-Like `message', except that if the users configured option
-`magit-no-message' to prevent the message corresponding to
-FORMAT-STRING to be displayed, then don't."
-  (unless (--first (string-prefix-p it format-string) magit-no-message)
-    (apply #'message format-string args)))
+;;; Kludges for Incompatible Modes
 
 (defvar whitespace-mode)
 
@@ -661,14 +662,15 @@ the %s(1) manpage.
 (advice-add 'org-man-export :around
             'org-man-export--magit-gitman)
 
-;;; magit-utils.el ends soon
+;;; Miscellaneous
 
-(define-obsolete-variable-alias 'magit-duration-spec
-  'magit--age-spec "Magit 2.9.0")
+(defun magit-message (format-string &rest args)
+  "Display a message at the bottom of the screen, or not.
+Like `message', except that if the users configured option
+`magit-no-message' to prevent the message corresponding to
+FORMAT-STRING to be displayed, then don't."
+  (unless (--first (string-prefix-p it format-string) magit-no-message)
+    (apply #'message format-string args)))
 
 (provide 'magit-utils)
-;; Local Variables:
-;; coding: utf-8
-;; indent-tabs-mode: nil
-;; End:
 ;;; magit-utils.el ends here

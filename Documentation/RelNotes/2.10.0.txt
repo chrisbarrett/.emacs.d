@@ -1,8 +1,34 @@
-Magit v2.9.1 Release Notes (unreleased)
-=======================================
+It's Magit!  A Git Porcelain inside Emacs
+=========================================
+
+Magit is an interface to the version control system Git, implemented
+as an Emacs package.  Magit aspires to be a complete Git porcelain.
+While we cannot (yet) claim that Magit wraps and improves upon each
+and every Git command, it is complete enough to allow even experienced
+Git users to perform almost all of their daily version control tasks
+directly from within Emacs.  While many fine Git clients exist, only
+Magit and Git itself deserve to be called porcelains.
+
+For more information about Magit, see https://magit.vc.
+
+If Magit helps you be more productive, then please consider donating
+at https://magit.vc/donate/.
+
+Magit v2.10.0 Release Notes
+===========================
+
+Released 4 January 2017 by Jonas Bernoulli.
+
+We are pleased to announce the release of Magit version 2.10.0,
+representing 85 commits by six people over one month.
+
+Also see https://emacsair.me/2017/01/04/magit-2.10.
 
 Changes since v2.9.0
 --------------------
+
+* Many new, well organized, libraries were added, consisting of code
+  that was previously located inside a messier "magit.el".  #2908
 
 * The function `magit-display-buffer' now sets the focus on the frame
   used to display the selected window.  #2865
@@ -12,12 +38,18 @@ Changes since v2.9.0
   before.  422d776e, 33c5c1ca
 
 * Many Custom groups and options now link to the relevant Info nodes
-  and to other relevant options.  810d7fb4
+  and to other relevant groups.  810d7fb4
 
 * Many doc-strings were improved, added, and fixed.  47aae617
 
+* Added the function `magit-repolist-column-dirty', which can be added
+  to `magit-repolist-columns' and `magit-submodule-list-columns'.  #2907
+
 * The obsolete variable `magit-repository-directory-depth' is no
   longer defined as an option.  09993c39
+
+* The obsolete hook variable `magit-status-refresh-hook' is no longer
+  defined explicitly.  7e96e831
 
 Fixes since v2.9.0
 ------------------
@@ -60,3 +92,10 @@ This release also contains documentation updates and typo fixes.
 
 Authors
 -------
+
+    68  Jonas Bernoulli
+    13  Kyle Meyer
+     1  Aleksey Uimanov
+     1  Alexander Gramiak
+     1  Noam Postavsky
+     1  Wouter Bolsterlee

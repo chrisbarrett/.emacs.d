@@ -1,13 +1,13 @@
 #+TITLE: Magit User Manual
 #+AUTHOR: Jonas Bernoulli
 #+EMAIL: jonas@bernoul.li
-#+DATE: 2015-2016
+#+DATE: 2015-2017
 #+LANGUAGE: en
 
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Magit: (magit).
 #+TEXINFO_DIR_DESC: Using Git from Emacs with Magit.
-#+SUBTITLE: for version 2.9
+#+SUBTITLE: for version 2.10
 
 #+TEXINFO_DEFFN: t
 #+TEXINFO_CLASS: info+
@@ -30,7 +30,7 @@ Magit and Git itself deserve to be called porcelains.
 @end ifnottex
 
 @quotation
-Copyright (C) 2015-2016 Jonas Bernoulli <jonas@@bernoul.li>
+Copyright (C) 2015-2017 Jonas Bernoulli <jonas@@bernoul.li>
 
 You can redistribute this document and/or modify it under the terms
 of the GNU General Public License as published by the Free Software
@@ -5144,7 +5144,7 @@ A---B---C              refs/heads/master
      \   \
       \   CW0---CW1    refs/wip/wtree/refs/heads/master
        \
-        BW0---BW1      refs/wip/wtree/refs/heads/master@{2}
+        BW0---BW1      refs/wip/wtree/refs/heads/master@@@{2@}
 #+END_EXAMPLE
 
 The fork-point of the index wip ref is not changed until some change

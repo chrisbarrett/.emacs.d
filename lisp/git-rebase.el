@@ -1,6 +1,6 @@
 ;;; git-rebase.el --- Edit Git rebase files  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2010-2016  The Magit Project Contributors
+;; Copyright (C) 2010-2017  The Magit Project Contributors
 ;;
 ;; You should have received a copy of the AUTHORS.md file which
 ;; lists all contributors.  If not, see http://magit.vc/authors.
@@ -545,7 +545,4 @@ By default, this is the same except for the \"pick\" command."
 (add-to-list 'with-editor-file-name-history-exclude git-rebase-filename-regexp)
 
 (provide 'git-rebase)
-;; Local Variables:
-;; indent-tabs-mode: nil
-;; End:
 ;;; git-rebase.el ends here

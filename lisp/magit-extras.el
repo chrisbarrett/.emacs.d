@@ -1,6 +1,6 @@
 ;;; magit-extras.el --- additional functionality for Magit  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2008-2016  The Magit Project Contributors
+;; Copyright (C) 2008-2017  The Magit Project Contributors
 ;;
 ;; You should have received a copy of the AUTHORS.md file which
 ;; lists all contributors.  If not, see http://magit.vc/authors.
@@ -92,6 +92,43 @@ blame to center around the line point is on."
   "Run `gitk --all' in the current repository."
   (interactive)
   (call-process magit-gitk-executable nil 0 nil "--all"))
+
+;;; Emacs Tools
+
+;;;###autoload
+(defun ido-enter-magit-status ()
+  "Drop into `magit-status' from file switching.
+
+To make this command available use something like:
+
+  (add-hook \\='ido-setup-hook
+            (lambda ()
+              (define-key ido-completion-map
+                (kbd \"C-x g\") \\='ido-enter-magit-status)))
+
+Starting with Emacs 25.1 the Ido keymaps are defined just once
+instead of every time Ido is invoked, so now you can modify it
+like pretty much every other keymap:
+
+  (define-key ido-common-completion-map
+    (kbd \"C-x g\") 'ido-enter-magit-status)"
+  (interactive)
+  (with-no-warnings ; FIXME these are internal variables
+    (setq ido-exit 'fallback fallback 'magit-status))
+  (exit-minibuffer))
+
+;;;###autoload
+(defun magit-dired-jump (&optional other-window)
+  "Visit file at point using Dired.
+With a prefix argument, visit in another window.  If there
+is no file at point then instead visit `default-directory'."
+  (interactive "P")
+  (dired-jump other-window (-if-let (file (magit-file-at-point))
+                               (progn (setq file (expand-file-name file))
+                                      (if (file-directory-p file)
+                                          (concat file "/.")
+                                        file))
+                             (concat default-directory "/."))))
 
 ;;; Clean
 
@@ -195,9 +232,5 @@ on a position in a file-visiting buffer."
                           (prompt-for-change-log-name))))
   (magit-add-change-log-entry whoami file-name t))
 
-;;; magit-extras.el ends soon
 (provide 'magit-extras)
-;; Local Variables:
-;; indent-tabs-mode: nil
-;; End:
 ;;; magit-extras.el ends here

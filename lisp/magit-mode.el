@@ -1,6 +1,6 @@
 ;;; magit-mode.el --- create and refresh Magit buffers  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2010-2016  The Magit Project Contributors
+;; Copyright (C) 2010-2017  The Magit Project Contributors
 ;;
 ;; You should have received a copy of the AUTHORS.md file which
 ;; lists all contributors.  If not, see http://magit.vc/authors.
@@ -1152,9 +1152,5 @@ Currently `magit-log-mode', `magit-reflog-mode',
                    (float-time (time-subtract (current-time) start))))
       (run-hooks hook))))
 
-;;; magit-mode.el ends soon
 (provide 'magit-mode)
-;; Local Variables:
-;; indent-tabs-mode: nil
-;; End:
 ;;; magit-mode.el ends here

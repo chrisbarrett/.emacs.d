@@ -59,7 +59,15 @@ ELS += magit-diff.el
 ELS += magit-log.el
 ELS += magit-wip.el
 ELS += magit-apply.el
+ELS += magit-repos.el
 ELS += magit.el
+ELS += magit-status.el
+ELS += magit-refs.el
+ELS += magit-files.el
+ELS += magit-branch.el
+ELS += magit-worktree.el
+ELS += magit-notes.el
+ELS += magit-obsolete.el
 ELS += magit-sequence.el
 ELS += magit-commit.el
 ELS += magit-remote.el
@@ -85,18 +93,18 @@ VERSION := $(shell \
   (load-file \"magit-version.el\")\
   (princ magit-version))")
 
-MAGIT_VERSION       = 2.9
+MAGIT_VERSION       = 2.10
 ASYNC_VERSION       = 1.9
 DASH_VERSION        = 2.13.0
-WITH_EDITOR_VERSION = 2.5.8
-GIT_COMMIT_VERSION  = 2.8.0
-MAGIT_POPUP_VERSION = 2.8.0
+WITH_EDITOR_VERSION = 2.5.9
+GIT_COMMIT_VERSION  = 2.10.0
+MAGIT_POPUP_VERSION = 2.10.0
 
-ASYNC_MELPA_SNAPSHOT       = 20160711.223
-DASH_MELPA_SNAPSHOT        = 20160820.501
-WITH_EDITOR_MELPA_SNAPSHOT = 20161201.925
-GIT_COMMIT_MELPA_SNAPSHOT  = 20161123.2204
-MAGIT_POPUP_MELPA_SNAPSHOT = 20161201.1352
+ASYNC_MELPA_SNAPSHOT       = 20161103.1036
+DASH_MELPA_SNAPSHOT        = 20161121.55
+WITH_EDITOR_MELPA_SNAPSHOT = 20170111.609
+GIT_COMMIT_MELPA_SNAPSHOT  = 20170112.334
+MAGIT_POPUP_MELPA_SNAPSHOT = 20170104.924
 
 EMACS_VERSION = 24.4
 

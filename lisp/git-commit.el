@@ -1,6 +1,6 @@
 ;;; git-commit.el --- Edit Git commit messages  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2010-2016  The Magit Project Contributors
+;; Copyright (C) 2010-2017  The Magit Project Contributors
 ;;
 ;; You should have received a copy of the AUTHORS.md file which
 ;; lists all contributors.  If not, see http://magit.vc/authors.
@@ -11,7 +11,7 @@
 ;;	Marius Vollmer <marius.vollmer@gmail.com>
 ;; Maintainer: Jonas Bernoulli <jonas@bernoul.li>
 
-;; Package-Requires: ((emacs "24.4") (dash "20160820.501") (with-editor "20161201.925"))
+;; Package-Requires: ((emacs "24.4") (dash "20161121.55") (with-editor "20170111.609"))
 ;; Keywords: git tools vc
 ;; Homepage: https://github.com/magit/magit
 
@@ -179,6 +179,7 @@ The major mode configured here is turned on by the minor mode
              git-commit-turn-on-auto-fill
              git-commit-turn-on-flyspell
              git-commit-propertize-diff
+             bug-reference-mode
              with-editor-usage-message))
 
 (defcustom git-commit-finish-query-functions
@@ -407,7 +408,7 @@ already using it, then you probably shouldn't start doing so."
                                                (regexp-quote buffer-file-name)
                                                "\\'")
                                        git-commit-major-mode))))
-      (normal-mode)))
+      (normal-mode t)))
   (setq with-editor-show-usage nil)
   (with-editor-mode 1)
   (add-hook 'with-editor-finish-query-functions
@@ -732,9 +733,5 @@ Added to `font-lock-extend-region-functions'."
                                 (get-text-property pos 'face)))
            (buffer-string)))))))
 
-;;; git-commit.el ends soon
 (provide 'git-commit)
-;; Local Variables:
-;; indent-tabs-mode: nil
-;; End:
 ;;; git-commit.el ends here
