@@ -105,3 +105,14 @@ echo '--> Pulling...'
     git fetch -q "$REMOTE"
     git subtree -q pull --prefix "$PREFIX" "$REMOTE" master --squash -m "Merge $REMOTE@master into $PREFIX"
 )
+
+echo '--> Recompiling'
+(
+    FULLPATH="$DIR/$PREFIX"
+    LOAD_DIRS=$(find "$DIR/lisp" -type d -maxdepth 1 | while read -r LINE; do echo -n "-L $LINE"; done)
+
+    # Don't actually echo the command, the load path is too long.
+    echo "+ emacs -q --batch [-L PATH]* --eval '(byte-recompile-directory \"$FULLPATH\" 0)'"
+
+    emacs -q --batch $LOAD_DIRS --eval '(byte-recompile-directory "'"$FULLPATH"'" 0)'
+)
