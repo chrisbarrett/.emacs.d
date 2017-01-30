@@ -1,6 +1,6 @@
 ;;; magit-sequence.el --- history manipulation in Magit  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2011-2016  The Magit Project Contributors
+;; Copyright (C) 2011-2017  The Magit Project Contributors
 ;;
 ;; You should have received a copy of the AUTHORS.md file which
 ;; lists all contributors.  If not, see http://magit.vc/authors.
@@ -575,8 +575,8 @@ If no such sequence is in progress, do nothing."
   (magit-sequence-insert-sequence
    (magit-file-line (magit-git-dir "rebase-merge/stopped-sha"))
    onto
-   (cadr (split-string (car (last (magit-file-lines
-                                   (magit-git-dir "rebase-merge/done"))))))))
+   (--when-let (magit-file-lines (magit-git-dir "rebase-merge/done"))
+     (cadr (split-string (car (last it)))))))
 
 (defun magit-rebase-insert-apply-sequence (onto)
   (let ((rewritten
@@ -662,9 +662,5 @@ If no such sequence is in progress, do nothing."
     (insert (propertize type 'face face)    ?\s
             (magit-format-rev-summary hash) ?\n)))
 
-;;; magit-sequence.el ends soon
 (provide 'magit-sequence)
-;; Local Variables:
-;; indent-tabs-mode: nil
-;; End:
 ;;; magit-sequence.el ends here

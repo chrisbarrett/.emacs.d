@@ -1,6 +1,6 @@
 ;;; magit-subtree.el --- subtree support for Magit  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2011-2016  The Magit Project Contributors
+;; Copyright (C) 2011-2017  The Magit Project Contributors
 ;;
 ;; You should have received a copy of the AUTHORS.md file which
 ;; lists all contributors.  If not, see http://magit.vc/authors.
@@ -24,6 +24,8 @@
 ;;; Code:
 
 (require 'magit)
+
+;;; Popup
 
 ;;;###autoload (autoload 'magit-subtree-popup "magit-subtree" nil t)
 (magit-define-popup magit-subtree-popup
@@ -50,12 +52,6 @@
               (?s "Split"      magit-subtree-split))
   :max-action-columns 3)
 
-(defun magit-subtree-prefix (prompt)
-  (--if-let (--first (string-prefix-p "--prefix=" it)
-                     (magit-subtree-arguments))
-      (substring it 9)
-    (magit-subtree-read-prefix prompt)))
-
 (defun magit-subtree-read-prefix (prompt &optional default)
   (let* ((insert-default-directory nil)
          (topdir (magit-toplevel))
@@ -66,6 +62,14 @@
             (file-relative-name prefix topdir)
           (user-error "%s isn't inside the repository at %s" prefix topdir))
       prefix)))
+
+;;; Commands
+
+(defun magit-subtree-prefix (prompt)
+  (--if-let (--first (string-prefix-p "--prefix=" it)
+                     (magit-subtree-arguments))
+      (substring it 9)
+    (magit-subtree-read-prefix prompt)))
 
 (defun magit-subtree-args ()
   (-filter (lambda (arg)
@@ -134,9 +138,5 @@
                      (magit-subtree-args)))
   (magit-git-subtree "split" prefix args commit))
 
-;;; magit-subtree.el ends soon
 (provide 'magit-subtree)
-;; Local Variables:
-;; indent-tabs-mode: nil
-;; End:
 ;;; magit-subtree.el ends here

@@ -1,6 +1,6 @@
 ;;; magit-margin.el --- margins in Magit buffers  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2010-2016  The Magit Project Contributors
+;; Copyright (C) 2010-2017  The Magit Project Contributors
 ;;
 ;; You should have received a copy of the AUTHORS.md file which
 ;; lists all contributors.  If not, see http://magit.vc/authors.
@@ -25,8 +25,8 @@
 
 ;; This library implements support for showing additional information
 ;; in the margins of Magit buffers.  Currently this is only used for
-;; commits, for which the author name and optionally committer date or
-;; age are shown.
+;; commits, for which the committer date or age, and optionally the
+;; author name are shown.
 
 ;;; Code:
 
@@ -225,10 +225,5 @@ English.")
     (fn (abs (- (float-time) (string-to-number date)))
         magit--age-spec)))
 
-;;; magit-margin.el ends soon
 (provide 'magit-margin)
-;; Local Variables:
-;; coding: utf-8
-;; indent-tabs-mode: nil
-;; End:
 ;;; magit-margin.el ends here

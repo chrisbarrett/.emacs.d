@@ -1,6 +1,6 @@
 ;;; magit-log.el --- inspect Git history  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2010-2016  The Magit Project Contributors
+;; Copyright (C) 2010-2017  The Magit Project Contributors
 ;;
 ;; You should have received a copy of the AUTHORS.md file which
 ;; lists all contributors.  If not, see http://magit.vc/authors.
@@ -325,6 +325,7 @@ the upstream isn't ahead of the current branch) show."
   :type '(repeat (string :tag "Argument")))
 
 ;;; Commands
+;;;; Popups
 
 (defvar magit-log-popup
   '(:variable magit-log-arguments
@@ -498,6 +499,8 @@ buffer."
                 magit-log-section-arguments))))
     (magit-invoke-popup 'magit-log-refresh-popup nil arg)))
 
+;;;; Refresh Commands
+
 (defun magit-log-refresh (args files)
   "Set the local log arguments for the current buffer."
   (interactive (magit-log-arguments t))
@@ -545,6 +548,8 @@ buffer."
          (user-error "Cannot change log arguments in reflog buffers"))
         ((derived-mode-p 'magit-cherry-mode)
          (user-error "Cannot change log arguments in cherry buffers"))))
+
+;;;; Log Commands
 
 (defvar magit-log-read-revs-map
   (let ((map (make-sparse-keymap)))
@@ -681,6 +686,8 @@ With a prefix argument or when `--follow' is part of
   (interactive)
   (magit-reflog "HEAD"))
 
+;;;; Limit Commands
+
 (defun magit-log-toggle-commit-limit ()
   "Toggle the number of commits the current log buffer is limited to.
 If the number of commits is currently limited, then remove that
@@ -714,6 +721,8 @@ limit.  Otherwise set it to 256."
   (--when-let (--first (string-match "^-n\\([0-9]+\\)?$" it)
                        (car (magit-log-arguments t)))
     (string-to-number (match-string 1 it))))
+
+;;;; Other Commands
 
 (defun magit-log-bury-buffer (&optional arg)
   "Bury the current buffer or the revision buffer in the same frame.
@@ -900,7 +909,7 @@ Do not add this to a hook variable."
           "\\(?1:[^\0]+\\)\0"                      ; sha1
           "\\(?5:[^\0]*\\)\0"                      ; author
           "\\(?:\\(?:[^@]+@{\\(?6:[^}]+\\)}\0"     ; date
-          "\\(?10:merge \\|autosave \\|restart \\|[^:]+: \\)?" ; refsub
+          "\\(?10:merge \\|autosave \\|restart \\|[^:\n]+: \\)?" ; refsub
           "\\(?2:.*\\)?\\)\\|\0\\)$"))             ; msg
 
 (defconst magit-reflog-subject-re
@@ -994,10 +1003,11 @@ Do not add this to a hook variable."
           (insert (propertize hash 'face 'magit-hash) ?\s))
         (when (and refs (not magit-log-show-refname-after-summary))
           (insert (magit-format-ref-labels refs) ?\s))
-        (when refsub
+        (when (eq style 'reflog)
           (insert (format "%-2s " (1- magit-log-count)))
-          (insert (magit-reflog-format-subject
-                   (substring refsub 0 (if (string-match-p ":" refsub) -2 -1)))))
+          (when refsub
+            (insert (magit-reflog-format-subject
+                     (substring refsub 0 (if (string-match-p ":" refsub) -2 -1))))))
         (when msg
           (insert (propertize msg 'face
                               (pcase (and gpg (aref gpg 0))
@@ -1210,7 +1220,7 @@ If there is no blob buffer in the same frame, then do nothing."
 (define-derived-mode magit-log-select-mode magit-log-mode "Magit Select"
   "Mode for selecting a commit from history.
 
-This mode is documented in info node `(magit)Select from log'.
+This mode is documented in info node `(magit)Select from Log'.
 
 \\<magit-mode-map>\
 Type \\[magit-refresh] to refresh the current buffer.
@@ -1494,7 +1504,7 @@ then show the last `magit-log-section-commit-count' commits."
 
 (defun magit-insert-unpulled-cherries ()
   "Insert section showing unpulled commits.
-Like `magit-insert-unpulled-to-upstream' but prefix each commit
+Like `magit-insert-unpulled-from-upstream' but prefix each commit
 which has not been applied yet (i.e. a commit with a patch-id
 not shared with any local commit) with \"+\", and all others with
 \"-\"."
@@ -1517,16 +1527,5 @@ all others with \"-\"."
       (magit-git-wash (apply-partially 'magit-log-wash-log 'cherry)
         "cherry" "-v" (magit-abbrev-arg) "@{upstream}"))))
 
-;;; magit-log.el ends soon
-
-(define-obsolete-variable-alias 'magit-log-section-args
-  'magit-log-section-arguments "Magit 2.2.0")
-(define-obsolete-function-alias 'magit-insert-unpulled-or-recent-commits
-  'magit-insert-unpulled-from-upstream-or-recent "Magit 2.4.0")
-
 (provide 'magit-log)
-;; Local Variables:
-;; coding: utf-8
-;; indent-tabs-mode: nil
-;; End:
 ;;; magit-log.el ends here

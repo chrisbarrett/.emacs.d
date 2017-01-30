@@ -1,6 +1,6 @@
 ;;; magit-popup.el --- Define prefix-infix-suffix command combos  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2010-2016  The Magit Project Contributors
+;; Copyright (C) 2010-2017  The Magit Project Contributors
 ;;
 ;; You should have received a copy of the AUTHORS.md file which
 ;; lists all contributors.  If not, see http://magit.vc/authors.
@@ -12,7 +12,7 @@
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
 ;; Maintainer: Jonas Bernoulli <jonas@bernoul.li>
 
-;; Package-Requires: ((emacs "24.4") (async "20160711.223") (dash "20160820.501"))
+;; Package-Requires: ((emacs "24.4") (async "20161103.1036") (dash "20161121.55"))
 ;; Keywords: bindings
 ;; Homepage: https://github.com/magit/magit
 
@@ -1275,8 +1275,6 @@ variable whose value may be used as a default."
             files (split-string (substring files 3) ",")))
     (list args files)))
 
-;;; magit-popup.el ends soon
-
 (defconst magit-popup-font-lock-keywords
   (eval-when-compile
     `((,(concat "(\\(magit-define-popup\\)\\_>"
@@ -1288,7 +1286,4 @@ variable whose value may be used as a default."
 (font-lock-add-keywords 'emacs-lisp-mode magit-popup-font-lock-keywords)
 
 (provide 'magit-popup)
-;; Local Variables:
-;; indent-tabs-mode: nil
-;; End:
 ;;; magit-popup.el ends here

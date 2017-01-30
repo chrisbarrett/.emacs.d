@@ -1,6 +1,6 @@
 ;;; magit-bisect.el --- bisect support for Magit  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2011-2016  The Magit Project Contributors
+;; Copyright (C) 2011-2017  The Magit Project Contributors
 ;;
 ;; You should have received a copy of the AUTHORS.md file which
 ;; lists all contributors.  If not, see http://magit.vc/authors.
@@ -29,6 +29,8 @@
 
 (require 'magit)
 
+;;; Options
+
 (defcustom magit-bisect-show-graph t
   "Whether to use `--graph' in the log showing commits yet to be bisected."
   :package-version '(magit . "2.8.0")
@@ -49,6 +51,8 @@
   '((t :foreground "IndianRed4"))
   "Face for bad bisect revisions."
   :group 'magit-faces)
+
+;;; Commands
 
 ;;;###autoload (autoload 'magit-bisect-popup "magit-bisect" nil t)
 (magit-define-popup magit-bisect-popup
@@ -134,6 +138,8 @@ bisect run'."
     (magit-run-git-with-logfile
      (magit-git-dir "BISECT_CMD_OUTPUT") "bisect" subcommand args)))
 
+;;; Sections
+
 (defun magit-bisect-in-progress-p ()
   (file-exists-p (magit-git-dir "BISECT_LOG")))
 
@@ -200,9 +206,5 @@ bisect run'."
         (magit-insert-section (bisect-log)
           (insert hash " is the first bad commit\n"))))))
 
-;;; magit-bisect.el ends soon
 (provide 'magit-bisect)
-;; Local Variables:
-;; indent-tabs-mode: nil
-;; End:
 ;;; magit-bisect.el ends here

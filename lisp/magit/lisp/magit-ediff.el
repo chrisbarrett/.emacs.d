@@ -1,6 +1,6 @@
 ;;; magit-ediff.el --- Ediff extension for Magit  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2010-2016  The Magit Project Contributors
+;; Copyright (C) 2010-2017  The Magit Project Contributors
 ;;
 ;; You should have received a copy of the AUTHORS.md file which
 ;; lists all contributors.  If not, see http://magit.vc/authors.
@@ -34,6 +34,8 @@
 
 (defvar smerge-ediff-buf)
 (defvar smerge-ediff-windows)
+
+;;; Options
 
 (defgroup magit-ediff nil
   "Ediff support for Magit."
@@ -72,7 +74,7 @@ If non-nil, use a third Ediff buffer to distinguish which changes
 in the stash were staged.  In cases where the stash contains no
 staged changes, fall back to a two-buffer Ediff.
 
-More specificaly, a stash is a merge commit, stash@{N}, with
+More specifically, a stash is a merge commit, stash@{N}, with
 potentially three parents.
 
 * stash@{N}^1 represents the HEAD commit at the time the stash
@@ -96,6 +98,8 @@ tree at the time of stashing."
   :package-version '(magit . "2.6.0")
   :group 'magit-ediff
   :type 'boolean)
+
+;;; Commands
 
 (defvar magit-ediff-previous-winconf nil)
 
@@ -498,9 +502,5 @@ stash that were staged."
 (defun magit-ediff-restore-previous-winconf ()
   (set-window-configuration magit-ediff-previous-winconf))
 
-;;; magit-ediff.el ends soon
 (provide 'magit-ediff)
-;; Local Variables:
-;; indent-tabs-mode: nil
-;; End:
 ;;; magit-ediff.el ends here
