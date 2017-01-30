@@ -93,7 +93,7 @@ echo '--> Pulling...'
 (
     set -x
     git fetch -q "$REMOTE"
-    git subtree -q pull --prefix "$PREFIX" "$REMOTE" master --squash
+    git subtree -q pull --prefix "$PREFIX" "$REMOTE" master --squash -m "Merge $REMOTE@master into $PREFIX"
 )
 
 if [ -n "$URL" ]; then
