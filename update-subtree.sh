@@ -73,7 +73,7 @@ set -e
 NAME="$1"
 URL="$2"
 
-PREFIX="/lisp/$NAME"
+PREFIX="lisp/$NAME"
 
 REMOTE=$(git remote | grep "/$NAME\$") || true
 
