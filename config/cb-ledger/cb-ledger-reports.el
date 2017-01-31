@@ -143,7 +143,7 @@ These balances show the remaining available balance for each category.")
     (header-1 "Unbudgeted Spending, Last 7 Days")
     "ledger -f %(ledger-file) bal expenses --sort total -p 'last 7 days' --invert --unbudgeted"
     (header "Register")
-    "ledger -f %(ledger-file) reg checking --by-payee --sort total -p 'last 7 days' --invert"))
+    "ledger -f %(ledger-file) reg checking -p 'last 7 days' --invert"))
 
 (defconst cb-ledger-reports-expenses
   '((header-1 "Expenses For Week")
