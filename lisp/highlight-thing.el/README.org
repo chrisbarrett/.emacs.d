@@ -1,0 +1,61 @@
+* highlight-thing.el
+
+  Global minor mode to highlight the thing under point.
+
+  [[https://melpa.org/#/highlight-thing][file:https://melpa.org/packages/highlight-thing-badge.svg]]
+
+  Similar to =highlight-symbol-mode=, but does not rely on font-lock
+  functionality and does not provide functionality to navigate to different
+  occurrences of the current symbol under point.
+
+  No external dependencies, uses =thingatpt= and =hi-lock= functionality that is
+  included with GNU Emacs.
+
+** Installation
+
+   Basic setup:
+
+   #+begin_src emacs-lisp
+     (require 'highlight-thing)
+     (global-highlight-thing-mode)
+   #+end_src
+
+   Alternatively you can use the buffer-local version:
+
+   #+begin_src emacs-lisp
+     (add-hook 'prog-mode-hook 'highlight-thing-mode)
+   #+end_src
+
+   The default is to highlight the symbol under point, but you can customize
+   =hightlight-thing-what-thing= to highlight different components. Set the following to only
+   highlight the word under point:
+
+   #+begin_src emacs-lisp
+     (setq highlight-thing-what-thing 'word)
+   #+end_src
+
+   As an extension to the =thing-at-point= capabilities you can select =region= in
+   which case an active region is used as the thing to highlight (cf. [[https://github.com/fgeller/highlight-thing.el/issues/7][#7]]).
+
+   Customize the face =hi-yellow= to change the colors that are used for
+   highlighting.
+
+   You can customize the delay before this mode attempts to highlight the thing
+   under point. For example, push it out to 1.5 seconds from the default 0.5:
+
+   #+begin_src emacs-lisp
+     (setq highlight-thing-delay-seconds 1.5)
+   #+end_src
+
+   You can limit the highlighting of things to the current defun via the
+   following setting:
+
+   #+begin_src emacs-lisp
+     (setq highlight-thing-limit-to-defun t)
+   #+end_src
+
+   You can configure the matching of occurrences to be case-sensitive via the following setting:
+
+   #+begin_src emacs-lisp
+     (setq highlight-thing-case-sensitive-p t)
+   #+end_src
