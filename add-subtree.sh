@@ -2,6 +2,8 @@
 #
 # Add a git subtree to the `lisp` directory.
 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 PROG=$(basename "$0")
 
 SHORT_USAGE="$PROG REMOTE-URL"
