@@ -78,13 +78,12 @@ PREFIX="lisp/$NAME"
 echo '--> Adding remote...'
 (
     set -x
-    git remote add "$REMOTE" "$URL"
+    git remote add "$REMOTE" "$URL" -f --no-tags
 )
 
 echo '--> Pulling...'
 (
     set -x
-    git fetch -q "$REMOTE"
     git subtree -q add --prefix "$PREFIX" "$REMOTE" master --squash -m "Add $REMOTE@master to $PREFIX"
 )
 
