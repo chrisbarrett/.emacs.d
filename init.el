@@ -128,6 +128,7 @@ If argument INTERACTIVE-P is set, log additional information."
 (use-package cb-haskell)
 (use-package cb-shell)
 (use-package cb-csv)
+(use-package cb-highlight-thing)
 
 (use-package personal-config
   :load-path "~/Sync/emacs")

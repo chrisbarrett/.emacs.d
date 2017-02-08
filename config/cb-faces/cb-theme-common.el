@@ -169,6 +169,18 @@
     (show-paren-mismatch
      ((t (:weight bold :foreground ,cb-theme-common-red :underline ,cb-theme-common-red))))
 
+    ;; Highlights
+
+    (highlight-thing
+     ((t (:weight demibold :underline ,cb-theme-common-blue :foreground ,cb-theme-common-blue :background nil))))
+
+    (ahs-face
+     ((t (:inherit highlight))))
+
+    (ahs-plugin-whole-buffer-face
+     ((t (:inherit highlight))))
+
+
     ;; Magit
 
     (magit-diff-file-heading
