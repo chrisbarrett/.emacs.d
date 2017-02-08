@@ -69,7 +69,7 @@ set -e
 URL="$1"
 
 NAME="$(basename "$URL")"
-NAME="${REPO%.*}"
+NAME="${NAME%.git}"
 USER=$(basename "$(dirname "$URL")")
 REMOTE="$USER/$NAME"
 
