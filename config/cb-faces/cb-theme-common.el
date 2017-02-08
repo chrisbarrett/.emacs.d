@@ -301,6 +301,23 @@
     (mu4e-header-highlight-face
      ((t :inherit region)))
 
+    ;; Message composition
+
+    (message-header-name
+     ((t (:weight demibold))))
+
+    (message-header-to
+     ((t (:weight normal))))
+
+    (message-cited-text
+     ((t (:weight light :foreground ,cb-theme-common-gray))))
+
+    (message-header-subject
+     ((t (:weight normal))))
+
+    (message-header-other
+     ((t (:weight demibold))))
+
     ;; Neotree
 
     (neo-file-link-face
