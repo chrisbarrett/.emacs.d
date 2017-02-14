@@ -2,6 +2,14 @@
 
 ## Next
 
+* New frontend `company-preview-common-frontend`.
+* `company-clang` calls Clang using a pipe instead of pty.
+* The minimum required version of Emacs is now 24.3.
+
+## 2016-11-12 (0.9.1)
+
+* `company-indent-or-complete-common` skips trying to indent if
+  `indent-line-function` is `indent-relative` or `indent-relative-maybe`.
 * Better visualization of search matches. New face `company-tooltip-search-selection`.
 * New variable `company-files-exclusions`.
 * `company-next-page` and `company-previous-page` adhere to
