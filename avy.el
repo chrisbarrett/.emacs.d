@@ -506,7 +506,10 @@ Set `avy-style' according to COMMMAND as well."
 
 (defun avy-action-goto (pt)
   "Goto PT."
-  (goto-char pt))
+  (let ((frame (window-frame (selected-window))))
+    (select-frame-set-input-focus frame)
+    (raise-frame frame)
+    (goto-char pt)))
 
 (defun avy-action-mark (pt)
   "Mark sexp at PT."
@@ -838,6 +841,10 @@ LEAF is normally ((BEG . END) . WND)."
                           (end-of-visual-line)
                           (point))
                       (line-end-position)))
+               ;; `end-of-visual-line' is bugged sometimes
+               (lep (if (< lep beg)
+                        (line-end-position)
+                      lep))
                (len-and-str (avy--update-offset-and-str len str lep)))
           (setq len (car len-and-str))
           (setq str (cdr len-and-str))
