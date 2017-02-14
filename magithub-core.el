@@ -1,6 +1,6 @@
 ;;; magithub-core.el --- core functions for magithub  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2016  Sean Allred
+;; Copyright (C) 2016-2017  Sean Allred
 
 ;; Author: Sean Allred <code@seanallred.com>
 ;; Keywords: tools
@@ -94,6 +94,13 @@ allowed."
   (with-timeout (5 (error "Took too long!  %s%S" command args))
     (magithub-with-hub (funcall magit-function command args))))
 
+(defun magithub--git-raw-output (&rest args)
+  "Execute Git with ARGS, returning its output as string.
+Adapted from `magit-git-lines'."
+  (with-temp-buffer
+    (apply #'magit-git-insert args)
+    (buffer-string)))
+
 (defun magithub--command (command &optional args)
   "Run COMMAND synchronously using `magithub-hub-executable'."
   (magithub--hub-command #'magit-run-git command args))
@@ -103,10 +110,10 @@ allowed."
 Ensure GIT_EDITOR is set up appropriately."
   (magithub--hub-command #'magit-run-git-with-editor command args))
 
-(defun magithub--command-output (command &optional args)
-  "Run COMMAND synchronously using `magithub-hub-executable'
-and returns its output as a list of lines."
-  (magithub--hub-command #'magit-git-lines command args))
+(defun magithub--command-output (command &optional args raw)
+  "Run COMMAND synchronously using `magithub-hub-executable'.
+If not RAW, return output as a list of lines."
+  (magithub--hub-command (if raw #'magithub--git-raw-output #'magit-git-lines) command args))
 
 (defun magithub--command-quick (command &optional args)
   "Quickly execute COMMAND with ARGS."
@@ -222,7 +229,7 @@ See /.github/ISSUE_TEMPLATE.md in this repository."
 If a prop is a symbol, that property will be used.
 
 If a prop is a function, it will be called with the
-currentelement of OBJECT-LIST.
+current element of OBJECT-LIST.
 
 If a prop is nil, the entire element is used."
   (delq nil
@@ -235,6 +242,52 @@ If a prop is nil, the entire element is used."
                (cons (if prop1 p1 e1)
                      (if prop2 p2 e2)))))
          object-list object-list)))
+
+(defconst magithub-feature-list
+  '(pull-request-merge pull-request-checkout)
+  "All magit-integration features of Magithub.
+
+`pull-request-merge'
+Apply patches from pull request
+
+`pull-request-checkout'
+Checkout pull requests as new branches")
+
+(defvar magithub-features nil
+  "An alist of feature-symbols to Booleans.
+When a feature symbol maps to non-nil, that feature is considered
+'loaded'.  Thus, to disable all messages, prepend '(t . t) to
+this list.
+
+Example:
+
+    ((pull-request-merge . t) (other-feature . nil))
+
+signals that `pull-request-merge' is a loaded feature and
+`other-feature' has not been loaded and will not be loaded.
+
+To enable all features, see `magithub-feature-autoinject'.
+
+See `magithub-feature-list' for a list and description of features.")
+
+(defun magithub-feature-check (feature)
+  "Check if a Magithub FEATURE has been configured.
+See `magithub-features'."
+  (if (listp magithub-features)
+      (let* ((p (assq feature magithub-features)))
+        (if (consp p) (cdr p)
+          (cdr (assq t magithub-features))))
+    magithub-features))
+
+(defun magithub-feature-maybe-idle-notify (&rest feature-list)
+  "Notify user if any of FEATURES are not yet configured."
+  (unless (-all? #'magithub-feature-check feature-list)
+    (let ((m "Magithub features not configured: %S")
+          (s "see variable `magithub-features' to turn off this message"))
+      (run-with-idle-timer
+       1 nil (lambda ()
+               (message (concat m "; " s) feature-list)
+               (add-to-list 'feature-list '(t . t) t))))))
 
 (provide 'magithub-core)
 ;;; magithub-core.el ends here

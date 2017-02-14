@@ -1,6 +1,6 @@
 ;;; magithub.el --- Magit interfaces for GitHub  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2016  Sean Allred
+;; Copyright (C) 2016-2017  Sean Allred
 
 ;; Author: Sean Allred <code@seanallred.com>
 ;; Keywords: git, tools, vc
@@ -54,6 +54,7 @@
 (require 'magithub-issue)
 (require 'magithub-cache)
 (require 'magithub-ci)
+(require 'magithub-proxy)
 
 (magit-define-popup magithub-dispatch-popup
   "Popup console for dispatching other Magithub popups."
@@ -65,6 +66,7 @@
              (?f "Fork" magithub-fork-popup)
              (?i "Issues" magithub-issues-popup)
              (?p "Submit a pull request" magithub-pull-request-popup)
+             (?x "Use a proxy repository for issues/PRs" magithub-proxy-set-default)
              "Meta"
              (?` "Toggle Magithub-Status integration" magithub-enabled-toggle)
              (?g "Refresh all GitHub data" magithub-refresh)
@@ -108,7 +110,7 @@
   (interactive)
   (unless (magithub-github-repository-p)
     (user-error "Not a GitHub repository"))
-  (magithub--command-quick "browse"))
+  (browse-url (car (magithub--command-output "browse" "-u"))))
 
 (defvar magithub-after-create-messages
   '("Don't be shy!"
@@ -220,16 +222,67 @@ Returns a list (USER REPOSITORY)."
     (list (match-string 1 repo)
           (match-string 2 repo))))
 
-(defun magithub-clone (user repo)
+(defcustom magithub-clone-default-directory nil
+  "Default directory to clone to when using `magithub-clone'.
+When nil, the current directory at invocation is used."
+  :type 'directory
+  :group 'magithub)
+
+(defun magithub-clone (user repo dir)
   "Clone USER/REPO.
-Banned inside existing GitHub repositories."
-  (interactive (if (magithub-github-repository-p)
+Banned inside existing GitHub repositories if
+`magithub-clone-default-directory' is nil."
+  (interactive (if (and (not magithub-clone-default-directory)
+                        (magithub-github-repository-p))
                    (user-error "Already in a GitHub repo")
-                 (magithub-clone--get-repo)))
-  (async-shell-command
-   (format "%s clone %s/%s"
-           magithub-hub-executable
-           user repo)))
+                 (let ((args (magithub-clone--get-repo)))
+                   (append args (list (read-directory-name
+                                       "Destination: "
+                                       (if (s-ends-with? "/" magithub-clone-default-directory)
+                                           magithub-clone-default-directory
+                                         (concat magithub-clone-default-directory "/"))
+                                       nil nil
+                                       (cadr args)))))))
+  (unless (file-writable-p dir)
+    (user-error "%s does not exist or is not writable" dir))
+  (when (y-or-n-p (format "Clone %s/%s to %s? " user repo dir))
+    (let* ((proc (start-process "*magithub-clone*" "*magithub-clone*"
+                                magithub-hub-executable
+                                "clone"
+                                (format "%s/%s" user repo)
+                                dir)))
+      (set-process-sentinel
+       proc
+       (lambda (p event)
+         (setq event (s-trim event))
+         (cond ((string= event "finished")
+                (run-with-idle-timer 1 nil #'magithub-clone--finished user repo dir))
+               (t (pop-to-buffer (process-buffer p))
+                  (message "unhandled event: %s => %s" (process-command p) event))))))))
+
+(defun magithub-clone--finished (user repo dir)
+  "After finishing the clone, allow the user to jump to their new repo."
+  (when (y-or-n-p (format "%s/%s has finished cloning to %s.  Open? " user repo dir))
+    (magit-status-internal (s-chop-suffix "/" dir))))
+
+(defun magithub-feature-autoinject (feature)
+  "Configure FEATURE to recommended settings.
+If FEATURE is `all' ot t, all known features will be loaded."
+  (if (memq feature '(t all))
+      (mapc #'magithub-feature-autoinject magithub-feature-list)
+    (cl-case feature
+
+      (pull-request-merge
+       (magit-define-popup-action 'magit-am-popup
+         ?P "Apply patches from pull request" #'magithub-pull-request-merge))
+
+      (pull-request-checkout
+       (magit-define-popup-action 'magit-branch-popup
+         ?P "Checkout pull request" #'magithub-pull-request-checkout))
+
+      (t (user-error "unknown feature %S" feature)))
+    (add-to-list 'magithub-features (cons feature t))))
+
 
 (provide 'magithub)
 ;;; magithub.el ends here
