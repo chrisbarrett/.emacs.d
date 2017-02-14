@@ -29,7 +29,7 @@
   (derived-mode-p 'sbt-mode))
 
 ;;;###autoload
-(defun sbt:switch-to-active-sbt-buffer ()
+(defun sbt-switch-to-active-sbt-buffer ()
   "Switch to buffer with running sbt process.
 If run in buffer in scala project then it switch to that project sbt buffer (if some exists).
 When run in buffer with no scala project then based on number of sbt buffers this happen:
@@ -42,7 +42,9 @@ When run in buffer with no scala project then based on number of sbt buffers thi
 	 (cl-loop for process being the elements of (process-list)
 	       for current-process-buffer = (process-buffer process)
 	       when (and
+		     (equal (process-status process) 'run) ;; proces must be running
 		     (bufferp current-process-buffer) ;; process must have associated buffer
+		     (buffer-live-p current-process-buffer) ;; buffer must not be killed
 		     (with-current-buffer current-process-buffer
 		       (and
 			(sbt:mode-p)
