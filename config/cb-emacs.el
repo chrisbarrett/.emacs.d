@@ -37,11 +37,6 @@
 
 ;; Commands for working with config subtrees
 
-(defun cb-emacs--read-subtree ()
-  (completing-read "Select subtree to update: "
-                   (-map #'f-filename (f-directories cb-emacs-lisp-directory))
-                   t))
-
 (defun cb-emacs--find-subtree-remote (subtree)
   (--find (equal (-last-item (s-split "/" it)) subtree)
           (magit-list-remotes)))
@@ -102,12 +97,15 @@ When called interactively, prompt for the subtree, then only
 prompt for REMOTE if it cannot be determined."
   (interactive  (let ((default-directory user-emacs-directory))
                   (cb-emacs--assert-tree-not-dirty)
-                  (let ((subtree (cb-emacs--read-subtree)))
+                  (let ((subtree (completing-read
+                                  "Select subtree to update: "
+                                  (-map #'f-filename (f-directories cb-emacs-lisp-directory))
+                                  t)))
                     (list subtree
                           (or (cb-emacs--find-subtree-remote subtree)
                               (cb-emacs--read-new-remote))))))
-  (let ((default-directory user-emacs-directory))
 
+  (let ((default-directory user-emacs-directory))
     (cb-emacs--assert-tree-not-dirty)
     (run-hooks 'magit-credential-hook)
 
