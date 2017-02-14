@@ -187,6 +187,7 @@ enclosing list."
     (ignore-errors
       (while (> (point) code-beg)
         (scala-syntax:backward-sexp)
+	(skip-syntax-backward ".")
         (when (< (point) code-beg)
           ;; moved to previous line, set new target
           (setq code-beg (scala-lib:point-after
@@ -243,7 +244,7 @@ and the empty line")
   (regexp-opt '("abstract" "catch" "case" "class" "def" "do" "else" "final"
                 "finally" "for" "if" "implicit" "import" "lazy" "new" "object"
                 "override" "package" "private" "protected" "return" "sealed"
-                "throw" "trait" "try" "type" "val" "var" "while" "yield")
+                "throw" "trait" "try" "type" "val" "var" "while" "yield" "inline")
               'words)
   "Words that we don't want to continue the previous line")
 
@@ -528,8 +529,8 @@ condition (or generators in the case of 'for') in parentheses.")
   "Other flow control keywords (not followed by parentheses)")
 
 (defconst scala-indent:control-keywords-re
-  (concat scala-indent:control-keywords-cond-re
-          scala-indent:control-keywords-other-re))
+  (concat "\\(" scala-indent:control-keywords-cond-re
+          "\\|" scala-indent:control-keywords-other-re "\\)"))
 
 (defun scala-indent:body-p (&optional point)
   "Returns the position of '=' symbol, or one of the
