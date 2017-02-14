@@ -65,6 +65,7 @@
       name)))
 
 (defun cb-emacs--assert-tree-not-dirty ()
+  (require 'magit)
   (when (magit-anything-modified-p)
     (user-error "`%s' has uncommitted changes.  Aborting" default-directory)))
 
