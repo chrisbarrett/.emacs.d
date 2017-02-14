@@ -1,6 +1,6 @@
 ;;; magithub-issue.el --- Browse issues with Magithub  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2016  Sean Allred
+;; Copyright (C) 2016-2017  Sean Allred
 
 ;; Author: Sean Allred <code@seanallred.com>
 ;; Keywords: tools
@@ -31,6 +31,7 @@
 
 (require 'magithub-core)
 (require 'magithub-cache)
+(require 'magithub-proxy)
 
 (magit-define-popup magithub-issues-popup
   "Popup console for creating GitHub issues."
@@ -38,12 +39,6 @@
   :man-page "hub"
   :options '((?l "Add labels" "--label=" magithub-issue-read-labels))
   :actions '((?c "Create new issue" magithub-issue-new)))
-
-(defvar magithub-issue-format
-  (list :number " %3d "
-        :title " %s ")
-  "These properties will be inserted in the order in which their
-found.  See `magithub-issue--process-line'.")
 
 (defun magithub-issue-new ()
   "Create a new issue on GitHub."
@@ -126,27 +121,82 @@ See `magithub-issue-list--internal'."
    (mapcar #'magithub-issue--process-line-2.2.8
            (magithub--command-output "issue"))))
 
-(defun magithub-issue--process-line (s)
-  "Process a line S into an issue.
+(defconst magithub-issue--format-args
+  (let ((csv (lambda (s) (unless (string= s "") (s-split "," s))))
+        (num (lambda (s) (unless (string= s "") (string-to-number s))))
+        (time (lambda (s) (seconds-to-time (string-to-number s)))))
+    `(("I" :number ,num)
+      ("U" :url)
+      ("t" :title)
+      ("L" :labels ,csv)
+      ("au" :author)
+      ("Mn" :milestone ,num)
+      ("Mt" :milestone-title)
+      ("NC" :comment-count ,num)
+      ("b" :body)
+      ("as" :assignees ,csv)
+      ("ct" :created ,time)
+      ("ut" :updated ,time)))
+  "List of format specifiers.
 
-Returns a plist with the following properties:
-
-  :number  issue or pull request number
-  :type    either 'pull-request or 'issue
-  :title   the title of the issue or pull request
-  :url     link to issue or pull request"
-  (let ((ss (split-string s ",")))
-    (list
-     :number (string-to-number (car ss))
-     :url (cadr ss)
-     :title (s-join "," (cddr ss))
-     :type (magithub-issue--url-type (cadr ss)))))
+1. Format code for Hub
+2. Property keyword to be used in the plist
+3. Optional response parser function")
 
 (defun magithub--issue-list--internal ()
   "Return a new list of issues for the current repository."
   (magithub-issue--sort
-   (mapcar #'magithub-issue--process-line
-           (magithub--command-output "issue" '("--format=%I,%U,%t%n")))))
+   (magithub--issue-list--get-properties
+    (mapcar #'cadr magithub-issue--format-args))))
+
+(defun magithub--issue-list--get-properties (props)
+  "Make a new request for PROPS (and only PROPS).
+Response will be processed into a list of plists."
+  (let* ((field-delim (char-to-string 1)) ;non-printing char -- safely delimit freetext
+         (issue-delim (char-to-string 2))
+         ;; filter the master list to just the properties we're interested in
+         (format-specs (-remove (lambda (fmt) (not (memq (cadr fmt) props)))
+                                magithub-issue--format-args))
+         ;; reset props to the correct order
+         (props (mapcar #'cadr format-specs))
+
+         ;; grab transform functions in the correct order
+         (string-or-nil (lambda (s) (if (string= "" s) nil s)))
+         (funcs (mapcar (lambda (fmt) (or (car (cddr fmt)) string-or-nil)) format-specs))
+
+         ;; build our --format= string
+         (format-string (mapconcat (lambda (f) (concat "%" f))
+                                   (mapcar #'car format-specs)
+                                   field-delim))
+         (format-string (format "--format=%s%s" format-string issue-delim))
+
+         ;; make request
+         (lines (magithub--command-output "issue" (list format-string) t))
+         ;; and split on the issue delimiter (butlast is for the terminal issue-delim)
+         (issues (butlast (s-split issue-delim lines)))
+
+         ;; split into fields
+         (pieces (mapcar (lambda (s) (split-string s field-delim)) issues))
+         ;; zip with our transform functions
+         (pieces (mapcar (lambda (p) (-zip p funcs)) pieces))
+         ;; and apply our transform functions
+         (pieces (mapcar (lambda (i) (mapcar (lambda (p) (funcall (cdr p) (car p))) i)) pieces))
+
+         ;; zip with our properties
+         (zipped (mapcar (lambda (p) (-zip props p props)) pieces))
+         ;; simplifying conses to lists -- only necessary until Dash 3.0 (minor performance hit)
+         (zipped (mapcar (lambda (p) (mapcar #'butlast p)) zipped))
+         ;; removing null values
+         (zapnil (lambda (pair) (when (cadr pair) pair)))
+         (zipped (delq nil (mapcar (lambda (p) (mapcar zapnil p)) zipped)))
+
+         ;; join all our lists into a plist
+         (flat (mapcar (lambda (p) (apply #'append p)) zipped)))
+    ;; determine the type of each issue (PR vs. issue)
+    (mapcar (lambda (p) (-if-let (url (plist-get p :url))
+                            (append `(:type ,(magithub-issue--url-type url)) p)
+                          p))
+            flat)))
 
 (defun magithub--issue-list ()
   "Return a list of issues for the current repository."
@@ -156,19 +206,20 @@ Returns a plist with the following properties:
            (magithub--issue-list--internal)
          (magithub--issue-list--internal-2.2.8)))))
 
+(defun magithub-issue--wrap-title (title indent)
+  "Word-wrap string TITLE to `fill-column' with an INDENT."
+  (s-replace
+   "\n" (concat "\n" (make-string indent ?\ ))
+   (s-word-wrap (- fill-column indent) title)))
+
 (defun magithub-issue--insert (issue)
   "Insert an `issue' as a Magit section into the buffer."
   (when issue
     (magit-insert-section (magithub-issue issue)
-      (let ((formats (or magithub-issue-format
-                         (list :number " %3d " :title " %s ")))
-            s)
-        (while formats
-          (let ((key (car formats)) (fmt (cadr formats)))
-            (setq s (concat s (format fmt (plist-get issue key)))))
-          (setq formats (cddr formats)))
-        (insert s))
-      (insert ?\n))))
+      (insert (format " %4d  %s\n"
+                      (plist-get issue :number)
+                      (magithub-issue--wrap-title
+                       (plist-get issue :title) 7))))))
 
 (defun magithub-issue-browse (issue)
   "Visits `issue' in the browser.
@@ -225,21 +276,26 @@ If `issue' is nil, open the repository's issues page."
 
 (defun magithub-issue--insert-issue-section ()
   "Insert GitHub issues if appropriate."
-  (when (magithub-usable-p)
-    (-when-let (issues (magithub-issues))
-      (magit-insert-section (magithub-issue-list)
-        (magit-insert-heading "Issues:")
-        (mapc #'magithub-issue--insert issues)
-        (insert ?\n)))))
+  (magithub-with-proxy (magithub-proxy-default-proxy)
+    (when (magithub-usable-p)
+      (-when-let (issues (magithub-issues))
+        (magit-insert-section (magithub-issue-list)
+          (magit-insert-heading "Issues:")
+          (mapc #'magithub-issue--insert issues)
+          (insert ?\n))))))
 
 (defun magithub-issue--insert-pr-section ()
   "Insert GitHub pull requests if appropriate."
-  (when (magithub-usable-p)
-    (-when-let (pull-requests (magithub-pull-requests))
-      (magit-insert-section (magithub-pull-request-list)
-        (magit-insert-heading "Pull Requests:")
-        (mapc #'magithub-issue--insert pull-requests)
-        (insert ?\n)))))
+  (magithub-feature-maybe-idle-notify
+   'pull-request-merge
+   'pull-request-checkout)
+  (magithub-with-proxy (magithub-proxy-default-proxy)
+    (when (magithub-usable-p)
+      (-when-let (pull-requests (magithub-pull-requests))
+        (magit-insert-section (magithub-pull-request-list)
+          (magit-insert-heading "Pull Requests:")
+          (mapc #'magithub-issue--insert pull-requests)
+          (insert ?\n))))))
 
 (defun magithub-repolist-column-issue (_id)
   "Insert the number of open issues in this repository."
@@ -291,6 +347,18 @@ default."
       (magit-set (cdr var-val)
                  "branch" (magit-get-current-branch)
                  (concat "magithubPullRequest" (car var-val))))))
+
+(defun magithub-pull-request-merge (pull-request &optional args)
+  "Merge PULL-REQUEST with ARGS.
+See `magithub-pull-request--completing-read'.  If point is on a
+pull-request object, that object is selected by default."
+  (interactive (list (magithub-pull-request--completing-read)
+                     (magit-am-arguments)))
+  (unless (member pull-request (magithub-pull-requests))
+    (user-error "Unknown pull request %S" pull-request))
+  (magithub-with-hub
+   (magit-run-git-sequencer "am" args (plist-get pull-request :url)))
+  (message "#%d has been applied" (plist-get pull-request :number)))
 
 ;;; Hook into the status buffer
 (magithub--deftoggle magithub-toggle-issues
