@@ -133,22 +133,6 @@ If argument INTERACTIVE-P is set, log additional information."
 (use-package personal-config
   :load-path "~/Sync/emacs")
 
-
-;;; Provide a convenience command to byte-compile parts of the config.
-
-(defun cb-init--subtrees ()
-  (let ((contents (directory-files (concat user-emacs-directory "lisp") t)))
-    (seq-filter (lambda (f)
-                  (and (file-directory-p f)
-                       (not (equal ".." (file-name-nondirectory f)))))
-                contents)))
-
-(defun cb-init-byte-recompile-dir (dir)
-  "Force the byte compilation of a subtree DIR."
-  (interactive (list (completing-read "Subtree: " (cb-init--subtrees))))
-  (byte-recompile-directory dir 0 t))
-
-
 ;;; Print overall startup time.
 
 (unless noninteractive

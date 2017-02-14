@@ -124,6 +124,14 @@ prompt for REMOTE if it cannot be determined."
 
       (message "Subtree `%s' updated successfully." prefix))))
 
+(defun cb-emacs-compile-subtree (subtree)
+  "Force the byte compilation of SUBTREE."
+  (interactive (list
+                (completing-read "Select subtree to byte-recompile: "
+                                 (-map #'f-filename (f-directories cb-emacs-lisp-directory))
+                                 t)))
+  (byte-recompile-directory (f-join cb-emacs-lisp-directory subtree) 0 t))
+
 (provide 'cb-emacs)
 
 ;;; cb-emacs.el ends here
