@@ -395,7 +395,20 @@ absolute path is returned."
         (setq it (file-name-as-directory (magit-expand-git-file-name it)))
         (if path (expand-file-name (convert-standard-filename path) it) it)))))
 
-(defvar magit-toplevel--force-fallback-to-gitdir nil)
+(defvar magit--separated-gitdirs nil)
+
+(defun magit--record-separated-gitdir ()
+  (let ((topdir (magit-toplevel))
+        (gitdir (magit-git-dir)))
+    ;; We want to delete the entry for `topdir' here, rather than within
+    ;; (unless ...), in case a `--separate-git-dir' repository was switched to
+    ;; the standard structure (i.e., "topdir/.git/").
+    (setq magit--separated-gitdirs (cl-delete topdir
+                                            magit--separated-gitdirs
+                                            :key #'car :test #'equal))
+    (unless (equal (file-name-as-directory (expand-file-name ".git" topdir))
+                   gitdir)
+      (push (cons topdir gitdir) magit--separated-gitdirs))))
 
 (defun magit-toplevel (&optional directory)
   "Return the absolute path to the toplevel of the current repository.
@@ -468,12 +481,10 @@ returning the truename."
                      (not (equal wtree ".git")))
                 ;; Return the linked working tree.
                 (file-name-directory wtree))
-               (magit-toplevel--force-fallback-to-gitdir
-                ;; `git init --separate-git-dir' doesn't set `core.worktree'.
-                ;; Commands that have to work under such conditions and that
-                ;; also do work properly when run in the gitdir, should bind
-                ;; this variable.  See #2955.
-                gitdir)
+               ;; The working directory may not be the parent directory of
+               ;; .git if it was set up with `git init --separate-git-dir'.
+               ;; See #2955.
+               ((car (rassoc gitdir magit--separated-gitdirs)))
                (t
                 ;; Step outside the control directory to enter the working tree.
                 (file-name-directory (directory-file-name gitdir)))))))))))
@@ -1143,7 +1154,10 @@ Return a list of two integers: (A>B B>A)."
 (defun magit-abbrev-length ()
   (--if-let (magit-get "core.abbrev")
       (string-to-number it)
-    (length (magit-rev-parse "--short" "HEAD"))))
+    (--if-let (magit-rev-parse "--short" "HEAD")
+        (length it)
+      ;; We are either in an empty repository or not in a repository.
+      7)))
 
 (defun magit-abbrev-arg (&optional arg)
   (format "--%s=%d" (or arg "abbrev") (magit-abbrev-length)))
