@@ -69,6 +69,32 @@
   (when (magit-anything-modified-p)
     (user-error "`%s' has uncommitted changes.  Aborting" default-directory)))
 
+(defun cb-emacs-add-subtree (subtree remote)
+  "Add a new SUBTREE at REMOTE."
+  (interactive  (let ((default-directory user-emacs-directory))
+                  (cb-emacs--assert-tree-not-dirty)
+                  (let* ((remote (cb-emacs--read-new-remote))
+                         (subtree (file-name-nondirectory remote)))
+                    (list subtree remote))))
+  (let ((default-directory user-emacs-directory))
+    (cb-emacs--assert-tree-not-dirty)
+    (run-hooks 'magit-credential-hook)
+
+    (cb-emacs--with-signal-handlers "Fetching remote..."
+      (magit-run-git "fetch" "-q" remote))
+
+    (let* ((prefix (format "lisp/%s" subtree))
+           (fullpath (f-join cb-emacs-lisp-directory subtree))
+           (commit-message (format "'Add %s@master to %s'" remote prefix)))
+
+      (cb-emacs--with-signal-handlers "Importing subtree..."
+        (magit-run-git "subtree" "-q" "add" "--prefix" prefix remote "master" "--squash" "-m" commit-message))
+
+      (cb-emacs--with-signal-handlers "Compiling..."
+        (byte-recompile-directory fullpath 0))
+
+      (message "Subtree `%s' added successfully." prefix))))
+
 (defun cb-emacs-update-subtree (subtree &optional remote)
   "Update SUBTREE at REMOTE.
 
