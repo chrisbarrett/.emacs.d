@@ -103,7 +103,7 @@
       (eval `(evil-define-key ',state ensime-mode-map
                (kbd "M-.") 'ensime-edit-definition
                (kbd "M-,") 'ensime-pop-find-definition-stack)))
-    
+
     (evil-define-key 'normal ensime-popup-buffer-map
       (kbd "q") 'ensime-popup-buffer-quit-function)
 
@@ -199,8 +199,12 @@
              ensime-flycheck-integration-prev-error)
   :config
   (progn
+    (define-key ensime-mode-map (kbd "M-n") #'ensime-flycheck-integration-next-error)
+    (define-key ensime-mode-map (kbd "M-p") #'ensime-flycheck-integration-prev-error)
     (define-key ensime-mode-map (kbd "M-N") #'ensime-flycheck-integration-next-error)
     (define-key ensime-mode-map (kbd "M-P") #'ensime-flycheck-integration-prev-error)
+    (evil-define-key 'normal ensime-mode-map (kbd "M-n") #'ensime-flycheck-integration-next-error)
+    (evil-define-key 'normal ensime-mode-map (kbd "M-p") #'ensime-flycheck-integration-prev-error)
     (evil-define-key 'normal ensime-mode-map (kbd "M-N") #'ensime-flycheck-integration-next-error)
     (evil-define-key 'normal ensime-mode-map (kbd "M-P") #'ensime-flycheck-integration-prev-error)))
 
