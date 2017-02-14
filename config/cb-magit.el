@@ -56,10 +56,6 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
   :defer t
   :after magit)
 
-(use-package magit-browse-repo
-  :after magit
-  :bind (:map magit-status-mode-map ("&" . magit-browse-repo)))
-
 (use-package git-auto-commit-mode
   :commands (git-auto-commit-mode)
   :init
