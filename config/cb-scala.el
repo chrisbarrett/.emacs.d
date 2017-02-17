@@ -18,6 +18,9 @@
 (require 'f)
 (require 'dash)
 
+;; Use conf mode for play routes files.
+(add-to-list 'auto-mode-alist (cons "/routes\\'" #'conf-unix-mode))
+
 (use-package scala-mode
   :defer t
   :mode (("\\.scala\\'" . scala-mode)
