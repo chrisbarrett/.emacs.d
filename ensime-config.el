@@ -46,7 +46,7 @@
   ;; this is a good candidate for caching
   (let ((config (or config (ensime-config-for-buffer))))
    (let* ((case-insensitive-fs t) ;; https://github.com/ensime/ensime-emacs/issues/532
-          (canonical (convert-standard-filename buffer-file-name))
+          (canonical (convert-standard-filename (buffer-file-name-with-indirect)))
           (subprojects (plist-get config :subprojects))
           (matches-subproject-dir? (lambda (dir) (s-starts-with-p dir canonical case-insensitive-fs)))
           (find-subproject (lambda (sp)
@@ -102,8 +102,7 @@
 	 (puthash (file-name-as-directory (file-truename f)) t result)))
      (unless no-ref-sources
        (-when-let (f (ensime-source-jars-dir conf))
-	 (when (file-directory-p f)
-	   (puthash (file-name-as-directory (file-truename f)) t result))))
+         (puthash (file-name-as-directory (file-truename f)) t result)))
 
      (setq ensime--cache-source-root-set
 	   (cons (cons (list conf no-ref-sources) result)
@@ -218,7 +217,7 @@ project directories, because neither does ensime-sbt.)"
 (defun ensime--refresh-config-sbt (project-root task on-success-fn)
   (with-current-buffer (get-buffer-create "*ensime-gen-config*")
     (erase-buffer)
-      (let ((default-directory project-root))
+      (let ((default-directory (file-name-as-directory project-root)))
         (if (executable-find ensime-sbt-command)
             (let ((process (start-process "*ensime-gen-config*" (current-buffer)
                                           ensime-sbt-command task)))

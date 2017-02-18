@@ -17,6 +17,7 @@
 
 (require 'sbt-mode)
 (require 'ensime-config)
+(require 'ensime-inf)
 
 (defgroup ensime-sbt nil
   "Support for sbt build REPL."
@@ -36,7 +37,6 @@
    conn
    (with-current-buffer (sbt-start)
      (setq ensime-buffer-connection conn)
-     (setq ensime-inf-overlay-marker nil)
      (add-hook 'ensime-source-buffer-saved-hook 'ensime-sbt-maybe-auto-compile)
      (add-hook 'comint-output-filter-functions 'ensime-inf-postoutput-filter))))
 
@@ -45,7 +45,7 @@
          (ensime-connected-p)
          ensime-sbt-perform-on-save
          (get-buffer (sbt:buffer-name)))
-    (sbt-command ensime-sbt-perform-on-save)))
+    (sbt:command ensime-sbt-perform-on-save)))
 
 (defun ensime-sbt-switch ()
   (interactive)
@@ -53,42 +53,46 @@
 
 (defun ensime-sbt-do-compile ()
   (interactive)
-  (sbt-command "test:compile"))
+  (sbt:command "test:compile"))
 
 (defun ensime-sbt-do-compile-only ()
   "Save the current buffer and compile it using `sbt-ensime's `ensimeCompileOnly' Task."
   (interactive)
   (save-buffer)
-  (ensime-sbt-run-command-in-subproject "ensimeCompileOnly" buffer-file-name))
+  (ensime-sbt-run-command-in-subproject "ensimeCompileOnly" (buffer-file-name-with-indirect)))
 
 (defun ensime-sbt-do-scalariform-only ()
   "Format the current file using Scalariform."
   (interactive)
   (save-buffer)
-  (ensime-sbt-run-command-in-subproject "ensimeScalariformOnly" buffer-file-name))
+  (ensime-sbt-run-command-in-subproject "ensimeScalariformOnly" (buffer-file-name-with-indirect)))
 
 (defun ensime-sbt-run-command-in-subproject (command file-name)
   "Run a sbt COMMAND in the module containing FILE-NAME, if specified."
   (let ((subproject (ensime-subproject-for-config)))
     (if subproject
-        (sbt-command (concat subproject "/" command " " file-name))
-      (sbt-command (concat command " " file-name)))))
+        (if (ensime-is-test-file file-name)
+            (sbt:command (concat subproject "/" "test:" command " " file-name))
+          (sbt:command (concat subproject "/" command " " file-name)))
+      (if (ensime-is-test-file file-name)
+          (sbt:command (concat "test:"command " " file-name))
+        (sbt:command (concat command " " file-name))))))
 
 (defun ensime-sbt-do-run ()
   (interactive)
-  (sbt-command "run"))
+  (sbt:command "run"))
 
 (defun ensime-sbt-do-clean ()
   (interactive)
-  (sbt-command "clean"))
+  (sbt:command "clean"))
 
 (defun ensime-sbt-do-ensime-config ()
   (interactive)
-  (sbt-command "ensimeConfig"))
+  (sbt:command "ensimeConfig"))
 
 (defun ensime-sbt-do-package ()
   (interactive)
-  (sbt-command "package"))
+  (sbt:command "package"))
 
 ;; shameless copypasta from magit-utils.el
 ;; added one little thing to eval the dynamic submodule binding
@@ -166,7 +170,7 @@ again."
     (concat module "/" source-set task)))
 
 (defun ensime-sbt-test-dwim (command)
-  (let* ((file-name (or buffer-file-name default-directory))
+  (let* ((file-name (or (buffer-file-name-with-indirect) default-directory))
          (source-set (cond
                       ((string-match-p "src/test" file-name) "")
                       ((string-match-p "/test" file-name) "") ;; for Play's default dir layout
@@ -175,8 +179,8 @@ again."
     (if source-set
         (-> (ensime-subproject-for-config)
             (concat "/" source-set command)
-            sbt-command)
-      (-> (ensime-sbt-prompt-for-test) sbt-command))))
+            sbt:command)
+      (-> (ensime-sbt-prompt-for-test) sbt:command))))
 
 (defun ensime-sbt-do-test-dwim ()
   (interactive)

@@ -225,7 +225,7 @@ any buffer visiting the given file."
         (max-external-offset (ensime-externalize-offset (point-max))))
     (dolist (note notes)
       (if (and (ensime-files-equal-p (ensime-note-file note)
-				     buffer-file-name)
+				     (buffer-file-name-with-indirect))
 	       (/= (ensime-note-beg note) external-offset))
 	  (let ((dist (cond
 		       (forward

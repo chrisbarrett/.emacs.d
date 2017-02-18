@@ -265,25 +265,47 @@
   (interactive)
   (pop-tag-mark))
 
-(defun ensime-edit-definition-other-window ()
-  (interactive)
-  (ensime-edit-definition 'window))
+(defun ensime-edit-definition-other-window (arg)
+  (interactive "P")
+  (ensime-edit-definition arg 'window))
 
-(defun ensime-edit-definition-other-frame ()
-  (interactive)
-  (ensime-edit-definition 'frame))
+(defun ensime-edit-definition-other-frame (arg)
+  (interactive "P")
+  (ensime-edit-definition arg 'frame))
 
-(defun ensime-edit-definition (&optional where)
+(defun ensime-edit-definition (arg &optional where)
+  "Lookup the definition of the name at point.
+
+If provided with the universal arguments looks up the definition
+of the type of the thing at point."
+  (interactive "P")
+  (if arg
+      (ensime-edit-definition-of-type-of-thing-at-point where)
+    (ensime-edit-definition-of-thing-at-point where)))
+
+(defun ensime-edit-definition-of-thing-at-point (&optional where)
   "Lookup the definition of the name at point.
 Goes to the point of the definition (returning point), or fails with `nil'."
   (interactive)
   (let* ((info (ensime-rpc-symbol-at-point))
          (pos (ensime-symbol-decl-pos info)))
-    (if (ensime-pos-valid-local-p pos)
-        (progn
-          (ensime-push-definition-stack)
-          (ensime-goto-source-location pos where))
-      (not (message "Sorry, ENSIME couldn't find the definition.")))))
+    (ensime-edit-definition-at-pos pos where)))
+
+(defun ensime-edit-definition-of-type-of-thing-at-point (&optional where)
+  "Lookup the type at point.
+Goes to the point of the definition of the type."
+  (interactive)
+  (let* ((type (ensime-rpc-get-type-at-point))
+         (pos (plist-get type :pos)))
+    (ensime-edit-definition-at-pos pos where)))
+
+(defun ensime-edit-definition-at-pos (pos where)
+  "Edits the definition at pos."
+  (if (ensime-pos-valid-local-p pos)
+      (progn
+        (ensime-push-definition-stack)
+        (ensime-goto-source-location pos where))
+    (not (message "Sorry, ENSIME couldn't find the definition."))))
 
 (defun ensime-files-equal-p (f1 f2)
   "Return t if file-names refer to same file."
@@ -580,7 +602,10 @@ Returns a function/closure to invoke the necessary buffer operations to perform 
                            (s-split ",") (-map 's-trim)
                            (cons qualified-class-name) (-sort 's-less?) (s-join ", "))))
     (lambda ()
-      (if (equal (point) (point-max)) (newline) (forward-char 1))
+      (cond
+        ((equal (point) (point-max)) (newline))
+        ; if the import statement is at point-min we can't be above it and are actually at point-at-bol
+        ((equal (point) (point-at-eol)) (forward-char 1)))
       (kill-line)
       (->> (ensime-scala-new-import-grouped-package base-package new-imports)
            insert save-excursion)

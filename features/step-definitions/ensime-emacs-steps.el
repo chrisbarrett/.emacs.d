@@ -51,3 +51,9 @@
      (lambda (formatted-result)
           (assert (equal ensime-helm-test-search-result formatted-result) nil
                   (format "Expected formated result \"%s\", but was \"%s\"" formatted-result ensime-helm-test-search-result))))
+
+(Then "^the line should match \"\\(.+\\)\"$"
+     (lambda (line)
+       (let ((actual-line (s-trim (thing-at-point 'line))))
+         (assert (equal line actual-line) nil
+                 (format "Expected \"%s\", but was \"%s\"" line actual-line)))))
