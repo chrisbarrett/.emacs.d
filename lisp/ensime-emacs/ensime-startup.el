@@ -76,7 +76,7 @@ If you want to install the stable release of ensime instead, delete
   (when ensime-startup-notification
     (let ((welcome (generate-new-buffer "*ENSIME Welcome*")))
       (with-current-buffer welcome
-        (insert "It looks like you've just installed ENSIME, welcome!
+        (insert "Welcome to ENSIME!
 
 ENSIME is more complex than a typical Emacs plugin and interacts
 with an external java application (which is downloaded by your

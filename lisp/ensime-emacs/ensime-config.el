@@ -102,8 +102,7 @@
 	 (puthash (file-name-as-directory (file-truename f)) t result)))
      (unless no-ref-sources
        (-when-let (f (ensime-source-jars-dir conf))
-	 (when (file-directory-p f)
-	   (puthash (file-name-as-directory (file-truename f)) t result))))
+         (puthash (file-name-as-directory (file-truename f)) t result)))
 
      (setq ensime--cache-source-root-set
 	   (cons (cons (list conf no-ref-sources) result)

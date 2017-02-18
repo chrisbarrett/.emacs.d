@@ -581,6 +581,34 @@
       (ensime-test-cleanup proj t))))
 
    (ensime-async-test
+    "Test edit definition."
+    (let* ((proj (ensime-create-tmp-project
+                  `((:name
+                     "test.scala"
+                     :contents ,(ensime-test-concat-lines
+                                 "package pack.a"
+                                 "case class A(value: String)"
+                                 ""
+                                 "object B {"
+                                 "  val testA = A(\"moep\")"
+                                 "  /*1*/testA.value"
+                                 "}"))))))
+      (ensime-test-init-proj proj))
+
+    ((:connected))
+    ((:compiler-ready :indexer-ready :full-typecheck-finished)
+     (ensime-test-with-proj
+      (proj src-files)
+      (find-file (car src-files))
+      (goto-char (ensime-test-after-label "1"))
+      (ensime-edit-definition-of-thing-at-point)
+      (ensime-assert-equal (thing-at-point 'symbol) "testA")
+      (goto-char (ensime-test-after-label "1"))
+      (ensime-edit-definition-of-type-of-thing-at-point)
+      (ensime-assert-equal (thing-at-point 'symbol) "A")
+      (ensime-test-cleanup proj))))
+
+   (ensime-async-test
     "Test inspect type at point."
     (let* ((proj (ensime-create-tmp-project
                   `((:name

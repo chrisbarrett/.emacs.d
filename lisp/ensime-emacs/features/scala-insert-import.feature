@@ -220,3 +220,19 @@ Feature: Insert Scala Import
       def f = 1
     }
     """
+
+  Scenario: Add Class to first import block in file
+    When I open temp scala file "test"
+    And I insert:
+    """
+    import java.util.GregorianCalendar
+
+    class C {
+      def f = 1
+    }
+    """
+    And I go to line "4"
+    And I insert import "java.util.Calendar"
+
+    And I go to line "1"
+    Then the line should match "import java.util.{ Calendar, GregorianCalendar }"

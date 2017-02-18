@@ -1,2 +1,2 @@
 ivyLoggingLevel := UpdateLogging.Quiet
-addSbtPlugin("org.ensime" % "sbt-ensime" % "1.12.1")
+addSbtPlugin("org.ensime" % "sbt-ensime" % "1.12.4")
