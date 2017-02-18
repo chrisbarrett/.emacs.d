@@ -118,7 +118,13 @@ Otherwise delete backwards."
       "yf" #'yas-visit-snippet-file
       "ye" #'yas-expand
       "yn" #'yas-new-snippet
-      "yy" #'yas-insert-snippet))
+      "yy" #'yas-insert-snippet)
+
+    ;; Fix malformed face decl
+
+    (defface yas-field-highlight-face
+      '((t (:inherit region)))
+      "The face used to highlight the currently active field of a snippet"))
 
   :config
   (progn
