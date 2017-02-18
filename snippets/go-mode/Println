@@ -2,4 +2,4 @@
 # name: Println
 # key: p
 # --
-fmt.Println($0)
+fmt.Println(${1:"$2", $3}$0)

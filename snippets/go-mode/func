@@ -3,6 +3,6 @@
 # key: f
 # condition: (cb-yas/bol?)
 # --
-func ${1:name}($2) $3{
+func ${1:name}($2) $3 {
   $0
 }

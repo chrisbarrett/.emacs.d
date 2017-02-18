@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: array
+# key: a
+# --
+[${1:size}]${2:T}{$0}
