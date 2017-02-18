@@ -87,7 +87,7 @@
       "ts" 'cb-go-run-test-current-suite
       "tp" 'cb-go-run-package-tests
       "tP" 'cb-go-run-package-tests-nested
-      "xx" 'cb-go-run-main)))
+      "x" 'cb-go-run-main)))
 
 (use-package autoinsert
   :preface
