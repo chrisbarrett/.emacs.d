@@ -94,7 +94,7 @@
   (defconst cb-go-autoinsert-form
     '((go-mode . "Go")
       nil
-      "package " (f-no-ext (f-filename (buffer-file-name))) \n \n
+      "package " (s-lower-camel-case (f-no-ext (f-filename (buffer-file-name)))) \n \n
       _ \n))
 
   :config
