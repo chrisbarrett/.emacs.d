@@ -3,7 +3,7 @@
 # name: switch
 # condition: (cb-yas/bol?)
 # --
-switch $1 {
-  case $2:
+switch ${1:value} {
+  case ${2:_}:
     $0
 }
