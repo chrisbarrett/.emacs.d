@@ -64,6 +64,7 @@
 (defun cb-go-run-main ()
   "Run the main function in the current buffer."
   (interactive)
+  (save-buffer)
   (shell-command (format "go run %s" (shell-quote-argument (buffer-file-name)))))
 
 (provide 'cb-go-run)
