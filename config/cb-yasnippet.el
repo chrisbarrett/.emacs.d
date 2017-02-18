@@ -15,7 +15,6 @@
 (require 'subr-x)
 (require 's)
 
-
 (use-package yasnippet
   :defer 1
 
@@ -172,6 +171,10 @@ Otherwise delete backwards."
    yas--field-contains-point-p
    yas--field-text-for-display))
 
+(use-package warnings
+  :defer t
+  :config
+  (add-to-list 'warning-suppress-types '(yasnippet backquote-change)))
 
 (use-package cb-yas-elisp
   :after yasnippet)
