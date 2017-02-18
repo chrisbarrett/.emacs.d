@@ -402,6 +402,11 @@
     (scala-font-lock:var-face
      ((t (:inherit font-lock-variable-name-face))))
 
+    ;; Company
+
+    (company-template-field
+     ((t (:inherit highlight))))
+
     ;; Misc faces
 
     (sh-quoted-exec
