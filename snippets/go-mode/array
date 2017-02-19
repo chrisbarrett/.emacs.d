@@ -1,5 +1,4 @@
-# -*- mode: snippet -*-
-# name: array
 # key: a
+# name: array
 # --
-[${1:size}]${2:T}{$0}
+[${1:size}]${2:int}{$0}

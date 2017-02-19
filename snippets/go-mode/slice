@@ -1,5 +1,4 @@
-# -*- mode: snippet -*-
-# name: slice
 # key: s
+# name: slice
 # --
-[]${1:T}{$0}
+[]${1:int}{$0}
