@@ -11,9 +11,12 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'dash)
+(require 's)
 (require 'spacemacs-keys)
 
 (autoload 'evil-define-key "evil-core")
+(autoload 'projectile-project-p "projectile")
 
 (use-package go-mode
   :mode ("\\.go\\'" . go-mode)
@@ -37,11 +40,24 @@
       "gc" 'go-coverage))
 
   :preface
-  (defun cb-go--set-local-vars ()
-    (setq-local tab-width 4)
-    (setq-local indent-tabs-mode t)
-    (with-no-warnings
-      (setq-local evil-shift-width 4)))
+  (progn
+    (defun cb-go-lookup-go-root ()
+      (-let* ((default-directory (or (projectile-project-p) default-directory))
+              (output (s-lines (s-trim (shell-command-to-string "go env"))))
+              ((&alist "GOROOT" go-root)
+               (--map (-let* (((var val) (s-split "=" it))
+                              ((_ val) (s-match (rx "\"" (group (*? nonl)) "\"") val)))
+                        (cons var val))
+                      output)))
+        go-root))
+
+    (defun cb-go--set-local-vars ()
+      (setq-local tab-width 4)
+      (setq-local indent-tabs-mode t)
+      (with-no-warnings
+        (setq-local evil-shift-width 4))
+      (unless (getenv "GOROOT")
+        (setenv "GOROOT" (cb-go-lookup-go-root)))))
 
   :config
   (progn
