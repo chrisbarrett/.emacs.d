@@ -87,6 +87,7 @@
                     display-buffer-in-side-window)
                    (reusable-frames . visible)
                    (side            . bottom)
+                   (slot            . 1)
                    (window-height   . 0.2)))))
 
 (provide 'cb-flycheck)
