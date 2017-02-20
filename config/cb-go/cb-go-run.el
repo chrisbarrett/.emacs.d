@@ -18,12 +18,15 @@
   :group 'cb-go-run
   :type 'boolean)
 
+(defconst cb-go-run-main-buffer "*go run*")
+(defconst cb-go-run-test-buffer "*go test*")
+
 ;;;###autoload
 (defun cb-go-run-tests (names)
   "Run all unit tests with NAMES."
   (interactive)
-  (save-selected-window
-    (async-shell-command (concat "go test " names))))
+  (let ((compilation-buffer-name-function (lambda (_) cb-go-run-test-buffer)))
+    (compile (concat "go test " (shell-quote-argument names)))))
 
 ;;;###autoload
 (defun cb-go-run-package-tests ()
@@ -65,7 +68,8 @@
   "Run the main function in the current buffer."
   (interactive)
   (save-buffer)
-  (shell-command (format "go run %s" (shell-quote-argument (buffer-file-name)))))
+  (let ((compilation-buffer-name-function (lambda (_) cb-go-run-main-buffer)))
+    (compile (concat "go run " (shell-quote-argument (buffer-file-name))) t)))
 
 (provide 'cb-go-run)
 

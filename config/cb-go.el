@@ -103,7 +103,15 @@
       "ts" 'cb-go-run-test-current-suite
       "tp" 'cb-go-run-package-tests
       "tP" 'cb-go-run-package-tests-nested
-      "x" 'cb-go-run-main)))
+      "x" 'cb-go-run-main))
+  :config
+  (add-to-list 'display-buffer-alist
+               `(,(rx bos "*go " (or "test" "run") "*" eos)
+                 (display-buffer-reuse-window
+                  display-buffer-in-side-window)
+                 (reusable-frames . visible)
+                 (side            . bottom)
+                 (window-height   . 0.2))))
 
 (use-package autoinsert
   :preface
