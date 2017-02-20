@@ -2,6 +2,6 @@
 # key: gf
 # name: go func
 # --
-go func($1) {
+go func() {
   $0
 }()

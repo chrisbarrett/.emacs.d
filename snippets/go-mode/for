@@ -3,6 +3,6 @@
 # name: for
 # condition: (cb-yas/bol?)
 # --
-for ${1:${2:i} := ${3:initial}; $2 < ${4:limit}; $2++} {
+for ${1:${2:i} := ${3:0}; $2 < ${4:limit}; $2++} {
   $0
 }

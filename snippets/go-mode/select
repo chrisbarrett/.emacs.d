@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: select
+# key: select
+# --
+select {
+case ${1:name} := <-${2:chan}:
+     $0
+}
