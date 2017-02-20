@@ -111,6 +111,7 @@
                   display-buffer-in-side-window)
                  (reusable-frames . visible)
                  (side            . bottom)
+                 (slot            . 0)
                  (window-height   . 0.2))))
 
 (use-package autoinsert
