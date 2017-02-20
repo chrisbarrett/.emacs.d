@@ -13,10 +13,14 @@
   (autoload 'evil-define-key "evil-core"))
 
 (require 'cb-emacs)
-(require 'spacemacs-keys)
-(require 's)
-(require 'f)
 (require 'dash)
+(require 'dash-functional)
+(require 'f)
+(require 's)
+(require 'spacemacs-keys)
+(require 'subr-x)
+
+(autoload 'projectile-project-name "projectile")
 
 ;; Use conf mode for play routes files.
 (add-to-list 'auto-mode-alist (cons "/routes\\'" #'conf-unix-mode))
@@ -155,12 +159,64 @@
                       ("my" . "yank")))
       (spacemacs-keys-declare-prefix-for-mode 'scala-mode (car prefix) (cdr prefix))))
 
+  :preface
+  (progn
+    (defun cb-scala--ensime-gen-config-buffer? (b)
+      (s-matches? (rx "*ensime-gen-config") (buffer-name b)))
+
+    (defun cb-scala--buffer-process-exited-cleanly? (b)
+      (when-let (proc (get-buffer-process b))
+        (and (not (process-live-p proc))
+             (zerop (process-exit-status proc)))))
+
+    (defun cb-scala--cleanup-ensime-gen-config-buffers (&rest _)
+      (-> (-filter (-andfn #'cb-scala--ensime-gen-config-buffer? #'cb-scala--buffer-process-exited-cleanly?)
+                  (buffer-list))
+         (-each #'kill-buffer)))
+
+    (defun cb-scala--delete-existing-ensime-process-buffer (&rest _)
+      (let ((bufname (format "*ENSIME-%s*" (projectile-project-name))))
+        (when (get-buffer bufname)
+          (kill-buffer bufname))))
+
+    (defun cb-scala--display-ensime-process-buffer-on-error (&rest _)
+      (let* ((bufname (format "*ENSIME-%s*" (projectile-project-name)))
+             (buf (get-buffer-create bufname)))
+        (when-let (proc (get-buffer-process buf))
+          (set-process-sentinel proc
+                                (lambda (p _)
+                                  (when (and (/= 0 (process-exit-status p))
+                                             (buffer-live-p buf))
+                                    (display-buffer buf))))))))
+
   :config
   (progn
     (setq ensime-startup-snapshot-notification nil)
     (setq ensime-auto-generate-config t)
     (setq ensime-implicit-gutter-icons nil)
-    (setq ensime-sem-high-enabled-p nil)))
+    (setq ensime-sem-high-enabled-p nil)
+
+    (advice-add 'ensime :before #'cb-scala--delete-existing-ensime-process-buffer)
+    (advice-add 'ensime :after #'cb-scala--cleanup-ensime-gen-config-buffers)
+    (advice-add 'ensime :after #'cb-scala--display-ensime-process-buffer-on-error)
+
+    (add-to-list 'display-buffer-alist
+                 `(,(rx bos "*ENSIME-" (+? nonl) "*" eos)
+                   (display-buffer-reuse-window
+                    display-buffer-in-side-window)
+                   (reusable-frames . visible)
+                   (side            . bottom)
+                   (slot            . 0)
+                   (window-height   . 0.2)))
+
+    (add-to-list 'display-buffer-alist
+                 `(,(rx bos "*ensime-gen-config*" eos)
+                   (display-buffer-reuse-window
+                    display-buffer-in-side-window)
+                   (reusable-frames . visible)
+                   (side            . bottom)
+                   (slot            . 0)
+                   (window-height   . 0.2)))))
 
 (use-package ensime-company
   :after ensime
