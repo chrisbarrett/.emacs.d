@@ -27,20 +27,19 @@
 
 (use-package scala-mode
   :defer t
-  :mode (("\\.scala\\'" . scala-mode)
-         ("\\.sbt\\'" . sbt-file-mode))
+  :mode (("\\.scala\\'" . scala-mode))
   :interpreter
   ("scala" . scala-mode)
   :config
   (progn
-    (define-derived-mode sbt-file-mode scala-mode "Scala(SBT)"
-      "Major mode for editing SBT files.\n\n \\{sbt-file-mode-map}")
-
     (setq scala-indent:align-forms t)
     (setq scala-indent:align-parameters t)
     (setq scala-indent:default-run-on-strategy scala-indent:operator-strategy)
 
-    ;; KLUDGE: They expose the face, but don't apply it in their font lock keywords. :/
+    ;; KLUDGE: Don't use the auto-mode form provided by this package.
+    (setq auto-mode-alist (delete '("\\.\\(scala\\|sbt\\)\\'" . scala-mode) auto-mode-alist))
+
+    ;; KLUDGE: Scala mode exposes the face, but doesn't apply it. :/
     (font-lock-add-keywords 'scala-mode
                     `((,(rx symbol-start "var" symbol-end) 0 'scala-font-lock:var-keyword-face)))))
 
@@ -239,6 +238,8 @@
   :config
   (setq ensime-goto-test-config-defaults cb-ensime-test-config-defaults))
 
+(use-package cb-scala-sbt-file-mode
+  :mode ("\\.sbt\\'". cb-scala-sbt-file-mode))
 
 (use-package flycheck
   :defer t
@@ -250,7 +251,8 @@
   :config
   (progn
     (setq flycheck-scalastylerc "~/.scalastyle.xml")
-    (add-hook 'ensime-mode-hook #'cb-scala--disable-flycheck-scala)) )
+    (add-hook 'cb-scala-sbt-file-mode-hook #'cb-scala--disable-flycheck-scala)
+    (add-hook 'ensime-mode-hook #'cb-scala--disable-flycheck-scala)))
 
 (use-package ensime-flycheck-integration
   :after ensime
@@ -272,7 +274,7 @@
   :config
   (progn
     (add-to-list 'aggressive-indent-excluded-modes 'scala-mode)
-    (add-to-list 'aggressive-indent-excluded-modes 'sbt-file-mode)))
+    (add-to-list 'aggressive-indent-excluded-modes 'cb-scala-sbt-file-mode)))
 
 (use-package cb-scala-autoinsert
   :after autoinsert
