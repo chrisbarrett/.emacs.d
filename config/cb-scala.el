@@ -160,19 +160,6 @@
 
   :preface
   (progn
-    (defun cb-scala--ensime-gen-config-buffer? (b)
-      (s-matches? (rx "*ensime-gen-config") (buffer-name b)))
-
-    (defun cb-scala--buffer-process-exited-cleanly? (b)
-      (when-let (proc (get-buffer-process b))
-        (and (not (process-live-p proc))
-             (zerop (process-exit-status proc)))))
-
-    (defun cb-scala--cleanup-ensime-gen-config-buffers (&rest _)
-      (-> (-filter (-andfn #'cb-scala--ensime-gen-config-buffer? #'cb-scala--buffer-process-exited-cleanly?)
-                  (buffer-list))
-         (-each #'kill-buffer)))
-
     (defun cb-scala--delete-existing-ensime-process-buffer (&rest _)
       (let ((bufname (format "*ENSIME-%s*" (projectile-project-name))))
         (when (get-buffer bufname)
@@ -186,7 +173,25 @@
                                 (lambda (p _)
                                   (when (and (/= 0 (process-exit-status p))
                                              (buffer-live-p buf))
-                                    (display-buffer buf))))))))
+                                    (display-buffer buf)))))))
+
+    ;; Use compilation mode for ensime config generation buffers.
+
+    (defconst cb-scala--ensime-gen-config-buffer "*ensime-gen-config*")
+
+    (defun cb-scala--refresh-config-sbt (project-root task on-success-fn)
+      (let ((default-directory (file-name-as-directory project-root))
+            (compilation-buffer-name-function (lambda (_) cb-scala--ensime-gen-config-buffer)))
+        (unless (executable-find ensime-sbt-command) (error "SBT command not found"))
+
+        (compile (format "%s %s" ensime-sbt-command task))
+
+        (with-current-buffer (get-buffer cb-scala--ensime-gen-config-buffer)
+          (display-buffer (current-buffer))
+          (set-process-sentinel (get-buffer-process (current-buffer))
+                                (lambda (process event)
+                                  (ensime--refresh-config-sentinel process event on-success-fn))))
+        (message "Updating ENSIME config..."))))
 
   :config
   (progn
@@ -196,8 +201,9 @@
     (setq ensime-sem-high-enabled-p nil)
 
     (advice-add 'ensime :before #'cb-scala--delete-existing-ensime-process-buffer)
-    (advice-add 'ensime :after #'cb-scala--cleanup-ensime-gen-config-buffers)
     (advice-add 'ensime :after #'cb-scala--display-ensime-process-buffer-on-error)
+
+    (defalias 'ensime--refresh-config-sbt #'cb-scala--refresh-config-sbt)
 
     (add-to-list 'display-buffer-alist
                  `(,(rx bos "*ENSIME-" (+? nonl) "*" eos)
