@@ -18,7 +18,9 @@
 (defconst cb-theme-common-cyan "#2aa198")
 (defconst cb-theme-common-green "#859900")
 
-(defconst cb-theme-common-gray "grey60")
+(defconst cb-theme-common-neutral-grey "grey60")
+(defconst cb-theme-common-dark-grey "grey40")
+(defconst cb-theme-common-light-grey "grey80")
 
 (defun cb-theme-common-make-theme (default-foreground default-background)
   `((default
@@ -29,7 +31,8 @@
      ((t (:foreground "gray40" :background "gray40" :height 20))))
 
     (link
-     ((t (:weight light :underline t))))
+     ((((background light)) (:weight light :underline ,cb-theme-common-light-grey))
+      (((background dark)) (:weight light :underline ,cb-theme-common-dark-grey))))
 
     (fringe
      ((t (:background ,default-background))))
@@ -87,25 +90,25 @@
      ((t (:weight demibold))))
 
     (info-function-ref-item
-     ((t (:weight demibold :foreground ,cb-theme-common-gray))))
+     ((t (:weight demibold :foreground ,cb-theme-common-neutral-grey))))
 
     (info-macro-ref-item
-     ((t (:weight demibold :foreground ,cb-theme-common-gray))))
+     ((t (:weight demibold :foreground ,cb-theme-common-neutral-grey))))
 
     (info-command-ref-item
-     ((t (:weight demibold :foreground ,cb-theme-common-gray))))
+     ((t (:weight demibold :foreground ,cb-theme-common-neutral-grey))))
 
     (info-special-form-ref-item
-     ((t (:weight demibold :foreground ,cb-theme-common-gray))))
+     ((t (:weight demibold :foreground ,cb-theme-common-neutral-grey))))
 
     (info-syntax-class-item
-     ((t (:weight demibold :foreground ,cb-theme-common-gray))))
+     ((t (:weight demibold :foreground ,cb-theme-common-neutral-grey))))
 
     (info-user-option-ref-item
-     ((t (:weight demibold :foreground ,cb-theme-common-gray))))
+     ((t (:weight demibold :foreground ,cb-theme-common-neutral-grey))))
 
     (info-variable-ref-item
-     ((t (:weight demibold :foreground ,cb-theme-common-gray))))
+     ((t (:weight demibold :foreground ,cb-theme-common-neutral-grey))))
 
     ;; Dired
 
@@ -122,31 +125,31 @@
      ((t (:inherit default))))
 
     (diredp-file-suffix
-     ((t (:foreground ,cb-theme-common-gray))))
+     ((t (:foreground ,cb-theme-common-neutral-grey))))
 
     (diredp-number
      ((t (:weight light))))
 
     (diredp-date-time
-     ((t (:foreground ,cb-theme-common-gray :weight light))))
+     ((t (:foreground ,cb-theme-common-neutral-grey :weight light))))
 
     (diredp-dir-priv
-     ((t (:weight light :foreground ,cb-theme-common-gray))))
+     ((t (:weight light :foreground ,cb-theme-common-neutral-grey))))
 
     (diredp-no-priv
-     ((t (:weight light :foreground ,cb-theme-common-gray))))
+     ((t (:weight light :foreground ,cb-theme-common-neutral-grey))))
 
     (diredp-rare-priv
-     ((t (:weight light :foreground ,cb-theme-common-gray))))
+     ((t (:weight light :foreground ,cb-theme-common-neutral-grey))))
 
     (diredp-exec-priv
-     ((t (:weight light :foreground ,cb-theme-common-gray))))
+     ((t (:weight light :foreground ,cb-theme-common-neutral-grey))))
 
     (diredp-read-priv
-     ((t (:weight light :foreground ,cb-theme-common-gray))))
+     ((t (:weight light :foreground ,cb-theme-common-neutral-grey))))
 
     (diredp-write-priv
-     ((t (:weight light :foreground ,cb-theme-common-gray))))
+     ((t (:weight light :foreground ,cb-theme-common-neutral-grey))))
 
     ;; Info
 
@@ -190,7 +193,7 @@
      ((t (:weight demibold))))
 
     (magit-popup-disabled-argument
-     ((t (:foreground ,cb-theme-common-gray))))
+     ((t (:foreground ,cb-theme-common-neutral-grey))))
 
     (magit-popup-option-value
      ((t (:weight normal))))
@@ -201,7 +204,7 @@
      ((t (:inherit link :weight normal))))
 
     (org-done
-     ((t (:inherit default :weight bold :foreground ,cb-theme-common-gray))))
+     ((t (:inherit default :weight bold :foreground ,cb-theme-common-neutral-grey))))
 
     (org-document-info-keyword
      ((t (:weight light))))
@@ -322,7 +325,7 @@
      ((t (:weight normal))))
 
     (message-cited-text
-     ((t (:weight light :foreground ,cb-theme-common-gray))))
+     ((t (:weight light :foreground ,cb-theme-common-neutral-grey))))
 
     (message-header-subject
      ((t (:weight normal))))
