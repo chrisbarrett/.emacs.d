@@ -412,6 +412,9 @@
 
     ;; Misc faces
 
+    (go-peg-mode-production-name
+     ((t (:weight demibold))))
+
     (sh-quoted-exec
      ((t (:weight demibold))))
 
