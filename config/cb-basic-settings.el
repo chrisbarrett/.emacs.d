@@ -297,6 +297,7 @@ Optional arg JUSTIFY will justify comments and strings."
 (add-to-list 'auto-mode-alist '("\\.env\\.erb\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.conf\\.erb\\'" . conf-mode))
 
+(add-to-list 'auto-mode-alist '("\\.kll\\'" . conf-mode))
 
 (use-package abbrev
   :defer t
