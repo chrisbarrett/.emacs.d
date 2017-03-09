@@ -180,8 +180,19 @@
 
     ;; Highlights
 
+    (highlight
+     ((((background light)) :background "#e0e0e0")
+      (((background dark))  :background "#303030")))
+
+    (iedit-occurrence
+     ((((background light)) :weight normal :background "#FFe0e0" :foreground ,default-foreground)
+      (((background dark))  :weight normal :background "#703030" :foreground ,default-foreground)))
+
+    (evil-search-highlight-persist-highlight-face
+     ((t (:inherit highlight :background nil))))
+
     (highlight-thing
-     ((t (:weight demibold :underline ,cb-theme-common-blue :foreground ,cb-theme-common-blue :background nil))))
+     ((t (:weight demibold :foreground ,cb-theme-common-blue))))
 
     (ahs-face
      ((t (:inherit highlight))))
