@@ -53,7 +53,7 @@
     (setq ivy-use-virtual-buffers t)
     (setq ivy-count-format "(%d/%d) ")
     (setq ivy-re-builders-alist '((t . ivy--regex-plus)))
-    (setq ivy-extra-directories nil)
+    (setq ivy-extra-directories '("."))
 
     (define-key ivy-minibuffer-map (kbd "<f1>") #'cb-ivy-help)
     (define-key ivy-occur-mode-map (kbd "C-x C-w") #'ivy-wgrep-change-to-wgrep-mode)
