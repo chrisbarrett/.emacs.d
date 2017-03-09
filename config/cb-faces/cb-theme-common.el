@@ -435,6 +435,9 @@
     (sh-quoted-exec
      ((t (:weight demibold))))
 
+    (sh-heredoc
+     ((t :inherit font-lock-string-face)))
+
     (hl-todo
      ((((background light)) (:foreground ,cb-theme-common-red :weight bold))
       (((background dark)) (:foreground ,cb-theme-common-pink :weight bold))))
