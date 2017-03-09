@@ -35,7 +35,11 @@
       (interactive)
       (let ((org-startup-folded 'nofold))
         (ivy-help)
-        (pop-to-buffer (get-buffer "*Ivy Help*")))))
+        (pop-to-buffer (get-buffer "*Ivy Help*"))))
+
+    (defun cb-ivy-with-empty-ivy-extra-directories (f &rest args)
+      (let ((ivy-extra-directories nil))
+        (apply f args))))
 
   :init
   (progn
@@ -53,7 +57,10 @@
     (setq ivy-use-virtual-buffers t)
     (setq ivy-count-format "(%d/%d) ")
     (setq ivy-re-builders-alist '((t . ivy--regex-plus)))
+
+    ;; Do not show extra directories when finding files.
     (setq ivy-extra-directories '("."))
+    (advice-add #'counsel-find-file :around #'cb-ivy-with-empty-ivy-extra-directories)
 
     (define-key ivy-minibuffer-map (kbd "<f1>") #'cb-ivy-help)
     (define-key ivy-occur-mode-map (kbd "C-x C-w") #'ivy-wgrep-change-to-wgrep-mode)
