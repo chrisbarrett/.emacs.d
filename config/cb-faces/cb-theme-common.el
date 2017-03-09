@@ -124,8 +124,14 @@
     (diredp-file-name
      ((t (:inherit default))))
 
+    (diredp-ignored-file-name
+     ((t (:inherit diredp-file-name :foreground ,cb-theme-common-neutral-grey))))
+
     (diredp-file-suffix
      ((t (:foreground ,cb-theme-common-neutral-grey))))
+
+    (diredp-compressed-file-suffix
+     ((t (:inherit diredp-file-suffix))))
 
     (diredp-number
      ((t (:weight light))))
