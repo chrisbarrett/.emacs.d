@@ -59,6 +59,19 @@
   :load-path cb-scala-ensime-load-path
   :defer t
   :commands (ensime)
+
+  ;; Define a command to send the current file to the scala repl.
+
+  :preface
+  (defun cb-scala-send-file (file)
+    "Quickly load current file in the Ensime repl."
+    (interactive (list (buffer-file-name)))
+    (save-buffer)
+    (ensime-inf-load-file file))
+  :config
+  (dolist (state '(normal insert))
+    (eval `(evil-define-key ',state ensime-mode-map (kbd "C-c C-l") 'cb-scala-send-file)))
+
   :config
   (progn
     (spacemacs-keys-set-leader-keys-for-major-mode 'scala-mode
@@ -102,13 +115,13 @@
       "sa" 'ensime-inf-load-file
       "sb" 'ensime-inf-eval-buffer
       "si" 'ensime-inf-switch
-      "sr" 'ensime-inf-eval-region
-      "z" 'ensime-expand-selection-command)
+      "sr" 'ensime-inf-eval-region)
 
     (dolist (state '(normal insert))
       (eval `(evil-define-key ',state ensime-mode-map
                (kbd "M-.") 'ensime-edit-definition
-               (kbd "M-,") 'ensime-pop-find-definition-stack)))
+               (kbd "M-,") 'ensime-pop-find-definition-stack
+               (kbd "C-c C-z") 'ensime-inf-switch)))
 
     (evil-define-key 'normal ensime-popup-buffer-map
       (kbd "q") 'ensime-popup-buffer-quit-function)
