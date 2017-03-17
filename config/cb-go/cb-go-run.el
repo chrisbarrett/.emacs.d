@@ -21,24 +21,27 @@
 (defconst cb-go-run-main-buffer "*go run*")
 (defconst cb-go-run-test-buffer "*go test*")
 
+(defun cb-go-run--run-test (str)
+  (let ((compilation-buffer-name-function (lambda (_) cb-go-run-test-buffer)))
+    (compile (concat "go test " str))))
+
 ;;;###autoload
 (defun cb-go-run-tests (names)
   "Run all unit tests with NAMES."
-  (interactive)
-  (let ((compilation-buffer-name-function (lambda (_) cb-go-run-test-buffer)))
-    (compile (concat "go test " (shell-quote-argument names)))))
+  (interactive "sNames: ")
+  (cb-go-run--run-test (shell-quote-argument names)))
 
 ;;;###autoload
 (defun cb-go-run-package-tests ()
   "Run all tests in the package."
   (interactive)
-  (cb-go-run-tests ""))
+  (cb-go-run--run-test ""))
 
 ;;;###autoload
 (defun cb-go-run-package-tests-nested ()
   "Run all tests in this package and its enclosing packages."
   (interactive)
-  (cb-go-run-tests "./..."))
+  (cb-go-run--run-test "./..."))
 
 ;;;###autoload
 (defun cb-go-run-test-current-function ()
@@ -49,7 +52,7 @@
   (save-excursion
     (let ((test-method (if cb-go-run-use-gocheck? "-check.f" "-run")))
       (re-search-backward "^func[ ]+\\(([[:alnum:]]*?[ ]?[*]?[[:alnum:]]+)[ ]+\\)?\\(Test[[:alnum:]_]+\\)(.*)")
-      (cb-go-run-tests (format "%s='%s'" test-method (match-string 2))))))
+      (cb-go-run--run-test (format "%s='%s'" test-method (match-string 2))))))
 
 ;;;###autoload
 (defun cb-go-run-test-current-suite ()
@@ -61,7 +64,7 @@
     (user-error "Gocheck is needed to test the current suite"))
   (save-excursion
     (re-search-backward "^func[ ]+\\(([[:alnum:]]*?[ ]?[*]?\\([[:alnum:]]+\\))[ ]+\\)?Test[[:alnum:]_]+(.*)")
-    (cb-go-run-tests (format "-check.f='%s'" (match-string 2)))))
+    (cb-go-run--run-test (format "-check.f='%s'" (match-string 2)))))
 
 ;;;###autoload
 (defun cb-go-run-main ()
