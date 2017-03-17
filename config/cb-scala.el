@@ -256,7 +256,6 @@
 
   :config
   (progn
-    (setq flycheck-scalastylerc "~/.scalastyle.xml")
     (add-hook 'cb-scala-sbt-file-mode-hook #'cb-scala--disable-flycheck-scala)
     (add-hook 'ensime-mode-hook #'cb-scala--disable-flycheck-scala)))
 
