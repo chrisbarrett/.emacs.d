@@ -442,6 +442,11 @@
     (term-color-yellow
      ((t :foreground ,cb-theme-common-yellow)))
 
+    ;; Markdown
+
+    (markdown-line-break-face
+     ((t :underline ,cb-theme-common-orange)))
+
     ;; Scala
 
     (scala-font-lock:var-keyword-face
