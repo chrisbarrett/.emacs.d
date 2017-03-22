@@ -22,6 +22,7 @@
     (add-to-list 'aggressive-indent-excluded-modes 'sql-mode)
     (add-to-list 'aggressive-indent-excluded-modes 'restclient-mode)
     (add-to-list 'aggressive-indent-excluded-modes 'stylus-mode)
+    (add-to-list 'aggressive-indent-excluded-modes 'idris-mode)
 
     (global-aggressive-indent-mode +1)))
 
