@@ -1,0 +1,51 @@
+language: emacs-lisp
+sudo: false
+
+cache:
+  directories:
+    - $HOME/emacs-24.3
+    - $HOME/emacs-24.4
+    - $HOME/emacs-24.5
+
+before_install:
+  # Emacs 24.3
+  - wget http://ftpmirror.gnu.org/emacs/emacs-24.3.tar.xz
+  - tar -xf emacs-24.3.tar.xz
+  - cd emacs-24.3
+  - if [ ! -e bin/emacs ]; then ./configure --prefix=$HOME/emacs-24.3 --with-xpm=no --with-gif=no ; make ; make install ; fi
+  - cd ..
+
+  # Emacs 24.4
+  - wget http://ftpmirror.gnu.org/emacs/emacs-24.4.tar.xz
+  - tar -xf emacs-24.4.tar.xz
+  - cd emacs-24.4
+  - if [ ! -e bin/emacs ]; then ./configure --prefix=$HOME/emacs-24.4 --with-xpm=no --with-gif=no ; make ; make install ; fi
+  - cd ..
+
+  # Emacs 24.5
+  - wget http://ftpmirror.gnu.org/emacs/emacs-24.5.tar.xz
+  - tar -xf emacs-24.5.tar.xz
+  - cd emacs-24.5
+  - if [ ! -e bin/emacs ]; then ./configure --prefix=$HOME/emacs-24.5 --with-xpm=no --with-gif=no ; make ; make install ; fi
+  - cd ..
+
+before_script: true
+
+script:
+  # emacs 24.3
+  - make getdeps EMACS=$HOME/emacs-24.3/bin/emacs
+  - make build EMACS=$HOME/emacs-24.3/bin/emacs
+  - make test EMACS=$HOME/emacs-24.3/bin/emacs
+  - make clean
+
+  # emacs 24.4
+  - make getdeps EMACS=$HOME/emacs-24.4/bin/emacs
+  - make build EMACS=$HOME/emacs-24.4/bin/emacs
+  - make test EMACS=$HOME/emacs-24.4/bin/emacs
+  - make clean
+
+  # emacs 24.5
+  - make getdeps EMACS=$HOME/emacs-24.5/bin/emacs
+  - make build EMACS=$HOME/emacs-24.5/bin/emacs
+  - make test EMACS=$HOME/emacs-24.5/bin/emacs
+  - make clean
