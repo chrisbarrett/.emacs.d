@@ -12,6 +12,7 @@
   (require 'use-package))
 
 (require 'seq)
+(require 'subr-x)
 
 (use-package highlight-thing
   :commands (highlight-thing-mode)
@@ -22,7 +23,7 @@
 
     (defun cb-highlight-thing--face-ancestors (face)
       (let (result)
-        (while (not (equal face 'unspecified))
+        (while (and face (not (equal face 'unspecified)))
           (setq result (cons face result))
           (setq face (face-attribute face :inherit)))
         (nreverse result)))
