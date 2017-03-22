@@ -16,10 +16,13 @@
 
 (use-package idris-mode
   :mode ("\\.l?idr\\'" . idris-mode)
+  :commands (idris-repl)
   :init
   (add-to-list 'completion-ignored-extensions ".ibc")
   :config
   (progn
+    (setq idris-semantic-source-highlighting nil)
+
     (spacemacs-keys-declare-prefix-for-mode 'idris-mode "mb" "build")
     (spacemacs-keys-declare-prefix-for-mode 'idris-mode "mi" "editing")
     (spacemacs-keys-declare-prefix-for-mode 'idris-mode "mh" "documentation")
