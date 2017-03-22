@@ -12,7 +12,7 @@
   (require 'use-package))
 
 (require 'spacemacs-keys)
-(autoload 'evil-set-initial-state "evil-core")
+(require 'evil)
 
 (use-package idris-mode
   :mode ("\\.l?idr\\'" . idris-mode)
@@ -75,6 +75,13 @@
       "sp" 'idris-load-backward-line
       "ss" 'idris-pop-to-repl
       "sq" 'idris-quit)
+
+
+    (dolist (state '(normal motion))
+      (eval `(evil-define-key ',state idris-hole-list-mode-map
+               (kbd "TAB")       #'forward-button
+               (kbd "<backtab>") #'backward-button
+               (kbd "RET")       #'button-activate)))
 
     ;; Open special buffers in motion state so they can be closed with `q'.
 
