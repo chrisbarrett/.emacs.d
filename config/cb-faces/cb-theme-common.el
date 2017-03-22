@@ -168,6 +168,14 @@
     (info-double-quoted-name
      ((t :weight normal)))
 
+    ;; Idris
+
+    (idris-repl-input-face
+     ((t :inherit default :foreground ,cb-theme-common-neutral-grey :weight normal)))
+
+    (idris-semantic-data-face
+     ((t :inherit default)))
+
     ;; web-mode
 
     (web-mode-function-call-face
