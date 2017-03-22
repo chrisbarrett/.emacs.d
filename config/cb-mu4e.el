@@ -67,6 +67,7 @@
       :after mu4e
       :functions (cb-mu4e-utils-view-in-external-browser-action
                   cb-mu4e-utils-read-and-archive-action
+                  mu4e-view-open-attachment
                   mu4e-headers-mark-for-read-and-archive
                   mu4e-view-mark-for-read-and-archive)))
 
@@ -210,9 +211,17 @@
     (define-key mu4e-headers-mode-map (kbd "SPC") spacemacs-keys-default-map)
     (define-key mu4e-view-mode-map (kbd "SPC") spacemacs-keys-default-map)
     (define-key mu4e-main-mode-map (kbd "SPC") spacemacs-keys-default-map)
-    (define-key mu4e-headers-mode-map (kbd "SPC") spacemacs-keys-default-map)))
+    (define-key mu4e-headers-mode-map (kbd "SPC") spacemacs-keys-default-map)
 
+    ;; Define some leader keybindings.
 
-  (provide 'cb-mu4e)
+    (spacemacs-keys-set-leader-keys-for-major-mode 'mu4e-view-mode
+      "a" #'mu4e-view-open-attachment
+      "o" #'cb-mu4e-utils-view-in-external-browser-action)
+
+    (spacemacs-keys-set-leader-keys-for-major-mode 'mu4e-compose-mode
+      "a" 'mail-insert-file)))
+
+(provide 'cb-mu4e)
 
 ;;; cb-mu4e.el ends here

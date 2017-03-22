@@ -19,6 +19,8 @@
 (mu4e~view-defun-mark-for read-and-archive)
 
 (defun cb-mu4e-utils-view-in-external-browser-action (msg)
+  "View the current message MSG in the browser."
+  (interactive (list mu4e~view-msg))
   (let ((browse-url-browser-function #'browse-url-default-browser))
     (mu4e-action-view-in-browser msg)))
 
