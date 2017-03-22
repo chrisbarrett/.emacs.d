@@ -538,6 +538,21 @@ Optional arg JUSTIFY will justify comments and strings."
 
   :defines (display-time-world-list world-time-table-mode-map))
 
+(use-package hideshow
+  :defer t
+  :preface
+  (defun cb-evil-ignore-errors (f &rest args)
+    (ignore-errors
+      (apply f args)))
+  :config
+  (dolist (cmd '(hs-minor-mode
+                 hs-show-all
+                 hs-hide-all
+                 hs-toggle-hiding
+                 hs-show-block
+                 hs-hide-block))
+    (advice-add cmd :around #'cb-evil-ignore-errors)))
+
 (provide 'cb-basic-settings)
 
 ;;; cb-basic-settings.el ends here
