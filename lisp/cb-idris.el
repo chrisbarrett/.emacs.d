@@ -76,12 +76,29 @@
       "ss" 'idris-pop-to-repl
       "sq" 'idris-quit)
 
+    ;; Enable keyboard control for buttons in holes list.
 
     (dolist (state '(normal motion))
       (eval `(evil-define-key ',state idris-hole-list-mode-map
                (kbd "TAB")       #'forward-button
                (kbd "<backtab>") #'backward-button
                (kbd "RET")       #'button-activate)))
+
+    ;; Customise prover keybindings.
+
+    (dolist (state '(normal insert motion))
+      (eval `(evil-define-key ',state idris-prover-script-mode-map
+               (kbd "M-n")       'idris-prover-script-forward
+               (kbd "M-p")       'idris-prover-script-backward)))
+
+    (spacemacs-keys-set-leader-keys-for-major-mode 'idris-prover-script-mode
+      "n" 'idris-prover-script-forward
+      "p" 'idris-prover-script-backward
+      "x" 'idris-prover-script-qed
+      "q" 'idris-prover-abandon)
+
+    (define-key idris-prover-script-mode-map (kbd "C-c C-k") 'idris-prover-abandon)
+    (define-key idris-prover-script-mode-map (kbd "C-c C-c") 'idris-prover-script-qed)
 
     ;; Open special buffers in motion state so they can be closed with `q'.
 
