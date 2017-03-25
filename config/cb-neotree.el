@@ -92,7 +92,7 @@
   (progn
     (spacemacs-keys-set-leader-keys
       "ft" #'neotree-toggle
-      "pt" #'cb-neotree-find-project-root)
+      "pT" #'cb-neotree-find-project-root)
 
     (evil-transient-state-define cb-neotree
       :title "NeoTree Key Hints"
