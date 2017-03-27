@@ -26,8 +26,17 @@
              projectile-switch-project
              projectile-test-project)
 
+  :functions (projectile-project-p)
+
   :preface
-  (autoload 'magit-status "magit")
+  (progn
+    (autoload 'magit-status "magit")
+    (autoload '-const "dash-functional")
+
+    (defun cb-projectile-test-project (arg)
+      (interactive "P")
+      (let ((compilation-buffer-name-function (-const "*projectile-test*")))
+        (projectile-test-project arg))))
 
   :init
   (progn
@@ -38,7 +47,7 @@
       "pa" #'projectile-ag
       "pc" #'projectile-compile-project
       "pr" #'projectile-replace
-      "pt" #'projectile-test-project
+      "pt" #'cb-projectile-test-project
       "pu" #'projectile-run-project))
 
   :config
@@ -67,8 +76,16 @@
             "node_modules"
             "target"))
 
-    (projectile-mode)))
+    (projectile-mode)
 
+    (add-to-list 'display-buffer-alist
+                 `(,(rx bos "*projectile-test*" eos)
+                   (display-buffer-reuse-window
+                    display-buffer-in-side-window)
+                   (reusable-frames . visible)
+                   (side            . bottom)
+                   (slot            . 1)
+                   (window-height   . 0.2)))))
 
 (use-package counsel-projectile
   :defer t
