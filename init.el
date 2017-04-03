@@ -130,6 +130,7 @@ If argument INTERACTIVE-P is set, log additional information."
 (use-package cb-csv)
 (use-package cb-highlight-thing)
 (use-package cb-idris)
+(use-package cb-docker)
 
 (use-package personal-config
   :load-path "~/Sync/emacs")
