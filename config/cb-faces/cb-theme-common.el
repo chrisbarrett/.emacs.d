@@ -466,6 +466,14 @@
     (scala-font-lock:var-face
      ((t :inherit font-lock-variable-name-face)))
 
+    ;; Git time machine
+
+    (git-timemachine-minibuffer-detail-face
+     ((t :foreground ,cb-theme-common-blue)))
+
+    (git-timemachine-minibuffer-author-face
+     ((t :inherit default)))
+
     ;; Company
 
     (company-template-field
