@@ -105,6 +105,14 @@
   (spacemacs-keys-set-leader-keys-for-major-mode 'emacs-lisp-mode
     "t" #'cb/ert-run-all-tests))
 
+(use-package package-lint
+  :commands (package-lint-current-buffer))
+
+(use-package flycheck-package
+  :after flycheck
+  :functions (flycheck-package-setup)
+  :config (flycheck-package-setup))
+
 
 (provide 'cb-elisp)
 
