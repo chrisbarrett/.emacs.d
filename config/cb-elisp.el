@@ -13,6 +13,7 @@
 
 (require 'spacemacs-keys)
 (autoload 'evil-define-key "evil-core")
+(autoload 'evil-set-initial-state "evil-core")
 
 ;; Print a message on `eval-buffer'.
 
@@ -103,7 +104,9 @@
     (ert t))
   :init
   (spacemacs-keys-set-leader-keys-for-major-mode 'emacs-lisp-mode
-    "t" #'cb/ert-run-all-tests))
+    "t" #'cb/ert-run-all-tests)
+  :config
+  (evil-set-initial-state 'ert-simple-view-mode 'motion))
 
 (use-package package-lint
   :commands (package-lint-current-buffer))
