@@ -49,6 +49,11 @@
     (evil-define-key 'motion help-mode-map (kbd "gb") #'help-go-back)
     (evil-define-key 'motion help-mode-map (kbd "gh") #'help-follow-symbol)
 
+    ;; Initial states
+
+    (evil-set-initial-state 'tar-mode 'motion)
+    (evil-set-initial-state 'archive-mode 'motion)
+
     ;; Better compat with smartparens-strict mode.
     ;; TODO: Move to SP config.
 
