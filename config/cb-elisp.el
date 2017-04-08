@@ -15,7 +15,8 @@
 (autoload 'evil-define-key "evil-core")
 (autoload 'evil-set-initial-state "evil-core")
 
-;; Print a message on `eval-buffer'.
+(use-package lisp-mode
+  :mode ("/Cask\\'" . lisp-mode))
 
 (use-package elisp-mode
   :preface
