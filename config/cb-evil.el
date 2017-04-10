@@ -51,8 +51,12 @@
 
     ;; Initial states
 
-    (evil-set-initial-state 'tar-mode 'motion)
-    (evil-set-initial-state 'archive-mode 'motion)
+    (with-eval-after-load 'tar-mode
+      (evil-set-initial-state 'tar-mode 'emacs)
+      (evil-add-hjkl-bindings tar-mode-map))
+    (with-eval-after-load 'arc-mode
+      (evil-set-initial-state 'archive-mode 'emacs)
+      (evil-add-hjkl-bindings archive-mode-map))
 
     ;; Better compat with smartparens-strict mode.
     ;; TODO: Move to SP config.
