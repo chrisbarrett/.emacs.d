@@ -83,6 +83,11 @@
     (setq dired-clean-up-buffers-too t)
     (setq dired-omit-files (rx bol (+ ".")))))
 
+(use-package wdired
+  :after dired
+  :config
+  (evil-define-key 'normal dired-mode-map (kbd "C-c C-w") #'wdired-change-to-wdired-mode))
+
 
 (provide 'cb-dired)
 
