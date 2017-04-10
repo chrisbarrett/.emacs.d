@@ -74,7 +74,11 @@
       "ev" 'flycheck-verify-setup)
 
     (with-eval-after-load 'evil
-      (evil-define-key 'normal flycheck-error-list-mode-map
+      (evil-set-initial-state 'flycheck-error-list-mode 'motion)
+      (evil-define-key 'motion flycheck-error-list-mode-map
+        (kbd "j") #'flycheck-error-list-next-error
+        (kbd "k") #'flycheck-error-list-previous-error
+        (kbd "RET") #'flycheck-error-list-goto-error
         (kbd "n") #'flycheck-error-list-next-error
         (kbd "p") #'flycheck-error-list-previous-error
         (kbd "q") #'quit-window))
