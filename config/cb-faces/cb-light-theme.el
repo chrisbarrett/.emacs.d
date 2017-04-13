@@ -12,7 +12,8 @@
 
 (require 'cb-theme-common)
 
-(apply #'custom-theme-set-faces 'cb-light (cb-theme-common-make-theme "black" "white"))
+(apply #'custom-theme-set-faces 'cb-light
+       (cb-theme-common-make-theme "black" "#f0f0f0"))
 
 (provide-theme 'cb-light)
 
