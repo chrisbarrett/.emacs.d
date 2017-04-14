@@ -234,6 +234,18 @@
     (magit-section-heading
      ((t :weight demibold)))
 
+    (magit-section-highlight
+     ((((background light)) :background "grey90")
+      (((background  dark)) :background "grey20")))
+
+    (magit-diff-context-highlight
+     ((((background light))
+       :background "grey90"
+       :foreground "grey50")
+      (((background dark))
+       :background "grey20"
+       :foreground "grey70")))
+
     (magit-popup-disabled-argument
      ((t :foreground ,cb-theme-common-neutral-grey)))
 
