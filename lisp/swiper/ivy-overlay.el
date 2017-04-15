@@ -1,6 +1,6 @@
-;;; ivy-overlay.el --- Overlay display functions for Ivy  -*- lexical-binding: t; -*-
+;;; ivy-overlay.el --- Overlay display functions for Ivy  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2016  Oleh Krehel
+;; Copyright (C) 2016-2017  Free Software Foundation, Inc.
 
 ;; Author: Oleh Krehel <ohwoeowho@gmail.com>
 ;; Keywords: convenience
@@ -39,7 +39,13 @@
 (defun ivy-left-pad (str width)
   "Pad STR from left with WIDTH spaces."
   (let ((padding (make-string width ?\ )))
-    (mapconcat (lambda (x) (concat padding x))
+    (mapconcat (lambda (x)
+                 (setq x (concat padding x))
+                 (if (> (length x) (window-width))
+                     (concat
+                      (substring x 0 (- (window-width) 4))
+                      "...")
+                   x))
                (split-string str "\n")
                "\n")))
 
@@ -69,6 +75,9 @@ Then attach the overlay the character before point."
   (overlay-put ivy-overlay-at 'display str)
   (overlay-put ivy-overlay-at 'after-string ""))
 
+(declare-function org-current-level "org")
+(defvar org-indent-indentation-per-level)
+
 (defun ivy-display-function-overlay (str)
   "Called from the minibuffer, display STR in an overlay in Ivy window.
 Hide the minibuffer contents and cursor."
@@ -94,11 +103,9 @@ Hide the minibuffer contents and cursor."
                (+ (if (eq major-mode 'org-mode)
                       (* org-indent-indentation-per-level (org-current-level))
                     0)
-                  (if (eq (ivy-state-caller ivy-last)
-                          'ivy-completion-in-region)
-                      (- ivy-completion-beg ivy-completion-end)
-                    0)
-                  (current-column))))))
+                  (save-excursion
+                    (goto-char ivy-completion-beg)
+                    (current-column)))))))
         (add-face-text-property cursor-pos (1+ cursor-pos)
                                 'ivy-cursor t overlay-str)
         (ivy-overlay-show-after overlay-str)))))
