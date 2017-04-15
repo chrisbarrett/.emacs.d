@@ -53,6 +53,7 @@
   :config
   (progn
     (require 'flx)
+    (require 'ivy-hydra)
 
     (setq ivy-use-virtual-buffers t)
     (setq ivy-count-format "(%d/%d) ")
