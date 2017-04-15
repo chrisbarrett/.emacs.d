@@ -1,6 +1,6 @@
 ;;; ivy-test.el --- tests for ivy
 
-;; Copyright (C) 2015  Free Software Foundation, Inc.
+;; Copyright (C) 2015-2017  Free Software Foundation, Inc.
 
 ;; Author: Oleh Krehel
 
@@ -169,7 +169,9 @@
   (should (equal (ivy--regex-ignore-order "one two !three four")
                  '(("one" . t) ("two" . t) ("three") ("four"))))
   (should (equal (ivy--regex-ignore-order "!three four")
-                 '(("" . t) (("three") ("four"))))))
+                 '(("" . t) (("three") ("four")))))
+  (should (equal (ivy--regex-ignore-order "foo[ bar[xy]")
+                 '(("foo\\[" . t) ("bar[xy]" . t)))))
 
 (ert-deftest ivy--format ()
   (should (string= (let ((ivy--index 10)
