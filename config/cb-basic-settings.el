@@ -75,6 +75,9 @@
 
 (setq frame-title-format `(:eval (cb-basic-settings--frame-title-string)))
 
+;; Don't pollute directories with lockfiles, since I only run one instance of
+;; Emacs and never need to prevent concurrent file access.
+(setq create-lockfiles nil)
 
 ;; Copy system clipboard to the kill-ring if an Emacs kill would overwrite it.
 (setq save-interprogram-paste-before-kill t)
