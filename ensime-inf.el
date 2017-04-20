@@ -223,12 +223,13 @@ Used for determining the default in the next one.")
   (comint-send-string ensime-inf-buffer-name "\n"))
 
 (defun ensime-inf-eval-region (start end)
-  "Send current region to Scala interpreter."
+  "Send current region to Scala interpreter. If no region is active send current line to Scala interpreter."
   (interactive "r")
   (ensime-inf-assert-running)
-
-  (let ((reg (buffer-substring-no-properties start end))
-        (buffer (buffer-name)))
+  (let* ((start (if (use-region-p) start (line-beginning-position)))
+         (end   (if (use-region-p) end (line-end-position)))
+         (reg (buffer-substring-no-properties start end))
+         (buffer (buffer-name)))
     (setq ensime-inf-overlay-marker (copy-marker end))
     (with-current-buffer ensime-inf-buffer-name
       (goto-char (point-max))

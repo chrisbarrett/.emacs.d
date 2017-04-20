@@ -735,9 +735,10 @@ copies. All other objects are used unchanged. List must not contain cycles."
 
 
 (defun ensime-handle-compiler-ready ()
-  "Do any work that should be done the first time the analyzer becomes
- ready for requests."
-  (message "ENSIME ready. %s" (ensime-random-words-of-encouragement))
+  "Work that should be done when the analyzer is ready."
+  (if (equal (format-time-string "%m-%d") "04-01")
+      (message "WHISKY ready: Writer for Holistic Interaction with Skala and Kleisli Yielding")
+    (message "ENSIME ready. %s" (ensime-random-words-of-encouragement)))
   (setf (ensime-analyzer-ready (ensime-connection)) t)
   (ensime-sem-high-refresh-all-buffers))
 
@@ -777,9 +778,8 @@ copies. All other objects are used unchanged. List must not contain cycles."
 
 (defun ensime-random-words-of-encouragement ()
   "Return a string of hackerish encouragement."
-  (eval (nth (random (length ensime-words-of-encouragement))
-	     ensime-words-of-encouragement)))
-
+  (nth (random (length ensime-words-of-encouragement))
+       ensime-words-of-encouragement))
 
 ;;; RPC calls and support functions
 

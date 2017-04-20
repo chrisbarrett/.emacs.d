@@ -120,6 +120,7 @@
       (define-key prefix-map (kbd "C-r l") 'ensime-refactor-diff-extract-local)
       (define-key prefix-map (kbd "C-r m") 'ensime-refactor-diff-extract-method)
       (define-key prefix-map (kbd "C-r i") 'ensime-refactor-diff-inline-local)
+      (define-key prefix-map (kbd "C-r i") 'ensime-refactor-expand-match-cases)
       (define-key prefix-map (kbd "C-r t") 'ensime-import-type-at-point)
 
       (define-key map ensime-mode-key-prefix prefix-map)
@@ -209,7 +210,8 @@
      ["Rename" (ensime-refactor-diff-rename)]
      ["Extract local val" (ensime-refactor-diff-extract-local)]
      ["Extract method" (ensime-refactor-diff-extract-method)]
-     ["Inline local val" (ensime-refactor-diff-inline-local)])
+     ["Inline local val" (ensime-refactor-diff-inline-local)]
+     ["Expand match cases" (ensime-refactor-expand-match-cases)])
 
     ("Navigation"
      ["Lookup definition" ensime-edit-definition]
