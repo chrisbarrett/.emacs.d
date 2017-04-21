@@ -95,6 +95,8 @@
     (indent-region (point-min) (point-max) nil)
     (untabify (point-min) (point-max))))
 
+(defalias 'indent-buffer #'cb-indent-buffer)
+
 (defun cb-indent-dwim (&optional justify)
   "Indent the thing at point.
 
