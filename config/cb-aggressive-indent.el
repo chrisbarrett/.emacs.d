@@ -23,6 +23,7 @@
     (add-to-list 'aggressive-indent-excluded-modes 'restclient-mode)
     (add-to-list 'aggressive-indent-excluded-modes 'stylus-mode)
     (add-to-list 'aggressive-indent-excluded-modes 'idris-mode)
+    (add-to-list 'aggressive-indent-excluded-modes 'dockerfile-mode)
     (add-to-list 'aggressive-indent-excluded-modes 'graphviz-dot-mode)
 
     (global-aggressive-indent-mode +1)))
