@@ -6,9 +6,11 @@
 
 * Consider Ensime configuration file as root marker, `.ensime`.
 * [#1057](https://github.com/bbatsov/projectile/issues/1057): Make it possible to disable automatic project tracking via `projectile-track-known-projects-automatically`.
+* Added ability to specify test files suffix and prefix at the project registration.
 
 ### Changes
 
+* [#1129](https://github.com/bbatsov/projectile/pull/1129): Fix TRAMP issues.
 * Add R DESCRIPTION file to `projectile-project-root-files`.
 * Ignore backup files in `projectile-get-other-files`.
 * Ignore Ensime cache directory, `.ensime_cache`.
