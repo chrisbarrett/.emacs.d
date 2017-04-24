@@ -94,15 +94,14 @@
              counsel-projectile-find-dir
              counsel-projectile-switch-project
              counsel-projectile-switch-to-buffer
-             counsel-projectile-ag)
+             counsel-projectile-rg)
   :init
   (spacemacs-keys-set-leader-keys
     "pf" #'counsel-projectile-find-file
     "pd" #'counsel-projectile-find-dir
     "pb" #'counsel-projectile-switch-to-buffer
     "pp" #'counsel-projectile-switch-project
-    "pa" #'counsel-projectile-ag
-    "/"  #'counsel-projectile-ag)
+    "/"  #'counsel-projectile-rg)
 
   :config
   (counsel-projectile-on))
