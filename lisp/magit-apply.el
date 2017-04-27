@@ -42,7 +42,7 @@
 (defvar auto-revert-verbose)
 ;; For `magit-stage-untracked'
 (declare-function magit-submodule-add 'magit-submodule)
-(declare-function magit-submodule-read-name 'magit-submodule)
+(declare-function magit-submodule-read-name-for-path 'magit-submodule)
 
 (require 'dired)
 
@@ -281,9 +281,10 @@ ignored) files.
         (magit-submodule-add
          (let ((default-directory
                  (file-name-as-directory (expand-file-name repo))))
-           (magit-get "remote" (or (magit-get-remote) "origin") "url"))
+           (or (magit-get "remote" (or (magit-get-remote) "origin") "url")
+               (concat (file-name-as-directory ".") repo)))
          repo
-         (magit-submodule-read-name repo))))
+         (magit-submodule-read-name-for-path repo))))
     (magit-wip-commit-after-apply files " after stage")))
 
 ;;;; Unstage
@@ -483,7 +484,10 @@ without requiring confirmation."
     (dolist (file files)
       (let ((orig (cadr (assoc file status))))
         (if (file-exists-p file)
-            (magit-call-git "mv" file orig)
+            (progn
+              (--when-let (file-name-directory orig)
+                (make-directory it t))
+              (magit-call-git "mv" file orig))
           (magit-call-git "rm" "--cached" "--" file)
           (magit-call-git "reset" "--" orig))))))
 

@@ -73,8 +73,6 @@ and then turned on again when turning off the latter."
   :group 'magit-blame
   :type '(repeat (symbol :tag "Mode")))
 
-(make-variable-buffer-local 'magit-blame-disabled-modes)
-
 (defcustom magit-blame-mode-lighter " Blame"
   "The mode-line lighter of the Magit-Blame mode."
   :group 'magit-blame
@@ -155,6 +153,7 @@ and then turned on again when turning off the latter."
 
 (defvar-local magit-blame-buffer-read-only nil)
 (defvar-local magit-blame-cache nil)
+(defvar-local magit-blame-disabled-modes nil)
 (defvar-local magit-blame-process nil)
 (defvar-local magit-blame-recursive-p nil)
 (defvar-local magit-blame-separator nil)
@@ -237,7 +236,7 @@ only arguments available from `magit-blame-popup' should be used.
              (list it (magit-blame-chunk-get :previous-file)
                    args (magit-blame-chunk-get :previous-start))
            (user-error "Block has no further history"))
-       (--if-let (magit-file-relative-name nil 'tracked)
+       (--if-let (magit-file-relative-name nil (not magit-buffer-file-name))
            (list (or magit-buffer-refname magit-buffer-revision) it args)
          (if buffer-file-name
              (user-error "Buffer isn't visiting a tracked file")

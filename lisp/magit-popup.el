@@ -12,7 +12,7 @@
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
 ;; Maintainer: Jonas Bernoulli <jonas@bernoul.li>
 
-;; Package-Requires: ((emacs "24.4") (async "20161103.1036") (dash "20161121.55"))
+;; Package-Requires: ((emacs "24.4") (async "20170219.942") (dash "20170207.2056"))
 ;; Keywords: bindings
 ;; Homepage: https://github.com/magit/magit
 
@@ -491,7 +491,9 @@ usually specified in that order):
   Controls when to display the popup buffer and when to invoke
   the default action (if any) directly.  This overrides the
   global default set using `magit-popup-use-prefix-argument'.
-  The value, if specified, should be one of `default' or `popup'.
+  The value, if specified, should be one of `default' or `popup',
+  or a function that is called with no arguments and returns one
+  of these symbols.
 
 `:max-action-columns'
   The maximum number of actions to display on a single line, a
@@ -763,6 +765,9 @@ TYPE is one of `:action', `:sequence-action', `:switch', or
          (val     (symbol-value (plist-get def :variable)))
          (default (plist-get def :default-action))
          (local   (plist-get def :use-prefix))
+         (local   (if (functionp local)
+                      (funcall local)
+                    local))
          (use-prefix (or local magit-popup-use-prefix-argument)))
     (cond
      ((or (and (eq use-prefix 'default) arg)

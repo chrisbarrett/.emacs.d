@@ -83,7 +83,7 @@ While such "prefix-infix-suffix" combos were inspired by regular
 prefix commands and prefix arguments, they are also quite different.
 This should illustrate the most basic differences:
 
-- A regular prefix commands
+- A regular prefix command
 
   #+BEGIN_EXAMPLE
           /- command1
@@ -96,7 +96,7 @@ This should illustrate the most basic differences:
   #+BEGIN_EXAMPLE
            /- command1
   C-u ... --- command2
-           \- well *any* command
+           \- well any command
   #+END_EXAMPLE
 
 - A Prefix-Infix-Suffix combo
@@ -110,8 +110,8 @@ This should illustrate the most basic differences:
       (refresh buffer)
    #+END_EXAMPLE
 
-This library was written as a replacement for ~magit-key-mode~ which was
-used in Magit releases before 2.1.0.  It is used to implement all
+This library was written as a replacement for ~magit-key-mode~, which
+was used in Magit releases before 2.1.0.  It is used to implement all
 "popups" in the current Magit release but a future release will switch
 to yet another implementation.
 
@@ -121,6 +121,7 @@ in packages that are not related to Magit.  But keep in mind that it
 will be deprecated eventually.
 
 * Usage
+** _ :ignore:
 
 Every popup buffers created with a prefix command contains a section
 named "Actions" listing the available suffix commands.  Most buffers
@@ -386,6 +387,7 @@ To emphasize the default action by making it bold use this:
 #+END_SRC
 
 * Defining Prefix and Suffix Commands
+** _ :ignore:
 
 If you write an extension for Magit then you should use this library
 now and later when ~transient~ is released port to that.
@@ -513,7 +515,8 @@ commands have to be defined separately using plain ~defun~.
     Controls when to display the popup buffer and when to invoke the
     default action (if any) directly.  This overrides the global
     default set using ~magit-popup-use-prefix-argument~.  The value, if
-    specified, should be one of ~default~ or ~prefix~.
+    specified, should be one of ~default~ or ~prefix~, or a function that
+    is called with no arguments and returns one of these symbols.
 
   - ~:max-action-columns~
 
@@ -625,6 +628,8 @@ Except when redefining the former, you should not use these directly.
   arguments that don't match any of the regexps are returned, or ~:only~
   which doesn't change the behavior.
 
+* _ :ignore:
+
 #  LocalWords:  ARG DESC KEY's LocalWords Magit OPTVAL POPUP PREPEND
 #  LocalWords:  Popup SHORTNAME args desc magit manpage popup popup's
 #  LocalWords:  popups pre prepend
@@ -633,4 +638,5 @@ Except when redefining the former, you should not use these directly.
 # eval: (require 'magit-utils nil t)
 # eval: (require 'org-man     nil t)
 # eval: (require 'ox-texinfo+ nil t)
+# eval: (and (require 'ox-extra nil t) (ox-extras-activate '(ignore-headlines)))
 # End:

@@ -11,7 +11,7 @@
 ;;	Marius Vollmer <marius.vollmer@gmail.com>
 ;; Maintainer: Jonas Bernoulli <jonas@bernoul.li>
 
-;; Package-Requires: ((emacs "24.4") (dash "20161121.55") (with-editor "20170111.609"))
+;; Package-Requires: ((emacs "24.4") (dash "20170207.2056") (with-editor "20170111.609"))
 ;; Keywords: git tools vc
 ;; Homepage: https://github.com/magit/magit
 
@@ -426,8 +426,7 @@ already using it, then you probably shouldn't start doing so."
     (setq save-place nil))
   (save-excursion
     (goto-char (point-min))
-    (when (= (line-beginning-position)
-             (line-end-position))
+    (when (looking-at "\\`\\(\\'\\|\n[^\n]\\)")
       (open-line 1)))
   (run-hooks 'git-commit-setup-hook)
   (set-buffer-modified-p nil))
