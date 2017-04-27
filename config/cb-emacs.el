@@ -132,6 +132,11 @@ prompt for REMOTE if it cannot be determined."
                                  t)))
   (byte-recompile-directory (f-join cb-emacs-lisp-directory subtree) 0 t))
 
+(defun cb-emacs-compile-all-subtrees ()
+  "Force the byte compilation of SUBTREE."
+  (interactive)
+  (byte-recompile-directory cb-emacs-lisp-directory 0 t))
+
 (provide 'cb-emacs)
 
 ;;; cb-emacs.el ends here
