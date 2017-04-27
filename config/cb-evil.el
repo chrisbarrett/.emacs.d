@@ -33,7 +33,7 @@
 
     (setq evil-motion-state-cursor '("plum3" box))
     (setq evil-visual-state-cursor '("gray" (hbar . 2)))
-    (setq evil-normal-state-cursor '("DarkGoldenrod2" box))
+    (setq evil-normal-state-cursor '("IndianRed" box))
     (setq evil-insert-state-cursor '("chartreuse3" (bar . 2)))
     (setq evil-emacs-state-cursor  '("SkyBlue2" hbar))
 
