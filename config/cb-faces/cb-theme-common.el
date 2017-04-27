@@ -176,6 +176,9 @@
     (idris-semantic-data-face
      ((t :inherit default)))
 
+    (idris-semantic-implicit-face
+     ((t :inherit default)))
+
     ;; web-mode
 
     (web-mode-function-call-face
