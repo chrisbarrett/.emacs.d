@@ -69,9 +69,8 @@
     (setq ledger-fontify-xact-state-overrides nil)
 
     (setq ledger-reports
-          `(("assets" "ledger -f %(ledger-file) bal assets")
-            ("liabilities" "ledger -f %(ledger-file) bal liabilities")
-            ("balance" "ledger -f %(ledger-file) bal not ^Equity")
+          `(("assets & liabilities" "ledger -f %(ledger-file) bal '^Assets' '^Liabilities' --depth 2")
+            ("balance" "ledger -f %(ledger-file) --depth 3 bal not ^Equity")
             ("reg this week" "ledger -f %(ledger-file) reg checking -p 'this week'")
             ("reg this month" "ledger -f %(ledger-file) reg checking -p 'this month'")
             ("reg since payday" "ledger -f %(ledger-file) reg checking -b %(last-payday)")
