@@ -43,19 +43,10 @@
 (eval-when-compile (require 'dired))
 (declare-function dired-uncache 'dired)
 
+(eval-when-compile (require 'auth-source))
+(declare-function auth-source-search 'auth-source)
+
 ;;; Options
-
-(defcustom magit-git-output-coding-system
-  (and (eq system-type 'windows-nt) 'utf-8)
-  "Coding system for receiving output from Git.
-
-If non-nil, the Git config value `i18n.logOutputEncoding' should
-be set via `magit-git-global-arguments' to value consistent with
-this."
-  :package-version '(magit . "2.9.0")
-  :group 'magit-process
-  :type '(choice (coding-system :tag "Coding system to decode Git output")
-                 (const :tag "Use system default" nil)))
 
 (defcustom magit-process-connection-type (not (eq system-type 'cygwin))
   "Connection type used for the Git process.
@@ -536,17 +527,22 @@ Magit status buffer."
       (unless (equal (expand-file-name pwd)
                      (expand-file-name default-directory))
         (insert (file-relative-name pwd default-directory) ?\s))
-      (insert (propertize program 'face 'magit-section-heading))
-      (insert " ")
-      (when (and args (equal program magit-git-executable))
+      (cond
+       ((and args (equal program magit-git-executable))
         (setq args (-split-at (length magit-git-global-arguments) args))
+        (insert (propertize program 'face 'magit-section-heading) " ")
         (insert (propertize (char-to-string magit-ellipsis)
                             'face 'magit-section-heading
                             'help-echo (mapconcat #'identity (car args) " ")))
         (insert " ")
-        (setq args (cadr args)))
-      (insert (propertize (mapconcat #'identity args " ")
-                          'face 'magit-section-heading))
+        (insert (propertize (mapconcat #'shell-quote-argument (cadr args) " ")
+                            'face 'magit-section-heading)))
+       ((and args (equal program shell-file-name))
+        (insert (propertize (cadr args) 'face 'magit-section-heading)))
+       (t
+        (insert (propertize program 'face 'magit-section-heading) " ")
+        (insert (propertize (mapconcat #'shell-quote-argument args " ")
+                            'face 'magit-section-heading))))
       (magit-insert-heading)
       (when errlog
         (insert-file-contents errlog)

@@ -559,27 +559,18 @@ buffer."
 
 (defun magit-log-read-revs (&optional use-current)
   (or (and use-current (--when-let (magit-get-current-branch) (list it)))
-      (let* ((choose-completion-string-functions
-              '(crm--choose-completion-string))
-             (minibuffer-completion-table #'crm--collection-fn)
-             (minibuffer-completion-confirm t)
-             (crm-completion-table
-              `(,@(and (file-exists-p (magit-git-dir "FETCH_HEAD"))
-                       (list "FETCH_HEAD"))
-                ,@(magit-list-refnames)))
-             (crm-separator "\\(\\.\\.\\.?\\|[, ]\\)")
-             (default (or (magit-branch-or-commit-at-point)
-                          (unless use-current
-                            (magit-get-previous-branch))))
-             (input (read-from-minibuffer
-                     (format "Log rev,s%s: "
-                             (if default (format " (%s)" default) ""))
-                     nil magit-log-read-revs-map
-                     nil 'magit-revision-history default)))
-        (when (string-equal input "")
-          (or (setq input default)
-              (user-error "Nothing selected")))
-        (split-string input "[, ]" t))))
+      (let ((collection `(,@(and (file-exists-p (magit-git-dir "FETCH_HEAD"))
+                                 (list "FETCH_HEAD"))
+                          ,@(magit-list-refnames))))
+        (split-string
+         (magit-completing-read-multiple "Log rev,s" collection
+                                         "\\(\\.\\.\\.?\\|[, ]\\)"
+                                         (or (magit-branch-or-commit-at-point)
+                                             (unless use-current
+                                               (magit-get-previous-branch)))
+                                         'magit-revision-history
+                                         magit-log-read-revs-map)
+         "[, ]" t))))
 
 ;;;###autoload
 (defun magit-log-current (revs &optional args files)
@@ -786,7 +777,7 @@ to visit the commit at point.
 Type \\[magit-branch-popup] to see available branch commands.
 Type \\[magit-merge-popup] to merge the branch or commit at point.
 Type \\[magit-cherry-pick-popup] to apply the commit at point.
-Type \\[magit-reset] to reset HEAD to the commit at point.
+Type \\[magit-reset] to reset `HEAD' to the commit at point.
 
 \\{magit-log-mode-map}"
   :group 'magit-log
@@ -837,7 +828,7 @@ Do not add this to a hook variable."
          (remove "--literal-pathspecs" magit-git-global-arguments)))
     (magit-git-wash (apply-partially #'magit-log-wash-log 'log)
       "log"
-      (format "--format=%%h%s %s[%%aN][%%at]%%s%s"
+      (format "--format=%%h%s%%x00%s%%x00%%aN%%x00%%at%%x00%%s%s"
               (if (member "--decorate" args) "%d" "")
               (if (member "--show-signature" args)
                   (progn (setq args (remove "--show-signature" args)) "%G?")
@@ -872,11 +863,11 @@ Do not add this to a hook variable."
 (defconst magit-log-heading-re
   (concat "^"
           "\\(?4:[-_/|\\*o. ]*\\)"                 ; graph
-          "\\(?1:[0-9a-fA-F]+\\) "                 ; sha1
-          "\\(?:\\(?3:([^()]+)\\) \\)?"            ; refs
-          "\\(?7:[BGUXYREN]\\)?"                   ; gpg
-          "\\[\\(?5:[^]]*\\)\\]"                   ; author
-          "\\[\\(?6:[^]]*\\)\\]"                   ; date
+          "\\(?1:[0-9a-fA-F]+\\)"                  ; sha1
+          "\\(?3:[^\0]+)\\)?\0"                    ; refs
+          "\\(?7:[BGUXYREN]\\)?\0"                 ; gpg
+          "\\(?5:[^\0]*\\)\0"                      ; author
+          "\\(?6:[^\0]+\\)\0"                      ; date
           "\\(?2:.*\\)$"))                         ; msg
 
 (defconst magit-log-cherry-re
@@ -894,8 +885,8 @@ Do not add this to a hook variable."
 (defconst magit-log-bisect-vis-re
   (concat "^"
           "\\(?4:[-_/|\\*o. ]*\\)"                 ; graph
-          "\\(?1:[0-9a-fA-F]+\\) "                 ; sha1
-          "\\(?:\\(?3:([^()]+)\\) \\)?"            ; refs
+          "\\(?1:[0-9a-fA-F]+\\)"                  ; sha1
+          "\\(?3:[^\0]+)\\)?\0"                    ; refs
           "\\(?2:.*\\)$"))                         ; msg
 
 (defconst magit-log-bisect-log-re
@@ -1353,7 +1344,7 @@ Type \\[magit-visit-thing] or \\[magit-diff-show-or-scroll-up] \
 to visit the commit at point.
 
 Type \\[magit-cherry-pick-popup] to apply the commit at point.
-Type \\[magit-reset] to reset HEAD to the commit at point.
+Type \\[magit-reset] to reset `HEAD' to the commit at point.
 
 \\{magit-reflog-mode-map}"
   :group 'magit-log

@@ -123,6 +123,7 @@ porcelain commands: ~add~, ~am~, ~bisect~, ~blame~, ~branch~, ~checkout~, ~cherr
 commands are implemented on top of Git plumbing commands.
 
 * Installation
+** _ :ignore:
 
 Magit can be installed using Emacs' package manager or manually from
 its development repository.
@@ -154,16 +155,16 @@ yourself with it by reading the documentation in the Emacs manual, see
 Once you have added your preferred archive, you need to update the
 local package list using:
 
-#+BEGIN_SRC undefined
+#+BEGIN_EXAMPLE
   M-x package-refresh-contents RET
-#+END_SRC
+#+END_EXAMPLE
 
 Once you have done that, you can install Magit and its dependencies
 using:
 
-#+BEGIN_SRC undefined
+#+BEGIN_EXAMPLE
   M-x package-install RET magit RET
-#+END_SRC
+#+END_EXAMPLE
 
 Now see [[*Post-Installation Tasks]].
 
@@ -182,14 +183,14 @@ can upload their packages in the first place.)
 
 Then clone the Magit repository:
 
-#+BEGIN_SRC shell
+#+BEGIN_SRC shell-script
   $ git clone https://github.com/magit/magit.git ~/.emacs.d/site-lisp/magit
   $ cd ~/.emacs.d/site-lisp/magit
 #+END_SRC
 
 Then compile the libraries and generate the info manuals:
 
-#+BEGIN_SRC shell
+#+BEGIN_SRC shell-script
   $ make
 #+END_SRC
 
@@ -233,7 +234,7 @@ directory using ~sudo make install~ and setting ~load-path~ accordingly.
 
 To update Magit use:
 
-#+BEGIN_SRC shell
+#+BEGIN_SRC shell-script
   $ git pull
   $ make
 #+END_SRC
@@ -251,15 +252,15 @@ Magit, Git, and Emacs releases you think you are using.  It's best to
 restart Emacs before doing so, to make sure you are not using an
 outdated value for ~load-path~.
 
-#+BEGIN_SRC undefined
+#+BEGIN_EXAMPLE
   M-x magit-version RET
-#+END_SRC
+#+END_EXAMPLE
 
 should display something like
 
-#+BEGIN_SRC undefined
+#+BEGIN_EXAMPLE
   Magit 2.8.0, Git 2.10.2, Emacs 25.1.1, gnu/linux
-#+END_SRC
+#+END_EXAMPLE
 
 Then you might also want to read about options that many users likely
 want to customize.  See [[*Essential Settings]].
@@ -270,6 +271,9 @@ or advice ~Info-follow-nearest-node~ to instead open the actual manpage.
 See [[*How to install the gitman info manual?]].
 
 If you are completely new to Magit then see [[*Getting Started]].
+
+If you run into problems, then please see the [[*FAQ]].  Also see the
+[[*Debugging Tools]].
 
 And last but not least please consider making a donation, to ensure
 that I can keep working on Magit.  See https://magit.vc/donations.
@@ -383,6 +387,7 @@ then it is highly recommended that you read the next section too.
 
 * Interface Concepts
 ** Modes and Buffers
+*** _ :ignore:
 
 Magit provides several major-modes.  For each of these modes there
 usually exists only one buffer per repository.  Separate modes and
@@ -853,6 +858,7 @@ buffer) and you would not be asked whether you want to save the buffer
 (because it isn't modified).
 
 ** Sections
+*** _ :ignore:
 
 Magit buffers are organized into nested sections, which can be
 collapsed and expanded, similar to how sections are handled in Org
@@ -1191,6 +1197,14 @@ More frameworks will be supported in the future.
   comes with a supposed drop-in replacement ~ido-completing-read~, but
   that has too many deficits to serve our needs.
 
+- User Option: magit-list-refs-sortby
+
+  For many commands that read a ref or refs from the user, the value
+  of this option can be used to control the order of the refs.  Valid
+  values include any key accepted by the ~--sort~ flag of ~git
+  for-each-ref~.  By default, refs are sorted alphabetically by their
+  full name (e.g., "refs/heads/master").
+
 By default many commands that could potentially lead to data loss have
 to be confirmed.  This includes many very common commands, so this
 can become annoying quickly.  Many of these actions can be undone,
@@ -1259,32 +1273,38 @@ switch to a shell.
 
   Shows the popup buffer featuring the below suffix commands.
 
-These suffix commands run a Git subcommand.  The user input has to
-begin with the subcommand, "git" is assumed.
-
 - Key: ! !, magit-git-command-topdir
 
-  This command reads a Git subcommand from the user and executes it in
-  the top-level directory of the current repository.
+  This command reads a command from the user and executes it in the
+  top-level directory of the current working tree.
+
+  The string "git " is used as initial input when prompting the user
+  for the command.  It can be removed to run another command.
 
 - Key: ! p, magit-git-command
 
-  This command reads a Git subcommand from the user and executes it in
+  This command reads a command from the user and executes it in
   ~default-directory~.  With a prefix argument the command is executed
-  in the top-level directory of the current repository instead.
+  in the top-level directory of the current working tree instead.
 
-These suffix commands run arbitrary shell commands.
+  The string "git " is used as initial input when prompting the user
+  for the command.  It can be removed to run another command.
 
 - Key: ! s, magit-shell-command-topdir
 
-  This command reads a shell command from the user and executes it in
-  the top-level directory of the current repository.
+  This command reads a command from the user and executes it in the
+  top-level directory of the current working tree.
 
 - Key: ! S, magit-shell-command
 
-  This command reads a shell command from the user and executes it in
+  This command reads a command from the user and executes it in
   ~default-directory~.  With a prefix argument the command is executed
-  in the top-level directory of the current repository instead.
+  in the top-level directory of the current working tree instead.
+
+- User Option: magit-shell-command-verbose-prompt
+
+  Whether the prompt, used by the the above commands when reading a
+  shell command, shows the directory in which it will be run.
 
 These suffix commands start external gui tools.
 
@@ -1319,8 +1339,9 @@ one you think you are using.
 
 - Key: M-x magit-version, magit-version
 
-  Shows the currently used versions of Magit, Git, and Emacs in the
-  echo area.  Non-interactively this just returns the Magit version.
+  This command shows the currently used versions of Magit, Git, and
+  Emacs in the echo area.  Non-interactively this just returns the
+  Magit version.
 
 When the ~system-type~ is ~windows-nt~, then ~magit-git-executable~ is set
 to an absolute path when Magit is first loaded.  This is necessary
@@ -1329,11 +1350,13 @@ the actual git binary, which are also placed on ~$PATH~, and using one
 of these wrappers instead of the binary would degrade performance
 horribly.
 
-If Magit doesn't find the correct executable then you *can* work around
-that by setting ~magit-git-executable~ to an absolute path.  But note
-that doing so is a kludge.  It is better to make sure the order in the
-environment variable ~$PATH~ is correct, and that Emacs is started with
-that environment in effect.  If you have to connect from Windows to a
+If Magit doesn't find the correct executable then you *can* work
+around that by setting ~magit-git-executable~ to an absolute path.
+But note that doing so is a kludge.  It is better to make sure the
+order in the environment variable ~$PATH~ is correct, and that Emacs
+is started with that environment in effect.  The command
+~magit-debug-git-executable~ can be useful to find out where Emacs is
+searching for git.  If you have to connect from Windows to a
 non-Windows machine, then you must change the value to "git".
 
 - User Option: magit-git-executable
@@ -1341,6 +1364,10 @@ non-Windows machine, then you must change the value to "git".
   The git executable used by Magit, either the full path to the
   executable or the string "git" to let Emacs find the executable
   itself, using the standard mechanism for doing such things.
+
+- Key: M-x magit-debug-git-executable, magit-debug-git-executable
+
+  Display a buffer with information about ~magit-git-executable~.
 
 *** Global Git Arguments
 
@@ -1358,6 +1385,7 @@ non-Windows machine, then you must change the value to "git".
   used every time Magit runs Git for any purpose.
 
 * Inspecting
+** _ :ignore:
 
 The functionality provided by Magit can be roughly divided into three
 groups: inspecting existing data, manipulating existing data or adding
@@ -1376,6 +1404,7 @@ mainly concerned with the porcelain -- Magit's plumbing layer is
 described later.
 
 ** Status Buffer
+*** _ :ignore:
 
 While other Magit buffers contain e.g. one particular diff or one
 particular log, the status buffer contains the diffs for staged and
@@ -1780,6 +1809,7 @@ The following functions can be added to the above option:
   but not its push branch.
 
 ** Logging
+*** _ :ignore:
 
 The status buffer contains logs for the unpushed and unpulled commits,
 but that obviously isn't enough.  The prefix command ~magit-log-popup~,
@@ -2127,6 +2157,7 @@ Also see [[man:git-reflog]]
     is shown, then this specifies how much space is used to do so.
 
 ** Diffing
+*** _ :ignore:
 
 The status buffer contains diffs for the staged and unstaged commits,
 but that obviously isn't enough.  The prefix command ~magit-diff-popup~,
@@ -2157,7 +2188,7 @@ Also see [[man:git-diff]]
 
   RANGE should be a range (A..B or A...B) but can also be a single
   commit.  If one side of the range is omitted, then it defaults to
-  HEAD.  If just a commit is given, then changes in the working tree
+  ~HEAD~.  If just a commit is given, then changes in the working tree
   relative to that commit are shown.
 
   If the region is active, use the revisions on the first and last
@@ -2359,9 +2390,10 @@ without having to using one of the diff popups.
 
   Specify where to highlight whitespace errors.
 
-  See ~magit-highlight-trailing-whitespace~,
-  ~magit-highlight-indentation~.  The symbol ~t~ means in all diffs,
-  ~status~ means only in the status buffer, and nil means nowhere.
+  See ~magit-diff-highlight-trailing~,
+  ~magit-diff-highlight-indentation~.  The symbol ~t~ means in all
+  diffs, ~status~ means only in the status buffer, and nil means
+  nowhere.
 
 - User Option: magit-diff-highlight-trailing
 
@@ -2500,7 +2532,7 @@ information on how to use Ediff itself, see info:ediff.
 
 - Key: E w, magit-ediff-show-working-tree
 
-  Show changes in a file between HEAD and working tree using Ediff.
+  Show changes in a file between ~HEAD~ and working tree using Ediff.
 
 - Key: E c, magit-ediff-show-commit
 
@@ -2536,6 +2568,7 @@ information on how to use Ediff itself, see info:ediff.
   that were created using a Magit command.
 
 ** References Buffer
+*** _ :ignore:
 
 - Key: y, magit-show-refs-popup
 
@@ -2647,7 +2680,7 @@ should also change the others to keep things aligned.  The following
   This option controls how ~magit-visit-ref~ behaves in ~magit-refs-mode~
   buffers.
 
-  By default ~magit-visit-ref~ behaves like ~magit-show-commits~, in all
+  By default ~magit-visit-ref~ behaves like ~magit-show-commit~, in all
   buffers, including ~magit-refs-mode~ buffers.  When the type of the
   section at point is ~commit~ then "RET" is bound to ~magit-show-commit~,
   and when the type is either ~branch~ or ~tag~ then it is bound to
@@ -2923,6 +2956,7 @@ Also see [[man:git-blame]]
   then ask the user every time she clones a repository.
 
 ** Staging and Unstaging
+*** _ :ignore:
 
 Like Git, Magit can of course stage and unstage complete files.
 Unlike Git, it also allows users to gracefully un-/stage
@@ -3079,6 +3113,7 @@ With a prefix argument all apply variants attempt a 3-way merge when
 appropriate (i.e. when ~git apply~ is used internally).
 
 ** Committing
+*** _ :ignore:
 
 When the user initiates a commit, Magit calls ~git commit~ without any
 arguments, so Git has to get it from the user.  It creates the file
@@ -3440,38 +3475,41 @@ upstream branch and the branch it is being pushed to, are usually the
 same remote branch.  But for a feature branch the upstream branch and
 the branch it is being pushed to should differ.
 
-Feature branches too should /eventually/ end up in a remote branch such
-as ~origin/master~ or ~origin/maint~.  Such a branch should therefore be
-used as the upstream.  But feature branches shouldn't be pushed
-directly to such branches.  Instead a feature branch ~my-feature~ is
-usually pushed to ~my-fork/my-feature~ or ~origin/my-feature~.  After the
-new feature has been reviewed, the maintainer merges the feature into
-~master~.  And finally ~master~ (not ~my-feature~ itself) is pushed to
-~origin/master~.
+The commits on feature branches too should /eventually/ end up in a
+remote branch such as ~origin/master~ or ~origin/maint~.  Such a branch
+should therefore be used as the upstream.  But feature branches
+shouldn't be pushed directly to such branches.  Instead a feature
+branch ~my-feature~ is usually pushed to ~my-fork/my-feature~ or if you
+are a contributor ~origin/my-feature~.  After the new feature has been
+reviewed, the maintainer merges the feature into ~master~.  And finally
+~master~ (not ~my-feature~ itself) is pushed to ~origin/master~.
 
 But new features seldom are perfect on the first try, and so feature
-branches usually have to be improved and re-pushed many times.
-Pushing should therefore be easy to do, and for that reason some users
-have concluded that the remote branch to which a feature branch is
-being pushed should be set as the upstream.  Luckily Git has long ago
-gained support for a push-remote which can be configured separately
-from the upstream branch, using the variables ~branch.<name>.pushRemote~
-and ~remote.pushDefault~, so we no longer have to choose which of the
-two remotes should be used as "the remote".
+branches usually have to be reviewed, improved, and re-pushed several
+times.  Pushing should therefore be easy to do, and for that reason
+many Git users have concluded that it is best to use the remote branch
+to which the local feature branch is being pushed as its upstream.
+
+But luckily Git has long ago gained support for a push-remote which
+can be configured separately from the upstream branch, using the
+variables ~branch.<name>.pushRemote~ and ~remote.pushDefault~.  So we no
+longer have to choose which of the two remotes should be used as "the
+remote".
 
 Each of the fetching, pulling, and pushing popups features three
-commands which act on the current branch and some other branch.  Of
+commands that act on the current branch and some other branch.  Of
 these, ~p~ is bound to a command which acts on the push-remote, ~u~ is
 bound to a command which acts on the upstream, and ~e~ is bound to a
 command which acts on any other branch.  The status buffer shows
-unpushed and unpulled for both the push-remote and the upstream.
+unpushed and unpulled commits for both the push-remote and the
+upstream.
 
 It's fairly simple to configure these two remotes.  The values of all
 the variables that are related to fetching, pulling, and pushing (as
 well as some other branch-related variables) can be inspected and
 changed using the popup ~magit-branch-config-popup~, which is a
 sub-popup of many popups that deal with branches.  It is also possible
-to set the push-remote and/or upstream while pushing (see [[*Pushing]]).
+to set the push-remote or upstream while pushing (see [[*Pushing]]).
 
 *** The Branch Popup
 
@@ -3540,11 +3578,13 @@ features are available from separate popups.
   of the starting-point may be used as the upstream of the new branch,
   instead of the starting-point itself.
 
-  If optional FROM is non-nil, then the source branch is reset to
-  that commit, instead of to the last commit it shares with its
-  upstream.  Interactively, FROM is non-nil, when the region
-  selects some commits, and among those commits, FROM it is the
-  commit that is the fewest commits ahead of the source branch.
+  If optional FROM is non-nil, then the source branch is reset
+  to ~FROM~~, instead of to the last commit it shares with its
+  upstream.  Interactively, FROM is only ever non-nil, if the
+  region selects some commits, and among those commits, FROM is
+  the commit that is the fewest commits ahead of the source
+  branch.  (It not yet possible to spin off a single commit,
+  unless it is the only unpushed commit.  See #2920.)
 
   The commit at the other end of the selection actually does not
   matter, all commits between FROM and ~HEAD~ are moved to the new
@@ -3805,7 +3845,7 @@ values.  If you want to change the global value, which is used when
 the local value is undefined, then you have to do so on the command
 line, e.g.:
 
-#+BEGIN_SRC shell
+#+BEGIN_SRC shell-script
   git config --global remote.autoSetupMerge always
 #+END_SRC
 
@@ -3902,13 +3942,13 @@ begin with the strings consisting of six times the same character, one
 of ~<~, ~|~, ~=~ and ~>~ and are followed by information about the source of
 the respective versions, e.g.:
 
-#+BEGIN_SRC undefined
+#+BEGIN_EXAMPLE
   <<<<<<< HEAD
   Take the blue pill.
   =======
   Take the red pill.
   >>>>>>> feature
-#+END_SRC
+#+END_EXAMPLE
 
 In this case you have chosen to take the red pill on one branch and on
 another you picked the blue pill.  Now that you are merging these two
@@ -3921,22 +3961,22 @@ it in order to bring in the changes from the other side, remove the
 other versions as well as the markers, and then stage the result.  A
 possible resolution might be:
 
-#+BEGIN_SRC undefined
+#+BEGIN_EXAMPLE
   Take both pills.
-#+END_SRC
+#+END_EXAMPLE
 
 Often it is useful to see not only the two sides of the conflict but
 also the "original" version from before the same area of the file was
 modified twice on different branches.  Instruct Git to insert that
 version as well by running this command once:
 
-#+BEGIN_SRC shell
+#+BEGIN_SRC shell-script
   git config --global merge.conflictStyle diff3
 #+END_SRC
 
 The above conflict might then have looked like this:
 
-#+BEGIN_SRC undefined
+#+BEGIN_EXAMPLE
   <<<<<<< HEAD
   Take the blue pill.
   ||||||| merged common ancestors
@@ -3944,7 +3984,7 @@ The above conflict might then have looked like this:
   =======
   Take the red pill.
   >>>>>>> feature
-#+END_SRC
+#+END_EXAMPLE
 
 If that were the case, then the above conflict resolution would not
 have been correct, which demonstrates why seeing the original version
@@ -3972,7 +4012,7 @@ commands and binding ~C-c ^ C-h~ and press ~RET~ while point is on a
 command name to read its documentation.
 
 Normally you would edit one version and then tell Smerge to keep only
-that version.  Use ~C-c ^ m~ (~smerge-keep-mine)~ to keep the "HEAD"
+that version.  Use ~C-c ^ m~ (~smerge-keep-mine~) to keep the ~HEAD~
 version or ~C-c ^ o~ (~smerge-keep-other~) to keep the version that
 follows "|||||||".  Then use ~C-c ^ n~ to move to the next conflicting
 area in the same file.  Once you are done resolving conflicts, return
@@ -3994,6 +4034,7 @@ former.  It is much easier to understand and use, and except for
 truely complex conflicts, the latter is usually overkill.
 
 ** Rebasing
+*** _ :ignore:
 
 Also see [[man:git-rebase]]  For information on how to resolve
 conflicts that occur during rebases see the preceding section.
@@ -4028,7 +4069,7 @@ See [[*Information About In-Progress Rebase]].
   commits that are reachable from head but not from the selected
   branch TARGET are being rebased."
 
-- Key: r o, magit-rebase-subset
+- Key: r s, magit-rebase-subset
 
   Start a non-interactive rebase sequence with commits from START to
   ~HEAD~ onto NEWBASE.  START has to be selected from a list of recent
@@ -4326,6 +4367,7 @@ the hash.  The patch-ids of two commits can be used to answer the
 question "Do these two commits make the same change?".
 
 ** Cherry Picking
+*** _ :ignore:
 
 Also see [[man:git-cherry-pick]]
 
@@ -4418,35 +4460,33 @@ Also see [[man:git-reset]]
   defaulting to the commit at point.  The working tree is kept as-is.
   With a prefix argument also reset the working tree.
 
-- Key: M-x magit-reset-index, magit-reset-index
+- Key: X m, magit-reset-head
+
+  Reset the ~HEAD~ and index to some commit read from the user and
+  defaulting to the commit at point.  The working tree is kept as-is.
+
+- Key: X s, magit-reset-soft
+
+  Reset the ~HEAD~ to some commit read from the user and defaulting
+  to the commit at point.  The index and the working tree are kept
+  as-is.
+
+- Key: X h, magit-reset-hard
+
+  Reset the ~HEAD~, index, and working tree to some commit read from the
+  user and defaulting to the commit at point.
+
+- Key: X i, magit-reset-index
 
   Reset the index to some commit read from the user and defaulting to
   the commit at point.  Keep the ~HEAD~ and working tree as-is, so if
   the commit refers to the ~HEAD~, then this effectively unstages all
   changes.
 
-- Key: M-x magit-reset-head, magit-reset-head
-
-  Reset the ~HEAD~ and index to some commit read from the user and
-  defaulting to the commit at point.  The working tree is kept as-is.
-
-- Key: M-x magit-reset-soft, magit-reset-soft
-
-  Reset the ~HEAD~ to some commit read from the user and defaulting
-  to the commit at point.  The index and the working tree are kept
-  as-is.
-
-- Key: M-x magit-reset-hard, magit-reset-hard
-
-  Reset the ~HEAD~, index, and working tree to some commit read from the
-  user and defaulting to the commit at point.
-
-- Key: M-x magit-file-checkout, magit-file-checkout
+- Key: X f, magit-file-checkout
 
   Update file in the working tree and index to the contents from a
-  revision.
-
-  Both the revision and file are read from the user.
+  revision.  Both the revision and file are read from the user.
 
 ** Stashing
 
@@ -4594,10 +4634,9 @@ Also see [[man:git-remote]]
   remote.
 
   If ~ask~, then always ask.  If ~ask-if-unset~, then ask, but only if the
-  variable isn't set already.  If ~nil~, then don't ever set.  If the
-  value is a string, then set without asking, provided the name of the
-  name of the added remote is equal to that string and the variable
-  isn't already set.
+  variable isn't set already.  If ~nil~, then don't ever set.  If the value
+  is a string, then set without asking, provided that the name of the added
+  remote is equal to that string and the variable isn't already set.
 
 ** Fetching
 
@@ -5344,6 +5383,7 @@ bindings, but this might be extended.
   Kill the current buffer.
 
 * Customizing
+** _ :ignore:
 
 Both Git and Emacs are highly customizable.  Magit is both a Git
 porcelain as well as an Emacs package, so it makes sense to customize
@@ -5463,6 +5503,7 @@ but to make an informed decision you should see [[*Risk of Reverting
 Automatically]].
 
 *** Performance
+**** _ :ignore:
 
 After Magit has run ~git~ for side-effects, it also refreshes the
 current Magit buffer and the respective status buffer.  This is
@@ -5518,33 +5559,6 @@ If performance is only slow inside certain unusually large
 repositories, then you might want to disable certain features on a
 per-repository or per-repository-class basis only.  See
 [[*Per-Repository Configuration]].
-
-**** Microsoft Windows Performance
-
-In order to update the status buffer, ~git~ has to be run a few dozen
-times.  That is only problematic on Microsoft Windows, because that
-operating system is exceptionally slow at starting processes.  Sadly
-this is an issue that can only be fixed by Microsoft itself, and they
-don't appear to be particularly interested in doing so.
-
-Beside the subprocess issue, there also exist other Window-specific
-performance issues, some of which can be worked around.  The
-maintainers of "Git for Windows" try to reduce their effect, and in
-order to benefit from the latest performance tweaks, should always
-use the latest release.  Magit too tries to work around some
-Windows-specific issues.
-
-According to some sources setting the following Git variables can also
-help.
-
-#+BEGIN_SRC shell-script
-  git config --global core.preloadindex true   # default since v2.1
-  git config --global core.fscache true        # default since v2.8
-  git config --global gc.auto 256
-#+END_SRC
-
-You should also check whether an anti-virus program is slowing things
-down.
 
 **** Log Performance
 
@@ -5646,6 +5660,65 @@ another version control system:
   (setq vc-handled-backends (delq 'Git vc-handled-backends))
 #+END_SRC
 
+**** Microsoft Windows Performance
+:PROPERTIES:
+:TEXINFO-NODE: t
+:END:
+
+In order to update the status buffer, ~git~ has to be run a few dozen
+times.  That is problematic on Microsoft Windows, because that
+operating system is exceptionally slow at starting processes.  Sadly
+this is an issue that can only be fixed by Microsoft itself, and they
+don't appear to be particularly interested in doing so.
+
+Beside the subprocess issue, there also exist other Window-specific
+performance issues, some of which can be worked around.  The
+maintainers of "Git for Windows" try to reduce their effect, and in
+order to benefit from the latest performance tweaks, should always
+use the latest release.  Magit too tries to work around some
+Windows-specific issues.
+
+According to some sources setting the following Git variables can also
+help.
+
+#+BEGIN_SRC shell-script
+  git config --global core.preloadindex true   # default since v2.1
+  git config --global core.fscache true        # default since v2.8
+  git config --global gc.auto 256
+#+END_SRC
+
+You should also check whether an anti-virus program is slowing things
+down.
+
+**** MacOS Performance
+:PROPERTIES:
+:TEXINFO-NODE: t
+:END:
+
+On macOS Emacs currently creates child processes using ~fork~.  It
+appears that this also copies GUI resources.  The result is that
+forking takes about 30 times as long on Darwin than on Linux.  And
+because Magit starts many ~git~ processes even when doing simple things,
+that makes quite a difference.
+
+On the ~master~ branch Emacs now uses ~vfork~ when possible, like this was
+already done on Linux, and now child creation only takes about twice
+as long on Darwin.  See [fn:mac1] for more information.
+
+Nobody knows when the changes on the ~master~ branch will be released as
+~26.1~, but it is still a long way off.  You might want to get your
+hands on this change before then.  The easiest way to get a patched
+Emacs is to install the ~emacs-plus~ formula [fn:mac2] using ~homebrew~.
+The change has been backported, so you get it not only when using
+~--HEAD~, but also when using ~--devel~ or when installing the latest
+release (by not using a version argument).
+
+Alternatively you can apply the backport [fn:mac3] manually.
+
+[fn:mac1] https://lists.gnu.org/archive/html/bug-gnu-emacs/2017-04/msg00201.html
+[fn:mac2] https://github.com/d12frosted/homebrew-emacs-plus
+[fn:mac3] https://gist.githubusercontent.com/aaronjensen/f45894ddf431ecbff78b1bcf533d3e6b/raw/6a5cd7f57341aba673234348d8b0d2e776f86719/Emacs-25-OS-X-use-vfork.patch
+
 * Plumbing
 
 The following sections describe how to use several of Magit's core
@@ -5662,6 +5735,7 @@ command provided by your own Magit extension, then checkout
 https://github.com/magit/magit/wiki/Plugin-Dispatch-Key-Registry.
 
 ** Calling Git
+*** _ :ignore:
 
 Magit provides many specialized functions for calling Git.  All of
 these functions are defined in either ~magit-git.el~ or ~magit-process.el~
@@ -5836,7 +5910,7 @@ the refresh because that also automatically moves to the next change.
   first insert the raw output at point.  If there is no output call
   ~magit-cancel-section~.  Otherwise temporarily narrow the buffer to
   the inserted text, move to its beginning, and then call function
-  WASHER with no argument.
+  WASHER with ARGS as its sole argument.
 
 And now for the asynchronous variants.
 
@@ -6379,6 +6453,8 @@ frequently *and recently* asked questions, i.e. questions that haven't
 made it into the manual yet, see
 https://github.com/magit/magit/wiki/FAQ.
 
+Please also use the [[*Debugging Tools]].
+
 ** FAQ - How to ...?
 *** How to show git's output?
 
@@ -6422,7 +6498,6 @@ also affects the diffs displayed inside Magit.
   git config --global diff.gpg.textconv "gpg --no-tty --decrypt"
   echo "*.gpg filter=gpg diff=gpg" > .gitattributes
 #+END_SRC
-
 
 *** How does branching and pushing work?
 
@@ -6586,6 +6661,49 @@ can work around the problem by setting
 ~tramp-ssh-controlmaster-options~. Changing your DNS server (e.g. to
 Google's ~8.8.8.8~) may also be sufficient to work around the issue.
 
+* Debugging Tools
+
+Magit and its dependencies provide a few debugging tools, and we
+appreciate it very much if you use those tools before reporting an
+issue.  Please include all relevant output when reporting an
+issue.
+
+- Key: M-x magit-version, magit-version
+
+  This command shows the currently used versions of Magit, Git, and
+  Emacs in the echo area.  Non-interactively this just returns the
+  Magit version.
+
+- Key: M-x magit-emacs-Q-command, magit-emacs-Q-command
+
+  This command shows a debugging shell command in the echo area and
+  adds it to the kill ring.  Paste that command into a shell an run
+  it.
+
+  This shell command starts ~emacs~ with only ~magit~ and its
+  dependencies loaded.  Neither your configuration nor other installed
+  packages are loaded.  This makes it easier to determine whether some
+  issue lays with Magit or something else.
+
+- Key: M-x magit-debug-git-executable, magit-debug-git-executable
+
+  This command displays a buffer containing information about the
+  available and used ~git~ executable(s), and can be useful when
+  investigating ~exec-path~ issues.
+
+  Also see [[*Git Executable]].
+
+- Key: M-x with-editor-debug, with-editor-debug
+
+  This command displays a buffer containing information about the
+  available and used ~git~ executable(s), and can be useful when
+  investigating why Magit (or rather ~with-editor~) cannot find an
+  appropriate ~emacsclient~ executable.
+
+  Also see [[info:with-editor#Debugging]].
+
+Please also see the [[*FAQ]].
+
 * Keystroke Index
 :PROPERTIES:
 :APPENDIX:   t
@@ -6608,6 +6726,8 @@ Google's ~8.8.8.8~) may also be sufficient to work around the issue.
 :INDEX:      vr
 :END:
 
+* _ :ignore:
+
 #  LocalWords:  ARG ARGS CONDITIONs ChangeLog DNS Dired Ediff Ediffing
 #  LocalWords:  Elpa Emacsclient FUNC Flyspell Git Git's Gitk HOOK's
 #  LocalWords:  IDENT Ido Junio LocalWords Magit Magit's Magitian Magitians
@@ -6626,9 +6746,11 @@ Google's ~8.8.8.8~) may also be sufficient to work around the issue.
 #  LocalWords:  sym texinfo theming todo topdir un unhighlighted unpulled
 #  LocalWords:  unpushed unstage unstaged unstages unstaging untracked url
 #  LocalWords:  versa whitespace wip workflow worktree wtree
+#  LocalWords:  backported macOS
 
 # Local Variables:
 # eval: (require 'magit-utils nil t)
 # eval: (require 'org-man     nil t)
 # eval: (require 'ox-texinfo+ nil t)
+# eval: (and (require 'ox-extra nil t) (ox-extras-activate '(ignore-headlines)))
 # End:

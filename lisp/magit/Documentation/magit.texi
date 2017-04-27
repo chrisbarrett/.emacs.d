@@ -67,6 +67,7 @@ General Public License for more details.
 * Customizing::
 * Plumbing::
 * FAQ::
+* Debugging Tools::
 * Keystroke Index::
 * Command Index::
 * Function Index::
@@ -550,6 +551,9 @@ or advice @code{Info-follow-nearest-node} to instead open the actual manpage.
 See @ref{How to install the gitman info manual?,How to install the gitman info manual?}.
 
 If you are completely new to Magit then see @ref{Getting Started,Getting Started}.
+
+If you run into problems, then please see the @ref{FAQ,FAQ}.  Also see the
+@ref{Debugging Tools,Debugging Tools}.
 
 And last but not least please consider making a donation, to ensure
 that I can keep working on Magit.  See @uref{https://magit.vc/donations}.
@@ -1648,6 +1652,15 @@ comes with a supposed drop-in replacement @code{ido-completing-read}, but
 that has too many deficits to serve our needs.
 @end defun
 
+@defopt magit-list-refs-sortby
+
+For many commands that read a ref or refs from the user, the value
+of this option can be used to control the order of the refs.  Valid
+values include any key accepted by the @code{--sort} flag of @code{git
+  for-each-ref}.  By default, refs are sorted alphabetically by their
+full name (e.g., "refs/heads/master").
+@end defopt
+
 By default many commands that could potentially lead to data loss have
 to be confirmed.  This includes many very common commands, so this
 can become annoying quickly.  Many of these actions can be undone,
@@ -1740,46 +1753,50 @@ switch to a shell.
 @item @kbd{!} @tie{}@tie{}@tie{}@tie{}(@code{magit-run-popup})
 
 Shows the popup buffer featuring the below suffix commands.
-@end table
 
-These suffix commands run a Git subcommand.  The user input has to
-begin with the subcommand, "git" is assumed.
-
-@table @asis
 @kindex ! !
 @cindex magit-git-command-topdir
 @item @kbd{! !} @tie{}@tie{}@tie{}@tie{}(@code{magit-git-command-topdir})
 
-This command reads a Git subcommand from the user and executes it in
-the top-level directory of the current repository.
+This command reads a command from the user and executes it in the
+top-level directory of the current working tree.
+
+The string "git " is used as initial input when prompting the user
+for the command.  It can be removed to run another command.
 
 @kindex ! p
 @cindex magit-git-command
 @item @kbd{! p} @tie{}@tie{}@tie{}@tie{}(@code{magit-git-command})
 
-This command reads a Git subcommand from the user and executes it in
+This command reads a command from the user and executes it in
 @code{default-directory}.  With a prefix argument the command is executed
-in the top-level directory of the current repository instead.
-@end table
+in the top-level directory of the current working tree instead.
 
-These suffix commands run arbitrary shell commands.
+The string "git " is used as initial input when prompting the user
+for the command.  It can be removed to run another command.
 
-@table @asis
 @kindex ! s
 @cindex magit-shell-command-topdir
 @item @kbd{! s} @tie{}@tie{}@tie{}@tie{}(@code{magit-shell-command-topdir})
 
-This command reads a shell command from the user and executes it in
-the top-level directory of the current repository.
+This command reads a command from the user and executes it in the
+top-level directory of the current working tree.
 
 @kindex ! S
 @cindex magit-shell-command
 @item @kbd{! S} @tie{}@tie{}@tie{}@tie{}(@code{magit-shell-command})
 
-This command reads a shell command from the user and executes it in
+This command reads a command from the user and executes it in
 @code{default-directory}.  With a prefix argument the command is executed
-in the top-level directory of the current repository instead.
+in the top-level directory of the current working tree instead.
+
 @end table
+
+@defopt magit-shell-command-verbose-prompt
+
+Whether the prompt, used by the the above commands when reading a
+shell command, shows the directory in which it will be run.
+@end defopt
 
 These suffix commands start external gui tools.
 
@@ -1828,8 +1845,9 @@ one you think you are using.
 @cindex magit-version
 @item @kbd{M-x magit-version} @tie{}@tie{}@tie{}@tie{}(@code{magit-version})
 
-Shows the currently used versions of Magit, Git, and Emacs in the
-echo area.  Non-interactively this just returns the Magit version.
+This command shows the currently used versions of Magit, Git, and
+Emacs in the echo area.  Non-interactively this just returns the
+Magit version.
 @end table
 
 When the @code{system-type} is @code{windows-nt}, then @code{magit-git-executable} is set
@@ -1839,11 +1857,13 @@ the actual git binary, which are also placed on @code{$PATH}, and using one
 of these wrappers instead of the binary would degrade performance
 horribly.
 
-If Magit doesn't find the correct executable then you @strong{can} work around
-that by setting @code{magit-git-executable} to an absolute path.  But note
-that doing so is a kludge.  It is better to make sure the order in the
-environment variable @code{$PATH} is correct, and that Emacs is started with
-that environment in effect.  If you have to connect from Windows to a
+If Magit doesn't find the correct executable then you @strong{can} work
+around that by setting @code{magit-git-executable} to an absolute path.
+But note that doing so is a kludge.  It is better to make sure the
+order in the environment variable @code{$PATH} is correct, and that Emacs
+is started with that environment in effect.  The command
+@code{magit-debug-git-executable} can be useful to find out where Emacs is
+searching for git.  If you have to connect from Windows to a
 non-Windows machine, then you must change the value to "git".
 
 @defopt magit-git-executable
@@ -1852,6 +1872,14 @@ The git executable used by Magit, either the full path to the
 executable or the string "git" to let Emacs find the executable
 itself, using the standard mechanism for doing such things.
 @end defopt
+
+@table @asis
+@kindex M-x magit-debug-git-executable
+@cindex magit-debug-git-executable
+@item @kbd{M-x magit-debug-git-executable} @tie{}@tie{}@tie{}@tie{}(@code{magit-debug-git-executable})
+
+Display a buffer with information about @code{magit-git-executable}.
+@end table
 
 @node Global Git Arguments
 @subsection Global Git Arguments
@@ -2977,7 +3005,7 @@ Show differences between two commits.
 
 RANGE should be a range (A..B or A@dots{}B) but can also be a single
 commit.  If one side of the range is omitted, then it defaults to
-HEAD.  If just a commit is given, then changes in the working tree
+@code{HEAD}.  If just a commit is given, then changes in the working tree
 relative to that commit are shown.
 
 If the region is active, use the revisions on the first and last
@@ -3259,9 +3287,10 @@ Whether to show word-granularity differences within diff hunks.
 
 Specify where to highlight whitespace errors.
 
-See @code{magit-highlight-trailing-whitespace},
-@code{magit-highlight-indentation}.  The symbol @code{t} means in all diffs,
-@code{status} means only in the status buffer, and nil means nowhere.
+See @code{magit-diff-highlight-trailing},
+@code{magit-diff-highlight-indentation}.  The symbol @code{t} means in all
+diffs, @code{status} means only in the status buffer, and nil means
+nowhere.
 @end defopt
 
 @defopt magit-diff-highlight-trailing
@@ -3427,7 +3456,7 @@ Show staged changes to a file using Ediff.
 @cindex magit-ediff-show-working-tree
 @item @kbd{E w} @tie{}@tie{}@tie{}@tie{}(@code{magit-ediff-show-working-tree})
 
-Show changes in a file between HEAD and working tree using Ediff.
+Show changes in a file between @code{HEAD} and working tree using Ediff.
 
 @kindex E c
 @cindex magit-ediff-show-commit
@@ -3644,7 +3673,7 @@ customized the option @code{magit-visit-ref-behavior}.
 This option controls how @code{magit-visit-ref} behaves in @code{magit-refs-mode}
 buffers.
 
-By default @code{magit-visit-ref} behaves like @code{magit-show-commits}, in all
+By default @code{magit-visit-ref} behaves like @code{magit-show-commit}, in all
 buffers, including @code{magit-refs-mode} buffers.  When the type of the
 section at point is @code{commit} then "RET" is bound to @code{magit-show-commit},
 and when the type is either @code{branch} or @code{tag} then it is bound to
@@ -4732,38 +4761,41 @@ upstream branch and the branch it is being pushed to, are usually the
 same remote branch.  But for a feature branch the upstream branch and
 the branch it is being pushed to should differ.
 
-Feature branches too should @emph{eventually} end up in a remote branch such
-as @code{origin/master} or @code{origin/maint}.  Such a branch should therefore be
-used as the upstream.  But feature branches shouldn't be pushed
-directly to such branches.  Instead a feature branch @code{my-feature} is
-usually pushed to @code{my-fork/my-feature} or @code{origin/my-feature}.  After the
-new feature has been reviewed, the maintainer merges the feature into
-@code{master}.  And finally @code{master} (not @code{my-feature} itself) is pushed to
-@code{origin/master}.
+The commits on feature branches too should @emph{eventually} end up in a
+remote branch such as @code{origin/master} or @code{origin/maint}.  Such a branch
+should therefore be used as the upstream.  But feature branches
+shouldn't be pushed directly to such branches.  Instead a feature
+branch @code{my-feature} is usually pushed to @code{my-fork/my-feature} or if you
+are a contributor @code{origin/my-feature}.  After the new feature has been
+reviewed, the maintainer merges the feature into @code{master}.  And finally
+@code{master} (not @code{my-feature} itself) is pushed to @code{origin/master}.
 
 But new features seldom are perfect on the first try, and so feature
-branches usually have to be improved and re-pushed many times.
-Pushing should therefore be easy to do, and for that reason some users
-have concluded that the remote branch to which a feature branch is
-being pushed should be set as the upstream.  Luckily Git has long ago
-gained support for a push-remote which can be configured separately
-from the upstream branch, using the variables @code{branch.<name>.pushRemote}
-and @code{remote.pushDefault}, so we no longer have to choose which of the
-two remotes should be used as "the remote".
+branches usually have to be reviewed, improved, and re-pushed several
+times.  Pushing should therefore be easy to do, and for that reason
+many Git users have concluded that it is best to use the remote branch
+to which the local feature branch is being pushed as its upstream.
+
+But luckily Git has long ago gained support for a push-remote which
+can be configured separately from the upstream branch, using the
+variables @code{branch.<name>.pushRemote} and @code{remote.pushDefault}.  So we no
+longer have to choose which of the two remotes should be used as "the
+remote".
 
 Each of the fetching, pulling, and pushing popups features three
-commands which act on the current branch and some other branch.  Of
+commands that act on the current branch and some other branch.  Of
 these, @code{p} is bound to a command which acts on the push-remote, @code{u} is
 bound to a command which acts on the upstream, and @code{e} is bound to a
 command which acts on any other branch.  The status buffer shows
-unpushed and unpulled for both the push-remote and the upstream.
+unpushed and unpulled commits for both the push-remote and the
+upstream.
 
 It's fairly simple to configure these two remotes.  The values of all
 the variables that are related to fetching, pulling, and pushing (as
 well as some other branch-related variables) can be inspected and
 changed using the popup @code{magit-branch-config-popup}, which is a
 sub-popup of many popups that deal with branches.  It is also possible
-to set the push-remote and/or upstream while pushing (see @ref{Pushing,Pushing}).
+to set the push-remote or upstream while pushing (see @ref{Pushing,Pushing}).
 
 @node The Branch Popup
 @subsection The Branch Popup
@@ -4848,11 +4880,13 @@ branch will be used as the starting point as usual, but the upstream
 of the starting-point may be used as the upstream of the new branch,
 instead of the starting-point itself.
 
-If optional FROM is non-nil, then the source branch is reset to
-that commit, instead of to the last commit it shares with its
-upstream.  Interactively, FROM is non-nil, when the region
-selects some commits, and among those commits, FROM it is the
-commit that is the fewest commits ahead of the source branch.
+If optional FROM is non-nil, then the source branch is reset
+to @code{FROM~}, instead of to the last commit it shares with its
+upstream.  Interactively, FROM is only ever non-nil, if the
+region selects some commits, and among those commits, FROM is
+the commit that is the fewest commits ahead of the source
+branch.  (It not yet possible to spin off a single commit,
+unless it is the only unpushed commit.  See #2920.)
 
 The commit at the other end of the selection actually does not
 matter, all commits between FROM and @code{HEAD} are moved to the new
@@ -5403,7 +5437,7 @@ commands and binding @code{C-c ^ C-h} and press @code{RET} while point is on a
 command name to read its documentation.
 
 Normally you would edit one version and then tell Smerge to keep only
-that version.  Use @code{C-c ^ m} (@code{smerge-keep-mine)} to keep the "HEAD"
+that version.  Use @code{C-c ^ m} (@code{smerge-keep-mine}) to keep the @code{HEAD}
 version or @code{C-c ^ o} (@code{smerge-keep-other}) to keep the version that
 follows "|||||||".  Then use @code{C-c ^ n} to move to the next conflicting
 area in the same file.  Once you are done resolving conflicts, return
@@ -5483,9 +5517,9 @@ Rebase the current branch onto a branch read in the minibuffer.  All
 commits that are reachable from head but not from the selected
 branch TARGET are being rebased."
 
-@kindex r o
+@kindex r s
 @cindex magit-rebase-subset
-@item @kbd{r o} @tie{}@tie{}@tie{}@tie{}(@code{magit-rebase-subset})
+@item @kbd{r s} @tie{}@tie{}@tie{}@tie{}(@code{magit-rebase-subset})
 
 Start a non-interactive rebase sequence with commits from START to
 @code{HEAD} onto NEWBASE.  START has to be selected from a list of recent
@@ -6048,45 +6082,43 @@ Reset the head and index to some commit read from the user and
 defaulting to the commit at point.  The working tree is kept as-is.
 With a prefix argument also reset the working tree.
 
-@kindex M-x magit-reset-index
+@kindex X m
+@cindex magit-reset-head
+@item @kbd{X m} @tie{}@tie{}@tie{}@tie{}(@code{magit-reset-head})
+
+Reset the @code{HEAD} and index to some commit read from the user and
+defaulting to the commit at point.  The working tree is kept as-is.
+
+@kindex X s
+@cindex magit-reset-soft
+@item @kbd{X s} @tie{}@tie{}@tie{}@tie{}(@code{magit-reset-soft})
+
+Reset the @code{HEAD} to some commit read from the user and defaulting
+to the commit at point.  The index and the working tree are kept
+as-is.
+
+@kindex X h
+@cindex magit-reset-hard
+@item @kbd{X h} @tie{}@tie{}@tie{}@tie{}(@code{magit-reset-hard})
+
+Reset the @code{HEAD}, index, and working tree to some commit read from the
+user and defaulting to the commit at point.
+
+@kindex X i
 @cindex magit-reset-index
-@item @kbd{M-x magit-reset-index} @tie{}@tie{}@tie{}@tie{}(@code{magit-reset-index})
+@item @kbd{X i} @tie{}@tie{}@tie{}@tie{}(@code{magit-reset-index})
 
 Reset the index to some commit read from the user and defaulting to
 the commit at point.  Keep the @code{HEAD} and working tree as-is, so if
 the commit refers to the @code{HEAD}, then this effectively unstages all
 changes.
 
-@kindex M-x magit-reset-head
-@cindex magit-reset-head
-@item @kbd{M-x magit-reset-head} @tie{}@tie{}@tie{}@tie{}(@code{magit-reset-head})
-
-Reset the @code{HEAD} and index to some commit read from the user and
-defaulting to the commit at point.  The working tree is kept as-is.
-
-@kindex M-x magit-reset-soft
-@cindex magit-reset-soft
-@item @kbd{M-x magit-reset-soft} @tie{}@tie{}@tie{}@tie{}(@code{magit-reset-soft})
-
-Reset the @code{HEAD} to some commit read from the user and defaulting
-to the commit at point.  The index and the working tree are kept
-as-is.
-
-@kindex M-x magit-reset-hard
-@cindex magit-reset-hard
-@item @kbd{M-x magit-reset-hard} @tie{}@tie{}@tie{}@tie{}(@code{magit-reset-hard})
-
-Reset the @code{HEAD}, index, and working tree to some commit read from the
-user and defaulting to the commit at point.
-
-@kindex M-x magit-file-checkout
+@kindex X f
 @cindex magit-file-checkout
-@item @kbd{M-x magit-file-checkout} @tie{}@tie{}@tie{}@tie{}(@code{magit-file-checkout})
+@item @kbd{X f} @tie{}@tie{}@tie{}@tie{}(@code{magit-file-checkout})
 
 Update file in the working tree and index to the contents from a
-revision.
-
-Both the revision and file are read from the user.
+revision.  Both the revision and file are read from the user.
 @end table
 
 @node Stashing
@@ -6330,10 +6362,9 @@ Whether to set the value of @code{remote.pushDefault} after adding a
 remote.
 
 If @code{ask}, then always ask.  If @code{ask-if-unset}, then ask, but only if the
-variable isn't set already.  If @code{nil}, then don't ever set.  If the
-value is a string, then set without asking, provided the name of the
-name of the added remote is equal to that string and the variable
-isn't already set.
+variable isn't set already.  If @code{nil}, then don't ever set.  If the value
+is a string, then set without asking, provided that the name of the added
+remote is equal to that string and the variable isn't already set.
 @end defopt
 
 @node Fetching
@@ -7624,32 +7655,10 @@ repositories, then you might want to disable certain features on a
 per-repository or per-repository-class basis only.  See
 @ref{Per-Repository Configuration,Per-Repository Configuration}.
 
-@unnumberedsubsubsec Microsoft Windows Performance
-
-In order to update the status buffer, @code{git} has to be run a few dozen
-times.  That is only problematic on Microsoft Windows, because that
-operating system is exceptionally slow at starting processes.  Sadly
-this is an issue that can only be fixed by Microsoft itself, and they
-don't appear to be particularly interested in doing so.
-
-Beside the subprocess issue, there also exist other Window-specific
-performance issues, some of which can be worked around.  The
-maintainers of "Git for Windows" try to reduce their effect, and in
-order to benefit from the latest performance tweaks, should always
-use the latest release.  Magit too tries to work around some
-Windows-specific issues.
-
-According to some sources setting the following Git variables can also
-help.
-
-@example
-git config --global core.preloadindex true   # default since v2.1
-git config --global core.fscache true        # default since v2.8
-git config --global gc.auto 256
-@end example
-
-You should also check whether an anti-virus program is slowing things
-down.
+@menu
+* Microsoft Windows Performance::
+* MacOS Performance::
+@end menu
 
 @unnumberedsubsubsec Log Performance
 
@@ -7750,6 +7759,57 @@ another version control system:
 @lisp
 (setq vc-handled-backends (delq 'Git vc-handled-backends))
 @end lisp
+
+@node Microsoft Windows Performance
+@unnumberedsubsubsec Microsoft Windows Performance
+
+In order to update the status buffer, @code{git} has to be run a few dozen
+times.  That is problematic on Microsoft Windows, because that
+operating system is exceptionally slow at starting processes.  Sadly
+this is an issue that can only be fixed by Microsoft itself, and they
+don't appear to be particularly interested in doing so.
+
+Beside the subprocess issue, there also exist other Window-specific
+performance issues, some of which can be worked around.  The
+maintainers of "Git for Windows" try to reduce their effect, and in
+order to benefit from the latest performance tweaks, should always
+use the latest release.  Magit too tries to work around some
+Windows-specific issues.
+
+According to some sources setting the following Git variables can also
+help.
+
+@example
+git config --global core.preloadindex true   # default since v2.1
+git config --global core.fscache true        # default since v2.8
+git config --global gc.auto 256
+@end example
+
+You should also check whether an anti-virus program is slowing things
+down.
+
+@node MacOS Performance
+@unnumberedsubsubsec MacOS Performance
+
+On macOS Emacs currently creates child processes using @code{fork}.  It
+appears that this also copies GUI resources.  The result is that
+forking takes about 30 times as long on Darwin than on Linux.  And
+because Magit starts many @code{git} processes even when doing simple things,
+that makes quite a difference.
+
+On the @code{master} branch Emacs now uses @code{vfork} when possible, like this was
+already done on Linux, and now child creation only takes about twice
+as long on Darwin.  See @footnote{@uref{https://lists.gnu.org/archive/html/bug-gnu-emacs/2017-04/msg00201.html}} for more information.
+
+Nobody knows when the changes on the @code{master} branch will be released as
+@code{26.1}, but it is still a long way off.  You might want to get your
+hands on this change before then.  The easiest way to get a patched
+Emacs is to install the @code{emacs-plus} formula @footnote{@uref{https://github.com/d12frosted/homebrew-emacs-plus}} using @code{homebrew}.
+The change has been backported, so you get it not only when using
+@code{--HEAD}, but also when using @code{--devel} or when installing the latest
+release (by not using a version argument).
+
+Alternatively you can apply the backport @footnote{@uref{https://gist.githubusercontent.com/aaronjensen/f45894ddf431ecbff78b1bcf533d3e6b/raw/6a5cd7f57341aba673234348d8b0d2e776f86719/Emacs-25-OS-X-use-vfork.patch}} manually.
 
 @node Plumbing
 @chapter Plumbing
@@ -7974,7 +8034,7 @@ Execute Git with ARGS, inserting washed output at point.  Actually
 first insert the raw output at point.  If there is no output call
 @code{magit-cancel-section}.  Otherwise temporarily narrow the buffer to
 the inserted text, move to its beginning, and then call function
-WASHER with no argument.
+WASHER with ARGS as its sole argument.
 @end defun
 
 And now for the asynchronous variants.
@@ -8575,6 +8635,8 @@ frequently @strong{and recently} asked questions, i.e. questions that haven't
 made it into the manual yet, see
 @uref{https://github.com/magit/magit/wiki/FAQ}.
 
+Please also use the @ref{Debugging Tools,Debugging Tools}.
+
 @menu
 * FAQ - How to @dots{}?::
 * FAQ - Issues and Errors::
@@ -8825,6 +8887,60 @@ This is actually triggered by loading Tramp.  See
 can work around the problem by setting
 @code{tramp-ssh-controlmaster-options}. Changing your DNS server (e.g. to
 Google's @code{8.8.8.8}) may also be sufficient to work around the issue.
+
+@node Debugging Tools
+@chapter Debugging Tools
+
+Magit and its dependencies provide a few debugging tools, and we
+appreciate it very much if you use those tools before reporting an
+issue.  Please include all relevant output when reporting an
+issue.
+
+@table @asis
+@kindex M-x magit-version
+@cindex magit-version
+@item @kbd{M-x magit-version} @tie{}@tie{}@tie{}@tie{}(@code{magit-version})
+
+This command shows the currently used versions of Magit, Git, and
+Emacs in the echo area.  Non-interactively this just returns the
+Magit version.
+
+@kindex M-x magit-emacs-Q-command
+@cindex magit-emacs-Q-command
+@item @kbd{M-x magit-emacs-Q-command} @tie{}@tie{}@tie{}@tie{}(@code{magit-emacs-Q-command})
+
+This command shows a debugging shell command in the echo area and
+adds it to the kill ring.  Paste that command into a shell an run
+it.
+
+This shell command starts @code{emacs} with only @code{magit} and its
+dependencies loaded.  Neither your configuration nor other installed
+packages are loaded.  This makes it easier to determine whether some
+issue lays with Magit or something else.
+
+@kindex M-x magit-debug-git-executable
+@cindex magit-debug-git-executable
+@item @kbd{M-x magit-debug-git-executable} @tie{}@tie{}@tie{}@tie{}(@code{magit-debug-git-executable})
+
+This command displays a buffer containing information about the
+available and used @code{git} executable(s), and can be useful when
+investigating @code{exec-path} issues.
+
+Also see @ref{Git Executable,Git Executable}.
+
+@kindex M-x with-editor-debug
+@cindex with-editor-debug
+@item @kbd{M-x with-editor-debug} @tie{}@tie{}@tie{}@tie{}(@code{with-editor-debug})
+
+This command displays a buffer containing information about the
+available and used @code{git} executable(s), and can be useful when
+investigating why Magit (or rather @code{with-editor}) cannot find an
+appropriate @code{emacsclient} executable.
+
+Also see @ref{Debugging,,,with-editor,}.
+@end table
+
+Please also see the @ref{FAQ,FAQ}.
 
 @node Keystroke Index
 @appendix Keystroke Index
