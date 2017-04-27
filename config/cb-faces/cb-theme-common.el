@@ -226,6 +226,24 @@
     (ahs-plugin-whole-buffer-face
      ((t :inherit highlight)))
 
+
+    ;; Ediff
+
+    (ediff-odd-diff-A
+     ((t :inherit highlight)))
+    (ediff-odd-diff-B
+     ((t :inherit highlight)))
+    (ediff-odd-diff-C
+     ((t :inherit highlight)))
+
+    (ediff-current-diff-C
+     ((((background light)) :background "#ffffaa")
+      (((background dark)) :background "#444477")))
+    (ediff-fine-diff-C
+     ((((background light)) :background "#ffff55")
+      (((background dark)) :background "#666699")))
+
+
     ;; Magit
 
     (magit-diff-file-heading
