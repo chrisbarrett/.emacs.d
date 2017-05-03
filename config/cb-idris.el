@@ -23,6 +23,8 @@
   (progn
     (setq idris-semantic-source-highlighting nil)
 
+    (evil-define-key 'normal idris-mode-map (kbd "K") #'idris-docs-at-point)
+
     (spacemacs-keys-declare-prefix-for-mode 'idris-mode "mb" "build")
     (spacemacs-keys-declare-prefix-for-mode 'idris-mode "mi" "editing")
     (spacemacs-keys-declare-prefix-for-mode 'idris-mode "mh" "documentation")
