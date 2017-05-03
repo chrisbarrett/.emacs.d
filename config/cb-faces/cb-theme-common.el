@@ -176,8 +176,17 @@
     (idris-semantic-data-face
      ((t :inherit default)))
 
+    (idris-semantic-type-face
+     ((t :inherit default)))
+
+    (idris-semantic-bound-face
+     ((t :inherit default :slant italic)))
+
     (idris-semantic-implicit-face
      ((t :inherit default)))
+
+    (idris-inline-doc-face
+     ((t :inherit font-lock-comment-face)))
 
     ;; web-mode
 
