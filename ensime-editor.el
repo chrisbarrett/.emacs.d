@@ -707,8 +707,19 @@ Decide what line to insert QUALIFIED-NAME."
     (let ((insertion-range (point))
           (starting-point (point))
           (insert-import-fn (if (ensime-visiting-java-file-p) 'ensime-insert-java-import 'ensime-insert-scala-import)))
-      (unless (search-backward-regexp "^\\s-*package\\s-" nil t)
-        (goto-char (point-min)))
+      (goto-char (point-min))
+      (let ((finished? nil))
+        (while (not finished?)
+          (let ((prev (point)))
+            (cond ((not (search-forward-regexp
+                         "^\\s-*package\\s-+\\(.+?\\)\\(?:\\s-\\|$\\)"
+                         nil t))
+                   ;; No more package statements
+                   (setq finished? t))
+                  ((string= (match-string 1) "object")
+                   ;; Found a package object - reverting
+                   (goto-char prev)
+                   (setq finished? t))))))
       (search-forward-regexp "^\\s-*import\\s-" insertion-range t)
       (goto-char (point-at-bol))
       (funcall (funcall insert-import-fn insertion-range starting-point qualified-name)))))

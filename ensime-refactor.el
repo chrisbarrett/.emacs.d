@@ -136,6 +136,7 @@
      `(file ,buffer-file-name
             start ,start
             end ,end
+            tpe "expandMatchCases"
             ))))
 
 (defun ensime-refactor-diff (refactor-type params &optional non-interactive blocking)
