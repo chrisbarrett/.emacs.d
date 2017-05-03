@@ -46,6 +46,12 @@
   :type 'boolean
   :group 'ensime-ui)
 
+(defcustom ensime-eldoc-hints 'all
+  "If non-nil, eldoc hints are activated.
+It can be set to 'all, 'error, 'implicit or 'type to limit the type of hints shown"
+  :type 'symbol
+  :group 'ensime-ui)
+
 (defcustom ensime-graphical-tooltips nil
   "If non-nil, show graphical bubbles for tooltips."
   :type 'boolean

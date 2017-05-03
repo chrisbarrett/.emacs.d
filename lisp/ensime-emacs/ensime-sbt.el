@@ -51,6 +51,11 @@
   (interactive)
   (ensime-sbt))
 
+(defun ensime-sbt-send-eol ()
+  (interactive)
+  (let ((sbt:clear-buffer-before-command nil))
+    (sbt:command "")))
+
 (defun ensime-sbt-do-compile ()
   (interactive)
   (sbt:command "test:compile"))

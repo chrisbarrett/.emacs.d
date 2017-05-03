@@ -30,6 +30,8 @@
 (require 'ensime-stacktrace)
 (require 'ensime-debug)
 (require 'ensime-editor)
+(require 'ensime-company)
+(require 'ensime-eldoc)
 (require 'ensime-goto-testfile)
 (require 'ensime-inspector)
 (require 'ensime-model)
@@ -102,6 +104,7 @@
       (define-key prefix-map (kbd "C-d a") 'ensime-db-clear-all-breaks)
 
       (define-key prefix-map (kbd "C-b s") 'ensime-sbt-switch)
+      (define-key prefix-map (kbd "C-b C-j") 'ensime-sbt-send-eol)
       (define-key prefix-map (kbd "C-b S") 'ensime-stacktrace-switch)
       (define-key prefix-map (kbd "C-b c") 'ensime-sbt-do-compile)
       (define-key prefix-map (kbd "C-b C") 'ensime-sbt-do-compile-only)
@@ -120,7 +123,7 @@
       (define-key prefix-map (kbd "C-r l") 'ensime-refactor-diff-extract-local)
       (define-key prefix-map (kbd "C-r m") 'ensime-refactor-diff-extract-method)
       (define-key prefix-map (kbd "C-r i") 'ensime-refactor-diff-inline-local)
-      (define-key prefix-map (kbd "C-r i") 'ensime-refactor-expand-match-cases)
+      (define-key prefix-map (kbd "C-r e") 'ensime-refactor-expand-match-cases)
       (define-key prefix-map (kbd "C-r t") 'ensime-import-type-at-point)
 
       (define-key map ensime-mode-key-prefix prefix-map)
@@ -318,6 +321,9 @@
           (define-key ensime-mode-map [mouse-movement] 'ensime-mouse-motion))
 
         (ensime-refresh-all-note-overlays)
+
+        (when ensime-eldoc-hints
+          (setq-local eldoc-documentation-function 'ensime-eldoc-info))
 
 	(when (equal major-mode 'scala-mode)
 	  (ensime--setup-imenu)))

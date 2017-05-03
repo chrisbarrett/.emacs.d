@@ -109,7 +109,7 @@
 		      subproject-name
 		    (downcase (file-name-nondirectory root-dir))))
          (config (let ((env (getenv "ENSIME_JVM_TEST_FLAGS"))
-                       (default-flags '("-Xmx1g" "-Xss2m")))
+                       (default-flags '("-Xmx4g" "-Xss2m")))
                    (append
                     extra-config
                     `(:root-dir ,root-dir
