@@ -265,7 +265,7 @@
      ((t :weight demibold)))
 
     (magit-section-highlight
-     ((((background light)) :background "grey90")
+     ((((background light)) :background "grey85")
       (((background  dark)) :background "grey20")))
 
     (magit-diff-context-highlight

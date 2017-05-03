@@ -13,7 +13,7 @@
 (require 'cb-theme-common)
 
 (apply #'custom-theme-set-faces 'cb-light
-       (cb-theme-common-make-theme "black" "#f0f0f0"))
+       (cb-theme-common-make-theme "black" "grey90"))
 
 (provide-theme 'cb-light)
 
