@@ -76,6 +76,8 @@
   :defines (ivy-use-virtual-buffers ivy-count-format))
 
 (use-package counsel
+  :demand t
+
   :commands (counsel-M-x
              counsel-descbinds
              counsel-describe-function
