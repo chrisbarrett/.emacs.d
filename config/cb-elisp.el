@@ -117,7 +117,18 @@
   :config (flycheck-package-setup))
 
 (use-package profiler
-  :commands profiler-start
+  :commands (profiler-start profiler-report profiler-stop)
+  :init
+  (progn
+    (use-package which-key
+      :preface (autoload 'which-key-add-key-based-replacements "which-key")
+      :config (which-key-add-key-based-replacements "SPC a p" "profiler"))
+
+    (spacemacs-keys-set-leader-keys
+      "app" 'profiler-start
+      "apr" 'profiler-report
+      "aps" 'profiler-stop))
+
   :config
   (progn
     (evil-set-initial-state 'profiler-report-mode 'motion)
