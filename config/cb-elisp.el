@@ -12,8 +12,7 @@
   (require 'use-package))
 
 (require 'spacemacs-keys)
-(autoload 'evil-define-key "evil-core")
-(autoload 'evil-set-initial-state "evil-core")
+(require 'evil)
 
 (use-package lisp-mode
   :mode ("/Cask\\'" . lisp-mode))
@@ -34,7 +33,6 @@
 
   :config
   (advice-add #'eval-buffer :after #'cb-elisp--message-on-eval-buffer))
-
 
 (use-package elisp-slime-nav
   :commands (elisp-slime-nav-find-elisp-thing-at-point
@@ -114,7 +112,8 @@
 
 (use-package flycheck-package
   :after flycheck
-  :functions (flycheck-package-setup)
+  :preface
+  (autoload 'flycheck-package-setup "flycheck-package")
   :config (flycheck-package-setup))
 
 
