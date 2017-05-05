@@ -142,41 +142,11 @@
 (defun cb-header-line-format--nonemphasised (str)
   (propertize str 'face 'cb-header-line-format-nonemphased-element))
 
-(defun cb-header-line-format--project-info ()
-  (let* ((project (cb-header-line-format--current-project))
-         (project (when project (directory-file-name project)))
-         (project-root-name (when project (file-name-nondirectory project)))
-         (branch (when project (cb-header-line-format--current-branch)))
-         (subdir (when project (s-chop-prefix project (directory-file-name (file-truename default-directory))))))
-    (cond
-     ((and project branch)
-      (concat (cb-header-line-format--nonemphasised " (in ")
-              (propertize project-root-name 'face 'cb-header-line-format-project-name)
-              (cb-header-line-format--nonemphasised subdir)
-              (cb-header-line-format--nonemphasised " on ")
-              (propertize branch 'face 'cb-header-line-format-branch-name)
-              (cb-header-line-format--nonemphasised ") ")))
-     (project
-      (concat (cb-header-line-format--nonemphasised " (in ")
-              (propertize project-root-name 'face 'cb-header-line-format-project-name)
-              (cb-header-line-format--nonemphasised ") ")))
-     (t
-      ""))))
-
 (defun cb-header-line-format--host-info ()
   (concat
    (cb-header-line-format--nonemphasised " (at ")
    (propertize (and (boundp 'tramp-current-host) tramp-current-host) 'face 'cb-header-line-format-host-name)
    (cb-header-line-format--nonemphasised ") ")))
-
-(defun cb-header-line-format--context-info ()
-  (cond
-   ((not (cb-header-line-format--window-selected?))
-    "")
-   ((file-remote-p default-directory)
-    "")
-   (t
-    (cb-header-line-format--project-info))))
 
 (defun cb-header-line-format--buffer-name ()
   (if (cb-header-line-format--window-selected?)
@@ -210,7 +180,6 @@
     "  %[" (:eval (cb-header-line-format--buffer-name)) "%] "
 
     (:eval (cb-header-line-format--narrowing-info))
-    (:eval (cb-header-line-format--context-info))
 
     " "
 
