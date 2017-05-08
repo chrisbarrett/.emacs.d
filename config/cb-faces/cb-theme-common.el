@@ -29,7 +29,7 @@
         :foreground ,default-foreground
         :weight normal
         :family "Hasklig"
-        :height 130)))
+        :height 145)))
 
     (mode-line
      ((t :foreground "gray40" :background "gray40" :height 20)))
