@@ -533,10 +533,7 @@
      ((t :inherit font-lock-string-face)))
 
     (hl-todo
-     ((((background light))
-       :foreground ,cb-theme-common-red :weight bold)
-      (((background dark))
-       :foreground ,cb-theme-common-pink :weight bold)))
+     ((t :foreground nil :box t)))
 
     (parenthesis
      ((t :weight light)))
