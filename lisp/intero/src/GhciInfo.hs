@@ -27,7 +27,6 @@ import           Outputable
 import           Prelude hiding (mod)
 import           System.Directory
 import           TcHsSyn
-import qualified TyCoRep
 import           Var
 
 #if MIN_VERSION_ghc(7,8,3)
@@ -154,7 +153,7 @@ getTypeLPat :: (GhcMonad m)
 getTypeLPat _ (L spn pat) =
   return (Just (getMaybeId pat,spn,getPatType pat))
   where
-    getPatType pat'@(ConPatOut (L _ (RealDataCon dc)) _ _ _ _ _ _) =
+    getPatType (ConPatOut (L _ (RealDataCon dc)) _ _ _ _ _ _) =
       dataConRepType dc
     getPatType pat' = hsPatType pat'
 #if __GLASGOW_HASKELL__ >= 800
