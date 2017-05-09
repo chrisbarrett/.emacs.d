@@ -213,8 +213,8 @@
     ;; Highlights
 
     (highlight
-     ((((background light)) :background "#e0e0e0")
-      (((background dark))  :background "#303030")))
+     ((((background light)) :background "gray82")
+      (((background dark))  :background "gray18")))
 
     (iedit-occurrence
      ((((background light))
