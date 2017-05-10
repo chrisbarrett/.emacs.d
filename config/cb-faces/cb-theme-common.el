@@ -54,6 +54,10 @@
     (mode-line
      ((t :inherit header-line :height 20)))
 
+    (region
+     ((((background light)) :background "lightblue")
+      (((background dark))  :background "#533")))
+
     ;; General font-lock faces.
 
     (font-lock-keyword-face
@@ -311,6 +315,9 @@
        :weight bold
        :foreground ,cb-theme-common-neutral-grey)))
 
+    (org-document-info
+     ((t :foreground ,default-foreground :weight demibold)))
+
     (org-document-info-keyword
      ((t :weight light)))
 
@@ -425,7 +432,10 @@
      ((t :weight demibold)))
 
     (mu4e-highlight-face
-     ((t :foreground ,cb-theme-common-blue :weight demibold)))
+     ((((background light))
+       :foreground ,cb-theme-common-blue :weight demibold)
+      (((background dark))
+       :foreground ,cb-theme-common-orange :weight demibold)))
 
     (mu4e-header-highlight-face
      ((t :inherit region)))
