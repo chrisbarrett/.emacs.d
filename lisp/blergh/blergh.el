@@ -3,7 +3,7 @@
 
 ;; Implements an interpreter for a simple layout DSL for magit sections.
 ;;
-;; Copied out of kubernetes.el, until I decide whether to release a separate
+;; Copied out of blergh.el, until I decide whether to release a separate
 ;; package.
 
 ;;; Code:
@@ -255,6 +255,79 @@ such in rendering ASTs." name)))
         (other
          (message "Stack: %s" instruction-stack)
          (error "Unknown AST instruction: %s" other))))))
+
+
+;; Mode
+
+(defvar blergh-mode-map
+  (let ((keymap (make-sparse-keymap)))
+    (define-key keymap (kbd "p")   #'magit-section-backward)
+    (define-key keymap (kbd "n")   #'magit-section-forward)
+    (define-key keymap (kbd "M-p") #'magit-section-backward-sibling)
+    (define-key keymap (kbd "M-n") #'magit-section-forward-sibling)
+    (define-key keymap (kbd "C-i") #'magit-section-toggle)
+    (define-key keymap (kbd "^")   #'magit-section-up)
+    (define-key keymap [tab]       #'magit-section-toggle)
+    (define-key keymap [C-tab]     #'magit-section-cycle)
+    (define-key keymap [M-tab]     #'magit-section-cycle-diffs)
+    (define-key keymap [S-tab]     #'magit-section-cycle-global)
+    (define-key keymap (kbd "q")   #'quit-window)
+    (define-key keymap (kbd "h")   #'describe-mode)
+
+    keymap)
+  "Keymap for `blergh-mode'.")
+
+(define-derived-mode blergh-mode special-mode "Blergh"
+  "Base mode for Blergh buffers.
+
+\\{blergh-mode-map}"
+  :group 'blergh
+  (read-only-mode)
+  (buffer-disable-undo)
+  (setq truncate-lines t)
+  (setq-local line-move-visual t)
+  (setq show-trailing-whitespace nil)
+  (setq list-buffers-directory (abbreviate-file-name default-directory))
+  (hack-dir-local-variables-non-file-buffer)
+  (make-local-variable 'text-property-default-nonsticky)
+  (push (cons 'keymap t) text-property-default-nonsticky)
+  (add-hook 'post-command-hook #'magit-section-update-highlight t t)
+  (setq-local redisplay-highlight-region-function 'magit-highlight-region)
+  (setq-local redisplay-unhighlight-region-function 'magit-unhighlight-region)
+  (when (bound-and-true-p global-linum-mode)
+    (linum-mode -1))
+  (when (and (fboundp 'nlinum-mode)
+             (bound-and-true-p global-nlinum-mode))
+    (nlinum-mode -1)))
+
+
+;; Evil compatability
+
+(autoload 'evil-define-key "evil-core")
+(autoload 'evil-set-initial-state "evil-core")
+
+(with-eval-after-load 'evil
+  (evil-set-initial-state 'blergh-mode 'motion)
+
+  (evil-define-key 'motion blergh-mode-map
+    (kbd "p")   #'magit-section-backward
+    (kbd "n")   #'magit-section-forward
+    (kbd "M-p") #'magit-section-backward-sibling
+    (kbd "M-n") #'magit-section-forward-sibling
+    (kbd "C-i") #'magit-section-toggle
+    (kbd "^")   #'magit-section-up
+    [tab]       #'magit-section-toggle
+    [C-tab]     #'magit-section-cycle
+    [M-tab]     #'magit-section-cycle-diffs
+    [S-tab]     #'magit-section-cycle-global
+
+    [remap evil-next-line] #'next-line
+    [remap evil-previous-line] #'previous-line
+    [remap evil-next-visual-line] #'next-line
+    [remap evil-previous-visual-line] #'previous-line
+
+    (kbd "q") #'quit-window
+    (kbd "h") #'describe-mode))
 
 
 (provide 'blergh)
