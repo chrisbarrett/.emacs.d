@@ -31,9 +31,6 @@
         :family "Hasklig"
         :height 145)))
 
-    (mode-line
-     ((t :foreground "gray40" :background "gray40" :height 20)))
-
     (link
      ((((background light))
        :weight light :underline ,cb-theme-common-light-grey)
@@ -44,10 +41,18 @@
      ((t :background ,default-background)))
 
     (header-line
-     ((t :background ,cb-theme-common-blue :foreground "white" :weight bold)))
+     ((((background light))
+       :background ,cb-theme-common-blue
+       :foreground ,default-foreground :weight demibold)
+      (((background dark))
+       :background "#533"
+       :foreground ,default-foreground :weight demibold)))
 
     (cb-header-line-format-nonemphased-element
      ((t :weight light)))
+
+    (mode-line
+     ((t :inherit header-line :height 20)))
 
     ;; General font-lock faces.
 
@@ -210,6 +215,18 @@
        :foreground ,cb-theme-common-red
        :underline ,cb-theme-common-red)))
 
+    ;; Ivy
+
+    (minibuffer-prompt
+     ((((background light)) :foreground ,cb-theme-common-blue)
+      (((background dark)) :foreground ,cb-theme-common-orange)))
+
+    (ivy-current-match
+     ((((background light))
+       :background ,cb-theme-common-blue :foreground "white")
+      (((background dark))
+       :background ,cb-theme-common-orange :foreground "black")))
+
     ;; Highlights
 
     (highlight
@@ -230,7 +247,8 @@
      ((t :inherit highlight :background nil)))
 
     (highlight-thing
-     ((t :weight demibold :foreground ,cb-theme-common-blue)))
+     ((((background light)) :weight demibold :foreground ,cb-theme-common-blue)
+      (((background dark)) :weight demibold :foreground ,cb-theme-common-orange)))
 
     (ahs-face
      ((t :inherit highlight)))

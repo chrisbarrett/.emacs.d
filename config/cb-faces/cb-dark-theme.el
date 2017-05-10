@@ -12,7 +12,7 @@
 
 (require 'cb-theme-common)
 
-(apply #'custom-theme-set-faces 'cb-dark (cb-theme-common-make-theme "#ccc" "#111"))
+(apply #'custom-theme-set-faces 'cb-dark (cb-theme-common-make-theme "#f88" "#200505"))
 
 (provide-theme 'cb-dark)
 
