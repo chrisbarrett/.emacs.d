@@ -120,6 +120,15 @@
     (define-key counsel-find-file-map (kbd "C-M-j") #'ivy-immediate-done)
     (define-key counsel-find-file-map (kbd "C-h") #'counsel-up-directory)
 
+    (defface cb-counsel-separator
+      '((t :foreground "gray50"))
+      "Face for "
+      :group 'cb-ivy)
+
+
+    (setq counsel-yank-pop-separator (propertize "\n-------------------------------------------\n"
+                                                 'face 'cb-counsel-separator))
+
     ;; Prefill counsel-ag with the symbol at point.
     (advice-add 'counsel-ag :around #'cb-ivy--ag-populate-with-symbol-at-point)
 
