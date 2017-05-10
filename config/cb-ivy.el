@@ -93,7 +93,7 @@
     (autoload 'counsel-up-directory "counsel")
     (autoload 'counsel-mode "counsel")
 
-    (defun cb-ivy--ag-populate-with-symbol-at-point (f &rest args)
+    (defun cb-ivy--populate-with-symbol-at-point (f &rest args)
       (if-let ((sym (symbol-at-point)))
           (apply f (symbol-name sym) (cdr args))
         (apply f args))))
@@ -130,7 +130,8 @@
                                                  'face 'cb-counsel-separator))
 
     ;; Prefill counsel-ag with the symbol at point.
-    (advice-add 'counsel-ag :around #'cb-ivy--ag-populate-with-symbol-at-point)
+    (advice-add 'counsel-rg :around #'cb-ivy--populate-with-symbol-at-point)
+    (advice-add 'counsel-ag :around #'cb-ivy--populate-with-symbol-at-point)
 
     (counsel-mode +1)))
 
