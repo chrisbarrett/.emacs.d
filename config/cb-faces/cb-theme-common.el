@@ -43,7 +43,7 @@
     (header-line
      ((((background light))
        :background ,cb-theme-common-blue
-       :foreground ,default-foreground :weight demibold)
+       :foreground ,default-background :weight demibold)
       (((background dark))
        :background "#533"
        :foreground ,default-foreground :weight demibold)))
@@ -352,7 +352,7 @@
      ((((background light))
        :foreground ,cb-theme-common-yellow :weight normal)
       (((background dark))
-       :foreground ,cb-theme-common-yellow :weight normal)))
+       :foreground ,cb-theme-common-orange :weight normal)))
 
     (org-scheduled-previously
      ((((background light))
