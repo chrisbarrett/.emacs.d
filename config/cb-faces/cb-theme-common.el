@@ -134,15 +134,21 @@
      ((t :inherit dired-header)))
 
     (diredp-dir-name
-     ((t :inherit default :foreground ,cb-theme-common-blue)))
+     ((((background light)) :foreground ,cb-theme-common-blue)
+      (((background dark))  :foreground ,cb-theme-common-pink)))
 
     (diredp-file-name
      ((t :inherit default)))
 
     (diredp-ignored-file-name
+     ((t :inherit diredp-file-name :foreground "#a55")))
+
+    (diredp-symlink
      ((t :inherit diredp-file-name :foreground ,cb-theme-common-neutral-grey)))
 
     (diredp-file-suffix
+     ((((background light)) :foreground ,cb-theme-common-neutral-grey)
+      (((background dark))  :foreground "#a55"))
      ((t :foreground ,cb-theme-common-neutral-grey)))
 
     (diredp-compressed-file-suffix
@@ -494,7 +500,8 @@
      ((t :foreground ,default-foreground)))
 
     (term-color-blue
-     ((t :foreground ,cb-theme-common-blue)))
+     ((((background light)) :foreground ,cb-theme-common-blue)
+      (((background dark))  :background ,cb-theme-common-pink)))
 
     (term-color-bold
      ((t :weight demibold)))
@@ -539,7 +546,8 @@
     ;; Git time machine
 
     (git-timemachine-minibuffer-detail-face
-     ((t :foreground ,cb-theme-common-blue)))
+     ((((background light)) :foreground ,cb-theme-common-blue)
+      (((background dark))  :background ,cb-theme-common-pink)))
 
     (git-timemachine-minibuffer-author-face
      ((t :inherit default)))
