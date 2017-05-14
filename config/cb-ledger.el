@@ -102,9 +102,9 @@
 
 (use-package cb-ledger-reports
   :after ledger-mode
-  :functions (cb-ledger-reports-init)
+  :commands (cb-ledger-reports-weekly-review)
   :init
-  (add-hook 'ledger-mode-hook #'cb-ledger-reports-init)
+  (spacemacs-keys-set-leader-keys-for-major-mode 'ledger-mode "r" #'cb-ledger-reports-weekly-review)
   :config
   (setq cb-ledger-reports-income-payee-name "Income:Movio"))
 
