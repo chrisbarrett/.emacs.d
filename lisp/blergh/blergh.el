@@ -74,7 +74,10 @@ such in rendering ASTs." name)))
 
 (defsubst blergh--eval-string (s indent-level)
   (let ((value (if (string-empty-p (buffer-substring (line-beginning-position) (point)))
-                   (concat (blergh--indentation indent-level) s)
+                   (mapconcat #'identity
+                              (--map (concat (blergh--indentation indent-level) it)
+                                     (split-string s "\n"))
+                              "\n")
                  s)))
     (insert value)))
 
