@@ -63,6 +63,12 @@
           (search-backward "(")
           (just-one-space))))
 
+    (defun cb-smartparens-delete-horizontal-space-for-delete (f &rest args)
+      (if (or (equal (char-before) ?\ )
+              (equal (char-after) ?\ ))
+          (delete-horizontal-space)
+        (funcall f args)))
+
     (defun cb-smartparens-add-space-before-sexp-insertion (id action _context)
       (when (eq action 'insert)
         (save-excursion
@@ -213,6 +219,10 @@
       (sp-local-pair "~" "~" :unless '(sp-point-after-word-p) :post-handlers '(("[d1]" "SPC")))
       (sp-local-pair "=" "=" :unless '(sp-point-after-word-p) :post-handlers '(("[d1]" "SPC")))
       (sp-local-pair "«" "»"))
+
+    ;; Delete enclosing whitespace if necessary.
+
+    (advice-add 'sp-backward-delete-char :around #'cb-smartparens-delete-horizontal-space-for-delete)
 
     ;; Enable modes.
 
