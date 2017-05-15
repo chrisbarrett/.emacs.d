@@ -182,6 +182,17 @@
                      :pre-handlers '(cb-smartparens-add-space-before-sexp-insertion)
                      :post-handlers '(cb-smartparens-add-space-after-sexp-insertion)))
 
+    (sp-with-modes 'haskell-mode
+      (sp-local-pair "(" nil
+                     :pre-handlers '(cb-smartparens-add-space-before-sexp-insertion)
+                     :post-handlers '(cb-smartparens-add-space-after-sexp-insertion))
+      (sp-local-pair "[" nil
+                     :pre-handlers '(cb-smartparens-add-space-before-sexp-insertion)
+                     :post-handlers '(cb-smartparens-add-space-after-sexp-insertion))
+      (sp-local-pair "{" nil
+                     :pre-handlers '(cb-smartparens-add-space-before-sexp-insertion)
+                     :post-handlers '(cb-smartparens-add-space-after-sexp-insertion)))
+
     (sp-with-modes 'web-mode
       (sp-local-pair "<" nil :when '(cb-smartparens-web-mode-is-code-context)))
 
