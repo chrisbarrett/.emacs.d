@@ -1,6 +1,6 @@
 ;;; test-helper.el --- helper for testing go-eldoc
 
-;; Copyright (C) 2016 by Syohei YOSHIDA
+;; Copyright (C) 2017 by Syohei YOSHIDA
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 
@@ -45,7 +45,5 @@
 
 (defun face-at-cursor-p (face)
   (eq (face-at-point) face))
-
-(provide 'test-helper)
 
 ;;; test-helper.el ends here

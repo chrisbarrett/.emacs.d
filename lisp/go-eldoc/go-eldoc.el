@@ -1,11 +1,11 @@
 ;;; go-eldoc.el --- eldoc for go-mode -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2016 by Syohei YOSHIDA
+;; Copyright (C) 2017 by Syohei YOSHIDA
 
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 ;; URL: https://github.com/syohex/emacs-go-eldoc
-;; Version: 0.28
-;; Package-Requires: ((go-mode "1.0.0") (cl-lib "0.5"))
+;; Version: 0.30
+;; Package-Requires: ((emacs "24.3") (go-mode "1.0.0"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -152,22 +152,24 @@
            finally return retval))
 
 (defun go-eldoc--invoke-autocomplete ()
-  (let ((temp-buffer (generate-new-buffer "*go-eldoc*"))
+  (let ((temp-buffer (get-buffer-create "*go-eldoc*"))
         (gocode-args (append go-eldoc-gocode-args
                              (list "-f=emacs"
                                    "autocomplete"
                                    (or (buffer-file-name) "")
                                    (concat "c" (int-to-string (- (point) 1)))))))
-    (prog2
-        (apply #'call-process-region
-               (point-min)
-               (point-max)
-               go-eldoc-gocode
-               nil
-               temp-buffer
-               nil
-               gocode-args)
-        (with-current-buffer temp-buffer (buffer-string))
+    (unwind-protect
+        (progn
+          (apply #'call-process-region
+                 (point-min)
+                 (point-max)
+                 go-eldoc-gocode
+                 nil
+                 temp-buffer
+                 nil
+                 gocode-args)
+          (with-current-buffer temp-buffer
+            (buffer-string)))
       (kill-buffer temp-buffer))))
 
 (defsubst go-eldoc--assignment-index (lhs)
@@ -419,8 +421,7 @@
 (defun go-eldoc-setup ()
   "Set up eldoc function and enable eldoc-mode."
   (interactive)
-  (set (make-local-variable 'eldoc-documentation-function)
-       'go-eldoc--documentation-function)
+  (setq-local eldoc-documentation-function #'go-eldoc--documentation-function)
   (eldoc-mode +1))
 
 (provide 'go-eldoc)
