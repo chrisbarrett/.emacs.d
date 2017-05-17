@@ -214,10 +214,14 @@
     ;; Pairs
 
     (show-paren-match
-     ((t
+     ((((background light))
        :weight bold
        :foreground ,cb-theme-common-cyan
-       :underline ,cb-theme-common-cyan)))
+       :underline ,cb-theme-common-cyan)
+      (((background dark))
+       :weight bold
+       :foreground "white"
+       :underline "white")))
 
     (show-paren-mismatch
      ((t
