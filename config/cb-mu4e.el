@@ -63,6 +63,13 @@
               (goto-char (point-max))
               (insert "\n"))))))
 
+    (defun cb-mu4e-view-ret ()
+      "Call the command that would be run by a mouse click at point."
+      (interactive)
+      (-if-let ((&alist 'keymap (&alist 'mouse-1 action)) (text-properties-at (point)))
+          (call-interactively action)
+        (call-interactively #'evil-ret)))
+
     (use-package cb-mu4e-utils
       :after mu4e
       :functions (cb-mu4e-utils-view-in-external-browser-action
@@ -93,14 +100,16 @@
       (kbd "j") #'mu4e-headers-next
       (kbd "k") #'mu4e-headers-prev)
 
-    (evilified-state-evilify-map mu4e-view-mode-map
-      :mode mu4e-view-mode
-      :bindings
+    (evil-set-initial-state 'mu4e-view-mode 'motion)
+    (evil-define-key 'motion mu4e-view-mode-map
       (kbd "J") #'mu4e~view-headers-jump-to-maildir
       (kbd "n") #'mu4e-view-headers-next
       (kbd "p") #'mu4e-view-headers-prev
       (kbd "C-j") #'mu4e-view-headers-next
-      (kbd "C-k") #'mu4e-view-headers-prev)
+      (kbd "C-k") #'mu4e-view-headers-prev
+      ;; (kbd "w") #'evil-forward-word-begin
+      ;; (kbd "b") #'evil-backward-word-begin
+      (kbd "RET") #'cb-mu4e-view-ret)
 
     ;; Set variables
 
