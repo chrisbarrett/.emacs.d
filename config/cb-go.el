@@ -64,6 +64,9 @@
     (setq gofmt-show-errors nil)
     (evil-define-key 'normal go-mode-map (kbd "K") #'godoc-at-point)
 
+    (evil-define-key 'normal go-mode-map (kbd "M-.") #'godef-jump)
+    (evil-define-key 'insert go-mode-map (kbd "M-.") #'godef-jump)
+
     (add-hook 'go-mode-hook #'cb-go--set-local-vars)
     (add-hook 'before-save-hook #'gofmt-before-save))
 
