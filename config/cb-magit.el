@@ -45,7 +45,9 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
 (use-package magithub
   :after magit
   :config
-  (setq magithub-features '((t . t))))
+  (progn
+    (magithub-feature-autoinject t)
+    (setq magithub-api-timeout 5)))
 
 (use-package git-commit-jira-prefix
   :after git-commit
