@@ -132,6 +132,7 @@ If argument INTERACTIVE-P is set, log additional information."
 (use-package cb-idris)
 (use-package cb-docker)
 (use-package cb-graphviz)
+(use-package cb-protobuf)
 
 (use-package personal-config
   :load-path "~/Sync/emacs")
