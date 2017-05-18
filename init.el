@@ -26,7 +26,7 @@
 ;; flycheck) break unless installed via package.el.
 
 (require 'package)
-(add-to-list 'package-archives '("MELPA Stable" . "https://stable.melpa.org/packages/"))
+(add-to-list 'package-archives '("MELPA" . "https://melpa.org/packages/"))
 (package-initialize)
 (unless package-archive-contents
   (package-refresh-contents))
