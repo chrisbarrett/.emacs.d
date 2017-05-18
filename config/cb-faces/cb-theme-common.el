@@ -469,6 +469,16 @@
 
     ;; Neotree
 
+    (neo-root-dir-face
+     ((((background light)) :foreground ,cb-theme-common-blue)
+      (((background dark))  :foreground ,cb-theme-common-pink)))
+
+    (neo-banner-face
+     ((((background light))
+       :foreground ,cb-theme-common-blue :weight light)
+      (((background dark))
+       :foreground ,cb-theme-common-orange :weight light)))
+
     (neo-file-link-face
      ((t :weight light)))
 
