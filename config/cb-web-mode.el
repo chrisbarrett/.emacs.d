@@ -70,10 +70,12 @@
         (setq flycheck-html-tidy-executable tidy-bin)))
 
     (flycheck-add-mode 'typescript-tslint 'cb-web-typescript-mode)
+
     (flycheck-add-mode 'javascript-eslint 'cb-web-js-mode)
-    (flycheck-add-mode 'javascript-gjslint 'cb-web-js-mode)
     (flycheck-add-mode 'javascript-jscs 'cb-web-js-mode)
     (flycheck-add-mode 'javascript-jshint 'cb-web-js-mode)
+    (flycheck-add-mode 'javascript-standard 'cb-web-js-mode)
+
     (flycheck-add-mode 'css-csslint 'cb-web-css-mode)
     (flycheck-add-mode 'json-jsonlint 'cb-web-json-mode)
     (flycheck-add-mode 'html-tidy 'cb-web-html-mode)))
