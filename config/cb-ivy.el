@@ -58,6 +58,7 @@
     (setq ivy-use-virtual-buffers t)
     (setq ivy-count-format "(%d/%d) ")
     (setq ivy-re-builders-alist '((t . ivy--regex-plus)))
+    (setq ivy-magic-slash-non-match-action nil)
 
     ;; Do not show extra directories when finding files.
     (setq ivy-extra-directories '("."))
