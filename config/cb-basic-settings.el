@@ -417,11 +417,13 @@ Optional arg JUSTIFY will justify comments and strings."
   (setq comint-prompt-read-only t))
 
 (use-package hippie-exp
+  :preface
+  (autoload 'evil-global-set-key "evil-core")
   :init
   (progn
     (global-set-key (kbd "M-/") #'hippie-expand)
     (with-eval-after-load 'evil
-      (define-key evil-insert-state-map [remap evil-complete-previous] #'hippie-expand)))
+      (evil-global-set-key 'insert [remap evil-complete-previous] #'hippie-expand)))
 
   :config
   (setq hippie-expand-try-functions-list
