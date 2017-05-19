@@ -15,10 +15,14 @@
 
 (use-package evil
   :preface
-  (defun cb-evil--sp-delete-and-join-compat (fn &rest args)
-    (if (bound-and-true-p smartparens-strict-mode)
-        (call-interactively 'sp-backward-delete-char)
-      (apply fn args)))
+  (progn
+    (autoload 'evil-set-initial-state "evil-core")
+    (autoload 'evil-visual-update-x-selection "evil-states")
+
+    (defun cb-evil--sp-delete-and-join-compat (fn &rest args)
+      (if (bound-and-true-p smartparens-strict-mode)
+          (call-interactively 'sp-backward-delete-char)
+        (apply fn args))))
 
   :config
   (progn
@@ -28,6 +32,10 @@
 
     (setq evil-want-visual-char-semi-exclusive t)
     (setq evil-want-Y-yank-to-eol t)
+
+    ;; Prevent visual state from updating the clipboard.
+
+    (advice-add #'evil-visual-update-x-selection :override #'ignore)
 
     ;; Configure cursors.
 
