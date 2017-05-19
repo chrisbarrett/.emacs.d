@@ -558,6 +558,11 @@ Optional arg JUSTIFY will justify comments and strings."
                  hs-hide-block))
     (advice-add cmd :around #'cb-evil-ignore-errors)))
 
+(use-package apropos
+  :defer t
+  :config
+  (setq apropos-do-all t))
+
 (provide 'cb-basic-settings)
 
 ;;; cb-basic-settings.el ends here
