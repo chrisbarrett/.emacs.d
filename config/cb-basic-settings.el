@@ -405,7 +405,10 @@ Optional arg JUSTIFY will justify comments and strings."
 (use-package compile
   :defer t
   :config
-  (setq compilation-scroll-output 'first-error))
+  (progn
+    (setq compilation-always-kill t)
+    (setq compilation-ask-about-save nil)
+    (setq compilation-scroll-output 'first-error)))
 
 (use-package mule
   :config
