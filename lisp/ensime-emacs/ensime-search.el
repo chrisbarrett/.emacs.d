@@ -24,6 +24,11 @@
   (require 'ensime-macros))
 
 (require 'dash)
+(require 'ensime-helm)
+(require 'ensime-ivy)
+
+(defvar ensime-search-interface)
+(defvar ensime-buffer-connection)
 
 (autoload 'ensime-helm-search "ensime-helm")
 
@@ -70,7 +75,6 @@
 (defvar ensime-search-max-results 50
   "The max number of results to return per rpc call.")
 
-
 (defvar ensime-search-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map "\C-c\C-q" 'ensime-search-quit)
@@ -100,7 +104,6 @@
 (defvar ensime-search-selection-overlay nil
   "Overlay that highlights the currently selected search result.")
 
-
 (defstruct ensime-search-result
   "A ensime-search search result.
 
@@ -125,7 +128,17 @@
   "The main entrypoint for ensime-search-mode.
    Initiate an incremental search of all live buffers."
   (interactive)
-  (if ensime-use-helm (ensime-helm-search) (ensime-search-classic)))
+  (pcase ensime-search-interface
+    (`classic
+     (ensime-search-classic))
+    (`helm
+     (if (featurep 'helm)
+         (ensime-helm-search)
+       (message "Please ensure helm is installed and loaded.")))
+    (`ivy
+     (if (featurep 'ivy)
+         (ensime-search-ivy)
+       (message "Please ensure helm is installed and loaded.")))))
 
 (defun ensime-search-classic ()
   "The classic entrypoint for ensime-search-mode.

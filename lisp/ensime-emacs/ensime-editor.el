@@ -13,6 +13,7 @@
 
 (require 'dash)
 (require 'popup)
+(require 'ensime-ivy)
 (require 'ensime-vars)
 
 (autoload 'ensime-helm-select-entry "ensime-helm")
@@ -725,46 +726,60 @@ Decide what line to insert QUALIFIED-NAME."
       (funcall (funcall insert-import-fn insertion-range starting-point qualified-name)))))
 
 (defun ensime-ask-user-to-select-entry (title entries)
-  "Prompts the user to select an entry of entries"
-  (if ensime-use-helm
-      (ensime-helm-select-entry entries title)
-      (popup-menu* entries :point (point))
-    ))
+  "Prompt the user to select an entry from entries."
+  (pcase ensime-search-interface
+    (`classic
+     (popup-menu* entries :point (point)))
+    (`helm
+     (if (featurep 'helm)
+         (ensime-helm-select-entry entries title)
+       (progn
+         (message "Helm is not installed, falling back to popup interface.")
+         (popup-menu* entries :point (point)))))
+    (`ivy
+     (if (featurep 'ivy)
+         (ensime-ivy-select-entry entries title)
+       (progn
+         (message "Ivy is not installed, falling back to popup interface.")
+         (popup-menu* entries :point (point)))))))
 
 (defun ensime-import-type-at-point (&optional non-interactive)
   "Suggest possible imports of the qualified name at point.
- If user selects and import, add it to the import list."
+If user selects an import, add it to the import list."
   (interactive)
   (let* ((sym (ensime-local-sym-at-point))
-	 (name (plist-get sym :name))
-	 (name-start (plist-get sym :start))
-	 (name-end (plist-get sym :end))
-	 (suggestions (when name (ensime-rpc-import-suggestions-at-point (list name) 10))))
-    (when (car-safe suggestions)
+         (name (plist-get sym :name))
+         (name-start (plist-get sym :start))
+         (name-end (plist-get sym :end))
+         (suggestions (when name
+                        (ensime-rpc-import-suggestions-at-point
+                         (list name) 10))))
+    (if (car-safe suggestions)
       (let* ((names (mapcar
-		     (lambda (s)
-		       (propertize (plist-get s :name)
-				   'local-name
-				   (plist-get s :local-name)))
-		     (apply 'append suggestions)))
-	     (selected-name
-	      (if non-interactive (car names)
-        (ensime-ask-user-to-select-entry "import-type" names)
-    )))
-	(when selected-name
-	  (save-excursion
-	    (when (and (not (equal selected-name name))
+                     (lambda (s)
+                       (propertize (plist-get s :name)
+                                   'local-name
+                                   (plist-get s :local-name)))
+                     (apply 'append suggestions)))
+             (selected-name (if non-interactive
+                                (car names)
+                              (ensime-ask-user-to-select-entry "Import type: "
+                                                               names))))
+        (when selected-name
+          (save-excursion
+            (when (and (not (equal selected-name name))
                        name-start name-end)
-	      (goto-char name-start)
-	      (delete-char (- name-end name-start))
-	      (insert (ensime-short-local-name
+              (goto-char name-start)
+              (delete-char (- name-end name-start))
+              (insert (ensime-short-local-name
                        (get-text-property
                         0 'local-name selected-name))))
-	    (let ((qual-name
-		   (ensime-strip-dollar-signs
-		    (ensime-kill-txt-props selected-name))))
-	      (ensime-insert-import qual-name)
-	      (ensime-typecheck-current-buffer))))))))
+            (let ((qual-name
+                   (ensime-strip-dollar-signs
+                    (ensime-kill-txt-props selected-name))))
+              (ensime-insert-import qual-name)
+              (ensime-typecheck-current-buffer)))))
+      (message "No import suggestions were returned for %S" name))))
 
 ;; Source Formatting - transition cue to sbt task
 (defun ensime-format-source ()

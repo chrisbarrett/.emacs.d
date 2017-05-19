@@ -104,6 +104,7 @@
          (example-dotensime (ensime-config-load "test/example/.ensime"))
          (scala-compiler-jars (plist-get example-dotensime :scala-compiler-jars))
          (ensime-server-jars (plist-get example-dotensime :ensime-server-jars))
+         (ensime-server-version (plist-get example-dotensime :ensime-server-version))
          (scala-jar (-find (lambda (e) (s-contains? "scala-library" e)) scala-compiler-jars))
 	 (sp-name (if subproject-name
 		      subproject-name
@@ -117,6 +118,7 @@
                                 :name "test"
                                 :scala-version ,ensime--test-scala-version
                                 :ensime-server-jars ,ensime-server-jars
+                                :ensime-server-version ,ensime-server-version
                                 :scala-compiler-jars ,scala-compiler-jars
                                 :java-home ,(getenv "JAVA_HOME")
                                 :java-flags , (if env
