@@ -295,6 +295,7 @@ Optional arg JUSTIFY will justify comments and strings."
 (setq initial-major-mode 'text-mode)
 (setq initial-buffer-choice t)
 (setq ring-bell-function #'ignore)
+(setq history-length 1000)
 
 
 ;; Use conf mode for puppet templated conf files
