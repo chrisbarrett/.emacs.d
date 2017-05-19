@@ -46,7 +46,7 @@
   :type 'boolean
   :group 'ensime-ui)
 
-(defcustom ensime-eldoc-hints 'all
+(defcustom ensime-eldoc-hints nil
   "If non-nil, eldoc hints are activated.
 It can be set to 'all, 'error, 'implicit or 'type to limit the type of hints shown"
   :type 'symbol
@@ -74,12 +74,6 @@ update it when the project definition changes. At the moment, this only
 works for sbt projects."
   :type 'boolean
   :group 'ensime-ui)
-
-(defcustom ensime-server-version
-  (or (getenv "ENSIME_SERVER_VERSION") "2.0.0-SNAPSHOT")
-  "Used to determine if this is a Developer install."
-  :type 'string
-  :group 'ensime-server)
 
 (defcustom ensime-default-server-env ()
   "A `process-environment' compatible list of environment variables"
@@ -314,9 +308,10 @@ Possible types: `organizeImport', `rename', `extractLocal',
   :type 'boolean
   :group 'ensime-ui)
 
-(defcustom ensime-use-helm nil
-  "Enable helm for some ensime features"
-  :type 'boolean
+(defcustom ensime-search-interface 'classic
+  "Completion mechanism for search.
+The options are `classic', `helm' and `ivy'."
+  :type '(repeat symbol)
   :group 'ensime-ui)
 
 (provide 'ensime-vars)

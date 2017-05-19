@@ -47,9 +47,7 @@
          (get-buffer (sbt:buffer-name)))
     (sbt:command ensime-sbt-perform-on-save)))
 
-(defun ensime-sbt-switch ()
-  (interactive)
-  (ensime-sbt))
+(defalias 'ensime-sbt-switch 'ensime-sbt)
 
 (defun ensime-sbt-send-eol ()
   (interactive)
@@ -57,6 +55,7 @@
     (sbt:command "")))
 
 (defun ensime-sbt-do-compile ()
+  "Compile all sources including tests." 
   (interactive)
   (sbt:command "test:compile"))
 
@@ -84,18 +83,22 @@
         (sbt:command (concat command " " file-name))))))
 
 (defun ensime-sbt-do-run ()
+  "Execute the sbt `run' command for the project."
   (interactive)
   (sbt:command "run"))
 
 (defun ensime-sbt-do-clean ()
+  "Execute the sbt `clean' command for the project."
   (interactive)
   (sbt:command "clean"))
 
 (defun ensime-sbt-do-ensime-config ()
+  "Execute the sbt `ensimeConfig' command for the project."
   (interactive)
   (sbt:command "ensimeConfig"))
 
 (defun ensime-sbt-do-package ()
+  "Build a jar file of the project."
   (interactive)
   (sbt:command "package"))
 
@@ -159,16 +162,16 @@ again."
 (defun ensime-sbt-prompt-for-test ()
   "Prompt sequence when `*-test-dwim' can't figure out what to do."
   (let ((module
-         (completing-read "Do you want to run from module "
+         (completing-read "Module to test: "
                           (->> (-> (ensime-connection) ensime-config (plist-get :subprojects))
                                (-map (lambda (sp) (plist-get sp :name))))))
         (source-set
-         (ensime-sbt-read-char-prompt "Do you want to run from " t
+         (ensime-sbt-read-char-prompt "Test suite: " t
                                       (?t "[t]est" "")
                                       (?i "[i]t" "it:")
                                       (?f "[f]un" "fun:")))
         (task
-         (ensime-sbt-read-char-prompt "Do you want to run " t
+         (ensime-sbt-read-char-prompt "Test command: " t
                                       (?t "[t]est" "test")
                                       (?o "test-[o]nly" "testOnly")
                                       (?q "test-[q]uick" "testQuick"))))
@@ -185,17 +188,40 @@ again."
         (-> (ensime-subproject-for-config)
             (concat "/" source-set command)
             sbt:command)
-      (-> (ensime-sbt-prompt-for-test) sbt:command))))
+      (-> (ensime-sbt-prompt-for-test) sbt:command)
+      (message "Run `%s' from a test file to avoid the prompts"
+               (key-description
+                (where-is-internal this-command overriding-local-map t))))))
+
+(defun ensime-sbt-do-test ()
+  "Run all the tests."
+  (interactive)
+  (sbt-command "test"))
 
 (defun ensime-sbt-do-test-dwim ()
+  "Execute the sbt `test' command for the project and suite that
+corresponds to the current source test file.
+
+If not run from a test source file, then prompt for the project
+module, test suite and test command."
   (interactive)
   (ensime-sbt-test-dwim "test"))
 
 (defun ensime-sbt-do-test-quick-dwim ()
+  "Execute the sbt `testQuick' command for the project and suite
+that corresponds to the current source test file.
+
+If not run from a test source file, then prompt for the project
+module, test suite and test command."
   (interactive)
   (ensime-sbt-test-dwim "testQuick"))
 
 (defun ensime-sbt-do-test-only-dwim ()
+  "Execute the sbt `testOnly' command for the project and suite
+that corresponds to the current source test file.
+
+If not run from a test source file, then prompt for the project
+module, test suite and test command."
   (interactive)
   (let* ((impl-class
           (or (ensime-top-level-class-closest-to-point)

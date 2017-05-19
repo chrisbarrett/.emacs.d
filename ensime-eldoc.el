@@ -17,19 +17,16 @@
   (when (ensime-connected-p)
     (let ((msg (pcase ensime-eldoc-hints
                  (`error
-                  (ensime-errors-at (point)))
+                  (mapconcat 'identity (ensime-errors-at (point)) "\n"))
                  (`implicit
-                  (ensime-implicit-notes-at (point)))
+                  (mapconcat 'identity (ensime-implicit-notes-at (point)) "\n"))
                  (`type
-                  (ensime-eldoc-type-info))
+                  (or (ensime-eldoc-type-info) ""))
                  (`all
-                  (let* ((error-msg (ensime-errors-at (point)))
-                         (implicit (ensime-implicit-notes-at (point)))
-                         (type (ensime-eldoc-type-info)))
-                    (format "%s\n%s\n%s"
-                            type
-                            (if implicit implicit "")
-                            (if error-msg error-msg "")))))))
+                  (format "%s\n%s\n%s"
+                          (or (ensime-eldoc-type-info) "")
+                          (mapconcat 'identity (ensime-implicit-notes-at (point)) "\n")
+                          (mapconcat 'identity (ensime-errors-at (point)) "\n"))))))
       (eldoc-message (s-trim msg)))))
 
 (defun ensime-eldoc-type-info ()
@@ -39,8 +36,10 @@
            (type (ensime-rpc-get-type-at-point))
            (name (plist-get symbol :local-name))
            (type-name (ensime-type-name-with-args type)))
-      (when (and type (not (string= type-name "<none>")))
-        (format "%s: %s" name type-name)))))
+      (when (and name type (not (string= type-name "<none>")))
+        (format "%s: %s"
+                (propertize name 'face 'font-lock-variable-name-face)
+                (propertize type-name 'face 'font-lock-type-face))))))
 
 (provide 'ensime-eldoc)
 

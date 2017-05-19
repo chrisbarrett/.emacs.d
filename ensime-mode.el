@@ -114,6 +114,7 @@
       (define-key prefix-map (kbd "C-b o") 'ensime-sbt-do-test-only-dwim)
       (define-key prefix-map (kbd "C-b p") 'ensime-sbt-do-package)
       (define-key prefix-map (kbd "C-b r") 'ensime-sbt-do-run)
+      (define-key prefix-map (kbd "C-b T") 'ensime-sbt-do-test)
       (define-key prefix-map (kbd "C-b t") 'ensime-sbt-do-test-dwim)
       (define-key prefix-map (kbd "C-b q") 'ensime-sbt-do-test-quick-dwim)
 
@@ -238,8 +239,9 @@
      ["Compile only" ensime-sbt-do-compile-only]
      ["Clean" ensime-sbt-do-clean]
      ["Test" ensime-sbt-do-test]
-     ["Test Quick" ensime-sbt-do-test-quick]
-     ["Test current class" ensime-sbt-do-test-only]
+     ["Test module/suite" ensime-sbt-do-test-dwim]
+     ["Test quick" ensime-sbt-do-test-quick-dwim]
+     ["Test current class" ensime-sbt-do-test-only-dwim]
      ["Format source" ensime-sbt-do-scalariform-only]
      ["Run" ensime-sbt-do-run]
      ["Package" ensime-sbt-do-package])
