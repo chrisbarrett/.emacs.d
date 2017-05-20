@@ -10,6 +10,7 @@
 
 (eval-when-compile
   (require 'use-package)
+  (require 'dash)
   (require 'cb-use-package-extensions))
 
 (require 'spacemacs-keys)
@@ -64,10 +65,36 @@
           (just-one-space))))
 
     (defun cb-smartparens-delete-horizontal-space-for-delete (f &rest args)
-      (if (or (equal (char-before) ?\ )
-              (equal (char-after) ?\ ))
-          (delete-horizontal-space)
-        (funcall f args)))
+      (-if-let ((&plist :beg beg :end end :op op :cl cl) (sp-get-enclosing-sexp))
+          (let* ((inside-start (+ beg (length op)))
+                 (inside-end (- end (length cl)))
+                 (before (buffer-substring inside-start (point)))
+                 (after (buffer-substring (point) inside-end))
+                 (inside (concat before after)))
+            (cond
+             ;; Delete contents for multiline pairs that were just inserted, e.g. braces.
+             ((string-match-p (rx bos (* space) "\n" (* space) "\n" (* space) eos) inside)
+              (delete-region inside-start inside-end))
+
+             ;; Delete preceding whitespace beyond a certain length.
+             ((let ((preceding (buffer-substring (line-beginning-position) (point))))
+                (string-match-p (rx space (+ space) eos) preceding))
+              (while (looking-back (rx space space) (line-beginning-position))
+                (delete-char -1)))
+
+             ;; Collapse horizontal space in empty pairs.
+             ((string-match-p (rx bos (+ space) eos) inside)
+              (delete-region inside-start inside-end))
+
+             (t
+              (funcall f args))))
+
+        ;; Delete preceding whitespace beyond a certain length.
+        (if (let ((preceding (buffer-substring (line-beginning-position) (point))))
+              (string-match-p (rx space (+ space) eos) preceding))
+            (while (looking-back (rx space space) (line-beginning-position))
+              (delete-char -1))
+          (funcall f args))))
 
     (defun cb-smartparens-add-space-before-sexp-insertion (id action _context)
       (when (eq action 'insert)
