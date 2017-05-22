@@ -298,12 +298,24 @@ Optional arg JUSTIFY will justify comments and strings."
 (setq history-length 1000)
 
 
+;; Display buffer customisations for inbuilt features
+
+(add-to-list 'display-buffer-alist
+             `(,(rx bos "*Help*" eos)
+               (display-buffer-reuse-window
+                display-buffer-in-side-window)
+               (reusable-frames . visible)
+               (side            . right)
+               (slot            . 1)
+               (window-width    . 0.5)))
+
+
 ;; Use conf mode for puppet templated conf files
-
-(add-to-list 'auto-mode-alist '("\\.env\\.erb\\'" . conf-mode))
-(add-to-list 'auto-mode-alist '("\\.conf\\.erb\\'" . conf-mode))
-
-(add-to-list 'auto-mode-alist '("\\.kll\\'" . conf-mode))
+(use-package conf-mode
+  :mode
+  (("\\.env\\.erb\\'" . conf-mode)
+   ("\\.conf\\.erb\\'" . conf-mode)
+   ("\\.kll\\'" . conf-mode)))
 
 (use-package abbrev
   :defer t
