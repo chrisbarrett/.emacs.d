@@ -106,7 +106,17 @@
   :init
   (spacemacs-keys-set-leader-keys-for-major-mode 'ledger-mode "r" #'cb-ledger-reports-weekly-review)
   :config
-  (setq cb-ledger-reports-income-payee-name "Income:Movio"))
+  (progn
+    (setq cb-ledger-reports-income-payee-name "Income:Movio")
+
+    (add-to-list 'display-buffer-alist
+                 `(,(rx bos "*ledger review*" eos)
+                   (display-buffer-reuse-window
+                    display-buffer-in-side-window)
+                   (reusable-frames . visible)
+                   (side            . right)
+                   (slot            . 1)
+                   (window-width   . 0.5)))))
 
 (use-package flycheck-ledger
   :after ledger-mode)
