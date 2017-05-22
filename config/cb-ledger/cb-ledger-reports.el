@@ -27,6 +27,11 @@
   :group 'cb-ledger-reports
   :type 'string)
 
+(defcustom cb-ledger-reports-budget-excludes nil
+  "Accounts to be excluded from budget reports."
+  :group 'cb-ledger-reports
+  :type '(repeat string))
+
 
 ;; Faces
 
@@ -162,20 +167,25 @@
                                       (ignore-errors (kill-buffer err-buf))))
                 nil t))))
 
+(defun cb-ledger-reports-format-budget-excludes ()
+  (when cb-ledger-reports-budget-excludes
+    `("and" "not" "(" ,@(-interpose "or" cb-ledger-reports-budget-excludes) ")")))
+
+
 (defun cb-ledger-reports--populate-state (state)
   (let ((last-payday (cb-ledger-reports-state-last-payday state))
         (prev-pay-period (cb-ledger-reports-state-prev-pay-period state)))
     (cb-ledger-reports--fetch-value 'assets-and-liabilities state '("bal" "^Assets" "^Liabilities" "--depth" "2"))
     (cb-ledger-reports--fetch-value 'expenses-last-7-days state '("bal" "expenses" "--sort" "total" "-p" "last 7 days" "--invert"))
     (cb-ledger-reports--fetch-value 'week-on-week-change state '("bal" "assets" "-p" "last 7 days"))
-    (cb-ledger-reports--fetch-value 'budget-last-7-days state '("bal" "expenses" "--sort" "total" "-p" "last 7 days" "--invert" "--budget"))
-    (cb-ledger-reports--fetch-value 'budget-last-30-days state '("bal" "expenses" "--sort" "total" "-p" "last 30 days" "--invert" "--budget"))
-    (cb-ledger-reports--fetch-value 'budget-since-payday state `("bal" "expenses" "--sort" "total" "-b" ,last-payday "--invert""--budget"))
-    (cb-ledger-reports--fetch-value 'budget-last-pay-period state `("bal" "expenses" "--sort" "total" "-p" ,prev-pay-period "--invert" "--budget"))
+    (cb-ledger-reports--fetch-value 'budget-last-7-days state `("bal" "expenses" ,@(cb-ledger-reports-format-budget-excludes) "--sort" "total" "-p" "last 7 days" "--invert" "--budget"))
+    (cb-ledger-reports--fetch-value 'budget-last-30-days state `("bal" "expenses" ,@(cb-ledger-reports-format-budget-excludes) "--sort" "total" "-p" "last 30 days" "--invert" "--budget"))
+    (cb-ledger-reports--fetch-value 'budget-since-payday state `("bal" "expenses" ,@(cb-ledger-reports-format-budget-excludes) "--sort" "total" "-b" ,last-payday "--invert""--budget"))
+    (cb-ledger-reports--fetch-value 'budget-last-pay-period state `("bal" "expenses" ,@(cb-ledger-reports-format-budget-excludes) "--sort" "total" "-p" ,prev-pay-period "--invert" "--budget"))
     (cb-ledger-reports--fetch-value 'budget-last-7-days-by-payee state '("reg" "expenses" "--by-payee" "--sort" "total" "-p" "last 7 days" "--invert" "--budget"))
     (cb-ledger-reports--fetch-value 'budget-last-30-days-by-payee state '("reg" "expenses" "--by-payee" "--sort" "total" "-p" "last 30 days" "--invert" "--budget"))
-    (cb-ledger-reports--fetch-value 'unbudgeted-last-7-days state '("bal" "expenses" "--sort" "total" "-p" "last 7 days" "--invert" "--unbudgeted"))
-    (cb-ledger-reports--fetch-value 'unbudgeted-last-30-days state '("bal" "expenses" "--sort" "total" "-p" "last 30 days" "--invert" "--unbudgeted"))
+    (cb-ledger-reports--fetch-value 'unbudgeted-last-7-days state `("bal" "expenses" ,@(cb-ledger-reports-format-budget-excludes) "--sort" "total" "-p" "last 7 days" "--invert" "--unbudgeted"))
+    (cb-ledger-reports--fetch-value 'unbudgeted-last-30-days state `("bal" "expenses" ,@(cb-ledger-reports-format-budget-excludes) "--sort" "total" "-p" "last 30 days" "--invert" "--unbudgeted"))
     (cb-ledger-reports--fetch-value 'register-last-7-days state '("reg" "checking" "-p" "last 7 days" "--invert"))))
 
 
