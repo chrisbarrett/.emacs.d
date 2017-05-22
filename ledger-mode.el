@@ -4,6 +4,8 @@
 
 ;; This file is not part of GNU Emacs.
 
+;; Package-Requires: ((emacs "24.3"))
+
 ;; This is free software; you can redistribute it and/or modify it under
 ;; the terms of the GNU General Public License as published by the Free
 ;; Software Foundation; either version 2, or (at your option) any later
@@ -100,10 +102,11 @@
 
 (defun ledger-read-account-with-prompt (prompt)
   "Read an account from the minibuffer with PROMPT."
-  (let ((context (ledger-context-at-point)))
+  (let* ((context (ledger-context-at-point))
+         (account (ledger-context-field-value context 'account)))
     (ledger-read-string-with-default prompt
-                                     (if (eq (ledger-context-current-field context) 'account)
-                                         (regexp-quote (ledger-context-field-value context 'account))
+                                     (if account
+                                         (regexp-quote account)
                                        nil))))
 
 (defun ledger-read-date (prompt)
@@ -137,10 +140,10 @@ the balance into that."
   (interactive "P")
   (let* ((account (ledger-read-account-with-prompt "Account balance to show"))
          (target-commodity (when arg (ledger-read-commodity-with-prompt "Target commodity: ")))
-         (buffer (current-buffer))
+         (buffer (find-file-noselect (ledger-master-file)))
          (balance (with-temp-buffer
                     (apply 'ledger-exec-ledger buffer (current-buffer) "cleared" account
-                            (when target-commodity (list "-X" target-commodity)))
+                           (when target-commodity (list "-X" target-commodity)))
                     (if (> (buffer-size) 0)
                         (buffer-substring-no-properties (point-min) (1- (point-max)))
                       (concat account " is empty.")))))
@@ -151,7 +154,7 @@ the balance into that."
   "Display the cleared-or-pending balance.
 And calculate the target-delta of the account being reconciled."
   (interactive)
-  (let* ((buffer (current-buffer))
+  (let* ((buffer (find-file-noselect (ledger-master-file)))
          (balance (with-temp-buffer
                     (ledger-exec-ledger buffer (current-buffer) "stats")
                     (buffer-substring-no-properties (point-min) (1- (point-max))))))
@@ -356,7 +359,7 @@ With a prefix argument, remove the effective date."
   (add-hook 'post-command-hook 'ledger-highlight-xact-under-point nil t)
 
   (ledger-init-load-init-file)
-  (setq comment-start ";")
+  (set (make-local-variable 'comment-start) ";")
 
   (set (make-local-variable 'indent-region-function) 'ledger-post-align-postings))
 
