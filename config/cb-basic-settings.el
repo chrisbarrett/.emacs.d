@@ -360,6 +360,7 @@ Optional arg JUSTIFY will justify comments and strings."
                           ".g8"
                           "target"
                           "build"
+                          "vendor"
                           "Maildir"
                           "dist")))
 
