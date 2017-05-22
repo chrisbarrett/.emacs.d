@@ -148,8 +148,7 @@
 
     (diredp-file-suffix
      ((((background light)) :foreground ,cb-theme-common-neutral-grey)
-      (((background dark))  :foreground "#a55"))
-     ((t :foreground ,cb-theme-common-neutral-grey)))
+      (((background dark))  :foreground "#a55")))
 
     (diredp-compressed-file-suffix
      ((t :inherit diredp-file-suffix)))
@@ -383,7 +382,8 @@
      ((t :inherit default)))
 
     (org-meta-line
-     ((t :weight light)))
+     ((((background light)) :foreground ,cb-theme-common-neutral-grey)
+      (((background dark))  :foreground "#a55")))
 
     (org-agenda-structure
      ((t :weight demibold)))
