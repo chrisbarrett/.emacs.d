@@ -46,7 +46,25 @@
     (setq haskell-indentation-left-offset 4)
     (setq haskell-indent-spaces 4)
 
-    (add-hook 'haskell-mode-hook #'cb-haskell--set-indentation-step)))
+    (add-hook 'haskell-mode-hook #'cb-haskell--set-indentation-step)
+
+    (add-to-list 'display-buffer-alist
+                 `(,(rx bos "*intero:")
+                   (display-buffer-reuse-window
+                    display-buffer-in-side-window)
+                   (reusable-frames . visible)
+                   (side            . right)
+                   (slot            . 1)
+                   (window-width    . 0.5)))
+
+    (add-to-list 'display-buffer-alist
+                 `(,(rx bos "*stack hoogle*" eos)
+                   (display-buffer-reuse-window
+                    display-buffer-in-side-window)
+                   (reusable-frames . visible)
+                   (side            . bottom)
+                   (slot            . 1)
+                   (window-height   . 0.5)))))
 
 
 (use-package haskell-customize
