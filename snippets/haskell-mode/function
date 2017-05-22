@@ -1,6 +1,7 @@
-# key: d
-# name: data
+# key: f
+# name: function
 # expand-env: ((yas-indent-line (quote fixed)) (yas-wrap-around-region (quote t)))
 # condition: (cb-yas/bol?)
 # --
-data ${1:Name} = $0
+${1:fn} :: ${T}
+$1 $0
