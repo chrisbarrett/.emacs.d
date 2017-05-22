@@ -297,7 +297,7 @@
 
     (magit-section-highlight
      ((((background light)) :background "grey85")
-      (((background  dark)) :background "grey20")))
+      (((background  dark)) :background "#2c1a1a")))
 
     (magit-diff-context-highlight
      ((((background light))
