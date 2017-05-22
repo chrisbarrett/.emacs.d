@@ -27,10 +27,12 @@
 ;;; Code:
 
 (require 'easymenu)
-(eval-when-compile
-  (require 'cl))
+(require 'ledger-navigate)
+(require 'ledger-report) ; for ledger-master-file
+
 
 (defvar ledger-check-buffer-name "*Ledger Check*")
+(defvar ledger-original-window-cfg nil)
 
 
 
@@ -45,7 +47,7 @@
 (easy-menu-define ledger-check-mode-menu ledger-check-mode-map
   "Ledger check menu"
   '("Check"
-;    ["Re-run Check" ledger-check-redo]
+    ;; ["Re-run Check" ledger-check-redo]
     "---"
     ["Visit Source" ledger-report-visit-source]
     "---"
@@ -117,7 +119,7 @@ commands for navigating the buffer to the errors found, etc."
      (when (and (buffer-modified-p)
                 (y-or-n-p "Buffer modified, save it? "))
        (save-buffer))))
-  (let ((buf (current-buffer))
+  (let ((buf (find-file-noselect (ledger-master-file)))
         (cbuf (get-buffer ledger-check-buffer-name))
         (wcfg (current-window-configuration)))
     (if cbuf
