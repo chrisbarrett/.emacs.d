@@ -167,6 +167,7 @@ If argument INTERACTIVE-P is set, log additional information."
 (use-package cb-docker)
 (use-package cb-graphviz)
 (use-package cb-protobuf)
+(use-package cb-latex)
 
 (use-package personal-config
   :load-path "~/Sync/emacs")
