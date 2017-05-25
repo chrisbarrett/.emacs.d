@@ -571,6 +571,22 @@
     (company-template-field
      ((t :inherit highlight)))
 
+    ;; Latex
+
+    (font-latex-bold-face
+     ((t :weight demibold)))
+
+    (font-latex-warning-face
+     ((t :inherit warning)))
+
+    (font-latex-sectioning-5-face
+     ((((background light)) :foreground ,cb-theme-common-blue :weight demibold)
+      (((background dark)) :foreground "#c55" :weight demibold)))
+
+    (font-latex-sedate-face
+     ((((background light)) :foreground ,cb-theme-common-dark-grey)
+      (((background dark))  :foreground "#a55")))
+
     ;; Misc faces
 
     (go-peg-mode-production-name
