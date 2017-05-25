@@ -32,10 +32,11 @@
   :after tex
   :preface
   (progn
-    (autoload 'TeX-save-document "tex-buf")
-    (autoload 'TeX-command "tex-buf")
-    (autoload 'TeX-master-file "tex")
     (autoload 'LaTeX-current-environment "latex")
+    (autoload 'TeX-command "tex-buf")
+    (autoload 'TeX-font "tex")
+    (autoload 'TeX-master-file "tex")
+    (autoload 'TeX-save-document "tex-buf")
 
     (defvar TeX-save-query)
 
