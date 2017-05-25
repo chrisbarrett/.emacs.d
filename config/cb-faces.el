@@ -30,7 +30,7 @@
 (let ((this-dir (file-name-directory (or load-file-name (buffer-file-name)))))
   (add-to-list 'custom-theme-load-path (concat this-dir "cb-faces/")))
 
-(load-theme 'cb-light t)
+(load-theme 'cb-dark t)
 
 ;; Configure packages
 
