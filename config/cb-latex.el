@@ -158,6 +158,11 @@
       "zR" 'TeX-fold-clearout-region
       "zz" 'TeX-fold-dwim)))
 
+(use-package company-auctex
+  :functions (company-auctex-init)
+  :init
+  (add-hook 'tex-mode-hook 'company-auctex-init))
+
 
 (provide 'cb-latex)
 
