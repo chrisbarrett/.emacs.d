@@ -582,6 +582,24 @@ Optional arg JUSTIFY will justify comments and strings."
   :config
   (setq apropos-do-all t))
 
+(use-package doc-view
+  :defer t
+  :preface
+  (autoload 'evil-set-initial-state "evil-core")
+  :config
+  (progn
+    (setq doc-view-continuous t)
+    (evil-set-initial-state 'doc-view-mode 'motion)
+    (evil-define-key 'motion doc-view-mode-map
+      (kbd "j") 'doc-view-next-line-or-next-page
+      (kbd "k") 'doc-view-previous-line-or-previous-page
+      (kbd "n") 'doc-view-next-page
+      (kbd "p") 'doc-view-previous-page
+      (kbd "<down>") 'doc-view-next-line-or-next-page
+      (kbd "<up>") 'doc-view-previous-line-or-previous-page
+      (kbd "<left>") 'image-backward-hscroll
+      (kbd "<right>") 'image-forward-hscroll)))
+
 (provide 'cb-basic-settings)
 
 ;;; cb-basic-settings.el ends here
