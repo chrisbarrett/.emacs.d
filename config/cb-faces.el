@@ -15,7 +15,12 @@
 
 ;; Load themes.
 
-(defvar cb-faces-dark-mode-p nil)
+(let ((this-dir (file-name-directory (or load-file-name (buffer-file-name)))))
+  (add-to-list 'custom-theme-load-path (concat this-dir "cb-faces/")))
+
+(load-theme 'cb-dark t)
+
+(defvar cb-faces-dark-mode-p t)
 
 (defun cb-faces/toggle-dark-mode ()
   "Toggle between light and dark mode."
@@ -27,10 +32,6 @@
 
 (spacemacs-keys-set-leader-keys "t t" #'cb-faces/toggle-dark-mode)
 
-(let ((this-dir (file-name-directory (or load-file-name (buffer-file-name)))))
-  (add-to-list 'custom-theme-load-path (concat this-dir "cb-faces/")))
-
-(load-theme 'cb-dark t)
 
 ;; Configure packages
 
