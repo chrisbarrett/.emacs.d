@@ -126,13 +126,13 @@
       "."   'LaTeX-mark-environment  ;; C-c .
       "c"   'LaTeX-close-environment ;; C-c ]
       "e"   'LaTeX-environment       ;; C-c C-e
-      "ii"   'LaTeX-insert-item       ;; C-c C-j
+      "ii"  'LaTeX-insert-item       ;; C-c C-j
       "s"   'LaTeX-section           ;; C-c C-s
       "fe"  'LaTeX-fill-environment  ;; C-c C-q C-e
       "fp"  'LaTeX-fill-paragraph    ;; C-c C-q C-p
       "fr"  'LaTeX-fill-region       ;; C-c C-q C-r
       "fs"  'LaTeX-fill-section      ;; C-c C-q C-s
-      "p"   'latex-preview-pane-update
+      "p"   'latex-preview-pane-mode
       "xB"  'cb-latex-font-medium
       "xr"  'cb-latex-font-clear
       "xfa" 'cb-latex-font-calligraphic
