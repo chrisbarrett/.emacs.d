@@ -591,6 +591,8 @@ Optional arg JUSTIFY will justify comments and strings."
     (setq doc-view-continuous t)
     (evil-set-initial-state 'doc-view-mode 'motion)
     (evil-define-key 'motion doc-view-mode-map
+      (kbd "gg") 'doc-view-first-page
+      (kbd "G") 'doc-view-last-page
       (kbd "j") 'doc-view-next-line-or-next-page
       (kbd "k") 'doc-view-previous-line-or-previous-page
       (kbd "n") 'doc-view-next-page
