@@ -9,7 +9,7 @@
 
 
 (use-package latex-preview-pane
-  :commands (latex-preview-pane-update))
+  :commands (latex-preview-pane-mode))
 
 
 ;; Auctex
