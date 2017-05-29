@@ -595,6 +595,8 @@ Optional arg JUSTIFY will justify comments and strings."
       (kbd "G") 'doc-view-last-page
       (kbd "j") 'doc-view-next-line-or-next-page
       (kbd "k") 'doc-view-previous-line-or-previous-page
+      (kbd "h") 'image-backward-hscroll
+      (kbd "l") 'image-forward-hscroll
       (kbd "n") 'doc-view-next-page
       (kbd "p") 'doc-view-previous-page
       (kbd "<down>") 'doc-view-next-line-or-next-page
