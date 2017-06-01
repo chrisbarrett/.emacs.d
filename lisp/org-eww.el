@@ -1,6 +1,6 @@
 ;;; org-eww.el --- Store url and kill from Eww mode for Org  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2014-2016 Free Software Foundation, Inc.
+;; Copyright (C) 2014-2017 Free Software Foundation, Inc.
 
 ;; Author: Marco Wahl <marcowahlsoft>a<gmailcom>
 ;; Keywords: link, eww
@@ -138,9 +138,12 @@ the structure of the Org file."
 		     (point)
 		     (org-eww-goto-next-url-property-change)))
               ;; concat `org-mode' style url to `return-content'.
-              (setq return-content (concat return-content
-                                           (org-make-link-string
-                                            link-location link-title))))
+	      (setq return-content
+		    (concat return-content
+			    (if (stringp link-location)
+				;; hint: link-location is different for form-elements.
+				(org-make-link-string link-location link-title)
+			      link-title))))
 	  (goto-char temp-position) ; reset point before jump next anchor
 	  (setq out-bound t)	    ; for break out `while' loop
 	  ))

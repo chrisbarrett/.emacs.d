@@ -221,13 +221,19 @@ This is not a node property
 :END:"
      (org-lint '(obsolete-properties-drawer)))))
 
+(ert-deftest test-org-lint/invalid-effort-property ()
+  "Test `org-lint-invalid-effort-property' checker."
+  (should
+   (org-test-with-temp-text "* H\n:PROPERTIES:\n:EFFORT: something\n:END:"
+     (org-lint '(invalid-effort-property))))
+  (should-not
+   (org-test-with-temp-text "* H\n:PROPERTIES:\n:EFFORT: 1:23\n:END:"
+     (org-lint '(invalid-effort-property)))))
+
 (ert-deftest test-org-lint/link-to-local-file ()
   "Test `org-lint-link-to-local-file' checker."
   (should
    (org-test-with-temp-text "[[file:/Idonotexist.org]]"
-     (org-lint '(link-to-local-file))))
-  (should
-   (org-test-with-temp-text "[[http://orgmode.org][file:/Idonotexist.org]]"
      (org-lint '(link-to-local-file)))))
 
 (ert-deftest test-org-lint/non-existent-setupfile-parameter ()
@@ -474,6 +480,18 @@ SCHEDULED: <2012-03-29 thu.>"
 \(+ 1 1)
 #+end_src"
      (org-lint '(wrong-header-value)))))
+
+(ert-deftest test-org-lint/empty-headline-with-tags ()
+  "Test `org-lint-empty-headline-with-tags' checker."
+  (should
+   (org-test-with-temp-text "* :tag:"
+     (org-lint '(empty-headline-with-tags))))
+  (should
+   (org-test-with-temp-text "*   :tag: "
+     (org-lint '(empty-headline-with-tags))))
+  (should-not
+   (org-test-with-temp-text "* notag: "
+     (org-lint '(empty-headline-with-tags)))))
 
 (provide 'test-org-lint)
 ;;; test-org-lint.el ends here

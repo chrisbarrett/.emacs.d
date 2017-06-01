@@ -1,6 +1,6 @@
 ;;; ob-C.el --- Babel Functions for C and Similar Languages -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2010-2016 Free Software Foundation, Inc.
+;; Copyright (C) 2010-2017 Free Software Foundation, Inc.
 
 ;; Author: Eric Schulte
 ;;      Thierry Banel
@@ -125,7 +125,8 @@ or `org-babel-execute:C++' or `org-babel-execute:D'."
 			(pcase org-babel-c-variant
 			  (`c ".c") (`cpp ".cpp") (`d ".d"))))
 	 (tmp-bin-file			;not used for D
-	  (org-babel-temp-file "C-bin-" org-babel-exeext))
+	  (org-babel-process-file-name
+	   (org-babel-temp-file "C-bin-" org-babel-exeext)))
 	 (cmdline (cdr (assq :cmdline params)))
 	 (cmdline (if cmdline (concat " " cmdline) ""))
 	 (flags (cdr (assq :flags params)))
@@ -151,7 +152,7 @@ or `org-babel-execute:C++' or `org-babel-execute:D'."
 		(pcase org-babel-c-variant
 		  (`c org-babel-C-compiler)
 		  (`cpp org-babel-C++-compiler))
-		(org-babel-process-file-name tmp-bin-file)
+		tmp-bin-file
 		flags
 		(org-babel-process-file-name tmp-src-file)
 		libs)
@@ -278,12 +279,12 @@ its header arguments."
 (defun org-babel-prep-session:C (_session _params)
   "This function does nothing as C is a compiled language with no
 support for sessions"
-  (error "C is a compiled languages -- no support for sessions"))
+  (error "C is a compiled language -- no support for sessions"))
 
 (defun org-babel-load-session:C (_session _body _params)
   "This function does nothing as C is a compiled language with no
 support for sessions"
-  (error "C is a compiled languages -- no support for sessions"))
+  (error "C is a compiled language -- no support for sessions"))
 
 ;; helper functions
 

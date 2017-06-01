@@ -1,6 +1,6 @@
 ;;; ox-groff.el --- Groff Back-End for Org Export Engine
 
-;; Copyright (C) 2011-2016  Free Software Foundation, Inc.
+;; Copyright (C) 2011-2017  Free Software Foundation, Inc.
 
 ;; Author: Nicolas Goaziou <n.goaziou at gmail dot com>
 ;; Author: Luis R Anaya <papoanaya aroba hot mail punto com>
@@ -823,9 +823,7 @@ information."
   (concat
    (format "\\fB%s\\fP " org-clock-string)
    (format org-groff-inactive-timestamp-format
-           (concat (org-translate-time
-		    (org-element-property :raw-value
-					  (org-element-property :value clock)))
+           (concat (org-timestamp-translate (org-element-property :value clock))
                    (let ((time (org-element-property :duration clock)))
                      (and time (format " (%s)" time)))))))
 
@@ -1409,22 +1407,19 @@ information."
                (concat
                 (format "\\fR %s \\fP" org-closed-string)
                 (format org-groff-inactive-timestamp-format
-                        (org-translate-time
-			 (org-element-property :raw-value closed))))))
+                        (org-timestamp-translate closed)))))
            (let ((deadline (org-element-property :deadline planning)))
              (when deadline
                (concat
                 (format "\\fB %s \\fP" org-deadline-string)
                 (format org-groff-active-timestamp-format
-                        (org-translate-time
-			 (org-element-property :raw-value deadline))))))
+                        (org-timestamp-translate deadline)))))
            (let ((scheduled (org-element-property :scheduled planning)))
              (when scheduled
                (concat
                 (format "\\fR %s \\fP" org-scheduled-string)
                 (format org-groff-active-timestamp-format
-                        (org-translate-time
-			 (org-element-property :raw-value scheduled))))))))
+                        (org-timestamp-translate scheduled)))))))
     "")
    ""))
 

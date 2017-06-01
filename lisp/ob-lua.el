@@ -1,6 +1,6 @@
 ;;; ob-lua.el --- Org Babel functions for Lua evaluation -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2014, 2016, 2017 Free Software Foundation, Inc.
 
 ;; Authors: Dieter Schoen
 ;; Keywords: literate programming, reproducible research
@@ -274,7 +274,7 @@ fd:write(t2s(main()))
 fd:close()")
 
 (defun org-babel-lua-evaluate
-  (session body &optional result-type result-params preamble)
+    (session body &optional result-type result-params preamble)
   "Evaluate BODY as Lua code."
   (if session
       (org-babel-lua-evaluate-session
@@ -283,7 +283,7 @@ fd:close()")
      body result-type result-params preamble)))
 
 (defun org-babel-lua-evaluate-external-process
-  (body &optional result-type result-params preamble)
+    (body &optional result-type result-params preamble)
   "Evaluate BODY in external lua process.
 If RESULT-TYPE equals 'output then return standard output as a
 string.  If RESULT-TYPE equals 'value then return the value of the

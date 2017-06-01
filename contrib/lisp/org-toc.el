@@ -1,6 +1,6 @@
 ;;; org-toc.el --- Table of contents for Org-mode buffer
 
-;; Copyright 2007-2016 Free Software Foundation, Inc.
+;; Copyright 2007-2017 Free Software Foundation, Inc.
 ;;
 ;; Author: Bastien Guerry <bzg@gnu.org>
 ;; Keywords: Org table of contents
@@ -354,7 +354,7 @@ If DELETE is non-nil, delete other windows when in the Org buffer."
 (defun org-toc-quit ()
   "Quit the current Org TOC buffer."
   (interactive)
-  (kill-this-buffer)
+  (kill-buffer)
   (other-window 1)
   (delete-other-windows))
 

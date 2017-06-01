@@ -1,6 +1,6 @@
 ;;; ob-sql.el --- Babel Functions for SQL            -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2009-2016 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2017 Free Software Foundation, Inc.
 
 ;; Author: Eric Schulte
 ;; Keywords: literate programming, reproducible research
@@ -43,15 +43,25 @@
 ;; - colnames (default, nil, means "yes")
 ;; - result-params
 ;; - out-file
+;;
 ;; The following are used but not really implemented for SQL:
 ;; - colname-names
 ;; - rownames
 ;; - rowname-names
 ;;
+;; Engines supported:
+;; - mysql
+;; - dbi
+;; - mssql
+;; - sqsh
+;; - postgresql
+;; - oracle
+;; - vertica
+;;
 ;; TODO:
 ;;
 ;; - support for sessions
-;; - support for more engines (currently only supports mysql)
+;; - support for more engines
 ;; - what's a reasonable way to drop table data into SQL?
 ;;
 
@@ -116,15 +126,37 @@ SQL Server on Windows and Linux platform."
 			 (when database (format "-d \"%s\"" database))))
 	     " "))
 
+(defun org-babel-sql-dbstring-sqsh (host user password database)
+  "Make sqsh commmand line args for database connection.
+\"sqsh\" is one method to access Sybase or MS SQL via Linux platform"
+  (mapconcat #'identity
+             (delq nil
+                   (list  (when host     (format "-S \"%s\"" host))
+                          (when user     (format "-U \"%s\"" user))
+                          (when password (format "-P \"%s\"" password))
+                          (when database (format "-D \"%s\"" database))))
+             " "))
+
+(defun org-babel-sql-dbstring-vertica (host port user password database)
+  "Make Vertica command line args for database connection. Pass nil to omit that arg."
+  (mapconcat #'identity
+	      (delq nil
+		    (list (when host     (format "-h %s" host))
+			  (when port     (format "-p %d" port))
+			  (when user     (format "-U %s" user))
+			  (when password (format "-w %s" (shell-quote-argument password) ))
+			  (when database (format "-d %s" database))))
+	      " "))
+
 (defun org-babel-sql-convert-standard-filename (file)
-  "Convert the file name to OS standard.
+  "Convert FILE to OS standard file name.
 If in Cygwin environment, uses Cygwin specific function to
-convert the file name. Otherwise, uses Emacs' standard conversion
-function."
-  (format "\"%s\""
-	  (if (fboundp 'cygwin-convert-file-name-to-windows)
-	      (cygwin-convert-file-name-to-windows file)
-	    (convert-standard-filename file))))
+convert the file name.  In a Windows-NT environment, do nothing.
+Otherwise, use Emacs' standard conversion function."
+  (cond ((fboundp 'cygwin-convert-file-name-to-windows)
+	 (format "%S" (cygwin-convert-file-name-to-windows file)))
+	((string= "windows-nt" system-type) file)
+	(t (format "%S" (convert-standard-filename file)))))
 
 (defun org-babel-execute:sql (body params)
   "Execute a block of Sql code with Babel.
@@ -179,6 +211,20 @@ footer=off -F \"\t\"  %s -f %s -o %s %s"
 				  (org-babel-process-file-name in-file)
 				  (org-babel-process-file-name out-file)
 				  (or cmdline "")))
+		    (`sqsh (format "sqsh %s %s -i %s -o %s -m csv"
+				   (or cmdline "")
+				   (org-babel-sql-dbstring-sqsh
+				    dbhost dbuser dbpassword database)
+				   (org-babel-sql-convert-standard-filename
+				    (org-babel-process-file-name in-file))
+				   (org-babel-sql-convert-standard-filename
+				    (org-babel-process-file-name out-file))))
+		    (`vertica (format "vsql %s -f %s -o %s %s"
+				    (org-babel-sql-dbstring-vertica
+				     dbhost dbport dbuser dbpassword database)
+				    (org-babel-process-file-name in-file)
+				    (org-babel-process-file-name out-file)
+				    (or cmdline "")))
                     (`oracle (format
 			      "sqlplus -s %s < %s > %s"
 			      (org-babel-sql-dbstring-oracle
@@ -203,18 +249,21 @@ SET MARKUP HTML OFF SPOOL OFF
 SET COLSEP '|'
 
 ")
-	 (`mssql "SET NOCOUNT ON
+	 ((or `mssql `sqsh) "SET NOCOUNT ON
 
 ")
+	 (`vertica "\\a\n")
 	 (_ ""))
-       (org-babel-expand-body:sql body params)))
+       (org-babel-expand-body:sql body params)
+       ;; "sqsh" requires "go" inserted at EOF.
+       (if (string= engine "sqsh") "\ngo" "")))
     (org-babel-eval command "")
     (org-babel-result-cond result-params
       (with-temp-buffer
 	(progn (insert-file-contents-literally out-file) (buffer-string)))
       (with-temp-buffer
 	(cond
-	 ((memq (intern engine) '(dbi mysql postgresql))
+	 ((memq (intern engine) '(dbi mysql postgresql sqsh vertica))
 	  ;; Add header row delimiter after column-names header in first line
 	  (cond
 	   (colnames-p
@@ -239,7 +288,7 @@ SET COLSEP '|'
 	      (goto-char (point-max))
 	      (forward-char -1))
 	    (write-file out-file))))
-	(org-table-import out-file '(16))
+	(org-table-import out-file (if (string= engine "sqsh") '(4) '(16)))
 	(org-babel-reassemble-table
 	 (mapcar (lambda (x)
 		   (if (string= (car x) header-delim)

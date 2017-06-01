@@ -1,6 +1,6 @@
 ;; ox-man.el --- Man Back-End for Org Export Engine -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2011-2016 Free Software Foundation, Inc.
+;; Copyright (C) 2011-2017 Free Software Foundation, Inc.
 
 ;; Author: Nicolas Goaziou <n.goaziou at gmail dot com>
 ;;      Luis R Anaya <papoanaya aroba hot mail punto com>
@@ -208,11 +208,13 @@ in this list - but it does not hurt if it is present."
     "tbl %f | eqn | groff -man | ps2pdf - > %b.pdf")
 
   "Commands to process a Man file to a PDF file.
+
 This is a list of strings, each of them will be given to the
 shell as a command.  %f in the command will be replaced by the
-full file name, %b by the file base name (i.e. without directory
-and extension parts) and %o by the base directory of the file.
-
+relative file name, %F by the absolute file name, %b by the file
+base name (i.e. without directory and extension parts), %o by the
+base directory of the file and %O by the absolute file name of
+the output file.
 
 By default, Org uses 3 runs of to do the processing.
 
@@ -588,7 +590,7 @@ CONTENTS is nil.  INFO is a plist holding contextual information."
 (defun org-man-line-break (_line-break _contents _info)
   "Transcode a LINE-BREAK object from Org to Man.
 CONTENTS is nil.  INFO is a plist holding contextual information."
-  ".br\n")
+  "\n.br\n")
 
 
 ;;; Link

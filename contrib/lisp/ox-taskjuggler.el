@@ -1,6 +1,6 @@
 ;;; ox-taskjuggler.el --- TaskJuggler Back-End for Org Export Engine
 ;;
-;; Copyright (C) 2007-2016 Free Software Foundation, Inc.
+;; Copyright (C) 2007-2017 Free Software Foundation, Inc.
 ;;
 ;; Emacs Lisp Archive Entry
 ;; Filename: ox-taskjuggler.el
@@ -861,7 +861,7 @@ a unique id will be associated to it."
      (and complete (format "  complete %s\n" complete))
      (and effort
           (format "  effort %s\n"
-                  (let* ((minutes (org-duration-string-to-minutes effort))
+                  (let* ((minutes (org-duration-minutes effort))
                          (hours (/ minutes 60.0)))
                     (format "%.1fh" hours))))
      (and priority (format "  priority %s\n" priority))

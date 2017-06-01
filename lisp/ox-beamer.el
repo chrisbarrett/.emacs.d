@@ -1,6 +1,6 @@
 ;;; ox-beamer.el --- Beamer Back-End for Org Export Engine -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2007-2016 Free Software Foundation, Inc.
+;; Copyright (C) 2007-2017 Free Software Foundation, Inc.
 
 ;; Author: Carsten Dominik <carsten.dominik AT gmail DOT com>
 ;;         Nicolas Goaziou <n.goaziou AT gmail DOT com>
@@ -140,7 +140,7 @@ You might want to put e.g. \"allowframebreaks=0.9\" here."
 The format string should have at most one \"%s\"-expression,
 which is replaced with the subtitle."
   :group 'org-export-beamer
-  :version "25.2"
+  :version "26.1"
   :package-version '(Org . "8.3")
   :type '(string :tag "Format string"))
 
@@ -260,7 +260,6 @@ Return overlay specification, as a string, or nil."
 		     (link . org-beamer-link)
 		     (plain-list . org-beamer-plain-list)
 		     (radio-target . org-beamer-radio-target)
-		     (target . org-beamer-target)
 		     (template . org-beamer-template)))
 
 
@@ -720,46 +719,16 @@ channel."
   "Transcode a LINK object into Beamer code.
 CONTENTS is the description part of the link.  INFO is a plist
 used as a communication channel."
-  (let ((type (org-element-property :type link)))
-    (cond
-     ;; Link type is handled by a special function.
-     ((org-export-custom-protocol-maybe link contents 'beamer))
-     ;; Use \hyperlink command for all internal links.
-     ((equal type "radio")
-      (let ((destination (org-export-resolve-radio-link link info)))
-	(if (not destination) contents
-	  (format "\\hyperlink%s{%s}{%s}"
-		  (or (org-beamer--element-has-overlay-p link) "")
-		  (org-export-get-reference destination info)
-		  contents))))
-     ((and (member type '("custom-id" "fuzzy" "id"))
-	   (let ((destination (if (string= type "fuzzy")
-				  (org-export-resolve-fuzzy-link link info)
-				(org-export-resolve-id-link link info))))
-	     (cl-case (org-element-type destination)
-	       (headline
-		(let ((label
-		       (format "sec-%s"
-			       (mapconcat
-				'number-to-string
-				(org-export-get-headline-number
-				 destination info)
-				"-"))))
-		  (if (and (plist-get info :section-numbers) (not contents))
-		      (format "\\ref{%s}" label)
-		    (format "\\hyperlink%s{%s}{%s}"
-			    (or (org-beamer--element-has-overlay-p link) "")
-			    label
-			    contents))))
-	       (target
-		(let ((ref (org-export-get-reference destination info)))
-		  (if (not contents) (format "\\ref{%s}" ref)
-		    (format "\\hyperlink%s{%s}{%s}"
-			    (or (org-beamer--element-has-overlay-p link) "")
-			    ref
-			    contents))))))))
-     ;; Otherwise, use `latex' back-end.
-     (t (org-export-with-backend 'latex link contents info)))))
+  (or (org-export-custom-protocol-maybe link contents 'beamer)
+      ;; Fall-back to LaTeX export.  However, prefer "\hyperlink" over
+      ;; "\hyperref" since the former handles overlay specifications.
+      (let ((latex-link (org-export-with-backend 'latex link contents info)))
+	(if (string-match "\\`\\\\hyperref\\[\\(.*?\\)\\]" latex-link)
+	    (replace-match
+	     (format "\\\\hyperlink%s{\\1}"
+		     (or (org-beamer--element-has-overlay-p link) ""))
+	     nil nil latex-link)
+	  latex-link))))
 
 
 ;;;; Plain List
@@ -810,15 +779,6 @@ contextual information."
 	  text))
 
 
-;;;; Target
-
-(defun org-beamer-target (target _contents info)
-  "Transcode a TARGET object into Beamer code.
-CONTENTS is nil.  INFO is a plist holding contextual
-information."
-  (format "\\label{%s}" (org-export-get-reference target info)))
-
-
 ;;;; Template
 ;;
 ;; Template used is similar to the one used in `latex' back-end,
@@ -837,7 +797,7 @@ holding export options."
      ;; LaTeX compiler
      (org-latex--insert-compiler info)
      ;; Document class and packages.
-     (org-latex--make-preamble info)
+     (org-latex-make-preamble info)
      ;; Insert themes.
      (let ((format-theme
 	    (function
@@ -1162,9 +1122,13 @@ Return output file name."
   ;; working directory and then moved to publishing directory.
   (org-publish-attachment
    plist
-   (org-latex-compile
-    (org-publish-org-to
-     'beamer filename ".tex" plist (file-name-directory filename)))
+   ;; Default directory could be anywhere when this function is
+   ;; called.  We ensure it is set to source file directory during
+   ;; compilation so as to not break links to external documents.
+   (let ((default-directory (file-name-directory filename)))
+     (org-latex-compile
+      (org-publish-org-to
+       'beamer filename ".tex" plist (file-name-directory filename))))
    pub-dir))
 
 

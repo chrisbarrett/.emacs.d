@@ -1,6 +1,6 @@
 ;;; ox-md.el --- Markdown Back-End for Org Export Engine -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2012-2016 Free Software Foundation, Inc.
+;; Copyright (C) 2012-2017 Free Software Foundation, Inc.
 
 ;; Author: Nicolas Goaziou <n.goaziou@gmail.com>
 ;; Keywords: org, wp, markdown
@@ -59,7 +59,7 @@ The first %s placeholder will be replaced with the localized Footnotes section
 heading, the second with the contents of the Footnotes section."
  :group 'org-export-md
  :type 'string
- :version "25.2"
+ :version "26.1"
  :package-version '(Org . "9.0"))
 
 (defcustom org-md-footnote-format "<sup>%s</sup>"
@@ -67,7 +67,7 @@ heading, the second with the contents of the Footnotes section."
 The %s will be replaced by the footnote reference itself."
   :group 'org-export-md
   :type 'string
-  :version "25.2"
+  :version "26.1"
   :package-version '(Org . "9.0"))
 
 
@@ -217,11 +217,6 @@ a communication channel."
 	    (and (plist-get info :with-priority)
 		 (let ((char (org-element-property :priority headline)))
 		   (and char (format "[#%c] " char)))))
-	   (anchor
-	    (and (plist-get info :with-toc)
-		 (format "<a id=\"%s\"></a>"
-			 (or (org-element-property :CUSTOM_ID headline)
-			     (org-export-get-reference headline info)))))
 	   ;; Headline text without tags.
 	   (heading (concat todo priority title))
 	   (style (plist-get info :md-headline-style)))
@@ -239,10 +234,56 @@ a communication channel."
 			 "."))))
 	  (concat bullet (make-string (- 4 (length bullet)) ?\s) heading tags "\n\n"
 		  (and contents (replace-regexp-in-string "^" "    " contents)))))
-       (t (concat (org-md--headline-title style level title anchor tags) contents))))))
+       (t
+	(let ((anchor
+	       (and (org-md--headline-referred-p headline info)
+		    (format "<a id=\"%s\"></a>"
+			    (or (org-element-property :CUSTOM_ID headline)
+				(org-export-get-reference headline info))))))
+	  (concat (org-md--headline-title style level title anchor tags)
+		  contents)))))))
 
 
-;; Headline Title
+(defun org-md--headline-referred-p (headline info)
+  "Non-nil when HEADLINE is being referred to.
+INFO is a plist used as a communication channel.  Links and table
+of contents can refer to headlines."
+  (unless (org-element-property :footnote-section-p headline)
+    (or
+     ;; Global table of contents includes HEADLINE.
+     (and (plist-get info :with-toc)
+	  (memq headline
+		(org-export-collect-headlines info (plist-get info :with-toc))))
+     ;; A local table of contents includes HEADLINE.
+     (cl-some
+      (lambda (h)
+	(let ((section (car (org-element-contents h))))
+	  (and
+	   (eq 'section (org-element-type section))
+	   (org-element-map section 'keyword
+	     (lambda (keyword)
+	       (when (equal "TOC" (org-element-property :key keyword))
+		 (let ((case-fold-search t)
+		       (value (org-element-property :value keyword)))
+		   (and (string-match-p "\\<headlines\\>" value)
+			(let ((n (and
+				  (string-match "\\<[0-9]+\\>" value)
+				  (string-to-number (match-string 0 value))))
+			      (local? (string-match-p "\\<local\\>" value)))
+			  (memq headline
+				(org-export-collect-headlines
+				 info n (and local? keyword))))))))
+	     info t))))
+      (org-element-lineage headline))
+     ;; A link refers internally to HEADLINE.
+     (org-element-map (plist-get info :parse-tree) 'link
+       (lambda (link)
+	 (eq headline
+	     (pcase (org-element-property :type link)
+	       ((or "custom-id" "id") (org-export-resolve-id-link link info))
+	       ("fuzzy" (org-export-resolve-fuzzy-link link info))
+	       (_ nil))))
+       info t))))
 
 (defun org-md--headline-title (style level title &optional anchor tags)
   "Generate a headline title in the preferred Markdown headline style.
@@ -314,9 +355,19 @@ a communication channel."
   "Transcode a KEYWORD element into Markdown format.
 CONTENTS is nil.  INFO is a plist used as a communication
 channel."
-  (if (member (org-element-property :key keyword) '("MARKDOWN" "MD"))
-      (org-element-property :value keyword)
-    (org-export-with-backend 'html keyword contents info)))
+  (pcase (org-element-property :key keyword)
+    ((or "MARKDOWN" "MD") (org-element-property :value keyword))
+    ("TOC"
+     (let ((case-fold-search t)
+	   (value (org-element-property :value keyword)))
+       (cond
+	((string-match-p "\\<headlines\\>" value)
+	 (let ((depth (and (string-match "\\<[0-9]+\\>" value)
+			   (string-to-number (match-string 0 value))))
+	       (local? (string-match-p "\\<local\\>" value)))
+	   (org-remove-indentation
+	    (org-md--build-toc info depth keyword local?)))))))
+    (_ (org-export-with-backend 'html keyword contents info))))
 
 
 ;;;; Line Break
@@ -498,6 +549,61 @@ a communication channel."
 
 ;;;; Template
 
+(defun org-md--build-toc (info &optional n keyword local)
+  "Return a table of contents.
+
+INFO is a plist used as a communication channel.
+
+Optional argument N, when non-nil, is an integer specifying the
+depth of the table.
+
+Optional argument KEYWORD specifies the TOC keyword, if any, from
+which the table of contents generation has been initiated.
+
+When optional argument LOCAL is non-nil, build a table of
+contents according to the current headline."
+  (concat
+   (unless local
+     (let ((style (plist-get info :md-headline-style))
+	   (title (org-html--translate "Table of Contents" info)))
+       (org-md--headline-title style 1 title nil)))
+   (mapconcat
+    (lambda (headline)
+      (let* ((indentation
+	      (make-string
+	       (* 4 (1- (org-export-get-relative-level headline info)))
+	       ?\s))
+	     (number (format "%d."
+			     (org-last
+			      (org-export-get-headline-number headline info))))
+	     (bullet (concat number (make-string (- 4 (length number)) ?\s)))
+	     (title
+	      (format "[%s](#%s)"
+		      (org-export-data-with-backend
+		       (org-export-get-alt-title headline info)
+		       ;; Create an anonymous back-end that will
+		       ;; ignore any footnote-reference, link,
+		       ;; radio-target and target in table of
+		       ;; contents.
+		       (org-export-create-backend
+			:parent 'md
+			:transcoders '((footnote-reference . ignore)
+				       (link . (lambda (object c i) c))
+				       (radio-target . (lambda (object c i) c))
+				       (target . ignore)))
+		       info)
+		      (or (org-element-property :CUSTOM_ID headline)
+			  (org-export-get-reference headline info))))
+	     (tags (and (plist-get info :with-tags)
+			(not (eq 'not-in-toc (plist-get info :with-tags)))
+			(let ((tags (org-export-get-tags headline info)))
+			  (and tags
+			       (format ":%s:"
+				       (mapconcat #'identity tags ":")))))))
+	(concat indentation bullet title tags)))
+    (org-export-collect-headlines info n (and local keyword)) "\n")
+   "\n"))
+
 (defun org-md--footnote-formatted (footnote info)
   "Formats a single footnote entry FOOTNOTE.
 FOOTNOTE is a cons cell of the form (number . definition).
@@ -534,7 +640,8 @@ holding export options."
   (concat
    ;; Table of contents.
    (let ((depth (plist-get info :with-toc)))
-     (when depth (org-html-toc depth info)))
+     (when depth
+       (concat (org-md--build-toc info (and (wholenump depth) depth)) "\n")))
    ;; Document contents.
    contents
    "\n"

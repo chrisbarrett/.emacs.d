@@ -1,6 +1,6 @@
 ;;; ob-exp.el --- Exportation of Babel Source Blocks -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2009-2016 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2017 Free Software Foundation, Inc.
 
 ;; Authors: Eric Schulte
 ;;	Dan Davison
@@ -38,10 +38,10 @@
 
 (defvar org-src-preserve-indentation)
 
-(defcustom org-export-babel-evaluate t
-  "Switch controlling code evaluation during export.
+(defcustom org-export-use-babel t
+  "Switch controlling code evaluation and header processing during export.
 When set to nil no code will be evaluated as part of the export
-process and no header argumentss will be obeyed.  When set to
+process and no header arguments will be obeyed.  When set to
 `inline-only', only inline code blocks will be executed.  Users
 who wish to avoid evaluating code on export should use the header
 argument `:eval never-export'."
@@ -49,8 +49,9 @@ argument `:eval never-export'."
   :version "24.1"
   :type '(choice (const :tag "Never" nil)
 		 (const :tag "Only inline code" inline-only)
-		 (const :tag "Always" t)))
-(put 'org-export-babel-evaluate 'safe-local-variable #'null)
+		 (const :tag "Always" t))
+  :safe #'null)
+
 
 (defmacro org-babel-exp--at-source (&rest body)
   "Evaluate BODY at the source of the Babel block at point.
@@ -128,10 +129,10 @@ this template."
 (defun org-babel-exp-process-buffer ()
   "Execute all Babel blocks in current buffer."
   (interactive)
-  (when org-export-babel-evaluate
+  (when org-export-use-babel
     (save-window-excursion
       (let ((case-fold-search t)
-	    (regexp (if (eq org-export-babel-evaluate 'inline-only)
+	    (regexp (if (eq org-export-use-babel 'inline-only)
 			"\\(call\\|src\\)_"
 		      "\\(call\\|src\\)_\\|^[ \t]*#\\+\\(BEGIN_SRC\\|CALL:\\)"))
 	    ;; Get a pristine copy of current buffer so Babel
@@ -159,8 +160,24 @@ this template."
 	      (goto-char (point-min))
 	      (while (re-search-forward regexp nil t)
 		(unless (save-match-data (org-in-commented-heading-p))
-		  (let* ((element (save-match-data (org-element-context)))
-			 (type (org-element-type element))
+		  (let* ((object? (match-end 1))
+			 (element (save-match-data
+				    (if object? (org-element-context)
+				      ;; No deep inspection if we're
+				      ;; just looking for an element.
+				      (org-element-at-point))))
+			 (type
+			  (pcase (org-element-type element)
+			    ;; Discard block elements if we're looking
+			    ;; for inline objects.  False results
+			    ;; happen when, e.g., "call_" syntax is
+			    ;; located within affiliated keywords:
+			    ;;
+			    ;; #+name: call_src
+			    ;; #+begin_src ...
+			    ((and (or `babel-call `src-block) (guard object?))
+			     nil)
+			    (type type)))
 			 (begin
 			  (copy-marker (org-element-property :begin element)))
 			 (end
@@ -323,7 +340,7 @@ defined for the code block may be used as a key and will be
 replaced with its value."
   :group 'org-babel
   :type 'string
-  :version "25.2"
+  :version "26.1"
   :package-version '(Org . "8.3"))
 
 (defun org-babel-exp-code (info type)
