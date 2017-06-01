@@ -21,6 +21,7 @@
 (autoload 'thing-at-point-looking-at "thingatpt")
 (autoload 'ansi-color-apply-on-region "ansi-color")
 (autoload 'evil-define-key "evil-core")
+(autoload 'evil-set-initial-state "evil-core")
 
 
 (defalias #'yes-or-no-p #'y-or-n-p)
@@ -582,10 +583,22 @@ Optional arg JUSTIFY will justify comments and strings."
   :config
   (setq apropos-do-all t))
 
+(use-package archive-mode
+  :defer t
+  :config
+  (progn
+    (evil-set-initial-state 'archive-mode 'motion)
+    (evil-define-key 'motion archive-mode-map
+      (kbd "RET") 'archive-extract
+      (kbd "o") 'archive-extract-other-window
+      (kbd "m") 'archive-mark
+      (kbd "x") 'archive-expunge
+      (kbd "U") 'archive-unmark-all-files
+      (kbd "j") 'archive-next-line
+      (kbd "k") 'archive-previous-line)))
+
 (use-package doc-view
   :defer t
-  :preface
-  (autoload 'evil-set-initial-state "evil-core")
   :config
   (progn
     (setq doc-view-continuous t)
