@@ -32,6 +32,9 @@
 (defconst cb-emacs-lisp-directory
   (concat user-emacs-directory "lisp"))
 
+(defconst cb-emacs-elpa-directory
+  (concat user-emacs-directory "elpa"))
+
 (defconst cb-emacs-config-directory
   (concat user-emacs-directory "config"))
 
@@ -133,9 +136,14 @@ prompt for REMOTE if it cannot be determined."
   (byte-recompile-directory (f-join cb-emacs-lisp-directory subtree) 0 t))
 
 (defun cb-emacs-compile-all-subtrees ()
-  "Force the byte compilation of SUBTREE."
+  "Force the byte compilation all subtrees."
   (interactive)
   (byte-recompile-directory cb-emacs-lisp-directory 0 t))
+
+(defun cb-emacs-compile-elpa ()
+  "Force the byte compilation ELPA directory."
+  (interactive)
+  (byte-recompile-directory cb-emacs-elpa-directory 0 t))
 
 (provide 'cb-emacs)
 
