@@ -1,6 +1,6 @@
 ;;; ox-icalendar.el --- iCalendar Back-End for Org Export Engine -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2004-2016 Free Software Foundation, Inc.
+;; Copyright (C) 2004-2017 Free Software Foundation, Inc.
 
 ;; Author: Carsten Dominik <carsten at orgmode dot org>
 ;;      Nicolas Goaziou <n dot goaziou at gmail dot com>
@@ -458,7 +458,7 @@ or subject for the event."
    (mapconcat
     (lambda (line)
       ;; Limit each line to a maximum of 75 characters.  If it is
-      ;; longer, fold it by using "\n " as a continuation marker.
+      ;; longer, fold it by using "\r\n " as a continuation marker.
       (let ((len (length line)))
 	(if (<= len 75) line
 	  (let ((folded-line (substring line 0 75))
@@ -468,11 +468,11 @@ or subject for the event."
 	    ;; line, real contents must be split at 74 chars.
 	    (while (< (setq chunk-end (+ chunk-start 74)) len)
 	      (setq folded-line
-		    (concat folded-line "\n "
+		    (concat folded-line "\r\n "
 			    (substring line chunk-start chunk-end))
 		    chunk-start chunk-end))
-	    (concat folded-line "\n " (substring line chunk-start))))))
-    (org-split-string s "\n") "\n")))
+	    (concat folded-line "\r\n " (substring line chunk-start))))))
+    (org-split-string s "\n") "\r\n")))
 
 
 
@@ -879,7 +879,7 @@ The file is stored under the name chosen in
   "Export current agenda view to an iCalendar FILE.
 This function assumes major mode for current buffer is
 `org-agenda-mode'."
-  (let* ((org-export-babel-evaluate)	; Don't evaluate Babel block.
+  (let* ((org-export-use-babel)	; Don't evaluate Babel block.
 	 (contents
 	  (org-export-string-as
 	   (with-output-to-string

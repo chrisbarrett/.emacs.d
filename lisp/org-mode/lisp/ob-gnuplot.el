@@ -1,6 +1,6 @@
 ;;; ob-gnuplot.el --- Babel Functions for Gnuplot    -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2009-2016 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2017 Free Software Foundation, Inc.
 
 ;; Author: Eric Schulte
 ;; Keywords: literate programming, reproducible research
@@ -187,7 +187,7 @@ This function is called by `org-babel-execute-src-block'."
 		     script-file
 		     (if (member system-type '(cygwin windows-nt ms-dos))
 			 t nil)))))
-            (message output))
+            (message "%s" output))
         (with-temp-buffer
           (insert (concat body "\n"))
           (gnuplot-mode)

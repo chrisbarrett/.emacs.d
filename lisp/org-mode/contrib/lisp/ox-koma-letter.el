@@ -1,6 +1,6 @@
 ;;; ox-koma-letter.el --- KOMA Scrlttr2 Back-End for Org Export Engine
 
-;; Copyright (C) 2007-2016  Free Software Foundation, Inc.
+;; Copyright (C) 2007-2017  Free Software Foundation, Inc.
 
 ;; Author: Nicolas Goaziou <n.goaziou AT gmail DOT com>
 ;;         Alan Schmitt <alan.schmitt AT polytechnique DOT org>
@@ -631,7 +631,7 @@ holding export options."
    ;; LaTeX compiler
    (org-latex--insert-compiler info)
    ;; Document class and packages.
-   (org-latex--make-preamble info)
+   (org-latex-make-preamble info)
    ;; Settings.  They can come from three locations, in increasing
    ;; order of precedence: global variables, LCO files and in-buffer
    ;; settings.  Thus, we first insert settings coming from global

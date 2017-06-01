@@ -1,6 +1,6 @@
 ;;; ox-odt.el --- OpenDocument Text Exporter for Org Mode -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2010-2016 Free Software Foundation, Inc.
+;; Copyright (C) 2010-2017 Free Software Foundation, Inc.
 
 ;; Author: Jambunathan K <kjambunathan at gmail dot com>
 ;; Keywords: outlines, hypermedia, calendar, wp
@@ -85,7 +85,8 @@
   :filters-alist '((:filter-parse-tree
 		    . (org-odt--translate-latex-fragments
 		       org-odt--translate-description-lists
-		       org-odt--translate-list-tables)))
+		       org-odt--translate-list-tables
+		       org-odt--translate-image-links)))
   :menu-entry
   '(?o "Export to ODT"
        ((?o "As ODT file" org-odt-export-to-odt)
@@ -673,7 +674,7 @@ TAGS      the tags string, separated with colons (string or nil).
 
 The function result will be used as headline text."
   :group 'org-export-odt
-  :version "25.2"
+  :version "26.1"
   :package-version '(Org . "8.3")
   :type 'function)
 
@@ -694,7 +695,7 @@ The function must accept six parameters:
 
 The function should return the string to be exported."
   :group 'org-export-odt
-  :version "25.2"
+  :version "26.1"
   :package-version '(Org . "8.3")
   :type 'function)
 
@@ -753,7 +754,7 @@ A rule consists in an association whose key is the type of link
 to consider, and value is a regexp that will be matched against
 link's path."
   :group 'org-export-odt
-  :version "25.2"
+  :version "26.1"
   :package-version '(Org . "8.3")
   :type '(alist :key-type (string :tag "Type")
 		:value-type (regexp :tag "Path")))
@@ -847,7 +848,7 @@ ON-OR-OFF                 := t | nil
 For example, with the following configuration
 
 \(setq org-odt-table-styles
-      '((\"TableWithHeaderRowsAndColumns\" \"Custom\"
+      \\='((\"TableWithHeaderRowsAndColumns\" \"Custom\"
          ((use-first-row-styles . t)
           (use-first-column-styles . t)))
         (\"TableWithHeaderColumns\" \"Custom\"
@@ -1747,8 +1748,8 @@ CONTENTS is nil.  INFO is a plist holding contextual information."
 			      info))))
 		   ;; Inline definitions are secondary strings.  We
 		   ;; need to wrap them within a paragraph.
-		   (if (memq (org-element-type (car (org-element-contents raw)))
-			     org-element-all-elements)
+		   (if (eq (org-element-class (car (org-element-contents raw)))
+			   'element)
 		       def
 		     (format
 		      "\n<text:p text:style-name=\"Footnote\">%s</text:p>"
@@ -2882,15 +2883,10 @@ contextual information."
 
 (defun org-odt--encode-tabs-and-spaces (line)
   (replace-regexp-in-string
-   "\\([\t]\\|\\([ ]+\\)\\)"
+   "\\(\t\\| \\{2,\\}\\)"
    (lambda (s)
-     (cond
-      ((string= s "\t") "<text:tab/>")
-      (t (let ((n (length s)))
-	   (cond
-	    ((= n 1) " ")
-	    ((> n 1) (concat " " (format "<text:s text:c=\"%d\"/>" (1- n))))
-	    (t ""))))))
+     (if (string= s "\t") "<text:tab/>"
+       (format " <text:s text:c=\"%d\"/>" (1- (length s)))))
    line))
 
 (defun org-odt--encode-plain-text (text &optional no-whitespace-filling)
@@ -3334,8 +3330,7 @@ channel."
      (format "\n<table:table-cell%s>\n%s\n</table:table-cell>"
 	     cell-attributes
 	     (let ((table-cell-contents (org-element-contents table-cell)))
-	       (if (memq (org-element-type (car table-cell-contents))
-			 org-element-all-elements)
+	       (if (eq (org-element-class (car table-cell-contents)) 'element)
 		   contents
 		 (format "\n<text:p text:style-name=\"%s\">%s</text:p>"
 			 paragraph-style contents))))
@@ -3674,19 +3669,22 @@ channel."
   "Transcode a VERSE-BLOCK element from Org to ODT.
 CONTENTS is verse block contents.  INFO is a plist holding
 contextual information."
-  ;; Add line breaks to each line of verse.
-  (setq contents (replace-regexp-in-string
-		  "\\(<text:line-break/>\\)?[ \t]*\n"
-		  "<text:line-break/>" contents))
-  ;; Replace tabs and spaces.
-  (setq contents (org-odt--encode-tabs-and-spaces contents))
-  ;; Surround it in a verse environment.
-  (format "\n<text:p text:style-name=\"%s\">%s</text:p>"
-	  "OrgVerse" contents))
+  (format "\n<text:p text:style-name=\"OrgVerse\">%s</text:p>"
+	  (replace-regexp-in-string
+	   ;; Replace leading tabs and spaces.
+	   "^[ \t]+" #'org-odt--encode-tabs-and-spaces
+	   ;; Add line breaks to each line of verse.
+	   (replace-regexp-in-string
+	    "\\(<text:line-break/>\\)?[ \t]*$" "<text:line-break/>" contents))))
 
 
 
 ;;; Filters
+
+;;; Images
+
+(defun org-odt--translate-image-links (data _backend info)
+  (org-export-insert-image-links data info org-odt-inline-image-rules))
 
 ;;;; LaTeX fragments
 
@@ -3742,9 +3740,9 @@ contextual information."
 		 (org-link
 		  (let ((link (with-temp-buffer
 				(insert latex-frag)
-				(org-format-latex cache-subdir cache-dir
-						  nil display-msg
-						  nil processing-type)
+				(org-format-latex cache-subdir nil nil cache-dir
+						  nil display-msg nil
+						  processing-type)
 				(buffer-substring-no-properties
 				 (point-min) (point-max)))))
 		    (if (string-match-p "file:\\([^]]*\\)" link) link

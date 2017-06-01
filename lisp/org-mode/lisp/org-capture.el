@@ -1,6 +1,6 @@
 ;;; org-capture.el --- Fast note taking in Org       -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2010-2016 Free Software Foundation, Inc.
+;; Copyright (C) 2010-2017 Free Software Foundation, Inc.
 
 ;; Author: Carsten Dominik <carsten at orgmode dot org>
 ;; Keywords: outlines, hypermedia, calendar, wp
@@ -56,6 +56,7 @@
 (declare-function org-decrypt-entry "org-crypt" ())
 (declare-function org-encrypt-entry "org-crypt" ())
 (declare-function org-table-analyze "org-table" ())
+(declare-function org-table-current-dline "org-table" ())
 (declare-function org-table-goto-line "org-table" (N))
 
 (defvar org-end-time-was-given)
@@ -82,6 +83,36 @@
   "Options concerning capturing new entries."
   :tag "Org Capture"
   :group 'org)
+
+(defun org-capture-upgrade-templates (templates)
+  "Update the template list to the new format.
+TEMPLATES is a template list, as in `org-capture-templates'. The
+new format unifies all the date/week tree targets into one that
+also allows for an optional outline path to specify a target."
+  (let ((modified-templates
+	 (mapcar
+	  (lambda (entry)
+	    (pcase entry
+	      ;; Match templates with an obsolete "tree" target type. Replace
+	      ;; it with common `file+olp-datetree'.  Add new properties
+	      ;; (i.e., `:time-prompt' and `:tree-type') if needed.
+	      (`(,key ,desc ,type (file+datetree . ,path) ,tpl . ,props)
+	       `(,key ,desc ,type (file+olp+datetree ,@path) ,tpl ,@props))
+	      (`(,key ,desc ,type (file+datetree+prompt . ,path) ,tpl . ,props)
+	       `(,key ,desc ,type (file+olp+datetree ,@path) ,tpl
+		      :time-prompt t ,@props))
+	      (`(,key ,desc ,type (file+weektree . ,path) ,tpl . ,props)
+	       `(,key ,desc ,type (file+olp+datetree ,@path) ,tpl
+		      :tree-type week ,@props))
+	      (`(,key ,desc ,type (file+weektree+prompt . ,path) ,tpl . ,props)
+	       `(,key ,desc ,type (file+olp+datetree ,@path) ,tpl
+		      :tree-type week :time-prompt t ,@props))
+	      ;; Other templates are left unchanged.
+	      (_ entry)))
+	  templates)))
+    (unless (equal modified-templates templates)
+      (message "Deprecated date/weektree capture templates changed to `file+olp+datetree'."))
+    modified-templates))
 
 (defcustom org-capture-templates nil
   "Templates for the creation of new entries.
@@ -124,8 +155,8 @@ target       Specification of where the captured item should be placed.
 
              Most target specifications contain a file name.  If that file
              name is the empty string, it defaults to `org-default-notes-file'.
-             A file can also be given as a variable, function, or Emacs Lisp
-             form.  When an absolute path is not specified for a
+             A file can also be given as a variable or as a function called
+             with no argument.  When an absolute path is not specified for a
              target, it is taken as relative to `org-directory'.
 
              Valid values are:
@@ -133,29 +164,24 @@ target       Specification of where the captured item should be placed.
              (file \"path/to/file\")
                  Text will be placed at the beginning or end of that file
 
-             (id \"id of existing org entry\")
+             (id \"id of existing Org entry\")
                  File as child of this entry, or in the body of the entry
 
              (file+headline \"path/to/file\" \"node headline\")
                  Fast configuration if the target heading is unique in the file
 
              (file+olp \"path/to/file\" \"Level 1 heading\" \"Level 2\" ...)
-                 For non-unique headings, the full path is safer
+                 For non-unique headings, the full outline path is safer
 
              (file+regexp  \"path/to/file\" \"regexp to find location\")
                  File to the entry matching regexp
 
-             (file+datetree \"path/to/file\")
-                 Will create a heading in a date tree for today's date
-
-             (file+datetree+prompt \"path/to/file\")
-                 Will create a heading in a date tree, prompts for date
-
-             (file+weektree \"path/to/file\")
-                 Will create a heading in a week tree for today's date
-
-             (file+weektree+prompt \"path/to/file\")
-                 Will create a heading in a week tree, prompts for date
+             (file+olp+datetree \"path/to/file\" \"Level 1 heading\" ...)
+                 Will create a heading in a date tree for today's date.
+                 If no heading is given, the tree will be on top level.
+                 To prompt for date instead of using TODAY, use the
+                 :time-prompt property.  To create a week-tree, use the
+                 :tree-type property.
 
              (file+function \"path/to/file\" function-finding-location)
                  A function to find the right location in the file
@@ -212,6 +238,11 @@ properties are:
                      Note that :clock-keep has precedence over :clock-resume.
                      When setting both to t, the current clock will run and
                      the previous one will not be resumed.
+
+ :time-prompt        Prompt for a date/time to be used for date/week trees
+                     and when filling the template.
+
+ :tree-type          When `week', make a week tree instead of the month tree.
 
  :unnarrowed         Do not narrow the target buffer, simply show the
                      full buffer.  Default is to narrow it so that you
@@ -296,6 +327,7 @@ When you need to insert a literal percent sign in the template,
 you can escape ambiguous cases with a backward slash, e.g., \\%i."
   :group 'org-capture
   :version "24.1"
+  :set (lambda (s v) (set s (org-capture-upgrade-templates v)))
   :type
   (let ((file-variants '(choice :tag "Filename       "
 				(file :tag "Literal")
@@ -336,18 +368,11 @@ you can escape ambiguous cases with a backward slash, e.g., \\%i."
 				(const :format "" file+regexp)
 				,file-variants
 				(regexp :tag "  Regexp"))
-			  (list :tag "File & Date tree"
-				(const :format "" file+datetree)
-				,file-variants)
-			  (list :tag "File & Date tree, prompt for date"
-				(const :format "" file+datetree+prompt)
-				,file-variants)
-			  (list :tag "File & Week tree"
-				(const :format "" file+weektree)
-				,file-variants)
-			  (list :tag "File & Week tree, prompt for date"
-				(const :format "" file+weektree+prompt)
-				,file-variants)
+			  (list :tag "File [ & Outline path ] & Date tree"
+				(const :format "" file+olp+datetree)
+				,file-variants
+				(option (repeat :tag "Outline path" :inline t
+						(string :tag "Headline"))))
 			  (list :tag "File & function"
 				(const :format "" file+function)
 				,file-variants
@@ -376,8 +401,10 @@ you can escape ambiguous cases with a backward slash, e.g., \\%i."
 				   ((const :format "%v " :clock-in) (const t))
 				   ((const :format "%v " :clock-keep) (const t))
 				   ((const :format "%v " :clock-resume) (const t))
+				   ((const :format "%v " :time-prompt) (const t))
+				   ((const :format "%v " :tree-type) (const week))
 				   ((const :format "%v " :unnarrowed) (const t))
-				   ((const :format "%v " :table-line-pos) (const t))
+				   ((const :format "%v " :table-line-pos) (string))
 				   ((const :format "%v " :kill-buffer) (const t)))))))))
 
 (defcustom org-capture-before-finalize-hook nil
@@ -561,6 +588,9 @@ the last note stored.
 
 When called with a `C-0' (zero) prefix, insert a template at point.
 
+When called with a `C-1' (one) prefix, force prompting for a date when
+a datetree entry is made.
+
 ELisp programs can set KEYS to a string associated with a template
 in `org-capture-templates'.  In this case, interactive selection
 will be bypassed.
@@ -578,7 +608,6 @@ of the day at point (if any) or the current HH:MM time."
    ((equal goto '(4)) (org-capture-goto-target))
    ((equal goto '(16)) (org-capture-goto-last-stored))
    (t
-    ;; FIXME: Are these needed?
     (let* ((orig-buf (current-buffer))
 	   (annotation (if (and (boundp 'org-capture-link-is-already-stored)
 				org-capture-link-is-already-stored)
@@ -723,16 +752,6 @@ captured item after finalizing."
 		(kill-region m1 m2))
 	    (setq abort-note 'dirty)))
 
-      ;; Make sure that the empty lines after are correct
-      (when (and (> (point-max) end) ; indeed, the buffer was still narrowed
-		 (member (org-capture-get :type 'local)
-			 '(entry item checkitem plain)))
-	(save-excursion
-	  (goto-char end)
-	  (or (bolp) (newline))
-	  (org-capture-empty-lines-after
-	   (or (org-capture-get :empty-lines-after 'local)
-	       (org-capture-get :empty-lines 'local) 0))))
       ;; Postprocessing:  Update Statistics cookies, do the sorting
       (when (derived-mode-p 'org-mode)
 	(save-excursion
@@ -749,8 +768,7 @@ captured item after finalizing."
       ;; Store this place as the last one where we stored something
       ;; Do the marking in the base buffer, so that it makes sense after
       ;; the indirect buffer has been killed.
-      (when org-capture-bookmark
-	(org-capture-bookmark-last-stored-position))
+      (org-capture-store-last-position)
 
       ;; Run the hook
       (run-hooks 'org-capture-before-finalize-hook))
@@ -821,20 +839,28 @@ Refiling is done from the base buffer, because the indirect buffer is then
 already gone.  Any prefix argument will be passed to the refile command."
   (interactive)
   (unless (eq (org-capture-get :type 'local) 'entry)
-    (error
-     "Refiling from a capture buffer makes only sense for `entry'-type templates"))
-  (let ((pos (point))
-	(base (buffer-base-buffer (current-buffer)))
-	(org-capture-is-refiling t)
-	(kill-buffer (org-capture-get :kill-buffer 'local)))
+    (user-error "Refiling from a capture buffer makes only sense \
+for `entry'-type templates"))
+  (let* ((base (or (buffer-base-buffer) (current-buffer)))
+	 (pos (make-marker))
+	 (org-capture-is-refiling t)
+	 (kill-buffer (org-capture-get :kill-buffer 'local)))
+    ;; Since `org-capture-finalize' may alter buffer contents (e.g.,
+    ;; empty lines) around entry, use a marker to refer to the
+    ;; headline to be refiled.  Place the marker in the base buffer,
+    ;; as the current indirect one is going to be killed.
+    (set-marker pos (save-excursion (org-back-to-heading t) (point)) base)
     (org-capture-put :kill-buffer nil)
-    (org-capture-finalize)
-    (save-window-excursion
-      (with-current-buffer (or base (current-buffer))
-	(org-with-wide-buffer
-	 (goto-char pos)
-	 (call-interactively 'org-refile))))
-    (when kill-buffer (kill-buffer base))))
+    (unwind-protect
+	(progn
+	  (org-capture-finalize)
+	  (save-window-excursion
+	    (with-current-buffer base
+	      (org-with-wide-buffer
+	       (goto-char pos)
+	       (call-interactively 'org-refile))))
+	  (when kill-buffer (kill-buffer base)))
+      (set-marker pos nil))))
 
 (defun org-capture-kill ()
   "Abort the current capture process."
@@ -869,163 +895,174 @@ already gone.  Any prefix argument will be passed to the refile command."
 (defun org-capture-set-target-location (&optional target)
   "Find TARGET buffer and position.
 Store them in the capture property list."
-  (let ((target-entry-p t) decrypted-hl-pos)
-    (setq target (or target (org-capture-get :target)))
+  (let ((target-entry-p t))
     (save-excursion
-      (cond
-       ((eq (car target) 'file)
-	(set-buffer (org-capture-target-buffer (nth 1 target)))
-	(org-capture-put-target-region-and-position)
-	(widen)
-	(setq target-entry-p nil))
-
-       ((eq (car target) 'id)
-	(let ((loc (org-id-find (nth 1 target))))
-	  (if (not loc)
-	      (error "Cannot find target ID \"%s\"" (nth 1 target))
-	    (set-buffer (org-capture-target-buffer (car loc)))
+      (pcase (or target (org-capture-get :target))
+	(`(file ,path)
+	 (set-buffer (org-capture-target-buffer path))
+	 (org-capture-put-target-region-and-position)
+	 (widen)
+	 (setq target-entry-p nil))
+	(`(id ,id)
+	 (pcase (org-id-find id)
+	   (`(,path . ,position)
+	    (set-buffer (org-capture-target-buffer path))
 	    (widen)
 	    (org-capture-put-target-region-and-position)
-	    (goto-char (cdr loc)))))
+	    (goto-char position))
+	   (_ (error "Cannot find target ID \"%s\"" id))))
+	(`(file+headline ,path ,headline)
+	 (set-buffer (org-capture-target-buffer path))
+	 (unless (derived-mode-p 'org-mode)
+	   (error "Target buffer \"%s\" for file+headline not in Org mode"
+		  (current-buffer)))
+	 (org-capture-put-target-region-and-position)
+	 (widen)
+	 (goto-char (point-min))
+	 (if (re-search-forward (format org-complex-heading-regexp-format
+					(regexp-quote headline))
+				nil t)
+	     (goto-char (line-beginning-position))
+	   (goto-char (point-max))
+	   (or (bolp) (insert "\n"))
+	   (insert "* " headline "\n")
+	   (beginning-of-line 0)))
+	(`(file+olp ,path . ,outline-path)
+	 (let ((m (org-find-olp (cons (org-capture-expand-file path)
+				      outline-path))))
+	   (set-buffer (marker-buffer m))
+	   (org-capture-put-target-region-and-position)
+	   (widen)
+	   (goto-char m)
+	   (set-marker m nil)))
+	(`(file+regexp ,path ,regexp)
+	 (set-buffer (org-capture-target-buffer path))
+	 (org-capture-put-target-region-and-position)
+	 (widen)
+	 (goto-char (point-min))
+	 (if (not (re-search-forward regexp nil t))
+	     (error "No match for target regexp in file %s" path)
+	   (goto-char (if (org-capture-get :prepend)
+			  (match-beginning 0)
+			(match-end 0)))
+	   (org-capture-put :exact-position (point))
+	   (setq target-entry-p
+		 (and (derived-mode-p 'org-mode) (org-at-heading-p)))))
+	(`(file+olp+datetree ,path . ,outline-path)
+	 (let ((m (if outline-path
+		      (org-find-olp (cons (org-capture-expand-file path)
+					  outline-path))
+		    (set-buffer (org-capture-target-buffer path))
+		    (point-marker))))
+	   (set-buffer (marker-buffer m))
+	   (org-capture-put-target-region-and-position)
+	   (widen)
+	   (goto-char m)
+	   (set-marker m nil)
+	   (require 'org-datetree)
+	   (org-capture-put-target-region-and-position)
+	   (widen)
+	   ;; Make a date/week tree entry, with the current date (or
+	   ;; yesterday, if we are extending dates for a couple of hours)
+	   (funcall
+	    (if (eq (org-capture-get :tree-type) 'week)
+		#'org-datetree-find-iso-week-create
+	      #'org-datetree-find-date-create)
+	    (calendar-gregorian-from-absolute
+	     (cond
+	      (org-overriding-default-time
+	       ;; Use the overriding default time.
+	       (time-to-days org-overriding-default-time))
+	      ((or (org-capture-get :time-prompt)
+		   (equal current-prefix-arg 1))
+	       ;; Prompt for date.
+	       (let ((prompt-time (org-read-date
+				   nil t nil "Date for tree entry:"
+				   (current-time))))
+		 (org-capture-put
+		  :default-time
+		  (cond ((and (or (not (boundp 'org-time-was-given))
+				  (not org-time-was-given))
+			      (not (= (time-to-days prompt-time) (org-today))))
+			 ;; Use 00:00 when no time is given for another
+			 ;; date than today?
+			 (apply #'encode-time
+				(append '(0 0 0)
+					(cl-cdddr (decode-time prompt-time)))))
+			((string-match "\\([^ ]+\\)--?[^ ]+[ ]+\\(.*\\)"
+				       org-read-date-final-answer)
+			 ;; Replace any time range by its start.
+			 (apply #'encode-time
+				(org-read-date-analyze
+				 (replace-match "\\1 \\2" nil nil
+						org-read-date-final-answer)
+				 prompt-time (decode-time prompt-time))))
+			(t prompt-time)))
+		 (time-to-days prompt-time)))
+	      (t
+	       ;; Current date, possibly corrected for late night
+	       ;; workers.
+	       (org-today))))
+	    ;; the following is the keep-restriction argument for
+	    ;; org-datetree-find-date-create
+	    (if outline-path 'subtree-at-point))))
+	(`(file+function ,path ,function)
+	 (set-buffer (org-capture-target-buffer path))
+	 (org-capture-put-target-region-and-position)
+	 (widen)
+	 (funcall function)
+	 (org-capture-put :exact-position (point))
+	 (setq target-entry-p
+	       (and (derived-mode-p 'org-mode) (org-at-heading-p))))
+	(`(function ,fun)
+	 (funcall fun)
+	 (org-capture-put :exact-position (point))
+	 (setq target-entry-p
+	       (and (derived-mode-p 'org-mode) (org-at-heading-p))))
+	(`(clock)
+	 (if (and (markerp org-clock-hd-marker)
+		  (marker-buffer org-clock-hd-marker))
+	     (progn (set-buffer (marker-buffer org-clock-hd-marker))
+		    (org-capture-put-target-region-and-position)
+		    (widen)
+		    (goto-char org-clock-hd-marker))
+	   (error "No running clock that could be used as capture target")))
+	(target (error "Invalid capture target specification: %S" target)))
 
-       ((eq (car target) 'file+headline)
-	(set-buffer (org-capture-target-buffer (nth 1 target)))
-	(org-capture-put-target-region-and-position)
-	(widen)
-	(let ((hd (nth 2 target)))
-	  (goto-char (point-min))
-	  (unless (derived-mode-p 'org-mode)
-	    (error
-	     "Target buffer \"%s\" for file+headline should be in Org mode"
-	     (current-buffer)))
-	  (if (re-search-forward
-	       (format org-complex-heading-regexp-format (regexp-quote hd))
-	       nil t)
-	      (goto-char (point-at-bol))
-	    (goto-char (point-max))
-	    (or (bolp) (insert "\n"))
-	    (insert "* " hd "\n")
-	    (beginning-of-line 0))))
-
-       ((eq (car target) 'file+olp)
- 	(let ((m (org-find-olp
-		  (cons (org-capture-expand-file (nth 1 target))
-			(cddr target)))))
-	  (set-buffer (marker-buffer m))
-	  (org-capture-put-target-region-and-position)
-	  (widen)
-	  (goto-char m)))
-
-       ((eq (car target) 'file+regexp)
-	(set-buffer (org-capture-target-buffer (nth 1 target)))
-	(org-capture-put-target-region-and-position)
-	(widen)
-	(goto-char (point-min))
-	(if (re-search-forward (nth 2 target) nil t)
-	    (progn
-	      (goto-char (if (org-capture-get :prepend)
-			     (match-beginning 0) (match-end 0)))
-	      (org-capture-put :exact-position (point))
-	      (setq target-entry-p (and (derived-mode-p 'org-mode) (org-at-heading-p))))
-	  (error "No match for target regexp in file %s" (nth 1 target))))
-
-       ((memq (car target) '(file+datetree file+datetree+prompt file+weektree file+weektree+prompt))
-	(require 'org-datetree)
-	(set-buffer (org-capture-target-buffer (nth 1 target)))
-	(org-capture-put-target-region-and-position)
-	(widen)
-	;; Make a date/week tree entry, with the current date (or
-	;; yesterday, if we are extending dates for a couple of hours)
-	(funcall
-	 (cond
-	  ((memq (car target) '(file+weektree file+weektree+prompt))
-	   #'org-datetree-find-iso-week-create)
-	  (t #'org-datetree-find-date-create))
-	 (calendar-gregorian-from-absolute
-	  (cond
-	   (org-overriding-default-time
-	    ;; use the overriding default time
-	    (time-to-days org-overriding-default-time))
-
-	   ((memq (car target) '(file+datetree+prompt file+weektree+prompt))
-	    ;; prompt for date
-	    (let ((prompt-time (org-read-date
-				nil t nil "Date for tree entry:"
-				(current-time))))
-	      (org-capture-put
-	       :default-time
-	       (cond ((and (or (not (boundp 'org-time-was-given))
-			       (not org-time-was-given))
-			   (not (= (time-to-days prompt-time) (org-today))))
-		      ;; Use 00:00 when no time is given for another date than today?
-		      (apply #'encode-time
-			     (append '(0 0 0)
-				     (cl-cdddr (decode-time prompt-time)))))
-		     ((string-match "\\([^ ]+\\)--?[^ ]+[ ]+\\(.*\\)" org-read-date-final-answer)
-		      ;; Replace any time range by its start
-		      (apply 'encode-time
-			     (org-read-date-analyze
-			      (replace-match "\\1 \\2" nil nil org-read-date-final-answer)
-			      prompt-time (decode-time prompt-time))))
-		     (t prompt-time)))
-	      (time-to-days prompt-time)))
-	   (t
-	    ;; current date, possibly corrected for late night workers
-	    (org-today))))))
-
-       ((eq (car target) 'file+function)
-	(set-buffer (org-capture-target-buffer (nth 1 target)))
-	(org-capture-put-target-region-and-position)
-	(widen)
-	(funcall (nth 2 target))
-	(org-capture-put :exact-position (point))
-	(setq target-entry-p (and (derived-mode-p 'org-mode) (org-at-heading-p))))
-
-       ((eq (car target) 'function)
-	(funcall (nth 1 target))
-	(org-capture-put :exact-position (point))
-	(setq target-entry-p (and (derived-mode-p 'org-mode) (org-at-heading-p))))
-
-       ((eq (car target) 'clock)
-	(if (and (markerp org-clock-hd-marker)
-		 (marker-buffer org-clock-hd-marker))
-	    (progn (set-buffer (marker-buffer org-clock-hd-marker))
-		   (org-capture-put-target-region-and-position)
-		   (widen)
-		   (goto-char org-clock-hd-marker))
-	  (error "No running clock that could be used as capture target")))
-
-       (t (error "Invalid capture target specification")))
-
-      (when (and (featurep 'org-crypt) (org-at-encrypted-entry-p))
-	(org-decrypt-entry)
-	(setq decrypted-hl-pos
-	      (save-excursion (and (org-back-to-heading t) (point)))))
-
-      (org-capture-put :buffer (current-buffer) :pos (point)
+      (org-capture-put :buffer (current-buffer)
+		       :pos (point)
 		       :target-entry-p target-entry-p
-		       :decrypted decrypted-hl-pos))))
+		       :decrypted
+		       (and (featurep 'org-crypt)
+			    (org-at-encrypted-entry-p)
+			    (save-excursion
+			      (org-decrypt-entry)
+			      (and (org-back-to-heading t) (point))))))))
 
 (defun org-capture-expand-file (file)
-  "Expand functions and symbols for FILE.
-When FILE is a function, call it.  When it is a variable,
-retrieve its value.  When it is the empty string, return
-`org-default-notes-file'.  In any other case, return FILE as-is."
-  (cond
-   ((equal file "") org-default-notes-file)
-   ((functionp file) (funcall file))
-   ((and (symbolp file) (boundp file)) (symbol-value file))
-   (t file)))
+  "Expand functions, symbols and file names for FILE.
+When FILE is a function, call it.  When it is a form, evaluate
+it.  When it is a variable, return its value.  When it is
+a string, treat it as a file name, possibly expanding it
+according to `org-directory', and return it.  If it is the empty
+string, however, return `org-default-notes-file'.  In any other
+case, raise an error."
+  (let ((location (cond ((equal file "") org-default-notes-file)
+			((stringp file) (expand-file-name file org-directory))
+			((functionp file) (funcall file))
+			((and (symbolp file) (boundp file)) (symbol-value file))
+			(t nil))))
+    (or (org-string-nw-p location)
+	(error "Invalid file location: %S" location))))
 
 (defun org-capture-target-buffer (file)
-  "Get a buffer for FILE."
-  (setq file (org-capture-expand-file file))
-  (setq file (or (org-string-nw-p file)
-		 org-default-notes-file
-		 (error "No notes file specified, and no default available")))
-  (or (org-find-base-buffer-visiting file)
-      (progn (org-capture-put :new-buffer t)
-	     (find-file-noselect (expand-file-name file org-directory)))))
+  "Get a buffer for FILE.
+FILE is a generalized file location, as handled by
+`org-capture-expand-file'."
+  (let ((file (org-capture-expand-file file)))
+    (or (org-find-base-buffer-visiting file)
+	(progn (org-capture-put :new-buffer t)
+	       (find-file-noselect file)))))
 
 (defun org-capture-place-template (&optional inhibit-wconf-store)
   "Insert the template at the target location, and display the buffer.
@@ -1084,7 +1121,7 @@ may have been stored before."
     (setq beg (point))
     (org-capture-verify-tree txt)
     (org-paste-subtree level txt 'for-yank)
-    (org-capture-empty-lines-after 1)
+    (org-capture-empty-lines-after)
     (org-capture-position-for-last-stored beg)
     (outline-next-heading)
     (setq end (point))
@@ -1144,7 +1181,7 @@ may have been stored before."
 		      "\n"))
     ;; Insert item.
     (insert txt)
-    (org-capture-empty-lines-after 1)
+    (org-capture-empty-lines-after)
     (org-capture-position-for-last-stored beg)
     (forward-char 1)
     (setq end (point))
@@ -1265,7 +1302,7 @@ Of course, if exact position has been required, just put it there."
     (org-capture-empty-lines-before)
     (setq beg (point))
     (insert txt)
-    (org-capture-empty-lines-after 1)
+    (org-capture-empty-lines-after)
     (org-capture-position-for-last-stored beg)
     (setq end (point))
     (org-capture-mark-kill-region beg (1- end))
@@ -1295,8 +1332,8 @@ Of course, if exact position has been required, just put it there."
 			   (org-table-current-dline))))
    (t (error "This should not happen"))))
 
-(defun org-capture-bookmark-last-stored-position ()
-  "Bookmark the last-captured position."
+(defun org-capture-store-last-position ()
+  "Store the last-captured position."
   (let* ((where (org-capture-get :position-for-last-stored 'local))
 	 (pos (cond
 	       ((markerp where)
@@ -1309,14 +1346,11 @@ Of course, if exact position has been required, just put it there."
 		      (point-at-bol))
 		  (point))))))
     (with-current-buffer (buffer-base-buffer (current-buffer))
-      (org-with-wide-buffer
-       (goto-char pos)
-       (let ((bookmark-name (plist-get org-bookmark-names-plist
-				       :last-capture)))
-	 (when bookmark-name
-	   (with-demoted-errors
-	       (bookmark-set bookmark-name))))
-       (move-marker org-capture-last-stored-marker (point))))))
+      (org-with-point-at pos
+	(when org-capture-bookmark
+	  (let ((bookmark (plist-get org-bookmark-names-plist :last-capture)))
+	    (when bookmark (with-demoted-errors (bookmark-set bookmark)))))
+	(move-marker org-capture-last-stored-marker (point))))))
 
 (defun org-capture-narrow (beg end)
   "Narrow, unless configuration says not to narrow."
@@ -1352,7 +1386,7 @@ Point will remain at the first line after the inserted text."
   (let* ((template (org-capture-get :template))
 	 (type  (org-capture-get :type))
 	 beg end pp)
-    (or (bolp) (newline))
+    (unless (bolp) (insert "\n"))
     (setq beg (point))
     (cond
      ((and (eq type 'entry) (derived-mode-p 'org-mode))
@@ -1374,13 +1408,16 @@ Point will remain at the first line after the inserted text."
       (org-capture-empty-lines-after)
       (goto-char beg)
       (org-list-repair)
-      (org-end-of-item)
-      (setq end (point)))
-     (t (insert template)))
+      (org-end-of-item))
+     (t
+      (insert template)
+      (org-capture-empty-lines-after)
+      (skip-chars-forward " \t\n")
+      (unless (eobp) (beginning-of-line))))
     (setq end (point))
     (goto-char beg)
-    (if (re-search-forward "%\\?" end t)
-	(replace-match ""))))
+    (when (re-search-forward "%\\?" end t)
+      (replace-match ""))))
 
 (defun org-capture-set-plist (entry)
   "Initialize the property list from the template definition."
@@ -1431,6 +1468,7 @@ Use PREFIX as a prefix for the name of the indirect buffer."
 
 (defun org-mks (table title &optional prompt specials)
   "Select a member of an alist with multiple keys.
+
 TABLE is the alist which should contain entries where the car is a string.
 There should be two types of entries.
 
@@ -1438,7 +1476,7 @@ There should be two types of entries.
    This indicates that `a' is a prefix key for multi-letter selection, and
    that there are entries following with keys like \"ab\", \"ax\"...
 
-2. Selectable members must have more than two elements, with the first
+2. Select-able members must have more than two elements, with the first
    being the string of keys that lead to selecting it, and the second a
    short description string of the item.
 
@@ -1449,84 +1487,72 @@ When you press a prefix key, the commands (and maybe further prefixes)
 under this key will be shown and offered for selection.
 
 TITLE will be placed over the selection in the temporary buffer,
-PROMPT will be used when prompting for a key.  SPECIAL is an alist with
-also (\"key\" \"description\") entries.  When one of these is selection,
-only the bare key is returned."
-  (setq prompt (or prompt "Select: "))
-  (let (tbl orig-table dkey ddesc des-keys allowed-keys
-	    current prefix rtn re pressed buffer (inhibit-quit t))
-    (save-window-excursion
-      (setq buffer (org-switch-to-buffer-other-window "*Org Select*"))
-      (setq orig-table table)
-      (catch 'exit
-	(while t
-	  (erase-buffer)
-	  (insert title "\n\n")
-	  (setq tbl table
-		des-keys nil
-		allowed-keys nil
-		cursor-type nil)
-	  (setq prefix (if current (concat current " ") ""))
-	  (while tbl
-	    (cond
-	     ((and (= 2 (length (car tbl))) (= (length (caar tbl)) 1))
-	      ;; This is a description on this level
-	      (setq dkey (caar tbl) ddesc (cl-cadar tbl))
-	      (pop tbl)
-	      (push dkey des-keys)
-	      (push dkey allowed-keys)
-	      (insert prefix "[" dkey "]" "..." "  " ddesc "..." "\n")
-	      ;; Skip keys which are below this prefix
-	      (setq re (concat "\\`" (regexp-quote dkey)))
-	      (let (case-fold-search)
-		(while (and tbl (string-match re (caar tbl))) (pop tbl))))
-	     ((= 2 (length (car tbl)))
-	      ;; Not yet a usable description, skip it
-	      )
-	     (t
-	      ;; usable entry on this level
-	      (insert prefix "[" (caar tbl) "]" "     " (nth 1 (car tbl)) "\n")
-	      (push (caar tbl) allowed-keys)
-	      (pop tbl))))
-	  (when specials
-	    (insert "-------------------------------------------------------------------------------\n")
-	    (let ((sp specials))
-	      (while sp
-		(insert (format "[%s]     %s\n"
-				(caar sp) (nth 1 (car sp))))
-		(push (caar sp) allowed-keys)
-		(pop sp))))
-	  (push "\C-g" allowed-keys)
-	  (goto-char (point-min))
-	  (if (not (pos-visible-in-window-p (point-max)))
-	      (org-fit-window-to-buffer))
-	  (message prompt)
-	  (setq pressed (char-to-string (read-char-exclusive)))
-	  (while (not (member pressed allowed-keys))
-	    (message "Invalid key `%s'" pressed) (sit-for 1)
-	    (message prompt)
-	    (setq pressed (char-to-string (read-char-exclusive))))
-	  (when (equal pressed "\C-g")
-	    (kill-buffer buffer)
-	    (user-error "Abort"))
-	  (when (and (not (assoc pressed table))
-		     (not (member pressed des-keys))
-		     (assoc pressed specials))
-	    (throw 'exit (setq rtn pressed)))
-	  (unless (member pressed des-keys)
-	    (throw 'exit (setq rtn (rassoc (cdr (assoc pressed table))
-					   orig-table))))
-	  (setq current (concat current pressed))
-	  (setq table (mapcar
-		       (lambda (x)
-			 (if (and (> (length (car x)) 1)
-				  (equal (substring (car x) 0 1) pressed))
-			     (cons (substring (car x) 1) (cdr x))
-			   nil))
-		       table))
-	  (setq table (remove nil table)))))
-    (when buffer (kill-buffer buffer))
-    rtn))
+PROMPT will be used when prompting for a key.  SPECIAL is an
+alist with (\"key\" \"description\") entries.  When one of these
+is selected, only the bare key is returned."
+  (save-window-excursion
+    (let ((inhibit-quit t)
+	  (buffer (org-switch-to-buffer-other-window "*Org Select*"))
+	  (prompt (or prompt "Select: "))
+	  current)
+      (unwind-protect
+	  (catch 'exit
+	    (while t
+	      (erase-buffer)
+	      (insert title "\n\n")
+	      (let ((des-keys nil)
+		    (allowed-keys '("\C-g"))
+		    (cursor-type nil))
+		;; Populate allowed keys and descriptions keys
+		;; available with CURRENT selector.
+		(let ((re (format "\\`%s\\(.\\)\\'"
+				  (if current (regexp-quote current) "")))
+		      (prefix (if current (concat current " ") "")))
+		  (dolist (entry table)
+		    (pcase entry
+		      ;; Description.
+		      (`(,(and key (pred (string-match re))) ,desc)
+		       (let ((k (match-string 1 key)))
+			 (push k des-keys)
+			 (push k allowed-keys)
+			 (insert prefix "[" k "]" "..." "  " desc "..." "\n")))
+		      ;; Usable entry.
+		      (`(,(and key (pred (string-match re))) ,desc . ,_)
+		       (let ((k (match-string 1 key)))
+			 (insert prefix "[" k "]" "     " desc "\n")
+			 (push k allowed-keys)))
+		      (_ nil))))
+		;; Insert special entries, if any.
+		(when specials
+		  (insert "----------------------------------------------------\
+---------------------------\n")
+		  (pcase-dolist (`(,key ,description) specials)
+		    (insert (format "[%s]     %s\n" key description))
+		    (push key allowed-keys)))
+		;; Display UI and let user select an entry or
+		;; a sub-level prefix.
+		(goto-char (point-min))
+		(unless (pos-visible-in-window-p (point-max))
+		  (org-fit-window-to-buffer))
+		(message prompt)
+		(let ((pressed (char-to-string (read-char-exclusive))))
+		  (while (not (member pressed allowed-keys))
+		    (message "Invalid key `%s'" pressed) (sit-for 1)
+		    (message prompt)
+		    (setq pressed (char-to-string (read-char-exclusive))))
+		  (setq current (concat current pressed))
+		  (cond
+		   ((equal pressed "\C-g") (user-error "Abort"))
+		   ;; Selection is a prefix: open a new menu.
+		   ((member pressed des-keys))
+		   ;; Selection matches an association: return it.
+		   ((let ((entry (assoc current table)))
+		      (and entry (throw 'exit entry))))
+		   ;; Selection matches a special entry: return the
+		   ;; selection prefix.
+		   ((assoc current specials) (throw 'exit current))
+		   (t (error "No entry available")))))))
+	(when buffer (kill-buffer buffer))))))
 
 ;;; The template code
 (defun org-capture-select-template (&optional keys)
@@ -1534,7 +1560,8 @@ only the bare key is returned."
 Lisp programs can force the template by setting KEYS to a string."
   (let ((org-capture-templates
 	 (or (org-contextualize-keys
-	      org-capture-templates org-capture-templates-contexts)
+	      (org-capture-upgrade-templates org-capture-templates)
+	      org-capture-templates-contexts)
 	     '(("t" "Task" entry (file+headline "" "Tasks")
 		"* TODO %?\n  %u\n  %a")))))
     (if keys
@@ -1545,6 +1572,9 @@ Lisp programs can force the template by setting KEYS to a string."
 	       "Template key: "
 	       '(("C" "Customize org-capture-templates")
 		 ("q" "Abort"))))))
+
+(defvar org-capture--clipboards nil
+  "List various clipboards values.")
 
 (defun org-capture-fill-template (&optional template initial annotation)
   "Fill a template and return the filled template as a string.
@@ -1594,12 +1624,13 @@ The template may still contain \"%?\" for cursor positioning."
 		   org-clock-heading)))
 	 (v-f (or (org-capture-get :original-file-nondirectory) ""))
 	 (v-F (or (org-capture-get :original-file) ""))
-	 (clipboards (delq nil
-			   (list v-i
-				 (org-get-x-clipboard 'PRIMARY)
-				 (org-get-x-clipboard 'CLIPBOARD)
-				 (org-get-x-clipboard 'SECONDARY)
-				 v-c))))
+	 (org-capture--clipboards
+	  (delq nil
+		(list v-i
+		      (org-get-x-clipboard 'PRIMARY)
+		      (org-get-x-clipboard 'CLIPBOARD)
+		      (org-get-x-clipboard 'SECONDARY)
+		      v-c))))
 
     (setq org-store-link-plist (plist-put org-store-link-plist :annotation v-a))
     (setq org-store-link-plist (plist-put org-store-link-plist :initial v-i))
@@ -1651,34 +1682,41 @@ The template may still contain \"%?\" for cursor positioning."
 		(delete-region pos end)
 		(set-marker pos nil)
 		(set-marker end nil)
-		(let ((replacement
-		       (pcase (string-to-char value)
-			 (?< (format-time-string time-string))
-			 (?:
-			  (or (plist-get org-store-link-plist (intern value))
-			      ""))
-			 (?i (let ((lead (buffer-substring-no-properties
+		(let* ((inside-sexp? (org-capture-inside-embedded-elisp-p))
+		       (replacement
+			(pcase (string-to-char value)
+			  (?< (format-time-string time-string time))
+			  (?:
+			   (or (plist-get org-store-link-plist (intern value))
+			       ""))
+			  (?i
+			   (if inside-sexp? v-i
+			     ;; Outside embedded Lisp, repeat leading
+			     ;; characters before initial place holder
+			     ;; every line.
+			     (let ((lead (buffer-substring-no-properties
 					  (line-beginning-position) (point))))
-			       (mapconcat #'identity
-					  (split-string v-i "\n")
-					  (concat "\n" lead))))
-			 (?a v-a)
-			 (?A v-A)
-			 (?c v-c)
-			 (?f v-f)
-			 (?F v-F)
-			 (?k v-k)
-			 (?K v-K)
-			 (?l v-l)
-			 (?n v-n)
-			 (?t v-t)
-			 (?T v-T)
-			 (?u v-u)
-			 (?U v-U)
-			 (?x v-x))))
+			       (replace-regexp-in-string "\n\\(.\\)"
+							 (concat lead "\\1")
+							 v-i nil nil 1))))
+			  (?a v-a)
+			  (?A v-A)
+			  (?c v-c)
+			  (?f v-f)
+			  (?F v-F)
+			  (?k v-k)
+			  (?K v-K)
+			  (?l v-l)
+			  (?n v-n)
+			  (?t v-t)
+			  (?T v-T)
+			  (?u v-u)
+			  (?U v-U)
+			  (?x v-x))))
 		  (insert
-		   (if (org-capture-inside-embedded-elisp-p)
-		       (replace-regexp-in-string "\"" "\\\\\"" replacement)
+		   (if inside-sexp?
+		       ;; Escape sensitive characters.
+		       (replace-regexp-in-string "[\\\"]" "\\\\\\&" replacement)
 		     replacement))))))))
 
       ;; Expand %() embedded Elisp.  Limit to Sexp originally marked.
@@ -1732,24 +1770,20 @@ The template may still contain \"%?\" for cursor positioning."
 			 (and (org-at-heading-p)
 			      (let ((org-ignore-region t))
 				(org-set-tags nil 'align))))))
-		    ("C"
-		     (cond
-		      ((= (length clipboards) 1) (insert (car clipboards)))
-		      ((> (length clipboards) 1)
-		       (insert (read-string "Clipboard/kill value: "
-					    (car clipboards)
-					    '(clipboards . 1)
-					    (car clipboards))))))
-		    ("L"
-		     (cond ((= (length clipboards) 1)
-			    (org-insert-link 0 (car clipboards)))
-			   ((> (length clipboards) 1)
-			    (org-insert-link
-			     0
-			     (read-string "Clipboard/kill value: "
-					  (car clipboards)
-					  '(clipboards . 1)
-					  (car clipboards))))))
+		    ((or "C" "L")
+		     (let ((insert-fun (if (equal key "C") #'insert
+					 (lambda (s) (org-insert-link 0 s)))))
+		       (pcase org-capture--clipboards
+			 (`nil nil)
+			 (`(,value) (funcall insert-fun value))
+			 (`(,first-value . ,_)
+			  (funcall insert-fun
+				   (read-string "Clipboard/kill value: "
+						first-value
+						'org-capture--clipboards
+						first-value)))
+			 (_ (error "Invalid `org-capture--clipboards' value: %S"
+				   org-capture--clipboards)))))
 		    ("p" (org-set-property prompt nil))
 		    ((guard key)
 		     ;; These are the date/time related ones.

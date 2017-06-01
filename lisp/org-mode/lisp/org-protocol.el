@@ -1,6 +1,6 @@
 ;;; org-protocol.el --- Intercept Calls from Emacsclient to Trigger Custom Actions -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2008-2016 Free Software Foundation, Inc.
+;; Copyright (C) 2008-2017 Free Software Foundation, Inc.
 ;;
 ;; Authors: Bastien Guerry <bzg@gnu.org>
 ;;       Daniel M German <dmg AT uvic DOT org>
@@ -498,7 +498,6 @@ Now template ?b will be used."
 	 (org-capture-link-is-already-stored t)) ;; avoid call to org-store-link
     (setq org-stored-links
 	  (cons (list url title) org-stored-links))
-    (kill-new orglink)
     (org-store-link-props :type type
 			  :link url
 			  :description title
@@ -596,11 +595,14 @@ CLIENT is ignored."
   (let ((sub-protocols (append org-protocol-protocol-alist
 			       org-protocol-protocol-alist-default)))
     (catch 'fname
-      (let ((the-protocol (concat (regexp-quote org-protocol-the-protocol) ":/+")))
+      (let ((the-protocol (concat (regexp-quote org-protocol-the-protocol)
+				  ":/+")))
         (when (string-match the-protocol fname)
           (dolist (prolist sub-protocols)
-            (let ((proto (concat the-protocol
-				 (regexp-quote (plist-get (cdr prolist) :protocol)) "\\(:/+\\|\\?\\)")))
+            (let ((proto
+		   (concat the-protocol
+			   (regexp-quote (plist-get (cdr prolist) :protocol))
+			   "\\(:/+\\|\\?\\)")))
               (when (string-match proto fname)
                 (let* ((func (plist-get (cdr prolist) :function))
                        (greedy (plist-get (cdr prolist) :greedy))
@@ -613,12 +615,14 @@ CLIENT is ignored."
                   (when (fboundp func)
                     (unless greedy
                       (throw 'fname
-			     (condition-case nil
-				 (funcall func (org-protocol-parse-parameters result new-style))
-			       (error
-				(warn "Please update your org protocol handler to deal with new-style links.")
-				(funcall func result)))))
-		    ;; Greedy protocol handlers are responsible for parsing their own filenames
+			     (if new-style
+				 (funcall func (org-protocol-parse-parameters
+						result new-style))
+			       (warn "Please update your Org Protocol handler \
+to deal with new-style links.")
+			       (funcall func result))))
+		    ;; Greedy protocol handlers are responsible for
+		    ;; parsing their own filenames.
 		    (funcall func result)
                     (throw 'fname t))))))))
       fname)))
@@ -651,11 +655,13 @@ The visited file needs to be part of a publishing project in
 `org-publish-project-alist' for this to work.  The function
 delegates most of the work to `org-protocol-create'."
   (interactive)
-  (require 'org-publish)
+  (require 'ox-publish)
   (let ((all (or (org-publish-get-project-from-filename buffer-file-name))))
     (if all (org-protocol-create (cdr all))
-      (message "Not in an org-project.  Did you mean `%s'?"
-               (substitute-command-keys "`\\[org-protocol-create]'")))))
+      (message "%s"
+	       (substitute-command-keys
+		"Not in an Org project.  \
+Did you mean `\\[org-protocol-create]'?")))))
 
 (defun org-protocol-create (&optional project-plist)
   "Create a new org-protocol project interactively.

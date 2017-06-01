@@ -1,6 +1,6 @@
 ;;; org-info.el --- Support for Links to Info Nodes -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2004-2016 Free Software Foundation, Inc.
+;; Copyright (C) 2004-2017 Free Software Foundation, Inc.
 
 ;; Author: Carsten Dominik <carsten at orgmode dot org>
 ;; Keywords: outlines, hypermedia, calendar, wp
@@ -97,34 +97,51 @@ Taken from <http://www.gnu.org/software/emacs/manual/html_mono/.>")
 (defconst org-info-other-documents
   '(("libc" . "http://www.gnu.org/software/libc/manual/html_mono/libc.html")
     ("make" . "http://www.gnu.org/software/make/manual/make.html"))
-  "Alist of documents generated from texinfo source.
-
-When converting info links to html, links to any one of these manuals are
-converted to use these URL's.")
+  "Alist of documents generated from Texinfo source.
+When converting info links to HTML, links to any one of these manuals are
+converted to use these URL.")
 
 (defun org-info-map-html-url (filename)
-  "Given info FILENAME, either return it (plus '.html' suffix added) or convert
-it to URL pointing to the official page on internet, e.g., use gnu.org for all
-emacs related documents. See `org-info-official-gnu-document' and
-`org-info-other-documents' for details."
-  (if (member filename org-info-emacs-documents)
-      (format "http://www.gnu.org/software/emacs/manual/html_mono/%s.html"
-              filename)
-    (let ((url (cdr (assoc filename org-info-other-documents))))
-      (or url (concat filename ".html")))))
+  "Return URL or HTML file associated to Info FILENAME.
+If FILENAME refers to an official GNU document, return a URL pointing to
+the official page for that document, e.g., use \"gnu.org\" for all Emacs
+related documents.  Otherwise, append \".html\" extension to FILENAME.
+See `org-info-emacs-documents' and `org-info-other-documents' for details."
+  (cond ((member filename org-info-emacs-documents)
+	 (format "http://www.gnu.org/software/emacs/manual/html_mono/%s.html"
+		 filename))
+	((cdr (assoc filename org-info-other-documents)))
+	(t (concat filename ".html"))))
+
+(defun org-info--expand-node-name (node)
+  "Expand Info NODE to HTML cross reference."
+  ;; See (info "(texinfo) HTML Xref Node Name Expansion") for the
+  ;; expansion rule.
+  (let ((node (replace-regexp-in-string
+	       "\\([ \t\n\r]+\\)\\|\\([^a-zA-Z0-9]\\)"
+	       (lambda (m)
+		 (if (match-end 1) "-" (format "_%04x" (string-to-char m))))
+	       (org-trim node))))
+    (cond ((string= node "") "")
+	  ((string-match-p "\\`[0-9]" node) (concat "g_t" node))
+	  (t node))))
 
 (defun org-info-export (path desc format)
   "Export an info link.
 See `org-link-parameters' for details about PATH, DESC and FORMAT."
-  (when (eq format 'html)
-    (or (string-match "\\(.*\\)[#:]:?\\(.*\\)" path)
-	(string-match "\\(.*\\)" path))
-    (let ((filename (match-string 1 path))
-	  (node (or (match-string 2 path) "Top")))
-      (format "<a href=\"%s#%s\">%s</a>"
-	      (org-info-map-html-url filename)
-	      (replace-regexp-in-string " " "-" node)
-	      (or desc path)))))
+  (let* ((parts (split-string path "[#:]:?"))
+	 (manual (car parts))
+	 (node (or (nth 1 parts) "Top")))
+    (pcase format
+      (`html
+       (format "<a href=\"%s#%s\">%s</a>"
+	       (org-info-map-html-url manual)
+	       (org-info--expand-node-name node)
+	       (or desc path)))
+      (`texinfo
+       (let ((title (or desc "")))
+	 (format "@ref{%s,%s,,%s,}" node title manual)))
+      (_ nil))))
 
 (provide 'org-info)
 

@@ -26,15 +26,15 @@ should still return the link."
   (should
    (let ((default-directory temporary-file-directory))
      (org-test-with-temp-text
-      "
+	 "
 * Test
   #+<point>BEGIN_SRC emacs-lisp :file test.txt :cache yes
     (message \"test\")
   #+END_SRC"
-      ;; Execute twice as the first time creates the cache.
-      (org-babel-execute-src-block)
-      (string= (concat default-directory "test.txt")
-	       (org-babel-execute-src-block))))))
+       ;; Execute twice as the first time creates the cache.
+       (org-babel-execute-src-block)
+       (string= (expand-file-name "test.txt")
+		(org-babel-execute-src-block))))))
 
 (ert-deftest test-ob/multi-line-header-regexp ()
   (should(equal "^[ \t]*#\\+headers?:[ \t]*\\([^\n]*\\)$"
@@ -701,11 +701,31 @@ x
     (should (= 2 (length (org-babel-ref-split-args
 			  "a=\"this, no work\", b=1"))))))
 
-(ert-deftest test-ob/org-babel-balanced-split ()
+(ert-deftest test-ob/balanced-split ()
+  "Test `org-babel-balanced-split' specifications."
   (should (equal
 	   '(":a 1" "b [2 3]" "c (4 :d (5 6))")
 	   (org-babel-balanced-split ":a 1 :b [2 3] :c (4 :d (5 6))"
-				     '((32 9) . 58)))))
+				     '((32 9) . 58))))
+  ;; Handle un-balanced parens.
+  (should
+   (equal '(":foo ((6)" "bar 1")
+	  (org-babel-balanced-split ":foo ((6) :bar 1" '((32 9) . 58))))
+  (should
+   (equal '(":foo \"(foo\"" "bar 2")
+	  (org-babel-balanced-split ":foo \"(foo\" :bar 2" '((32 9) . 58))))
+  ;; Handle un-balanced quotes.
+  (should
+   (equal '(":foo \"1" "bar 3")
+	  (org-babel-balanced-split ":foo \"1 :bar 3" '((32 9) . 58))))
+  ;; Handle empty string.
+  (should
+   (equal '(":foo \"\"")
+	  (org-babel-balanced-split ":foo \"\"" '((32 9) . 58))))
+  ;; Handle control characters within double quotes.
+  (should
+   (equal '(":foo \"\\n\"")
+	  (org-babel-balanced-split ":foo \"\\n\"" '((32 9) . 58)))))
 
 (ert-deftest test-ob/commented-last-block-line-no-var ()
   (org-test-with-temp-text-in-file "
@@ -757,8 +777,8 @@ x
 	     ": 2"
 	     (buffer-substring-no-properties (point-at-bol) (point-at-eol))))))
 
-(ert-deftest test-ob/org-babel-insert-result--improper-lists ()
-  "Test `org-babel-insert-result' with improper lists."
+(ert-deftest test-ob/org-babel-insert-result ()
+  "Test `org-babel-insert-result' specifications."
   ;; Do not error when output is an improper list.
   (should
    (org-test-with-temp-text
@@ -767,7 +787,66 @@ x
 '((1 . nil) (2 . 3))
 #+END_SRC
 "
-     (org-babel-execute-maybe) t)))
+     (org-babel-execute-maybe) t))
+  ;; Escape headlines when producing an example block.
+  (should
+   (string-match-p
+    ",\\* Not an headline"
+    (org-test-with-temp-text
+	"
+<point>#+BEGIN_SRC emacs-lisp
+\"* Not an headline\"
+#+END_SRC
+"
+      (let ((org-babel-min-lines-for-block-output 1)) (org-babel-execute-maybe))
+      (buffer-string))))
+  ;; Escape special syntax in example blocks.
+  (should
+   (string-match-p
+    ",#\\+END_SRC"
+    (org-test-with-temp-text
+	"
+<point>#+BEGIN_SRC emacs-lisp
+\"#+END_SRC\"
+#+END_SRC
+"
+      (let ((org-babel-min-lines-for-block-output 1)) (org-babel-execute-maybe))
+      (buffer-string))))
+  ;; No escaping is done with other blocks or raw type.
+  (should-not
+   (string-match-p
+    ",\\* Not an headline"
+    (org-test-with-temp-text
+	"
+<point>#+BEGIN_SRC emacs-lisp
+\"* Not an headline\"
+#+END_SRC
+"
+      (let ((org-babel-min-lines-for-block-output 10))
+	(org-babel-execute-maybe))
+      (buffer-string))))
+  (should-not
+   (string-match-p
+    ",\\* Not an headline"
+    (org-test-with-temp-text
+	"
+<point>#+BEGIN_SRC emacs-lisp :results raw
+\"* Not an headline\"
+#+END_SRC
+"
+      (org-babel-execute-maybe)
+      (buffer-string))))
+  (should-not
+   (string-match-p
+    ",\\* Not an headline"
+    (org-test-with-temp-text
+	"
+<point>#+BEGIN_SRC emacs-lisp :results drawer
+\"* Not an headline\"
+#+END_SRC
+"
+      (org-babel-execute-maybe)
+      (buffer-string)))))
 
 (ert-deftest test-ob/remove-inline-result ()
   "Test `org-babel-remove-inline-result' honors whitespace."

@@ -1,6 +1,6 @@
 ;;; org-pcomplete.el --- In-buffer Completion Code -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2004-2016 Free Software Foundation, Inc.
+;; Copyright (C) 2004-2017 Free Software Foundation, Inc.
 ;;
 ;; Author: Carsten Dominik <carsten at orgmode dot org>
 ;;         John Wiegley <johnw at gnu dot org>
@@ -315,10 +315,11 @@ This needs more work, to handle headings with lots of spaces in them."
        (save-excursion
 	 (goto-char (point-min))
 	 (let (tbl)
-	   (while (re-search-forward org-todo-line-regexp nil t)
-	     (push (org-make-org-heading-search-string
-		    (match-string-no-properties 3))
-		   tbl))
+	   (let ((case-fold-search nil))
+	     (while (re-search-forward org-todo-line-regexp nil t)
+	       (push (org-make-org-heading-search-string
+		      (match-string-no-properties 3))
+		     tbl)))
 	   (pcomplete-uniqify-list tbl)))
        (substring pcomplete-stub 1))))
 

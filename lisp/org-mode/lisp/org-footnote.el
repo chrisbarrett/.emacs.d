@@ -1,6 +1,6 @@
 ;;; org-footnote.el --- Footnote support in Org      -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2009-2016 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2017 Free Software Foundation, Inc.
 ;;
 ;; Author: Carsten Dominik <carsten at orgmode dot org>
 ;; Keywords: outlines, hypermedia, calendar, wp
@@ -39,6 +39,7 @@
 (declare-function org-back-over-empty-lines "org" ())
 (declare-function org-edit-footnote-reference "org-src" ())
 (declare-function org-element-at-point "org-element" ())
+(declare-function org-element-class "org-element" (datum &optional parent))
 (declare-function org-element-context "org-element" (&optional element))
 (declare-function org-element-lineage "org-element" (blob &optional types with-self))
 (declare-function org-element-property "org-element" (property element))
@@ -59,8 +60,6 @@
 (defvar org-blank-before-new-entry)	; defined in org.el
 (defvar org-bracket-link-regexp)	; defined in org.el
 (defvar org-complex-heading-regexp)	; defined in org.el
-(defvar org-element-all-elements)	; defined in org-element.el
-(defvar org-element-all-objects)	; defined in org-element.el
 (defvar org-odd-levels-only)		; defined in org.el
 (defvar org-outline-regexp)		; defined in org.el
 (defvar org-outline-regexp-bol)		; defined in org.el
@@ -285,10 +284,12 @@ otherwise."
        ;; heading itself or on the blank lines below.
        ((memq type '(headline inlinetask))
 	(or (not (org-at-heading-p))
-	    (and (save-excursion (beginning-of-line)
-				 (and (let ((case-fold-search t))
-					(not (looking-at "\\*+ END[ \t]*$")))
-				      (looking-at org-complex-heading-regexp)))
+	    (and (save-excursion
+		   (beginning-of-line)
+		   (and (let ((case-fold-search t))
+			  (not (looking-at-p "\\*+ END[ \t]*$")))
+			(let ((case-fold-search nil))
+			  (looking-at org-complex-heading-regexp))))
 		 (match-beginning 4)
 		 (>= (point) (match-beginning 4))
 		 (or (not (match-beginning 5))
@@ -298,10 +299,10 @@ otherwise."
        ((>= (point)
 	    (save-excursion (goto-char (org-element-property :end context))
 			    (skip-chars-backward " \r\t\n")
-			    (if (memq type org-element-all-objects) (point)
+			    (if (eq (org-element-class context) 'object) (point)
 			      (1+ (line-beginning-position 2))))))
        ;; Other elements are invalid.
-       ((memq type org-element-all-elements) nil)
+       ((eq (org-element-class context) 'element) nil)
        ;; Just before object is fine.
        ((= (point) (org-element-property :begin context)))
        ;; Within recursive object too, but not in a link.
@@ -348,7 +349,7 @@ to rename."
 
 Return an alist where associations follow the pattern
 
-  \(LABEL MARKER TOP-LEVEL SIZE)
+  (LABEL MARKER TOP-LEVEL SIZE)
 
 with
 
@@ -413,7 +414,7 @@ References are sorted according to a deep-reading order."
 
 Return an alist where associations follow the pattern
 
-  \(LABEL . DEFINITION)
+  (LABEL . DEFINITION)
 
 with LABEL and DEFINITION being, respectively, the label and the
 definition of the footnote, as strings.

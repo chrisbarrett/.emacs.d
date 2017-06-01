@@ -1,6 +1,6 @@
 ;;; ox-texinfo.el --- Texinfo Back-End for Org Export Engine -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2012-2016 Free Software Foundation, Inc.
+;; Copyright (C) 2012-2017 Free Software Foundation, Inc.
 ;; Author: Jonathan Leech-Pepin <jonathan.leechpepin at gmail dot com>
 ;; Keywords: outlines, hypermedia, calendar, wp
 
@@ -224,7 +224,7 @@ TAGS      the tags as a list of strings (list of strings or nil).
 The function result will be used in the section format string."
   :group 'org-export-texinfo
   :type 'function
-  :version "25.2"
+  :version "26.1"
   :package-version '(Org . "8.3"))
 
 ;;;; Node listing (menu)
@@ -346,10 +346,13 @@ The function should return the string to be exported."
 
 (defcustom org-texinfo-info-process '("makeinfo %f")
   "Commands to process a Texinfo file to an INFO file.
-This is list of strings, each of them will be given to the shell
-as a command.  %f in the command will be replaced by the full
-file name, %b by the file base name (i.e without extension) and
-%o by the base directory of the file."
+
+This is a list of strings, each of them will be given to the
+shell as a command.  %f in the command will be replaced by the
+relative file name, %F by the absolute file name, %b by the file
+base name (i.e. without directory and extension parts), %o by the
+base directory of the file and %O by the absolute file name of
+the output file."
   :group 'org-export-texinfo
   :type '(repeat :tag "Shell command sequence"
 		 (string :tag "Shell command")))
@@ -1001,12 +1004,6 @@ INFO is a plist holding contextual information.  See
 		    ;; Eventually, just return "Top" to refer to the
 		    ;; beginning of the info file.
 		    (t "Top")))))))
-     ((equal type "info")
-      (let* ((info-path (split-string path "[:#]"))
-	     (info-manual (car info-path))
-	     (info-node (or (cadr info-path) "Top"))
-	     (title (or desc "")))
-	(format "@ref{%s,%s,,%s,}" info-node title info-manual)))
      ((string= type "mailto")
       (format "@email{%s}"
 	      (concat (org-texinfo--sanitize-content path)

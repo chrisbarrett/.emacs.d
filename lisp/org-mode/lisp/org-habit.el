@@ -1,6 +1,6 @@
 ;;; org-habit.el --- The habit tracking code for Org -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2009-2016 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2017 Free Software Foundation, Inc.
 
 ;; Author: John Wiegley <johnw at gnu dot org>
 ;; Keywords: outlines, hypermedia, calendar, wp
@@ -170,7 +170,7 @@ This list represents a \"habit\" for the rest of this module."
     (if pom (goto-char pom))
     (cl-assert (org-is-habit-p (point)))
     (let* ((scheduled (org-get-scheduled-time (point)))
-	   (scheduled-repeat (org-get-repeat org-scheduled-string))
+	   (scheduled-repeat (org-get-repeat (org-entry-get (point) "SCHEDULED")))
 	   (end (org-entry-end-position))
 	   (habit-entry (org-no-properties (nth 4 (org-heading-components))))
 	   closed-dates deadline dr-days sr-days sr-type)

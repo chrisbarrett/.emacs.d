@@ -1,6 +1,6 @@
 ;;; org-timer.el --- Timer code for Org mode         -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2008-2016 Free Software Foundation, Inc.
+;; Copyright (C) 2008-2017 Free Software Foundation, Inc.
 
 ;; Author: Carsten Dominik <carsten at orgmode dot org>
 ;; Keywords: outlines, hypermedia, calendar, wp
@@ -69,7 +69,7 @@ the value of the timer."
   "The default timer when a timer is set, in minutes or hh:mm:ss format.
 When 0, the user is prompted for a value."
   :group 'org-time
-  :version "25.2"
+  :version "26.1"
   :package-version '(Org . "8.3")
   :type 'string)
 
