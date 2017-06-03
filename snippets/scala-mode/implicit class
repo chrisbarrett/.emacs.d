@@ -1,0 +1,7 @@
+# key: ic
+# name: implicit class
+# condition: (cb-yas/bol?)
+# --
+implicit class ${1:Name} {
+  $0
+}
