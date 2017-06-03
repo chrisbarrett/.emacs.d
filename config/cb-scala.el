@@ -68,7 +68,7 @@
                        (list (region-beginning) (region-end))
                      (list (point-min) (point-max))))
       (-let* ((buf ensime-inf-buffer-name)
-              (str (cb-scala--process-string-for-paste (substring-no-properties (buffer-substring beg end)))))
+              (str (substring-no-properties (buffer-substring beg end))))
         (with-current-buffer buf
           (comint-send-string buf (format ":paste -raw\n%s" str))
           (comint-send-eof))
