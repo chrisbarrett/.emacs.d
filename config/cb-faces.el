@@ -44,6 +44,12 @@
     (add-hook 'text-mode-hook #'cb-ligatures-init)
     (global-prettify-symbols-mode +1)))
 
+(use-package page-break-lines
+  :commands (global-page-break-lines-mode)
+  :demand t
+  :config
+  (global-page-break-lines-mode))
+
 (provide 'cb-faces)
 
 ;;; cb-faces.el ends here

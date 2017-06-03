@@ -589,6 +589,10 @@
 
     ;; Misc faces
 
+    (page-break-lines
+     ((((background light)) :weight light :foreground ,cb-theme-common-dark-grey)
+      (((background dark)) :weight light :foreground "#a55")))
+
     (go-peg-mode-production-name
      ((t :weight demibold)))
 
