@@ -310,6 +310,21 @@ Optional arg JUSTIFY will justify comments and strings."
                (slot            . 1)
                (window-width    . 0.5)))
 
+;; Prevent display-buffer from displaying in new frames.
+
+(setq display-buffer-fallback-action
+      '((display-buffer--maybe-same-window
+         display-buffer-reuse-window
+         display-buffer-pop-up-window
+         display-buffer-in-previous-window
+         display-buffer-use-some-window
+         cb-basic-settings-display-buffer-fallback)))
+
+(defun cb-basic-settings-display-buffer-fallback (buffer &optional _alist)
+  (with-selected-window (split-window-sensibly)
+    (switch-to-buffer buffer)
+    (help-window-setup (selected-window)))
+  t)
 
 ;; Use conf mode for puppet templated conf files
 (use-package conf-mode
