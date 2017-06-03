@@ -228,6 +228,15 @@
                    (window-height   . 0.2)))
 
     (add-to-list 'display-buffer-alist
+                 `(,(rx bos "*Scala REPL" "*" eos)
+                   (display-buffer-reuse-window
+                    display-buffer-in-side-window)
+                   (reusable-frames . visible)
+                   (side            . bottom)
+                   (slot            . 0)
+                   (window-height   . 0.2)))
+
+    (add-to-list 'display-buffer-alist
                  `(,(rx bos "*ensime-gen-config*" eos)
                    (display-buffer-reuse-window
                     display-buffer-in-side-window)
