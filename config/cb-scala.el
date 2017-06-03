@@ -60,20 +60,32 @@
   :defer t
   :commands (ensime)
 
-  ;; Define a command to send the current file to the scala repl.
-
+  ;; Define commands for working with the repl.
   :preface
-  (defun cb-scala-send-file (file)
-    "Quickly load current file in the Ensime repl."
-    (interactive (list (buffer-file-name)))
-    (save-buffer)
-    (ensime-inf-load-file file))
-  :config
-  (dolist (state '(normal insert))
-    (eval `(evil-define-key ',state ensime-mode-map (kbd "C-c C-l") 'cb-scala-send-file)))
+  (progn
+    (defun cb-scala-send-as-paste (beg end)
+      (interactive (if (region-active-p)
+                       (list (region-beginning) (region-end))
+                     (list (point-min) (point-max))))
+      (-let* ((buf ensime-inf-buffer-name)
+              (str (cb-scala--process-string-for-paste (substring-no-properties (buffer-substring beg end)))))
+        (with-current-buffer buf
+          (comint-send-string buf (format ":paste -raw\n%s" str))
+          (comint-send-eof))
+        (message "Buffer pasted into REPL.")
+        (display-buffer buf)))
+
+    (defun cb-scala-send-file (file)
+      "Quickly load current file in the Ensime repl."
+      (interactive (list (buffer-file-name)))
+      (save-buffer)
+      (ensime-inf-load-file file)))
 
   :config
   (progn
+    (dolist (state '(normal insert))
+      (eval `(evil-define-key ',state ensime-mode-map (kbd "C-c C-l") 'cb-scala-send-as-paste)))
+
     (spacemacs-keys-set-leader-keys-for-major-mode 'scala-mode
       "/" 'ensime-search
       "'" 'ensime-inf-switch
@@ -87,6 +99,7 @@
       "ee" 'ensime-print-errors-at-point
       "el" 'ensime-show-all-errors-and-warnings
       "es" 'ensime-stacktrace-switch
+      "eb" 'cb-scala-send-as-paste
       "gg" 'ensime-edit-definition
       "gp" 'ensime-pop-find-definition-stack
       "gi" 'ensime-goto-impl
@@ -95,6 +108,7 @@
       "hT" 'ensime-type-at-point-full-name
       "ht" 'ensime-type-at-point
       "hu" 'ensime-show-uses-of-symbol-at-point
+      "l"  'cb-scala-send-file
       "ii" 'ensime-import-type-at-point
       "iI" 'ensime-inspect-type-at-point-other-frame
       "ip" 'ensime-inspect-project-package
