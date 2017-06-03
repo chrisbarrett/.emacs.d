@@ -1,5 +1,6 @@
 # Compiled
 *.elc
+.yas-compiled-snippets.el
 
 # Packaging
 .cask
