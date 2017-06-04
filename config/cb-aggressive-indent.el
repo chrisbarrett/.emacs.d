@@ -16,16 +16,18 @@
   :defer 1
   :config
   (progn
+    (add-to-list 'aggressive-indent-excluded-modes 'cb-scala-sbt-file-mode)
     (add-to-list 'aggressive-indent-excluded-modes 'diff-auto-refine-mode)
-    (add-to-list 'aggressive-indent-excluded-modes 'rust-mode)
-    (add-to-list 'aggressive-indent-excluded-modes 'toml-mode)
-    (add-to-list 'aggressive-indent-excluded-modes 'sql-mode)
-    (add-to-list 'aggressive-indent-excluded-modes 'restclient-mode)
-    (add-to-list 'aggressive-indent-excluded-modes 'stylus-mode)
-    (add-to-list 'aggressive-indent-excluded-modes 'idris-mode)
-    (add-to-list 'aggressive-indent-excluded-modes 'idris-repl-mode)
     (add-to-list 'aggressive-indent-excluded-modes 'dockerfile-mode)
     (add-to-list 'aggressive-indent-excluded-modes 'graphviz-dot-mode)
+    (add-to-list 'aggressive-indent-excluded-modes 'idris-mode)
+    (add-to-list 'aggressive-indent-excluded-modes 'idris-repl-mode)
+    (add-to-list 'aggressive-indent-excluded-modes 'restclient-mode)
+    (add-to-list 'aggressive-indent-excluded-modes 'rust-mode)
+    (add-to-list 'aggressive-indent-excluded-modes 'scala-mode)
+    (add-to-list 'aggressive-indent-excluded-modes 'sql-mode)
+    (add-to-list 'aggressive-indent-excluded-modes 'stylus-mode)
+    (add-to-list 'aggressive-indent-excluded-modes 'toml-mode)
 
     (global-aggressive-indent-mode +1)))
 
