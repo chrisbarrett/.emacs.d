@@ -23,7 +23,86 @@
 (autoload 'projectile-project-name "projectile")
 
 ;; Use conf mode for play routes files.
+
 (add-to-list 'auto-mode-alist (cons "/routes\\'" #'conf-unix-mode))
+
+;; Keybindings are separated into those that are loaded before and after ensime.
+
+(defconst cb-scala--initial-leader-keys
+  '(("n s" . ensime)))
+
+(defconst cb-scala--ensime-leader-keys
+  '(("/" . ensime-search)
+    ("'" . ensime-inf-switch)
+    ("b C" . ensime-sbt-do-clean)
+    ("b c" . ensime-sbt-do-compile)
+    ("b i" . ensime-sbt-switch)
+    ("b p" . ensime-sbt-do-package)
+    ("b r" . ensime-sbt-do-run)
+    ("c T" . ensime-typecheck-all)
+    ("c t" . ensime-typecheck-current-buffer)
+    ("e b" . cb-scala-send-as-paste)
+    ("e e" . ensime-print-errors-at-point)
+    ("e l" . ensime-show-all-errors-and-warnings)
+    ("e s" . ensime-stacktrace-switch)
+    ("g g" . ensime-edit-definition)
+    ("g i" . ensime-goto-impl)
+    ("g p" . ensime-pop-find-definition-stack)
+    ("g t" . ensime-goto-test)
+    ("h T" . ensime-type-at-point-full-name)
+    ("h h" . ensime-show-doc-for-symbol-at-point)
+    ("h t" . ensime-type-at-point)
+    ("h u" . ensime-show-uses-of-symbol-at-point)
+    ("i I" . ensime-inspect-type-at-point-other-frame)
+    ("i i" . ensime-import-type-at-point)
+    ("i p" . ensime-inspect-project-package)
+    ("l"  . cb-scala-send-file)
+    ("n F" . ensime-reload-open-files)
+    ("n s" . ensime)
+    ("r D" . ensime-undo-peek)
+    ("r a" . ensime-refactor-add-type-annotation)
+    ("r d" . ensime-refactor-diff-inline-local)
+    ("r f" . ensime-format-source)
+    ("r i" . ensime-refactor-diff-organize-imports)
+    ("r m" . ensime-refactor-diff-extract-method)
+    ("r r" . ensime-refactor-diff-rename)
+    ("r t" . ensime-import-type-at-point)
+    ("r v" . ensime-refactor-diff-extract-local)
+    ("t a" . ensime-sbt-do-test-dwim)
+    ("t r" . ensime-sbt-do-test-quick-dwim)
+    ("t t" . ensime-sbt-do-test-only-dwim)))
+
+(defconst cb-scala--prefix-keys
+  '(("m b" . "build")
+    ("m c" . "check")
+    ("m d" . "debug")
+    ("m e" . "errors")
+    ("m g" . "goto")
+    ("m h" . "docs")
+    ("m i" . "inspect")
+    ("m n" . "ensime")
+    ("m r" . "refactor")
+    ("m t" . "test")
+    ("m s" . "repl")
+    ("m y" . "yank")))
+
+(use-package which-key
+  :config
+  (progn
+
+    (defconst cb-scala--boring-prefixes
+      '("cb-scala-"
+        "ensime-sbt-do-"
+        "ensime-sbt-"
+        "ensime-refactor-"
+        "ensime-"))
+
+    (let ((match-suffix (rx-to-string `(and bos (or ,@cb-scala--boring-prefixes) (group (+ nonl)))
+                                      t)))
+      (push `((nil . ,match-suffix) . (nil . "\\1"))
+            which-key-replacement-alist))))
+
+;; Load modes.
 
 (use-package scala-mode
   :defer t
@@ -65,21 +144,6 @@
     (autoload 'comint-send-eof "comint")
     (autoload 'comint-send-string "comint")
     (autoload 'ensime-inf-load-file "ensime-inf")
-    (autoload 'which-key-add-major-mode-key-based-replacements "which-key")
-
-    (defconst cb-scala--boring-prefixes
-      '("cb-scala-"
-        "ensime-sbt-do-"
-        "ensime-sbt-"
-        "ensime-refactor-"
-        "ensime-"))
-
-    (defun cb-scala--declare-scala-leader-key (key command)
-      "Utility for declaring key bindings without prefixes."
-      (spacemacs-keys-set-leader-keys-for-major-mode 'scala-mode key command)
-      (let ((desc (s-chop-prefixes cb-scala--boring-prefixes (symbol-name command))))
-        (unless (equal (intern desc) command)
-          (which-key-add-major-mode-key-based-replacements 'scala-mode key desc))))
 
     ;; Define commands for working with the repl.
 
@@ -103,72 +167,20 @@
 
   :init
   (progn
-    (defconst cb-scala--prefix-keys
-      '(("mb" . "build")
-        ("mc" . "check")
-        ("md" . "debug")
-        ("me" . "errors")
-        ("mg" . "goto")
-        ("mh" . "docs")
-        ("mi" . "inspect")
-        ("mn" . "ensime")
-        ("mr" . "refactor")
-        ("mt" . "test")
-        ("ms" . "repl")
-        ("my" . "yank")))
-
-    (defconst cb-scala--leader-keys
-      '(("/" . ensime-search)
-        ("'" . ensime-inf-switch)
-        ("bC" . ensime-sbt-do-clean)
-        ("bc" . ensime-sbt-do-compile)
-        ("bi" . ensime-sbt-switch)
-        ("bp" . ensime-sbt-do-package)
-        ("br" . ensime-sbt-do-run)
-        ("cT" . ensime-typecheck-all)
-        ("ct" . ensime-typecheck-current-buffer)
-        ("eb" . cb-scala-send-as-paste)
-        ("ee" . ensime-print-errors-at-point)
-        ("el" . ensime-show-all-errors-and-warnings)
-        ("es" . ensime-stacktrace-switch)
-        ("gg" . ensime-edit-definition)
-        ("gi" . ensime-goto-impl)
-        ("gp" . ensime-pop-find-definition-stack)
-        ("gt" . ensime-goto-test)
-        ("hT" . ensime-type-at-point-full-name)
-        ("hh" . ensime-show-doc-for-symbol-at-point)
-        ("ht" . ensime-type-at-point)
-        ("hu" . ensime-show-uses-of-symbol-at-point)
-        ("iI" . ensime-inspect-type-at-point-other-frame)
-        ("ii" . ensime-import-type-at-point)
-        ("ip" . ensime-inspect-project-package)
-        ("l"  . cb-scala-send-file)
-        ("nF" . ensime-reload-open-files)
-        ("ns" . ensime)
-        ("rD" . ensime-undo-peek)
-        ("ra" . ensime-refactor-add-type-annotation)
-        ("rd" . ensime-refactor-diff-inline-local)
-        ("rf" . ensime-format-source)
-        ("ri" . ensime-refactor-diff-organize-imports)
-        ("rm" . ensime-refactor-diff-extract-method)
-        ("rr" . ensime-refactor-diff-rename)
-        ("rt" . ensime-import-type-at-point)
-        ("rv" . ensime-refactor-diff-extract-local)
-        ("ta" . ensime-sbt-do-test-dwim)
-        ("tr" . ensime-sbt-do-test-quick-dwim)
-        ("tt" . ensime-sbt-do-test-only-dwim)
-        ("z" . ensime-inf-switch)))
-
     (-each cb-scala--prefix-keys
       (-lambda ((prefix . name))
         (spacemacs-keys-declare-prefix-for-mode 'scala-mode prefix name)))
 
-    (-each cb-scala--leader-keys
+    (-each cb-scala--initial-leader-keys
       (-lambda ((key . command))
-        (cb-scala--declare-scala-leader-key key command))))
+        (spacemacs-keys-set-leader-keys-for-major-mode 'scala-mode key command))))
 
   :config
   (progn
+    (-each cb-scala--ensime-leader-keys
+      (-lambda ((key . command))
+        (spacemacs-keys-set-leader-keys-for-major-mode 'scala-mode key command)))
+
     (dolist (state '(normal insert))
       (eval `(evil-define-key ',state ensime-mode-map (kbd "C-c C-l") 'cb-scala-send-as-paste)))
 
@@ -191,7 +203,6 @@
       (kbd ",") 'ensime-inspector-backward-page
       (kbd ".") 'ensime-inspector-forward-page
       (kbd "^") 'ensime-inspector-backward-page)
-
 
     (evil-define-key 'normal ensime-refactor-info-map
       (kbd "q") 'cb-scala/ensime-refactor-cancel

@@ -25,7 +25,7 @@
 
   :init
   (progn
-    (spacemacs-keys-declare-prefix-for-mode 'emacs-lisp-mode "m e" "Eval")
+    (spacemacs-keys-declare-prefix-for-mode 'emacs-lisp-mode "m e" "eval")
 
     (spacemacs-keys-set-leader-keys-for-major-mode 'emacs-lisp-mode
       "eb" #'eval-buffer

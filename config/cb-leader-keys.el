@@ -55,10 +55,12 @@
     (setq which-key-idle-delay 0.4)
     (setq which-key-allow-evil-operators t)
 
-    ;; Rename functions shown by which-key for legibility.
+    ;; Strip cb prefixes from commands shown in which-key.
 
-    (add-to-list 'which-key-description-replacement-alist
-                 (cons (rx bos "cb" (* (not (any "/"))) "/" (group (+ nonl)) eos) "\\1"))
+    (push `((nil . ,(rx bos "cb" (*? nonl) "/" (group (+ nonl))))
+            .
+            (nil . "\\1"))
+          which-key-replacement-alist)
 
     (which-key-add-key-based-replacements
       "SPC ,"   "smartparens"
@@ -161,8 +163,12 @@
 (use-package cb-scale-font-transient-state
   :commands (cb-scale-font-transient-state/body)
   :init
-  (spacemacs-keys-set-leader-keys
-    "zx" #'cb-scale-font-transient-state/body))
+  (progn
+    (push '((nil . "cb-scale-font-transient-state/body") . (nil . "text scale"))
+          which-key-replacement-alist)
+
+    (spacemacs-keys-set-leader-keys
+      "z" #'cb-scale-font-transient-state/body)))
 
 (use-package cb-buffer-transient-state
   :commands (cb-buffer-transient-state/body
