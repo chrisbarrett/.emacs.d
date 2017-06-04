@@ -267,6 +267,19 @@
              smartparens-global-strict-mode
              show-smartparens-global-mode))
 
+(use-package which-key
+  :config
+  (progn
+    (push `((nil . "sp-splice-sexp-killing-around") . (nil . "splice-killing-around"))
+          which-key-replacement-alist)
+    (push `((nil . "sp-splice-sexp-killing-forward") . (nil . "splice-killing-forward"))
+          which-key-replacement-alist)
+    (push `((nil . "sp-splice-sexp-killing-backward") . (nil . "splice-killing-backward"))
+          which-key-replacement-alist)
+
+    (push `((nil . ,(rx bos "sp-" (group (+? nonl))
+                        "-sexp" eos)) . (nil . "\\1"))
+          which-key-replacement-alist)))
 
 (provide 'cb-smartparens)
 
