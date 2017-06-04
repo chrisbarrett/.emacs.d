@@ -271,7 +271,9 @@
     (setq ensime-startup-snapshot-notification nil)
     (setq ensime-auto-generate-config t)
     (setq ensime-implicit-gutter-icons nil)
-    (setq ensime-sem-high-enabled-p nil)
+    (setq ensime-sem-high-enabled-p t)
+    (setq ensime-sem-high-faces
+          `((deprecated . (:underline ,cb-theme-common-orange))))
 
     (advice-add 'ensime :before #'cb-scala--delete-existing-ensime-process-buffer)
     (advice-add 'ensime :after #'cb-scala--display-ensime-process-buffer-on-error)
