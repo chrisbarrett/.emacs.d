@@ -109,27 +109,26 @@ Navigation^^^^             Actions^^         Visual actions/config^^^
 [_k_]   line up^^          ^^                ^^
 [_RET_] open               ^^^^              [_?_]   close hints
 "
-        :bindings
-        ("RET" neotree-enter)
-        ("TAB" neotree-stretch-toggle)
-        ("|" neotree-enter-vertical-split)
-        ("-" neotree-enter-horizontal-split)
-        ("?" nil :exit t)
-        ("c" neotree-create-node)
-        ("d" neotree-delete-node)
-        ("gr" neotree-refresh)
-        ("h" cb-neotree-collapse-or-up)
-        ("H" neotree-select-previous-sibling-node)
-        ("j" next-line)
-        ("J" neotree-select-down-node)
-        ("k" previous-line)
-        ("K" neotree-select-up-node)
-        ("l" cb-neotree-expand-or-open)
-        ("L" neotree-select-next-sibling-node)
-        ("r" neotree-rename-node)
-        ("R" neotree-change-root)
-        ("s" neotree-hidden-file-toggle))))
-
+      :bindings
+      ("RET" neotree-enter)
+      ("TAB" neotree-stretch-toggle)
+      ("|" neotree-enter-vertical-split)
+      ("-" neotree-enter-horizontal-split)
+      ("?" nil :exit t)
+      ("c" neotree-create-node)
+      ("d" neotree-delete-node)
+      ("gr" neotree-refresh)
+      ("h" cb-neotree-collapse-or-up)
+      ("H" neotree-select-previous-sibling-node)
+      ("j" next-line)
+      ("J" neotree-select-down-node)
+      ("k" previous-line)
+      ("K" neotree-select-up-node)
+      ("l" cb-neotree-expand-or-open)
+      ("L" neotree-select-next-sibling-node)
+      ("r" neotree-rename-node)
+      ("R" neotree-change-root)
+      ("s" neotree-hidden-file-toggle))))
 
 (use-package which-key
   :config
