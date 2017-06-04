@@ -321,9 +321,10 @@ Optional arg JUSTIFY will justify comments and strings."
          cb-basic-settings-display-buffer-fallback)))
 
 (defun cb-basic-settings-display-buffer-fallback (buffer &optional _alist)
-  (with-selected-window (split-window-sensibly)
-    (switch-to-buffer buffer)
-    (help-window-setup (selected-window)))
+  (-when-let (win (split-window-sensibly))
+    (with-selected-window win
+      (switch-to-buffer buffer)
+      (help-window-setup (selected-window))))
   t)
 
 ;; Use conf mode for puppet templated conf files
