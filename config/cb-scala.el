@@ -148,6 +148,14 @@
 
     ;; Define commands for working with the repl.
 
+    (defun cb-scala-switch-to-source ()
+      (interactive)
+      (when-let* ((buf (--first (with-current-buffer it
+                                  (equal major-mode 'scala-mode))
+                                (buffer-list)))
+                  (win (display-buffer buf)))
+        (select-window win)))
+
     (defun cb-scala-send-as-paste (beg end)
       (interactive (if (region-active-p)
                        (list (region-beginning) (region-end))
@@ -184,6 +192,9 @@
 
     (dolist (state '(normal insert))
       (eval `(evil-define-key ',state ensime-mode-map (kbd "C-c C-l") 'cb-scala-send-as-paste)))
+
+    (dolist (state '(normal insert))
+      (eval `(evil-define-key ',state ensime-inf-mode-map (kbd "C-c C-z") 'cb-scala-switch-to-source)))
 
     (dolist (state '(normal insert))
       (eval `(evil-define-key ',state ensime-mode-map
