@@ -275,6 +275,7 @@
     (setq ensime-sem-high-faces
           `((deprecated . (:underline ,cb-theme-common-orange))))
     (setq ensime-eldoc-hints 'type)
+    (setq ensime-search-interface 'ivy)
 
     (advice-add 'ensime :before #'cb-scala--delete-existing-ensime-process-buffer)
     (advice-add 'ensime :after #'cb-scala--display-ensime-process-buffer-on-error)
