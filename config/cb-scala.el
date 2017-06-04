@@ -41,7 +41,6 @@
     ("b r" . ensime-sbt-do-run)
     ("c T" . ensime-typecheck-all)
     ("c t" . ensime-typecheck-current-buffer)
-    ("e b" . cb-scala-send-as-paste)
     ("e e" . ensime-print-errors-at-point)
     ("e l" . ensime-show-all-errors-and-warnings)
     ("e s" . ensime-stacktrace-switch)
@@ -59,6 +58,7 @@
     ("l"  . cb-scala-send-file)
     ("n F" . ensime-reload-open-files)
     ("n s" . ensime)
+    ("p" . cb-scala-send-as-paste)
     ("r D" . ensime-undo-peek)
     ("r a" . ensime-refactor-add-type-annotation)
     ("r d" . ensime-refactor-diff-inline-local)
@@ -94,6 +94,7 @@
       '("cb-scala-"
         "ensime-sbt-do-"
         "ensime-sbt-"
+        "ensime-refactor-diff-"
         "ensime-refactor-"
         "ensime-"))
 

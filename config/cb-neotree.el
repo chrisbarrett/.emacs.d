@@ -130,11 +130,6 @@ Navigation^^^^             Actions^^         Visual actions/config^^^
       ("R" neotree-change-root)
       ("s" neotree-hidden-file-toggle))))
 
-(use-package which-key
-  :config
-  (push `((nil . "cb-neotree-find-project-root") . (nil . "project-root (neotree)"))
-        which-key-replacement-alist))
-
 (provide 'cb-neotree)
 
 ;;; cb-neotree.el ends here

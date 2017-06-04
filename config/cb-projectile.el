@@ -107,17 +107,6 @@
   :config
   (counsel-projectile-on))
 
-(use-package which-key
-  :config
-  (progn
-    (let ((match-suffix (rx-to-string `(and bos (or "projectile" "cb-projectile" "counsel-projectile") "-" (group (+ nonl)))
-                                      t)))
-      (push `((nil . ,match-suffix) . (nil . "\\1"))
-            which-key-replacement-alist))
-
-    (push `((nil . "projectile-dired") . (nil . "project-root (dired)"))
-          which-key-replacement-alist)))
-
 (provide 'cb-projectile)
 
 ;;; cb-projectile.el ends here

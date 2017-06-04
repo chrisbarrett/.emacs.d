@@ -68,7 +68,7 @@
       "el" 'cb-flycheck-toggle-error-list
       "ee" 'flycheck-explain-error-at-point
       "en" 'flycheck-next-error
-      "eN" 'flycheck-next-error
+      "eN" 'flycheck-previous-error
       "ep" 'flycheck-previous-error
       "es" 'flycheck-select-checker
       "eS" 'flycheck-set-checker-executable

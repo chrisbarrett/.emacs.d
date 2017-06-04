@@ -62,6 +62,117 @@
             (nil . "\\1"))
           which-key-replacement-alist)
 
+    ;; Clean up comments entries
+
+    (push `(("SPC c" . ,(rx (? "cb-evil-nerd-commenter/") (? "quick-") "comment-or-uncomment-" (group (+? nonl)))) . (nil . "\\1\\2"))
+          which-key-replacement-alist)
+
+    ;; Clean up errors entries
+
+    (push `(("SPC e" . ,(rx (? "cb-") "flycheck-" (group (+? nonl)))) . (nil . "\\1"))
+          which-key-replacement-alist)
+
+    ;; Clean up goto and git
+
+    (push `(("SPC g" . ,(rx "cb-" (group "goto-" (+? nonl)))) . (nil . "\\1"))
+          which-key-replacement-alist)
+
+    (push `(("SPC g" . "git-blame-transient-state/body") . (nil . "git-blame"))
+          which-key-replacement-alist)
+
+    (push `(("SPC g" . "time-machine-transient-state/body") . (nil . "git-time-machine"))
+          which-key-replacement-alist)
+
+    ;; Clean up help
+
+    (push `(("SPC h d" . ,(rx bos (? "counsel-") "describe-" (group (+ nonl)))) . (nil . "\\1"))
+          which-key-replacement-alist)
+
+    (push `(("SPC h f" . ,(rx bos "find-" (group (+ nonl)))) . (nil . "\\1"))
+          which-key-replacement-alist)
+
+    ;; Clean up navigation
+
+    (push `(("SPC j" . ,(rx bos (? "evil-") "avy-" (group (+ nonl)))) . (nil . "\\1"))
+          which-key-replacement-alist)
+
+    ;; Clean up kill
+
+    (push `(("SPC k" . "kill-this-buffer") . (nil . "buffer"))
+          which-key-replacement-alist)
+
+    (push `(("SPC k" . "delete-window") . (nil . "window"))
+          which-key-replacement-alist)
+
+    (push `(("SPC k" . "counsel-yank-pop") . (nil . "kill-ring"))
+          which-key-replacement-alist)
+
+    ;; Clean up narrowing
+
+    (push `(("SPC n" . ,(rx bos (? "org-") "narrow-to-" (group (+ nonl)))) . (nil . "\\1"))
+          which-key-replacement-alist)
+
+    ;; Clean up org
+
+    (push `(("SPC o" . ,(rx bos (? "cb-") (or "org-" "ledger-") (group (+ nonl)))) . (nil . "\\1"))
+          which-key-replacement-alist)
+
+    ;; Clean up projectile
+
+    (push `((nil . ,(rx bos (? "cb-") (? "counsel-") "projectile-" (group (+? nonl)) (? "-project") eos)) . (nil . "\\1"))
+          which-key-replacement-alist)
+
+    (push `((nil . "projectile-dired") . (nil . "root (dired)"))
+          which-key-replacement-alist)
+
+    (push `((nil . "cb-neotree-find-project-root") . (nil . "root (neotree)"))
+          which-key-replacement-alist)
+
+    (push `(("SPC p" . ,(rx bos (*? nonl) "shell-command" (* nonl))) . (nil . "shell-command"))
+          which-key-replacement-alist)
+
+    (push `(("SPC p" . ,(rx bos (*? nonl) "async-shell-command" (* nonl))) . (nil . "shell-command (async)"))
+          which-key-replacement-alist)
+
+    ;; Clean up symbols
+
+    (push `(("SPC s" . "evil-iedit-state/iedit-mode") . (nil . "iedit"))
+          which-key-replacement-alist)
+
+    ;; Clean up toggles
+
+    (push `(("SPC t" . ,(rx bos "cb-" (? "faces/") (group (+ nonl)))) . (nil . "\\1"))
+          which-key-replacement-alist)
+
+    ;; Clean up windows
+
+    (push `(("SPC w" . ,(rx bos (? "cb-") (? "evil-") "window-" (group (+ nonl)))) . (nil . "\\1"))
+          which-key-replacement-alist)
+
+    (push `(("SPC w" . "balance-windows") . (nil . "balance"))
+          which-key-replacement-alist)
+
+    (push `(("SPC w" . "delete-window") . (nil . "delete"))
+          which-key-replacement-alist)
+
+    (push `(("SPC w" . "delete-other-windows") . (nil . "delete-others"))
+          which-key-replacement-alist)
+
+    ;; Clean up links
+
+    (push `(("SPC x" . ,(rx bos "link-hint-" (group (+ nonl)))) . (nil . "\\1"))
+          which-key-replacement-alist)
+
+    ;; Clean up yasnippet
+
+    (push `(("SPC y" . ,(rx bos (? "cb-") "yas" (any "-/") (group (+? nonl)) "-snippet" eos)) . (nil . "\\1"))
+          which-key-replacement-alist)
+
+    (push `(("SPC y" . "yas-visit-snippet-file") . (nil . "visit-file"))
+          which-key-replacement-alist)
+
+    ;; Add basic prefixes
+
     (which-key-add-key-based-replacements
       "SPC ,"   "smartparens"
       "SPC a"   "applications"
@@ -85,86 +196,86 @@
     (which-key-mode +1)))
 
 (use-package spacemacs-keys
-  :preface
-  (progn
-    (autoload 'evil-window-next "evil-commands")
-    (autoload 'evil-window-split "evil-commands")
-    (autoload 'evil-window-vsplit "evil-commands")
+:preface
+(progn
+  (autoload 'evil-window-next "evil-commands")
+  (autoload 'evil-window-split "evil-commands")
+  (autoload 'evil-window-vsplit "evil-commands")
 
-    (defun cb-leader-keys/reload-file ()
-      "Revisit the current file."
-      (interactive)
-      (when-let (path (buffer-file-name))
-        (find-alternate-file path))))
+  (defun cb-leader-keys/reload-file ()
+    "Revisit the current file."
+    (interactive)
+    (when-let (path (buffer-file-name))
+      (find-alternate-file path))))
 
-  :config
-  (progn
-    (define-key universal-argument-map (kbd (concat "SPC u")) #'universal-argument-more)
+:config
+(progn
+  (define-key universal-argument-map (kbd (concat "SPC u")) #'universal-argument-more)
 
-    (spacemacs-keys-set-leader-keys
-      "u"   #'universal-argument
-      "SPC" #'execute-extended-command
-      "TAB" #'cb/alternate-buffer
-      "|"   #'cb/toggle-window-split
+  (spacemacs-keys-set-leader-keys
+    "u"   #'universal-argument
+    "SPC" #'execute-extended-command
+    "TAB" #'cb/alternate-buffer
+    "|"   #'cb/toggle-window-split
 
-      "!"   #'shell-command
+    "!"   #'shell-command
 
-      "b d" #'kill-this-buffer
-      "b b" #'bury-buffer
-      "b v" #'cb-leader-keys/reload-file
+    "b d" #'kill-this-buffer
+    "b b" #'bury-buffer
+    "b v" #'cb-leader-keys/reload-file
 
-      "C" #'compile
+    "C" #'compile
 
-      "c r" #'comment-or-uncomment-region
+    "c r" #'comment-or-uncomment-region
 
-      "f D" #'cb/delete-current-buffer-and-file
-      "f F" #'find-file-other-window
-      "f R" #'cb/rename-file-and-buffer
-      "f e" #'cb/sudo-edit
-      "f f" #'find-file
-      "f s" #'save-buffer
-      "f S" #'save-some-buffers
-      "f W" #'write-file
-      "f v" #'cb-leader-keys/reload-file
-      "f y" #'cb/copy-buffer-path
+    "f D" #'cb/delete-current-buffer-and-file
+    "f F" #'find-file-other-window
+    "f R" #'cb/rename-file-and-buffer
+    "f e" #'cb/sudo-edit
+    "f f" #'find-file
+    "f s" #'save-buffer
+    "f S" #'save-some-buffers
+    "f W" #'write-file
+    "f v" #'cb-leader-keys/reload-file
+    "f y" #'cb/copy-buffer-path
 
-      "g i" #'cb-goto-init-file
-      "g m" #'cb-goto-messages
-      "g p" #'cb-goto-personal-config
+    "g i" #'cb-goto-init-file
+    "g m" #'cb-goto-messages
+    "g p" #'cb-goto-personal-config
 
-      "h d c" #'describe-face
-      "h d k" #'describe-key
-      "h d m" #'describe-mode
-      "h f c" #'find-face-definition
-      "h f f" #'find-function
-      "h f l" #'find-library
-      "h f v" #'find-variable
-      "h i"   #'info
+    "h d c" #'describe-face
+    "h d k" #'describe-key
+    "h d m" #'describe-mode
+    "h f c" #'find-face-definition
+    "h f f" #'find-function
+    "h f l" #'find-library
+    "h f v" #'find-variable
+    "h i"   #'info
 
-      "k b" #'kill-this-buffer
-      "k w" #'delete-window
+    "k b" #'kill-this-buffer
+    "k w" #'delete-window
 
-      "n d" #'narrow-to-defun
-      "n f" #'narrow-to-defun
-      "n r" #'narrow-to-region
-      "n s" #'org-narrow-to-subtree
-      "n w" #'widen
+    "n d" #'narrow-to-defun
+    "n f" #'narrow-to-defun
+    "n r" #'narrow-to-region
+    "n s" #'org-narrow-to-subtree
+    "n w" #'widen
 
-      "q" #'delete-window
+    "q" #'delete-window
 
-      "w =" #'balance-windows
-      "w w" #'evil-window-next
-      "w o" #'delete-other-windows
-      "w q" #'delete-window
-      "w r" #'evil-window-rotate-downwards
-      "w -" #'evil-window-split
-      "w /" #'evil-window-vsplit)))
+    "w =" #'balance-windows
+    "w w" #'evil-window-next
+    "w o" #'delete-other-windows
+    "w q" #'delete-window
+    "w r" #'evil-window-rotate-downwards
+    "w -" #'evil-window-split
+    "w /" #'evil-window-vsplit)))
 
 (use-package cb-scale-font-transient-state
   :commands (cb-scale-font-transient-state/body)
   :init
   (progn
-    (push '((nil . "cb-scale-font-transient-state/body") . (nil . "text scale"))
+    (push '((nil . "cb-scale-font-transient-state/body") . (nil . "text-scale"))
           which-key-replacement-alist)
 
     (spacemacs-keys-set-leader-keys

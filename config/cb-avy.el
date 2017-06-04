@@ -12,6 +12,10 @@
   (require 'use-package))
 
 (require 'spacemacs-keys)
+(autoload 'evil-avy-goto-char "evil-integration")
+(autoload 'evil-avy-goto-char-2 "evil-integration")
+(autoload 'evil-avy-goto-line "evil-integration")
+(autoload 'evil-avy-goto-word-or-subword-1 "evil-integration")
 
 (use-package avy
   :defer t

@@ -26,13 +26,22 @@
   :init
   (progn
     (spacemacs-keys-declare-prefix-for-mode 'emacs-lisp-mode "m e" "eval")
-
     (spacemacs-keys-set-leader-keys-for-major-mode 'emacs-lisp-mode
       "eb" #'eval-buffer
       "ee" #'eval-expression))
 
   :config
   (advice-add #'eval-buffer :after #'cb-elisp--message-on-eval-buffer))
+
+(use-package which-key
+  :functions (which-key-add-key-based-replacements)
+  :config
+  (progn
+    (which-key-add-key-based-replacements "SPC a p" "profiler")
+    (push `(("SPC a p" . ,(rx bos "profiler-" (group (+ nonl)))) . (nil . "\\1"))
+          which-key-replacement-alist)
+    (push `((", e" . ,(rx bos "eval-" (group (+ nonl)))) . (nil . "\\1"))
+          which-key-replacement-alist)))
 
 (use-package elisp-slime-nav
   :commands (elisp-slime-nav-find-elisp-thing-at-point
@@ -119,15 +128,10 @@
 (use-package profiler
   :commands (profiler-start profiler-report profiler-stop)
   :init
-  (progn
-    (use-package which-key
-      :preface (autoload 'which-key-add-key-based-replacements "which-key")
-      :config (which-key-add-key-based-replacements "SPC a p" "profiler"))
-
-    (spacemacs-keys-set-leader-keys
-      "app" 'profiler-start
-      "apr" 'profiler-report
-      "aps" 'profiler-stop))
+  (spacemacs-keys-set-leader-keys
+    "app" 'profiler-start
+    "apr" 'profiler-report
+    "aps" 'profiler-stop)
 
   :config
   (progn
