@@ -112,7 +112,7 @@
     (add-to-list 'display-buffer-alist
                  `(,(rx bos "*ledger review*" eos)
                    (display-buffer-reuse-window
-                    display-buffer-in-side-window)
+                    display-buffer-pop-up-window)
                    (reusable-frames . visible)
                    (side            . right)
                    (slot            . 1)
