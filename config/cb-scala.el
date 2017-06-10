@@ -277,6 +277,8 @@
           `((deprecated . (:underline ,cb-theme-common-orange))))
     (setq ensime-eldoc-hints 'type)
     (setq ensime-search-interface 'ivy)
+    (setq ensime-sbt-perform-on-save "compile")
+    (setq ensime-startup-dirname (f-join cb-emacs-cache-directory "ensime"))
 
     (advice-add 'ensime :before #'cb-scala--delete-existing-ensime-process-buffer)
     (advice-add 'ensime :after #'cb-scala--display-ensime-process-buffer-on-error)
