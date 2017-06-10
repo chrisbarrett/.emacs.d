@@ -79,22 +79,20 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
     :title "Git Timemachine Transient State"
     :doc "
 [_p_/_N_] previous [_n_] next [_c_] current [_g_] goto nth rev [_Y_] copy hash [_q_] quit"
-        :on-enter (unless (bound-and-true-p git-timemachine-mode)
-                      (call-interactively 'git-timemachine))
-        :on-exit (when (bound-and-true-p git-timemachine-mode)
-                   (git-timemachine-quit))
-        :foreign-keys run
-        :bindings
-        ("c" git-timemachine-show-current-revision)
-        ("g" git-timemachine-show-nth-revision)
-        ("p" git-timemachine-show-previous-revision)
-        ("n" git-timemachine-show-next-revision)
-        ("N" git-timemachine-show-previous-revision)
-        ("Y" git-timemachine-kill-revision)
-        ("q" nil :exit t))
   :init
-  (spacemacs-keys-set-leader-keys
-    "gt" #'time-machine-transient-state/body))
+    :on-enter (unless (bound-and-true-p git-timemachine-mode)
+                (call-interactively 'git-timemachine))
+    :on-exit (when (bound-and-true-p git-timemachine-mode)
+               (git-timemachine-quit))
+    :foreign-keys run
+    :bindings
+    ("c" git-timemachine-show-current-revision)
+    ("g" git-timemachine-show-nth-revision)
+    ("p" git-timemachine-show-previous-revision)
+    ("n" git-timemachine-show-next-revision)
+    ("N" git-timemachine-show-previous-revision)
+    ("Y" git-timemachine-kill-revision)
+    ("q" nil :exit t))
 
 (provide 'cb-magit)
 
