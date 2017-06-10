@@ -634,6 +634,11 @@ Do not scheduled items or repeating todos."
     (setq org-export-exclude-tags '("noexport" "crypt"))
     (setq org-export-coding-system 'utf-8)))
 
+(use-package ox-koma-letter
+  :after org
+  :config
+  (add-to-list 'org-latex-packages-alist '("AUTO" "babel" nil)))
+
 (use-package ox-html
   :after org
   :preface
@@ -672,7 +677,11 @@ table tr.tr-even td {
 (use-package cb-org-export-koma-letter
   :after org
   :functions (cb-org-export-koma-letter-init)
-  :init (add-hook 'org-mode-hook #'cb-org-export-koma-letter-init))
+  :config
+  (progn
+    (add-to-list 'org-latex-classes `("koma-letter" ,cb-org-export-koma-letter-latex-class))
+    (setq org-latex-hyperref-template "")
+    (add-hook 'org-ctrl-c-ctrl-c-hook #'cb-org-export-koma-letter--handler t)))
 
 (use-package cb-org-pgp-decrpyt
   :after org
