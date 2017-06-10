@@ -44,6 +44,7 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
 
 (use-package magithub
   :after magit
+  :commands (magithub-feature-autoinject)
   :config
   (progn
     (magithub-feature-autoinject t)
