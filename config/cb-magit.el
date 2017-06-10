@@ -26,6 +26,12 @@
     (autoload 'magit-popup-import-file-args "magit-popup")
     (autoload 'magit-diff-dwim "magit-diff")
 
+    (defun cb-magit-find-file (&optional arg)
+      (interactive "P")
+      (if arg
+          (call-interactively #'magit-find-file)
+        (call-interactively #'magit-find-file-other-window)))
+
     (defun cb-magit-diff-buffer-file (&optional arg)
       (interactive "P")
       (cond
@@ -55,6 +61,7 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
   (spacemacs-keys-set-leader-keys
     "gs" #'magit-status
     "gd" #'cb-magit-diff-buffer-file
+    "gf" #'cb-magit-find-file
     "gb" #'git-blame-transient-state/body)
   :config
   (progn
