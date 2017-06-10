@@ -21,21 +21,40 @@
   :commands (magit-status magit-blame magit-branch-and-checkout)
   :functions (magit-display-buffer-fullframe-status-v1)
   :preface
-  (evil-transient-state-define git-blame
-    :title "Git Blame Transient State"
-    :doc "
+  (progn
+    (autoload 'magit-file-relative-name "magit-git")
+    (autoload 'magit-popup-import-file-args "magit-popup")
+    (autoload 'magit-diff-dwim "magit-diff")
+
+    (defun cb-magit-diff-buffer-file (&optional arg)
+      (interactive "P")
+      (cond
+       (arg
+        (call-interactively 'magit-diff-buffer-file-popup))
+       ((magit-file-relative-name)
+        (let ((magit-diff-arguments (magit-popup-import-file-args
+                                     (default-value 'magit-diff-arguments)
+                                     (list (magit-file-relative-name)))))
+          (magit-diff-dwim magit-diff-arguments)))
+       (t
+        (user-error "Buffer isn't visiting a file"))))
+
+    (evil-transient-state-define git-blame
+      :title "Git Blame Transient State"
+      :doc "
 Press [_b_] again to blame further in the history, [_q_] to go up or quit."
-    :on-enter (unless (bound-and-true-p magit-blame-mode)
-                (call-interactively 'magit-blame))
-    :foreign-keys run
-    :bindings
-    ("b" magit-blame)
-    ("q" nil :exit (progn (when (bound-and-true-p magit-blame-mode)
-                            (magit-blame-quit))
-                          (not (bound-and-true-p magit-blame-mode)))))
+      :on-enter (unless (bound-and-true-p magit-blame-mode)
+                  (call-interactively 'magit-blame))
+      :foreign-keys run
+      :bindings
+      ("b" magit-blame)
+      ("q" nil :exit (progn (when (bound-and-true-p magit-blame-mode)
+                              (magit-blame-quit))
+                            (not (bound-and-true-p magit-blame-mode))))))
   :init
   (spacemacs-keys-set-leader-keys
     "gs" #'magit-status
+    "gd" #'cb-magit-diff-buffer-file
     "gb" #'git-blame-transient-state/body)
   :config
   (progn
