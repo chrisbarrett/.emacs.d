@@ -6,7 +6,6 @@
 
 (require 'dash)
 (require 'cl-lib)
-(require 'ensime-overlay)
 
 ;; Note: This might better be a connection-local variable, but
 ;; afraid that might lead to hanging overlays..
@@ -37,7 +36,6 @@
 
     (ensime-make-note-overlays notes)
     (ensime-update-note-counts)
-    (ensime-event-sig :notes-added)
     ))
 
 
@@ -225,7 +223,7 @@ any buffer visiting the given file."
         (max-external-offset (ensime-externalize-offset (point-max))))
     (dolist (note notes)
       (if (and (ensime-files-equal-p (ensime-note-file note)
-				     (buffer-file-name-with-indirect))
+				     buffer-file-name)
 	       (/= (ensime-note-beg note) external-offset))
 	  (let ((dist (cond
 		       (forward
@@ -273,19 +271,12 @@ any buffer visiting the given file."
 (defun ensime-errors-at (point)
   (delq nil (mapcar (lambda (x) (overlay-get x 'help-echo)) (ensime-overlays-at point))))
 
-(defun ensime-print-errors-at-point (&optional arg)
-  (interactive "P")
+(defun ensime-print-errors-at-point ()
+  (interactive)
   (let ((msgs (append (ensime-errors-at (point))
                       (ensime-implicit-notes-at (point)))))
     (when msgs
-      (let ((msg (mapconcat 'identity msgs "\n")))
-        (when (equal arg '(16))
-          (ensime--make-result-overlay
-              (format "%S" msg)
-            :where (point)
-            :duration 'command))
-        (message "%s" msg)))
-    (ensime-event-sig :errors-at-point-printed)))
+      (message "%s" (mapconcat 'identity msgs "\n")))))
 
 (defun ensime-implicit-notes-at (point)
   (cl-labels

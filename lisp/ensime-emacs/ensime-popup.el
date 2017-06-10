@@ -85,7 +85,7 @@ The buffer also uses the minor-mode `ensime-popup-buffer-mode'."
 	(set (make-local-variable 'ensime-popup-restore-data)
 	     (list new-window
 		   selected-window
-		   (cdr (cl-find new-window old-windows :key #'car)))))
+		   (cdr (find new-window old-windows :key #'car)))))
       (when select
 	(select-window new-window))
       new-window)))

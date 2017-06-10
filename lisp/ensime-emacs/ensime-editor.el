@@ -13,7 +13,6 @@
 
 (require 'dash)
 (require 'popup)
-(require 'ensime-ivy)
 (require 'ensime-vars)
 
 (autoload 'ensime-helm-select-entry "ensime-helm")
@@ -266,47 +265,25 @@
   (interactive)
   (pop-tag-mark))
 
-(defun ensime-edit-definition-other-window (arg)
-  (interactive "P")
-  (ensime-edit-definition arg 'window))
+(defun ensime-edit-definition-other-window ()
+  (interactive)
+  (ensime-edit-definition 'window))
 
-(defun ensime-edit-definition-other-frame (arg)
-  (interactive "P")
-  (ensime-edit-definition arg 'frame))
+(defun ensime-edit-definition-other-frame ()
+  (interactive)
+  (ensime-edit-definition 'frame))
 
-(defun ensime-edit-definition (arg &optional where)
-  "Lookup the definition of the name at point.
-
-If provided with the universal arguments looks up the definition
-of the type of the thing at point."
-  (interactive "P")
-  (if arg
-      (ensime-edit-definition-of-type-of-thing-at-point where)
-    (ensime-edit-definition-of-thing-at-point where)))
-
-(defun ensime-edit-definition-of-thing-at-point (&optional where)
+(defun ensime-edit-definition (&optional where)
   "Lookup the definition of the name at point.
 Goes to the point of the definition (returning point), or fails with `nil'."
   (interactive)
   (let* ((info (ensime-rpc-symbol-at-point))
          (pos (ensime-symbol-decl-pos info)))
-    (ensime-edit-definition-at-pos pos where)))
-
-(defun ensime-edit-definition-of-type-of-thing-at-point (&optional where)
-  "Lookup the type at point.
-Goes to the point of the definition of the type."
-  (interactive)
-  (let* ((type (ensime-rpc-get-type-at-point))
-         (pos (plist-get type :pos)))
-    (ensime-edit-definition-at-pos pos where)))
-
-(defun ensime-edit-definition-at-pos (pos where)
-  "Edits the definition at pos."
-  (if (ensime-pos-valid-local-p pos)
-      (progn
-        (ensime-push-definition-stack)
-        (ensime-goto-source-location pos where))
-    (not (message "Sorry, ENSIME couldn't find the definition."))))
+    (if (ensime-pos-valid-local-p pos)
+        (progn
+          (ensime-push-definition-stack)
+          (ensime-goto-source-location pos where))
+      (not (message "Sorry, ENSIME couldn't find the definition.")))))
 
 (defun ensime-files-equal-p (f1 f2)
   "Return t if file-names refer to same file."
@@ -603,10 +580,7 @@ Returns a function/closure to invoke the necessary buffer operations to perform 
                            (s-split ",") (-map 's-trim)
                            (cons qualified-class-name) (-sort 's-less?) (s-join ", "))))
     (lambda ()
-      (cond
-        ((equal (point) (point-max)) (newline))
-        ; if the import statement is at point-min we can't be above it and are actually at point-at-bol
-        ((equal (point) (point-at-eol)) (forward-char 1)))
+      (if (equal (point) (point-max)) (newline) (forward-char 1))
       (kill-line)
       (->> (ensime-scala-new-import-grouped-package base-package new-imports)
            insert save-excursion)
@@ -708,87 +682,68 @@ Decide what line to insert QUALIFIED-NAME."
     (let ((insertion-range (point))
           (starting-point (point))
           (insert-import-fn (if (ensime-visiting-java-file-p) 'ensime-insert-java-import 'ensime-insert-scala-import)))
-      (goto-char (point-min))
-      (let ((finished? nil))
-        (while (not finished?)
-          (let ((prev (point)))
-            (cond ((not (search-forward-regexp
-                         "^\\s-*package\\s-+\\(.+?\\)\\(?:\\s-\\|$\\)"
-                         nil t))
-                   ;; No more package statements
-                   (setq finished? t))
-                  ((string= (match-string 1) "object")
-                   ;; Found a package object - reverting
-                   (goto-char prev)
-                   (setq finished? t))))))
+      (unless (search-backward-regexp "^\\s-*package\\s-" nil t)
+        (goto-char (point-min)))
       (search-forward-regexp "^\\s-*import\\s-" insertion-range t)
       (goto-char (point-at-bol))
       (funcall (funcall insert-import-fn insertion-range starting-point qualified-name)))))
 
 (defun ensime-ask-user-to-select-entry (title entries)
-  "Prompt the user to select an entry from entries."
-  (pcase ensime-search-interface
-    (`classic
-     (popup-menu* entries :point (point)))
-    (`helm
-     (if (featurep 'helm)
-         (ensime-helm-select-entry entries title)
-       (progn
-         (message "Helm is not installed, falling back to popup interface.")
-         (popup-menu* entries :point (point)))))
-    (`ivy
-     (if (featurep 'ivy)
-         (ensime-ivy-select-entry entries title)
-       (progn
-         (message "Ivy is not installed, falling back to popup interface.")
-         (popup-menu* entries :point (point)))))))
+  "Prompts the user to select an entry of entries"
+  (if ensime-use-helm
+      (ensime-helm-select-entry entries title)
+      (popup-menu* entries :point (point))
+    ))
 
 (defun ensime-import-type-at-point (&optional non-interactive)
   "Suggest possible imports of the qualified name at point.
-If user selects an import, add it to the import list."
+ If user selects and import, add it to the import list."
   (interactive)
   (let* ((sym (ensime-local-sym-at-point))
-         (name (plist-get sym :name))
-         (name-start (plist-get sym :start))
-         (name-end (plist-get sym :end))
-         (suggestions (when name
-                        (ensime-rpc-import-suggestions-at-point
-                         (list name) 10))))
-    (if (car-safe suggestions)
+	 (name (plist-get sym :name))
+	 (name-start (plist-get sym :start))
+	 (name-end (plist-get sym :end))
+	 (suggestions (when name (ensime-rpc-import-suggestions-at-point (list name) 10))))
+    (when (car-safe suggestions)
       (let* ((names (mapcar
-                     (lambda (s)
-                       (propertize (plist-get s :name)
-                                   'local-name
-                                   (plist-get s :local-name)))
-                     (apply 'append suggestions)))
-             (selected-name (if non-interactive
-                                (car names)
-                              (ensime-ask-user-to-select-entry "Import type: "
-                                                               names))))
-        (when selected-name
-          (save-excursion
-            (when (and (not (equal selected-name name))
+		     (lambda (s)
+		       (propertize (plist-get s :name)
+				   'local-name
+				   (plist-get s :local-name)))
+		     (apply 'append suggestions)))
+	     (selected-name
+	      (if non-interactive (car names)
+        (ensime-ask-user-to-select-entry "import-type" names)
+    )))
+	(when selected-name
+	  (save-excursion
+	    (when (and (not (equal selected-name name))
                        name-start name-end)
-              (goto-char name-start)
-              (delete-char (- name-end name-start))
-              (insert (ensime-short-local-name
+	      (goto-char name-start)
+	      (delete-char (- name-end name-start))
+	      (insert (ensime-short-local-name
                        (get-text-property
                         0 'local-name selected-name))))
-            (let ((qual-name
-                   (ensime-strip-dollar-signs
-                    (ensime-kill-txt-props selected-name))))
-              (ensime-insert-import qual-name)
-              (ensime-typecheck-current-buffer)))))
-      (message "No import suggestions were returned for %S" name))))
+	    (let ((qual-name
+		   (ensime-strip-dollar-signs
+		    (ensime-kill-txt-props selected-name))))
+	      (ensime-insert-import qual-name)
+	      (ensime-typecheck-current-buffer))))))))
 
-;; Source Formatting - transition cue to sbt task
+;; Source Formatting
+
 (defun ensime-format-source ()
-  "DEPRECATED - use ensime-sbt-do-scalariform-only directly.
-Functionality was moved from ensime-server to the build tool plugins.
-Use build tools tasks appropriately"
+  "Format the source in the current buffer using the Scalariform
+ formatting library."
   (interactive)
-  (message "Function use is deprecated, please transition to ensime-sbt-do-scalariform-only.")
-  (ensime-sbt-do-scalariform-only))
+  (let ((formatted (ensime-rpc-format-buffer)))
+    (when formatted
+      (when (eq 1 (coding-system-eol-type buffer-file-coding-system))
+        (setq formatted (replace-regexp-in-string "\r$" "" formatted)))
+      (let ((pt (point)))
+        (erase-buffer)
+        (insert formatted)
+        (goto-char pt)))))
 
 (defun ensime-revert-visited-files (files &optional typecheck)
   "files is a list of buffer-file-names to revert or lists of the form

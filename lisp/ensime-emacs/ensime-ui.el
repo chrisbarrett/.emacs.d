@@ -227,7 +227,7 @@
 	  (setq ensime-ui-nav-restore-data
 		(list new-window
 		      selected-window
-		      (cdr (cl-find new-window
+		      (cdr (find new-window
 				 old-windows
 				 :key #'car)))))
 	(when select

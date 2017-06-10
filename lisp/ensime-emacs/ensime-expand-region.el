@@ -16,6 +16,7 @@
 ;;
 ;;; Code:
 
+(require 'ensime-mode)
 (require 'ensime-client)
 (require 'ensime-editor)
 (require 'expand-region-core)
