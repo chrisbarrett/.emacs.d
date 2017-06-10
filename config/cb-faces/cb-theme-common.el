@@ -589,6 +589,9 @@
 
     ;; Misc faces
 
+    (vi-tilde-fringe-face
+     ((t :inherit default)))
+
     (page-break-lines
      ((((background light)) :weight light :foreground ,cb-theme-common-dark-grey)
       (((background dark)) :weight light :foreground "#a55")))
