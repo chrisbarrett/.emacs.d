@@ -1,54 +1,10 @@
 ;;; ensime-mode.el --- ensime mode
 
 (eval-when-compile
+  (require 'cl)
   (require 'ensime-macros))
 
-(require 'cl) ;; needs to be interpreter until we catch all uses
-
-(require 'arc-mode)
-(require 'comint)
-(require 'dash)
-(require 'easymenu)
-(require 'flymake)
-(require 'font-lock)
-(require 'hideshow)
-(require 'pp)
 (require 's)
-(require 'scala-mode)
-(require 'thingatpt)
-(require 'timer)
-(require 'tooltip)
-(require 'url-gw)
-
-(require 'ensime-client)
-(require 'ensime-util)
-(require 'ensime-vars)
-(require 'ensime-config)
-(require 'ensime-completion-util)
-
-(require 'ensime-inf)
-(require 'ensime-stacktrace)
-(require 'ensime-debug)
-(require 'ensime-editor)
-(require 'ensime-company)
-(require 'ensime-eldoc)
-(require 'ensime-goto-testfile)
-(require 'ensime-inspector)
-(require 'ensime-model)
-(require 'ensime-notes)
-(require 'ensime-popup)
-(require 'ensime-refactor)
-(require 'ensime-startup)
-(require 'ensime-undo)
-(require 'ensime-search)
-(require 'ensime-doc)
-(require 'ensime-semantic-highlight)
-(require 'ensime-ui)
-(require 'ensime-http)
-(require 'timer)
-
-;; should really be optional
-(require 'ensime-sbt)
 
 (defvar ensime-source-buffer-saved-hook nil
   "Hook called whenever an ensime source buffer is saved.")
@@ -104,17 +60,14 @@
       (define-key prefix-map (kbd "C-d a") 'ensime-db-clear-all-breaks)
 
       (define-key prefix-map (kbd "C-b s") 'ensime-sbt-switch)
-      (define-key prefix-map (kbd "C-b C-j") 'ensime-sbt-send-eol)
       (define-key prefix-map (kbd "C-b S") 'ensime-stacktrace-switch)
       (define-key prefix-map (kbd "C-b c") 'ensime-sbt-do-compile)
       (define-key prefix-map (kbd "C-b C") 'ensime-sbt-do-compile-only)
-      (define-key prefix-map (kbd "C-b f") 'ensime-sbt-do-scalariform-only)
       (define-key prefix-map (kbd "C-b n") 'ensime-sbt-do-clean)
       (define-key prefix-map (kbd "C-b E") 'ensime-sbt-do-ensime-config)
       (define-key prefix-map (kbd "C-b o") 'ensime-sbt-do-test-only-dwim)
       (define-key prefix-map (kbd "C-b p") 'ensime-sbt-do-package)
       (define-key prefix-map (kbd "C-b r") 'ensime-sbt-do-run)
-      (define-key prefix-map (kbd "C-b T") 'ensime-sbt-do-test)
       (define-key prefix-map (kbd "C-b t") 'ensime-sbt-do-test-dwim)
       (define-key prefix-map (kbd "C-b q") 'ensime-sbt-do-test-quick-dwim)
 
@@ -124,7 +77,6 @@
       (define-key prefix-map (kbd "C-r l") 'ensime-refactor-diff-extract-local)
       (define-key prefix-map (kbd "C-r m") 'ensime-refactor-diff-extract-method)
       (define-key prefix-map (kbd "C-r i") 'ensime-refactor-diff-inline-local)
-      (define-key prefix-map (kbd "C-r e") 'ensime-refactor-expand-match-cases)
       (define-key prefix-map (kbd "C-r t") 'ensime-import-type-at-point)
 
       (define-key map ensime-mode-key-prefix prefix-map)
@@ -147,6 +99,11 @@
     map)
   "Keymap for ENSIME mode."
   )
+
+;;;;; ensime-mode
+(defun ensime-scala-mode-hook ()
+  "Conveniance hook function that just starts ensime-mode."
+  (ensime-mode 1))
 
 (defun ensime-run-after-save-hooks ()
   "Things to run whenever a source buffer is saved."
@@ -180,13 +137,11 @@
   "Kill the current buffer and delete the corresponding file!"
   (interactive)
   (ensime-assert-buffer-saved-interactive
-   (with-current-buffer (or (buffer-base-buffer) (current-buffer))
-     (let ((f (buffer-file-name-with-indirect)))
-       (ensime-rpc-remove-file f)
-       (delete-file f)
-       (kill-buffer nil)
-       ))
-   ))
+   (let ((f buffer-file-name))
+     (ensime-rpc-remove-file f)
+     (delete-file f)
+     (kill-buffer nil)
+     )))
 
 (easy-menu-define ensime-mode-menu ensime-mode-map
   "Menu for ENSIME mode"
@@ -194,6 +149,7 @@
     ("Test")
 
     ("Source"
+     ["Format source" ensime-format-source]
      ["Find all references" ensime-show-uses-of-symbol-at-point]
      ["Inspect type" ensime-inspect-type-at-point]
      ["Inspect type in another frame" ensime-inspect-type-at-point-other-frame]
@@ -214,8 +170,7 @@
      ["Rename" (ensime-refactor-diff-rename)]
      ["Extract local val" (ensime-refactor-diff-extract-local)]
      ["Extract method" (ensime-refactor-diff-extract-method)]
-     ["Inline local val" (ensime-refactor-diff-inline-local)]
-     ["Expand match cases" (ensime-refactor-expand-match-cases)])
+     ["Inline local val" (ensime-refactor-diff-inline-local)])
 
     ("Navigation"
      ["Lookup definition" ensime-edit-definition]
@@ -239,10 +194,8 @@
      ["Compile only" ensime-sbt-do-compile-only]
      ["Clean" ensime-sbt-do-clean]
      ["Test" ensime-sbt-do-test]
-     ["Test module/suite" ensime-sbt-do-test-dwim]
-     ["Test quick" ensime-sbt-do-test-quick-dwim]
-     ["Test current class" ensime-sbt-do-test-only-dwim]
-     ["Format source" ensime-sbt-do-scalariform-only]
+     ["Test Quick" ensime-sbt-do-test-quick]
+     ["Test current class" ensime-sbt-do-test-only]
      ["Run" ensime-sbt-do-run]
      ["Package" ensime-sbt-do-package])
 
@@ -324,9 +277,6 @@
 
         (ensime-refresh-all-note-overlays)
 
-        (when ensime-eldoc-hints
-          (setq-local eldoc-documentation-function 'ensime-eldoc-info))
-
 	(when (equal major-mode 'scala-mode)
 	  (ensime--setup-imenu)))
     (progn
@@ -366,7 +316,7 @@
 
 ;;;###autoload
 (add-hook 'scala-mode-hook
-          (lambda () (when (fboundp 'ensime) (ensime-mode))))
+          'ensime-mode)
 
 ;;;;;; Mouse handlers
 
@@ -451,8 +401,8 @@
                         t))
 
        ;; Show implicit conversions if present
-       ((or (member 'implicitConversion sem-high-overlays)
-            (member 'implicitParams sem-high-overlays))
+       ((or (find 'implicitConversion sem-high-overlays)
+            (find 'implicitParams sem-high-overlays))
         (ensime-tooltip-show-message
          (mapconcat 'identity (ensime-implicit-notes-at point) "\n")))
 
@@ -460,7 +410,7 @@
        ((and ident ensime-tooltip-type-hints)
         (progn
           (ensime-eval-async
-           `(swank:type-at-point ,(buffer-file-name-with-indirect) ,external-pos)
+           `(swank:type-at-point ,buffer-file-name ,external-pos)
            #'(lambda (type)
                (when type
                  (let ((msg (ensime-type-full-name-with-args type)))
@@ -488,7 +438,7 @@ include connection-name, and possibly some state information."
      (condition-case err
          (let ((conn (ensime-connection-or-nil)))
            (cond ((not conn)
-                  (if (ensime-owning-server-process-for-source-file (buffer-file-name-with-indirect))
+                  (if (ensime-owning-server-process-for-source-file buffer-file-name)
                       "ENSIME: Starting"
                     "ENSIME: Disconnected"))
                  ((ensime-connected-p conn)

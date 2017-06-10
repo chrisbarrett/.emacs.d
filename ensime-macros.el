@@ -209,7 +209,7 @@ corresponding values in the CDR of VALUE."
  file's state."
   `(let ((,file-sym (ensime-temp-file-name
 		     (concat ".tmp_" (file-name-nondirectory
-				      (buffer-file-name-with-indirect))))))
+				      buffer-file-name)))))
      (ensime-write-buffer ,file-sym)
      ,@body))
 

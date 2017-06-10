@@ -6,7 +6,6 @@
 
 (require 'dash)
 (require 'imenu)
-(require 'ensime-overlay)
 
 ;; Type Inspector UI
 
@@ -47,13 +46,8 @@ If additional parameter use-full-name is provided it'll use type fullname"
          (type-name (if use-full-name
                         (ensime-type-full-name-with-args type)
                       (ensime-type-name-with-args type))))
-    (when  (equal arg '(4))
+    (when arg
       (kill-new type-name))
-    (when (equal arg '(16))
-      (ensime--make-result-overlay
-          (format "%S" type-name)
-        :where (point)
-        :duration 'command))
     (message type-name)))
 
 (defun ensime-type-at-point-full-name (&optional arg)

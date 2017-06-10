@@ -46,12 +46,6 @@
   :type 'boolean
   :group 'ensime-ui)
 
-(defcustom ensime-eldoc-hints nil
-  "If non-nil, eldoc hints are activated.
-It can be set to 'all, 'error, 'implicit or 'type to limit the type of hints shown"
-  :type 'symbol
-  :group 'ensime-ui)
-
 (defcustom ensime-graphical-tooltips nil
   "If non-nil, show graphical bubbles for tooltips."
   :type 'boolean
@@ -74,6 +68,14 @@ update it when the project definition changes. At the moment, this only
 works for sbt projects."
   :type 'boolean
   :group 'ensime-ui)
+
+(defcustom ensime-server-version (or (getenv "ENSIME_SERVER_VERSION") "1.0.1")
+  "Distributed version of the server to upgrade and start.
+This is primarily useful for ENSIME developers (or bug reporters)
+to test against. The client is designed to work with the default
+version."
+  :type 'string
+  :group 'ensime-server)
 
 (defcustom ensime-default-server-env ()
   "A `process-environment' compatible list of environment variables"
@@ -308,10 +310,9 @@ Possible types: `organizeImport', `rename', `extractLocal',
   :type 'boolean
   :group 'ensime-ui)
 
-(defcustom ensime-search-interface 'classic
-  "Completion mechanism for search.
-The options are `classic', `helm' and `ivy'."
-  :type '(repeat symbol)
+(defcustom ensime-use-helm nil
+  "Enable helm for some ensime features"
+  :type 'boolean
   :group 'ensime-ui)
 
 (provide 'ensime-vars)

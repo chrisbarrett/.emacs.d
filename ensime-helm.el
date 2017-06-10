@@ -7,7 +7,8 @@
 ;;
 ;;; Code:
 
-(require 'helm "helm.el" t)
+
+(require 'helm)
 
 (defun ensime-helm-select-entry (entries name)
   "Select one entry using helm"

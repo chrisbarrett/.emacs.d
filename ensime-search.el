@@ -24,11 +24,6 @@
   (require 'ensime-macros))
 
 (require 'dash)
-(require 'ensime-helm)
-(require 'ensime-ivy)
-
-(defvar ensime-search-interface)
-(defvar ensime-buffer-connection)
 
 (autoload 'ensime-helm-search "ensime-helm")
 
@@ -75,6 +70,7 @@
 (defvar ensime-search-max-results 50
   "The max number of results to return per rpc call.")
 
+
 (defvar ensime-search-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map "\C-c\C-q" 'ensime-search-quit)
@@ -104,6 +100,7 @@
 (defvar ensime-search-selection-overlay nil
   "Overlay that highlights the currently selected search result.")
 
+
 (defstruct ensime-search-result
   "A ensime-search search result.
 
@@ -128,17 +125,7 @@
   "The main entrypoint for ensime-search-mode.
    Initiate an incremental search of all live buffers."
   (interactive)
-  (pcase ensime-search-interface
-    (`classic
-     (ensime-search-classic))
-    (`helm
-     (if (featurep 'helm)
-         (ensime-helm-search)
-       (message "Please ensure helm is installed and loaded.")))
-    (`ivy
-     (if (featurep 'ivy)
-         (ensime-search-ivy)
-       (message "Please ensure helm is installed and loaded.")))))
+  (if ensime-use-helm (ensime-helm-search) (ensime-search-classic)))
 
 (defun ensime-search-classic ()
   "The classic entrypoint for ensime-search-mode.
@@ -151,7 +138,7 @@
 
        (message "Already in ensime-search buffer")
 
-     (when (buffer-file-name-with-indirect)
+     (when buffer-file-name
        (setq ensime-search-originating-buffer (current-buffer)))
 
      (setq ensime-search-window-config (current-window-configuration))
@@ -163,13 +150,7 @@
      (use-local-map ensime-search-target-buffer-map)
      (setq ensime-buffer-connection conn)
 
-     ;; Compute the heights of the search window and text entry area
-     ;; The entry height is 4 lines unless the window-height is too small
-     (let* ((wh (window-height))
-            (eh (min (- wh 2) 4))
-            (size (- wh eh)))
-       (select-window (split-window (selected-window) size))
-       )
+     (select-window (split-window (selected-window) (- (window-height) 4)))
      (switch-to-buffer (get-buffer-create ensime-search-buffer-name))
      (setq ensime-buffer-connection conn)
      (erase-buffer)
@@ -180,7 +161,7 @@
 
 
 (defun ensime-search-mode ()
-  "Major mode for incrementally searching through all open buffers."
+  "Major mode for incrementally seaching through all open buffers."
   (interactive)
   (setq major-mode 'ensime-search-mode
         mode-name "ensime-search")
@@ -329,7 +310,7 @@
  BEG, END and LENOLD are passed in from the hook.
  An actual update is only done if the regexp has changed or if the
  optional fourth argument FORCE is non-nil."
-  (let ((new-query (buffer-substring-no-properties (point-min) (point-max))))
+  (let ((new-query (buffer-string)))
     (when (not (equal new-query ensime-search-text))
       (setq ensime-search-text new-query)
       (if (>= (length new-query) ensime-search-min-length)

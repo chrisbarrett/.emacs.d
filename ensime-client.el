@@ -398,7 +398,7 @@ This doesn't mean it will connect right after Ensime is loaded."
 (defun ensime-generate-connection-name (server-name)
   (loop for i from 1
 	for name = server-name then (format "%s<%d>" server-name i)
-	while (cl-find name ensime-net-processes
+	while (find name ensime-net-processes
 		    :key #'ensime-connection-name :test #'equal)
 	finally (return name)))
 
@@ -735,10 +735,9 @@ copies. All other objects are used unchanged. List must not contain cycles."
 
 
 (defun ensime-handle-compiler-ready ()
-  "Work that should be done when the analyzer is ready."
-  (if (equal (format-time-string "%m-%d") "04-01")
-      (message "WHISKY ready: Writer for Holistic Interaction with Skala and Kleisli Yielding")
-    (message "ENSIME ready. %s" (ensime-random-words-of-encouragement)))
+  "Do any work that should be done the first time the analyzer becomes
+ ready for requests."
+  (message "ENSIME ready. %s" (ensime-random-words-of-encouragement))
   (setf (ensime-analyzer-ready (ensime-connection)) t)
   (ensime-sem-high-refresh-all-buffers))
 
@@ -758,28 +757,22 @@ copies. All other objects are used unchanged. List must not contain cycles."
     "May the source be with you, always."
     "Death to null!"
     "Find closure!"
-    "Is it a bird? is it a plane? No, it's Lambda Man!"
     "Let's flatMap this thing and go home!"
-    "A monad is just a monoid in the category of endofunctors."
-    "rm -rf *SingletonFactoryBean"
-    "Join us now and share the software, you'll be free."
-    "implicitly[T], my dear Watson"
+    "case Live(_ : Long) if prosper =>"
     "May the _ be with you."
-    "When I left you I was but the feature/learner. Now I am the master branch."
-    "I am altering the public mutable field, pray I do not alter it any further."
-    "I hope so for your sake. The scala compiler is not as forgiving as I am."
     "M-x be_cool"
     "Good news, everyone! I've taught the type system to feel love."
     "Come and say hi at https://gitter.im/ensime/ensime-emacs"
     "CanBuildFrom[List[Dream], Reality, List[Reality]]"
-    ,(format "Witness[%s.type]" (ensime-user-first-name))
-    ,(format "%s, this could be the start of a beautiful program." (ensime-user-first-name)))
+    ,(format "%s, this could be the start of a beautiful program."
+	     (ensime-user-first-name)))
   "Scientifically-proven optimal words of hackerish encouragement.")
 
 (defun ensime-random-words-of-encouragement ()
   "Return a string of hackerish encouragement."
-  (nth (random (length ensime-words-of-encouragement))
-       ensime-words-of-encouragement))
+  (eval (nth (random (length ensime-words-of-encouragement))
+	     ensime-words-of-encouragement)))
+
 
 ;;; RPC calls and support functions
 
@@ -935,7 +928,7 @@ copies. All other objects are used unchanged. List must not contain cycles."
 
 (defun ensime-rpc-symbol-at-point ()
   (ensime-eval
-   `(swank:symbol-at-point ,(buffer-file-name-with-indirect) ,(ensime-computed-point))))
+   `(swank:symbol-at-point ,buffer-file-name ,(ensime-computed-point))))
 
 (defun ensime-rpc-remove-file (file-name)
   (ensime-eval `(swank:remove-file ,file-name)))
@@ -956,6 +949,13 @@ copies. All other objects are used unchanged. List must not contain cycles."
 (defun ensime-rpc-async-typecheck-all (continue)
   (ensime-eval-async `(swank:typecheck-all) continue))
 
+(defun ensime-rpc-async-format-files (file-names continue)
+  (ensime-eval-async `(swank:format-source ,file-names) continue))
+
+(defun ensime-rpc-format-buffer ()
+  (ensime-eval `(swank:format-one-source (:file ,buffer-file-name
+                                          :contents ,(ensime-get-buffer-as-string)))))
+
 (defun ensime-rpc-expand-selection (file-name start end)
   (ensime-internalize-offset-fields
    (ensime-eval `(swank:expand-selection
@@ -970,7 +970,7 @@ copies. All other objects are used unchanged. List must not contain cycles."
 (defun ensime-rpc-import-suggestions-at-point (names max-results)
   (ensime-eval
    `(swank:import-suggestions
-     ,(buffer-file-name-with-indirect)
+     ,buffer-file-name
      ,(ensime-computed-point)
      ,names
      ,max-results
@@ -995,7 +995,7 @@ copies. All other objects are used unchanged. List must not contain cycles."
 (defun ensime-rpc-uses-of-symbol-at-point ()
   (ensime-eval
    `(swank:uses-of-symbol-at-point
-     ,(buffer-file-name-with-indirect)
+     ,buffer-file-name
      ,(ensime-computed-point)
      )))
 
@@ -1015,11 +1015,11 @@ copies. All other objects are used unchanged. List must not contain cycles."
 (defun ensime-rpc-get-type-by-name-at-point (name)
   (ensime-eval
    `(swank:type-by-name-at-point
-     ,name ,(buffer-file-name-with-indirect) ,(ensime-computed-point))))
+     ,name ,buffer-file-name ,(ensime-computed-point))))
 
 (defun ensime-rpc-get-type-at-point ()
   (ensime-eval
-   `(swank:type-at-point ,(buffer-file-name-with-indirect) ,(ensime-computed-point))))
+   `(swank:type-at-point ,buffer-file-name ,(ensime-computed-point))))
 
 (defun ensime-rpc-inspect-type-at-point ()
   (ensime-eval
@@ -1027,7 +1027,7 @@ copies. All other objects are used unchanged. List must not contain cycles."
 
 (defun ensime-rpc-inspect-type-at-range (&optional range)
   (ensime-eval
-   `(swank:inspect-type-at-point ,(buffer-file-name-with-indirect)
+   `(swank:inspect-type-at-point ,buffer-file-name
                                  ,(or range (ensime-computed-range)))))
 
 (defun ensime-rpc-inspect-type-by-id (id)
@@ -1083,7 +1083,7 @@ copies. All other objects are used unchanged. List must not contain cycles."
 
 (defun ensime-rpc-implicit-info-in-range (start end)
   (ensime-eval `(swank:implicit-info
-                 ,(buffer-file-name-with-indirect)
+                 ,(buffer-file-name)
                  (,(ensime-externalize-offset start) ,(ensime-externalize-offset end)))))
 
 (defun ensime-rpc-get-call-completion (id)

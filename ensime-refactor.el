@@ -126,19 +126,6 @@
                   end ,(ensime-externalize-offset end))))
       (message "Please place cursor on a local value."))))
 
-(defun ensime-refactor-expand-match-cases ()
-  "Expand the cases for a match block on a sealed trait, case class or case object."
-  (interactive)
-  (destructuring-bind (start end)
-      (ensime-computed-range)
-    (ensime-refactor-diff
-     'expandMatchCases
-     `(file ,buffer-file-name
-            start ,start
-            end ,end
-            tpe "expandMatchCases"
-            ))))
-
 (defun ensime-refactor-diff (refactor-type params &optional non-interactive blocking)
   (if (buffer-modified-p) (ensime-write-buffer nil t))
   (incf ensime-refactor-id-counter)

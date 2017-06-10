@@ -64,10 +64,10 @@ the output received after a call to `ensime-comint-complete'.")
     (let* ((output-list
             (split-string (ensime-comint-sanitise output) cand-regexp t))
            (input (car output-list))
-           (invalid-input (cl-find err-regexp output-list :test 'string-match))
+           (invalid-input (find err-regexp output-list :test 'string-match))
            (rev-output-list (reverse output-list))
            (prompt-completion
-            (cl-find comint-prompt-regexp rev-output-list :test 'string-match))
+            (find comint-prompt-regexp rev-output-list :test 'string-match))
            ;; this is very ugly
            (trailing-space (if (and (string= (replace-regexp-in-string "\s" "" input)
                                              (replace-regexp-in-string

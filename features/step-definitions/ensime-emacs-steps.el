@@ -2,8 +2,6 @@
 ;; files in this directory whose names end with "-steps.el" will be
 ;; loaded automatically by Ecukes.
 
-(require 'ensime-company) ;; the autoload cookie is not available in unit tests
-
 (When "^I open temp \\(java\\|scala\\) file \"\\(.+\\)\"$"
       (lambda (suffix arg)
         (find-file (make-temp-file arg nil (format ".%s" suffix)))))
@@ -51,9 +49,3 @@
      (lambda (formatted-result)
           (assert (equal ensime-helm-test-search-result formatted-result) nil
                   (format "Expected formated result \"%s\", but was \"%s\"" formatted-result ensime-helm-test-search-result))))
-
-(Then "^the line should match \"\\(.+\\)\"$"
-     (lambda (line)
-       (let ((actual-line (s-trim (thing-at-point 'line))))
-         (assert (equal line actual-line) nil
-                 (format "Expected \"%s\", but was \"%s\"" line actual-line)))))
