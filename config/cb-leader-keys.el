@@ -74,6 +74,9 @@
 
     ;; Clean up goto and git
 
+    (push `(("SPC g" . ,(rx (? "cb-") "magit-" (group (+? nonl)))) . (nil . "\\1"))
+          which-key-replacement-alist)
+
     (push `(("SPC g" . ,(rx "cb-" (group "goto-" (+? nonl)))) . (nil . "\\1"))
           which-key-replacement-alist)
 
