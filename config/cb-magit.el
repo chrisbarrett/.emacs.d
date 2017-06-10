@@ -106,7 +106,6 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
     :title "Git Timemachine Transient State"
     :doc "
 [_p_/_N_] previous [_n_] next [_c_] current [_g_] goto nth rev [_Y_] copy hash [_q_] quit"
-  :init
     :on-enter (unless (bound-and-true-p git-timemachine-mode)
                 (call-interactively 'git-timemachine))
     :on-exit (when (bound-and-true-p git-timemachine-mode)
@@ -119,7 +118,7 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
     ("n" git-timemachine-show-next-revision)
     ("N" git-timemachine-show-previous-revision)
     ("Y" git-timemachine-kill-revision)
-    ("q" nil :exit t))
+    ("q" nil :exit t)))
 
 (provide 'cb-magit)
 
