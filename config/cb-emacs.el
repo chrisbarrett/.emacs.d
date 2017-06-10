@@ -93,6 +93,9 @@
 
       (message "Subtree `%s' added successfully." prefix))))
 
+(defconst cb-emacs-pinned-subtree-versions
+  '((ensime-emacs . "v1.0.1")))
+
 (defun cb-emacs-update-subtree (subtree &optional remote)
   "Update SUBTREE at REMOTE.
 
@@ -117,10 +120,11 @@ prompt for REMOTE if it cannot be determined."
 
     (let* ((prefix (format "lisp/%s" subtree))
            (fullpath (f-join cb-emacs-lisp-directory subtree))
-           (commit-message (format "'Merge %s@master into %s'" remote prefix)))
+           (version (alist-get (intern subtree) cb-emacs-pinned-subtree-versions "master"))
+           (commit-message (format "'Merge %s@%s into %s'" remote version prefix)))
 
       (cb-emacs--with-signal-handlers "Importing subtree..."
-        (magit-run-git "subtree" "-q" "pull" "--prefix" prefix remote "master" "--squash" "-m" commit-message))
+        (magit-run-git "subtree" "-q" "pull" "--prefix" prefix remote version "--squash" "-m" commit-message))
 
       (cb-emacs--with-signal-handlers "Compiling..."
         (byte-recompile-directory fullpath 0))
