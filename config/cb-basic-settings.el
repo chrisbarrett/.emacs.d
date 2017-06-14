@@ -605,6 +605,7 @@ Optional arg JUSTIFY will justify comments and strings."
   (progn
     (evil-set-initial-state 'archive-mode 'motion)
     (evil-define-key 'motion archive-mode-map
+      (kbd "q") 'kill-this-buffer
       (kbd "RET") 'archive-extract
       (kbd "o") 'archive-extract-other-window
       (kbd "m") 'archive-mark
