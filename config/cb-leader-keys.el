@@ -83,6 +83,9 @@
     (push `(("SPC g" . "git-blame-transient-state/body") . (nil . "git-blame"))
           which-key-replacement-alist)
 
+    (push `(("SPC g" . "git-hunks-transient-state/body") . (nil . "git-hunks"))
+          which-key-replacement-alist)
+
     (push `(("SPC g" . "time-machine-transient-state/body") . (nil . "git-time-machine"))
           which-key-replacement-alist)
 
