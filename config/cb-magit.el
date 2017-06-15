@@ -22,9 +22,11 @@
   :functions (magit-display-buffer-fullframe-status-v1)
   :preface
   (progn
-    (autoload 'magit-file-relative-name "magit-git")
-    (autoload 'magit-popup-import-file-args "magit-popup")
     (autoload 'magit-diff-dwim "magit-diff")
+    (autoload 'magit-file-relative-name "magit-git")
+    (autoload 'magit-find-file "magit-files")
+    (autoload 'magit-find-file-other-window "magit-files")
+    (autoload 'magit-popup-import-file-args "magit-popup")
 
     (defun cb-magit-find-file (&optional arg)
       (interactive "P")
@@ -119,6 +121,15 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
     ("N" git-timemachine-show-previous-revision)
     ("Y" git-timemachine-kill-revision)
     ("q" nil :exit t)))
+
+(use-package diff-hl
+  :after magit
+  :commands (diff-hl-magit-post-refresh global-diff-hl-mode)
+  :config
+  (progn
+    (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
+    (global-diff-hl-mode)))
+
 
 (provide 'cb-magit)
 
