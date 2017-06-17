@@ -64,6 +64,7 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
     "gs" #'magit-status
     "gd" #'cb-magit-diff-buffer-file
     "gf" #'cb-magit-find-file
+    "gt" #'git-time-machine-transient-state/body
     "gb" #'git-blame-transient-state/body)
   :config
   (progn
@@ -104,7 +105,7 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
    git-timemachine-kill-revision
    git-timemachine-quit)
   :preface
-  (evil-transient-state-define time-machine
+  (evil-transient-state-define git-time-machine
     :title "Git Timemachine Transient State"
     :doc "
 [_p_/_N_] previous [_n_] next [_c_] current [_g_] goto nth rev [_Y_] copy hash [_q_] quit"
