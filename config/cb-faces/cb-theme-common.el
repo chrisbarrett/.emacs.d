@@ -553,6 +553,12 @@
     (markdown-line-break-face
      ((t :underline ,cb-theme-common-orange)))
 
+    ;; Kubernetes
+
+    (kubernetes-loading
+     ((((background light)) :foreground ,cb-theme-common-neutral-grey)
+      (((background dark))  :foreground "#a55")))
+
     ;; Scala
 
     (scala-font-lock:var-keyword-face
