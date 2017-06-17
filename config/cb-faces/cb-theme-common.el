@@ -31,6 +31,13 @@
         :family "Hasklig"
         :height 145)))
 
+    (success
+     ((t :weight normal :foreground ,cb-theme-common-green)))
+    (warning
+     ((t :weight normal :foreground ,cb-theme-common-orange)))
+    (error
+     ((t :weight normal :foreground ,cb-theme-common-red)))
+
     (link
      ((((background light))
        :weight light :underline ,cb-theme-common-light-grey)
