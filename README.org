@@ -1,5 +1,5 @@
 * Iedit - Edit multiple regions in the same way simultaneously
-
+** Introduction
 This package includes Emacs minor modes (iedit-mode and
 iedit-rectangle-mode) based on a API library (iedit-lib) and allows you to edit
 one occurrence of some text in a buffer (possibly narrowed) or region, and
@@ -8,10 +8,10 @@ feedback as you type.
 
 Normal scenario of Iedit mode is like:
 
- - Highlight certain contents - by press C-;
-   All occurrences of a symbol, string or a rectangle in the buffer or a region
-   may be highlighted corresponding to current mark, point and prefix
-   argument. Refer to the document of `iedit-mode' for details.
+ - Highlight certain contents - by press C-; (The default key binding) All
+   occurrences of a symbol, string or a region in the buffer may be highlighted
+   corresponding to current mark, point and prefix argument.  Refer to the
+   document of `iedit-mode' for details.
 
  - Edit one of the occurrences
    The change is applied to other occurrences simultaneously.
@@ -23,7 +23,7 @@ buffer lines that match the current text being edited.  This gives you the
 effect of a temporary `keep-lines' or `occur'.  To get this effect, hit C-'
 when in Iedit mode - it toggles hiding non-matching lines.
 
-Renaming refactoring is convinient in Iedit mode
+Renaming refactoring is convenient in Iedit mode
 
  - The symbol under point is selected as occurrence by default and only complete
    symbols are matched
@@ -40,7 +40,7 @@ Renaming refactoring is convinient in Iedit mode
 
  - Restricting the search area to the lines near the current line can
    be done by pressing M-{ and M-}. These will expand the search
-   region one line at a time from the top and bottom. Add a prefix
+   region one line at a time from the top and bottom.  Add a prefix
    argument to go the opposite direction.
 
 Iedit-rectangle-mode provides rectangle support with *visible rectangle*
@@ -49,3 +49,23 @@ lighter weight and uses iedit mechanisms.
 
 There are also some other facilities you may never think about.  Refer to the
 document of function `iedit-mode' (C-h f iedit-mode RET) for more details.
+
+** Installation instruction
+*** Installing from MELPA
+The easiest way to install and keep Iedit up-to-date is using Emacs’s built-in
+package manager.  Iedit is available in the MELPA repository.  Refer to
+http://melpa.org/#/getting-started for how to install a package from MELPA.
+
+*** Installing from GitHub
+You can also clone Iedit's repository or download a zip package from GitHub
+https://github.com/victorhge/iedit
+
+You will need to add a few extra lines in your .emacs file, to make your Emacs
+knows about the package:
+#+BEGIN_SRC elisp
+(add-to-list 'load-path "~/dir/to/your/iedit")
+(require 'iedit)
+#+END_SRC
+
+
+#  LocalWords:  Iedit iedit
