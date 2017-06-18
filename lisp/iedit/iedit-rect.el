@@ -2,10 +2,10 @@
 
 ;; Copyright (C) 2010, 2011, 2012 Victor Ren
 
-;; Time-stamp: <2013-02-09 00:55:45 Victor Ren>
+;; Time-stamp: <2016-09-28 00:03:47 Victor Ren>
 ;; Author: Victor Ren <victorhge@gmail.com>
 ;; Keywords: occurrence region simultaneous rectangle refactoring
-;; Version: 0.97
+;; Version: 0.9.9
 ;; X-URL: http://www.emacswiki.org/emacs/Iedit
 ;; Compatibility: GNU Emacs: 22.x, 23.x, 24.x
 
@@ -53,7 +53,15 @@
 
 
 ;;; Default key bindings:
-(define-key global-map [C-return] 'iedit-rectangle-mode)
+(when (null (where-is-internal 'iedit-rectangle-mode))
+  (let ((key-def (lookup-key ctl-x-r-map "\r")))
+    (if key-def
+        (display-warning 'iedit (format "Iedit rect default key %S is occupied by %s."
+                                        (key-description [C-x r RET])
+                                        key-def)
+                         :warning)
+      (define-key ctl-x-r-map "\r" 'iedit-rectangle-mode)
+      (message "Iedit-rect default key binding is %s" (key-description [C-x r RET])))))
 
 (defvar iedit-rectangle nil
   "This buffer local variable which is the rectangle geometry if
@@ -139,6 +147,7 @@ Commands:
          'face
          'font-lock-warning-face))
   (force-mode-line-update)
+  (add-hook 'before-revert-hook 'iedit-rectangle-done nil t)
   (add-hook 'kbd-macro-termination-hook 'iedit-rectangle-done nil t)
   (add-hook 'change-major-mode-hook 'iedit-rectangle-done nil t)
   (add-hook 'iedit-aborting-hook 'iedit-rectangle-done nil t))
@@ -148,10 +157,11 @@ Commands:
 Save the current occurrence string locally and globally.  Save
 the initial string globally."
   (when iedit-buffering
-      (iedit-stop-buffering))
+    (iedit-stop-buffering))
   (iedit-cleanup)
   (setq iedit-rectangle-mode nil)
   (force-mode-line-update)
+  (remove-hook 'before-revert-hook 'iedit-rectangle-done t)
   (remove-hook 'kbd-macro-termination-hook 'iedit-rectangle-done t)
   (remove-hook 'change-major-mode-hook 'iedit-rectangle-done t)
   (remove-hook 'iedit-aborting-hook 'iedit-rectangle-done t))

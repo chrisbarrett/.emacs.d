@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2010, 2011, 2012 Victor Ren
 
-;; Time-stamp: <2013-02-09 00:54:03 Victor Ren>
+;; Time-stamp: <2016-09-20 00:28:29 Victor Ren>
 ;; Author: Victor Ren <victorhge@gmail.com>
 ;; Version: 0.97
 ;; X-URL: http://www.emacswiki.org/emacs/Iedit
@@ -34,8 +34,8 @@
 
 (ert-deftest iedit-compile-test ()
   (let ((byte-compile-error-on-warn t ))
-    (should (byte-compile-file "iedit.el"))
-    (delete-file "iedit.elc" nil)))
+    (should (byte-compile-file "~/.emacs.d/site-lisp/iedit/iedit.el"))
+    (delete-file "~/.emacs.d/site-lisp/iedit/iedit.elc" nil)))
 
 (defmacro with-iedit-test-buffer (buffer-name &rest body)
   (declare (indent 1) (debug t))
@@ -43,7 +43,10 @@
      (when (get-buffer ,buffer-name)
        (kill-buffer ,buffer-name))
      (with-current-buffer (get-buffer-create ,buffer-name)
-       ,@body)))
+       ;; Give the current temp buffer a window. Otherwise `recenter' will
+       ;; trigger an error message.
+       (progn (set-window-buffer nil ,buffer-name)
+              ,@body))))
 
 (defun marker-position-list (l)
   "convert list of markers to positions"
@@ -114,12 +117,37 @@ foo"
      (iedit-mode)
      (should (= 4 (length iedit-occurrences-overlays)))
      (should (string= iedit-initial-string-local "foo"))
-     (should (null iedit-only-complete-symbol-local))
+     (should (eq 'selection iedit-occurrence-type-local))
      (goto-char 1)
      (set-mark-command nil)
      (forward-line 3)
      (iedit-mode 4)
      (should (= 1 (length iedit-occurrences-overlays))))))
+
+(ert-deftest iedit-mode-with-tag-pair-test ()
+  (with-iedit-test-fixture
+   "<div> foo </div>
+<div> bar </div>
+<div> foobar </div>
+div
+foobar
+ foo
+ bar
+foo"
+   (lambda ()
+     (iedit-mode)
+     (goto-char 2)
+     (iedit-mode)
+     (should (= 2 (length iedit-occurrences-overlays)))
+     (should (string= iedit-initial-string-local "div"))
+     ;; (should (eq 'tag iedit-occurrence-type-local))
+     (iedit-mode)
+     (sgml-electric-tag-pair-mode t)
+     (iedit-mode)
+     (should (= 3 (length iedit-occurrences-overlays)))
+     (should (string= iedit-initial-string-local "<div>"))
+     (should (eq 'symbol iedit-occurrence-type-local))
+     (sgml-electric-tag-pair-mode))))
 
 (ert-deftest iedit-move-conjointed-overlays-test ()
   (with-iedit-test-fixture
@@ -135,7 +163,7 @@ foo"
      (iedit-mode)
      (should (= 7 (length iedit-occurrences-overlays)))
      (should (string= iedit-initial-string-local "foo"))
-     (should (null iedit-only-complete-symbol-local))
+     (should (eq 'selection iedit-occurrence-type-local))
      (goto-char 1)
      (insert "123")
      (should (string= (buffer-string)
@@ -217,6 +245,7 @@ fob")))))
      (should (string= iedit-initial-string-local "foo"))
      (iedit-mode)
      (with-temp-buffer
+       (set-window-buffer nil (current-buffer))
        (insert "bar foo foo")
        (goto-char 1)
        (iedit-mode 16)
@@ -499,6 +528,30 @@ fob")))))
      (should (not (iedit-same-column)))
      (should-error (iedit-kill-rectangle)))))
 
+(ert-deftest iedit-expand-to-occurrence-test ()
+  (with-iedit-test-fixture
+   "a a
+a a a
+a a a"
+   (lambda()
+     (goto-char 5)
+     (iedit-restrict-current-line)
+     (call-interactively 'iedit-expand-down-to-occurrence)
+     (should (equal (length iedit-occurrences-overlays) 4))
+     (should (= (point) 11))
+     (call-interactively 'iedit-expand-up-to-occurrence)
+     (should (equal (length iedit-occurrences-overlays) 5))
+     (should (= (point) 3))
+     (call-interactively 'iedit-expand-up-to-occurrence)
+     (call-interactively 'iedit-expand-up-to-occurrence)
+     (should (equal (length iedit-occurrences-overlays) 6))
+     (should (= (point) 1))
+     (call-interactively 'iedit-expand-down-to-occurrence)
+     (call-interactively 'iedit-expand-down-to-occurrence)
+     (call-interactively 'iedit-expand-down-to-occurrence)
+     (should (equal (length iedit-occurrences-overlays) 8))
+     (should (= (point) 15)))))
+
 (ert-deftest iedit-kill-rectangle-test ()
   (with-iedit-test-fixture
 "foo
@@ -635,21 +688,22 @@ foo"
      (iedit-show-all)
      (should (equal (iedit-hide-unmatched-lines 3) nil)))))
 
-;; (elp-instrument-list '(;; insert-and-inherit
-;;                        ;; delete-region
-;;                        ;; goto-char
-;;                        ;; iedit-occurrence-update
-;;                        ;; buffer-substring-no-properties
-;;                        ;; string=
-;;                        re-search-forward
-;;                        ;; replace-match
-;;                        text-property-not-all
-;;                        iedit-make-occurrence-overlay
-;;                        iedit-make-occurrences-overlays
-;;                        match-beginning
-;;                        match-end
-;;                        push
-;;                        ))
+;; todo add a auto performance test
+(setq elp-function-list '(;; insert-and-inherit
+                       ;; delete-region
+                       ;; goto-char
+                       ;; iedit-occurrence-update
+                       ;; buffer-substring-no-properties
+                       ;; string=
+                       re-search-forward
+                       ;; replace-match
+                       text-property-not-all
+                       iedit-make-occurrence-overlay
+                       iedit-make-occurrences-overlays
+                       match-beginning
+                       match-end
+                       push
+                       ))
 
 
 ;;; iedit-tests.el ends here
