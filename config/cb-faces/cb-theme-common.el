@@ -555,7 +555,7 @@
 
     ;; Kubernetes
 
-    (kubernetes-loading
+    (kubernetes-dimmed
      ((((background light)) :foreground ,cb-theme-common-neutral-grey)
       (((background dark))  :foreground "#a55")))
 
