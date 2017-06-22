@@ -627,12 +627,22 @@ Do not scheduled items or repeating todos."
 
 (use-package ox
   :after org
+  :init
+  (defvar org-export-backends '(ascii html latex odt gfm koma-letter custom-confluence))
   :config
   (progn
     (require 'ox-gfm)
-    (setq org-export-backends '(ascii html latex odt gfm koma-letter))
     (setq org-export-exclude-tags '("noexport" "crypt"))
     (setq org-export-coding-system 'utf-8)))
+
+(use-package ox-confluence
+  :after org
+  :config
+  (org-export-define-derived-backend 'custom-confluence 'confluence
+    :menu-entry
+    '(?c "Export as Confluence markup"
+         ((?c "As LaTeX buffer" org-confluence-export-as-confluence)))))
+
 
 (use-package ox-koma-letter
   :after org
