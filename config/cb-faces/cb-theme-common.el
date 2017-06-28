@@ -49,7 +49,7 @@
 
     (header-line
      ((((background light))
-       :background ,cb-theme-common-blue
+       :background ,cb-theme-common-violet
        :foreground ,default-background :weight demibold)
       (((background dark))
        :background "#533"
