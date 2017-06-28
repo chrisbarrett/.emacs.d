@@ -641,7 +641,7 @@ Do not scheduled items or repeating todos."
   (org-export-define-derived-backend 'custom-confluence 'confluence
     :menu-entry
     '(?c "Export as Confluence markup"
-         ((?c "As LaTeX buffer" org-confluence-export-as-confluence)))))
+         ((?c "To temporary buffer" org-confluence-export-as-confluence)))))
 
 
 (use-package ox-koma-letter
