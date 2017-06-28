@@ -149,12 +149,12 @@ To use this, use the following mode hook:
       (message "Disabling interactive-haskell-mode ...")
       (interactive-haskell-mode -1)))
   (if intero-mode
-      (progn (flycheck-select-checker 'intero)
-             (flycheck-mode)
-             (add-hook 'completion-at-point-functions 'intero-completion-at-point nil t)
-             (add-to-list (make-local-variable 'company-backends) 'intero-company)
-             (company-mode)
-             (setq-local eldoc-documentation-function 'intero-eldoc))
+      (progn
+        (intero-flycheck-enable)
+        (add-hook 'completion-at-point-functions 'intero-completion-at-point nil t)
+        (add-to-list (make-local-variable 'company-backends) 'intero-company)
+        (company-mode)
+        (setq-local eldoc-documentation-function 'intero-eldoc))
     (message "Intero mode disabled.")))
 
 ;;;###autoload
@@ -179,6 +179,7 @@ To use this, use the following mode hook:
 
 
 (define-key intero-mode-map (kbd "C-c C-t") 'intero-type-at)
+(define-key intero-mode-map (kbd "M-?") 'intero-uses-at)
 (define-key intero-mode-map (kbd "C-c C-i") 'intero-info)
 (define-key intero-mode-map (kbd "M-.") 'intero-goto-definition)
 (define-key intero-mode-map (kbd "C-c C-l") 'intero-repl-load)
@@ -234,6 +235,9 @@ LIST is a FIFO.")
 
 (defvar-local intero-targets (list)
   "Targets used for the stack process.")
+
+(defvar-local intero-start-time nil
+  "Start time of the stack process.")
 
 (defvar-local intero-source-buffer (list)
   "Buffer from which Intero was first requested to start.")
@@ -347,6 +351,41 @@ You can use this to kill them or look inside."
     (insert expression)
     (font-lock-ensure)
     (buffer-string)))
+
+(defun intero-uses-at ()
+  "Highlight uses of the identifier at point."
+  (interactive)
+  (let* ((thing (intero-thing-at-point))
+         (uses (split-string (apply #'intero-get-uses-at thing)
+                             "\n"
+                             t)))
+    (unless (null uses)
+      (let ((highlighted nil))
+        (cl-loop
+         for use in uses
+         when (string-match
+               "\\(.*?\\):(\\([0-9]+\\),\\([0-9]+\\))-(\\([0-9]+\\),\\([0-9]+\\))$"
+               use)
+         do (let* ((fp (match-string 1 use))
+                   (sline (string-to-number (match-string 2 use)))
+                   (scol (string-to-number (match-string 3 use)))
+                   (eline (string-to-number (match-string 4 use)))
+                   (ecol (string-to-number (match-string 5 use)))
+                   (start (save-excursion (goto-char (point-min))
+                                          (forward-line (1- sline))
+                                          (forward-char (1- scol))
+                                          (point))))
+              (when (string= fp (intero-temp-file-name))
+                (unless highlighted
+                  (intero-highlight-uses-mode))
+                (setq highlighted t)
+                (intero-highlight-uses-mode-highlight
+                 start
+                 (save-excursion (goto-char (point-min))
+                                 (forward-line (1- eline))
+                                 (forward-char (1- ecol))
+                                 (point))
+                 (= start (car thing))))))))))
 
 (defun intero-type-at (insert)
   "Get the type of the thing or selection at point.
@@ -483,27 +522,38 @@ If the problem persists, please report this as a bug!")))
       (intero-get-worker-create 'backend targets (current-buffer))
       (intero-repl-restart))))
 
-(defun intero-targets ()
-  "Set the targets to use for stack ghci."
-  (interactive)
-  (let* ((old-targets
-          (with-current-buffer (intero-buffer 'backend)
-            intero-targets))
-         (available-targets (intero-get-targets))
-         (targets (if available-targets
-                      (intero-multiswitch
-                       "Set the targets to use for stack ghci:"
-                       (mapcar (lambda (target)
-                                 (list :key target
-                                       :title target
-                                       :default (member target old-targets)))
-                               available-targets))
-                    (split-string (read-from-minibuffer "Targets: " nil nil nil nil old-targets)
-                                  " "
-                                  t))))
-    (intero-destroy)
-    (intero-get-worker-create 'backend targets (current-buffer))
-    (intero-repl-restart)))
+(defun intero-read-targets ()
+  "Read a list of stack targets."
+  (let ((old-targets
+         (with-current-buffer (intero-buffer 'backend)
+           intero-targets))
+        (available-targets (intero-get-targets)))
+    (if available-targets
+        (intero-multiswitch
+         "Set the targets to use for stack ghci:"
+         (mapcar (lambda (target)
+                   (list :key target
+                         :title target
+                         :default (member target old-targets)))
+                 available-targets))
+      (split-string (read-from-minibuffer "Targets: " nil nil nil nil old-targets)
+                    " "
+                    t))))
+
+(defun intero-targets (targets save-dir-local)
+  "Set the TARGETS to use for stack ghci.
+When SAVE-DIR-LOCAL is non-nil, save TARGETS as the
+directory-local value for `intero-targets'."
+  (interactive (list (intero-read-targets)
+                     (y-or-n-p "Save selected target(s) in directory local variables for future sessions? ")))
+  (intero-destroy)
+  (intero-get-worker-create 'backend targets (current-buffer))
+  (intero-repl-restart)
+  (when save-dir-local
+    (save-window-excursion
+      (let ((default-directory (intero-project-root)))
+        (add-dir-local-variable 'haskell-mode 'intero-targets targets)
+        (save-buffer)))))
 
 (defun intero-destroy (&optional worker)
   "Stop WORKER and kill its associated process buffer.
@@ -563,11 +613,23 @@ running context across :load/:reloads in Intero."
 
 (defun intero-check-reuse-last-results (mod-time cont)
   "If MOD-TIME is not new, return non-nil and call CONT with `intero-check-last-results'."
-  (let ((reuse (and intero-check-last-mod-time (equal mod-time intero-check-last-mod-time))))
+  (let ((reuse (and intero-check-last-mod-time
+                    (equal mod-time intero-check-last-mod-time)
+                    ;; Cached results are assumed invalid after a backend restart
+                    (time-less-p (with-current-buffer (intero-buffer 'backend)
+                                   intero-start-time)
+                                 intero-check-last-mod-time))))
     (progn
       (when reuse
         (funcall cont 'finished intero-check-last-results))
       reuse)))
+
+(defun intero-flycheck-enable ()
+  "Enable intero's flycheck support in this buffer."
+  (flycheck-select-checker 'intero)
+  (setq intero-check-last-mod-time nil
+        intero-check-last-results nil)
+  (flycheck-mode))
 
 (defun intero-check (checker cont)
   "Run a check with CHECKER and pass the status onto CONT."
@@ -1885,6 +1947,7 @@ Automatically performs initial actions in SOURCE-BUFFER, if specified."
       (with-current-buffer buffer
         (erase-buffer)
         (setq intero-targets targets)
+        (setq intero-start-time (current-time))
         (setq intero-source-buffer source-buffer)
         (setq intero-arguments arguments)
         (setq intero-starting t)
@@ -2277,6 +2340,7 @@ Each option is a plist of (:key :default :title) wherein:
           (use-local-map
            (let ((map (copy-keymap widget-keymap)))
              (define-key map (kbd "C-c C-c") 'exit-recursive-edit)
+             (define-key map (kbd "C-c C-k") 'abort-recursive-edit)
              (define-key map (kbd "C-g") 'abort-recursive-edit)
              map))
           (widget-setup)
@@ -2828,6 +2892,119 @@ Equivalent to 'warn', but label the warning as coming from intero."
 
 (define-key intero-help-mode-map (kbd "g") 'intero-help-refresh)
 (define-key intero-help-mode-map (kbd "C-c C-i") 'intero-help-info)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Intero highlight uses mode
+
+(defvar intero-highlight-uses-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "n") 'intero-highlight-uses-mode-next)
+    (define-key map (kbd "TAB") 'intero-highlight-uses-mode-next)
+    (define-key map (kbd "p") 'intero-highlight-uses-mode-prev)
+    (define-key map (kbd "S-TAB") 'intero-highlight-uses-mode-prev)
+    (define-key map (kbd "<backtab>") 'intero-highlight-uses-mode-prev)
+    (define-key map (kbd "RET") 'intero-highlight-uses-mode-stop-here)
+    (define-key map (kbd "r") 'intero-highlight-uses-mode-replace)
+    (define-key map (kbd "C-g") 'intero-highlight-uses-mode)
+    (define-key map (kbd "q") 'intero-highlight-uses-mode)
+    map)
+  "Keymap for using `intero-highlight-uses-mode'.")
+
+(defvar-local intero-highlight-uses-mode-point nil)
+(defvar-local intero-highlight-uses-buffer-old-mode nil)
+
+;;;###autoload
+(define-minor-mode intero-highlight-uses-mode
+  "Minor mode for highlighting and jumping between uses."
+  :lighter " Uses"
+  :keymap intero-highlight-uses-mode-map
+  (if intero-highlight-uses-mode
+      (progn (setq intero-highlight-uses-buffer-old-mode buffer-read-only)
+             (setq buffer-read-only t)
+             (setq intero-highlight-uses-mode-point (point)))
+    (progn (setq buffer-read-only intero-highlight-uses-buffer-old-mode)
+           (when intero-highlight-uses-mode-point
+             (goto-char intero-highlight-uses-mode-point))))
+  (remove-overlays (point-min) (point-max) 'intero-highlight-uses-mode-highlight t))
+
+(defun intero-highlight-uses-mode-replace ()
+  "Replace all highlighted instances in the buffer with something
+  else."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (let ((o (intero-highlight-uses-mode-next)))
+      (when o
+        (let ((replacement
+               (read-from-minibuffer
+                (format "Replace uses %s with: "
+                        (buffer-substring
+                         (overlay-start o)
+                         (overlay-end o))))))
+          (let ((inhibit-read-only t))
+            (while o
+              (goto-char (overlay-start o))
+              (delete-region (overlay-start o)
+                             (overlay-end o))
+              (insert replacement)
+              (setq o (intero-highlight-uses-mode-next))))))))
+  (intero-highlight-uses-mode -1))
+
+(defun intero-highlight-uses-mode-stop-here ()
+  "Stop at this point."
+  (interactive)
+  (setq intero-highlight-uses-mode-point (point))
+  (intero-highlight-uses-mode -1))
+
+(defun intero-highlight-uses-mode-next ()
+  "Jump to next result."
+  (interactive)
+  (let ((os (sort (cl-remove-if (lambda (o)
+                                  (or (<= (overlay-start o) (point))
+                                      (not (overlay-get o 'intero-highlight-uses-mode-highlight))))
+                                (overlays-in (point) (point-max)))
+                  (lambda (a b)
+                    (< (overlay-start a)
+                       (overlay-start b))))))
+    (when os
+      (mapc
+       (lambda (o)
+         (when (overlay-get o 'intero-highlight-uses-mode-highlight)
+           (overlay-put o 'face 'lazy-highlight)))
+       (overlays-in (line-beginning-position) (line-end-position)))
+      (goto-char (overlay-start (car os)))
+      (overlay-put (car os) 'face 'isearch)
+      (car os))))
+
+(defun intero-highlight-uses-mode-prev ()
+  "Jump to previous result."
+  (interactive)
+  (let ((os (sort (cl-remove-if (lambda (o)
+                                  (or (>= (overlay-end o) (point))
+                                      (not (overlay-get o 'intero-highlight-uses-mode-highlight))))
+                                (overlays-in (point-min) (point)))
+                  (lambda (a b)
+                    (> (overlay-start a)
+                       (overlay-start b))))))
+    (when os
+      (mapc
+       (lambda (o)
+         (when (overlay-get o 'intero-highlight-uses-mode-highlight)
+           (overlay-put o 'face 'lazy-highlight)))
+       (overlays-in (line-beginning-position) (line-end-position)))
+      (goto-char (overlay-start (car os)))
+      (overlay-put (car os) 'face 'isearch)
+      (car os))))
+
+(defun intero-highlight-uses-mode-highlight (start end current)
+  "Make a highlight overlay at the given span."
+  (let ((o (make-overlay start end)))
+    (overlay-put o 'priority 999)
+    (overlay-put o 'face
+                 (if current
+                     'isearch
+                   'lazy-highlight))
+    (overlay-put o 'intero-highlight-uses-mode-highlight t)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
