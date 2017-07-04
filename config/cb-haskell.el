@@ -138,6 +138,13 @@
     "iq" #'haskell-imports-insert-qualified))
 
 
+(use-package haskell-pragmas
+  :after haskell-mode
+  :commands (haskell-pragmas-insert)
+  :config
+  (spacemacs-keys-set-leader-keys-for-major-mode 'haskell-mode "il" #'haskell-pragmas-insert))
+
+
 (use-package intero
   :after haskell-mode
 
