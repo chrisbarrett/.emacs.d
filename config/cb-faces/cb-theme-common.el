@@ -465,6 +465,9 @@
     (message-header-to
      ((t :weight normal)))
 
+    (message-header-cc
+     ((t :weight light :foreground ,cb-theme-common-neutral-grey)))
+
     (message-cited-text
      ((t :weight light :foreground ,cb-theme-common-neutral-grey)))
 
