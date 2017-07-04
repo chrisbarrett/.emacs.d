@@ -173,6 +173,9 @@
     (spacemacs-keys-set-leader-keys-for-major-mode 'haskell-mode
       "t" #'intero-targets)
 
+    (with-eval-after-load 'flycheck
+      (flycheck-add-next-checker 'intero 'haskell-hlint))
+
     (with-no-warnings
       (evil-define-key 'normal intero-mode-map (kbd "M-.") #'intero-goto-definition)
       (evil-define-key 'normal intero-mode-map (kbd "M-,") #'pop-tag-mark))))
