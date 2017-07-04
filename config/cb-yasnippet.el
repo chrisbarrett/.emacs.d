@@ -188,6 +188,9 @@ Otherwise delete backwards."
 (use-package cb-yas-js
   :after yasnippet)
 
+(use-package cb-yas-haskell
+  :after yasnippet)
+
 (provide 'cb-yasnippet)
 
 ;;; cb-yasnippet.el ends here
