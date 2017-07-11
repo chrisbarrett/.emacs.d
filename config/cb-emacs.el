@@ -63,9 +63,10 @@
 (defun cb-emacs--read-new-remote ()
   (let* ((name (magit-read-string-ns "Remote name"))
          (url (magit-read-url "Remote url" (format "https://github.com/%s.git" name))))
-    (cb-emacs--with-signal-handlers "Adding remote..."
-      (magit-run-git "remote" "add" name url)
-      name)))
+    (unless (member name (magit-list-remotes))
+      (cb-emacs--with-signal-handlers "Adding remote..."
+        (magit-run-git "remote" "add" name url)))
+    name))
 
 (defun cb-emacs--assert-tree-not-dirty ()
   (require 'magit)
