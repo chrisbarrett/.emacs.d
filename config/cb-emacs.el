@@ -94,7 +94,8 @@
       (message "Subtree `%s' added successfully." prefix))))
 
 (defconst cb-emacs-pinned-subtree-versions
-  '((ensime-emacs . "v1.0.1")))
+  '((ensime-emacs . "v1.0.1")
+    (mu . "0.9.18")))
 
 (defun cb-emacs-update-subtree (subtree &optional remote)
   "Update SUBTREE at REMOTE.
