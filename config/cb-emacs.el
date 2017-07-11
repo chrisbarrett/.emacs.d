@@ -23,7 +23,7 @@
 
 (defconst cb-emacs-pinned-subtree-versions
   '((ensime-emacs . "v1.0.1")
-    (mu . "0.9.18")))
+    (mu . "4014e3d210bed5ad639a3a31ac34502e81f2290a")))
 
 
 ;; Config Paths
