@@ -22,9 +22,7 @@
 (defvar magit-process-raise-error)
 
 (defconst cb-emacs-pinned-subtree-versions
-  '((ensime-emacs . "v1.0.1")
-    (mu . "4014e3d210bed5ad639a3a31ac34502e81f2290a") ; master at 2017-07-11
-    ))
+  '((ensime-emacs . "v1.0.1")))
 
 
 ;; Config Paths
