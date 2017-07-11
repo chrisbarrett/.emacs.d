@@ -229,7 +229,8 @@
       "o" #'cb-mu4e-utils-view-in-external-browser-action)
 
     (spacemacs-keys-set-leader-keys-for-major-mode 'mu4e-compose-mode
-      "a" 'mail-insert-file)))
+      "a" 'mail-add-attachment
+      "i" 'mail-insert-file)))
 
 (provide 'cb-mu4e)
 
