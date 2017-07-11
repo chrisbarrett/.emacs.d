@@ -91,6 +91,7 @@
 
   :init
   (progn
+    (add-hook 'LaTeX-mode-hook 'flyspell-mode)
     (add-hook 'LaTeX-mode-hook 'cb-latex--auto-fill-mode)
     (add-hook 'LaTeX-mode-hook 'TeX-fold-mode)
     (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
