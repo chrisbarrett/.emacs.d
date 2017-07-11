@@ -121,7 +121,7 @@ prompt for REMOTE if it cannot be determined."
     (let* ((prefix (format "lisp/%s" subtree))
            (fullpath (f-join cb-emacs-lisp-directory subtree))
            (version (alist-get (intern subtree) cb-emacs-pinned-subtree-versions "master"))
-           (commit-message (shell-quote-argument (format "Merge %s@%s into %s" remote version prefix))))
+           (commit-message (format "Merge %s@%s into %s" remote version prefix)))
 
       (cb-emacs--with-signal-handlers "Importing subtree..."
         (magit-run-git "subtree" "-q" "pull" "--prefix" prefix remote version "--squash" "-m" commit-message))
