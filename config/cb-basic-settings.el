@@ -435,8 +435,21 @@ Optional arg JUSTIFY will justify comments and strings."
 
 (use-package compile
   :defer t
+  :preface
+  (progn
+    (autoload 'ansi-color-apply-on-region "ansi-color")
+
+    (defvar compiation-filter-start)
+
+    (defun cb-basic-settings-colorize-compilation-buffer ()
+      (let ((inhibit-read-only t))
+        (ansi-color-apply-on-region compilation-filter-start (point)))))
+
   :config
   (progn
+    (add-hook 'compilation-filter-hook #'cb-basic-settings-colorize-compilation-buffer)
+
+    (setq compilation-environment '("TERM=screen-256color"))
     (setq compilation-always-kill t)
     (setq compilation-ask-about-save nil)
     (setq compilation-scroll-output 'first-error)))
