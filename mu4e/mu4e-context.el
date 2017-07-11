@@ -37,9 +37,16 @@ describing mu4e's contexts.")
   "The current context; for internal use. Use
   `mu4e-context-switch' to change it.")
 
-(defun mu4e-context-current ()
-  "Get the currently active context, or nil if there is none."
-  mu4e~context-current)
+(defun mu4e-context-current (&optional output)
+  "Get the currently active context, or nil if there is none.
+When OUTPUT is non-nil, echo the name of the current context or
+none."
+  (interactive "p")
+  (let ((ctx mu4e~context-current))
+    (when output
+      (mu4e-message "Current context: %s"
+	(if ctx (mu4e-context-name ctx) "<none>")))
+    ctx))
 
 (defun mu4e-context-label ()
   "Propertized string with the current context name, or \"\" if
@@ -108,6 +115,8 @@ non-nil."
 		  (set (car cell) (cdr cell)))
 	  (mu4e-context-vars context)))
       (setq mu4e~context-current context)
+      (unless (eq mu4e-split-view 'single-window)
+        (mu4e~main-view-real nil nil))
       (mu4e-message "Switched context to %s" (mu4e-context-name context)))
     context))
 
@@ -154,4 +163,3 @@ match, POLICY determines what to do:
 	  (otherwise nil))))))
 
 (provide 'mu4e-context)
- 
