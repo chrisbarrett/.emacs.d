@@ -25,6 +25,10 @@
 
     (setq restclient-same-buffer-response-name "*restclient*")
 
+    (with-eval-after-load 'which-key
+      (push `(("," . ,(rx bos "restclient-http-" (group (+ nonl)))) . (nil . "\\1"))
+            which-key-replacement-alist))
+
     (add-to-list 'display-buffer-alist
                  `(,(rx bos "*restclient*" eos)
                    (display-buffer-reuse-window
