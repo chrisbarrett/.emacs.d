@@ -30,6 +30,8 @@
   :functions
   (osx-trash-setup))
 
+(use-package dash-at-point
+  :bind ("<f8>" . dash-at-point))
 
 (provide 'cb-darwin)
 
