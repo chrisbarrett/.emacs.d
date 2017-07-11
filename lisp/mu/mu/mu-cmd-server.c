@@ -1,6 +1,6 @@
 /* -*-mode: c; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-*/
 /*
-** Copyright (C) 2011-2013 Dirk-Jan C. Binnema <djcb@djcbsoftware.nl>
+** Copyright (C) 2011-2017 Dirk-Jan C. Binnema <djcb@djcbsoftware.nl>
 **
 ** This program is free software; you can redistribute it and/or modify it
 ** under the terms of the GNU General Public License as published by the
@@ -441,8 +441,8 @@ typedef struct _PartInfo PartInfo;
 static void
 each_part (MuMsg *msg, MuMsgPart *part, PartInfo *pinfo)
 {
-	char *att, *cachefile;
-	GError *err;
+	char	*att, *cachefile, *encfile;
+	GError	*err;
 
 	/* exclude things that don't look like proper attachments,
 	 * unless they're images */
@@ -458,11 +458,14 @@ each_part (MuMsg *msg, MuMsgPart *part, PartInfo *pinfo)
 		return;
 	}
 
-	att = g_strdup_printf (
-		"(:file-name \"%s\" :mime-type \"%s/%s\")",
-		cachefile, part->type, part->subtype);
-	pinfo->attlist = g_slist_append (pinfo->attlist, att);
+	encfile = mu_str_escape_c_literal(cachefile, TRUE);
 	g_free (cachefile);
+
+	att = g_strdup_printf (
+		"(:file-name %s :mime-type \"%s/%s\")",
+		encfile, part->type, part->subtype);
+	pinfo->attlist = g_slist_append (pinfo->attlist, att);
+	g_free (encfile);
 }
 
 
@@ -544,10 +547,10 @@ compose_type (const char *typestr)
 static MuError
 cmd_compose (ServerContext *ctx, GHashTable *args, GError **err)
 {
-	const gchar *typestr;
-	char *sexp, *atts;
-	unsigned ctype;
-	MuMsgOptions opts;
+	const gchar	*typestr;
+	char		*sexp, *atts;
+	unsigned	 ctype;
+	MuMsgOptions	 opts;
 
 	opts = get_encrypted_msg_opts (args);
 
@@ -570,7 +573,8 @@ cmd_compose (ServerContext *ctx, GHashTable *args, GError **err)
 			return MU_OK;
 		}
 		sexp = mu_msg_to_sexp (msg, atoi(docidstr), NULL, opts);
-		atts = (ctype == FORWARD) ? include_attachments (msg, opts) : NULL;
+		atts = (ctype == FORWARD) ?
+			include_attachments (msg, opts) : NULL;
 		mu_msg_unref (msg);
 	} else
 		atts = sexp = NULL;

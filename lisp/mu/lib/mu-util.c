@@ -1,7 +1,7 @@
 /* -*-mode: c; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-*/
 /*
 **
-** Copyright (C) 2008-2013 Dirk-Jan C. Binnema <djcb@djcbsoftware.nl>
+** Copyright (C) 2008-2016 Dirk-Jan C. Binnema <djcb@djcbsoftware.nl>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -117,28 +117,6 @@ mu_util_dir_expand (const char *path)
 	return g_strdup (resolved);
 }
 
-
-char*
-mu_util_create_tmpdir (void)
-{
-	gchar *dirname;
-
-        dirname =  g_strdup_printf ("%s%cmu-%d%c%x",
-				    g_get_tmp_dir(),
-				    G_DIR_SEPARATOR,
-				    getuid(),
-				    G_DIR_SEPARATOR,
-				    (int)random()*getpid()*(int)time(NULL));
-
-	if (!mu_util_create_dir_maybe (dirname, 0700, FALSE)) {
-		g_free (dirname);
-		return NULL;
-	}
-
-	return dirname;
-}
-
-
 GQuark
 mu_util_error_quark (void)
 {
@@ -193,45 +171,52 @@ mu_util_check_dir (const gchar* path, gboolean readable, gboolean writeable)
 gchar*
 mu_util_guess_maildir (void)
 {
-        const gchar *mdir1, *home;
+	const gchar *mdir1, *home;
 
-        /* first, try MAILDIR */
-        mdir1 = g_getenv ("MAILDIR");
+	/* first, try MAILDIR */
+	mdir1 = g_getenv ("MAILDIR");
 
-        if (mdir1 && mu_util_check_dir (mdir1, TRUE, FALSE))
-                return g_strdup (mdir1);
+	if (mdir1 && mu_util_check_dir (mdir1, TRUE, FALSE))
+		return g_strdup (mdir1);
 
-        /* then, try <home>/Maildir */
-        home = g_get_home_dir();
-        if (home) {
-                char *mdir2;
-                mdir2 = g_strdup_printf ("%s%cMaildir",
-                        home, G_DIR_SEPARATOR);
-                if (mu_util_check_dir (mdir2, TRUE, FALSE))
-                        return mdir2;
-                g_free (mdir2);
-        }
+	/* then, try <home>/Maildir */
+	home = g_get_home_dir();
+	if (home) {
+		char *mdir2;
+		mdir2 = g_strdup_printf ("%s%cMaildir",
+			home, G_DIR_SEPARATOR);
+		if (mu_util_check_dir (mdir2, TRUE, FALSE))
+			return mdir2;
+		g_free (mdir2);
+	}
 
-        /* nope; nothing found */
-        return NULL;
+	/* nope; nothing found */
+	return NULL;
 }
 
 
 gchar*
 mu_util_guess_mu_homedir (void)
 {
-        const char* home;
+	const char* home;
+	const gchar *hdir1;
 
-        /* g_get_home_dir use /etc/passwd, not $HOME; this is better,
-         * as HOME may be wrong when using 'sudo' etc.*/
-        home = g_get_home_dir ();
+	/* first, try MU_HOME */
+	hdir1 = g_getenv ("MU_HOME");
 
-        if (!home) {
-                MU_WRITE_LOG ("failed to determine homedir");
-                return NULL;
-        }
+	if (hdir1 && mu_util_check_dir (hdir1, TRUE, FALSE))
+		return g_strdup (hdir1);
 
-        return g_strdup_printf ("%s%c%s", home ? home : ".",
+	/* then, g_get_home_dir use /etc/passwd, not $HOME; this is
+	 * better, as HOME may be wrong when using 'sudo' etc.*/
+	home = g_get_home_dir ();
+
+	if (!home) {
+		MU_WRITE_LOG ("failed to determine homedir");
+		return NULL;
+	}
+
+	return g_strdup_printf ("%s%c%s", home ? home : ".",
 				G_DIR_SEPARATOR, ".mu");
 }
 
@@ -352,6 +337,17 @@ mu_util_program_in_path (const char *prog)
 }
 
 
+/*
+ * Set the child to a group leader to avoid being killed when the
+ * parent group is killed.
+ */
+static void
+maybe_setsid (G_GNUC_UNUSED gpointer user_data)
+{
+#if HAVE_SETSID
+	setsid();
+#endif /*HAVE_SETSID*/
+}
 
 gboolean
 mu_util_play (const char *path, gboolean allow_local, gboolean allow_remote,
@@ -388,8 +384,8 @@ mu_util_play (const char *path, gboolean allow_local, gboolean allow_remote,
 
 	err = NULL;
 	rv = g_spawn_async (NULL, (gchar**)&argv, NULL,
-			    G_SPAWN_SEARCH_PATH, NULL, NULL, NULL,
-			    err);
+			    G_SPAWN_SEARCH_PATH, maybe_setsid,
+			    NULL, NULL, err);
 	return rv;
 }
 
@@ -433,35 +429,25 @@ mu_util_locale_is_utf8 (void)
 gboolean
 mu_util_fputs_encoded (const char *str, FILE *stream)
 {
-	int rv;
-	unsigned	 bytes;
-	char		*conv;
+	int	 rv;
+	char	*conv;
 
-	g_return_val_if_fail (str, FALSE);
 	g_return_val_if_fail (stream, FALSE);
 
 	/* g_get_charset return TRUE when the locale is UTF8 */
 	if (mu_util_locale_is_utf8())
 		return fputs (str, stream) == EOF ? FALSE : TRUE;
 
-	 /* charset is _not_ utf8, so we actually have to convert
-	  * it
-	  */
+	 /* charset is _not_ utf8, so we need to convert it */
 	conv = NULL;
 	if (g_utf8_validate (str, -1, NULL))
-		/* it _seems_ that on the bsds, the final err param
-		 * may receive garbage... so we don't use it */
-		conv = g_locale_from_utf8
-			(str, -1, (gsize*)&bytes, NULL, NULL);
+		conv = g_locale_from_utf8 (str, -1, NULL, NULL, NULL);
 
-	/* conversion failed; this happens because is some cases GMime
-	 * may gives us non-UTF-8 strings from e.g. wrongly encoded
-	 * message-subjects; if so, we escape the string
-	 */
-	if (!conv)
-		conv = g_strescape (str, "\n\t");
-
-	rv  = conv ? fputs (conv, stream) : EOF;
+	/* conversion failed; this happens because is some cases GMime may gives
+	 * us non-UTF-8 strings from e.g. wrongly encoded message-subjects; if
+	 * so, we escape the string */
+	conv = conv ? conv : g_strescape (str, "\n\t");
+	rv   = conv ? fputs (conv, stream) : EOF;
 	g_free (conv);
 
 	return (rv == EOF) ? FALSE : TRUE;
@@ -490,6 +476,7 @@ mu_util_g_set_error (GError **err, MuError errcode, const char *frm, ...)
 
 	return FALSE;
 }
+
 
 
 static gboolean
@@ -557,5 +544,3 @@ mu_util_read_password (const char *prompt)
 
 	return g_strdup (pass);
 }
-
-

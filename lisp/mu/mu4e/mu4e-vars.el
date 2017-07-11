@@ -1,6 +1,6 @@
 ;;; mu4e-vars.el -- part of mu4e, the mu mail user agent
 ;;
-;; Copyright (C) 2011-2016 Dirk-Jan C. Binnema
+;; Copyright (C) 2011-2017 Dirk-Jan C. Binnema
 
 ;; Author: Dirk-Jan C. Binnema <djcb@djcbsoftware.nl>
 ;; Maintainer: Dirk-Jan C. Binnema <djcb@djcbsoftware.nl>
@@ -37,7 +37,7 @@
   "Location of the mu homedir, or nil for the default."
   :group 'mu4e
   :type '(choice (const :tag "Default location" nil)
-                 (directory :tag "Specify location"))
+		 (directory :tag "Specify location"))
   :safe 'stringp)
 
 (defcustom mu4e-mu-binary (executable-find "mu")
@@ -91,25 +91,21 @@ background."
   :safe 'booleanp)
 
 (defcustom mu4e-index-cleanup t
-  "Whether to run a cleanup face after indexing -- that is, see
-if the is a message in the filesystem for each file in the
-message store. Having this option as `t' ensures that no
-non-existing mesages are shown but can also be quite slow with
-large message stores."
-  :type 'boolean
-  :group 'mu4e
-  :safe 'booleanp)
+  "Whether to run a cleanup phase after indexing -- that is,
+validate that each message in the message store has a
+corresponding message file in the filesystem.
+
+Having this option as `t' ensures that no non-existing mesages
+are shown but can also be quite slow with large message stores."
+:type 'boolean :group 'mu4e :safe 'booleanp)
 
 (defcustom mu4e-index-lazy-check nil
-  "Whether to run do a 'lazy check' for deciding whether to
-indexing a message. When this is set to `t', mu only uses the
-directory timestamps to decide on whether it needs to check the
-messages beneath it, which would miss messages that are modified
-outside mu. On the other hand, it's significantly faster."
-  :type 'boolean
-  :group 'mu4e
-  :safe 'booleanp)
-
+  "Whether to only use a 'lazy check' to decide whether a message
+needs (re)indexing or not. When this is set to `t', mu only uses
+the directory timestamps to decide on whether it needs to check
+the messages beneath it, which would miss messages that are
+modified outside mu. On the other hand, it's significantly
+faster."  :type 'boolean :group 'mu4e :safe 'booleanp)
 
 (defcustom mu4e-update-interval nil
   "Number of seconds between automatic calls to retrieve mail and
@@ -117,7 +113,7 @@ update the database. If nil, don't update automatically. Note,
 changes in `mu4e-update-interval' only take effect after restarting
 mu4e."
   :type '(choice (const :tag "No automatic update" nil)
-                 (integer :tag "Seconds"))
+		 (integer :tag "Seconds"))
   :group 'mu4e
   :safe 'integerp)
 
@@ -233,15 +229,18 @@ KEY) is still recognized as well, for backward-compatibility.")
 (defcustom mu4e-split-view 'horizontal
   "How to show messages / headers.
 A symbol which is either:
- * `horizontal':   split horizontally (headers on top)
- * `vertical':     split vertically (headers on the left).
- * anything else:  don't split (show either headers or messages,
-                  not both)
+ * `horizontal':    split horizontally (headers on top)
+ * `vertical':      split vertically (headers on the left).
+ * `single-window': view and headers in one window (mu4e will try not to
+		    touch your window layout), main view in minibuffer
+ * anything else:   don't split (show either headers or messages,
+		    not both)
 Also see `mu4e-headers-visible-lines'
 and `mu4e-headers-visible-columns'."
   :type '(choice (const :tag "Split horizontally" horizontal)
-                 (const :tag "Split vertically" vertical)
-                 (const :tag "Don't split" nil))
+		 (const :tag "Split vertically" vertical)
+		 (const :tag "Single window" single-window)
+		 (const :tag "Don't split" nil))
   :group 'mu4e-headers)
 
 (defcustom mu4e-view-show-images nil
@@ -294,13 +293,12 @@ contexts match, we have the following choices:
 Also see `mu4e-compose-context-policy'."
   :type '(choice
 	   (const :tag "Always ask what context to use, even if one matches"
-	     'always-ask)
-	   (const :tag "Ask if none of the contexts match" 'ask)
-	   (const :tag "Ask when there's no context yet" 'ask-if-none)
-	   (const :tag "Pick the first context if none match" 'pick-first)
-	   (const :tag "Don't change the context when none match" nil)
-  :safe 'symbolp
-  :group 'mu4e))
+	     always-ask)
+	   (const :tag "Ask if none of the contexts match" ask)
+	   (const :tag "Ask when there's no context yet" ask-if-none)
+	   (const :tag "Pick the first context if none match" pick-first)
+	   (const :tag "Don't change the context when none match" nil))
+  :group 'mu4e)
 
 
 ;; crypto
@@ -320,8 +318,8 @@ The setting is a symbol:
  * `ask': ask before decrypting anything
  * nil:   don't try to decrypt anything."
   :type '(choice (const :tag "Try to decrypt automatically" t)
-                 (const :tag "Ask before decrypting anything" ask)
-                 (const :tag "Don't try to decrypt anything" nil))
+		 (const :tag "Ask before decrypting anything" ask)
+		 (const :tag "Don't try to decrypt anything" nil))
   :group 'mu4e-crypto)
 
 ;; completion; we put them here rather than in mu4e-compose, as mu4e-utils needs
@@ -364,7 +362,7 @@ Set to nil to not have any time-based restriction."
 It is used as the identity function for converting contacts to
 their canonical counterpart; useful as an example."
     (let ((name (plist-get contact :name))
-          (mail (plist-get contact :mail)))
+	  (mail (plist-get contact :mail)))
       (list :name name :mail mail)))
 
 (defcustom mu4e-contact-rewrite-function nil
@@ -392,12 +390,28 @@ are needed for sorting the contacts."
   :type 'string
   :group 'mu4e-compose)
 
+(defcustom mu4e-compose-reply-ignore-address message-dont-reply-to-names
+  "Addresses to prune when doing wide replies.
+
+This can be a regexp matching the address, a list of regexps
+or a predicate function. A value of nil keeps all the addresses."
+  :type '(choice
+	   (const nil)
+	   function
+	   string
+	   (repeat string))
+  :group 'mu4e-compose)
+
 (defcustom mu4e-compose-reply-to-address nil
   "The Reply-To address (if this, for some reason, is not equal to
 the From: address.)"
   :type 'string
   :group 'mu4e-compose)
 
+(defcustom mu4e-compose-forward-as-attachment nil
+  "Whether to forward messages as attachments instead of inline."
+  :type 'boolean
+  :group 'mu4e-compose)
 
 ;; backward compatibility
 (make-obsolete-variable 'mu4e-reply-to-address 'mu4e-compose-reply-to-address
@@ -689,6 +703,7 @@ mu4e-compose-mode."
        ( :name "Attachments"
 	 :shortname "Atts"
 	 :help "Message attachments"
+	 :require-full t
 	 :sortable nil))
      (:bcc .
        ( :name "Bcc"
@@ -730,11 +745,16 @@ mu4e-compose-mode."
 	 :shortname "Maildir"
 	 :help "Maildir for this message"
 	 :sortable t))
+     (:list .
+       ( :name "List-Id"
+	 :shortname "List"
+	 :help "Mailing list id for this message"
+	 :sortable t))
      (:mailing-list .
        ( :name "List"
 	 :shortname "List"
-	 :help "Mailing list for this message"
-	 :sortable nil))
+	 :help "Mailing list friendly name for this message"
+	 :sortable :list))
      (:message-id .
        ( :name "Message-Id"
 	 :shortname "MsgID"
@@ -749,11 +769,13 @@ mu4e-compose-mode."
        ( :name "Signature"
 	 :shortname "Sgn"
 	 :help "Check for the cryptographic signature"
+	 :require-full t
 	 :sortable nil))
      (:decryption .
        ( :name "Decryption"
 	 :shortname "Dec"
 	 :help "Check the cryptographic decryption status"
+	 :require-full t
 	 :sortable nil))
      (:size .
        ( :name "Size"
@@ -784,6 +806,7 @@ mu4e-compose-mode."
        ( :name "User-Agent"
 	 :shortname "UA"
 	 :help "Program used for writing this message"
+	 :require-full t
 	 :sortable t)))
   "An alist of all possible header fields and information about them.
 This is used in the user-interface (the column headers in the header list, and
@@ -799,7 +822,12 @@ sort by this field.  This can be either a boolean (nil or t), or a
 symbol for /another/ field. For example, the `:human-date' field
 uses `:date' for that.
 
-Note, `:sortable' does not work for custom header fields.")
+Fields with which have the property `:require-full' set to
+non-nil require a full message; in practice this means that you
+cannot use such fieds as part of `mu4e-headers-fields', but only
+in `mu4e-view-fields.'
+
+Note, `:sortable' is not supported for custom header fields.")
 
 
 (defvar mu4e-header-info-custom
@@ -828,7 +856,7 @@ argument, and returns a string. See the default value of
 ;; headers
 (defconst mu4e~headers-buffer-name "*mu4e-headers*"
   "Name of the buffer for message headers.")
-(defvar mu4e~headers-buffer nil "Buffer for message headers.")
+
 ; view
 (defconst mu4e~view-buffer-name "*mu4e-view*"
   "Name for the message view buffer.")
@@ -836,12 +864,8 @@ argument, and returns a string. See the default value of
 (defconst mu4e~view-embedded-buffer-name " *mu4e-embedded-view*"
   "Name for the embedded message view buffer.")
 
-(defvar mu4e~view-buffer nil "The view buffer.")
-
 (defvar mu4e~view-msg nil "The message being viewed in view mode.")
-
-(defvar mu4e~view-headers-buffer nil
-  "The headers buffer connected to this view.")
+(make-variable-buffer-local 'mu4e~view-msg)
 
 (defvar mu4e~contacts nil
   "Hash of that maps contacts (ie. 'name <e-mail>') to an integer
