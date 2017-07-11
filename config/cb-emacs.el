@@ -83,7 +83,7 @@
 
     (let* ((prefix (format "lisp/%s" subtree))
            (fullpath (f-join cb-emacs-lisp-directory subtree))
-           (commit-message (format "'Add %s@master to %s'" remote prefix)))
+           (commit-message (format "Add %s@master to %s" remote prefix)))
 
       (cb-emacs--with-signal-handlers "Importing subtree..."
         (magit-run-git "subtree" "-q" "add" "--prefix" prefix remote "master" "--squash" "-m" commit-message))
