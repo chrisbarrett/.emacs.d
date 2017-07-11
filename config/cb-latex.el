@@ -16,6 +16,12 @@
 
 (defvar cb-latex-command "LaTeX")
 
+(with-eval-after-load 'which-key
+  (push `((nil . ,(rx bos (? "cb-") (? "la") "tex-" (group (+ nonl)))) . (nil . "\\1"))
+        which-key-replacement-alist)
+  (push `((nil . ,(rx bos (? "La") "TeX-" (group (+ nonl)))) . (nil . "\\1"))
+        which-key-replacement-alist))
+
 (use-package tex
   :defer t
   :preface
