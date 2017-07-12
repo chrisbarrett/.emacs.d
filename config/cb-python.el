@@ -8,18 +8,21 @@
 (require 'cb-emacs)
 (require 'spacemacs-keys)
 (require 'evil)
+(autoload 'xref-push-marker-stack "xref")
 
 (use-package python
   :defer t
   :preface
   (progn
+    (autoload 'python-indent-dedent-line "python")
     (autoload 'sp-backward-delete-char "smartparens")
 
     (defun cb-python-backspace ()
       (interactive)
       (if (equal (char-before) ?\s)
-          (call-interactively 'python-indent-dedent-line-backspace)
-        (call-interactively 'sp-backward-delete-char))))
+          (unless (python-indent-dedent-line)
+            (backward-delete-char-untabify 1))
+        (sp-backward-delete-char))))
 
   :config
   (progn
