@@ -1,0 +1,6 @@
+language: python
+python:
+  - "3.4"
+install:
+  - sudo pip install yapf
+script: ./tests.sh
