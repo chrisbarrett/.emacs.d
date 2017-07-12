@@ -75,6 +75,11 @@
   :config
   (add-hook 'anaconda-mode-hook #'cb-python--enable-company-anaconda))
 
+(use-package py-isort
+  :functions (py-isort-before-save)
+  :init
+  (add-hook 'before-save-hook #'py-isort-before-save))
+
 
 (provide 'cb-python)
 
