@@ -36,8 +36,11 @@
   :ensure t
   :commands (anaconda-mode)
   :preface
-  (defun cb-python--push-mark (&rest _)
-    (evil--jumps-push))
+  (progn
+    (autoload 'anaconda-mode-find-definitions "anaconda-mode")
+
+    (defun cb-python--push-mark (&rest _)
+      (evil--jumps-push)))
 
   :init
   (progn
@@ -45,7 +48,8 @@
     (add-hook 'python-mode-hook 'anaconda-eldoc-mode))
   :config
   (progn
-    (setq anaconda-mode-installation-directory (f-join cb-emacs-cache-directory "anaconda-mode"))
+    (setq anaconda-mode-installation-directory
+          (f-join cb-emacs-cache-directory "anaconda-mode"))
 
     ;; Main keybindings
 
