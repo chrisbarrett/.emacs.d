@@ -32,6 +32,10 @@
     (push `((nil . ,(rx bos "anaconda-mode-" (group (+ nonl)))) . (nil . "\\1"))
           which-key-replacement-alist)))
 
+(with-eval-after-load 'flycheck
+  (with-no-warnings
+    (setq flycheck-python-pycompile-executable "python3")))
+
 (use-package anaconda-mode
   :ensure t
   :commands (anaconda-mode)
