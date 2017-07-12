@@ -44,7 +44,7 @@
     (autoload 'anaconda-mode-find-definitions "anaconda-mode")
 
     (defun cb-python--push-mark (&rest _)
-      (evil--jumps-push)))
+      (xref-push-marker-stack)))
 
   :init
   (progn
@@ -73,6 +73,7 @@
 
     ;; Advice
 
+    (advice-add 'anaconda-mode-find-assignments :before #'cb-python--push-mark)
     (advice-add 'anaconda-mode-find-definitions :before #'cb-python--push-mark)))
 
 (use-package company-anaconda
