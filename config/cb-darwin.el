@@ -16,6 +16,7 @@
 (global-set-key (kbd "s-w") 'delete-frame)
 (global-unset-key (kbd "s-p"))
 (global-unset-key (kbd "s-t"))
+(global-unset-key (kbd "s-q"))
 
 (use-package exec-path-from-shell
   :if window-system
