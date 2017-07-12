@@ -56,7 +56,7 @@
     (spacemacs-keys-set-leader-keys-for-major-mode 'python-mode
       "a" 'anaconda-mode-find-assignments
       "b" 'anaconda-mode-go-back
-      "u" 'anaconda-mode-find-references)
+      "r" 'anaconda-mode-find-references)
 
     (evil-define-key 'normal anaconda-mode-map (kbd "K") #'anaconda-mode-show-doc)
     (define-key anaconda-mode-map (kbd "M-.") #'anaconda-mode-find-definitions)
@@ -79,11 +79,12 @@
   :config
   (add-hook 'anaconda-mode-hook #'cb-python--enable-company-anaconda))
 
+;; pip install isort
+
 (use-package py-isort
   :functions (py-isort-before-save)
   :init
   (add-hook 'before-save-hook #'py-isort-before-save))
-
 
 (provide 'cb-python)
 
