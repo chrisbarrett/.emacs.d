@@ -100,6 +100,8 @@
       (cb-emacs--with-signal-handlers "Compiling..."
         (byte-recompile-directory fullpath 0))
 
+      (cb-init/init-load-path)
+
       (message "Subtree `%s' added successfully." prefix))))
 
 (defun cb-emacs-update-subtree (subtree &optional remote)
