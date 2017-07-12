@@ -82,9 +82,19 @@
 ;; pip install isort
 
 (use-package py-isort
-  :functions (py-isort-before-save)
+  :defer t
+  :after 'python
   :init
-  (add-hook 'before-save-hook #'py-isort-before-save))
+  (add-hook 'before-save-hook 'py-isort-before-save))
+
+;; pip install yapf
+
+(use-package py-yapf
+  :defer t
+  :after 'python
+  :init
+  (add-hook 'python-mode-hook 'py-yapf-enable-on-save))
+
 
 (provide 'cb-python)
 
