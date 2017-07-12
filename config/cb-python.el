@@ -63,8 +63,10 @@
       "r" 'anaconda-mode-find-references)
 
     (evil-define-key 'normal anaconda-mode-map (kbd "K") #'anaconda-mode-show-doc)
+    (evil-define-key 'normal anaconda-mode-map (kbd "M-.") #'anaconda-mode-find-definitions)
+    (evil-define-key 'normal anaconda-mode-map (kbd "M-,") #'pop-tag-mark)
     (define-key anaconda-mode-map (kbd "M-.") #'anaconda-mode-find-definitions)
-    (define-key anaconda-mode-map (kbd "M-,") #'pop-global-mark)
+    (define-key anaconda-mode-map (kbd "M-,") #'pop-tag-mark)
 
     (evil-set-initial-state 'anaconda-mode-view-mode 'motion)
     (evil-define-key 'motion anaconda-mode-view-mode-map (kbd "q") 'quit-window)
