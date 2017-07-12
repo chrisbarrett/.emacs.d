@@ -1,11 +1,6 @@
-# key: init
-# name: init
+# key: ctor
+# name: init method
 # condition: (cb-yas/bol?)
 # --
-
 def __init__ (self${1:, $2}):
-    ${3:"""$4
-    ${2:$(yas/python-docstring yas/text)}
-
-    """
-    }$0
+    $0
