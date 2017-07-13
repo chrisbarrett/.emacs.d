@@ -2,5 +2,5 @@
 # name: if
 # condition: (cb-yas/bol?)
 # --
-if $1:
+if ${1:test}:
     $0

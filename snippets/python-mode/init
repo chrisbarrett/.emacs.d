@@ -2,5 +2,5 @@
 # name: init method
 # condition: (cb-yas/bol?)
 # --
-def __init__ (self${1:, $2}):
+def __init__(self${1:, $2}):
     $0

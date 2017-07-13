@@ -2,5 +2,5 @@
 # name: method
 # condition: (cb-yas/bol?)
 # --
-def ${1:name} (self${2:, $3}):
+def ${1:name}(self${2:, $3}):
     $0
