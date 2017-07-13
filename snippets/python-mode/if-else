@@ -1,0 +1,9 @@
+# key: ie
+# name: if-else
+# expand-env: ((yas-indent-line (quote fixed)) (yas-wrap-around-region (quote t)))
+# condition: (cb-yas/bol?)
+# --
+if ${1:test}:
+    ${2:pass}
+else:
+    ${3:pass}

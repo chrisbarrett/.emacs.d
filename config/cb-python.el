@@ -17,12 +17,19 @@
     (autoload 'python-indent-dedent-line "python")
     (autoload 'sp-backward-delete-char "smartparens")
 
+    (defun cb-python--init-python-mode ()
+      (setq-local tab-width 4)
+      (setq-local evil-shift-width 4))
+
     (defun cb-python-backspace ()
       (interactive)
       (if (equal (char-before) ?\s)
           (unless (python-indent-dedent-line)
             (backward-delete-char-untabify 1))
         (sp-backward-delete-char))))
+
+  :init
+  (add-hook 'python-mode-hook #'cb-python--init-python-mode)
 
   :config
   (progn
