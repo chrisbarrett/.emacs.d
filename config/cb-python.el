@@ -35,7 +35,16 @@
   (progn
     (setq python-indent-guess-indent-offset nil)
     (setq python-indent-offset 4)
-    (define-key python-mode-map [remap python-indent-dedent-line-backspace]  #'cb-python-backspace)))
+    (define-key python-mode-map [remap python-indent-dedent-line-backspace]  #'cb-python-backspace)
+
+    (add-to-list 'display-buffer-alist
+                 `(,(rx bos "*Python*" eos)
+                   (display-buffer-reuse-window
+                    display-buffer-in-side-window)
+                   (reusable-frames . visible)
+                   (side            . bottom)
+                   (slot            . 0)
+                   (window-height   . 0.2)))))
 
 (with-eval-after-load 'which-key
   (with-no-warnings
