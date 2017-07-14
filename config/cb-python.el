@@ -54,7 +54,7 @@
     (push `((nil . ,(rx bos "pytest-" (group (+ nonl)))) . (nil . "\\1"))
           which-key-replacement-alist)
 
-    (push `((nil . ,(rx bos "pyvenv-" (group (+ nonl)))) . (nil . "\\1"))
+    (push `((nil . ,(rx bos (? "cb-python-") "pyvenv-" (group (+ nonl)))) . (nil . "\\1"))
           which-key-replacement-alist)))
 
 (with-eval-after-load 'flycheck
@@ -143,13 +143,44 @@
 
 (use-package pyvenv
   :commands (pyvenv-activate pyvenv-deactivate pyvenv-workon)
+  :preface
+  (progn
+    (autoload 'projectile-project-p "projectile")
+    (autoload 'f-join "f")
+
+    (defun cb-python-pyvenv-dir ()
+      (let ((root (or (projectile-project-p) default-directory)))
+        (f-join root "env")))
+
+    (defun cb-python-pyvenv-activate-if-found ()
+      (let ((env (cb-python-pyvenv-dir)))
+        (when (file-directory-p env)
+          (pyvenv-activate env)
+          (message "Using pyvenv at %s" (f-abbrev env)))))
+
+    (defun cb-python-pyvenv-init (env)
+      (interactive
+       (list (or (cb-python-pyvenv-dir)
+                 (f-join (read-directory-name "Project root: " nil nil t) "env"))))
+      (when (f-dir? env)
+        (user-error "Environment already exists"))
+      (let ((reporter (make-progress-reporter "Initializing pyvenv environment...")))
+        (pcase (call-process "pyvenv" nil nil nil env)
+          (`0
+           (progress-reporter-update reporter)
+           (pyvenv-activate env)
+           (progress-reporter-done reporter))
+          (_
+           (message "%sFAILED" (aref (cdr reporter) 3)))))))
   :init
   (progn
+    (add-hook 'python-mode-hook #'cb-python-pyvenv-activate-if-found)
     (spacemacs-keys-declare-prefix-for-mode 'python-mode "me" "pyvenv")
     (spacemacs-keys-set-leader-keys-for-major-mode 'python-mode
-      "ea" 'pyvenv-activate
-      "ed" 'pyvenv-deactivate
-      "ew" 'pyvenv-workon)))
+      "ei" #'cb-python-pyvenv-init
+      "ea" #'pyvenv-activate
+      "ed" #'pyvenv-deactivate
+      "ew" #'pyvenv-workon)))
 
 ;; pip install isort
 
