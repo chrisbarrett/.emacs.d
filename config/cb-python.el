@@ -18,6 +18,7 @@
     (autoload 'sp-backward-delete-char "smartparens")
 
     (defun cb-python--init-python-mode ()
+      (setq-local comment-inline-offset 2)
       (setq-local tab-width 4)
       (setq-local evil-shift-width 4))
 
