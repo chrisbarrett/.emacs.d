@@ -49,6 +49,9 @@
 (with-eval-after-load 'which-key
   (with-no-warnings
     (push `((nil . ,(rx bos "anaconda-mode-" (group (+ nonl)))) . (nil . "\\1"))
+          which-key-replacement-alist)
+
+    (push `((nil . ,(rx bos "pytest-" (group (+ nonl)))) . (nil . "\\1"))
           which-key-replacement-alist)))
 
 (with-eval-after-load 'flycheck
@@ -104,6 +107,31 @@
       (add-to-list 'company-backends 'company-anaconda)))
   :config
   (add-hook 'anaconda-mode-hook #'cb-python--enable-company-anaconda))
+
+(use-package pytest
+  :after python
+  :commands (pytest-one
+             pytest-pdb-one
+             pytest-all
+             pytest-pdb-all
+             pytest-module
+             pytest-pdb-module
+             pytest-suite
+             pytest-pdb-suite)
+  :init
+  (progn
+    (spacemacs-keys-declare-prefix-for-mode 'python-mode "mt" "test")
+    (spacemacs-keys-set-leader-keys-for-major-mode 'python-mode
+      "tA" #'pytest-pdb-all
+      "ta" #'pytest-all
+      "tT" #'pytest-pdb-one
+      "tt" #'pytest-one
+      "tM" #'pytest-pdb-module
+      "tm" #'pytest-module
+      "tS" #'pytest-pdb-suite
+      "ts" #'pytest-suite))
+  :config
+  (add-to-list 'pytest-project-root-files "setup.cfg"))
 
 ;; pip install isort
 
