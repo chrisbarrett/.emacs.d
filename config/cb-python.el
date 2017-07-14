@@ -133,6 +133,11 @@
   :config
   (add-to-list 'pytest-project-root-files "setup.cfg"))
 
+(use-package pip-requirements
+  :mode (("\\.pip\\'" . pip-requirements-mode)
+         ("requirements.+\\.txt\\'" . pip-requirements-mode)
+         ("requirements\\.in\\'" . pip-requirements-mode)))
+
 ;; pip install isort
 
 (use-package py-isort
