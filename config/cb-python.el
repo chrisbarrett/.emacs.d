@@ -52,6 +52,9 @@
           which-key-replacement-alist)
 
     (push `((nil . ,(rx bos "pytest-" (group (+ nonl)))) . (nil . "\\1"))
+          which-key-replacement-alist)
+
+    (push `((nil . ,(rx bos "pyvenv-" (group (+ nonl)))) . (nil . "\\1"))
           which-key-replacement-alist)))
 
 (with-eval-after-load 'flycheck
@@ -137,6 +140,16 @@
   :mode (("\\.pip\\'" . pip-requirements-mode)
          ("requirements.+\\.txt\\'" . pip-requirements-mode)
          ("requirements\\.in\\'" . pip-requirements-mode)))
+
+(use-package pyvenv
+  :commands (pyvenv-activate pyvenv-deactivate pyvenv-workon)
+  :init
+  (progn
+    (spacemacs-keys-declare-prefix-for-mode 'python-mode "me" "pyvenv")
+    (spacemacs-keys-set-leader-keys-for-major-mode 'python-mode
+      "ea" 'pyvenv-activate
+      "ed" 'pyvenv-deactivate
+      "ew" 'pyvenv-workon)))
 
 ;; pip install isort
 
