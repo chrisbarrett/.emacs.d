@@ -26,7 +26,30 @@
       (if (equal (char-before) ?\s)
           (unless (python-indent-dedent-line)
             (backward-delete-char-untabify 1))
-        (sp-backward-delete-char))))
+        (sp-backward-delete-char)))
+
+    (defvar cb-python-prev-source-buffer)
+
+    (defun cb-python-repl-switch-to-source ()
+      (interactive)
+      (-when-let (buf cb-python-prev-source-buffer)
+        (when (buffer-live-p buf)
+          (pop-to-buffer buf))))
+
+    (defun cb-python-repl ()
+      "Start and/or switch to the REPL."
+      (interactive)
+      (when (derived-mode-p 'python-mode)
+        (setq cb-python-prev-source-buffer (current-buffer)))
+      (let ((shell-process
+             (or (python-shell-get-process)
+                 (with-demoted-errors "Error: %S"
+                   (call-interactively #'run-python)
+                   (python-shell-get-process)))))
+        (unless shell-process
+          (error "Failed to start python shell properly"))
+        (pop-to-buffer (process-buffer shell-process))
+        (evil-insert-state))))
 
   :init
   (add-hook 'python-mode-hook #'cb-python--init-python-mode)
@@ -36,6 +59,13 @@
     (setq python-indent-guess-indent-offset nil)
     (setq python-indent-offset 4)
     (define-key python-mode-map [remap python-indent-dedent-line-backspace]  #'cb-python-backspace)
+    (define-key python-mode-map [remap python-shell-switch-to-shell] #'cb-python-repl)
+    (define-key inferior-python-mode-map (kbd "C-c C-z") #'cb-python-repl-switch-to-source)
+
+    (spacemacs-keys-declare-prefix-for-mode 'python-mode "ms" "shell")
+    (spacemacs-keys-set-leader-keys-for-major-mode 'python-mode
+      "sb" 'python-shell-send-buffer
+      "sf" 'python-shell-send-file)
 
     (add-to-list 'display-buffer-alist
                  `(,(rx bos "*Python*" eos)
@@ -47,15 +77,18 @@
                    (window-height   . 0.2)))))
 
 (with-eval-after-load 'which-key
-  (with-no-warnings
-    (push `((nil . ,(rx bos "anaconda-mode-" (group (+ nonl)))) . (nil . "\\1"))
-          which-key-replacement-alist)
+(with-no-warnings
+(push `((nil . ,(rx bos "anaconda-mode-" (group (+ nonl)))) . (nil . "\\1"))
+      which-key-replacement-alist)
 
-    (push `((nil . ,(rx bos "pytest-" (group (+ nonl)))) . (nil . "\\1"))
-          which-key-replacement-alist)
+(push `((nil . ,(rx bos "pytest-" (group (+ nonl)))) . (nil . "\\1"))
+      which-key-replacement-alist)
 
-    (push `((nil . ,(rx bos (? "cb-python-") "pyvenv-" (group (+ nonl)))) . (nil . "\\1"))
-          which-key-replacement-alist)))
+(push `((nil . ,(rx bos "python-shell-" (group (+ nonl)))) . (nil . "\\1"))
+      which-key-replacement-alist)
+
+(push `((nil . ,(rx bos (? "cb-python-") "pyvenv-" (group (+ nonl)))) . (nil . "\\1"))
+      which-key-replacement-alist)))
 
 (with-eval-after-load 'flycheck
   (with-no-warnings
