@@ -167,13 +167,13 @@
   (require 'cb-evil-nerd-commenter)
   :init
   (progn
+    (evil-global-set-key 'normal (kbd ";") 'evilnc-comment-operator)
     ;; Double all the commenting functions so that the inverse operations
     ;; can be called without setting a flag
     (define-key evil-normal-state-map "gc" 'evilnc-comment-operator)
     (define-key evil-normal-state-map "gy" 'cb-evil-nerd-commenter/copy-and-comment-lines)
 
     (spacemacs-keys-set-leader-keys
-      ";"  #'evilnc-comment-operator
       "cl" #'cb-evil-nerd-commenter/comment-or-uncomment-lines
       "cL" #'cb-evil-nerd-commenter/comment-or-uncomment-lines-inverse
       "cp" #'cb-evil-nerd-commenter/comment-or-uncomment-paragraphs
