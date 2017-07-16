@@ -80,12 +80,6 @@
     (push `(("SPC g" . ,(rx "cb-" (group "goto-" (+? nonl)))) . (nil . "\\1"))
           which-key-replacement-alist)
 
-    (push `(("SPC g" . "git-blame-transient-state/body") . (nil . "git-blame"))
-          which-key-replacement-alist)
-
-    (push `(("SPC g" . "git-hunks-transient-state/body") . (nil . "git-hunks"))
-          which-key-replacement-alist)
-
     (push `(("SPC g" . "time-machine-transient-state/body") . (nil . "git-time-machine"))
           which-key-replacement-alist)
 
@@ -177,6 +171,11 @@
     (push `(("SPC y" . "yas-visit-snippet-file") . (nil . "visit-file"))
           which-key-replacement-alist)
 
+    ;; Clean up transient states
+
+    (push `((nil . ,(rx bos (group (+? nonl)) "-transient-state/body" eos)) . (nil . "\\1"))
+          which-key-replacement-alist)
+
     ;; Add basic prefixes
 
     (which-key-add-key-based-replacements
@@ -184,6 +183,7 @@
       "SPC a"   "applications"
       "SPC b"   "buffers"
       "SPC c"   "comments"
+      "SPC e"   "errors"
       "SPC f"   "files"
       "SPC g"   "git/goto"
       "SPC h"   "help"

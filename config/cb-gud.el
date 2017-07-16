@@ -15,15 +15,10 @@
 (require 'spacemacs-keys)
 (require 'subr-x)
 
-(with-eval-after-load 'which-key
-  (with-no-warnings
-    (push `((nil . ,(rx bos "debugger-transient-state/body" eos)) . (nil . "debugger (gud)"))
-          which-key-replacement-alist)))
-
 (use-package realgud
   :ensure t
   :init
-  (spacemacs-keys-set-leader-keys "gg" #'debugger-transient-state/body)
+  (spacemacs-keys-set-leader-keys "D" #'debugger-transient-state/body)
   :preface
   (progn
     (autoload 'f-relative "f")

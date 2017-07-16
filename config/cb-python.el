@@ -90,7 +90,7 @@
     (push `((nil . ,(rx bos "python-shell-" (group (+ nonl)))) . (nil . "\\1"))
           which-key-replacement-alist)
 
-    (push `((nil . ,(rx bos (? "cb-python-") (? "pyvenv-") (group (+ nonl)))) . (nil . "\\1"))
+    (push `((nil . ,(rx bos (? "cb-python-") "pyvenv-" (group (+ nonl)))) . (nil . "\\1"))
           which-key-replacement-alist)))
 
 (with-eval-after-load 'flycheck

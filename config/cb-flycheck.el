@@ -19,11 +19,6 @@
   :ensure t ; load with package.el
   :defer 1
   :commands (global-flycheck-mode)
-
-  :init
-  (spacemacs-keys-declare-prefix "e" "errors")
-
-
   :preface
   (progn
     (autoload 'flycheck-error-format-message-and-id "flycheck")
