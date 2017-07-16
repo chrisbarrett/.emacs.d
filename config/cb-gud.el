@@ -32,6 +32,7 @@
              (realgud:run-process "pdb" (buffer-file-name) args 'realgud:pdb-minibuffer-history))))))
 
     (defun realgud ()
+      (interactive)
       (let ((buf (current-buffer)))
         (unless (or (realgud-get-cmdbuf) (realgud-get-current-srcbuf))
           (if-let (command (cb-gud--realgud-command-for-mode major-mode))
