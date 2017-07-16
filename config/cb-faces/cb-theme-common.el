@@ -59,7 +59,12 @@
      ((t :weight light)))
 
     (mode-line
-     ((t :inherit header-line :height 20)))
+     ((t :inherit header-line :height 20 :foreground ,default-background)))
+
+    (evil-transient-state-title-face
+     ((t :inherit header-line
+         :background ,default-background
+         :foreground ,default-foreground)))
 
     (region
      ((((background light)) :background "lightblue")
