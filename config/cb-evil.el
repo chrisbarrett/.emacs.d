@@ -170,7 +170,7 @@
     ;; Double all the commenting functions so that the inverse operations
     ;; can be called without setting a flag
     (define-key evil-normal-state-map "gc" 'evilnc-comment-operator)
-    (define-key evil-normal-state-map "gy" 'spacemacs/copy-and-comment-lines)
+    (define-key evil-normal-state-map "gy" 'cb-evil-nerd-commenter/copy-and-comment-lines)
 
     (spacemacs-keys-set-leader-keys
       ";"  #'evilnc-comment-operator
