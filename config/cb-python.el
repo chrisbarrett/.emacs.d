@@ -78,18 +78,18 @@
                    (window-height   . 0.2)))))
 
 (with-eval-after-load 'which-key
-(with-no-warnings
-(push `((nil . ,(rx bos "anaconda-mode-" (group (+ nonl)))) . (nil . "\\1"))
-      which-key-replacement-alist)
+  (with-no-warnings
+    (push `((nil . ,(rx bos "anaconda-mode-" (group (+ nonl)))) . (nil . "\\1"))
+          which-key-replacement-alist)
 
-(push `((nil . ,(rx bos "pytest-" (group (+ nonl)))) . (nil . "\\1"))
-      which-key-replacement-alist)
+    (push `((nil . ,(rx bos "pytest-" (group (+ nonl)))) . (nil . "\\1"))
+          which-key-replacement-alist)
 
-(push `((nil . ,(rx bos "python-shell-" (group (+ nonl)))) . (nil . "\\1"))
-      which-key-replacement-alist)
+    (push `((nil . ,(rx bos "python-shell-" (group (+ nonl)))) . (nil . "\\1"))
+          which-key-replacement-alist)
 
-(push `((nil . ,(rx bos (? "cb-python-") "pyvenv-" (group (+ nonl)))) . (nil . "\\1"))
-      which-key-replacement-alist)))
+    (push `((nil . ,(rx bos (? "cb-python-") (? "pyvenv-") (group (+ nonl)))) . (nil . "\\1"))
+          which-key-replacement-alist)))
 
 (with-eval-after-load 'flycheck
   (with-no-warnings
@@ -231,7 +231,6 @@
   :after 'python
   :init
   (add-hook 'python-mode-hook 'py-yapf-enable-on-save))
-
 
 (provide 'cb-python)
 
