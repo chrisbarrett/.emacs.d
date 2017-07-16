@@ -3,4 +3,4 @@
 # condition: (cb-yas/bol?)
 # --
 class ${1:Name}:
-    $0
+    ${2:pass}

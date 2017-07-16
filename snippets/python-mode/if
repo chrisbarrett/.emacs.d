@@ -3,4 +3,4 @@
 # condition: (cb-yas/bol?)
 # --
 if ${1:test}:
-    $0
+    ${2:pass}

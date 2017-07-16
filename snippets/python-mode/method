@@ -3,4 +3,4 @@
 # condition: (cb-yas/bol?)
 # --
 def ${1:name}(self${2:, $3}):
-    $0
+    ${4:pass}

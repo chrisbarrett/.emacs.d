@@ -3,4 +3,4 @@
 # condition: (cb-yas/bol?)
 # --
 def __init__(self${1:, $2}):
-    $0
+    ${3:pass}

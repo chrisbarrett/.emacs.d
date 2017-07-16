@@ -3,4 +3,4 @@
 # condition: (cb-yas/bol?)
 # --
 while ${1:True}:
-    $0
+    ${2:pass}
