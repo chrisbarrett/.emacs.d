@@ -67,7 +67,7 @@
     (defalias 'realgud-window-src-undisturb-cmd #'cb-gud--setup-realgud-windows)
 
     (add-to-list 'display-buffer-alist
-                 `(,(rx bos "*" (or "pdb " "gud-") (+? nonl) "*" eos)
+                 `(,(rx bos "*" "pdb " (+? nonl) "*" eos)
                    (display-buffer-in-side-window)
                    (reusable-frames . visible)
                    (side            . right)
