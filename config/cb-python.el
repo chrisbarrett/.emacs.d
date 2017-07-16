@@ -15,6 +15,7 @@
   :preface
   (progn
     (autoload 'python-indent-dedent-line "python")
+    (autoload 'python-shell-get-process "python")
     (autoload 'sp-backward-delete-char "smartparens")
 
     (defun cb-python--init-python-mode ()
@@ -65,6 +66,7 @@
 
     (spacemacs-keys-declare-prefix-for-mode 'python-mode "ms" "shell")
     (spacemacs-keys-set-leader-keys-for-major-mode 'python-mode
+      "eb" 'python-shell-send-buffer
       "sb" 'python-shell-send-buffer
       "sf" 'python-shell-send-file)
 
@@ -118,7 +120,6 @@
 
     (spacemacs-keys-set-leader-keys-for-major-mode 'python-mode
       "a" 'anaconda-mode-find-assignments
-      "b" 'anaconda-mode-go-back
       "r" 'anaconda-mode-find-references)
 
     (evil-define-key 'normal anaconda-mode-map (kbd "K") #'anaconda-mode-show-doc)
