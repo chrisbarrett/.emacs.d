@@ -169,6 +169,7 @@ If argument INTERACTIVE-P is set, log additional information."
 (use-package cb-protobuf)
 (use-package cb-latex)
 (use-package cb-python)
+(use-package cb-gud)
 
 (use-package personal-config
   :load-path "~/Sync/emacs")
