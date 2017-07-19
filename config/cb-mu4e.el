@@ -30,12 +30,18 @@
     (autoload 'message-insert-formatted-citation-line "message")
     (autoload 'message-insert-signature "message")
     (autoload 'message-send-mail-with-sendmail "message")
+    (autoload 'shr-render-region "shr")
 
     ;; Declare dynamic variables
 
     (defvar message-signature)
     (defvar mu4e-compose-signature)
     (defvar mu4e-compose-signature-auto-include)
+    (defvar shr-use-fonts)
+
+    (defun cb-mu4e-shr-buffer ()
+      (let ((shr-use-fonts nil))
+        (shr-render-region (point-min) (point-max))))
 
     (defun cb-mu4e--insert-signature-before-quoted-message ()
       (unless (member mu4e-compose-type '(edit resend))
@@ -186,15 +192,8 @@
     (when (fboundp 'imagemagick-register-types)
       (imagemagick-register-types))
 
-    ;; Render html emails using something reasonable.
-    (setq mu4e-html2text-command
-          (cond
-           ((executable-find "w3m")
-            "w3m -dump -cols 80 -T text/html")
-           ((executable-find "textutil")
-            "textutil -stdin -format html -convert txt -stdout")
-           (t
-            'html2text)))
+    ;; Custom rendering of HTML messages
+    (setq mu4e-html2text-command #'cb-mu4e-shr-buffer)
 
     ;; View html message in eww. `av` in view to activate
     (add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
