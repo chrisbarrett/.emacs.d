@@ -164,8 +164,8 @@ Do not scheduled items or repeating todos."
                               (type "SOMEDAY(s)" "|")))
 
 
-    (use-package ob-restclient)
     (use-package ob-python)
+    (use-package ob-restclient)
     (use-package ob-sql)
 
     (setq org-confirm-babel-evaluate nil)
