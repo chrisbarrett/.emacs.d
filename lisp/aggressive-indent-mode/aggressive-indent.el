@@ -4,7 +4,7 @@
 
 ;; Author: Artur Malabarba <emacs@endlessparentheses.com>
 ;; URL: https://github.com/Malabarba/aggressive-indent-mode
-;; Version: 1.8.3
+;; Version: 1.8.4
 ;; Package-Requires: ((emacs "24.1") (cl-lib "0.5"))
 ;; Keywords: indent lisp maint tools
 ;; Prefix: aggressive-indent
@@ -113,50 +113,18 @@ Please include this in your report!"
   :package-version '(aggressive-indent . "0.3.1"))
 
 (defcustom aggressive-indent-excluded-modes
-  '(
-    bibtex-mode
-    cider-repl-mode
-    coffee-mode
-    comint-mode
-    conf-mode
-    Custom-mode
-    diff-mode
-    doc-view-mode
-    dos-mode
-    erc-mode
-    feature-mode
-    fortran-mode
-    f90-mode
-    jabber-chat-mode
-    haml-mode
-    haskell-mode
-    haskell-interactive-mode
-    image-mode
-    inf-ruby-mode
+  '(inf-ruby-mode
     makefile-mode
     makefile-gmake-mode
-    minibuffer-inactive-mode
-    netcmd-mode
     python-mode
-    sass-mode
-    scala-mode
-    slim-mode
-    special-mode
-    shell-mode
-    snippet-mode
-    eshell-mode
-    tabulated-list-mode
-    term-mode
-    TeX-output-mode
     text-mode
-    yaml-mode
-    )
+    yaml-mode)
   "Modes in which `aggressive-indent-mode' should not be activated.
 This variable is only used if `global-aggressive-indent-mode' is
 active.  If the minor mode is turned on with the local command,
 `aggressive-indent-mode', this variable is ignored."
   :type '(repeat symbol)
-  :package-version '(aggressive-indent . "0.3.1"))
+  :package-version '(aggressive-indent . "1.8.4"))
 
 (defcustom aggressive-indent-protected-commands '(undo undo-tree-undo undo-tree-redo whitespace-cleanup)
   "Commands after which indentation will NOT be performed.
@@ -165,6 +133,14 @@ the user in a loop, so this variable is used to control which
 commands will NOT be followed by a re-indent."
   :type '(repeat symbol)
   :package-version '(aggressive-indent . "0.1"))
+
+(defcustom aggressive-indent-protected-current-commands
+  '(query-replace-regexp query-replace)
+  "Like `aggressive-indent-protected-commands', but for the current command.
+For instance, with the default value, this variable prevents
+indentation during `query-replace' (but not after)."
+  :type '(repeat symbol)
+  :package-version '(aggressive-indent . "1.8.4"))
 
 (defcustom aggressive-indent-comments-too nil
   "If non-nil, aggressively indent in comments as well."
@@ -189,11 +165,13 @@ change."
 ;;; Preventing indentation
 (defconst aggressive-indent--internal-dont-indent-if
   '((memq last-command aggressive-indent-protected-commands)
+    (memq this-command aggressive-indent-protected-current-commands)
     (region-active-p)
     buffer-read-only
     undo-in-progress
     (null (buffer-modified-p))
     (and (boundp 'smerge-mode) smerge-mode)
+    (equal (buffer-name) "*ediff-merge*")
     (let ((line (thing-at-point 'line)))
       (and (stringp line)
            ;; If the user is starting to type a comment.
@@ -352,6 +330,15 @@ Return non-nil only if the line's indentation actually changed."
           (indent-region line-end (1- (point))))
         (skip-chars-forward "[:blank:]")))))
 
+(defun aggressive-indent--extend-end-to-whole-sexps (beg end)
+  "Return a point >= END, so that it covers whole sexps from BEG."
+  (save-excursion
+    (goto-char beg)
+    (while (and (< (point) end)
+                (not (eobp)))
+      (forward-sexp 1))
+    (point)))
+
 ;;;###autoload
 (defun aggressive-indent-indent-region-and-on (l r)
   "Indent region between L and R, and then some.
@@ -458,7 +445,9 @@ typing, try tweaking this number."
   (if aggressive-indent-mode
       (if (and global-aggressive-indent-mode
                (or (cl-member-if #'derived-mode-p aggressive-indent-excluded-modes)
-                   (memq major-mode '(text-mode fundamental-mode))
+                   (equal indent-line-function #'indent-relative)
+                   (derived-mode-p 'text-mode)
+                   (eq major-mode 'fundamental-mode)
                    buffer-read-only))
           (aggressive-indent-mode -1)
         ;; Should electric indent be ON or OFF?
