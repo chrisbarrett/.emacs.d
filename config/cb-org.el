@@ -163,6 +163,18 @@ Do not scheduled items or repeating todos."
     (setq org-todo-keywords '((type "TODO(t)" "MAYBE(m)" "NEXT(n)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")
                               (type "SOMEDAY(s)" "|")))
 
+
+    (use-package ob-restclient)
+    (use-package ob-python)
+    (use-package ob-sql)
+
+    (setq org-confirm-babel-evaluate nil)
+    (setq org-babel-load-languages '((emacs-lisp . t)
+                                     (restclient . t)
+                                     (python . t)
+                                     (scala . t)
+                                     (sql . t)))
+
     (advice-add 'org-add-log-note :before #'cb-org--exit-minibuffer)
     (advice-add 'org-toggle-heading :after #'cb-org--toggle-heading-goto-eol)))
 
