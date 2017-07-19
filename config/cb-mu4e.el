@@ -54,7 +54,7 @@
               (kill-region (point) (point-max)))
              ((message-goto-signature)
               (forward-line -2)
-              (kill-region (point) (point-max))))
+              (delete-region (point) (point-max))))
 
             (message-goto-body)
             (insert "\n")
