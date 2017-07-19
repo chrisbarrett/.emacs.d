@@ -330,6 +330,12 @@
     (org-link
      ((t :inherit link :weight normal)))
 
+    (org-block
+     ((((background light))
+       :background "#e1dddd")
+      (((background dark))
+       :background "#311")))
+
     (org-done
      ((t
        :inherit default
