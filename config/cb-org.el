@@ -196,6 +196,17 @@ Do not scheduled items or repeating todos."
                  (side            . bottom)
                  (window-height   . 0.2))))
 
+(use-package cb-org-hydras
+  :after org
+  :init
+  (progn
+    (with-eval-after-load 'which-key
+      (with-no-warnings
+        (push `((nil . ,(rx bos "cb-org-babel/body")) . (nil . "babel"))
+              which-key-replacement-alist)))
+    (spacemacs-keys-set-leader-keys-for-major-mode 'org-mode
+      "e" 'cb-org-babel/body)))
+
 
 (use-package org-attach
   :after org
