@@ -673,7 +673,6 @@ Do not scheduled items or repeating todos."
   (defvar org-export-backends '(ascii html latex odt gfm koma-letter custom-confluence))
   :config
   (progn
-    (require 'ox-gfm)
     (setq org-export-exclude-tags '("noexport" "crypt"))
     (setq org-export-coding-system 'utf-8)))
 
@@ -685,6 +684,7 @@ Do not scheduled items or repeating todos."
     '(?c "Export as Confluence markup"
          ((?c "To temporary buffer" org-confluence-export-as-confluence)))))
 
+(use-package ox-gfm :after org)
 
 (use-package ox-koma-letter
   :after org
