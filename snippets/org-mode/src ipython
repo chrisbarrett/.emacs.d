@@ -1,7 +1,7 @@
 # key: py
-# name: src python
+# name: src ipython
 # condition: (cb-yas/bol?)
 # --
-#+begin_src python
+#+begin_src ipython
 $0
 #+end_src
