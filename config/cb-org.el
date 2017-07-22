@@ -86,14 +86,14 @@
     (defun cb-org--set-next-todo-state ()
       "When marking a todo to DONE, set the next TODO as NEXT.
 Do not scheduled items or repeating todos."
-           (when (equal org-state "DONE")
-             (save-excursion
-               (when (and (ignore-errors (outline-forward-same-level 1) t)
-                          (equal (org-get-todo-state) "TODO"))
-                 (unless (or (org-entry-get (point) "STYLE")
-                             (org-entry-get (point) "LAST_REPEAT")
-                             (org-get-scheduled-time (point)))
-                   (org-todo "NEXT"))))))
+      (when (equal org-state "DONE")
+        (save-excursion
+          (when (and (ignore-errors (outline-forward-same-level 1) t)
+                     (equal (org-get-todo-state) "TODO"))
+            (unless (or (org-entry-get (point) "STYLE")
+                        (org-entry-get (point) "LAST_REPEAT")
+                        (org-get-scheduled-time (point)))
+              (org-todo "NEXT"))))))
 
     (defun cb-org--children-done-parent-done (_n-done n-todo)
       "Mark the parent task as done when all children are completed."
