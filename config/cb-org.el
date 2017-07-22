@@ -173,6 +173,7 @@ Do not scheduled items or repeating todos."
     (setq org-babel-load-languages '((emacs-lisp . t)
                                      (restclient . t)
                                      (python . t)
+                                     (ipython . t)
                                      (scala . t)
                                      (shell . t)
                                      (sql . t)))
@@ -181,6 +182,21 @@ Do not scheduled items or repeating todos."
 
     (advice-add 'org-add-log-note :before #'cb-org--exit-minibuffer)
     (advice-add 'org-toggle-heading :after #'cb-org--toggle-heading-goto-eol)))
+
+(use-package ob-ipython
+  :after org
+  :preface
+  (defun cb-org--setup-ipython (f &rest args)
+    (if (executable-find "ipython")
+        (let ((python-shell-interpreter "ipython")
+              (python-shell-interpreter-args "--simple-prompt -i")
+              (python-shell-prompt-detect-failure-warning nil))
+          (apply f args))
+      (apply f args)))
+  :config
+  (progn
+    (advice-add 'org-babel-execute:ipython :around #'cb-org--setup-ipython)
+    (defalias 'ipython-mode 'python-mode)))
 
 (use-package ob-python
   :after org
