@@ -169,11 +169,6 @@ Do not scheduled items or repeating todos."
                               (type "SOMEDAY(s)" "|")))
 
 
-    (use-package ob-python)
-    (use-package ob-restclient)
-    (use-package ob-shell)
-    (use-package ob-sql)
-
     (setq org-confirm-babel-evaluate nil)
     (setq org-babel-load-languages '((emacs-lisp . t)
                                      (restclient . t)
@@ -184,6 +179,14 @@ Do not scheduled items or repeating todos."
 
     (advice-add 'org-add-log-note :before #'cb-org--exit-minibuffer)
     (advice-add 'org-toggle-heading :after #'cb-org--toggle-heading-goto-eol)))
+
+(use-package ob-python :after org)
+
+(use-package ob-restclient :after org)
+
+(use-package ob-shell :after org)
+
+(use-package ob-sql :after org)
 
 (use-package org-id
   :after org
