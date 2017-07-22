@@ -62,6 +62,9 @@
   (progn
     (setq python-indent-guess-indent-offset nil)
     (setq python-indent-offset 4)
+
+    (push "jupyter" python-shell-completion-native-disabled-interpreters)
+
     (define-key python-mode-map [remap python-indent-dedent-line-backspace]  #'cb-python-backspace)
     (define-key python-mode-map [remap python-shell-switch-to-shell] #'cb-python-repl)
     (define-key inferior-python-mode-map (kbd "C-c C-z") #'cb-python-repl-switch-to-source)
