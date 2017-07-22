@@ -177,6 +177,8 @@ Do not scheduled items or repeating todos."
                                      (shell . t)
                                      (sql . t)))
 
+    (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
+
     (advice-add 'org-add-log-note :before #'cb-org--exit-minibuffer)
     (advice-add 'org-toggle-heading :after #'cb-org--toggle-heading-goto-eol)))
 
