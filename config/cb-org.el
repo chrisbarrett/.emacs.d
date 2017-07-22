@@ -27,6 +27,11 @@
 
 (defconst cb-org-work-file (concat org-directory "/work_movio.org"))
 
+(with-eval-after-load 'which-key
+  (with-no-warnings
+    (push `(("," . ,(rx bos (? "evil-") "org-" (group (+ nonl)))) . (nil . "\\1"))
+          which-key-replacement-alist)))
+
 (use-package org
   :load-path cb-org-load-path
   :defer t
