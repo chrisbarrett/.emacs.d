@@ -686,6 +686,11 @@ Do not scheduled items or repeating todos."
 
 (use-package ox-gfm :after org)
 
+(use-package ox-latex
+  :after org
+  :config
+  (add-to-list 'org-latex-minted-langs '(ipython "python")))
+
 (use-package ox-koma-letter
   :after org
   :config
