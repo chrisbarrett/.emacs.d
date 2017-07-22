@@ -180,7 +180,14 @@ Do not scheduled items or repeating todos."
     (advice-add 'org-add-log-note :before #'cb-org--exit-minibuffer)
     (advice-add 'org-toggle-heading :after #'cb-org--toggle-heading-goto-eol)))
 
-(use-package ob-python :after org)
+(use-package ob-python
+  :after org
+  :preface
+  (defun cb-org-setup-python ()
+    (when (executable-find "ipython")
+      (setq-local org-babel-python-command "ipython")))
+  :config
+  (add-hook 'org-mode-hook #'cb-org-setup-python))
 
 (use-package ob-restclient :after org)
 
