@@ -23,7 +23,8 @@
       (setq-local tab-width 4)
       (setq-local evil-shift-width 4)
       (when (executable-find "ipython")
-        (setq-local python-shell-interpreter "ipython")))
+        (setq-local python-shell-interpreter "ipython")
+        (setq-local python-shell-interpreter-args "--simple-prompt -i")))
 
     (defun cb-python-backspace ()
       (interactive)
