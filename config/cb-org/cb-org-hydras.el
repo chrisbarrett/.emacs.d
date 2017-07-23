@@ -29,7 +29,7 @@ Sessions
   ("B" org-babel-goto-named-src-block)
   ("I" org-babel-insert-header-arg)
   ("N" org-babel-goto-named-result)
-  ("b" org-babel-execute-buffer)
+  ("b" org-babel-execute-buffer :exit t)
   ("c" org-babel-tangle-clean :exit t)
   ("d" org-babel-detangle)
   ("e" org-babel-execute-maybe)
