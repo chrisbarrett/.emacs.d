@@ -63,6 +63,7 @@
   (progn
     (setq python-indent-guess-indent-offset nil)
     (setq python-indent-offset 4)
+    (setq python-fill-docstring-style 'django)
 
     (push "jupyter" python-shell-completion-native-disabled-interpreters)
 
