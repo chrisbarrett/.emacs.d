@@ -79,12 +79,14 @@
 (use-package counsel
   :demand t
 
-  :commands (counsel-M-x
-             counsel-descbinds
-             counsel-describe-function
-             counsel-describe-variable
+  :bind (("C-s" . counsel-grep-or-swiper)
+         ("M-x" . counsel-M-x)
+         ("C-x C-f" . counsel-find-file)
+         ("C-h v" . counsel-describe-variable)
+         ("C-h f" . counsel-describe-function))
+
+  :commands (counsel-descbinds
              counsel-expression-history
-             counsel-find-file
              counsel-imenu
              counsel-recentf
              counsel-yank-pop)
@@ -100,26 +102,22 @@
         (apply f args))))
 
   :init
-  (progn
-    (spacemacs-keys-set-leader-keys
-      "SPC" #'counsel-M-x
-      "?"   #'counsel-descbinds
-      "f f" #'counsel-find-file
-      "f r" #'counsel-recentf
-      "k r" #'counsel-yank-pop
-      "i"   #'counsel-imenu
-      "h d f" #'counsel-describe-function
-      "h d v" #'counsel-describe-variable)
-
-    (bind-key "M-x" #'counsel-M-x)
-    (bind-key "C-x C-f" #'counsel-find-file)
-    (bind-key "C-h v" #'counsel-describe-variable)
-    (bind-key "C-h f" #'counsel-describe-function))
+  (spacemacs-keys-set-leader-keys
+    "SPC" #'counsel-M-x
+    "?"   #'counsel-descbinds
+    "f f" #'counsel-find-file
+    "f r" #'counsel-recentf
+    "k r" #'counsel-yank-pop
+    "i"   #'counsel-imenu
+    "h d f" #'counsel-describe-function
+    "h d v" #'counsel-describe-variable)
 
   :config
   (progn
     (define-key counsel-find-file-map (kbd "C-M-j") #'ivy-immediate-done)
     (define-key counsel-find-file-map (kbd "C-h") #'counsel-up-directory)
+
+    (evil-global-set-key 'normal "/" #'counsel-grep-or-swiper)
 
     (defface cb-counsel-separator
       '((t :foreground "gray50"))
@@ -135,11 +133,6 @@
     (advice-add 'counsel-ag :around #'cb-ivy--populate-with-symbol-at-point)
 
     (counsel-mode +1)))
-
-(use-package swiper
-  :bind (("C-s" . swiper))
-  :init
-  (evil-global-set-key 'normal "/" #'swiper))
 
 (provide 'cb-ivy)
 
