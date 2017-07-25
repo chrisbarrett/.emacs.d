@@ -186,17 +186,37 @@ Do not scheduled items or repeating todos."
 (use-package ob-ipython
   :after org
   :preface
-  (defun cb-org--setup-ipython (f &rest args)
-    (if (executable-find "ipython")
-        (let ((python-shell-interpreter "ipython")
-              (python-shell-interpreter-args "--simple-prompt -i")
-              (python-shell-prompt-detect-failure-warning nil))
-          (apply f args))
-      (apply f args)))
+  (progn
+    (define-derived-mode org-babel-traceback-mode special-mode "traceback")
+    (evil-set-initial-state 'org-babel-traceback-mode 'motion)
+
+    (defun cb-org--setup-traceback-buffer (buf)
+      (with-current-buffer buf
+        (org-babel-traceback-mode))
+      buf)
+
+    (defun cb-org--setup-ipython (f &rest args)
+      (if (executable-find "ipython")
+          (let ((python-shell-interpreter "ipython")
+                (python-shell-interpreter-args "--simple-prompt -i")
+                (python-shell-prompt-detect-failure-warning nil))
+            (apply f args))
+        (apply f args))))
   :config
   (progn
+    ;; HACK: ipython-mode must be defined for source blocks to work.
+    (defalias 'ipython-mode 'python-mode)
+
     (advice-add 'org-babel-execute:ipython :around #'cb-org--setup-ipython)
-    (defalias 'ipython-mode 'python-mode)))
+    (advice-add 'ob-ipython--create-traceback-buffer :filter-return #'cb-org--setup-traceback-buffer)
+
+    (add-to-list 'display-buffer-alist
+                 `(,(rx bos "*ob-ipython-traceback*" eos)
+                   (display-buffer-reuse-window
+                    display-buffer-pop-up-window)
+                   (reusable-frames . visible)
+                   (side            . bottom)
+                   (window-height   . 0.5)))))
 
 (use-package ob-python
   :after org
