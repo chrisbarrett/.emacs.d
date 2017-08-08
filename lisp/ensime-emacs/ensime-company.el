@@ -115,13 +115,24 @@ block notation for the final parameter."
         (indent-region (region-beginning) (region-end))
       (indent-according-to-mode))))
 
+(defcustom ensime-company-idle-delay 0
+  "The idle delay in seconds until completion starts automatically when using company-mode."
+  :type 'number
+  :group 'ensime-ui)
+
+(defcustom company-minimum-prefix-length 2
+  "Minimum prefix length until completion starts automatically when using company-mode."
+  :type 'number
+  :group 'ensime-ui)
+
+;;;###autoload
 (defun ensime-company-enable ()
   (make-local-variable 'company-backends)
   (push #'ensime-company company-backends)
   (company-mode t)
 
-  (set (make-local-variable 'company-idle-delay) 0)
-  (set (make-local-variable 'company-minimum-prefix-length) 2)
+  (set (make-local-variable 'company-idle-delay) ensime-company-idle-delay)
+  (set (make-local-variable 'company-minimum-prefix-length) company-minimum-prefix-length)
 
   ;; https://github.com/joaotavora/yasnippet/issues/708#issuecomment-222517433
   (yas-minor-mode t)
@@ -150,7 +161,7 @@ been inserted immediately prior to the point."
          (type-info (get-text-property 0 'type-info candidate))
          (is-callable (plist-get type-info :arrow-type))
          (name-start-point (- (point) (length name)))
-         (is-scala (ensime-scala-file-p buffer-file-name))
+         (is-scala (ensime-scala-file-p (buffer-file-name-with-indirect)))
 
          (param-sections
           ;; ignore implicit sections

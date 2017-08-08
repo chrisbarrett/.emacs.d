@@ -29,19 +29,32 @@
 (defvar ensime-config-file-name ".ensime"
   "The default file name for ensime project configurations.")
 
-(add-to-list 'auto-mode-alist '("\\.ensime$" . emacs-lisp-mode))
-
 (defun ensime-config-for-buffer ()
   "Resolve the config for the current buffer via the ENSIME connection."
   (let ((connection (ensime-connection)))
     (ensime-config connection)))
 
-(defun ensime-process-for-config (config)
-  "Obtain the ENSIME Server process for the given config."
+(defun ensime-process-for-config (&optional config)
+  "Obtain the ENSIME Server process for the given CONFIG (auto discovered if NIL)."
   ;; this is a bit of a hack, we should always have ready access to this
-  (-first (lambda (p) (eq config (process-get p :ensime-config)))
-          ensime-server-processes))
+  (let ((config (or config (ensime-config-for-buffer))))
+   (-first (lambda (p) (eq config (process-get p :ensime-config)))
+           ensime-server-processes)))
 
+(defun ensime-subproject-for-config (&optional config)
+  "Obtain the subproject for the current buffer for the given CONFIG (auto discovered if NIL)."
+  ;; this is a good candidate for caching
+  (let ((config (or config (ensime-config-for-buffer))))
+   (let* ((case-insensitive-fs t) ;; https://github.com/ensime/ensime-emacs/issues/532
+          (canonical (convert-standard-filename (buffer-file-name-with-indirect)))
+          (subprojects (plist-get config :subprojects))
+          (matches-subproject-dir? (lambda (dir) (s-starts-with-p dir canonical case-insensitive-fs)))
+          (find-subproject (lambda (sp)
+                             (-any matches-subproject-dir? (plist-get sp :source-roots)))))
+     (-> (-find find-subproject subprojects) (plist-get :name)))))
+
+
+;; DEPRECATED: these getters should be replaced with a function that takes the key
 (defun ensime--get-cache-dir (config)
   (let ((cache-dir (plist-get config :cache-dir)))
     (unless cache-dir
@@ -89,8 +102,7 @@
 	 (puthash (file-name-as-directory (file-truename f)) t result)))
      (unless no-ref-sources
        (-when-let (f (ensime-source-jars-dir conf))
-	 (when (file-directory-p f)
-	   (puthash (file-name-as-directory (file-truename f)) t result))))
+         (puthash (file-name-as-directory (file-truename f)) t result)))
 
      (setq ensime--cache-source-root-set
 	   (cons (cons (list conf no-ref-sources) result)
@@ -150,22 +162,13 @@ NO-REF-SOURCES allows skipping the extracted dependencies."
               "See http://ensime.org/build_tools"))
       nil)))
 
-(defun ensime-config-load (file-name &optional force-dir)
-  "Load and parse a project config file. Return the resulting plist."
-  (let ((dir (expand-file-name (file-name-directory file-name)))
-	(source-path (or force-dir buffer-file-name default-directory)))
-    (save-excursion
-      (let ((config
-	     (let ((buf (find-file-read-only file-name ensime-config-file-name))
-		   (src (buffer-substring-no-properties
-			 (point-min) (point-max))))
-	       (kill-buffer buf)
-	       (condition-case error
-		   (read src)
-		 (error
-		  (error "Error reading configuration file, %s: %s" src error)
-		  )))))
-        config))))
+(defun ensime-config-load (file-name)
+  "Load, parse, and return FILE-NAME as a Lisp object."
+  (condition-case problem
+      (with-temp-buffer
+        (insert-file-contents file-name)
+        (read (current-buffer)))
+    (error (error "Error reading configuration file, %s: %s" file-name problem))))
 
 (defun ensime-source-roots-from-config ()
   "Return all source directories from all subprojects"
@@ -214,7 +217,7 @@ project directories, because neither does ensime-sbt.)"
 (defun ensime--refresh-config-sbt (project-root task on-success-fn)
   (with-current-buffer (get-buffer-create "*ensime-gen-config*")
     (erase-buffer)
-      (let ((default-directory project-root))
+      (let ((default-directory (file-name-as-directory project-root)))
         (if (executable-find ensime-sbt-command)
             (let ((process (start-process "*ensime-gen-config*" (current-buffer)
                                           ensime-sbt-command task)))
@@ -252,3 +255,5 @@ project directories, because neither does ensime-sbt.)"
 
 ;; Local Variables:
 ;; End:
+;;
+;;; ensime-config.el ends here

@@ -2,6 +2,8 @@
 ;; files in this directory whose names end with "-steps.el" will be
 ;; loaded automatically by Ecukes.
 
+(require 'ensime-company) ;; the autoload cookie is not available in unit tests
+
 (When "^I open temp \\(java\\|scala\\) file \"\\(.+\\)\"$"
       (lambda (suffix arg)
         (find-file (make-temp-file arg nil (format ".%s" suffix)))))
@@ -49,3 +51,18 @@
      (lambda (formatted-result)
           (assert (equal ensime-helm-test-search-result formatted-result) nil
                   (format "Expected formated result \"%s\", but was \"%s\"" formatted-result ensime-helm-test-search-result))))
+
+(Then "^the line should match \"\\(.+\\)\"$"
+     (lambda (line)
+       (let ((actual-line (s-trim (thing-at-point 'line))))
+         (assert (equal line actual-line) nil
+                 (format "Expected \"%s\", but was \"%s\"" line actual-line)))))
+
+(Given "^I got a type hierarchy type for \"\\(.+\\)\" in file \"\\(.+\\)\" in line \"\\([0-9]+\\)\"$"
+     (lambda (class file linenumber)
+       (let ((line (string-to-int linenumber)))
+         (setq ensime-helm-test-hierarchy-type-result `(:fqn ,class :source-position (:type line :file ,file :line ,line))))))
+
+(Then "^I format the hierarchy type in the current buffer$"
+     (lambda ()
+       (ensime-write-hierarchy-entries-to-buffer `(,ensime-helm-test-hierarchy-type-result))))

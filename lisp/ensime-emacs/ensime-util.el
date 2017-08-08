@@ -92,12 +92,16 @@
   (set-text-properties 0 (length str) nil str)
   str)
 
+(defun buffer-file-name-with-indirect ()
+  "Return buffer name. Works both for regular buffers and indirect buffers."
+  (buffer-file-name (buffer-base-buffer)))
+
 ;; File/path functions
 
 (defun ensime-source-file-p (&optional filename)
   "Return t if the given filename (or the currently visited file if no
 argument is supplied) is a .scala or .java file."
-  (let ((file (or filename buffer-file-name)))
+  (let ((file (or filename (buffer-file-name-with-indirect))))
     (when file
       (integerp (string-match "\\(?:\\.scala$\\|\\.java$\\)" file)))))
 
@@ -108,10 +112,10 @@ argument is supplied) is a .scala or .java file."
   (string-match "\\.scala$" f))
 
 (defun ensime-visiting-java-file-p ()
-  (ensime-java-file-p buffer-file-name))
+  (ensime-java-file-p (buffer-file-name-with-indirect)))
 
 (defun ensime-visiting-scala-file-p ()
-  (ensime-scala-file-p buffer-file-name))
+  (ensime-scala-file-p (buffer-file-name-with-indirect)))
 
 (defun ensime-path-prefix-p (file-name dir-name)
   "Expands both file-name and dir-name and returns t if dir-name is a
@@ -171,7 +175,7 @@ absolute path to f."
 (defun ensime-write-buffer (&optional filename clear-modtime set-unmodified)
   "Write the contents of buffer to its buffer-file-name.
 Do not show 'Writing..' message."
-  (let ((file (or filename buffer-file-name))
+  (let ((file (or filename (buffer-file-name-with-indirect)))
         (write-region-annotate-functions nil)
         (write-region-post-annotation-function nil))
     (when clear-modtime
@@ -203,7 +207,7 @@ Do not show 'Writing..' message."
       (if (< (buffer-size) 1000) ;; TODO: find break-even point experimentally
 	  (ensime-src-info-with-contents)
 	(ensime-src-info-with-contents-in-temp))
-    `(:file ,buffer-file-name)
+    `(:file ,(buffer-file-name-with-indirect))
     ))
 
 (defun ensime-src-info-with-contents-in-temp ()
@@ -221,11 +225,11 @@ Do not show 'Writing..' message."
     (when (not (file-directory-p tmp-dir))
       (make-directory tmp-dir t))
     (ensime-write-buffer tmp-file nil nil)
-    `(:file ,buffer-file-name :contents-in ,tmp-file)))
+    `(:file ,(buffer-file-name-with-indirect) :contents-in ,tmp-file)))
 
 (defun ensime-src-info-with-contents ()
   "Returns a source-file-info with contents of current buffer as string."
-  `(:file ,buffer-file-name :contents ,(ensime-get-buffer-as-string)))
+  `(:file ,(buffer-file-name-with-indirect) :contents ,(ensime-get-buffer-as-string)))
 
 (defun ensime--dependencies-newer-than-target-p (target-file dep-files-list)
   (if (file-exists-p target-file)

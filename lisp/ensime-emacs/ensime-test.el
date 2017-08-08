@@ -60,15 +60,6 @@
 (put 'ensime-test-interrupted 'error-message "Test Interrupted")
 
 
-(defun ensime--extract-scala-library-jar ()
-  (with-temp-buffer
-    (insert-file-contents
-     (ensime-startup-classpath-filename ensime--test-scala-version))
-    (--first
-     (string-match "[/\\]scala-library.*\\.jar$" it )
-     (split-string (buffer-string) ensime--classpath-separator 'omit-nulls))))
-
-
 (defun ensime-test-concat-lines (&rest lines)
   (mapconcat #'identity lines "\n"))
 
@@ -79,6 +70,17 @@
   (with-temp-file file-name
     (insert contents))
   file-name)
+
+(defun ensime-test-find-overlays-specifying (prop)
+  "Return a list of overlays that specify property PROP in buffer."
+  (let ((overlays (overlays-in (point-min) (point-max)))
+        found)
+    (while overlays
+      (let ((overlay (car overlays)))
+        (if (overlay-get overlay prop)
+            (setq found (cons overlay found))))
+      (setq overlays (cdr overlays)))
+    found))
 
 (defvar ensime--test-scala-version
   (or (getenv "SCALA_VERSION") "2.11.8"))
@@ -99,18 +101,25 @@
                       "/classes")
                       root-dir))
          (test-target-dir (expand-file-name "test-target" root-dir))
-         (scala-jar (ensime--extract-scala-library-jar))
+         (example-dotensime (ensime-config-load "test/example/.ensime"))
+         (scala-compiler-jars (plist-get example-dotensime :scala-compiler-jars))
+         (ensime-server-jars (plist-get example-dotensime :ensime-server-jars))
+         (ensime-server-version (plist-get example-dotensime :ensime-server-version))
+         (scala-jar (-find (lambda (e) (s-contains? "scala-library" e)) scala-compiler-jars))
 	 (sp-name (if subproject-name
 		      subproject-name
 		    (downcase (file-name-nondirectory root-dir))))
          (config (let ((env (getenv "ENSIME_JVM_TEST_FLAGS"))
-                       (default-flags '("-Xmx1g" "-Xss2m" "-XX:MaxPermSize=128m")))
+                       (default-flags '("-Xmx4g" "-Xss2m")))
                    (append
                     extra-config
                     `(:root-dir ,root-dir
                                 :cache-dir ,cache-dir
                                 :name "test"
                                 :scala-version ,ensime--test-scala-version
+                                :ensime-server-jars ,ensime-server-jars
+                                :ensime-server-version ,ensime-server-version
+                                :scala-compiler-jars ,scala-compiler-jars
                                 :java-home ,(getenv "JAVA_HOME")
                                 :java-flags , (if env
                                                   (cons env default-flags)
@@ -163,6 +172,13 @@
        :src-dir src-dir
        :targets `(,target-dir)
        :config config))))
+
+(defun ensime-create-tmp-project-compiled (src-files)
+  (let ((proj (ensime-create-tmp-project src-files)))
+    (find-file (car (plist-get proj :src-files)))
+    (ensime-sbt-do-compile)
+    (sleep-for 25)
+    proj))
 
 (defvar ensime-tmp-project-hello-world
   `((:name
@@ -522,7 +538,7 @@
       (message "OK no unreplied messages")))
   (ensime-kill-all-ensime-servers)
 					; In Windows, we can't delete cache files until the server process has exited
-  (sleep-for 1)
+  (sleep-for 3)
   (ensime-cleanup-tmp-project proj no-del))
 
 ;;;;;;;;;;;;;;;;;;
@@ -567,13 +583,17 @@
       (ensime-test-cleanup proj t))))
 
    (ensime-async-test
-    "Test inspect type at point."
+    "Test edit definition."
     (let* ((proj (ensime-create-tmp-project
                   `((:name
                      "test.scala"
                      :contents ,(ensime-test-concat-lines
                                  "package pack.a"
-                                 "class A(value:/*1*/String){"
+                                 "case class A(value: String)"
+                                 ""
+                                 "object B {"
+                                 "  val testA = A(\"moep\")"
+                                 "  /*1*/testA.value"
                                  "}"))))))
       (ensime-test-init-proj proj))
 
@@ -583,97 +603,11 @@
       (proj src-files)
       (find-file (car src-files))
       (goto-char (ensime-test-after-label "1"))
-      (let* ((info (ensime-rpc-inspect-type-at-point)))
-        (ensime-assert (not (null info)))
-        (ensime-assert-equal (plist-get (plist-get info :type) :name) "String"))
-      (ensime-test-cleanup proj))))
-
-   (ensime-async-test
-    "Test inspect type in range."
-    (let* ((proj (ensime-create-tmp-project
-                  `((:name
-                     "test.scala"
-                     :contents ,(ensime-test-concat-lines
-                                 "package pack.a"
-                                 "class A {"
-                                 " def foo = {"
-                                 "  /*1*/this bar 2"
-                                 "  val x = 10"
-                                 " }"
-                                 " def bar(i:Int) = \"dlkjf\""
-                                 "}"))))))
-      (ensime-test-init-proj proj))
-
-    ((:connected))
-    ((:compiler-ready :indexer-ready :full-typecheck-finished)
-     (ensime-test-with-proj
-      (proj src-files)
-      (find-file (car src-files))
+      (ensime-edit-definition-of-thing-at-point)
+      (ensime-assert-equal (thing-at-point 'symbol) "testA")
       (goto-char (ensime-test-after-label "1"))
-      (let ((info (ensime-rpc-inspect-type-at-range
-                   (list (ensime-externalize-offset (point))
-                         (ensime-externalize-offset (point-at-eol))))))
-        (ensime-assert (not (null info)))
-        (ensime-assert-equal
-         (plist-get (plist-get info :type) :name) "String"))
-      (ensime-test-cleanup proj))))
-
-   (ensime-async-test
-    "Test inspector ui."
-    (let* ((proj (ensime-create-tmp-project
-                  `((:name
-                     "test.scala"
-                     :contents ,(ensime-test-concat-lines
-                                 "package pack.a"
-                                 "class A(value:/*1*/String){"
-                                 "}"))))))
-      (ensime-test-init-proj proj))
-
-
-    ((:connected))
-    ((:compiler-ready :full-typecheck-finished)
-     (ensime-test-with-proj
-      (proj src-files)
-      (find-file (car src-files))
-      (goto-char (ensime-test-after-label "1"))
-      (ensime-inspect-type-at-point)))
-
-    ((:type-inspector-shown)
-     (ensime-test-with-proj
-      (proj src-files)
-      (switch-to-buffer ensime-inspector-buffer-name)
-      (ensime-assert (search-forward-regexp "^class" nil t))
-      (ensime-assert (search-forward-regexp "^java.lang.String" nil t))
-      (backward-char 1)
-      (ensime-assert-equal (plist-get (text-properties-at (point)) :ensime-type-full-name) "java.lang.String")
-      (ensime-assert (s-ends-with-p "java/lang/String.html" (ensime--inspector-doc-url-at-point)))
-      (goto-char 1)
-      (ensime-assert (search-forward-regexp "^scala.collection.immutable.StringLike" nil t))
-      (goto-char 1)
-      (ensime-assert (search-forward-regexp "^scala.collection.TraversableOnce" nil t))
-      (goto-char 1)
-      (ensime-assert (search-forward-regexp "^scala.collection.IndexedSeqOptimized" nil t))
-
-      (goto-char 1)
-      (ensime-assert (search-forward-regexp "^equalsIgnoreCase" nil t))
-      (backward-char 1)
-      (ensime-assert-equal (plist-get (text-properties-at (point)) :ensime-type-full-name) "java.lang.String")
-      (ensime-assert-equal (plist-get (text-properties-at (point)) :ensime-member-name) "equalsIgnoreCase")
-      (ensime-assert-equal (plist-get (text-properties-at (point)) :ensime-member-signature) "(Ljava/lang/String;)Z")
-      (ensime-assert (let ((url (ensime--inspector-doc-url-at-point)))
-		       (s-ends-with-p "java/lang/String.html#equalsIgnoreCase(java.lang.String)" (url-unhex-string url))))
-
-      (goto-char 1)
-      (ensime-assert (search-forward-regexp "^offsetByCodePoints" nil t))
-      (ensime-assert-equal (plist-get (text-properties-at (point)) :ensime-type-full-name) "java.lang.String")
-      (ensime-assert-equal (plist-get (text-properties-at (point)) :ensime-member-name) "offsetByCodePoints")
-      (ensime-assert-equal (plist-get (text-properties-at (point)) :ensime-member-signature) "(II)I")
-
-      (ensime-assert (search-forward-regexp "Arra" nil t))
-      (push-button)
-      (ensime-assert (search-forward-regexp "^scala.Array$" nil t))
-      (ensime-assert (search-forward-regexp "^(compan" nil t))
-      (push-button)
+      (ensime-edit-definition-of-type-of-thing-at-point)
+      (ensime-assert-equal (thing-at-point 'symbol) "A")
       (ensime-test-cleanup proj))))
 
    (ensime-async-test
@@ -806,9 +740,9 @@
                                  "package com.helloworld"
 
                                  "object HelloWorld {"
-				 "  private var _field:Int = 1"
-				 "  def field = _field"
-				 "  def field_=(i:Int) { _field = i}"
+                                 "  private var _field:Int = 1"
+                                 "  def field = _field"
+                                 "  def field_=(i:Int) { _field = i}"
                                  "  def add(a:Int, b:Int) = {"
                                  "    a + b"
                                  "  }"
@@ -821,17 +755,17 @@
                                  "  def doByName(block: => String) = {"
                                  "    block"
                                  "  }"
-                                 "  def test() {"
+                                 "  def test(): Unit = {"
                                  "    val c = ad/*1*/"
-				 "    val d = c /*2*/"
-				 "    val e = d./*3*/"
-				 "    val f = doBlo/*4*/"
-				 "    val g = doBlo/*5*/"
-				 "    val h = doByNa/*6*/"
-				 "      this.fie/*7*/"
-				 "    \"kjsdf\".hashCo/*8*/"
-				 "    \"kjsdf\".getByt/*8_1*/"
-				 "    5.toLo/*9*/"
+                                 "    val d = c /*2*/"
+                                 "    val e = d./*3*/"
+                                 "    val f = doBlo/*4*/"
+                                 "    val g = doBlo/*5*/"
+                                 "    val h = doByNa/*6*/"
+                                 "      this.fie/*7*/"
+                                 "    \"kjsdf\".hashCo/*8*/"
+                                 "    \"kjsdf\".getByt/*8_1*/"
+                                 "    5.toLo/*9*/"
                                  "  }"
                                  "}")))))
            (src-files (plist-get proj :src-files)))
@@ -1065,9 +999,10 @@
 
    (ensime-async-test
     "Test rename diff refactoring over multiple files."
-    (let* ((proj (ensime-create-tmp-project
+    (let* ((proj (ensime-create-tmp-project-compiled
                   `((:name
                      "hello_world.scala"
+                     :relative-to "src/main/scala"
                      :contents ,(ensime-test-concat-lines
                                  "package com.helloworld"
                                  "class /*1*/HelloWorld{"
@@ -1075,6 +1010,7 @@
                                  ""))
                     (:name
                      "another.scala"
+                     :relative-to "src/main/scala"
                      :contents ,(ensime-test-concat-lines
                                  "package com.helloworld"
                                  "object Another {"
@@ -1082,14 +1018,19 @@
                                  "val a = new HelloWorld()"
                                  "}"
                                  "}"
-                                 ""))))))
+                                 ""))
+                    (:name
+                     "build.sbt"
+                     :relative-to ""
+                     :contents ,(ensime-test-concat-lines
+                                  (concat "scalaVersion := \"" ensime--test-scala-version "\"")
+                                  (concat "scalaBinaryVersion := \"" (ensime--scala-binary-version ensime--test-scala-version) "\"")))))))
       (ensime-test-init-proj proj))
     ((:connected))
     ((:compiler-ready :full-typecheck-finished)
      (ensime-test-with-proj
       (proj src-files)
-      ;; refactor-rename needs all files to be typechecked
-      (ensime-typecheck-all)))
+      (ensime-reload-open-files)))
 
     ((:full-typecheck-finished)
      (ensime-test-with-proj
@@ -1124,7 +1065,7 @@
                              (ensime-test-cleanup proj))))
    (ensime-async-test
     "Test find-references."
-    (let* ((proj (ensime-create-tmp-project
+    (let* ((proj (ensime-create-tmp-project-compiled
                   `((:name
                      "pack/a.scala"
                      :contents ,(ensime-test-concat-lines
@@ -1136,15 +1077,20 @@
                      :contents ,(ensime-test-concat-lines
                                  "package pack"
                                  "class B(value:String) extends A(value){"
-                                 "}"))))))
+                                 "}"))
+                    (:name
+                     "build.sbt"
+                     :relative-to ""
+                     :contents ,(ensime-test-concat-lines
+                                  (concat "scalaVersion := \"" ensime--test-scala-version "\"")
+                                  (concat "scalaBinaryVersion := \"" (ensime--scala-binary-version ensime--test-scala-version) "\"")))))))
       (ensime-test-init-proj proj))
 
     ((:connected))
     ((:compiler-ready :full-typecheck-finished)
      (ensime-test-with-proj
       (proj src-files)
-      ;; find-references requires all files to be typechecked
-      (ensime-typecheck-all)))
+      (ensime-reload-open-files)))
 
     ((:full-typecheck-finished)
      (ensime-test-with-proj
@@ -1185,7 +1131,7 @@
     ((:compiler-ready :full-typecheck-finished)
      (ensime-test-with-proj
       (proj src-files)
-      (ensime-typecheck-all)))
+      (ensime-reload-open-files)))
 
     ((:full-typecheck-finished)
      (ensime-test-with-proj
@@ -1194,97 +1140,50 @@
         (ensime-assert-equal (length notes) 0))
       (ensime-test-cleanup proj))))
 
-   (ensime-async-test
-    "Test deleting file and reloading."
-    (let* ((proj (ensime-create-tmp-project
-                  `((:name
-                     "pack/a.scala"
-                     :contents ,(ensime-test-concat-lines
-                                 "package pack"
-                                 "class A(value:String){"
-                                 "}"))
-                    (:name
-                     "pack/b.scala"
-                     :contents ,(ensime-test-concat-lines
-                                 "package pack"
-                                 "class B(value:String) extends A(value){"
-                                 "}"))))))
-      (ensime-test-init-proj proj))
+   ;; (ensime-async-test
+   ;;  "Test deleting file and reloading."
+   ;;  (let* ((proj (ensime-create-tmp-project
+   ;;                `((:name
+   ;;                   "pack/a.scala"
+   ;;                   :contents ,(ensime-test-concat-lines
+   ;;                               "package pack"
+   ;;                               "class A(value:String){"
+   ;;                               "}"))
+   ;;                  (:name
+   ;;                   "pack/b.scala"
+   ;;                   :contents ,(ensime-test-concat-lines
+   ;;                               "package pack"
+   ;;                               "class B(value:String) extends A(value){"
+   ;;                               "}"))))))
+   ;;    (ensime-test-init-proj proj))
 
 
-    ((:connected))
-    ((:compiler-ready :full-typecheck-finished)
-     (ensime-test-with-proj
-      (proj src-files)
-      (ensime-typecheck-all)))
+   ;;  ((:connected))
+   ;;  ((:compiler-ready :full-typecheck-finished)
+   ;;   (ensime-test-with-proj
+   ;;    (proj src-files)
+   ;;    (ensime-reload-open-files)))
 
-    ((:full-typecheck-finished)
-     (ensime-test-with-proj
-      (proj src-files)
-      (let* ((notes (ensime-all-notes)))
-        (ensime-assert-equal (length notes) 0))
-      (kill-buffer nil)
-      (delete-file (car src-files))
-      (find-file (cadr src-files))))
+   ;;  ((:full-typecheck-finished)
+   ;;   (ensime-test-with-proj
+   ;;    (proj src-files)
+   ;;    (let* ((notes (ensime-all-notes)))
+   ;;      (ensime-assert-equal (length notes) 0))
+   ;;    (kill-buffer nil)
+   ;;    (delete-file (car src-files))
+   ;;    (find-file (cadr src-files))))
 
-    ((:full-typecheck-finished)
-     (ensime-test-with-proj
-      (proj src-files)
-      (ensime-typecheck-all)))
+   ;;  ((:full-typecheck-finished)
+   ;;   (ensime-test-with-proj
+   ;;    (proj src-files)
+   ;;    (ensime-reload-open-files)))
 
-    ((:full-typecheck-finished)
-     (ensime-test-with-proj
-      (proj src-files)
-      (let* ((notes (ensime-all-notes)))
-        (ensime-assert (> (length notes) 0)))
-      (ensime-test-cleanup proj))))
-
-   (ensime-async-test
-    "Test formatting source."
-    (let* ((proj (ensime-create-tmp-project
-                  `((:name
-                     "format_world.scala"
-                     :contents ,(ensime-test-concat-lines
-                                 "class HelloWorld{"
-                                 "def foo:Int=1"
-                                 "}"
-                                 ""))))))
-      (ensime-test-init-proj proj))
-
-    ((:connected))
-    ((:compiler-ready :full-typecheck-finished)
-     (ensime-test-with-proj
-      (proj src-files)
-      (find-file (car src-files))
-      (ensime-format-source)
-      (let ((src (buffer-substring-no-properties
-                  (point-min) (point-max))))
-        (ensime-assert-equal src (ensime-test-concat-lines
-                                  "class HelloWorld {"
-                                  "  def foo: Int = 1"
-                                  "}"
-                                  "")))
-      (ensime-test-cleanup proj))))
-
-   (ensime-async-test
-    "Get package info for com.helloworld."
-    (let* ((proj (ensime-create-tmp-project
-                  ensime-tmp-project-hello-world)))
-      (ensime-test-init-proj proj))
-
-    ((:connected))
-    ((:compiler-ready :full-typecheck-finished)
-     (ensime-test-with-proj
-      (proj src-files)
-      (let ((info (ensime-rpc-inspect-package-by-path
-                   "com.helloworld")))
-        (ensime-assert (not (null info)))
-        (ensime-assert-equal
-         (ensime-package-full-name info) "com.helloworld")
-        ;; Should be one class, one object
-        (ensime-assert-equal
-         2 (length (ensime-package-members info))))
-      (ensime-test-cleanup proj))))
+   ;;  ((:full-typecheck-finished)
+   ;;   (ensime-test-with-proj
+   ;;    (proj src-files)
+   ;;    (let* ((notes (ensime-all-notes)))
+   ;;      (ensime-assert (> (length notes) 0)))
+   ;;    (ensime-test-cleanup proj))))
 
    (ensime-async-test
     "Verify re-typecheck on save-buffer."
@@ -1338,114 +1237,114 @@
          (ensime-externalize-offset (ensime-test-after-label "2"))))
       (ensime-test-cleanup proj))))
 
-   ;; (ensime-async-test
-   ;;  "Test interactive search."
-   ;;  (let* ((proj (ensime-create-tmp-project
-   ;;                ensime-tmp-project-hello-world)))
-   ;;    (ensime-test-init-proj proj))
-
-   ;;  ((:connected))
-   ;;  ((:compiler-ready :full-typecheck-finished :indexer-ready)
-   ;;   (ensime-test-with-proj
-   ;;    (proj src-files)
-   ;;    ;; Prevent a previous search from affecting this test
-   ;;    (setq ensime-search-text "")
-   ;;    (ensime-search)
-   ;;    (insert "scala.collection.immutable.Vector")))
-
-   ;;  ((:search-buffer-populated)
-   ;;   (ensime-test-with-proj
-   ;;    (proj src-files)
-
-   ;;    (with-current-buffer ensime-search-target-buffer-name
-   ;;      ;; uncomment to see the results (e.g. if they change due to server improvements)
-   ;;      ;;(message "%s" (buffer-string))
-   ;;      (goto-char 1)
-   ;;      (ensime-assert (search-forward-regexp "scala.collection.immutable.Vector[[:space:]]+" nil t))
-   ;;      (goto-char 1)
-   ;;      ;; I don't necessarilly agree with these results, indeed they will change when
-   ;;      ;; we refactor the search backend.
-   ;;      (ensime-assert (search-forward "scala.collection.immutable.VectorIterator" nil t)))
-
-   ;;    (ensime-search-quit)
-   ;;    (ensime-test-cleanup proj))))
-
-
    (ensime-async-test
-    "Test misc operations on unsaved source file."
-    (let* ((proj (ensime-create-tmp-project '())))
+    "Test interactive search."
+    (let* ((proj (ensime-create-tmp-project
+                  ensime-tmp-project-hello-world)))
       (ensime-test-init-proj proj))
 
     ((:connected))
     ((:compiler-ready :full-typecheck-finished :indexer-ready)
      (ensime-test-with-proj
       (proj src-files)
-      (let ((path (expand-file-name "src/main/scala/test/Test.scala" (plist-get proj :root-dir))))
-	(ensime-test-var-put :path path)
-        (make-directory (file-name-directory path) t)
-        (find-file path)
-        (insert (ensime-test-concat-lines
-                                 "package test"
-                                 "class A(value:String){"
-                                 "def hello(){"
-                                 "  println/*1*/(1)"
-                                 "  /*2*/"
-                                 "}"
-                                 "}"))
-	(ensime-mode)
-        (ensime-assert-equal (ensime-owning-connection-for-source-file path)
-                             (ensime-owning-connection-for-rootdir
-                              (plist-get proj :root-dir)))
+      ;; Prevent a previous search from affecting this test
+      (setq ensime-search-text "")
+      (ensime-search)
+      (insert (propertize "scala.collection.immutable.Vector" 'face 'italic))))
 
-        (ensime-assert (= (length (ensime-all-notes)) 0))
-
-	;; Verify nothing we did caused the file to be written.
-	(ensime-assert (not (file-exists-p path)))
-	)))
-
-    ((:full-typecheck-finished :region-sem-highlighted)
+    ((:search-buffer-populated)
      (ensime-test-with-proj
       (proj src-files)
-      (let ((path (ensime-test-var-get :path)))
-	(find-file path)
-        (ensime-assert (= (length (ensime-all-notes)) 0))
-	(goto-char (ensime-test-before-label "2"))
-        (insert "prin")
 
-        (ensime-typecheck-current-buffer)
-        (ensime-sem-high-refresh-buffer)
+      (with-current-buffer ensime-search-target-buffer-name
+        ;; uncomment to see the results (e.g. if they change due to server improvements)
+        ;;(message "%s" (buffer-string))
+        (goto-char 1)
+        (ensime-assert (search-forward-regexp "scala.collection.immutable.Vector[[:space:]]+" nil t))
+        (goto-char 1)
+        ;; I don't necessarilly agree with these results, indeed they will change when
+        ;; we refactor the search backend.
+        (ensime-assert (search-forward "scala.collection.immutable.VectorIterator" nil t)))
 
-	;; Verify nothing we did caused the file to be written.
-	(ensime-assert (not (file-exists-p path)))
-        )))
+      (ensime-search-quit)
+      (ensime-test-cleanup proj))))
 
-    ((:full-typecheck-finished :region-sem-highlighted)
-     (ensime-test-with-proj
-      (proj src-files)
-      (let ((path (ensime-test-var-get :path)))
-	(find-file path)
 
-	;; Auto typecheck should catch unrecognized symbol
-	(ensime-assert (> (length (ensime-all-notes)) 0))
+   ;; (ensime-async-test
+   ;;  "Test misc operations on unsaved source file."
+   ;;  (let* ((proj (ensime-create-tmp-project '())))
+   ;;    (ensime-test-init-proj proj))
 
-	;; Auto semantic highlighting should have kicked in
-	(goto-char (ensime-test-before-label "1"))
-	(ensime-assert (memq 'functionCall (ensime-sem-high-sym-types-at-point)))
+   ;;  ((:connected))
+   ;;  ((:compiler-ready :full-typecheck-finished :indexer-ready)
+   ;;   (ensime-test-with-proj
+   ;;    (proj src-files)
+   ;;    (let ((path (expand-file-name "src/main/scala/test/Test.scala" (plist-get proj :root-dir))))
+   ;;  (ensime-test-var-put :path path)
+   ;;      (make-directory (file-name-directory path) t)
+   ;;      (find-file path)
+   ;;      (insert (ensime-test-concat-lines
+   ;;                               "package test"
+   ;;                               "class A(value:String){"
+   ;;                               "def hello(){"
+   ;;                               "  println/*1*/(1)"
+   ;;                               "  /*2*/"
+   ;;                               "}"
+   ;;                               "}"))
+   ;;  (ensime-mode)
+   ;;      (ensime-assert-equal (ensime-owning-connection-for-source-file path)
+   ;;                           (ensime-owning-connection-for-rootdir
+   ;;                            (plist-get proj :root-dir)))
 
-	;; Completion should work
-	(goto-char (ensime-test-before-label "2"))
-	(let* ((candidates (ensime--test-completions)))
-          (ensime-assert (member "println" candidates)))
+   ;;      (ensime-assert (= (length (ensime-all-notes)) 0))
 
-	;; Verify nothing we did caused the file to be written.
-	(ensime-assert (not (file-exists-p path)))
+   ;;  ;; Verify nothing we did caused the file to be written.
+   ;;  (ensime-assert (not (file-exists-p path)))
+   ;;  )))
 
-	;; Extra steps to kill unsaved file without complaint.
-	(set-buffer-modified-p nil)
-	(kill-buffer nil)
+   ;;  ((:full-typecheck-finished :region-sem-highlighted)
+   ;;   (ensime-test-with-proj
+   ;;    (proj src-files)
+   ;;    (let ((path (ensime-test-var-get :path)))
+   ;;  (find-file path)
+   ;;      (ensime-assert (= (length (ensime-all-notes)) 0))
+   ;;  (goto-char (ensime-test-before-label "2"))
+   ;;      (insert "prin")
 
-	(ensime-test-cleanup proj))))
-    )
+   ;;      (ensime-typecheck-current-buffer)
+   ;;      (ensime-sem-high-refresh-buffer)
+
+   ;;  ;; Verify nothing we did caused the file to be written.
+   ;;  (ensime-assert (not (file-exists-p path)))
+   ;;      )))
+
+   ;;  ((:full-typecheck-finished :region-sem-highlighted)
+   ;;   (ensime-test-with-proj
+   ;;    (proj src-files)
+   ;;    (let ((path (ensime-test-var-get :path)))
+   ;;  (find-file path)
+
+   ;;  ;; Auto typecheck should catch unrecognized symbol
+   ;;  (ensime-assert (> (length (ensime-all-notes)) 0))
+
+   ;;  ;; Auto semantic highlighting should have kicked in
+   ;;  (goto-char (ensime-test-before-label "1"))
+   ;;  (ensime-assert (memq 'functionCall (ensime-sem-high-sym-types-at-point)))
+
+   ;;  ;; Completion should work
+   ;;  (goto-char (ensime-test-before-label "2"))
+   ;;  (let* ((candidates (ensime--test-completions)))
+   ;;        (ensime-assert (member "println" candidates)))
+
+   ;;  ;; Verify nothing we did caused the file to be written.
+   ;;  (ensime-assert (not (file-exists-p path)))
+
+   ;;  ;; Extra steps to kill unsaved file without complaint.
+   ;;  (set-buffer-modified-p nil)
+   ;;  (kill-buffer nil)
+
+   ;;  (ensime-test-cleanup proj))))
+   ;;  )
 
    (ensime-async-test
     "Test add import."
@@ -1725,111 +1624,91 @@
       (ensime-test-cleanup proj)
       )))
 
-      ;; (ensime-async-test
-      ;;  "Test debugging scala project."
-      ;;  ;; these test projects should really just be explicitly defined in the repo
-      ;;  (let* ((proj (ensime-create-tmp-project
-      ;;                `((:name
-      ;;                   "test/Test.scala"
-      ;;                   :contents ,(ensime-test-concat-lines
-      ;;                               "package test"
-      ;;                               "object Test {"
-      ;;                               "  def main(args: Array[String]) {"
-      ;;                               "    val a = \"cat\""
-      ;;                               "    val b = \"dog\""
-      ;;                               "    val c = \"bird\""
-      ;;                               "    println(a + b + c)"
-      ;;                               "  }"
-      ;;                               "}")))))
-      ;;         (target    (car (plist-get proj :targets)))
-      ;;         (src-files (plist-get proj :src-files)))
-      ;;    (ensime-create-file
-      ;;     (expand-file-name "build.sbt" (plist-get proj :root-dir))
-      ;;     (ensime-test-concat-lines
-      ;;      "import sbt._"
-      ;;      ""
-      ;;      "name := \"test\""
-      ;;      ""
-      ;;      "scalacOptions += \"-g:notailcalls\""
-      ;;      ""
-      ;;      (concat "scalaVersion := \"" ensime--test-scala-version "\"")
-      ;;      (concat "scalaBinaryVersion := \"" (ensime--scala-binary-version ensime--test-scala-version) "\"")
-      ;;      ))
-      ;;    (assert ensime-sbt-command)
-      ;;    (let ((default-directory (file-name-as-directory (plist-get proj :root-dir))))
-      ;;      (assert (= 0 (apply 'call-process ensime-sbt-command nil
-      ;;                          "*sbt-test-compilation*" nil '("compile")))))
-      ;;    (assert (directory-files (concat target "/test") nil "class$"))
-      ;;    (ensime-test-init-proj proj))
-
-      ;;  ((:connected))
-      ;;  ((:compiler-ready :full-typecheck-finished)
-      ;;   (ensime-test-with-proj
-      ;;    (proj src-files)
-      ;;    (ensime-rpc-debug-set-break buffer-file-name 7)
-      ;;    ;; we could also use the ensime-sbt debugging launcher here
-      ;;    (let ((debugging (start-process
-      ;;                      "debugging"
-      ;;                      "*debugging*"
-      ;;                      "java"
-      ;;                      "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
-      ;;                      "-classpath" (concat (ensime--extract-scala-library-jar)
-      ;;                                           ensime--classpath-separator
-      ;;                                           (car (plist-get proj :targets)))
-      ;;                      "test.Test"))
-      ;;          (attach (lambda (p text)
-      ;;                    (when (s-contains? "Listening for transport dt_socket at address: 5005" text)
-      ;;                      (set-process-filter p nil)
-      ;;                      (ensime-db-attach "127.0.0.1" "5005")))))
-      ;;      (set-process-filter debugging attach))))
-
-      ;;  ;; this doesn't always arrive
-      ;;  ;;(:debug-event evt (equal (plist-get evt :type) 'threadStart))
-
-      ;;  (:debug-event evt (equal (plist-get evt :type) 'breakpoint)
-      ;;                (ensime-test-with-proj
-      ;;                 (proj src-files)
-      ;;                 (let* ((thread-id (plist-get evt :thread-id))
-      ;;                        (trace (ensime-rpc-debug-backtrace thread-id 0 -1))
-      ;;                        (pc-file (file-truename (car src-files))))
-      ;;                   (when (eql system-type 'windows-nt)
-      ;;                     (aset pc-file 0 (upcase (aref pc-file 0)))
-      ;;                     (setq pc-file (replace-regexp-in-string "/" "\\\\" pc-file)))
-      ;;                   (ensime-assert trace)
-      ;;                   (let* ((frame-zero (nth 0 (plist-get trace :frames)))
-      ;;                          ;; Remove incidentals...
-      ;;                          (frame (plist-put frame-zero :this-object-id "NA")))
-      ;;                     (ensime-assert-equal
-      ;;                      frame
-      ;;                      `(:index 0 :locals
-      ;;                               ((:index 0 :name "args" :summary "Array[]" :type-name "java.lang.String[]")
-      ;;                                (:index 1 :name "a" :summary "\"cat\"" :type-name "java.lang.String")
-      ;;                                (:index 2 :name "b" :summary "\"dog\"" :type-name "java.lang.String")
-      ;;                                (:index 3 :name "c" :summary "\"bird\"" :type-name "java.lang.String"))
-      ;;                               :num-args 1
-      ;;                               :class-name "test.Test$"
-      ;;                               :method-name "main"
-      ;;                               :pc-location (:file ,pc-file :line 7)
-      ;;                               :this-object-id "NA"))))
-      ;;                 (ensime-rpc-debug-stop)
-      ;;                 (ensime-test-cleanup proj))))
+   (ensime-async-test
+    "Test ensime--make-result-overlay."
+    (let* ((proj (ensime-create-tmp-project
+                  `((:name
+                     "hello_world.scala"
+                     :contents ,(ensime-test-concat-lines
+                                 "sealed trait Foo"
+                                 "object Foo {"
+                                 ""
+                                 ""
+                                 ""
+                                 "}"
+                                 ""))))))
+      (ensime-test-init-proj proj))
+    ((:connected))
+    ((:compiler-ready :full-typecheck-finished)
+     (ensime-test-with-proj
+      (proj src-files)
+      (find-file (car src-files))
+      (ensime--make-result-overlay
+          (format "%S" "overlay")
+        :where (point-min)
+        :duration 'command)
+      (ensime-assert (overlayp (car(overlays-at (point-min)))))
+      (ensime-test-cleanup proj))))
 
    (ensime-async-test
-    "REPL without server."
-    (progn
-      (ensime-test-init-proj
-       (ensime-create-tmp-project '((:name "test.scala" :contents "")))
-       t)
-      (let* ((ensime-prefer-noninteractive t)
-	     (proc (ensime-inf-run-scala)))
-	(ensime-test-var-put :repl-proc proc)))
-    ((:inf-repl-ready)
-     (ensime-inf-quit-interpreter))
-    ((:inf-repl-exit)
-     (let ((proc (ensime-test-var-get :repl-proc)))
-       (ensime-assert-equal (process-status proc) 'exit)
-       (ensime-assert-equal (process-exit-status proc) 0)
-       (ensime-test-with-proj (proj src-files) (ensime-cleanup-tmp-project proj)))))
+    "Test ensime-type-at-point overlay."
+    (let* ((proj (ensime-create-tmp-project
+                  `((:name
+                     "hello_world.scala"
+                     :contents ,(ensime-test-concat-lines
+                                 "sealed trait Foo"
+                                 "object Foo {"
+                                 ""
+                                 "  val a /*1*/ = 1"
+                                 ""
+                                 "}"
+                                 ""))))))
+      (ensime-test-init-proj proj))
+    ((:connected))
+    ((:compiler-ready :full-typecheck-finished)
+     (ensime-test-with-proj
+      (proj src-files)
+      (find-file (car src-files))
+      (ensime-test-eat-label "1")
+      (ensime-type-at-point '(16))
+      (let ((overlays (ensime-test-find-overlays-specifying 'after-string)))
+        (ensime-assert (eq (length overlays) 1))
+                (ensime-assert
+         (string-match "Int" (overlay-get (car overlays)
+                                                         'after-string))))
+      (ensime-test-cleanup proj))))
+
+   (ensime-async-test
+    "Test ensime-print-errors-at-point overlay."
+    (let* ((proj (ensime-create-tmp-project
+                  `((:name
+                     "hello_world.scala"
+                     :contents ,(ensime-test-concat-lines
+                                 "sealed trait Foo"
+                                 "object Foo {"
+                                 ""
+                                 "  val a = /*1*/b"
+                                 ""
+                                 "}"
+                                 ""))))))
+      (ensime-test-init-proj proj))
+    ((:connected))
+    ((:compiler-ready :full-typecheck-finished :notes-added)
+     (ensime-test-with-proj
+      (proj src-files)
+      (find-file (car src-files))
+      (ensime-test-eat-label "1")
+      (ensime-print-errors-at-point '(16))))
+    ((:errors-at-point-printed)
+     (ensime-test-with-proj
+      (proj src-files)
+      (find-file (car src-files))
+      (let ((overlays (ensime-test-find-overlays-specifying 'after-string)))
+        (ensime-assert (eq (length overlays) 1))
+        (ensime-assert
+         (string-match "not found: value b" (overlay-get (car overlays)
+                                                         'after-string))))
+      (ensime-test-cleanup proj))))
 
    (ensime-async-test
     "Ensime unit test dwim."
@@ -1955,68 +1834,17 @@
 	  (apply f)
 	  (ensime-assert-equal (sbt:get-previous-command) command)))
       (ensime-test-cleanup proj))))
-
-   (ensime-async-test
-    "Ensime integration test compile-only."
-    (let* ((proj (ensime-create-tmp-project
-                  `((:name
-                     "apackage/Example.scala"
-                     :relative-to "src/main/scala"
-                     :contents ,(ensime-test-concat-lines
-                                 "package apackage"
-                                 "object Example {"
-                                 "  def foo = println(\"foo\")"
-                                 "}"))
-                    (:name "build.sbt"
-                           :relative-to ""
-                           :contents ,(ensime-test-concat-lines
-                                       (concat "scalaVersion := \"" ensime--test-scala-version "\"")
-                                       (concat "scalaBinaryVersion := \"" (ensime--scala-binary-version ensime--test-scala-version) "\"")
-                                       ""
-                                       "lazy val root ="
-                                       "  Project(\"root\", file(\".\"))"
-                                       )))
-                  nil "root" '("src/main/scala")))
-           (src-files (plist-get proj :src-files)))
-      (assert ensime-sbt-command)
-      (ensime-test-init-proj proj))
-
-    ((:connected))
-    ((:compiler-ready :full-typecheck-finished :indexer-ready)
-     (ensime-test-with-proj
-      (proj src-files)
-      (dolist
-          (tests '(("ensimeCompileOnly" ensime-sbt-do-compile-only)
-                   ))
-        (let* ((module (-> (plist-get proj :config)
-                           (plist-get :subprojects)
-                           -first-item
-                           (plist-get :name)))
-               (command (s-concat module "/" (car tests) " " buffer-file-name))
-               (f (cdr tests)))
-          (apply f)
-          (ensime-assert-equal (sbt:get-previous-command) command)))
-      (ensime-test-cleanup proj))))))
+   ))
 
 (defun ensime-run-all-tests ()
   "Run all regression tests for ensime-mode."
   (interactive)
-  ;; HACK: temporarilly disable exiting, to run the fast suite
-  (setq ensime--test-exit-on-finish--old ensime--test-exit-on-finish)
-  (setq ensime--test-exit-on-finish nil)
 
-  (ensime--update-server
-   ensime--test-scala-version
-   (lambda()
-     (setq ensime--test-exit-on-finish ensime--test-exit-on-finish--old)
-     (when (and ensime--test-had-failures ensime--test-exit-on-finish)
-       (kill-emacs 1))
-     (ensime-run-suite ensime-slow-suite)))
+  (ensime-run-suite ensime-slow-suite)
 
   ;; needed for -batch mode
   (while noninteractive
-    (sit-for 30))
-  )
+    (sit-for 30)))
 
 (defun ensime-run-one-test (key)
   "Run a single test selected by title.

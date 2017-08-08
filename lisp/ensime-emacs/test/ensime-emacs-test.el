@@ -190,7 +190,7 @@
      (should (equal internalized-syms expected)))))
 
 (ert-deftest ensime-emacs-test-path-includes-dir-p ()
-    (unless (find system-type '(windows-nt cygwin))
+  (unless (member system-type '(windows-nt cygwin))
       (let ((d (make-temp-file "ensime_test_proj" t)))
         (make-directory (concat d "/proj/src/main") t)
         (make-directory (concat d "/proj/src/main/java") t)
@@ -230,24 +230,16 @@
         '(:scala-version "test-inf-repl-config"
                          :java-home "/x/y/jdk" :targets ("a") :compile-deps ("b" "c") :runtime-deps ("d" "e")
                          :java-flags ("flag1" "flag2")
+                         :scala-compiler-jars ("/x/y/scala-compiler-2.11.5.jar"
+                                               "/x/y/something-else-1.2.jar"
+                                               "/x/y/scala-reflect-2.11.5.jar")
                          :subprojects
                          ((:targets ("f") :compile-deps ("g") :runtime-deps ("h"))
                           (:targets ("i") :compile-deps ("j" "k") :runtime-deps ("l" "m"))))))
-   (unwind-protect
-       (progn
-         (ensime-write-to-file (ensime-startup-classpath-filename "test-inf-repl-config")
-                               (mapconcat #'identity
-                                          '("/x/y/scala-compiler-2.11.5.jar"
-                                            "/x/y/something-else-1.2.jar"
-                                            "/x/y/scala-reflect-2.11.5.jar")
-                                          ensime--classpath-separator))
-         (should (equal (ensime-inf-repl-config test-config)
-                        `(:java "/x/y/jdk/bin/java"
-                                :java-flags ("flag1" "flag2")
-                                :classpath ,(ensime--build-classpath
-                                             '("/x/y/scala-compiler-2.11.5.jar" "/x/y/scala-reflect-2.11.5.jar"
-                                               "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m"))))))
-     (delete-file (ensime-startup-classpath-filename "test-inf-repl-config")))))
+   (should (equal (ensime-inf-repl-config test-config)
+                  `(:java "/x/y/jdk/bin/java"
+                          :java-flags ("flag1" "flag2")
+                          :classpath "/x/y/scala-compiler-2.11.5.jar:/x/y/something-else-1.2.jar:/x/y/scala-reflect-2.11.5.jar:a:b:c:d:e:f:g:h:i:j:k:l:m")))))
 
 (ert-deftest support-scala-versions ()
   (should (equal (ensime--scala-binary-version "2.10.6")

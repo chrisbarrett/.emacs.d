@@ -33,11 +33,10 @@
 (defun ensime-show-doc-for-symbol-at-point ()
   "Browse to documentation for the symbol at current point."
   (interactive)
-  (let* ((url (ensime-rpc-doc-uri-at-point buffer-file-name (point))))
+  (let* ((url (ensime-rpc-doc-uri-at-point (buffer-file-name-with-indirect) (point))))
     (if url (browse-url (ensime--normalise-url url))
       (message "No documentation found."))))
 
 (provide 'ensime-doc)
 ;; Local Variables:
 ;; End:
-

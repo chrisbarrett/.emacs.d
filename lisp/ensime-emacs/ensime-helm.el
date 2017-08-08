@@ -7,8 +7,15 @@
 ;;
 ;;; Code:
 
+(require 'helm "helm.el" t)
 
-(require 'helm)
+(defun ensime-helm-select-source-position (positions name)
+  "Select one source position element using helm"
+  (let ((name-alist (mapcar (lambda (elem) (cons (ensime-format-source-position (ensime-source-hint-position elem)) elem)) positions)))
+  (helm :sources (helm-build-sync-source name
+                   :candidates name-alist
+                   :fuzzy-match t))))
+
 
 (defun ensime-helm-select-entry (entries name)
   "Select one entry using helm"

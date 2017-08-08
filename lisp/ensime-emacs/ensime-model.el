@@ -45,9 +45,6 @@
 (defun ensime-package-p (info)
   (equal 'package (plist-get info :info-type)))
 
-(defun ensime-type-inspection-p (info)
-  (equal 'typeInspect (plist-get info :info-type)))
-
 (defun ensime-type-name (type)
   ;; legacy method
   (replace-regexp-in-string "\\[.*" ""
@@ -173,6 +170,23 @@
 
 (defun ensime-note-message (note)
   (plist-get note :msg))
+
+(defun ensime-type-ancestors (type)
+  (plist-get type :ancestors))
+
+(defun ensime-type-inheritors (type)
+  (plist-get type :inheritors))
+
+(defun ensime-type-fqn (type)
+  (plist-get type :fqn))
+
+(defun ensime-type-source-position (type)
+  (plist-get type :source-position))
+
+(defun ensime-source-hint-position (hint)
+  (plist-get hint :position))
+
+
 
 (provide 'ensime-model)
 

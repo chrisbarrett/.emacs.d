@@ -14,7 +14,7 @@ filled with a stub test class.
 With an argument, open the test file in another window."
   (interactive "P")
   (block nil
-    (when (ensime-is-test-file buffer-file-name)
+    (when (ensime-is-test-file (buffer-file-name-with-indirect))
       (message "This isn't an implementation file")
       (return))
     (let* ((impl-class
@@ -36,7 +36,7 @@ With an argument, open the test file in another window."
 implementation class. With an argument, open the test file in another window."
   (interactive "P")
   (block nil
-    (unless (ensime-is-test-file buffer-file-name)
+    (unless (ensime-is-test-file (buffer-file-name-with-indirect))
       (message "This isn't a test file")
       (return))
     (let ((test-class (ensime-top-level-class-closest-to-point)))
@@ -53,7 +53,7 @@ implementation class. With an argument, open the test file in another window."
          (case-fold-search nil)
          (module-params
           (cdr
-           (find module-name ensime-goto-test-configs
+           (cl-find module-name ensime-goto-test-configs
                  :test (lambda (m p) (string-match-p (car p) m))))))
     (if (plist-member module-params key)
         (plist-get module-params key)
@@ -81,10 +81,13 @@ or (if the point isn't inside a class definition) the class that follows
 the point. Return nil if no class can be found."
   ;; TODO use an RPC call instead of this cheesy search
   (cl-labels
-      ((pos-of-top-level-class (&optional last-try)
+      ((inside-string? () (nth 3 (syntax-ppss)))
+       (pos-of-top-level-class (&optional last-try)
          (save-excursion
            (save-restriction
              (widen)
+             (while (inside-string?)
+               (goto-char (1- (point))))
              (let ((top-level-sexp (point)))
                ;; Try to go up a sexp until we get an error
                (condition-case nil
@@ -177,8 +180,8 @@ the file with stub code. if the file already exists, simply visit it."
   "Return the name of the file that should contain the test class
 TEST-CLASS-NAME. The current buffer must be the file that contains the
 implementation class."
-  (let* ((impl-base-dir (ensime-source-base-dir-for-file buffer-file-name))
-         (impl-extension (file-name-extension buffer-file-name t))
+  (let* ((impl-base-dir (ensime-source-base-dir-for-file (buffer-file-name-with-indirect)))
+         (impl-extension (file-name-extension (buffer-file-name-with-indirect) t))
          (test-relative-path
           (concat
            (replace-regexp-in-string "\\." "/" test-class-name)
@@ -236,7 +239,7 @@ implementation class."
              (mapcar (lambda (s)
                        (file-name-as-directory (expand-file-name s)))
                      (plist-get module :source-roots))))
-        (when (find impl-dir module-sources :test #'equal)
+        (when (cl-find impl-dir module-sources :test #'equal)
           (return (find-if is-test-dir-fn module-sources)))))))
 
 (defun ensime-goto-test--is-test-dir (dir)

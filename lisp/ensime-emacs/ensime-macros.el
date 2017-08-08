@@ -87,39 +87,6 @@ If PROCESS is not specified, `ensime-connection' is used.
 			   (error "No connection")))
      ,@body))
 
-(defmacro* ensime-with-inspector-buffer ((name object &optional select)
-					 &body body)
-  "Extend the standard popup buffer with inspector-specific bindings."
-  `(ensime-with-popup-buffer
-    (,name t ,select 'ensime-inspector-mode)
-
-    (let ((conn ensime-buffer-connection))
-      (setq ensime-buffer-connection conn))
-
-    (when (not ensime-inspector-paging-in-progress)
-
-      ;; Clamp the history cursor
-      (setq ensime-inspector-history-cursor
-	    (min (- (length ensime-inspector-history) 1)
-		 ensime-inspector-history-cursor))
-      (setq ensime-inspector-history-cursor
-	    (max 0 ensime-inspector-history-cursor))
-
-      ;; Remove all elements preceding the cursor (the 'redo' history)
-      (setq ensime-inspector-history
-	    (subseq ensime-inspector-history
-		    ensime-inspector-history-cursor))
-
-      ;; Add the new history item
-      (push ,object ensime-inspector-history)
-
-      ;; Set cursor to point to the new item
-      (setq ensime-inspector-history-cursor 0)
-
-      )
-    ,@body
-    ))
-
 (defmacro destructure-case (value &rest patterns)
   "Dispatch VALUE to one of PATTERNS.
 A cross between `case' and `destructuring-bind'.
@@ -209,7 +176,7 @@ corresponding values in the CDR of VALUE."
  file's state."
   `(let ((,file-sym (ensime-temp-file-name
 		     (concat ".tmp_" (file-name-nondirectory
-				      buffer-file-name)))))
+				      (buffer-file-name-with-indirect))))))
      (ensime-write-buffer ,file-sym)
      ,@body))
 

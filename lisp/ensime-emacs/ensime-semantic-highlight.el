@@ -128,17 +128,6 @@
         (when info (ensime-sem-high-apply-properties info))
         (ensime-event-sig :region-sem-highlighted nil)))))
 
-(defun ensime-sem-high-inspect-highlight ()
-  (interactive)
-  (let ((ovs (overlays-at (point))))
-    (message "%S" (mapcar
-		   (lambda (ov)
-		     (format "%S %S %S"
-			     (overlay-get ov 'face)
-			     (overlay-get ov 'ensime-sem-high-overlay)
-			     (overlay-get ov 'ensime-sym-type)))
-		   ovs))))
-
 (defun ensime-sem-high-sym-types-at-point (&optional point)
   (interactive)
   (let ((ovs (overlays-at (or point (point)))))
