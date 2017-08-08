@@ -138,6 +138,11 @@ prompt for REMOTE if it cannot be determined."
       (cb-emacs--with-signal-handlers "Importing subtree..."
         (magit-run-git "subtree" "-q" "pull" "--prefix" prefix remote version "--squash" "-m" commit-message))
 
+      (cb-emacs--with-signal-handlers "Removing existing byte-compiled files..."
+        (ignore-errors
+          (let ((elc-files (f-files fullpath (lambda (f) (f-ext? f "elc")) t)))
+            (-each elc-files #'f-delete))))
+
       (cb-emacs--with-signal-handlers "Compiling..."
         (byte-recompile-directory fullpath 0))
 
