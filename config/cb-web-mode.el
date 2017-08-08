@@ -223,6 +223,16 @@
     (add-to-list 'aggressive-indent-dont-indent-if '(cb-web--in-flow-strict-object-type?))
     (add-hook 'aggressive-indent-stop-here-hook #'cb-web--in-flow-strict-object-type?)))
 
+;; Avro file mode
+
+(autoload 'web-mode "web-mode")
+
+(define-derived-mode avro-mode web-mode "Avro"
+  "Derived mode for editing Avro schema files."
+  (setq-local web-mode-content-type "json"))
+
+(add-to-list 'auto-mode-alist '("\\.avsc" . avro-mode))
+
 
 (provide 'cb-web-mode)
 
