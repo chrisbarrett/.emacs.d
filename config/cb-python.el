@@ -120,8 +120,10 @@
     (add-hook 'python-mode-hook 'anaconda-eldoc-mode))
   :config
   (progn
-    (setq anaconda-mode-installation-directory
-          (f-join cb-emacs-cache-directory "anaconda-mode"))
+    (let ((dir (f-join cb-emacs-cache-directory "anaconda-mode")))
+      (f-mkdir dir)
+      (setq anaconda-mode-installation-directory dir))
+
 
     ;; Main keybindings
 
