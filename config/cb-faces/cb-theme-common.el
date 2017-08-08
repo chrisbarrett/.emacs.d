@@ -275,6 +275,13 @@
      ((((background light)) :weight demibold :foreground ,cb-theme-common-blue)
       (((background dark)) :weight demibold :foreground ,cb-theme-common-orange)))
 
+    (hexl-ascii-region
+     ((t (:inherit highlight-thing))))
+
+    (hexl-address-region
+     ((t (:inherit highlight-thing :underline t))))
+
+
     (ahs-face
      ((t :inherit highlight)))
 
