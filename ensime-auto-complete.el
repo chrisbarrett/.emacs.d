@@ -214,6 +214,7 @@ be used later to give contextual help when entering arguments."
     (symbol . "f")
     ))
 
+;;;###autoload
 (defun ensime-ac-enable ()
   (when ensime-ac-override-settings
     (make-local-variable 'ac-sources)

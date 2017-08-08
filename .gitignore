@@ -4,6 +4,9 @@
 
 .cask
 ensime-pkg.el
+ensime-autoloads.el
+
+dist
 
 TAGS
 emacs.d

@@ -66,6 +66,11 @@ The buffer also uses the minor-mode `ensime-popup-buffer-mode'."
   (multiple-value-setq (ensime-buffer-connection)
     buffer-vars))
 
+(defun ensime-popup-buffer-p (buffer)
+  "Is this an ensime popup buffer?"
+  (with-current-buffer buffer
+    ensime-is-popup-buffer))
+
 (defun ensime-display-popup-buffer (select)
   "Display the current buffer.
    Save the selected-window in a buffer-local variable, so that we
@@ -85,7 +90,7 @@ The buffer also uses the minor-mode `ensime-popup-buffer-mode'."
 	(set (make-local-variable 'ensime-popup-restore-data)
 	     (list new-window
 		   selected-window
-		   (cdr (find new-window old-windows :key #'car)))))
+		   (cdr (cl-find new-window old-windows :key #'car)))))
       (when select
 	(select-window new-window))
       new-window)))
