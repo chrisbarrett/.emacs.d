@@ -182,7 +182,8 @@
     (bind-key [remap c-electric-backspace] 'sp-backward-delete-char smartparens-strict-mode-map)
 
     (with-eval-after-load 'evil
-      (define-key (with-no-warnings evil-insert-state-map) ")" #'sp-up-sexp))
+      (define-key evil-insert-state-map (kbd ")") #'sp-up-sexp)
+      (define-key evil-normal-state-map (kbd "D") #'sp-kill-hybrid-sexp))
 
     ;; Configure global pairs.
 
