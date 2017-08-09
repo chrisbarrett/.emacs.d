@@ -101,7 +101,6 @@
     "pf" #'counsel-projectile-find-file
     "pd" #'counsel-projectile-find-dir
     "pb" #'counsel-projectile-switch-to-buffer
-    "pp" #'counsel-projectile-switch-project
     "/"  #'counsel-projectile-rg)
 
   :config

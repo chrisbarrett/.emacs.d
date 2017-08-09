@@ -170,6 +170,7 @@ If argument INTERACTIVE-P is set, log additional information."
 (use-package cb-latex)
 (use-package cb-python)
 (use-package cb-gud)
+(use-package cb-eyebrowse)
 
 (use-package personal-config
   :load-path "~/Sync/emacs")
