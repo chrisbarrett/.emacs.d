@@ -14,9 +14,23 @@
   (require 'cb-use-package-extensions))
 
 (require 'spacemacs-keys)
+(require 'evil)
 
 (use-package smartparens
   :defer t
+
+  :functions (sp-local-pair
+              sp-pair
+              sp-get-pair
+              sp--get-opening-regexp
+              sp--get-closing-regexp
+              sp-get-enclosing-sexp)
+  :commands (smartparens-mode
+             sp-up-sexp
+             sp-kill-hybrid-sexp
+             smartparens-strict-mode
+             smartparens-global-strict-mode
+             show-smartparens-global-mode)
 
   :preface
   (progn
@@ -254,18 +268,7 @@
     ;; Enable modes.
 
     (smartparens-global-strict-mode +1)
-    (show-smartparens-global-mode +1))
-
-  :functions (sp-local-pair
-              sp-pair
-              sp-get-pair
-              sp--get-opening-regexp
-              sp--get-closing-regexp)
-  :commands (smartparens-mode
-             sp-up-sexp
-             smartparens-strict-mode
-             smartparens-global-strict-mode
-             show-smartparens-global-mode))
+    (show-smartparens-global-mode +1)))
 
 (use-package which-key
   :config
