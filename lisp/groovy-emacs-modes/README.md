@@ -1,37 +1,61 @@
 # Emacs Modes for Groovy and Grails
 
+[![Travis-CI](https://travis-ci.org/Groovy-Emacs-Modes/groovy-emacs-modes.svg?branch=master)](https://travis-ci.org/Groovy-Emacs-Modes/groovy-emacs-modes)
+[![Coverage Status](https://coveralls.io/repos/github/Groovy-Emacs-Modes/groovy-emacs-modes/badge.svg?branch=master)](https://coveralls.io/github/Groovy-Emacs-Modes/groovy-emacs-modes?branch=master)
 [![Licence](https://img.shields.io/badge/license-GPL_3-green.svg)](https://www.gnu.org/licenses/gpl-3.0.txt)
 [![MELPA](https://melpa.org/packages/groovy-mode-badge.svg)](https://melpa.org/#/groovy-mode)
 [![MELPA](https://stable.melpa.org/packages/groovy-mode-badge.svg)](https://stable.melpa.org/#/groovy-mode)
 
-This is a collection of (X)Emacs modes for use with Groovy-related technology -- Groovy, Grails, etc.
+This repository contains Emacs modes for Groovy and Grails. The major
+features are syntax highlighting with `groovy-mode`, REPL integration
+with `run-groovy` and Grails project navigation with `grails-mode`.
 
-These modes are currently known to work with Emacs 24 and believed to work with Emacs 23.
+## Installation
 
-The Groovy major mode is a derived mode of Java mode which is itself a derived mode in CC Mode. Inspiration
-came from Dylan R.E. Moonfire's C# mode.
+These modes should work with Emacs 23, but we recommend Emacs 24+.
 
-The best way of installing these modes, at least for Emacs 24, is to use the packaging system. Add MELPA or
-MELPA Stable to the list of repositories to access this mode. For those who want only formal, tagged
-releases use MELPA Stable:
+These packages are available on [MELPA](http://melpa.org/). To use
+rolling releases:
 
-    (require 'package)
-    (add-to-list 'package-archives
-             '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-    (package-initialize)
-
-For those who want rolling releases as they happen use MELPA:
-
-    (require 'package)
-    (add-to-list 'package-archives
+``` emacs-lisp
+(require 'package)
+(add-to-list 'package-archives
              '("melpa" . "https://melpa.org/packages/") t)
-    (package-initialize)
+(package-initialize)
+```
 
-and then use M-x package-list-package to get to the package listing and install from there. MELPA tracks
-this Git repository and updates relatively soon after each commit or formal release. For more detail on
-setting up see [MELPA Getting Started](https://melpa.org/#/getting-started).
+Alternatively, if you just want stable releases:
 
-The master of all the material is the Git repository at
-https://github.com/Groovy-Emacs-Modes/groovy-emacs-modes .
+``` emacs-lisp
+(require 'package)
+(add-to-list 'package-archives
+             '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+(package-initialize)
+```
 
-This software is licenced using GNU General Public Licence version 3.
+## A Bit of History
+
+This mode was originally developed as a derived mode of `java-mode` (a derived mode of `cc-mode`) inspired
+by Dylan R.E. Moonfire's C# mode. There are however what seem to be insurmountable obstacles to making
+`groovy-mode` based on CC Mode work as people want.  Wilfred Hughes created a new `groovy-mode` (standalone)
+independent of CC Mode.
+
+The CC Mode version of `groovy-mode` used to be master, and is the basis for the 1.0.1 version on MELPA. The
+work on standlone `groovy-mode` happened on a feature branch. As of 2017-05-08T08:00+01:00, the CC Mode
+version has been switched to the 1.X branch and the standalone version is now master and will be released as
+2.0.0 as soon as viable.
+
+## cc-mode derived mode
+
+The CC Mode version of `groovy-mode` is configured by overriding `cc-mode`
+settings, such as `c-basic-offset`.
+
+## Standalone mode (the default)
+
+The new, and now default, standalone mode provides more robust highlighting and indentation, plus niceties
+like string interpolation highlighting, compared to the CC Mode based version..
+
+![screenshot](groovy-mode.png)
+
+You can configure the standalone `groovy-mode` with `M-x customize RET
+groovy-mode RET`.
