@@ -4,12 +4,11 @@
 
 ;;  Author: Russel Winder <russel@winder.org.uk>, 2006–
 ;;	Jim Morris <morris@wolfman.com>, 2009–
+;;	Wilfred Hughes <me@wilfred.me.uk>, 2017–
 ;;  Maintainer:  Russel Winder <russel@winder.org.uk>
 ;;  Created: 2006-08-01
-;;  Version: 201605040859
 ;;  Keywords: languages
-
-;;;; NB Version number is date and time yyyymmddhhMM UTC.
+;; Package-Requires: ((s "1.11.0"))
 
 ;;  This program is free software: you can redistribute it and/or modify
 ;;  it under the terms of the GNU General Public License as published by
@@ -36,11 +35,6 @@
 ;;  was used) and C# Mode from Dylan R. E. Moonfire <contact@mfgames.com> (the 0.5.0 source was used).  This
 ;;  code may contain some code fragments from those sources that was cut-and-pasted then edited.  All other
 ;;  code was newly entered by the author.  Obviously changes have been made since then.
-;;
-;;  NB  This mode requires CC Mode 5.31 or later for the virtual semicolon code to work.
-;;
-;;  There appears to be a problem in CC Mode 5.31 such that csharp-mode and groovy-mode crash XEmacs 21.4 if
-;;  the files are byte compiled.
 
 ;;; Bugs:
 ;;  Bug tracking is currently handled using the GitHub issue tracker at
@@ -51,22 +45,7 @@
 ;;  system based on commits to the mainline.
 
 ;;; Notes:
-;;  Need to think about the `*.', `?.', `.&' and `.@' operators.  Also, `..' and `..<'.  This probably means
-;;  changing `c-after-id-concat-ops' but also `c-operators'.
-;;
-;;  Need to deal with operator overloading (groovy has this but Java does not) so `c-overloadable-operators'
-;;  needs investigating.
-;;
-;;  Need to investigate how to support the triple string delimiters for multi-line strings.
-;;
 ;;  Should we support GString / template markup ( e.g. `<%' and `%>') specially?
-;;
-;;  Need to think whether Groovy needs a different c-decl-prefix-re compared to Java.  Certainly, Java will
-;;  have to change to handle the generics.
-;;
-;;  Probably need to change `c-block-prefix-disallowed-chars' as Groovy is not the same as Java.
-;;
-;;  Probably need to change `c-type-decl-suffix-key' as Groovy is not the same as Java.
 
 ;;;  TODO:
 ;;   Issues with this code are managed via the project issue management
@@ -79,567 +58,587 @@
 ;;----------------------------------------------------------------------------
 ;;; Code:
 
-(require 'cc-mode)
-
-;; CSharp mode comment says: These are only required at compile time to get the sources for the language
-;; constants.  (The cc-fonts require and the font-lock related constants could additionally be put inside an
-;; (eval-after-load "font-lock" ...) but then some trickery is necessary to get them compiled.)
-(eval-when-compile
-    (require 'cc-mode)
-    (require 'cc-fonts)
-    (require 'cc-langs)
-    (require 'cc-bytecomp)
-
-    ; There seems to be a problem in Emacs 24.3, 24.4 and 24.5 when batch-byte-compiling this file. It's to
-    ; do with one of the symbols c-lang-defconst and c-identifier-ops. These stem from CC Mode. From
-    ; http://debbugs.gnu.org/db/18/18845.html it seems there is a bug that should be fixed in 24.5.
-    ; Whatever the claim, pragmatically it seems the bug remains. As a hack simply raise the version
-    ; of the fix to 6.
-
-    (if (and (= emacs-major-version 24) (< emacs-minor-version 6))
-        (require 'cl))
-)
-
-(eval-and-compile
-  (c-add-language 'groovy-mode 'java-mode))
-
-;;  Groovy allows `?.' as well as `.' for creating identifiers.
-(c-lang-defconst c-identifier-ops
-                 groovy '((left-assoc "." "?.")))
-
-;; Groovy allows operators such as `*.', `?.', `.&' and `.@'.  Java mode puts `*' here to deal with
-;; import statement usage which we need for Groovy.
-(c-lang-defconst c-after-id-concat-ops
-  groovy '( "*" "&" "@" ))
-
-;;;;  Should really do something with `c-string-escaped-newlines' and `c-multiline-string-start-char' to
-;;;;  handle the triple delimeter multiline strings.
-
-;; Because of the above we have to redefine `c_operators' because no other language has `.&' and
-;; `.@' operators.
-
-(c-lang-defconst c-operators
-  "List describing all operators, along with their precedence and
-associativity.  The order in the list corresponds to the precedence of
-the operators: The operators in each element is a group with the same
-precedence, and the group has higher precedence than the groups in all
-following elements.  The car of each element describes the type of of
-the operator group, and the cdr is a list of the operator tokens in
-it.  The operator group types are:
-
-'prefix         Unary prefix operators.
-'postfix        Unary postfix operators.
-'postfix-if-paren
-		Unary postfix operators if and only if the chars have
-		parenthesis syntax.
-'left-assoc     Binary left associative operators (i.e. a+b+c means (a+b)+c).
-'right-assoc    Binary right associative operators (i.e. a=b=c means a=(b=c)).
-'right-assoc-sequence
-                Right associative operator that constitutes of a
-                sequence of tokens that separate expressions.  All the
-                tokens in the group are in this case taken as
-                describing the sequence in one such operator, and the
-                order between them is therefore significant.
-
-Operators containing a character with paren syntax are taken to match
-with a corresponding open/close paren somewhere else.  A postfix
-operator with close paren syntax is taken to end a postfix expression
-started somewhere earlier, rather than start a new one at point.  Vice
-versa for prefix operators with open paren syntax.
-
-Note that operators like \".\" and \"->\" which in language references
-often are described as postfix operators are considered binary here,
-since CC Mode treats every identifier as an expression."
-
-  groovy `(
-           ;; Primary.
-           ,@(c-lang-const c-identifier-ops)
-
-             (postfix-if-paren "<" ">") ; Templates.
-
-             (prefix "super")
-
-             ;; Postfix.
-             (left-assoc "." "*." "?." ".&" ".@")
-
-             (postfix "++" "--" "[" "]" "(" ")" "<:" ":>")
-
-             ;; Unary.
-             (prefix "++" "--" "+" "-" "!" "~" "new" "(" ")")
-
-             ;; Multiplicative.
-             (left-assoc "*" "/" "%")
-
-             ;; Additive.
-             (left-assoc "+" "-")
-
-             ;; Shift.
-             (left-assoc "<<" ">>" ">>>")
-
-             ;; Relational.
-             (left-assoc "<" ">" "<=" ">=" "instanceof" "<=>")
-
-             ;; Matching.
-             (left-assoc "=~" "==~" )
-
-             ;; Equality.
-             (left-assoc "==" "!=" )
-
-             ;; Bitwise and.
-             (left-assoc "&")
-
-             ;; Bitwise exclusive or.
-             (left-assoc "^")
-
-             ;; Bitwise or.
-             (left-assoc "|")
-
-             ;; Logical and.
-             (left-assoc "&&")
-
-             ;; Logical or.
-             (left-assoc "||")
-
-             ;; Conditional.
-             (right-assoc-sequence "?" ":")
-
-             ;; Assignment.
-             (right-assoc ,@(c-lang-const c-assignment-operators))
-
-             ;; Exception.
-             ;(prefix "throw") ; Java mode didn't have this but c++ mode does.  Humm...
-
-             ;; Sequence.
-             (left-assoc ",")
-
-             ;; Separator for parameter list and code in a closure.
-             (left-assoc "->")
-             ))
-
-;;  Groovy can overload operators where Java cannot.
-(c-lang-defconst c-overloadable-operators
-                 groovy '("+" "-" "*" "/" "%"
-                          "&" "|" "^" "~" "<<" ">>" ">>>"
-                          "==" "!=" ">" "<" ">=" "<="
-                          "<=>"
-                          "=~" "==~"
-                          "++" "--" "+=" "-=" "*=" "/=" "%="
-                          "&=" "|=" "^=" "~=" "<<=" ">>=" ">>>="
-                          "!" "&&" "||"))
-
-;; Groovy allows newline to terminate a statement unlike Java and like Awk.  We draw on the Awk
-;; Mode `Virtual semicolon material.  The idea is to say when an EOL is a `virtual semicolon,
-;; i.e. a statement terminator.
-
-(when (version< c-version "5.32.2")
-  (c-lang-defconst c-stmt-delim-chars
-                   groovy "^;{}\n\r?:")
-
-  (c-lang-defconst c-stmt-delim-chars-with-comma
-                   groovy "^;,{}\n\r?:"))
-
-;;  Is there a virtual semicolon at POS or point?
-;;
-;;  A virtual semicolon is considered to lie just after the last non-syntactic-whitespace
-;; character on a line where the EOL is the statement terminator.  A real semicolon never
-;; counts as a virtual one.
-(defun groovy-at-vsemi-p ( &optional pos )
-  (save-excursion
-	(let ((pos-or-point (if pos (goto-char pos) (point))))
-	  (if (eq pos-or-point (point-min))
-		  nil
-		(and
-		 (not (char-equal (char-before) ?\;))
-		 (groovy-ws-or-comment-to-eol-p pos-or-point)
-		 (groovy-not-in-statement-p pos-or-point)
-		 (groovy-not-if-or-else-etc-p pos-or-point))))))
-
-(c-lang-defconst c-at-vsemi-p-fn
-                 groovy 'groovy-at-vsemi-p)
-
-;; see if end of line or comment on rest of line
-(defun groovy-ws-or-comment-to-eol-p ( pos )
-  (save-excursion
-    (goto-char pos)
-    (skip-chars-forward " \t")
-       (or
-        (char-equal (char-after) ?\n)
-        (looking-at "/[/*].*"))))
-
-(defun groovy-not-in-statement-p ( pos )
-  (save-excursion
-    (goto-char pos)
-    (if (equal (point) (point-min))
-        nil
-      (backward-char 1)
-      (or
-       (not (looking-at "[=+*%<{:]"))
-       (if (char-equal (char-after) ?>)
-           (if (equal (point) (point-min))
-               nil
-             (char-equal (char-before) ?-)))))))
-
-;; check for case of if(stuff) and nothing else on line
-;; ie
-;; if(x > y)
-;;
-;; if(x < y) do something will not match
-;; else blah blah will not match either
-(defun groovy-not-if-or-else-etc-p ( pos )
-  (save-excursion
-    (goto-char pos)
-	(back-to-indentation)
-	(not
-	 (or
-	  (and (looking-at "if") ; make sure nothing else on line
-		   (progn (forward-sexp 2)
-				  (groovy-ws-or-comment-to-eol-p (point))))
-	  (and (looking-at "}?else")
-		   (progn (forward-char)
-				  (forward-sexp 1)
-				  (groovy-ws-or-comment-to-eol-p (point))))))))
-
-(defun groovy-vsemi-status-unknown-p () nil)
-
-(c-lang-defconst c-vsemi-status-unknown-p-fn
-                 groovy 'c-groovy-vsemi-status-unknown-p)
-
-
-;;  Java does not do this but perhaps it should?
-(c-lang-defconst c-type-modifier-kwds
-                 groovy '("volatile" "transient"))
-
-(c-lang-defconst c-typeless-decl-kwds
-                 groovy (append (c-lang-const c-class-decl-kwds)
-                                (c-lang-const c-brace-list-decl-kwds)
-                                '("def")))
-
-;;;;  Should we be tinkering with `c-block-stmt-1-key' or `c-block-stmt-2-key' to deal with closures
-;;;;  following what appears to be function calls or even field names?
-
-;; Groovy allows use of `<%' and `%>' in template expressions.
-;(c-lang-defconst c-other-op-syntax-tokens
-;  groovy '( "<%" "%>" ))
-
-;; Groovy does not allow the full set of Java keywords in the modifier category and, of course, there is the
-;; `def' modifier which Groovy introduces to support dynamic typing.  Should `const' be treated
-;; as reserved here as it is in Java?
-(c-lang-defconst c-modifier-kwds
-                 groovy '( "abstract" "def" "final" "private" "protected" "public" "static" "synchronized" ))
-
-;;  Java does not define these pseudo-kewords as keywords, why not?
-
-(c-lang-defconst c-constant-kwds
-  groovy '( "true" "false" "null" ))
-
-;;  Why does Java mode not put `super' into the `c-primary-expr-kwds?
-
-(c-lang-defconst c-primary-expr-kwds
-  groovy '( "this" "super" ))
-
-;;  Groovy does not allow anonymous classes as Java does.
-(c-lang-defconst c-inexpr-class-kwds
-                 groovy nil)
-
-(c-lang-defconst c-inexpr-brace-list-kwds
-                 groovy nil)
-
-;;;;  Should we be changing `c-opt-inexpr-brace-list-key' to deal with closures after function calls and
-;;;;  field expressions?
-
-;; We need to include the "as" for the cast and "in" for for.
-(c-lang-defconst c-other-kwds
-                 groovy '( "in" "as" ))
-
-
-(defconst groovy-font-lock-keywords-1 (c-lang-const c-matchers-1 groovy)
-  "Minimal highlighting for Groovy mode.
-Fontifies nothing except the syntactic fontification of strings and
-comments.")
-
-(defconst groovy-font-lock-keywords-2 (c-lang-const c-matchers-2 groovy)
-  "Fast normal highlighting for Groovy mode.
-In addition to `java-font-lock-keywords-1', this adds fontification of
-keywords, simple types, declarations that are easy to recognize, the
-user defined types on `java-font-lock-extra-types', and the doc
-comment styles specified by `c-doc-comment-style'.")
-
-(defconst groovy-font-lock-keywords-3 (c-lang-const c-matchers-3 groovy)
-  "Accurate normal highlighting for Groovy mode.
-Like `java-font-lock-keywords-2' but detects declarations in a more
-accurate way that works in most cases for arbitrary types without the
-need for `java-font-lock-extra-types'.")
-
-(defvar groovy-font-lock-keywords groovy-font-lock-keywords-3
-  "Default expressions to highlight in Groovy mode.")
-
-(defun groovy-font-lock-keywords-2 ()
-  (c-compose-keywords-list groovy-font-lock-keywords-2))
-(defun groovy-font-lock-keywords-3 ()
-  (c-compose-keywords-list groovy-font-lock-keywords-3))
-(defun groovy-font-lock-keywords ()
-  (c-compose-keywords-list groovy-font-lock-keywords))
-
-(defvar groovy-mode-syntax-table nil
+(require 's)
+
+(defvar groovy-mode-syntax-table
+  (let ((table (make-syntax-table)))
+    ;; Operators
+    ;; http://docs.groovy-lang.org/latest/html/documentation/#groovy-operators
+    (dolist (i '(?+ ?- ?* ?/ ?% ?& ?| ?^ ?! ?< ?> ?~ ?@ ?=))
+      (modify-syntax-entry i "." table))
+    ;; Strings
+    (modify-syntax-entry ?\" "\"" table)
+    (modify-syntax-entry ?\\ "\\" table)
+    (modify-syntax-entry ?' "\"" table)
+    ;; Comments
+    (modify-syntax-entry ?/ ". 124b" table)
+    (modify-syntax-entry ?* ". 23" table)
+    (modify-syntax-entry ?\n "> b" table)
+    (modify-syntax-entry ?\^m "> b" table)
+    table)
   "Syntax table used in Groovy mode buffers.")
-(or groovy-mode-syntax-table
-    (setq groovy-mode-syntax-table
-	  (funcall (c-lang-const c-make-mode-syntax-table groovy))))
 
-;(modify-syntax-entry ?: "_" groovy-mode-syntax-table)
-
-(defvar groovy-mode-abbrev-table nil
-  "Abbreviation table used in groovy-mode buffers.")
-(c-define-abbrev-table 'groovy-mode-abbrev-table
-  ;; Keywords that if they occur first on a line might alter the syntactic context, and which
-  ;; therefore should trigger reindentation when they are completed.
-  '(("else" "else" c-electric-continued-statement 0)
-    ("while" "while" c-electric-continued-statement 0)
-    ("catch" "catch" c-electric-continued-statement 0)
-    ("finally" "finally" c-electric-continued-statement 0)))
-
-;;  Jim Morris proposed changing to the following definition of groovy-mode-map 2009-11-27, but this change
-;;  has not made so as to continue to use the same code structure as still used in the Java mode.
-
-;(defvar groovy-mode-map (let ((map (c-make-inherited-keymap)))
-;                                                  ;; Add bindings which are only useful for Groovy
-;                                                  map)
-;  "Keymap used in groovy-mode buffers.")
-
-(defvar groovy-mode-map ()
-  "Keymap used in groovy-mode buffers.")
-(if groovy-mode-map
-    nil
-  (setq groovy-mode-map (c-make-inherited-keymap))
-  ;; add bindings which are only useful for Groovy
-  )
-
-;(easy-menu-define c-groovy-menu groovy-mode-map "Groovy Mode Commands"
-;                (cons "Groovy" (c-lang-const c-mode-menu groovy)))
-
-;;----------------------------------------------------------------------------
-;;;###autoload (add-to-list 'auto-mode-alist '("\\.g\\(?:ant\\|roovy\\|radle\\)\\'" . groovy-mode))
-;;;###autoload (add-to-list 'interpreter-mode-alist '("groovy" . groovy-mode))
-
-;; Custom variables
 ;;;###autoload
-(defcustom groovy-mode-hook nil
-  "*Hook called by `groovy-mode'."
-  :type 'hook
-  :group 'c)
+(add-to-list 'auto-mode-alist '("\\.g\\(?:ant\\|roovy\\|radle\\)\\'" . groovy-mode))
+(add-to-list 'auto-mode-alist '("Jenkinsfile" . groovy-mode))
+;;;###autoload
+(add-to-list 'interpreter-mode-alist '("groovy" . groovy-mode))
 
-;;; The following are used to overide cc-mode indentation behavior to match groovy
+(defconst groovy-type-regexp
+  (rx symbol-start
+      (group
+       (or
+        ;; Treat Foo, FooBar and FFoo as type names, but not FOO.
+        (seq (+ upper) lower (0+ (or (syntax symbol) (syntax word))))
+        "byte"
+        "short"
+        "int"
+        "long"
+        "float"
+        "double"
+        "boolean"
+        "char"
+        "void"))
+      symbol-end
+      (? "[]"))
+  "Matches types, where the name is first group.")
 
-;; if we are in a closure that has an argument eg ends with -> (excluding comment) then
-;; change indent else lineup with previous one
-(defun groovy-mode-fix-closure-with-argument (langelem)
-  (save-excursion
-	(back-to-indentation)
-	(c-backward-syntactic-ws)
-	(backward-char 2)
-	(if (looking-at "->")                                  ; if the line has a -> in it
-		(vector (+ (current-indentation) c-basic-offset))  ; then indent from base
-	  0)))
+(defvar groovy-symbol-regexp
+  (rx
+   symbol-start
+   (group (+ (or (syntax word) (syntax symbol))))
+   symbol-end)
+  "A variable name or a type name.")
 
-;; A helper function from: http://mihai.bazon.net/projects/emacs-javascript-mode/javascript.el
-;; Originally named js-lineup-arglist, renamed to groovy-lineup-arglist
-(defun groovy-lineup-arglist (langelem)
-  ;; the "DWIM" in c-mode doesn't Do What I Mean.
-  ;; see doc of c-lineup-arglist for why I redefined this
-  (save-excursion
-    (let ((indent-pos (point)))
-      ;; Normal case.  Indent to the token after the arglist open paren.
-      (goto-char (c-langelem-2nd-pos c-syntactic-element))
-      (if (and c-special-brace-lists
-               (c-looking-at-special-brace-list))
-          ;; Skip a special brace list opener like "({".
-          (progn (c-forward-token-2)
-                 (forward-char))
-        (forward-char))
-      (let ((arglist-content-start (point)))
-        (c-forward-syntactic-ws)
-        (when (< (point) indent-pos)
-          (goto-char arglist-content-start)
-          (skip-chars-forward " \t"))
-        (vector (current-column))))))
-
-(defun is-groovy-mode ()
-  "return t if we are in groovy mode else nil"
-  (eq major-mode 'groovy-mode))
-
-(defun groovy-is-label (the-list)
-  (let ((ret nil))
-    (dolist (elt the-list)
-      (if (eq 'label (car elt))
-	  (setq ret t)))
-    ret))
-
-(defun groovy-backtrack-open-paren ()
-  (let ((counter 0))
-    (while (<= 0 counter)
-      (skip-chars-backward "^}]){[(")
-      (cond ((or (equal ?\] (preceding-char))
-		 (equal ?\) (preceding-char))
-		 (equal ?} (preceding-char)))
-	     (setq counter (1+ counter)))
-	    ((or (equal ?\[ (preceding-char))
-		 (equal ?\( (preceding-char))
-		 (equal ?{ (preceding-char)))
-	     (setq counter (1- counter))))
-      (backward-char 1))))
-
-(defun groovy-named-parameter-list-anchor-points ()
-  (save-excursion
-    (beginning-of-line)
-    (c-backward-syntactic-ws)
-    (if (equal ?, (preceding-char))
-	(let* ((second-anchor (progn (groovy-backtrack-open-paren)
-				     (point)))
-	       (first-anchor (progn (beginning-of-line)
-				    (c-forward-syntactic-ws)
-				    (point))))
-	  (cons first-anchor second-anchor))
-      nil)))
-
-;; use defadvice to override the syntactic type if we have a
-;; statement-cont, see if previous line has a virtual semicolon and if
-;; so make it statement.
-(defadvice c-guess-basic-syntax (after c-guess-basic-syntax-groovy activate)
-  (catch 'exit-early
-    (when (is-groovy-mode)
-      (if (groovy-is-label ad-return-value)
-	  (progn
-	    (let ((anchor-points (groovy-named-parameter-list-anchor-points)))
-	      (if anchor-points
-		  (setq ad-return-value `((arglist-cont-nonempty ,(car anchor-points) ,(cdr anchor-points))))
-      		(throw 'exit-early 1)))))
-
-      (save-excursion
-	(let* ((ankpos (progn
-			 (beginning-of-line)
-			 (c-backward-syntactic-ws)
-			 (beginning-of-line)
-			 (c-forward-syntactic-ws)
-			 (point))) ; position to previous non-blank line
-	       (curelem (c-langelem-sym (car ad-return-value))))
-	  (end-of-line)
-	  (cond
-	   ((eq 'statement-cont curelem)
-	    (when (groovy-at-vsemi-p) ; if there is a virtual semi there then make it a statement
-	      (setq ad-return-value `((statement ,ankpos)))))
-
-	   ((eq 'topmost-intro-cont curelem)
-	    (when (groovy-at-vsemi-p) ; if there is a virtual semi there then make it a top-most-intro
-	      (setq ad-return-value `((topmost-intro ,ankpos)))))
-
-	   ))))))
-
-;; This disables bracelists, as most of the time in groovy they are closures
-;; We need to check we are currently in groovy mode
-(defadvice c-inside-bracelist-p (around groovy-c-inside-bracelist-p activate)
-  (if (not (is-groovy-mode))
-	  ad-do-it
- 	(setq ad-return-value nil)))
-
-
-;; based on java-function-regexp
-;; Complicated regexp to match method declarations in interfaces or classes
-;; A nasty test case is:
-;;    else if(foo instanceof bar) {
-;; which will get mistaken for a function as Groovy does not require types on arguments
-;; so we need to check for empty parens or comma separated list, or type args
 (defvar groovy-function-regexp
-  (concat
-   "^[ \t]*"                                   ; leading white space
-   "\\(public\\|private\\|protected\\|"        ; some of these 8 keywords
-   "abstract\\|final\\|static\\|"
-   "synchronized\\|native|def"
-   "\\|[ \t\n\r]\\)*"                          ; or whitespace
-   "[a-zA-Z0-9_$]*"                            ; optional return type
-   "[ \t\n\r]*[[]?[]]?"                        ; (could be array)
-   "[ \t\n\r]+"                                ; whitespace
-   "\\([a-zA-Z0-9_$]+\\)"                      ; the name we want
-   "[ \t\n\r]*"                                ; optional whitespace
-   "("                                         ; open the param list
-   "[ \t]*"                                    ; optional whitespace
-   "\\("
-   "[ \t\n\r]*\\|"                             ; empty parens or
-   "[a-zA-Z0-9_$]+\\|"                         ; single param or
-   ".+?,.+?\\|"                                ; multi comma separated params or
-   "[a-zA-Z0-9_$]+"                            ; a type
-   "[ \t\n\r]*[[]?[]]?"                        ; optional array
-   "[ \t\n\r]+[a-zA-Z0-9_$]+"                  ; and param
-   "\\)"
-   "[ \t\n\r]*"                                ; optional whitespace
-   ")"                                         ; end the param list
-   "[ \t\n\r]*"                                ; whitespace
-;   "\\(throws\\([, \t\n\r]\\|[a-zA-Z0-9_$]\\)+\\)?{"
-   "\\(throws[^{;]+\\)?"                       ; optional exceptions
-   "[;{]"                                      ; ending ';' (interfaces) or '{'
-										       ; TODO groovy interfaces don't need to end in ;
-   )
-  "Matches method names in groovy code, select match 2")
+  (rx-to-string
+   `(seq
+     line-start (0+ space)
+     ;; A function may start with 'public static final'
+     (1+
+      (or
+       (seq
+        (or "public" "private" "protected"
+            "abstract" "final" "static"
+            "synchronized" "native" "def")
+        (+ space))
+       ;; or it may start with a type name.
+       (seq (regexp ,groovy-type-regexp) (+ space))))
+
+     ;; The actual function name.
+     (group (regexp ,groovy-symbol-regexp))
+
+     ;; Require an open paren to avoid confusing with "def foo ="
+     (0+ space)
+     "("))
+  "Matches functions and methods in groovy code.
+The function name is the second group in the regexp.")
 
 (defvar groovy-class-regexp
   "^[ \t\n\r]*\\(final\\|abstract\\|public\\|[ \t\n\r]\\)*class[ \t\n\r]+\\([a-zA-Z0-9_$]+\\)[^;{]*{"
   "Matches class names in groovy code, select match 2")
 
 (defvar groovy-interface-regexp
-  "^[ \t\n\r]*\\(abstract\\|public\\|[ \t\n\r]\\)*interface[ \t\n\r]+\\([a-zA-Z0-9_$]+\\)[^;]*;"
-  "Matches interface names in groovy code, select match 2")
+  (rx-to-string
+   `(seq
+     line-start (0+ space)
+     (0+ (or "abstract" "public") (+ space))
+     "interface" (+ space)
+     (group (regexp ,groovy-symbol-regexp))))
+  "Matches interface names in groovy code.")
 
 (defvar groovy-imenu-regexp
-  (list (list nil groovy-function-regexp 2)
-        (list ".CLASSES." groovy-class-regexp 2)
-        (list ".INTERFACES." groovy-interface-regexp 2)
-		(list ".CLOSURES." 	"def[ \t]+\\([a-zA-Z_][a-zA-Z0-9_]*\\)[ \t]*=[ \t]*{" 1))
+  (list (list "Functions" groovy-function-regexp 2)
+        (list "Classes" groovy-class-regexp 2)
+        (list "Interfaces" groovy-interface-regexp 1)
+        (list "Closures" "def[ \t]+\\([a-zA-Z_][a-zA-Z0-9_]*\\)[ \t]*=[ \t]*{" 1))
   "Imenu expression for Groovy")
 
-
-;; Setup imenu to extract functions, classes, interfaces and closures assigned to variables
-(defvar cc-imenu-groovy-generic-expression
-  groovy-imenu-regexp
-  "Imenu generic expression for Groovy mode.  See `imenu-generic-expression'.")
 
 ;; For compatibility with Emacs < 24
 (defalias 'groovy-parent-mode
   (if (fboundp 'prog-mode) 'prog-mode 'fundamental-mode))
 
+(defvar groovy-declaration-regexp
+  (rx-to-string
+   `(seq
+     line-start (0+ space)
+     (+
+      (or "def" "public" "private" "protected" "final"
+          (regexp ,groovy-type-regexp))
+      (+ space))
+     (group (regexp ,groovy-symbol-regexp))))
+  "Match 'def foo' or 'private Type foo'. The name is the second group.")
+
+(defsubst groovy--in-string-p ()
+  "Return t if (point) is in a string."
+  (nth 3 (syntax-ppss)))
+(defsubst groovy--in-string-at-p (pos)
+  "Return t if POS is in a string."
+  (save-excursion
+    (nth 3 (syntax-ppss pos))))
+
+(defvar groovy-font-lock-keywords
+  `((,(regexp-opt
+       ;; http://docs.groovy-lang.org/latest/html/documentation/#_keywords
+       '("as"
+         "assert"
+         "break"
+         "case"
+         "catch"
+         "class"
+         "const"
+         "continue"
+         "def"
+         "default"
+         "do"
+         "else"
+         "enum"
+         "extends"
+         "finally"
+         "for"
+         "goto"
+         "if"
+         "implements"
+         "import"
+         "in"
+         "instanceof"
+         "interface"
+         "new"
+         "package"
+         "return"
+         "super"
+         "switch"
+         "this"
+         "throw"
+         "throws"
+         "trait"
+         "try"
+         "while"
+         ;; Other strings that we want to highlight as keywords.
+         "abstract"
+         "final"
+         "native"
+         "private"
+         "protected"
+         "public"
+         "static"
+         "synchronized"
+         )
+       'symbols)
+     . font-lock-keyword-face)
+    ;; Highlight println as a keyword, but don't highlight foo.println.
+    (,(rx (or line-start space)
+          symbol-start (or "print" "printf" "println") symbol-end)
+     . font-lock-keyword-face)
+    ;; Constants
+    (,(regexp-opt '("false" "null" "true") 'symbols)
+     . font-lock-constant-face)
+    (,(rx symbol-start "it" symbol-end)
+     . font-lock-variable-name-face)
+    ;; Annotations
+    (,(rx "@" symbol-start (+ (or (syntax word) (syntax symbol))) symbol-end)
+     . c-annotation-face)
+    (,groovy-type-regexp
+     1 font-lock-type-face)
+    ;; Highlight function names.
+    (,groovy-function-regexp 2 font-lock-function-name-face)
+    ;; Highlight declarations of the form 'def foo'.
+    (,groovy-declaration-regexp
+     2 font-lock-variable-name-face)
+    ;; Highlight variables of the form 'foo = '
+    (,(rx
+       line-start (0+ space)
+       (group (+ (or (syntax word) (syntax symbol))))
+       (0+ space) "=")
+     1 font-lock-variable-name-face)
+    ;; Highlight $foo and $foo.bar string interpolation, but not \$foo.
+    (,(lambda (limit)
+        (let ((pattern
+               (rx "$" (+ (or (syntax word) (syntax symbol))) symbol-end
+                   (? "." (+ (or (syntax word) (syntax symbol))) symbol-end)))
+              res match-data)
+          (save-match-data
+            ;; Search forward for $foo and terminate on the first
+            ;; instance we find that's inside a sring.
+            (while (and
+                    (not res)
+                    (re-search-forward pattern limit t))
+
+              (let* ((string-delimiter-pos (nth 8 (syntax-ppss)))
+                     (string-delimiter (char-after string-delimiter-pos))
+                     (escaped-p (eq (char-before (match-beginning 0))
+                                    ?\\)))
+                (when (and (groovy--in-string-p)
+                           ;; Interpolation does not apply in single-quoted strings.
+                           (not (eq string-delimiter ?'))
+                           (not escaped-p)
+                           (not (equal (match-string 0) "$$")))
+                  (setq res (point))
+                  (setq match-data (match-data))))))
+          ;; Set match data and return point so we highlight this
+          ;; instance.
+          (when res
+            (set-match-data match-data)
+            res)))
+     (0 font-lock-variable-name-face t))
+    ;; Highlight ${foo} string interpolation.
+    (,(lambda (limit)
+        (let (res start)
+          (while (and
+                  (not res)
+                  (search-forward "${" limit t))
+            (when (and (groovy--in-string-p)
+                       (not (eq (char-before (- (point) 2))
+                                ?\\)))
+              (setq start (match-beginning 0))
+              (let ((restart-pos (match-end 0)))
+                (let (finish)
+                  ;; Search forward for the } that matches the opening {.
+                  (while (and (not res) (search-forward "}" limit t))
+                    (let ((end-pos (point)))
+                      (save-excursion
+                        (when (and (ignore-errors (backward-list 1))
+                                   (= start (1- (point))))
+                          (setq res end-pos)))))
+                  (unless res
+                    (goto-char restart-pos))))))
+          ;; Set match data and return point so we highlight this
+          ;; instance.
+          (when res
+            (set-match-data (list start res))
+            res)))
+     (0 font-lock-variable-name-face t))))
+
+(eval-when-compile
+  ;; http://groovy-lang.org/syntax.html#_shebang_line
+  (defconst groovy-shebang-regex
+    (rx buffer-start "#"))
+  (defconst groovy-triple-double-quoted-string-regex
+    (rx "\"\"\""))
+  (defconst groovy-triple-single-quoted-string-regex
+    (rx "'''"))
+  (defconst groovy-slashy-open-regex
+    ;; /foo/ is a slashy-string, but // or /* are not.
+    (rx "/" (not (any "/" "*"))))
+
+  (defconst groovy-dollar-slashy-open-regex
+    (rx "$/"))
+  (defconst groovy-dollar-slashy-close-regex
+    (rx "/$")))
+
+(defun groovy-stringify-triple-quote ()
+  "Put `syntax-table' property on triple-quoted strings."
+  ;; This applies to both ''' and """
+  (let* ((string-end-pos (point))
+         (string-start-pos (- string-end-pos 3))
+         (ppss (prog2
+                   (backward-char 3)
+                   (syntax-ppss)
+                 (forward-char 3))))
+    (unless (nth 4 ppss) ;; not inside comment
+      (if (nth 8 ppss)
+          ;; We're in a string, so this must be the closing triple-quote.
+          ;; Put | on the last ' or " character.
+          (put-text-property (1- string-end-pos) string-end-pos
+                             'syntax-table (string-to-syntax "|"))
+        ;; We're not in a string, so this is the opening triple-quote.
+        ;; Put | on the first ' or " character.
+        (put-text-property string-start-pos (1+ string-start-pos)
+                           'syntax-table (string-to-syntax "|"))))))
+
+(defun groovy--comment-p (pos)
+  "Return t if POS is in a comment."
+  (save-excursion
+    (nth 4 (syntax-ppss pos))))
+
+(defun groovy-stringify-slashy-string ()
+  "Put `syntax-table' property on slashy-quoted strings (strings
+of the form /foo/)."
+  ;; We match to characters ?/ ?something, so move backwards so point
+  ;; is on the /.
+  (save-excursion
+    (backward-char 1)
+    (let* ((slash-pos (point))
+           ;; Look at the previous char: // is a comment, not an empty
+           ;; slashy-string.
+           (singleline-comment (eq (char-before (1- (point))) ?/))
+           ;; Look at this syntax on the previous char: if we're on a /*
+           ;; or a */ this isn't a slashy-string.
+           (multiline-comment (prog2
+                                  (backward-char 1)
+                                  (groovy--comment-p (point))
+                                (forward-char 1)))
+           (string-open-pos (nth 8 (syntax-ppss))))
+
+      (unless (or singleline-comment multiline-comment)
+        (if string-open-pos
+            ;; If we're in a string, that was opened with /, then this
+            ;; is the closing /. This prevents confusion with """ /* """
+            (when (eq (char-after string-open-pos) ?/)
+              (put-text-property (1- slash-pos) slash-pos
+                                 'syntax-table (string-to-syntax "|")))
+          ;; We're not in a string, so this is the opening / or division
+          (let ((str (buffer-substring-no-properties (line-beginning-position) slash-pos)))
+            ;; test if operator precedes slash. if so, slashy-string, otherwise division and ignore
+            (when (string-match
+                   (rx
+                    (or bol
+                        (or "+" "-" "=" "+=" "-=" "==" "!="
+                            "<" "<=" ">" ">=" "&&" "!!" "?" "?:" ":"
+                            "=~" "==~" "<=>" "("))
+                    (0+ whitespace)
+                    "/"
+                    eol)
+                   str)
+              (put-text-property (1- slash-pos) slash-pos
+                                 'syntax-table (string-to-syntax "|")))))))))
+
+(defun groovy-stringify-dollar-slashy-open ()
+  "Put `syntax-table' property on the opening $/ of
+dollar-slashy-quoted strings."
+  (let ((delimiter-end-pos (point)))
+    (if (or (groovy--comment-p delimiter-end-pos) (groovy--in-string-p))
+        ;; if not $/ open comment then go back a char so we can test
+        ;;   if it's a closing slashy-string /
+        (backward-char 1)
+      ;; Mark the $ in $/ as a generic string delimiter.
+      (put-text-property (- delimiter-end-pos 2) (- delimiter-end-pos 1)
+                         'syntax-table (string-to-syntax "|")))))
+
+(defun groovy-stringify-dollar-slashy-close ()
+  "Put `syntax-table' property on the closing /$ of
+dollar-slashy-quoted strings."
+  (let* ((delimiter-end-pos (point))
+         ;; We can't use `syntax-ppss' here as the state may not be
+         ;; set yet. Using `parse-partial-sexp' ensures that the
+         ;; highlighting is correct even when the mode is started
+         ;; initially.
+         (in-string (nth 3 (parse-partial-sexp (point-min) delimiter-end-pos))))
+    (unless (or (groovy--comment-p delimiter-end-pos) (not in-string)
+                ;; Ignore $/$ as it's escaped and not a /$ close delimiter.
+                (looking-back (rx "$/$") 3))
+      ;; Mark the $ in /$ as a generic string delimiter.
+      (put-text-property (- delimiter-end-pos 1) delimiter-end-pos
+                         'syntax-table (string-to-syntax "|")))))
+
+
+(defconst groovy-syntax-propertize-function
+  (syntax-propertize-rules
+   ;; Treat the shebang as a comment. We reuse comment sequence b
+   ;; (which is the // comment) so Emacs treats \n as the end of the
+   ;; comment.
+   (groovy-shebang-regex
+    (0 "< b"))
+   (groovy-triple-double-quoted-string-regex
+    (0 (ignore (groovy-stringify-triple-quote))))
+   (groovy-triple-single-quoted-string-regex
+    (0 (ignore (groovy-stringify-triple-quote))))
+   ;; http://groovy-lang.org/syntax.html#_dollar_slashy_string
+   (groovy-dollar-slashy-open-regex
+    (0 (ignore (groovy-stringify-dollar-slashy-open))))
+   (groovy-dollar-slashy-close-regex
+    (0 (ignore (groovy-stringify-dollar-slashy-close))))
+   ;; http://groovy-lang.org/syntax.html#_slashy_string
+   (groovy-slashy-open-regex
+    (0 (ignore (groovy-stringify-slashy-string))))))
+
+(defgroup groovy nil
+  "A Groovy major mode."
+  :group 'languages)
+
+(defcustom groovy-indent-offset 4
+  "Indentation amount for Groovy."
+  :safe #'integerp
+  :group 'groovy)
+
+(defun groovy--ends-with-infix-p (str)
+  "Does STR end with an infix operator?"
+  (string-match-p
+   (rx
+    (or symbol-end space)
+    ;; http://docs.groovy-lang.org/next/html/documentation/core-operators.html
+    (or "+" "-" "*" "/" "%" "**"
+        "=" "+=" "-=" "*=" "/=" "%=" "**="
+        "==" "!=" "<" "<=" ">" ">=" "<<=" ">>=" ">>>=" "&=" "^=" "|="
+        "&&" "!!"
+        "&" "|" "^" "<<" "<<<" ">>" ">>>"
+        "?" "?:" ":"
+        "=~" "==~"
+        "<=>" "<>"
+        "in" "as")
+    (0+ space)
+    line-end)
+   str))
+
+(defun groovy--current-line ()
+  "The current line enclosing point."
+  (buffer-substring-no-properties
+   (line-beginning-position) (line-end-position)))
+
+(defun groovy--enclosing-blocks ()
+  "Return a list of the block keywords that enclose point.
+
+Given the code, where | is point:
+
+def foo() {
+  if (bar) {
+    switch (baz) {
+      |
+    }
+  }
+}
+
+Then this function returns (\"def\" \"if\" \"switch\")."
+  (let (enclosing-paren-pos blocks)
+    (save-excursion
+      (setq enclosing-paren-pos (nth 1 (syntax-ppss)))
+      (while enclosing-paren-pos
+        (goto-char enclosing-paren-pos)
+        (let* ((line (s-trim (groovy--current-line)))
+               (symbols (s-split (rx symbol-end) line t))
+               (symbol (car-safe symbols)))
+          (push symbol blocks))
+        (setq enclosing-paren-pos (nth 1 (syntax-ppss)))))
+    blocks))
+
+(defconst groovy--case-regexp
+  (rx (or
+       (seq "case" symbol-end (+ any))
+       (seq "default" symbol-end))
+      ":"))
+
+(defun groovy-indent-line ()
+  "Indent the current line according to the number of parentheses."
+  (interactive)
+  (let* ((point-offset (- (current-column) (current-indentation)))
+         (syntax-bol (syntax-ppss (line-beginning-position)))
+         (multiline-string-p (nth 3 syntax-bol))
+         (multiline-comment-p (nth 4 syntax-bol))
+         (current-paren-depth (nth 0 syntax-bol))
+         (current-paren-pos (nth 1 syntax-bol))
+         (text-after-paren
+          (when current-paren-pos
+            (save-excursion
+              (goto-char current-paren-pos)
+              (s-trim
+               (buffer-substring
+                (1+ current-paren-pos)
+                (line-end-position))))))
+         (current-line (s-trim (groovy--current-line)))
+         has-closing-paren)
+    ;; If this line starts with a closing paren, unindent by one level.
+    ;;   if {
+    ;;   } <- this should not be indented.
+    (when (or (s-starts-with-p "}" current-line)
+              (s-starts-with-p ")" current-line)
+              (s-starts-with-p "]" current-line))
+      (setq has-closing-paren t)
+      (setq current-paren-depth (1- current-paren-depth)))
+
+    ;; `current-paren-depth' should never be negative, unless the code
+    ;; contains unbalanced parens. Ensure we handle that robustly.
+    (when (< current-paren-depth 0)
+      (setq current-paren-depth 0))
+
+    (cond
+     ;; Don't try to indent the line if we're in a multiline string.
+     (multiline-string-p 'noindent)
+     ;; Ensure we indent
+     ;; /*
+     ;;  * foo
+     ;;  */
+     ;;  correctly.
+     (multiline-comment-p
+      (indent-line-to (1+ (* groovy-indent-offset current-paren-depth))))
+
+     ;; Ensure we indent
+     ;; def x = [1,
+     ;;          2,
+     ;; ]
+     ;; correctly.
+     ((and (not (s-blank-str? text-after-paren))
+           (not has-closing-paren)
+           ;; ensure we don't indent closures
+           (not (string-match (rx "->" eol) text-after-paren)))
+      (let (open-paren-column)
+        (save-excursion
+          (goto-char current-paren-pos)
+          (setq open-paren-column (current-column)))
+        (indent-line-to (1+ open-paren-column))))
+
+     ;; Indent according to the number of parens.
+     (t
+      (let ((indent-level current-paren-depth)
+            prev-line
+            end-slashy-string)
+        ;; If the previous line ended `foo +` then this line should be
+        ;; indented one more level.
+        (save-excursion
+          ;; Try to go back one line.
+          (when (zerop (forward-line -1))
+            ;; Ignore the previous line if it's a comment or end slashy-string
+            (let ((line-end (line-end-position)))
+              (unless (groovy--comment-p line-end)
+                (setq prev-line (buffer-substring (point) (line-end-position))))
+              ;; check if the last thing is a slashy-string end
+              (setq end-slashy-string (and
+                                       (eq (char-before line-end) ?/)
+                                       (groovy--in-string-at-p (- line-end 1)))))))
+        (when (and prev-line
+                   (not end-slashy-string)
+                   (groovy--ends-with-infix-p prev-line)
+                   (not (s-matches-p groovy--case-regexp prev-line)))
+          (setq indent-level (1+ indent-level)))
+
+        ;; If this line is .methodCall() then we should indent one
+        ;; more level.
+        (when (s-starts-with-p "." current-line)
+          (setq indent-level (1+ indent-level)))
+
+        ;; If we're inside a switch statement, we should indent
+        ;; another level after case labels, e.g.
+        ;; case foo:
+        ;;     bar // <- extra indent
+        (let ((blocks (groovy--enclosing-blocks))
+              (switch-count 0))
+          (dolist (block-symbol blocks)
+            (when (equal block-symbol "switch")
+              (setq switch-count (1+ switch-count))))
+          (when (> switch-count 0)
+            (setq indent-level (+ indent-level switch-count))
+            ;; The `case foo:' line should be indented less than the body.
+            (when (s-matches-p groovy--case-regexp current-line)
+              (setq indent-level (1- indent-level)))
+            ;; The extra indent does not apply to the } closing the
+            ;; switch block.
+            (when (and
+                   (equal (car (last blocks)) "switch")
+                   (equal current-line "}"))
+              (setq indent-level (1- indent-level)))))
+
+        (indent-line-to (* groovy-indent-offset indent-level)))))
+    ;; Point is now at the beginning of indentation, restore it
+    ;; to its original position (relative to indentation).
+    (when (>= point-offset 0)
+      (move-to-column (+ (current-indentation) point-offset)))))
+
 ;;;###autoload
 (define-derived-mode groovy-mode groovy-parent-mode "Groovy"
   "Major mode for editing Groovy code.
 
-The hook `c-mode-common-hook' is run with no args at mode
-initialization, then `groovy-mode-hook'.
+The hook `groovy-mode-hook' is run with no args at mode
+initialization.
 
 Key bindings:
 \\{groovy-mode-map}"
-  (c-initialize-cc-mode t)
-  (setq local-abbrev-table groovy-mode-abbrev-table
-        abbrev-mode t)
-  (use-local-map groovy-mode-map)
-  (c-init-language-vars groovy-mode)
-  (c-common-init 'groovy-mode)
-  ;;(easy-menu-add groovy-menu)
-  (cc-imenu-init cc-imenu-groovy-generic-expression)
-  (c-run-mode-hooks 'c-mode-common-hook 'groovy-mode-hook)
-
-  ;; quick fix for misalignment of statements with =
-  (setq c-label-minimum-indentation 0)
-
-  ;; fix for indentation after a closure param list
-  (c-set-offset 'statement 'groovy-mode-fix-closure-with-argument)
-
-  ;; get arglists (in groovy lists or maps) to align properly
-  (c-set-offset 'arglist-close '(c-lineup-close-paren))
-  (c-set-offset 'arglist-cont 0)
-  (c-set-offset 'arglist-cont-nonempty '(groovy-lineup-arglist))
-  (c-set-offset 'arglist-intro '+)
-  (c-set-offset 'label '+)
-
-  (c-update-modeline))
-
-;;----------------------------------------------------------------------------
+  (set (make-local-variable 'font-lock-defaults)
+       '(groovy-font-lock-keywords))
+  (set (make-local-variable 'syntax-propertize-function)
+       groovy-syntax-propertize-function)
+  (setq imenu-generic-expression groovy-imenu-regexp)
+  (set (make-local-variable 'indent-line-function) #'groovy-indent-line)
+  (set (make-local-variable 'comment-start) "//"))
 
 (provide 'groovy-mode)
 
