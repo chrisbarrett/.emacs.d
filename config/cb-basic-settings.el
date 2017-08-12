@@ -647,6 +647,11 @@ Optional arg JUSTIFY will justify comments and strings."
       (kbd "<left>") 'image-backward-hscroll
       (kbd "<right>") 'image-forward-hscroll)))
 
+(use-package url-cookie
+  :defer t
+  :config
+  (setq url-cookie-file (concat cb-emacs-cache-directory "/cookies")))
+
 (provide 'cb-basic-settings)
 
 ;;; cb-basic-settings.el ends here
