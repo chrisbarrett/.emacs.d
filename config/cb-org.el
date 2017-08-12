@@ -79,7 +79,7 @@
                              (nth 2 (org-heading-components))))
         (save-excursion
           (while (org-up-heading-safe)
-            (when (-contains? '("NEXT" "WAITING" "MAYBE")
+            (when (-contains? '("WAITING" "MAYBE")
                               (nth 2 (org-heading-components)))
               (org-todo "TODO"))))))
 
@@ -87,18 +87,6 @@
       "Set buffer-local hooks for orgmode."
       (add-hook 'org-after-todo-state-change-hook #'cb-org--mark-next-parent-tasks-todo nil t)
       (add-hook 'org-clock-in-hook #'cb-org--mark-next-parent-tasks-todo nil t))
-
-    (defun cb-org--set-next-todo-state ()
-      "When marking a todo to DONE, set the next TODO as NEXT.
-Do not scheduled items or repeating todos."
-      (when (equal org-state "DONE")
-        (save-excursion
-          (when (and (ignore-errors (outline-forward-same-level 1) t)
-                     (equal (org-get-todo-state) "TODO"))
-            (unless (or (org-entry-get (point) "STYLE")
-                        (org-entry-get (point) "LAST_REPEAT")
-                        (org-get-scheduled-time (point)))
-              (org-todo "NEXT"))))))
 
     (defun cb-org--children-done-parent-done (_n-done n-todo)
       "Mark the parent task as done when all children are completed."
@@ -111,7 +99,6 @@ Do not scheduled items or repeating todos."
   :init
   (progn
     (add-hook 'org-mode-hook #'cb-org--add-local-hooks)
-    (add-hook 'org-after-todo-state-change-hook #'cb-org--set-next-todo-state)
     (add-hook 'org-after-todo-statistics-hook #'cb-org--children-done-parent-done)
 
     (dolist (dir (f-directories "~/org/lisp/"))
@@ -165,7 +152,7 @@ Do not scheduled items or repeating todos."
     (setq org-log-repeat nil)
     (setq org-blank-before-new-entry '((heading . always) (plain-list-item . nil)))
 
-    (setq org-todo-keywords '((type "TODO(t)" "MAYBE(m)" "NEXT(n)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")
+    (setq org-todo-keywords '((type "TODO(t)" "MAYBE(m)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")
                               (type "SOMEDAY(s)" "|")))
 
 
@@ -272,8 +259,33 @@ Do not scheduled items or repeating todos."
   :bind (:map org-agenda-mode-map ("J" . org-agenda-goto-date))
 
   :preface
-  (defun cb-org--exclude-tasks-on-hold (tag)
-    (and (equal tag "hold") (concat "-" tag)))
+  (progn
+
+    (defun cb-org--exclude-tasks-on-hold (tag)
+      (and (equal tag "hold") (concat "-" tag)))
+
+    (defun cb-org--agenda-skip-if-has-timestamp ()
+      "Skip the item if it has a scheduled or deadline timestamp."
+      (when (or (org-get-scheduled-time (point))
+                (org-get-deadline-time (point)))
+        (or (outline-next-heading)
+            (goto-char (point-max)))))
+
+    (defun cb-org--current-headline-is-todo ()
+      (string= "TODO" (org-get-todo-state)))
+
+    (defun cb-org--agenda-skip-all-siblings-but-first ()
+      "Skip all but the first non-done entry."
+      (let (should-skip-entry)
+        (unless (cb-org--current-headline-is-todo)
+          (setq should-skip-entry t))
+        (save-excursion
+          (while (and (not should-skip-entry) (org-goto-sibling t))
+            (when (cb-org--current-headline-is-todo)
+              (setq should-skip-entry t))))
+        (when should-skip-entry
+          (or (outline-next-heading)
+              (goto-char (point-max)))))))
 
   :bind
   ("C-c a" . org-agenda)
@@ -297,10 +309,9 @@ Do not scheduled items or repeating todos."
     (define-key org-agenda-mode-map (kbd "C-f" ) #'evil-scroll-page-down)
     (define-key org-agenda-mode-map (kbd "C-b") #'evil-scroll-page-up)
 
-    ;; Match projects that do not have a scheduled action or NEXT action.
+    ;; Match projects that do not have any todos.
     (setq org-stuck-projects '("+project-ignore-maybe-done"
-                               ("NEXT") nil
-                               "SCHEDULED:"))
+                               ("TODO") nil))
 
     ;; Enable leader key in agenda.
     (define-key org-agenda-mode-map (kbd "SPC") spacemacs-keys-default-map)
@@ -336,31 +347,29 @@ Do not scheduled items or repeating todos."
            :fileskip0 t
            :step 'week))
 
-    (setq org-time-clocksum-format
-          (list :hours "%d" :require-hours t
-                :minutes ":%02d" :require-minutes t))
-
     (add-hook 'org-finalize-agenda-hook #'org-agenda-to-appt)
 
     (setq org-agenda-custom-commands
           '(("A" "Agenda and next actions"
-             ((tags-todo "-study-someday-media/NEXT"
-                         ((org-agenda-overriding-header "Next Actions")))
+             ((tags-todo "-study-someday-media-gtd/TODO"
+                         ((org-agenda-overriding-header "Next Actions")
+                          ;; Take the first item from each todo list. Also
+                          ;; exclude items with scheduled/deadline times, since
+                          ;; they show up in the calendar views.
+                          (org-agenda-skip-function (lambda ()
+                                                      (or (cb-org--agenda-skip-if-has-timestamp)
+                                                          (cb-org--agenda-skip-all-siblings-but-first))))))
               (agenda "")
               (todo "WAITING"
                     ((org-agenda-overriding-header "Waiting")))
               (stuck "")
-              (tags-todo "media|study/NEXT"
+              (tags-todo "media|study/TODO"
                          ((org-agenda-overriding-header "Media & Study"))))
              ((org-agenda-tag-filter-preset '("-ignore"))
               (org-agenda-files (list org-default-notes-file org-agenda-diary-file))
               (org-agenda-dim-blocked-tasks nil)
               (org-agenda-archives-mode nil)
               (org-agenda-ignore-drawer-properties '(effort appt))))
-
-            ("n" "Next actions"
-             ((tags-todo "-study-someday/NEXT"))
-             ((org-agenda-overriding-header "Next Actions")))
 
             ("r" "Weekly Review"
              ((agenda ""
@@ -375,18 +384,22 @@ Do not scheduled items or repeating todos."
               (todo "WAITING"
                     ((org-agenda-overriding-header "Review Tasks on Hold")))
 
-              (tags-todo "-someday-media/NEXT"
-                         ((org-agenda-overriding-header "Next Actions")))
-              (tags-todo "+goals+3_months+project/NEXT"
-                         ((org-agenda-overriding-header "Review 3 Month Goals")))
-              (tags-todo "+goals+1_year+project/NEXT"
-                         ((org-agenda-overriding-header "Review 1 Year Goals")))
-              (tags-todo "+goals+3_years+project/MAYBE|SOMEDAY|NEXT"
-                         ((org-agenda-overriding-header "Review 3 Year Goals")))
-              (tags-todo "someday-skill/MAYBE|NEXT"
-                         ((org-agenda-overriding-header "Decide whether to promote any SOMEDAY items to NEXT actions")))
+              (tags-todo "-someday-media/TODO"
+                         ((org-agenda-overriding-header "Next Actions")
+                          (org-agenda-skip-function #'cb-org--agenda-skip-all-siblings-but-first)))
+              (tags-todo "+goals+3_months+project/TODO"
+                         ((org-agenda-overriding-header "Review 3 Month Goals")
+                          (org-agenda-skip-function #'cb-org--agenda-skip-all-siblings-but-first)))
+              (tags-todo "+goals+1_year+project/TODO"
+                         ((org-agenda-overriding-header "Review 1 Year Goals")
+                          (org-agenda-skip-function #'cb-org--agenda-skip-all-siblings-but-first)))
+              (tags-todo "+goals+3_years+project/MAYBE|SOMEDAY|TODO"
+                         ((org-agenda-overriding-header "Review 3 Year Goals")
+                          (org-agenda-skip-function #'cb-org--agenda-skip-all-siblings-but-first)))
+              (tags-todo "someday-skill/MAYBE|TODO"
+                         ((org-agenda-overriding-header "Decide whether to promote any SOMEDAY items to TODOs")))
               (tags-todo "someday&skill"
-                         ((org-agenda-overriding-header "Decide whether to promote any learning tasks to NEXT actions"))))
+                         ((org-agenda-overriding-header "Decide whether to promote any learning tasks to TODOs"))))
              ((org-agenda-tag-filter-preset
                '("-drill" "-gtd" "-ignore"))
               (org-agenda-include-inactive-timestamps t)
@@ -395,8 +408,9 @@ Do not scheduled items or repeating todos."
               (org-agenda-dim-blocked-tasks nil)))
 
             ("w" "Work actions"
-             ((tags-todo "-study-someday-media/NEXT"
-                         ((org-agenda-overriding-header "Next Actions")))
+             ((tags-todo "-study-someday-media-gtd/TODO"
+                         ((org-agenda-overriding-header "Next Actions")
+                          (org-agenda-skip-function #'cb-org--agenda-skip-all-siblings-but-first)))
               (todo "WAITING"
                     ((org-agenda-overriding-header "Waiting")))
               (stuck "")
@@ -563,14 +577,6 @@ Do not scheduled items or repeating todos."
          (cb-org--capture-template-entry
           "T" "Todo (work)"
           `(file ,cb-org-work-file) "* TODO %?")
-
-         (cb-org--capture-template-entry
-          "n" "Next"
-          '(file org-default-notes-file) "* NEXT %?")
-
-         (cb-org--capture-template-entry
-          "N" "Next (work)"
-          `(file cb-org-work-file) "* NEXT %?")
 
          (cb-org--capture-template-entry
           "d" "Diary"
