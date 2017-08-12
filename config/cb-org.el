@@ -714,6 +714,8 @@ Do not scheduled items or repeating todos."
 
 (use-package ox-confluence
   :after org
+  :preface
+  (autoload 'org-export-define-derived-backend "ox")
   :config
   (org-export-define-derived-backend 'custom-confluence 'confluence
     :menu-entry
