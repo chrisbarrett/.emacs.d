@@ -308,6 +308,9 @@
 
     ;; Magit
 
+    (magit-signature-untrusted
+     ((t :foreground ,cb-theme-common-cyan)))
+
     (magit-diff-file-heading
      ((t :weight normal)))
 
