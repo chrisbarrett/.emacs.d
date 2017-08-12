@@ -34,7 +34,8 @@
   (advice-add #'eval-buffer :after #'cb-elisp--message-on-eval-buffer))
 
 (use-package which-key
-  :functions (which-key-add-key-based-replacements)
+  :preface
+  (autoload 'which-key-add-key-based-replacements "cb-leader-keys")
   :config
   (progn
     (which-key-add-key-based-replacements "SPC a p" "profiler")
