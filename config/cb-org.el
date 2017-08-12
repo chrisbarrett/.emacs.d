@@ -247,6 +247,7 @@
     (spacemacs-keys-set-leader-keys-for-major-mode 'org-mode
       "e" 'cb-org-babel/body)))
 
+(use-package org-duration :after org)
 
 (use-package org-attach
   :after org
