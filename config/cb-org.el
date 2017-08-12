@@ -806,6 +806,7 @@ table tr.tr-even td {
              cb-org-goto-tags-list)
   :init
   (spacemacs-keys-set-leader-keys
+    "oo" #'cb-org-goto-headline
     "oa" #'cb-org-goto-agenda
     "od" #'cb-org-goto-diary
     "on" #'cb-org-goto-notes

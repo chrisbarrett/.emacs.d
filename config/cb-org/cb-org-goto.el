@@ -78,6 +78,15 @@
     (org-agenda current-prefix-arg agenda-key))
   (delete-other-windows))
 
+;;;###autoload
+(defun cb-org-goto-headline ()
+  "Prompt for a headline to jump to."
+  (interactive)
+  (let ((buf (if (derived-mode-p 'org-mode)
+                 (current-buffer)
+               (find-file-noselect org-default-notes-file))))
+    (org-refile '(4) buf)))
+
 (provide 'cb-org-goto)
 
 ;;; cb-org-goto.el ends here
