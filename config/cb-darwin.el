@@ -11,6 +11,8 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'cb-emacs)
+
 (global-set-key (kbd "s-v") 'yank)
 (global-set-key (kbd "s-c") 'copy-region-as-kill)
 (global-set-key (kbd "s-w") 'delete-frame)
@@ -20,19 +22,28 @@
 
 (use-package exec-path-from-shell
   :if window-system
+  :functions (exec-path-from-shell-initialize)
   :config
-  (exec-path-from-shell-initialize)
-  :functions
   (exec-path-from-shell-initialize))
 
 (use-package osx-trash
+  :preface
+  (autoload 'osx-trash-setup "osx-trash")
   :config
-  (osx-trash-setup)
-  :functions
   (osx-trash-setup))
 
 (use-package dash-at-point
   :bind ("<f8>" . dash-at-point))
+
+(use-package emojify
+  :commands (global-emojify-mode)
+  :demand t
+  :config
+  (progn
+    (add-hook 'after-init-hook #'global-emojify-mode)
+    (setq emojify-emojis-dir (concat cb-emacs-cache-directory "/emojis"))
+    ;; Test: :wink:
+    (setq emojify-display-style 'image)))
 
 (provide 'cb-darwin)
 
