@@ -151,6 +151,15 @@
       "B" 'profiler-report-render-reversed-calltree
       "f" 'profiler-report-find-entry)))
 
+(use-package emr
+  :commands (emr-show-refactor-menu)
+  :ensure t
+  :init
+  (define-key prog-mode-map (kbd "C-<return>") #'emr-show-refactor-menu)
+  :config
+  (emr-initialize))
+
+
 (provide 'cb-elisp)
 
 ;;; cb-elisp.el ends here
