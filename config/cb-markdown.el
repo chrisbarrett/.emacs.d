@@ -19,6 +19,14 @@
   :init
   (setq markdown-command "multimarkdown"))
 
+(use-package fence-edit
+  :after markdown-mode
+  :commands (fence-edit-code-at-point)
+  :config
+  (progn
+    (add-to-list 'fence-edit-lang-modes '("lisp" . emacs-lisp-mode))
+    (define-key markdown-mode-map (kbd "C-c '") #'fence-edit-code-at-point)))
+
 (provide 'cb-markdown)
 
 ;;; cb-markdown.el ends here
