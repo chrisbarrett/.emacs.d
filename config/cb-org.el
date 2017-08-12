@@ -769,12 +769,12 @@ table tr.tr-even td {
 
 (use-package cb-org-export-koma-letter
   :after org
-  :functions (cb-org-export-koma-letter-init)
+  :commands (cb-org-export-koma-letter-handler)
   :config
   (progn
     (add-to-list 'org-latex-classes `("koma-letter" ,cb-org-export-koma-letter-latex-class))
     (setq org-latex-hyperref-template "")
-    (add-hook 'org-ctrl-c-ctrl-c-hook #'cb-org-export-koma-letter--handler t)))
+    (add-hook 'org-ctrl-c-ctrl-c-hook #'cb-org-export-koma-letter-handler t)))
 
 (use-package cb-org-pgp-decrpyt
   :after org

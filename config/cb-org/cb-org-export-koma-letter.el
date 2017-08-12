@@ -80,7 +80,10 @@ exported file's name. The PDF will be created at DEST."
     (start-process " open" nil "open" dest)
     (message "opening %s..." dest)))
 
+;;;###autoload
+(defun cb-org-export-koma-letter-handler ()
   "Export the koma letter at point."
+  (interactive)
   (when (ignore-errors
           (s-matches? (rx "latex_class:" (* space) "koma")
                       (cb-org-export-koma-letter--subtree-content)))
