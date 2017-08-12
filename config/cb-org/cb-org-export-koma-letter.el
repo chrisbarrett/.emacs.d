@@ -64,23 +64,22 @@
 With a prefix arg, prompt for the output destination. Otherwise
 generate use the name of the current file to generate the
 exported file's name. The PDF will be created at DEST."
-       (interactive
-        (list (if current-prefix-arg
-                  (ido-read-file-name "Destination: " nil nil nil ".pdf")
-                (concat (f-no-ext (buffer-file-name)) ".pdf"))))
+  (interactive
+   (list (if current-prefix-arg
+             (ido-read-file-name "Destination: " nil nil nil ".pdf")
+           (concat (f-no-ext (buffer-file-name)) ".pdf"))))
 
-       (let ((tmpfile (make-temp-file "org-export-" nil ".org")))
-         (cb-org-export-koma-letter--subtree-write-content tmpfile)
-         (with-current-buffer (find-file-noselect tmpfile)
-           (unwind-protect
-               (-if-let (exported (org-koma-letter-export-to-pdf))
-                   (f-move exported dest)
-                 (error "Export failed"))
-             (kill-buffer)))
-         (start-process " open" nil "open" dest)
-         (message "opening %s..." dest)))
+  (let ((tmpfile (make-temp-file "org-export-" nil ".org")))
+    (cb-org-export-koma-letter--subtree-write-content tmpfile)
+    (with-current-buffer (find-file-noselect tmpfile)
+      (unwind-protect
+          (-if-let (exported (org-koma-letter-export-to-pdf))
+              (f-move exported dest)
+            (error "Export failed"))
+        (kill-buffer)))
+    (start-process " open" nil "open" dest)
+    (message "opening %s..." dest)))
 
-(defun cb-org-export-koma-letter--handler ()
   "Export the koma letter at point."
   (when (ignore-errors
           (s-matches? (rx "latex_class:" (* space) "koma")
