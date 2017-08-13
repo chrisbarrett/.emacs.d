@@ -14,6 +14,9 @@
 (require 'spacemacs-keys)
 (require 'evil)
 
+(define-derived-mode dir-locals-mode emacs-lisp-mode "dir-locals")
+(add-to-list 'auto-mode-alist '("\\.dir-locals.el\\'" . dir-locals-mode))
+
 (use-package lisp-mode
   :mode ("/Cask\\'" . lisp-mode))
 

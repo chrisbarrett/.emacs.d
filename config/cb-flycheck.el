@@ -54,6 +54,7 @@
     (setq flycheck-global-modes
           '(not sbt-file-mode
                 idris-repl-mode
+                dir-locals-mode
                 ;; restclient buffers
                 js-mode))
 
