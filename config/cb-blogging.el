@@ -26,6 +26,7 @@
     (defvar op/repository-directory "~/Projects/blog")
     (defvar op/site-preview-directory "~/tmp/.op-tmp")
     (defvar cb-blogging-email "chris+blog@walrus.cool")
+    (defvar op/personal-linkedin-link "https://www.linkedin.com/in/chrisdbarrett/")
 
     (autoload 'httpd-serve-directory "simple-httpd")
 
