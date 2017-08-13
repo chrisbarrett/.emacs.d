@@ -25,6 +25,7 @@
   (progn
     (defvar op/repository-directory "~/Projects/blog")
     (defvar op/site-preview-directory "~/tmp/.op-tmp")
+    (defvar cb-blogging-email "chris+blog@walrus.cool")
 
     (autoload 'httpd-serve-directory "simple-httpd")
 
@@ -39,9 +40,10 @@
 
     (defun cb-blogging-publish (path)
       (interactive (list op/site-preview-directory))
-      (op/do-publication t nil path)
-      (httpd-serve-directory path)
-      (browse-url (format "http://localhost:%d" httpd-port)))
+      (let ((user-mail-address cb-blogging-email))
+        (op/do-publication t nil path)
+        (httpd-serve-directory path)
+        (browse-url (format "http://localhost:%d" httpd-port))))
 
     (add-hook 'org-mode-hook #'cb-blogging-maybe-enable-op-blog-mode))
 
