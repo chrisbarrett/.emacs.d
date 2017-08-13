@@ -88,7 +88,7 @@
            (fullpath (f-join cb-emacs-lisp-directory subtree))
            (commit-message (format "Add %s@master to %s" remote prefix)))
 
-      (unless (y-or-n-p (format "%s at %s will merged to %s. Continue? " remote version fullpath))
+      (unless (y-or-n-p (format "%s at %s will be merged to %s. Continue? " remote version fullpath))
         (user-error "Aborted"))
 
       (cb-emacs--with-signal-handlers "Fetching remote..."
@@ -127,7 +127,7 @@ prompt for REMOTE if it cannot be determined."
            (version (alist-get (intern subtree) cb-emacs-pinned-subtree-versions "master"))
            (commit-message (format "Merge %s@%s into %s" remote version prefix)))
 
-      (unless (y-or-n-p (format "%s at %s will merged to %s. Continue? " remote version fullpath))
+      (unless (y-or-n-p (format "%s at %s will be merged to %s. Continue? " remote version fullpath))
         (user-error "Aborted"))
 
       (run-hooks 'magit-credential-hook)
