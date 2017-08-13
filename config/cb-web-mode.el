@@ -21,6 +21,8 @@
   :defines (web-mode-markup-indent-offset
             web-mode-css-indent-offset)
 
+  :mode ("\\.mustache\\'" . web-mode)
+
   :defer t
 
   :preface
