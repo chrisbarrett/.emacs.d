@@ -72,10 +72,6 @@ deleted. PUB-ROOT-DIR is the root publication directory."
                (expand-file-name "index.org" op/repository-directory)
                all-list)
         (op/generate-default-index file-attr-list pub-root-dir))
-      (unless (member
-               (expand-file-name "about.org" op/repository-directory)
-               all-list)
-        (op/generate-default-about pub-root-dir))
       (op/update-category-index file-attr-list pub-root-dir)
       (op/update-rss file-attr-list pub-root-dir)
       (op/update-tags file-attr-list pub-root-dir)

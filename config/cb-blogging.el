@@ -72,7 +72,7 @@
              :show-meta t
              :show-comment nil
              :uri-generator op/generate-uri
-             :uri-template "/blog/%y/%m/%d/%t/"
+             :uri-template "/blog/%y/%t/"
              :sort-by :date
              :category-index t)
             ("index"
@@ -80,13 +80,6 @@
              :show-comment nil
              :uri-generator op/generate-uri
              :uri-template "/"
-             :sort-by :date
-             :category-index nil)
-            ("about"
-             :show-meta nil
-             :show-comment nil
-             :uri-generator op/generate-uri
-             :uri-template "/about/"
              :sort-by :date
              :category-index nil)))))
 
