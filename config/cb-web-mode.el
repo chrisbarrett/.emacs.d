@@ -21,8 +21,6 @@
   :defines (web-mode-markup-indent-offset
             web-mode-css-indent-offset)
 
-  :mode ("\\.mustache\\'" . web-mode)
-
   :defer t
 
   :preface
@@ -62,6 +60,7 @@
          ("\\.tsx?\\'"  . cb-web-typescript-mode)
          ("\\.jsx?\\'" . cb-web-js-mode)
          ("\\.css\\'"  . cb-web-css-mode)
+         ("\\.mustache\\'"  . cb-web-mustache-mode)
          ("\\.scss\\'"  . cb-web-css-mode)
          ("\\.html\\'" . cb-web-html-mode))
   :defines (flycheck-html-tidy-executable)
@@ -114,6 +113,9 @@
     (defun cb-web--maybe-emmet-mode ()
       (cond
        ((derived-mode-p 'cb-web-html-mode 'html-mode 'nxml-mode)
+        (emmet-mode +1))
+
+       ((equal web-mode-content-type "html")
         (emmet-mode +1))
 
        ((and (derived-mode-p 'cb-web-js-mode)

@@ -33,6 +33,10 @@
   "Derived mode for editing CSS files."
   (setq-local web-mode-content-type "css"))
 
+;;;###autoload
+(define-derived-mode cb-web-mustache-mode web-mode "Mustache"
+  "Derived mode for editing mustache files.")
+
 (provide 'cb-web-modes)
 
 ;;; cb-web-modes.el ends here
