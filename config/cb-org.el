@@ -411,7 +411,9 @@
             ("w" "Work actions"
              ((tags-todo "-study-someday-media-gtd/TODO"
                          ((org-agenda-overriding-header "Next Actions")
-                          (org-agenda-skip-function #'cb-org--agenda-skip-all-siblings-but-first)))
+                          (org-agenda-skip-function (lambda ()
+                                                      (or (cb-org--agenda-skip-if-has-timestamp)
+                                                          (cb-org--agenda-skip-all-siblings-but-first))))))
               (todo "WAITING"
                     ((org-agenda-overriding-header "Waiting")))
               (stuck "")
