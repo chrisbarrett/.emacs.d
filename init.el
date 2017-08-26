@@ -110,7 +110,6 @@ If argument INTERACTIVE-P is set, log additional information."
 ;; Load features.
 
 (use-package cb-emacs)
-(use-package cb-remacs :if (string-match-p "/remacs/" exec-directory))
 
 (use-package cb-faces)
 (use-package cb-basic-settings)
