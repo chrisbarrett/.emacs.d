@@ -193,6 +193,9 @@
     (when (fboundp 'imagemagick-register-types)
       (imagemagick-register-types))
 
+    ;; Ensure I'm never prompted for the buffer coding system when sending mail.
+    (setq sendmail-coding-system 'utf-8)
+
     ;; Custom rendering of HTML messages
     (setq mu4e-html2text-command #'cb-mu4e-shr-buffer)
 
