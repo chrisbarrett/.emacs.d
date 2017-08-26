@@ -114,7 +114,7 @@
     (setq scala-indent:align-forms t)
     (setq scala-indent:align-parameters t)
     (setq scala-indent:default-run-on-strategy scala-indent:operator-strategy)
-    (setq scala-indent:indent-value-expression t)
+    (setq scala-indent:indent-value-expression nil)
 
     ;; KLUDGE: Don't use the auto-mode form provided by this package.
     (setq auto-mode-alist (delete '("\\.\\(scala\\|sbt\\)\\'" . scala-mode) auto-mode-alist))
