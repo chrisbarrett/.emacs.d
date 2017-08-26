@@ -104,9 +104,14 @@
 (use-package emmet-mode
   :defer t
   :defines (emmet-expand-jsx-className?)
-  :commands (emmet-mode emmet-expand-line)
+  :commands (emmet-mode emmet-expand-yas)
   :preface
   (progn
+    (autoload 'sp-get-enclosing-sexp "smartparens")
+    (autoload 'sp-up-sexp "smartparens")
+    (autoload 'yas--templates-for-key-at-point "yasnippet")
+    (autoload 'yas-expand "yasnippet")
+
     (defun cb-web--set-jsx-classname-on ()
       (setq-local emmet-expand-jsx-className? t))
 
@@ -121,14 +126,39 @@
        ((and (derived-mode-p 'cb-web-js-mode)
              (buffer-file-name)
              (memq "components" (f-split (buffer-file-name))))
-        (emmet-mode +1)))))
+        (emmet-mode +1))))
+
+    (defun cb-web--emmet-move-out-of-squares ()
+      "Move point outside squares before expansion."
+      (cl-flet ((sp-has-op? (op)
+                            (-when-let ((&plist :op o) (sp-get-enclosing-sexp))
+                              (equal op o)))
+                (move-out-of-sexp ()
+                                  (-when-let ((&plist :end end) (sp-get-enclosing-sexp))
+                                    (goto-char end))))
+        (cond
+         ((sp-has-op? "[")
+          (move-out-of-sexp))
+         ((and (sp-has-op? "\"")
+               (save-excursion
+                 (sp-up-sexp)
+                 (sp-has-op? "[")))
+          (move-out-of-sexp)
+          (move-out-of-sexp)))))
+
+    (defun cb-web-expand-snippet-then-emmet ()
+      (interactive)
+      (if (yas--templates-for-key-at-point)
+          (call-interactively #'yas-expand)
+        (cb-web--emmet-move-out-of-squares)
+        (emmet-expand-yas))))
 
   :init
   (add-hook 'web-mode-hook #'cb-web--maybe-emmet-mode)
   :config
   (progn
     (setq emmet-move-cursor-between-quotes t)
-    (define-key emmet-mode-keymap (kbd "TAB") #'emmet-expand-line)
+    (define-key emmet-mode-keymap (kbd "TAB") #'cb-web-expand-snippet-then-emmet)
     (add-hook 'cb-web-js-mode-hook #'cb-web--set-jsx-classname-on)))
 
 (use-package cb-flow-checker
