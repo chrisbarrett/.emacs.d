@@ -37,6 +37,7 @@
 
 (use-package emojify
   :commands (global-emojify-mode)
+  :disabled t
   :demand t
   :config
   (progn
