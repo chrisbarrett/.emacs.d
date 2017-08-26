@@ -206,7 +206,7 @@
       (kbd "q") 'ensime-popup-buffer-quit-function)
 
     (evil-define-key 'normal ensime-mode-map
-      (kbd "K") 'ensime-inspect-type-at-point)
+      (kbd "K") 'ensime-type-at-point-full-name)
 
     (evil-define-key 'normal ensime-inspector-mode-map
       (kbd "M-.") 'ensime-inspector-browse-source
