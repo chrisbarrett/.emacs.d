@@ -340,6 +340,7 @@ Optional arg JUSTIFY will justify comments and strings."
   (setq abbrev-file-name (concat cb-emacs-cache-directory "/abbrev_defs")))
 
 (use-package window-numbering
+  :when (display-graphic-p)
   :defer t
   :commands (window-numbering-mode)
   :config
