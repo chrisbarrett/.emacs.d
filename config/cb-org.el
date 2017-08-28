@@ -395,16 +395,24 @@
 
               (tags-todo "-someday-media/TODO"
                          ((org-agenda-overriding-header "Next Actions")
-                          (org-agenda-skip-function #'cb-org--agenda-skip-all-siblings-but-first)))
+                          (org-agenda-skip-function (lambda ()
+                                                      (or (cb-org--agenda-skip-if-has-timestamp)
+                                                          (cb-org--agenda-skip-all-siblings-but-first))))))
               (tags-todo "+goals+3_months+project/TODO"
                          ((org-agenda-overriding-header "Review 3 Month Goals")
-                          (org-agenda-skip-function #'cb-org--agenda-skip-all-siblings-but-first)))
+                          (org-agenda-skip-function (lambda ()
+                                                      (or (cb-org--agenda-skip-if-has-timestamp)
+                                                          (cb-org--agenda-skip-all-siblings-but-first))))))
               (tags-todo "+goals+1_year+project/TODO"
                          ((org-agenda-overriding-header "Review 1 Year Goals")
-                          (org-agenda-skip-function #'cb-org--agenda-skip-all-siblings-but-first)))
+                          (org-agenda-skip-function (lambda ()
+                                                      (or (cb-org--agenda-skip-if-has-timestamp)
+                                                          (cb-org--agenda-skip-all-siblings-but-first))))))
               (tags-todo "+goals+3_years+project/MAYBE|SOMEDAY|TODO"
                          ((org-agenda-overriding-header "Review 3 Year Goals")
-                          (org-agenda-skip-function #'cb-org--agenda-skip-all-siblings-but-first)))
+                          (org-agenda-skip-function (lambda ()
+                                                      (or (cb-org--agenda-skip-if-has-timestamp)
+                                                          (cb-org--agenda-skip-all-siblings-but-first))))))
               (tags-todo "someday-skill/MAYBE|TODO"
                          ((org-agenda-overriding-header "Decide whether to promote any SOMEDAY items to TODOs")))
               (tags-todo "someday&skill"
