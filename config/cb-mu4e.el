@@ -147,8 +147,10 @@
              "Last 7 days" ?w)
             ("d:30d..now AND NOT (s:JIRA OR s:jenkins)"
              "Last 30 days" ?m)
+            ("m:/walrus/inbox"
+             "Inbox" ?i)
             ("m:/walrus/inbox OR m:/movio/inbox"
-             "All Inboxes" ?i)
+             "All Inboxes" ?I)
             ("m:/walrus/sent OR m:/movio/sent"
              "Sent messages" ?s)
             ("bitbucket OR github"
