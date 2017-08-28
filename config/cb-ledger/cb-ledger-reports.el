@@ -107,6 +107,8 @@
        (setf (alist-get 'unbudgeted-last-30-days next) args))
       (:update-register-last-7-days
        (setf (alist-get 'register-last-7-days next) args))
+      (:update-register-last-7-days-by-payee
+       (setf (alist-get 'register-last-7-days-by-payee next) args))
       (_
        (error "Unknown action: %s" action)))
 
@@ -186,7 +188,8 @@
     (cb-ledger-reports--fetch-value 'budget-last-30-days-by-payee state '("reg" "expenses" "--by-payee" "--sort" "total" "-p" "last 30 days" "--invert" "--budget"))
     (cb-ledger-reports--fetch-value 'unbudgeted-last-7-days state `("bal" "expenses" ,@(cb-ledger-reports-format-budget-excludes) "--sort" "total" "-p" "last 7 days" "--invert" "--unbudgeted"))
     (cb-ledger-reports--fetch-value 'unbudgeted-last-30-days state `("bal" "expenses" ,@(cb-ledger-reports-format-budget-excludes) "--sort" "total" "-p" "last 30 days" "--invert" "--unbudgeted"))
-    (cb-ledger-reports--fetch-value 'register-last-7-days state '("reg" "checking" "-p" "last 7 days" "--invert"))))
+    (cb-ledger-reports--fetch-value 'register-last-7-days state '("reg" "checking" "-p" "last 7 days" "--invert"))
+    (cb-ledger-reports--fetch-value 'register-last-7-days-by-payee state '("reg" "checking" "-p" "last 7 days" "--invert" "--by-payee" "--sort" "total"))))
 
 
 ;; Components
@@ -297,6 +300,13 @@
              (async-value register-last-7-days ,state))
             (padding)))
 
+(blergh-define-component ledger-register-last-7-days-by-payee (state)
+  `(section (register-7-days-by-payee nil)
+            (heading "Register (7 Days, By Payee)")
+            (indent
+             (async-value register-last-7-days-by-payee ,state))
+            (padding)))
+
 (blergh-define-component ledger-weekly-review (state)
   `((section (balances nil)
              (heading "Balances")
@@ -341,7 +351,9 @@ These balances show the remaining available balance for each category.")
               (line "Read through the payees below from my checking account.
 Any spending patterns here that could be budgeted?")
               (padding)
-              (ledger-register-last-7-days ,state)))))
+              (ledger-register-last-7-days ,state)
+              (padding)
+              (ledger-register-last-7-days-by-payee ,state)))))
 
 
 ;; Commands
