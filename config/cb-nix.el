@@ -9,6 +9,11 @@
   :mode (("\\.nix\\'" . nix-mode)
          ("\\.nix.in\\'" . nix-mode)))
 
+(use-package company-nixos-options
+  :after nix-mode
+  :config
+  (with-eval-after-load 'company
+    (add-to-list 'company-backends 'company-nixos-options)))
 
 (provide 'cb-nix)
 
