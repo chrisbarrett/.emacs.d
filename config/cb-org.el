@@ -159,6 +159,7 @@
     (setq org-confirm-babel-evaluate nil)
     (setq org-babel-load-languages '((emacs-lisp . t)
                                      (restclient . t)
+                                     (gnuplot . t)
                                      (python . t)
                                      (ipython . t)
                                      (scala . t)
@@ -213,6 +214,13 @@
       (setq-local org-babel-python-command "ipython")))
   :config
   (add-hook 'org-mode-hook #'cb-org-setup-python))
+
+(use-package ob-gnuplot
+  :after org)
+
+(use-package gnuplot
+  :ensure t
+  :defer t)
 
 (use-package ob-restclient :after org)
 
