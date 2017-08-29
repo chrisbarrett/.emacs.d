@@ -21,11 +21,21 @@
       (completing-read "Switch to project: " projects)
     (user-error "There are no known projects")))
 
+(defun cb-projectile-eyebrowse--buffer-in-project? (buf project-root)
+  (with-current-buffer buf
+    (f-child-of? default-directory project-root)))
+
 (defun cb-projectile-eyebrowse-switch-to-project (project-root)
   "Switch to the project at PROJECT-ROOT."
   (interactive (list (cb-projectile-eyebrowse--read-project)))
   (-if-let (slot (cb-projectile-eyebrowse--slot-for-project project-root))
-      (eyebrowse-switch-to-window-config slot)
+      (progn
+        (eyebrowse-switch-to-window-config slot)
+        ;; Display project if none of the selected windows
+        (let ((buffers (-map #'window-buffer (window-list))))
+          (unless (--any? (cb-projectile-eyebrowse--buffer-in-project? it project-root) buffers)
+            (projectile-switch-project-by-name project-root))))
+
     (let ((slot (eyebrowse-free-slot (-map #'car (eyebrowse--get 'window-configs)))))
       (eyebrowse-switch-to-window-config slot)
       (eyebrowse-rename-window-config slot project-root)
