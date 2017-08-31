@@ -235,13 +235,16 @@
   (progn
     (defvar python-sort-imports t)
 
+    (defun python-sort-imports-maybe ()
+      (when python-sort-imports
+        (py-isort-before-save)))
+
     (define-minor-mode python-sort-imports-mode
       "Minor mode for sorting python imports on save."
       nil nil nil nil
-      (if (and python-sort-imports-mode
-               (or python-sort-imports (called-interactively-p nil)))
-          (add-hook 'before-save-hook 'py-isort-before-save nil t)
-        (remove-hook 'before-save-hook 'py-isort-before-save t))))
+      (if python-sort-imports-mode
+          (add-hook 'before-save-hook 'python-sort-imports-maybe nil t)
+        (remove-hook 'before-save-hook 'python-sort-imports-maybe t))))
   :init
   (add-hook 'python-mode-hook #'python-sort-imports-mode))
 
@@ -254,13 +257,16 @@
   (progn
     (defvar python-auto-format-buffer t)
 
+    (defun python-auto-format-maybe ()
+      (when python-auto-format-buffer
+        (py-yapf-buffer)))
+
     (define-minor-mode python-auto-format-mode
       "Minor mode for sorting formatting the buffer on save."
       nil nil nil nil
-      (if (and python-auto-format-mode
-               (or python-auto-format-buffer (called-interactively-p nil)))
-          (add-hook 'before-save-hook 'py-yapf-buffer nil t)
-        (remove-hook 'before-save-hook 'py-yapf-buffer t))))
+      (if python-auto-format-mode
+          (add-hook 'before-save-hook 'python-auto-format-maybe nil t)
+        (remove-hook 'before-save-hook 'python-auto-format-maybe t))))
   :init
   (add-hook 'python-mode-hook #'python-auto-format-mode))
 
