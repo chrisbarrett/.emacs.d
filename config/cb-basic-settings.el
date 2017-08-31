@@ -197,6 +197,18 @@ Optional arg JUSTIFY will justify comments and strings."
 
 (advice-add #'display-message-or-buffer :before #'cb-basic-settings--display-ansi-codes)
 
+
+;; Hide files with boring extensions from find-file
+
+(defun cb-basic-settings--hide-boring-files-in-completion (result)
+  "Filter RESULT using `completion-ignored-extensions'."
+  (if (and (listp result) (stringp (car result)) (cdr result))
+      (completion-pcm--filename-try-filter result)
+    result))
+
+(advice-add #'completion--file-name-table :filter-return #'cb-basic-settings--hide-boring-files-in-completion)
+
+
 ;; Generate random passwords.
 
 (defun cb-generate-password ()
