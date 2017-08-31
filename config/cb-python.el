@@ -231,16 +231,38 @@
 (use-package py-isort
   :defer t
   :after 'python
+  :preface
+  (progn
+    (defvar python-sort-imports t)
+
+    (define-minor-mode python-sort-imports-mode
+      "Minor mode for sorting python imports on save."
+      nil nil nil nil
+      (if (and python-sort-imports-mode
+               (or python-sort-imports (called-interactively-p nil)))
+          (add-hook 'before-save-hook 'py-isort-before-save nil t)
+        (remove-hook 'before-save-hook 'py-isort-before-save t))))
   :init
-  (add-hook 'before-save-hook 'py-isort-before-save))
+  (add-hook 'python-mode-hook #'python-sort-imports-mode))
 
 ;; pip install yapf
 
 (use-package py-yapf
   :defer t
   :after 'python
+  :preface
+  (progn
+    (defvar python-auto-format-buffer t)
+
+    (define-minor-mode python-auto-format-mode
+      "Minor mode for sorting formatting the buffer on save."
+      nil nil nil nil
+      (if (and python-auto-format-mode
+               (or python-auto-format-buffer (called-interactively-p nil)))
+          (add-hook 'before-save-hook 'py-yapf-buffer nil t)
+        (remove-hook 'before-save-hook 'py-yapf-buffer t))))
   :init
-  (add-hook 'python-mode-hook 'py-yapf-enable-on-save))
+  (add-hook 'python-mode-hook #'python-auto-format-mode))
 
 (provide 'cb-python)
 
