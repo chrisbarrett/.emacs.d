@@ -203,7 +203,15 @@ Optional arg JUSTIFY will justify comments and strings."
 (defun cb-basic-settings--hide-boring-files-in-completion (result)
   "Filter RESULT using `completion-ignored-extensions'."
   (if (and (listp result) (stringp (car result)) (cdr result))
-      (completion-pcm--filename-try-filter result)
+      (let ((matches-boring (rx-to-string `(and (or "."
+                                                    ".."
+                                                    ".DS_Store"
+                                                    "__pycache__/"
+                                                    ".cache/"
+                                                    ".ensime_cache/"
+                                                    ,@completion-ignored-extensions)
+                                                eos))))
+        (--remove (string-match-p matches-boring it) result))
     result))
 
 (advice-add #'completion--file-name-table :filter-return #'cb-basic-settings--hide-boring-files-in-completion)
