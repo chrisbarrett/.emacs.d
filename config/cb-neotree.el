@@ -53,7 +53,6 @@
     (setq neo-mode-line-type 'nerd)
     (setq neo-smart-open t)
     (setq neo-theme 'ascii)
-    (setq neo-dont-be-alone t)
     (setq neo-persist-show nil)
     (setq neo-show-hidden-files nil)
     (setq neo-vc-integration nil)
