@@ -335,6 +335,9 @@
     (magit-popup-option-value
      ((t :weight normal)))
 
+    (magithub-ci-success
+     ((t :inherit success)))
+
     ;; Outline, Org
 
     (org-link
