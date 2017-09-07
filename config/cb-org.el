@@ -579,9 +579,12 @@
   :after org
   :load-path cb-org-load-path
   :preface
-  (defun cb-org--capture-template-entry (key label form template &rest kws)
+  (cl-defun cb-org--capture-template-entry (key label form template
+                                          &rest kws
+                                          &key (type 'entry)
+                                          &allow-other-keys)
     (append
-     (list key label 'entry form template
+     (list key label type form template
            :clock-keep t
            :empty-lines 1
            :prepend t)
@@ -604,6 +607,11 @@
          (cb-org--capture-template-entry
           "D" "Diary (work)"
           `(file+datetree cb-org-work-file) "* %?\n%^t")
+
+         (cb-org--capture-template-entry
+          "j" "Journal"
+          '(file+datetree org-agenda-diary-file) "%?"
+          :type 'plain)
 
          (cb-org--capture-template-entry
           "l" "Link"
