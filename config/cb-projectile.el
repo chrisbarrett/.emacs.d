@@ -75,6 +75,7 @@
             "build"
             "dist"
             "node_modules"
+            "jars"
             "target"))
 
     (projectile-mode)
