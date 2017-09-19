@@ -120,6 +120,7 @@ If argument INTERACTIVE-P is set, log additional information."
 (use-package cb-ivy)
 (use-package cb-avy)
 (use-package cb-darwin :if (equal system-type 'darwin))
+(use-package cb-dumb-jump)
 (use-package cb-ag)
 (use-package cb-projectile)
 (use-package cb-elisp)
