@@ -876,6 +876,8 @@ table tr.tr-even td {
   :init
   (add-hook 'org-mode-hook #'org-indent-mode))
 
+(use-package org-html-span
+  :after org)
 
 (provide 'cb-org)
 
