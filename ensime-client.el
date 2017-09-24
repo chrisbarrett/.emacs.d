@@ -845,14 +845,6 @@ copies. All other objects are used unchanged. List must not contain cycles."
   (ensime-eval
    `(swank:doc-uri-for-symbol ,scala-name ,member-name ,member-signature)))
 
-(defun ensime-rpc-symbol-by-name (scala-name &optional member-name member-signature)
-  (ensime-eval
-   `(swank:symbol-by-name ,scala-name ,member-name ,member-signature)))
-
-(defun ensime-rpc-method-bytecode (file line)
-  (ensime-eval
-   `(swank:method-bytecode ,file ,line)))
-
 (defun ensime-rpc-debug-active-vm ()
   (ensime-eval
    `(swank:debug-active-vm)))
@@ -1004,15 +996,6 @@ copies. All other objects are used unchanged. List must not contain cycles."
   (if (and (integerp id) (> id -1))
       (ensime-eval
        `(swank:type-by-id ,id))))
-
-(defun ensime-rpc-get-type-by-name (name)
-  (ensime-eval
-   `(swank:type-by-name ,name)))
-
-(defun ensime-rpc-get-type-by-name-at-point (name)
-  (ensime-eval
-   `(swank:type-by-name-at-point
-     ,name ,(buffer-file-name-with-indirect) ,(ensime-computed-point))))
 
 (defun ensime-rpc-get-type-at-point ()
   (ensime-eval

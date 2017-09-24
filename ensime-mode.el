@@ -32,7 +32,6 @@
 (require 'ensime-editor)
 (require 'ensime-company)
 (require 'ensime-eldoc)
-(require 'ensime-goto-testfile)
 (require 'ensime-model)
 (require 'ensime-notes)
 (require 'ensime-popup)
@@ -80,9 +79,6 @@
 
       (define-key prefix-map (kbd "C-c c") 'ensime-typecheck-current-buffer)
       (define-key prefix-map (kbd "C-c r") 'ensime-reload-open-files)
-      
-      (define-key prefix-map (kbd "C-t t") 'ensime-goto-test)
-      (define-key prefix-map (kbd "C-t i") 'ensime-goto-impl)
 
       (define-key prefix-map (kbd "C-d a") 'ensime-db-attach)
       (define-key prefix-map (kbd "C-d b") 'ensime-db-set-break)
@@ -209,9 +205,6 @@
      ["Pop definition stack" ensime-pop-find-definition-stack]
 
      ["Expand selection" ensime-expand-selection-command]
-
-     ["Go to test class" ensime-goto-test]
-     ["Go to implementation class" ensime-goto-impl]
      )
 
     ("Documentation"

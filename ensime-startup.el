@@ -31,51 +31,8 @@ It is important that users know about the documentation."
   :group 'ensime-mode
   :type 'boolean)
 
-(defcustom ensime-startup-snapshot-notification t
-  "Show a warning about using rolling release.
-It is important that users know what they are getting into."
-  :group 'ensime-mode
-  :type 'boolean)
-
 (defun ensime-startup-notifications ()
   "Invasive informational messages that users need to be aware of."
-
-  (when ensime-startup-snapshot-notification
-    (let ((developer (generate-new-buffer "*ENSIME Developer Edition*")))
-      (with-current-buffer developer
-        (insert
-         "You are tracking a SNAPSHOT version of ensime-server, i.e. you are
-using the unstable (developer) release of ensime (e.g. from MELPA). That's cool
-since \"ENSIME appeals to hackers, minimalists and connoisseurs - engineers and
-artists who craft their own exquisite tools and help their neighbour\".
-Please get involved in the development of ensime and help to create high quality
-reproductions of bugs.
-
-Please note:
-1. you are expected to remain up-to-date with developments. You
-   will get access to new features but regressions in existing
-   features will happen from time to time (typically while we
-   await a volunteer to make required changes to the emacs
-   plugin, please help by getting involved!).
-
-2. remember to upgrade both the emacs and server components
-   regularly as they can get out of sync with each other. Do not
-   forget to follow the process outlined in
-   http://ensime.org/editors/emacs/troubleshooting/
-
-You can disable this message permanently by setting
-`ensime-startup-snapshot-notification' to `nil', acknowledging
-that you have read this message.
-
-If you want to install the stable release of ensime instead, delete
-~/.emacs.d/elpa/ensime and follow the instructions at:
-
-* http://ensime.org/editors/emacs/install/")
-        (goto-char (point-min))
-        (read-only-mode t)
-        (display-buffer developer #'display-buffer-pop-up-window))))
-
-  ;; welcome is more important, make sure it wins the popup race
   (when ensime-startup-notification
     (let ((welcome (generate-new-buffer "*ENSIME Welcome*")))
       (with-current-buffer welcome
@@ -150,19 +107,6 @@ that you have read this message.")
               "You are using a .ensime file format that is no longer supported.\n"
               "You must upgrade your build tool or downgrade to ensime stable.\n"
               "See http://ensime.org/editors/emacs/install\n\n")))
-
-    ;; not relevant for stable releases
-    (unless (ensime-dev-version-p ensime-server-version)
-      (error (concat
-              "\n\n"
-              "Your build tool has downloaded the stable version of ENSIME "
-              "but you are using the Developer Emacs install.\n\n"
-              "Check that you followed all the steps at http://ensime.org/editors/emacs/install "
-              "including additional steps that are required by your build tool.\n\n"
-              "For SBT, add the following to your ~/.sbt/0.13/global.sbt\n\n"
-              "\t import org.ensime.EnsimeCoursierKeys._\n"
-              "\t ensimeServerVersion in ThisBuild := \"2.0.0-M1\"\n\n"
-              "Currently other build tools do not support 2.0 file format.\n\n")))
 
     (let* ((server-proc
             (ensime--maybe-start-server
