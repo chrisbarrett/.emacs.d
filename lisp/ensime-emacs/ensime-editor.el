@@ -657,7 +657,7 @@ Decide what line to insert QUALIFIED-NAME."
          (popup-menu* entries :point (point)))))
     (`ivy
      (if (featurep 'ivy)
-         (ivy-read entries title)
+         (ivy-read title entries)
        (progn
          (message "Ivy is not installed, falling back to popup interface.")
          (popup-menu* entries :point (point)))))))
@@ -897,15 +897,17 @@ falls back to the classic version."
 
 (defun ensime-format-source-position (source-position)
   "Format source position SOURCE-POSITION."
-  (let* ((file-name (ensime-pos-file source-position))
-         (maybe-line (ensime-pos-line source-position))
-         (root-dir (ensime-configured-project-root))
-         (shortened-file-name (if root-dir
-                                  (replace-regexp-in-string (concat "^" (regexp-quote (expand-file-name root-dir)) "[/]?") "" file-name)
-                                file-name)))
-    (let ((line (if maybe-line (number-to-string (if (= 0 maybe-line) 1 maybe-line)) "?")))
-      (concat shortened-file-name
-              (propertize (concat ":" line) 'face 'font-lock-comment-face)))))
+  (if source-position
+      (let* ((file-name (ensime-pos-file source-position))
+             (maybe-line (ensime-pos-line source-position))
+             (root-dir (ensime-configured-project-root))
+             (shortened-file-name (if root-dir
+                                      (replace-regexp-in-string (concat "^" (regexp-quote (expand-file-name root-dir)) "[/]?") "" file-name)
+                                    file-name)))
+        (let ((line (if maybe-line (number-to-string (if (= 0 maybe-line) 1 maybe-line)) "?")))
+          (concat shortened-file-name
+                  (propertize (concat ":" line) 'face 'font-lock-comment-face))))
+    "???:?"))
 
 
 
