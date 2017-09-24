@@ -50,6 +50,7 @@
     ("g t" . ensime-goto-test)
     ("h T" . ensime-type-at-point-full-name)
     ("h h" . ensime-show-doc-for-symbol-at-point)
+    ("h i" . ensime-show-hierarchy-of-type-at-point)
     ("h t" . ensime-type-at-point)
     ("h u" . ensime-show-uses-of-symbol-at-point)
     ("i i" . ensime-import-type-at-point)
