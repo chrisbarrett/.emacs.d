@@ -157,6 +157,22 @@
                   (win (display-buffer buf)))
         (select-window win)))
 
+    (defun cb-scala-ensime-goto-definition-or-dumb-jump ()
+      (interactive)
+      (cond
+       ((ensime-connected-p)
+        (call-interactively #'ensime-edit-definition))
+       ((require 'dumb-jump nil t)
+        (call-interactively #'dumb-jump-go))
+       (t
+        (user-error "Ensime not connected"))))
+
+    (defun cb-scala-ensime-pop-stack-or-tag-mark ()
+      (interactive)
+      (if (ensime-connected-p)
+          (call-interactively #'ensime-pop-find-definition-stack)
+        (pop-tag-mark)))
+
     (defun cb-scala-send-as-paste (beg end)
       (interactive (if (region-active-p)
                        (list (region-beginning) (region-end))
@@ -199,8 +215,8 @@
 
     (dolist (state '(normal insert))
       (eval `(evil-define-key ',state ensime-mode-map
-               (kbd "M-.") 'ensime-edit-definition
-               (kbd "M-,") 'ensime-pop-find-definition-stack
+               (kbd "M-.") 'cb-scala-ensime-goto-definition-or-dumb-jump
+               (kbd "M-,") 'cb-scala-ensime-pop-stack-or-tag-mark
                (kbd "C-c C-z") 'ensime-inf-switch)))
 
     (evil-define-key 'normal ensime-popup-buffer-map
