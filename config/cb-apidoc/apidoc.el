@@ -12,6 +12,11 @@
 
 (autoload 'json-read-from-string "json")
 
+(defvar apidoc-program "/usr/local/Cellar/apibuilder-cli/0.1.8/bin/apibuilder")
+
+(defvar apidoc-host "apidoc.movio.co")
+
+
 (defun apidoc--parse-yaml (file)
   (let ((command (concat
                   "ruby -ryaml -rjson -e 'puts JSON.pretty_generate(YAML.load(ARGF))' < "
@@ -35,13 +40,12 @@
                      (apidoc--locate-or-prompt-for-file ".apidoc")))
   (-let* (((&plist :org org :service service)
            (apidoc--parse-apidoc-yaml (apidoc--parse-yaml (car (file-expand-wildcards api-yaml t)))))
-          (command (format "apidoc upload %s %s %s"
+          (command (format "%s upload %s %s %s"
+                           apidoc-program
                            (shell-quote-argument org)
                            (shell-quote-argument service)
                            (shell-quote-argument (car (file-expand-wildcards api-json t))))))
     (compile command t)))
-
-(defvar apidoc-host "apidoc.movio.co")
 
 (defun apidoc--url-for-service (host org service)
   (format "http://%s/%s/%s" host org service))
@@ -57,7 +61,7 @@
   "Run apidoc update in DIR.  That directory should contain a .apidoc file."
   (interactive (list (file-name-directory (apidoc--locate-or-prompt-for-file ".apidoc"))))
   (let ((default-directory dir))
-    (compile "apidoc update")))
+    (compile (format "%s update" apidoc-program))))
 
 (provide 'apidoc)
 
