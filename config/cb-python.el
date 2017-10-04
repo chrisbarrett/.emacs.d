@@ -193,11 +193,14 @@
     (autoload 'f-join "f")
 
     (defun cb-python-pyvenv-dir ()
-      (let ((root (or (projectile-project-p) default-directory)))
-        (f-join root "env")))
+      (cl-loop with start = (or (buffer-file-name) default-directory)
+               for venv in (list ".env" "env" ".venv" "venv")
+               for path = (locate-dominating-file start venv)
+               when path
+               return (f-join path venv)))
 
     (defun cb-python-pyvenv-activate-if-found ()
-      (let ((env (cb-python-pyvenv-dir)))
+      (-when-let (env (cb-python-pyvenv-dir))
         (when (file-directory-p env)
           (pyvenv-activate env)
           (message "Using pyvenv at %s" (f-abbrev env)))))
@@ -205,7 +208,7 @@
     (defun cb-python-pyvenv-init (env)
       (interactive
        (list (or (cb-python-pyvenv-dir)
-                 (f-join (read-directory-name "Project root: " nil nil t) "env"))))
+                 (f-join (read-directory-name "Project root: " nil nil t) ".env"))))
       (when (f-dir? env)
         (user-error "Environment already exists"))
       (let ((reporter (make-progress-reporter "Initializing pyvenv environment...")))
