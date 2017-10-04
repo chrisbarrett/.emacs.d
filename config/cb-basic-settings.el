@@ -305,7 +305,6 @@ Optional arg JUSTIFY will justify comments and strings."
 ;;; General variables
 
 (setq-default fill-column 80)
-(setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
 (setq-default sentence-end-double-space t)
 
