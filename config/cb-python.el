@@ -103,7 +103,7 @@
 
 (with-eval-after-load 'flycheck
   (with-no-warnings
-    (setq flycheck-python-pycompile-executable "python3")))
+    (setq flycheck-python-pycompile-executable "python")))
 
 (use-package anaconda-mode
   :ensure t
