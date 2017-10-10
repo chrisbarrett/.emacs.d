@@ -193,18 +193,36 @@
     (autoload 'projectile-project-p "projectile")
     (autoload 'f-join "f")
 
+    (defvar cb-python--venv-names '(".env" "env" ".venv" "venv" ".virtualenv"))
+
+    (defun cb-python--directory-first-ancestor (dir pred)
+      "Search up the filesystem for the first DIR satisfying PRED.
+Return the first non-nil result of evalutating PRED."
+      (let (result)
+        (while dir
+          (pcase (funcall pred dir)
+            (`nil
+             (setq dir (f-parent dir)))
+            (res
+             (setq result res)
+             (setq dir nil))))
+        result))
+
+    (defun cb-python--find-venv-in-directory (dir)
+      (-when-let ((dir) (--keep (let ((dir (f-join dir it)))
+                                  (when (f-directory? dir)
+                                    dir))
+                                cb-python--venv-names))
+        (file-truename dir)))
+
     (defun cb-python-pyvenv-dir ()
-      (cl-loop with start = (or (buffer-file-name) default-directory)
-               for venv in (list ".env" "env" ".venv" "venv")
-               for path = (locate-dominating-file start venv)
-               when path
-               return (f-join path venv)))
+      (cb-python--directory-first-ancestor default-directory
+                                  #'cb-python--find-venv-in-directory))
 
     (defun cb-python-pyvenv-activate-if-found ()
       (-when-let (env (cb-python-pyvenv-dir))
-        (when (file-directory-p env)
-          (pyvenv-activate env)
-          (message "Using pyvenv at %s" (f-abbrev env)))))
+        (pyvenv-activate env)
+        (message "Using pyvenv at %s" (f-abbrev env))))
 
     (defun cb-python-pyvenv-init (env)
       (interactive
