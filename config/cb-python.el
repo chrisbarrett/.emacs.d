@@ -22,6 +22,7 @@
       (setq-local comment-inline-offset 2)
       (setq-local tab-width 4)
       (setq-local evil-shift-width 4)
+      (prettify-symbols-mode -1)
       (when (executable-find "ipython")
         (setq-local python-shell-interpreter "ipython")
         (setq-local python-shell-interpreter-args "--simple-prompt -i")))
