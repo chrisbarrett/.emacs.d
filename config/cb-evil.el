@@ -66,6 +66,8 @@
       (evil-set-initial-state 'archive-mode 'emacs)
       (evil-add-hjkl-bindings archive-mode-map))
 
+    (evil-set-initial-state 'wdired-mode 'normal)
+
     ;; Better compat with smartparens-strict mode.
     ;; TODO: Move to SP config.
 
