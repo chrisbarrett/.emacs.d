@@ -15,6 +15,7 @@
 (require 'spacemacs-keys)
 
 (autoload 'evil-define-key "evil-core")
+(autoload 'evil-first-non-blank "evil-commands")
 
 (use-package dired
   :defer t
@@ -63,6 +64,7 @@
     (unless (bound-and-true-p diredp-loaded-p)
       (load-file (concat cb-emacs-lisp-directory "/dired-plus/dired+.el")))
 
+    (evil-define-key 'normal dired-mode-map (kbd "$") #'end-of-line)
     (evil-define-key 'normal dired-mode-map (kbd "j") #'diredp-next-line)
     (evil-define-key 'normal dired-mode-map (kbd "k") #'diredp-previous-line)))
 
@@ -87,7 +89,9 @@
 (use-package wdired
   :after dired
   :config
-  (evil-define-key 'normal dired-mode-map (kbd "C-c C-w") #'wdired-change-to-wdired-mode))
+  (progn
+    (evil-define-key 'normal wdired-mode-map (kbd "^") #'evil-first-non-blank)
+    (evil-define-key 'normal dired-mode-map (kbd "C-c C-e") #'wdired-change-to-wdired-mode)))
 
 
 (provide 'cb-dired)
