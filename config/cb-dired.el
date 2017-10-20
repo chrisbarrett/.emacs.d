@@ -25,12 +25,6 @@
     (autoload 'diredp-next-line "dired+")
     (autoload 'diredp-previous-line "dired+")
 
-    ;; HACK: Hide the cursor and use hl-line.
-    (defun cb-dired--hacky-show-line-only ()
-      (run-with-timer 0.01 nil (lambda ()
-                                 (setq cursor-type nil)
-                                 (hl-line-mode +1))))
-
     (defun cb-dired--sort-directories-first (&rest _)
       "Sort dired listings with directories first."
       (save-excursion
@@ -53,7 +47,7 @@
 
   :config
   (progn
-    (add-hook 'dired-mode-hook #'cb-dired--hacky-show-line-only t)
+    (add-hook 'dired-mode-hook #'hl-line-mode)
 
     (put 'dired-find-alternate-file 'disabled nil)
 
