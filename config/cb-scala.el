@@ -41,6 +41,19 @@
     ("b r" . ensime-sbt-do-run)
     ("c a" . ensime-typecheck-all)
     ("c c" . ensime-typecheck-current-buffer)
+    ("d a" . ensime-db-attach)
+    ("d b" . ensime-db-set-break)
+    ("d c" . ensime-db-continue)
+    ("d i" . ensime-db-inspect-value-at-point)
+    ("d n" . ensime-db-next)
+    ("d o" . ensime-db-step-out)
+    ("d q" . ensime-db-quit)
+    ("d r" . ensime-db-run)
+    ("d s" . ensime-db-step)
+    ("d t" . ensime-db-backtrace)
+    ("d w" . ensime-db-commit-writable-values)
+    ("d x" . ensime-db-clear-break)
+    ("d X" . ensime-db-clear-all-breaks)
     ("e e" . ensime-print-errors-at-point)
     ("e l" . ensime-show-all-errors-and-warnings)
     ("e s" . ensime-stacktrace-switch)
@@ -92,6 +105,7 @@
 
     (defconst cb-scala--boring-prefixes
       '("cb-scala-"
+        "ensime-db-"
         "ensime-sbt-do-"
         "ensime-sbt-"
         "ensime-refactor-diff-"
