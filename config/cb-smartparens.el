@@ -79,36 +79,40 @@
           (just-one-space))))
 
     (defun cb-smartparens-delete-horizontal-space-for-delete (f &rest args)
-      (-if-let ((&plist :beg beg :end end :op op :cl cl) (sp-get-enclosing-sexp))
-          (let* ((inside-start (+ beg (length op)))
-                 (inside-end (- end (length cl)))
-                 (before (buffer-substring inside-start (point)))
-                 (after (buffer-substring (point) inside-end))
-                 (inside (concat before after)))
-            (cond
-             ;; Delete contents for multiline pairs that were just inserted, e.g. braces.
-             ((string-match-p (rx bos (* space) "\n" (* space) "\n" (* space) eos) inside)
-              (delete-region inside-start inside-end))
+      "Perform context-sensitive whitespace cleanups when deleting."
+      (-let* ((line-before-pt (buffer-substring (line-beginning-position) (point)))
+              (line-after-pt (buffer-substring (point) (line-end-position)))
 
-             ;; Delete preceding whitespace beyond a certain length.
-             ((let ((preceding (buffer-substring (line-beginning-position) (point))))
-                (string-match-p (rx space (+ space) eos) preceding))
-              (while (looking-back (rx space space) (line-beginning-position))
-                (delete-char -1)))
+              ((&plist :beg beg :end end :op op :cl cl) (sp-get-enclosing-sexp))
+              (inside-start (when op (+ beg (length op))))
+              (inside-end   (when op (- end (length cl))))
+              (inside       (when op
+                              (concat (buffer-substring inside-start (point))
+                                      (buffer-substring (point) inside-end)))))
+        (cond
+         ;; Collapse horizontal space in empty pairs.
+         ((when op (string-match-p (rx bos (+ space) eos) inside))
+          (delete-region inside-start inside-end))
 
-             ;; Collapse horizontal space in empty pairs.
-             ((string-match-p (rx bos (+ space) eos) inside)
-              (delete-region inside-start inside-end))
+         ;; Delete contents for multiline pairs that were just inserted, e.g. braces.
+         ((when op (string-match-p (rx bos (* space) "\n" (* space) "\n" (* space) eos) inside))
+          (delete-region inside-start inside-end))
 
-             (t
-              (funcall f args))))
+         ;; Don't aggressively delete whitespace if there's a comment
+         ;; following pt.
+         ((string-match-p (rx (syntax comment-start)) line-after-pt)
+          (funcall f args))
 
-        ;; Delete preceding whitespace beyond a certain length.
-        (if (let ((preceding (buffer-substring (line-beginning-position) (point))))
-              (string-match-p (rx space (+ space) eos) preceding))
-            (while (looking-back (rx space space) (line-beginning-position))
-              (delete-char -1))
-          (funcall f args))))
+         ;; Delete surrounding whitespace beyond a certain length.
+         ((or (string-match-p (rx (>= 2 space) eos) line-before-pt)
+              (and (string-match-p (rx space eos) line-before-pt)
+                   (string-match-p (rx bos space) line-after-pt)))
+          (skip-chars-forward " ")
+          (while (looking-back (rx space space) (line-beginning-position))
+            (delete-char -1)))
+
+         (t
+          (funcall f args)))))
 
     (defun cb-smartparens-add-space-before-sexp-insertion (id action _context)
       (when (eq action 'insert)
