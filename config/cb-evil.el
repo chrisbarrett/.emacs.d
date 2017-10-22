@@ -19,10 +19,33 @@
     (autoload 'evil-set-initial-state "evil-core")
     (autoload 'evil-visual-update-x-selection "evil-states")
 
+    (defun cb-evil--bounds-of-surrounding-lines (lines-before lines-after)
+      (let ((start
+             (save-excursion
+               (ignore-errors
+                 (forward-line (- lines-before)))
+               (line-beginning-position)))
+            (end
+             (save-excursion
+               (ignore-errors
+                 (forward-line lines-after))
+               (line-end-position))))
+        (list start end)))
+
     (defun cb-evil--sp-delete-and-join-compat (fn &rest args)
-      (if (bound-and-true-p smartparens-strict-mode)
-          (call-interactively 'sp-backward-delete-char)
-        (apply fn args))))
+      (cond
+       ;; Narrow before deleting to improve performance in large org buffers.
+       ((and (bound-and-true-p smartparens-strict-mode)
+             (derived-mode-p 'org-mode))
+        (save-restriction
+          (apply #'narrow-to-region (cb-evil--bounds-of-surrounding-lines 10 10))
+          (call-interactively 'sp-backward-delete-char)))
+
+       ((bound-and-true-p smartparens-strict-mode)
+        (call-interactively 'sp-backward-delete-char))
+
+       (t
+        (apply fn args)))))
 
   :config
   (progn
