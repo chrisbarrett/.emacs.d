@@ -45,7 +45,6 @@
     (setq haskell-indentation-where-pre-offset 2)
     (setq haskell-indentation-where-post-offset 2)
     (setq haskell-indentation-left-offset 4)
-    (setq haskell-indent-spaces 4)
 
     (add-hook 'haskell-mode-hook #'cb-haskell--set-indentation-step)
 
