@@ -51,13 +51,6 @@
 
     (s-upper-camel-case (file-name-base))))
 
-;;;###autoload
-(defun haskell-autoinsert-init ()
-  (with-eval-after-load 'autoinsert
-    (dolist (form haskell-autoinsert-forms)
-      (with-no-warnings
-        (add-to-list 'auto-insert-alist form)))))
-
 (provide 'haskell-autoinsert)
 
 ;;; haskell-autoinsert.el ends here

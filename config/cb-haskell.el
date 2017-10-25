@@ -124,8 +124,13 @@
 
 
 (use-package haskell-autoinsert
-  :functions (haskell-autoinsert-init)
-  :config (haskell-autoinsert-init))
+  :after autoinsert
+  :defer t
+  :preface
+  (defvar auto-insert-alist nil)
+  :config
+  (dolist (form haskell-autoinsert-forms)
+    (add-to-list 'auto-insert-alist form)))
 
 
 (use-package haskell-imports
