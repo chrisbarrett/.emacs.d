@@ -1,6 +1,6 @@
 ;;; core-tests.el --- company-mode tests  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2015, 2016  Free Software Foundation, Inc.
+;; Copyright (C) 2015, 2016, 2017  Free Software Foundation, Inc.
 
 ;; Author: Dmitry Gutov
 
@@ -157,16 +157,16 @@
   (let ((one (lambda (command &optional _)
                (cl-case command
                  (prefix "a")
-                 (candidates '("aa" "ca" "ba")))))
+                 (candidates (list "aa" "ca" "ba")))))
         (two (lambda (command &optional _)
                (cl-case command
                  (prefix "a")
-                 (candidates '("bb" "ab")))))
+                 (candidates (list "bb" "ab")))))
         (tri (lambda (command &optional _)
                (cl-case command
                  (prefix "a")
                  (sorted t)
-                 (candidates '("cc" "bc" "ac"))))))
+                 (candidates (list "cc" "bc" "ac"))))))
     (let ((company-backend (list one two tri :separate)))
       (should (company-call-backend 'sorted))
       (should-not (company-call-backend 'duplicates))
@@ -315,6 +315,23 @@
         (company-call 'backward-delete-char 1)
         (should (eq 2 company-candidates-length))))))
 
+(ert-deftest company-backspace-into-bad-prefix ()
+  (with-temp-buffer
+    (insert "ab")
+    (company-mode)
+    (let (company-frontends
+          (company-minimum-prefix-length 2)
+          (company-backends
+           (list (lambda (command &optional _)
+                   (cl-case command
+                     (prefix (buffer-substring (point-min) (point)))
+                     (candidates '("abcd" "abef")))))))
+      (let ((company-idle-delay 'now))
+        (company-auto-begin))
+      (company-call 'backward-delete-char-untabify 1)
+      (should (string= "a" (buffer-string)))
+      (should (null company-candidates)))))
+
 (ert-deftest company-auto-complete-explicit ()
   (with-temp-buffer
     (insert "ab")
@@ -332,6 +349,31 @@
       (let ((last-command-event ? ))
         (company-call 'self-insert-command 1))
       (should (string= "abcd " (buffer-string))))))
+
+(ert-deftest company-auto-complete-with-electric-pair ()
+  (with-temp-buffer
+    (insert "foo(ab)")
+    (forward-char -1)
+    (company-mode)
+    (let (company-frontends
+          (company-auto-complete t)
+          (company-auto-complete-chars '(? ?\)))
+          (company-backends
+           (list (lambda (command &optional _)
+                   (cl-case command
+                     (prefix (buffer-substring 5 (point)))
+                     (candidates '("abcd" "abef"))))))
+          (electric-pair electric-pair-mode))
+      (unwind-protect
+          (progn
+            (electric-pair-mode)
+            (let (this-command)
+              (company-complete))
+            (let ((last-command-event ?\)))
+              (company-call 'self-insert-command 1)))
+        (unless electric-pair
+          (electric-pair-mode -1)))
+      (should (string= "foo(abcd)" (buffer-string))))))
 
 (ert-deftest company-no-auto-complete-when-idle ()
   (with-temp-buffer
@@ -502,3 +544,24 @@
       (should (= (company--row) 0))
       (setq header-line-format "aaaaaaa")
       (should (= (company--row) 0)))))
+
+(ert-deftest company-column-with-line-numbers-display ()
+  :tags '(interactive)
+  (skip-unless (fboundp 'display-line-numbers-mode))
+  (with-temp-buffer
+    (display-line-numbers-mode)
+    (save-window-excursion
+      (set-window-buffer nil (current-buffer))
+      (should (= (company--column) 0)))))
+
+(ert-deftest company-row-and-column-with-line-numbers-display ()
+  :tags '(interactive)
+  (skip-unless (fboundp 'display-line-numbers-mode))
+  (with-temp-buffer
+    (display-line-numbers-mode)
+    (insert (make-string (+ (company--window-width) (line-number-display-width)) ?a))
+    (insert ?\n)
+    (save-window-excursion
+      (set-window-buffer nil (current-buffer))
+      (should (= (company--column) 0))
+      (should (= (company--row) 2)))))
