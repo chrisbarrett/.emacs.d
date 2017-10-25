@@ -108,6 +108,7 @@ This is the case if the \".\" is part of a \"forall <tvar> . <type>\"."
                             (line-beginning-position) t)
         (not (or
               (string= " " (string (char-after start)))
+              (null (char-before start))
               (string= " " (string (char-before start))))))))
 
 (defvar haskell-yesod-parse-routes-mode-keywords
@@ -133,6 +134,8 @@ This is the case if the \".\" is part of a \"forall <tvar> . <type>\"."
     ("r" . ess-mode)
     ("rChan" . ess-mode)
     ("sql" . sql-mode)
+    ("json" . json-mode)
+    ("aesonQQ" . json-mode)
     ("parseRoutes" . haskell-yesod-parse-routes-mode))
   "Mapping from quasi quoter token to fontification mode.
 

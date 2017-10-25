@@ -1020,11 +1020,6 @@ list marker of some kind), and end of the obstacle."
 (defvar haskell-saved-check-command nil
   "Internal use.")
 
-(defcustom haskell-indent-spaces 2
-  "Number of spaces to indent inwards."
-  :group 'haskell
-  :type 'integer)
-
 ;; Like Python.  Should be abstracted, sigh.
 (defun haskell-check (command)
   "Check a Haskell file (default current buffer's file).
@@ -1197,19 +1192,6 @@ generated."
       (when and-then-find-this-tag
         (let ((tags-file-name dir))
           (xref-find-definitions and-then-find-this-tag))))))
-
-(defun haskell-mode-message-line (str)
-  "Echo STR in mini-buffer.
-Given string is shrinken to single line, multiple lines just
-disturbs the programmer."
-  (message "%s" (haskell-mode-one-line str (frame-width))))
-
-(defun haskell-mode-one-line (str width)
-  "Try to fit STR as much as possible on one line according to given WIDTH."
-  (let* ((long-line (replace-regexp-in-string "\n" " " str))
-         (condensed  (replace-regexp-in-string
-                      " +" " " (haskell-string-trim long-line))))
-    (truncate-string-to-width condensed width nil nil "…")))
 
 ;; Provide ourselves:
 (provide 'haskell-mode)
