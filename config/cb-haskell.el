@@ -19,7 +19,8 @@
   :mode
   (("\\.[gh]s\\'" . haskell-mode)
    ("\\.l[gh]s\\'" . literate-haskell-mode)
-   ("\\.hsc\\'" . haskell-mode))
+   ("\\.hsc\\'" . haskell-mode)
+   ("\\.cabal". haskell-cabal-mode))
 
   :interpreter
   (("runghc" . haskell-mode)
@@ -199,6 +200,7 @@
   (progn
     (setq hindent-reformat-buffer-on-save t)
     (add-hook 'haskell-mode-hook #'hindent-mode)))
+
 
 (use-package stack-hoogle
   :after haskell-mode
