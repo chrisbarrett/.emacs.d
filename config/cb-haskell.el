@@ -71,7 +71,7 @@
   :after haskell-mode
   :config
   (progn
-    (setq haskell-stylish-on-save t)
+    ;; (setq haskell-stylish-on-save t)
     (setq haskell-completing-read-function #'completing-read)
     (setq haskell-interactive-popup-errors nil)))
 
@@ -185,6 +185,20 @@
       (evil-define-key 'normal intero-mode-map (kbd "M-.") #'intero-goto-definition)
       (evil-define-key 'normal intero-mode-map (kbd "M-,") #'pop-tag-mark))))
 
+
+(use-package hindent
+  :after haskell-mode
+  :commands (hindent-mode
+             hindent-reformat-decl-or-fill
+             hindent-reformat-buffer)
+  :init
+  (spacemacs-keys-set-leader-keys-for-major-mode 'haskell-mode
+    "." #'hindent-reformat-buffer
+    "f" #'hindent-reformat-decl-or-fill)
+  :config
+  (progn
+    (setq hindent-reformat-buffer-on-save t)
+    (add-hook 'haskell-mode-hook #'hindent-mode)))
 
 (use-package stack-hoogle
   :after haskell-mode
