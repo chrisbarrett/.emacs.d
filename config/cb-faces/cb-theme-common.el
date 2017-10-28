@@ -50,10 +50,12 @@
     (header-line
      ((((background light))
        :background ,cb-theme-common-violet
-       :foreground ,default-background :weight demibold)
+       :foreground ,default-background :weight demibold
+       :box (:line-width 3 :color ,cb-theme-common-violet))
       (((background dark))
        :background "#533"
-       :foreground ,default-foreground :weight demibold)))
+       :foreground ,default-foreground :weight demibold
+       :box (:line-width 3 :color "#533"))))
 
     (cb-header-line-format-nonemphased-element
      ((t :weight light)))
