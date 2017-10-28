@@ -167,6 +167,7 @@
       "zz" 'TeX-fold-dwim)))
 
 (use-package company-auctex
+  :defer t
   :functions (company-auctex-init)
   :init
   (add-hook 'tex-mode-hook 'company-auctex-init))

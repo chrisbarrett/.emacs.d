@@ -16,12 +16,40 @@
 (require 'subr-x)
 
 (use-package realgud
-  :ensure t
+  :commands (realgud:cmd-newer-frame
+             realgud:cmd-older-frame
+             realgud:cmd-backtrace
+             realgud:cmd-enable
+             realgud:cmd-disable
+             realgud:cmd-shell
+             realgud:cmd-step
+             realgud:cmd-until
+             realgud:cmd-delete
+             realgud:cmd-break
+             realgud:cmd-continue
+             realgud:cmd-quit
+             realgud:cmd-restart
+             realgud:cmd-eval-dwim
+             realgud:cmd-finish
+             realgud-recenter-arrow
+             realgud:cmd-next
+             realgud:cmd-step
+             realgud:cmd-repeat-last)
+  :functions
+  (realgud:run-process
+   realgud-get-cmdbuf
+   realgud-get-current-srcbuf
+   realgud:cmd-terminate
+   realgud-get-srcbuf)
+
   :init
   (spacemacs-keys-set-leader-keys "D" #'debugger-transient-state/body)
   :preface
   (progn
     (autoload 'f-relative "f")
+
+
+
 
     (defun cb-gud--realgud-command-for-mode (mode)
       (pcase mode
