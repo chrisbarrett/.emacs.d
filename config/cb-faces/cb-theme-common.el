@@ -64,9 +64,8 @@
      ((t :inherit header-line :height 20 :foreground ,default-background)))
 
     (evil-transient-state-title-face
-     ((t :inherit header-line
-         :background ,default-background
-         :foreground ,default-foreground)))
+     ((((background light)) :inherit header-line :background "lightblue")
+      (((background dark))  :inherit header-line :background "#533")))
 
     (region
      ((((background light)) :background "lightblue")

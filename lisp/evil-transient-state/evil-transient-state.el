@@ -249,11 +249,11 @@ used."
                  (list 'concat
                        (concat
                         (propertize
-                         ,title
+                         (concat " " ,title " ")
                          'face 'evil-transient-state-title-face)
                         (if ,hint-doc-p " " "\n")) ,hint-var
-                        ',dyn-hint
-                        (concat "\n" guide)))))
+                       ',dyn-hint
+                       (concat "\n" guide)))))
        ,@bindkeys)))
 
 (provide 'evil-transient-state)

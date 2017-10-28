@@ -124,6 +124,9 @@ Optional arg JUSTIFY will justify comments and strings."
 
 (define-key prog-mode-map (kbd "M-q") #'cb-indent-dwim)
 
+;; Evil breaks cursor settings when combined with hydra.
+
+(setq-default cursor-in-non-selected-windows nil)
 
 ;; 2-window scrolling is never useful, but an emergency window switch command
 ;; sure is.

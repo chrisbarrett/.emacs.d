@@ -43,7 +43,15 @@
   :preface
   (progn
     (autoload 'which-key-mode "which-key")
-    (autoload 'which-key-add-key-based-replacements "which-key"))
+    (autoload 'which-key-add-key-based-replacements "which-key")
+
+    (defun cb-leader-keys-set-up-which-key-buffer (&rest _)
+      (when-let (buf (get-buffer which-key-buffer-name))
+        (when (buffer-live-p buf)
+          (with-current-buffer buf
+            (setq-local mode-line-format nil)
+            (setq-local header-line-format nil)
+            (force-mode-line-update))))))
 
   :config
   (progn
@@ -54,6 +62,9 @@
     (setq which-key-sort-order 'which-key-key-order-alpha)
     (setq which-key-idle-delay 0.4)
     (setq which-key-allow-evil-operators t)
+
+    (advice-add 'which-key--create-buffer-and-show
+                :after #'cb-leader-keys-set-up-which-key-buffer)
 
     ;; Strip cb prefixes from commands shown in which-key.
 
@@ -202,80 +213,80 @@
     (which-key-mode +1)))
 
 (use-package spacemacs-keys
-:preface
-(progn
-  (autoload 'evil-window-next "evil-commands")
-  (autoload 'evil-window-split "evil-commands")
-  (autoload 'evil-window-vsplit "evil-commands")
+  :preface
+  (progn
+    (autoload 'evil-window-next "evil-commands")
+    (autoload 'evil-window-split "evil-commands")
+    (autoload 'evil-window-vsplit "evil-commands")
 
-  (defun cb-leader-keys/reload-file ()
-    "Revisit the current file."
-    (interactive)
-    (when-let (path (buffer-file-name))
-      (find-alternate-file path))))
+    (defun cb-leader-keys/reload-file ()
+      "Revisit the current file."
+      (interactive)
+      (when-let (path (buffer-file-name))
+        (find-alternate-file path))))
 
-:config
-(progn
-  (define-key universal-argument-map (kbd (concat "SPC u")) #'universal-argument-more)
+  :config
+  (progn
+    (define-key universal-argument-map (kbd (concat "SPC u")) #'universal-argument-more)
 
-  (spacemacs-keys-set-leader-keys
-    "u"   #'universal-argument
-    "SPC" #'execute-extended-command
-    "TAB" #'cb/alternate-buffer
-    "|"   #'cb/toggle-window-split
+    (spacemacs-keys-set-leader-keys
+      "u"   #'universal-argument
+      "SPC" #'execute-extended-command
+      "TAB" #'cb/alternate-buffer
+      "|"   #'cb/toggle-window-split
 
-    "!"   #'shell-command
+      "!"   #'shell-command
 
-    "b d" #'kill-this-buffer
-    "b b" #'bury-buffer
-    "b v" #'cb-leader-keys/reload-file
+      "b d" #'kill-this-buffer
+      "b b" #'bury-buffer
+      "b v" #'cb-leader-keys/reload-file
 
-    "C" #'compile
+      "C" #'compile
 
-    "c r" #'comment-or-uncomment-region
+      "c r" #'comment-or-uncomment-region
 
-    "f D" #'cb/delete-current-buffer-and-file
-    "f F" #'find-file-other-window
-    "f R" #'cb/rename-file-and-buffer
-    "f e" #'cb/sudo-edit
-    "f f" #'find-file
-    "f s" #'save-buffer
-    "f S" #'save-some-buffers
-    "f W" #'write-file
-    "f v" #'cb-leader-keys/reload-file
-    "f y" #'cb/copy-buffer-path
+      "f D" #'cb/delete-current-buffer-and-file
+      "f F" #'find-file-other-window
+      "f R" #'cb/rename-file-and-buffer
+      "f e" #'cb/sudo-edit
+      "f f" #'find-file
+      "f s" #'save-buffer
+      "f S" #'save-some-buffers
+      "f W" #'write-file
+      "f v" #'cb-leader-keys/reload-file
+      "f y" #'cb/copy-buffer-path
 
-    "g i" #'cb-goto-init-file
-    "g m" #'cb-goto-messages
-    "g p" #'cb-goto-personal-config
+      "g i" #'cb-goto-init-file
+      "g m" #'cb-goto-messages
+      "g p" #'cb-goto-personal-config
 
-    "h d c" #'describe-face
-    "h d k" #'describe-key
-    "h d m" #'describe-mode
-    "h f c" #'find-face-definition
-    "h f f" #'find-function
-    "h f l" #'find-library
-    "h f v" #'find-variable
-    "h i"   #'info
+      "h d c" #'describe-face
+      "h d k" #'describe-key
+      "h d m" #'describe-mode
+      "h f c" #'find-face-definition
+      "h f f" #'find-function
+      "h f l" #'find-library
+      "h f v" #'find-variable
+      "h i"   #'info
 
-    "k b" #'kill-this-buffer
-    "k w" #'delete-window
+      "k b" #'kill-this-buffer
+      "k w" #'delete-window
 
-    "n d" #'narrow-to-defun
-    "n f" #'narrow-to-defun
-    "n r" #'narrow-to-region
-    "n s" #'org-narrow-to-subtree
-    "n w" #'widen
+      "n d" #'narrow-to-defun
+      "n f" #'narrow-to-defun
+      "n r" #'narrow-to-region
+      "n s" #'org-narrow-to-subtree
+      "n w" #'widen
 
-    "q" #'delete-window
+      "q" #'delete-window
 
-    "w =" #'balance-windows
-    "w w" #'evil-window-next
-    "w o" #'delete-other-windows
-    "w q" #'delete-window
-    "w r" #'evil-window-rotate-downwards
-    "w -" #'evil-window-split
-    "w /" #'evil-window-vsplit)))
+      "w =" #'balance-windows
+      "w w" #'evil-window-next
+      "w o" #'delete-other-windows
+      "w q" #'delete-window
+      "w r" #'evil-window-rotate-downwards
+      "w -" #'evil-window-split
+      "w /" #'evil-window-vsplit)))
 
 (use-package cb-scale-font-transient-state
   :commands (cb-scale-font-transient-state/body)
@@ -297,6 +308,18 @@
     "bN" #'cb-buffer-transient-state/previous-buffer
     "bp" #'cb-buffer-transient-state/previous-buffer))
 
+(use-package hydra
+  :defer t
+  :preface
+  (defun cb-leader-keys-set-up-hydra-buffer (&rest _)
+    (when-let (buf (get-buffer " *LV*"))
+      (when (buffer-live-p buf)
+        (with-current-buffer buf
+          (setq-local mode-line-format nil)
+          (setq-local header-line-format nil)
+          (force-mode-line-update)))))
+  :config
+  (advice-add 'lv-window :after #'cb-leader-keys-set-up-hydra-buffer))
 
 (provide 'cb-leader-keys)
 
