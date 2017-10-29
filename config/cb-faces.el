@@ -42,7 +42,11 @@
   (interactive)
   (load-theme 'cb-green t))
 
-(spacemacs-keys-set-leader-keys "t t" #'cb-faces/toggle-dark-mode)
+(spacemacs-keys-set-leader-keys
+  "t t" #'cb-faces/toggle-dark-mode
+  "t g" #'cb-green-theme
+  "t d" #'cb-dark-theme
+  "t l" #'cb-light-theme)
 
 
 ;; Configure packages
