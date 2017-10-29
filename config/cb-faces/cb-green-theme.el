@@ -14,8 +14,8 @@
 
 (apply #'custom-theme-set-faces 'cb-green
        (cb-theme-common-make-theme
-        :default-fg "#7a7a7a"
-        :default-bg "#0a2020"
+        :default-fg "#8a8a8a"
+        :default-bg "#103030"
         :region-bg "#355"
         :dimmed-fg "#555"
         :subtle-bg "#102727"
