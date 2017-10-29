@@ -252,10 +252,10 @@
     ;; Ivy
 
     (minibuffer-prompt
-     ((t :foreground ,emphasis-1)))
+     ((t :foreground ,default-fg)))
 
     (ivy-current-match
-     ((t :background ,emphasis-1 :foreground ,emphasis-2)))
+     ((t :foreground ,emphasis-1 :background ,highlight-bg)))
 
     (ivy-minibuffer-match-face-1
      ((t :background ,subtle-bg)))
