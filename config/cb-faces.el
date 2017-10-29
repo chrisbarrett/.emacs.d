@@ -26,9 +26,21 @@
   "Toggle between light and dark mode."
   (interactive)
   (if cb-faces-dark-mode-p
-      (load-theme 'cb-light t)
-    (load-theme 'cb-dark t))
+      (cb-light-theme)
+    (cb-dark-theme))
   (setq cb-faces-dark-mode-p (not cb-faces-dark-mode-p)))
+
+(defun cb-light-theme ()
+  (interactive)
+  (load-theme 'cb-light t))
+
+(defun cb-dark-theme ()
+  (interactive)
+  (load-theme 'cb-dark t))
+
+(defun cb-green-theme ()
+  (interactive)
+  (load-theme 'cb-green t))
 
 (spacemacs-keys-set-leader-keys "t t" #'cb-faces/toggle-dark-mode)
 

@@ -8,27 +8,41 @@
 
 ;;; Code:
 
+(require 'cl-lib)
+
 (defconst cb-theme-common-yellow "#b58900")
 (defconst cb-theme-common-orange "#cb4b16")
 (defconst cb-theme-common-red "red1")
 (defconst cb-theme-common-pink "pink")
 (defconst cb-theme-common-magenta "#d33682")
-(defconst cb-theme-common-violet "#6c71c4")
 (defconst cb-theme-common-blue "#268bd2")
 (defconst cb-theme-common-cyan "#2aa198")
 (defconst cb-theme-common-green "#859900")
 
-(defconst cb-theme-common-neutral-grey "grey60")
-(defconst cb-theme-common-dark-grey "grey40")
-(defconst cb-theme-common-light-grey "grey80")
+(defconst cb-theme-common-font-family "Hasklig")
 
-(defun cb-theme-common-make-theme (default-foreground default-background)
+(cl-defun cb-theme-common-make-theme (&key
+                       default-fg
+                       default-bg
+                       region-bg
+                       header-line-bg
+                       subtle-bg
+                       highlight-bg
+                       paren-match
+                       emphasis-1
+                       emphasis-2
+                       (header-line-fg default-bg)
+                       (mid-grey "grey60")
+                       (dark-grey "grey40")
+                       (light-grey "grey80")
+                       (error-fg cb-theme-common-red)
+                       (dimmed-fg mid-grey))
   `((default
       ((t
-        :background ,default-background
-        :foreground ,default-foreground
+        :background ,default-bg
+        :foreground ,default-fg
         :weight normal
-        :family "Hasklig"
+        :family ,cb-theme-common-font-family
         :height 145)))
 
     (success
@@ -36,40 +50,40 @@
     (warning
      ((t :weight normal :foreground ,cb-theme-common-orange)))
     (error
-     ((t :weight normal :foreground ,cb-theme-common-red)))
+     ((t :weight normal :foreground ,error-fg)))
 
     (link
      ((((background light))
-       :weight light :underline ,cb-theme-common-light-grey)
+       :weight light :underline ,light-grey)
       (((background dark))
-       :weight light :underline ,cb-theme-common-dark-grey)))
+       :weight light :underline ,dark-grey)))
 
     (fringe
-     ((t :background ,default-background)))
+     ((t :background ,default-bg)))
 
     (header-line
-     ((((background light))
-       :background ,cb-theme-common-violet
-       :foreground ,default-background :weight demibold
-       :box (:line-width 3 :color ,cb-theme-common-violet))
-      (((background dark))
-       :background "#533"
-       :foreground ,default-foreground :weight demibold
-       :box (:line-width 3 :color "#533"))))
+     ((t
+       :background ,header-line-bg
+       :foreground ,header-line-fg :weight demibold
+       :box (:line-width 3 :color ,header-line-bg))))
 
     (cb-header-line-format-nonemphased-element
      ((t :weight light)))
 
     (mode-line
-     ((t :inherit header-line :height 20 :foreground ,default-background)))
+     ((t :inherit header-line :height 20)))
+
+    (mode-line-inactive
+     ((t :inherit header-line :height 20)))
 
     (evil-transient-state-title-face
-     ((((background light)) :inherit header-line :background "lightblue")
-      (((background dark))  :inherit header-line :background "#533")))
+     ((t :inherit header-line :background ,header-line-bg)))
 
     (region
-     ((((background light)) :background "lightblue")
-      (((background dark))  :background "#533")))
+     ((t :background ,region-bg)))
+
+    (hl-line
+     ((t :background ,subtle-bg)))
 
     ;; General font-lock faces.
 
@@ -118,25 +132,25 @@
      ((t :weight demibold)))
 
     (info-function-ref-item
-     ((t :weight demibold :foreground ,cb-theme-common-neutral-grey)))
+     ((t :weight demibold :foreground ,mid-grey)))
 
     (info-macro-ref-item
-     ((t :weight demibold :foreground ,cb-theme-common-neutral-grey)))
+     ((t :weight demibold :foreground ,mid-grey)))
 
     (info-command-ref-item
-     ((t :weight demibold :foreground ,cb-theme-common-neutral-grey)))
+     ((t :weight demibold :foreground ,mid-grey)))
 
     (info-special-form-ref-item
-     ((t :weight demibold :foreground ,cb-theme-common-neutral-grey)))
+     ((t :weight demibold :foreground ,mid-grey)))
 
     (info-syntax-class-item
-     ((t :weight demibold :foreground ,cb-theme-common-neutral-grey)))
+     ((t :weight demibold :foreground ,mid-grey)))
 
     (info-user-option-ref-item
-     ((t :weight demibold :foreground ,cb-theme-common-neutral-grey)))
+     ((t :weight demibold :foreground ,mid-grey)))
 
     (info-variable-ref-item
-     ((t :weight demibold :foreground ,cb-theme-common-neutral-grey)))
+     ((t :weight demibold :foreground ,mid-grey)))
 
     ;; Dired
 
@@ -147,21 +161,19 @@
      ((t :inherit dired-header)))
 
     (diredp-dir-name
-     ((((background light)) :foreground ,cb-theme-common-blue)
-      (((background dark))  :foreground ,cb-theme-common-pink)))
+     ((t :foreground ,emphasis-1)))
 
     (diredp-file-name
      ((t :inherit default)))
 
     (diredp-ignored-file-name
-     ((t :inherit diredp-file-name :foreground "#a55")))
+     ((t :inherit diredp-file-name :foreground ,dimmed-fg)))
 
     (diredp-symlink
-     ((t :inherit diredp-file-name :foreground ,cb-theme-common-neutral-grey)))
+     ((t :inherit diredp-file-name :foreground ,mid-grey)))
 
     (diredp-file-suffix
-     ((((background light)) :foreground ,cb-theme-common-neutral-grey)
-      (((background dark))  :foreground "#a55")))
+     ((t :foreground ,dimmed-fg)))
 
     (diredp-compressed-file-suffix
      ((t :inherit diredp-file-suffix)))
@@ -170,25 +182,25 @@
      ((t :weight light)))
 
     (diredp-date-time
-     ((t :foreground ,cb-theme-common-neutral-grey :weight light)))
+     ((t :foreground ,mid-grey :weight light)))
 
     (diredp-dir-priv
-     ((t :weight light :foreground ,cb-theme-common-neutral-grey)))
+     ((t :weight light :foreground ,mid-grey)))
 
     (diredp-no-priv
-     ((t :weight light :foreground ,cb-theme-common-neutral-grey)))
+     ((t :weight light :foreground ,mid-grey)))
 
     (diredp-rare-priv
-     ((t :weight light :foreground ,cb-theme-common-neutral-grey)))
+     ((t :weight light :foreground ,mid-grey)))
 
     (diredp-exec-priv
-     ((t :weight light :foreground ,cb-theme-common-neutral-grey)))
+     ((t :weight light :foreground ,mid-grey)))
 
     (diredp-read-priv
-     ((t :weight light :foreground ,cb-theme-common-neutral-grey)))
+     ((t :weight light :foreground ,mid-grey)))
 
     (diredp-write-priv
-     ((t :weight light :foreground ,cb-theme-common-neutral-grey)))
+     ((t :weight light :foreground ,mid-grey)))
 
     ;; Info
 
@@ -198,7 +210,7 @@
     ;; Idris
 
     (idris-repl-input-face
-     ((t :inherit default :foreground ,cb-theme-common-neutral-grey :weight normal)))
+     ((t :inherit default :foreground ,mid-grey :weight normal)))
 
     (idris-semantic-data-face
      ((t :inherit default)))
@@ -226,55 +238,51 @@
     ;; Pairs
 
     (show-paren-match
-     ((((background light))
+     ((t
        :weight bold
-       :foreground ,cb-theme-common-cyan
-       :underline ,cb-theme-common-cyan)
-      (((background dark))
-       :weight bold
-       :foreground "white"
-       :underline "white")))
+       :foreground ,paren-match
+       :underline ,paren-match)))
 
     (show-paren-mismatch
      ((t
        :weight bold
-       :foreground ,cb-theme-common-red
-       :underline ,cb-theme-common-red)))
+       :foreground ,error-fg
+       :underline ,error-fg)))
 
     ;; Ivy
 
     (minibuffer-prompt
-     ((((background light)) :foreground ,cb-theme-common-blue)
-      (((background dark)) :foreground ,cb-theme-common-orange)))
+     ((t :foreground ,emphasis-1)))
 
     (ivy-current-match
-     ((((background light))
-       :background ,cb-theme-common-blue :foreground "white")
-      (((background dark))
-       :background ,cb-theme-common-orange :foreground "black")))
+     ((t :background ,emphasis-1 :foreground ,emphasis-2)))
+
+    (ivy-minibuffer-match-face-1
+     ((t :background ,subtle-bg)))
+
+    (ivy-minibuffer-match-face-2
+     ((t :background ,subtle-bg)))
 
     ;; Highlights
 
     (highlight
-     ((((background light)) :background "gray82")
-      (((background dark))  :background "gray18")))
+     ((t :background ,highlight-bg)))
 
     (iedit-occurrence
      ((((background light))
        :weight normal
        :background "#FFe0e0"
-       :foreground ,default-foreground)
+       :foreground ,default-fg)
       (((background dark))
        :weight normal
        :background "#703030"
-       :foreground ,default-foreground)))
+       :foreground ,default-fg)))
 
     (evil-search-highlight-persist-highlight-face
      ((t :inherit highlight :background nil)))
 
     (highlight-thing
-     ((((background light)) :weight demibold :foreground ,cb-theme-common-blue)
-      (((background dark)) :weight demibold :foreground ,cb-theme-common-orange)))
+     ((t :weight demibold :foreground ,emphasis-1)))
 
     (hexl-ascii-region
      ((t (:inherit highlight-thing))))
@@ -319,8 +327,7 @@
      ((t :weight demibold)))
 
     (magit-section-highlight
-     ((((background light)) :background "grey85")
-      (((background  dark)) :background "#2c1a1a")))
+     ((t :background ,subtle-bg)))
 
     (magit-diff-context-highlight
      ((((background light))
@@ -331,7 +338,7 @@
        :foreground "grey70")))
 
     (magit-popup-disabled-argument
-     ((t :foreground ,cb-theme-common-neutral-grey)))
+     ((t :foreground ,mid-grey)))
 
     (magit-popup-option-value
      ((t :weight normal)))
@@ -345,19 +352,16 @@
      ((t :inherit link :weight normal)))
 
     (org-block
-     ((((background light))
-       :background "#e1dddd")
-      (((background dark))
-       :background "#311")))
+     ((t :background ,subtle-bg)))
 
     (org-done
      ((t
        :inherit default
        :weight bold
-       :foreground ,cb-theme-common-neutral-grey)))
+       :foreground ,dimmed-fg)))
 
     (org-document-info
-     ((t :foreground ,default-foreground :weight demibold)))
+     ((t :foreground ,default-fg :weight demibold)))
 
     (org-document-info-keyword
      ((t :weight light)))
@@ -375,31 +379,19 @@
      ((t :underline t)))
 
     (org-agenda-date-today
-     ((((background light))
-       :foreground ,cb-theme-common-red :weight demibold)
-      (((background dark))
-       :foreground ,cb-theme-common-pink :weight demibold)))
+     ((t :foreground ,emphasis-1 :weight demibold)))
 
     (org-agenda-date-weekend
      ((t :inherit org-agenda-date)))
 
     (org-warning
-     ((((background light))
-       :foreground ,cb-theme-common-red :weight normal)
-      (((background dark))
-       :foreground ,cb-theme-common-pink :weight normal)))
+     ((t :inherit warning)))
 
     (org-upcoming-deadline
-     ((((background light))
-       :foreground ,cb-theme-common-yellow :weight normal)
-      (((background dark))
-       :foreground ,cb-theme-common-orange :weight normal)))
+     ((t :foreground ,emphasis-1 :weight normal)))
 
     (org-scheduled-previously
-     ((((background light))
-       :foreground ,cb-theme-common-red :weight normal)
-      (((background dark))
-       :foreground ,cb-theme-common-pink :weight normal)))
+     ((t :foreground ,error-fg)))
 
     (org-formula
      ((t :weight light)))
@@ -414,8 +406,7 @@
      ((t :inherit default)))
 
     (org-meta-line
-     ((((background light)) :foreground ,cb-theme-common-neutral-grey)
-      (((background dark))  :foreground "#a55")))
+     ((t :foreground ,dimmed-fg)))
 
     (org-agenda-structure
      ((t :weight demibold)))
@@ -474,13 +465,10 @@
      ((t :weight demibold)))
 
     (mu4e-highlight-face
-     ((((background light))
-       :foreground ,cb-theme-common-blue :weight demibold)
-      (((background dark))
-       :foreground ,cb-theme-common-orange :weight demibold)))
+     ((t :foreground ,emphasis-1 :weight demibold)))
 
     (mu4e-header-highlight-face
-     ((t :inherit region)))
+     ((t :inherit highlight)))
 
     ;; Message composition
 
@@ -491,10 +479,10 @@
      ((t :weight normal)))
 
     (message-header-cc
-     ((t :weight light :foreground ,cb-theme-common-neutral-grey)))
+     ((t :weight light :foreground ,mid-grey)))
 
     (message-cited-text
-     ((t :weight light :foreground ,cb-theme-common-neutral-grey)))
+     ((t :weight light :foreground ,mid-grey)))
 
     (message-header-subject
      ((t :weight normal)))
@@ -505,14 +493,10 @@
     ;; Neotree
 
     (neo-root-dir-face
-     ((((background light)) :foreground ,cb-theme-common-blue)
-      (((background dark))  :foreground ,cb-theme-common-pink)))
+     ((t :foreground ,emphasis-1)))
 
     (neo-banner-face
-     ((((background light))
-       :foreground ,cb-theme-common-blue :weight light)
-      (((background dark))
-       :foreground ,cb-theme-common-orange :weight light)))
+     ((t :foreground ,emphasis-1 :weight light)))
 
     (neo-file-link-face
      ((t :weight light)))
@@ -546,11 +530,10 @@
     ;; Term
 
     (term-color-black
-     ((t :foreground ,default-foreground)))
+     ((t :foreground ,default-fg)))
 
     (term-color-blue
-     ((((background light)) :foreground ,cb-theme-common-blue)
-      (((background dark))  :background ,cb-theme-common-pink)))
+     ((t :foreground ,emphasis-1)))
 
     (term-color-bold
      ((t :weight demibold)))
@@ -571,7 +554,7 @@
      ((t :underline t)))
 
     (term-color-white
-     ((t :foreground ,default-foreground)))
+     ((t :foreground ,default-fg)))
 
     (term-color-yellow
      ((t :foreground ,cb-theme-common-yellow)))
@@ -579,21 +562,17 @@
     ;; Markdown
 
     (markdown-line-break-face
-     ((t :underline ,cb-theme-common-orange)))
+     ((t :underline ,emphasis-1)))
 
     ;; Kubernetes
 
     (kubernetes-dimmed
-     ((((background light)) :foreground ,cb-theme-common-neutral-grey)
-      (((background dark))  :foreground "#a55")))
+     ((t :foreground ,dimmed-fg)))
 
     ;; Scala
 
     (scala-font-lock:var-keyword-face
-     ((((background light))
-       :foreground ,cb-theme-common-red :weight normal)
-      (((background dark))
-       :foreground ,cb-theme-common-pink :weight normal)))
+     ((t :inherit error)))
 
     (scala-font-lock:var-face
      ((t :inherit font-lock-variable-name-face)))
@@ -601,8 +580,7 @@
     ;; Git time machine
 
     (git-timemachine-minibuffer-detail-face
-     ((((background light)) :foreground ,cb-theme-common-blue)
-      (((background dark))  :background ,cb-theme-common-pink)))
+     ((t :foreground ,emphasis-1)))
 
     (git-timemachine-minibuffer-author-face
      ((t :inherit default)))
@@ -621,12 +599,10 @@
      ((t :inherit warning)))
 
     (font-latex-sectioning-5-face
-     ((((background light)) :foreground ,cb-theme-common-blue :weight demibold)
-      (((background dark)) :foreground "#c55" :weight demibold)))
+     ((t :foreground ,emphasis-1 :weight demibold)))
 
     (font-latex-sedate-face
-     ((((background light)) :foreground ,cb-theme-common-dark-grey)
-      (((background dark))  :foreground "#a55")))
+     ((t :weight light :foreground ,dimmed-fg)))
 
     ;; Misc faces
 
@@ -634,8 +610,7 @@
      ((t :inherit default)))
 
     (page-break-lines
-     ((((background light)) :weight light :foreground ,cb-theme-common-dark-grey)
-      (((background dark)) :weight light :foreground "#a55")))
+     ((t :weight light :foreground ,dimmed-fg)))
 
     (go-peg-mode-production-name
      ((t :weight demibold)))
