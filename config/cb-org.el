@@ -101,7 +101,7 @@
     (add-hook 'org-mode-hook #'cb-org--add-local-hooks)
     (add-hook 'org-after-todo-statistics-hook #'cb-org--children-done-parent-done)
 
-    (dolist (dir (f-directories "~/org/lisp/"))
+    (dolist (dir (ignore-errors (f-directories "~/org/lisp/")))
       (add-to-list 'load-path (f-slash dir)))
 
     (spacemacs-keys-set-leader-keys
