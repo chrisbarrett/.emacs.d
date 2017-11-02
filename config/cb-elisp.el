@@ -156,6 +156,7 @@
       "f" 'profiler-report-find-entry)))
 
 (use-package emr
+  :disabled t
   :commands (emr-show-refactor-menu)
   :ensure t
   :init
