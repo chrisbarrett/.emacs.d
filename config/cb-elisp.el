@@ -54,7 +54,7 @@
   (:map emacs-lisp-mode-map ("M-." . elisp-slime-nav-find-elisp-thing-at-point))
   :init
   (progn
-    (evil-define-key 'normal emacs-lisp-mode-map
+    (evil-define-key 'normal elisp-slime-nav-mode-map
       (kbd "M-.") #'elisp-slime-nav-find-elisp-thing-at-point
       (kbd "K") #'elisp-slime-nav-describe-elisp-thing-at-point)
 
