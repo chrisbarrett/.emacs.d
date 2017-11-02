@@ -553,7 +553,10 @@
              org-drill-directory
              org-drill-again)
   :preface
-  (defconst cb-org-drill-files (f-files (concat org-directory "/drill")))
+  (defconst cb-org-drill-files
+    (let ((dir (concat org-directory "/drill")))
+      (when (f-dir? dir)
+        (f-files dir))))
 
   :defines
   (org-drill-scope
