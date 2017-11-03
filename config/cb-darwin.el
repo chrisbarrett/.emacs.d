@@ -46,6 +46,13 @@
     ;; Test: :wink:
     (setq emojify-display-style 'image)))
 
+(use-package time
+  :commands (display-time-mode)
+  :init
+  (add-hook 'after-init-hook #'display-time-mode)
+  :config
+  (setq display-time-default-load-average nil))
+
 (provide 'cb-darwin)
 
 ;;; cb-darwin.el ends here
