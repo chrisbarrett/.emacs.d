@@ -168,7 +168,8 @@
 
 (use-package company-auctex
   :defer t
-  :functions (company-auctex-init)
+  :preface
+  (autoload 'company-auctex-init "company-auctex")
   :init
   (add-hook 'tex-mode-hook 'company-auctex-init))
 
