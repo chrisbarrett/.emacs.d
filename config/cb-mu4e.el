@@ -9,17 +9,16 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'use-package)
-  (require 'cb-emacs)
+  (require 'use-package))
 
-  (defconst cb-mu4e-load-path (concat cb-emacs-lisp-directory "/mu/mu4e")))
-
+(require 'cb-emacs)
 (require 'spacemacs-keys)
 (require 'evilified-state)
 (require 'f)
 
+(add-to-list 'load-path (concat cb-emacs-site-lisp-directory "/mu4e") t)
+
 (use-package mu4e
-  :load-path cb-mu4e-load-path
   :commands (mu4e mu4e-compose-new)
   :defer t
 
@@ -85,11 +84,7 @@
                   mu4e-view-mark-for-read-and-archive)))
 
   :init
-  (progn
-    (with-eval-after-load 'org
-      (require 'org-mu4e))
-
-    (spacemacs-keys-set-leader-keys "am" #'mu4e))
+  (spacemacs-keys-set-leader-keys "am" #'mu4e)
 
   :config
   (progn
@@ -236,6 +231,9 @@
     (spacemacs-keys-set-leader-keys-for-major-mode 'mu4e-compose-mode
       "a" 'mail-add-attachment
       "i" 'mail-insert-file)))
+
+(use-package org-mu4e
+  :after org)
 
 (provide 'cb-mu4e)
 
