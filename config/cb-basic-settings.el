@@ -69,12 +69,7 @@
 
 ;; Show file or buffer name in the title bar.
 
-(defun cb-basic-settings--frame-title-string ()
-  (if (buffer-file-name)
-      (abbreviate-file-name (buffer-file-name))
-    (buffer-name)))
-
-(setq frame-title-format `(:eval (cb-basic-settings--frame-title-string)))
+(setq frame-title-format "Emacs")
 
 ;; Don't pollute directories with lockfiles, since I only run one instance of
 ;; Emacs and never need to prevent concurrent file access.
