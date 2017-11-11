@@ -21,6 +21,14 @@
 
 (defconst cb-theme-common-font-family "Hasklig")
 
+;; TODO: Maybe move this into a host-specific way of setting config.
+(defconst cb-theme-common-default-height
+  (pcase system-type
+    (`darwin
+     145)
+    (_
+     120)))
+
 (cl-defun cb-theme-common-make-theme (&key
                        default-fg
                        default-bg
@@ -43,7 +51,7 @@
         :foreground ,default-fg
         :weight normal
         :family ,cb-theme-common-font-family
-        :height 145)))
+        :height ,cb-theme-common-default-height)))
 
     (success
      ((t :weight normal :foreground ,cb-theme-common-green)))

@@ -18,8 +18,6 @@
 (let ((this-dir (file-name-directory (or load-file-name (buffer-file-name)))))
   (add-to-list 'custom-theme-load-path (concat this-dir "cb-faces/")))
 
-(load-theme 'cb-dark t)
-
 (defvar cb-faces-dark-mode-p t)
 
 (defun cb-faces/toggle-dark-mode ()
@@ -32,15 +30,25 @@
 
 (defun cb-light-theme ()
   (interactive)
-  (load-theme 'cb-light t))
+  (pcase system-type
+    (`darwin
+     (load-theme 'cb-light t))
+    (_
+     (load-theme 'cb-arc-darker t))))
 
 (defun cb-dark-theme ()
   (interactive)
-  (load-theme 'cb-dark t))
+  (pcase system-type
+    (`darwin
+     (load-theme 'cb-dark t))
+    (_
+     (load-theme 'cb-arc-dark t))))
 
 (defun cb-green-theme ()
   (interactive)
   (load-theme 'cb-green t))
+
+(cb-dark-theme)
 
 (spacemacs-keys-set-leader-keys
   "t t" #'cb-faces/toggle-dark-mode
