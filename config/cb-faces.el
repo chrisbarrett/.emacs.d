@@ -44,10 +44,6 @@
     (_
      (load-theme 'cb-arc-dark t))))
 
-(defun cb-green-theme ()
-  (interactive)
-  (load-theme 'cb-green t))
-
 (cb-dark-theme)
 
 (spacemacs-keys-set-leader-keys
