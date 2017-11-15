@@ -259,6 +259,7 @@
       (sp-local-pair "(" ")" :pre-handlers '(:add cb-smartparens--web-mode-format-paren-after-keyword)))
 
     (sp-with-modes 'org-mode
+      (sp-local-pair "[" "]" :post-handlers '(("|" "SPC")))
       (sp-local-pair "*" "*" :actions '(insert wrap) :unless '(sp-point-after-word-p sp-point-at-bol-p) :wrap "C-*" :skip-match 'cb-smartparens--org-skip-asterisk)
       (sp-local-pair "_" "_" :unless '(sp-point-after-word-p) :wrap "C-_")
       (sp-local-pair "/" "/" :unless '(sp-point-after-word-p) :post-handlers '(("[d1]" "SPC")))
