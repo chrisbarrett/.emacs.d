@@ -177,6 +177,9 @@ If argument INTERACTIVE-P is set, log additional information."
 (use-package personal-config
   :load-path "~/Sync/emacs")
 
+(unless user-full-name (warn "`user-full-name' not set"))
+(unless user-mail-address (warn "`user-mail-address' not set"))
+
 ;;; Print overall startup time.
 
 (unless noninteractive
