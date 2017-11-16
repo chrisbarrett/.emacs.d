@@ -9,6 +9,7 @@
 ;;; Code:
 
 (require 'cl-lib)
+(require 'dash)
 
 (defconst cb-theme-common-yellow "#b58900")
 (defconst cb-theme-common-orange "#cb4b16")
@@ -19,7 +20,9 @@
 (defconst cb-theme-common-cyan "#2aa198")
 (defconst cb-theme-common-green "#859900")
 
-(defconst cb-theme-common-font-family "Hasklig")
+(defconst cb-theme-common-font-family
+  (--first (find-font (font-spec :name it))
+           '("Hasklig" "DejaVu Sans Mono" "Menlo")))
 
 ;; TODO: Maybe move this into a host-specific way of setting config.
 (defconst cb-theme-common-default-height
