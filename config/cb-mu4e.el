@@ -73,15 +73,7 @@
       (interactive)
       (-if-let ((&alist 'keymap (&alist 'mouse-1 action)) (text-properties-at (point)))
           (call-interactively action)
-        (call-interactively #'evil-ret)))
-
-    (use-package cb-mu4e-utils
-      :after mu4e
-      :functions (cb-mu4e-utils-view-in-external-browser-action
-                  cb-mu4e-utils-read-and-archive-action
-                  mu4e-view-open-attachment
-                  mu4e-headers-mark-for-read-and-archive
-                  mu4e-view-mark-for-read-and-archive)))
+        (call-interactively #'evil-ret))))
 
   :init
   (spacemacs-keys-set-leader-keys "am" #'mu4e)
@@ -231,6 +223,14 @@
     (spacemacs-keys-set-leader-keys-for-major-mode 'mu4e-compose-mode
       "a" 'mail-add-attachment
       "i" 'mail-insert-file)))
+
+(use-package cb-mu4e-utils
+  :after mu4e
+  :functions (cb-mu4e-utils-view-in-external-browser-action
+              cb-mu4e-utils-read-and-archive-action
+              mu4e-view-open-attachment
+              mu4e-headers-mark-for-read-and-archive
+              mu4e-view-mark-for-read-and-archive))
 
 (use-package org-mu4e
   :after org)
