@@ -180,6 +180,12 @@ If argument INTERACTIVE-P is set, log additional information."
 (unless user-full-name (warn "`user-full-name' not set"))
 (unless user-mail-address (warn "`user-mail-address' not set"))
 
+;;; Post init setup.
+
+(unless (f-dir? org-directory)
+  (when (y-or-n-p (format "`org-directory' does not exist. Create at %s? " org-directory))
+    (mkdir org-directory)))
+
 ;;; Print overall startup time.
 
 (unless noninteractive
