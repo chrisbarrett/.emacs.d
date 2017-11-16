@@ -257,7 +257,8 @@ view buffer."
   :type 'boolean
   :group 'mu4e)
 
-(defcustom mu4e-cited-regexp  "^\\(\\([[:alpha:]]+\\)\\|\\( *\\)\\)\\(\\(>+ ?\\)+\\)"
+(defcustom mu4e-cited-regexp
+  "^\\(\\([[:alpha:]]+\\)\\|\\( *\\)\\)\\(\\(>+ ?\\)+\\)"
   "Regular expression that determines whether a line is a
   citation. This recognizes lines starting with numbers of '>'
   and spaces as well as citations of the type \"John> ... \"."
@@ -500,6 +501,11 @@ Unlike in search queries, folder names with spaces in them must NOT
 be quoted, since mu4e does this automatically for you."
   :type '(repeat (cons (string :tag "Maildir") character))
   :group 'mu4e-folders)
+
+(defcustom mu4e-display-update-status-in-modeline nil
+  "Non-nil value will display the update status in the modeline."
+  :group 'mu4e
+  :type 'boolean)
 
 ;; Faces
 (defgroup mu4e-faces nil
