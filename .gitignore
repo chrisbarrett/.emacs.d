@@ -1,0 +1,8 @@
+*~
+*#*
+*.elc
+TAGS
+.cask
+docs/_build/
+sphinx-doc/_build/
+Jade.info

@@ -1,0 +1,16 @@
+image: nicolaspetton/emacs
+
+before_script:
+ - cask install
+ - emacs --version
+ - curl -sL https://deb.nodesource.com/setup_8.x | bash -
+ - apt-get install -y nodejs
+
+lint:
+  script:
+    - ./run-lint.sh
+
+test:
+  script:
+    - ./run-tests.sh
+  
