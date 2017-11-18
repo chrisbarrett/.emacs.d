@@ -12,6 +12,7 @@
   (require 'use-package))
 
 (require 'spacemacs-keys)
+(autoload 'evil-set-initial-state "cb-evil")
 (autoload 'evil-define-key "evil-core")
 (autoload 'projectile-project-p "projectile")
 (autoload 'f-join "f")
@@ -195,9 +196,7 @@
   :defines (auto-insert-alist))
 
 (use-package tern
-  :defer t
-  :functions (tern-mode)
-  :commands (tern-find-definition tern-pop-find-definition)
+  :commands (tern-mode)
   :init
   (add-hook 'cb-web-js-mode-hook #'tern-mode)
   :config
@@ -208,8 +207,9 @@
       (setenv "NODE_PATH" "/usr/local/lib/node_modules"))
 
     (evil-define-key 'normal tern-mode-keymap
-      (kbd "M-.") #'tern-find-definition
-      (kbd "M-,") #'tern-pop-find-definition)))
+      (kbd "K") 'tern-get-docs
+      (kbd "M-.") 'tern-find-definition
+      (kbd "M-,") 'tern-pop-find-definition)))
 
 (use-package company-tern
   :after cb-web-modes
@@ -251,6 +251,44 @@
   (progn
     (add-to-list 'aggressive-indent-dont-indent-if '(cb-web--in-flow-strict-object-type?))
     (add-hook 'aggressive-indent-stop-here-hook #'cb-web--in-flow-strict-object-type?)))
+
+(use-package indium
+  :commands (indium-interaction-mode)
+  :init
+  (progn
+    (add-hook 'cb-web-js-mode-hook #'indium-interaction-mode)
+    (add-hook 'js-mode-hook #'indium-interaction-mode)
+
+    (dolist (mode '(cb-web-js-mode js-mode))
+      (spacemacs-keys-declare-prefix-for-mode mode "md" "debugger")
+      (spacemacs-keys-declare-prefix-for-mode mode "mi" "flow")
+      (spacemacs-keys-declare-prefix-for-mode mode "mr" "run")
+      (spacemacs-keys-set-leader-keys-for-major-mode mode
+        "d b" 'indium-add-breakpoint
+        "d B" 'indium-add-conditional-breakpoint
+        "d x" 'indium-remove-breakpoint
+        "d X" 'indium-remove-all-breakpoints-from-buffer
+        "d e" 'indium-edit-breakpoint-condition
+        "d l" 'indium-list-breakpoints
+        "d d" 'indium-deactivate-breakpoints
+        "d a" 'indium-activate-breakpoints
+        "r n" 'indium-run-node
+        "r c" 'indium-run-chrome)))
+
+  :config
+  (progn
+    (evil-set-initial-state 'indium-inspector-mode 'motion)
+    (evil-define-key 'motion indium-inspector-mode-map (kbd "^") 'indium-inspector-pop)
+    (evil-define-key 'motion indium-inspector-mode-map (kbd "r") 'indium-inspector-refresh)
+    (define-key cb-web-js-mode-map (kbd "C-c C-l") 'indium-eval-buffer)))
+
+(use-package which-key
+  :config
+  (let* ((boring-prefixes '("indium" "cb-flow"))
+         (match-prefix (rx-to-string `(and bos (or ,@boring-prefixes) "-" (group (+ nonl)))
+                                     t)))
+    (push `((nil . ,match-prefix) . (nil . "\\1"))
+          which-key-replacement-alist)))
 
 ;; Avro file mode
 

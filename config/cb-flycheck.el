@@ -55,6 +55,7 @@
           '(not sbt-file-mode
                 idris-repl-mode
                 dir-locals-mode
+                indium-repl-mode
                 ;; restclient buffers
                 js-mode))
 
