@@ -161,11 +161,6 @@
     (define-key emmet-mode-keymap (kbd "TAB") #'cb-web-expand-snippet-then-emmet)
     (add-hook 'cb-web-js-mode-hook #'cb-web--set-jsx-classname-on)))
 
-(use-package cb-flow-checker
-  :disabled t
-  :defer t
-  :after flycheck)
-
 (use-package flycheck-flow
   :after flycheck
   :config
