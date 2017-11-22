@@ -315,6 +315,11 @@ Optional arg JUSTIFY will justify comments and strings."
 (setq ring-bell-function #'ignore)
 (setq history-length 1000)
 
+(prefer-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(set-language-environment 'utf-8)
 
 ;; Display buffer customisations for inbuilt features
 
