@@ -630,9 +630,20 @@ Optional arg JUSTIFY will justify comments and strings."
 
 (use-package archive-mode
   :defer t
+  :preface
+  (progn
+    ;; HACK: `evil-set-initial-state' doesn't work with archive-mode. Run a hook
+    ;; to set that instead.
+    (defvar archive-mode-hook nil)
+
+    (defun cb-basic-settings--run-archive-mode-hook ()
+      (run-hooks 'archive-mode-hook)))
+
   :config
   (progn
-    (evil-set-initial-state 'archive-mode 'motion)
+    (advice-add 'archive-mode :after #'cb-basic-settings--run-archive-mode-hook)
+    (add-hook 'archive-mode-hook 'evil-motion-state)
+
     (evil-define-key 'motion archive-mode-map
       (kbd "q") 'kill-this-buffer
       (kbd "RET") 'archive-extract
