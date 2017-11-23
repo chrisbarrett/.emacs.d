@@ -52,8 +52,7 @@
     (setq flycheck-emacs-lisp-load-path 'inherit)
 
     (setq flycheck-global-modes
-          '(not sbt-file-mode
-                idris-repl-mode
+          '(not idris-repl-mode
                 dir-locals-mode
                 indium-repl-mode
                 ;; restclient buffers
