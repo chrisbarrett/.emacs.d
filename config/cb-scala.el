@@ -374,6 +374,9 @@
 (use-package cb-scala-sbt-file-mode
   :mode ("\\.sbt\\'". cb-scala-sbt-file-mode))
 
+(use-package cb-scala-script-mode
+  :mode ("\\.sc\\'" . cb-scala-script-mode))
+
 (use-package flycheck
   :defer t
   :preface
