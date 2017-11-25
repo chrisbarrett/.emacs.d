@@ -18,6 +18,13 @@
       (message (kill-new path))
     (error "Buffer not visiting a file")))
 
+(defun cb/copy-buffer-directory ()
+  "Show and copy the directory of the current file in the minibuffer."
+  (interactive)
+  ;; list-buffers-directory is the variable set in dired buffers
+  (if-let ((path (or (ignore-errors (file-name-directory (buffer-file-name))) list-buffers-directory)))
+      (message (kill-new path))
+    (error "Buffer not visiting a file")))
 
 (provide 'cb-copy-buffer-path)
 

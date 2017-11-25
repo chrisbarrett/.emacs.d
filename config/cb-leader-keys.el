@@ -17,6 +17,7 @@
 (autoload 'evil-window-rotate-downwards "evil-commands")
 (autoload 'cb/alternate-buffer "cb-alternate-buffer")
 (autoload 'cb/copy-buffer-path "cb-copy-buffer-path")
+(autoload 'cb/copy-buffer-directory "cb-copy-buffer-path")
 (autoload 'cb/rename-file-and-buffer "cb-rename-file-and-buffer")
 (autoload 'cb/sudo-edit "cb-sudo-edit")
 (autoload 'cb/toggle-window-split "cb-toggle-window-split")
@@ -245,6 +246,7 @@
 
       "c r" #'comment-or-uncomment-region
 
+      "f d" #'cb/copy-buffer-directory
       "f D" #'cb/delete-current-buffer-and-file
       "f F" #'find-file-other-window
       "f R" #'cb/rename-file-and-buffer
