@@ -12,6 +12,7 @@
 (use-package fstar-mode
   :config
   (progn
+    (setq fstar-enabled-modules (delq 'prettify fstar-enabled-modules))
     (evil-define-key 'normal fstar-mode-map (kbd "M-.") 'fstar-jump-to-definition)
     (evil-define-key 'insert fstar-mode-map (kbd "M-.") 'fstar-jump-to-definition)
     (evil-define-key 'normal fstar-mode-map (kbd "K") 'fstar-doc-at-point-dwim)
