@@ -598,8 +598,21 @@
 
     ;; Company
 
+    (tooltip
+     ((default :foreground "black")
+      (((class color) (min-colors 88) (background light))
+       (:background "cornsilk"))
+      (((class color) (min-colors 88) (background dark))
+       (:background "yellow"))))
+
+    (company-tooltip
+     ((t :inherit tooltip)))
+
     (company-template-field
      ((t :inherit highlight)))
+
+    (pos-tip-temp
+     ((t :inherit tooltip)))
 
     ;; Latex
 

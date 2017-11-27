@@ -6,7 +6,7 @@
 ;; Maintainer: S. Irie
 ;; Keywords: Tooltip
 
-(defconst pos-tip-version "0.4.5")
+(defconst pos-tip-version "0.4.6")
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -69,6 +69,11 @@
 
 
 ;;; History:
+;; 2013-07-16  P. Kalinowski
+;;         * Adjusted `pos-tip-show' to correctly set tooltip text foreground
+;;           color when using custom color themes.
+;;         * Version 0.4.6
+;;
 ;; 2010-09-27  S. Irie
 ;;         * Simplified implementation of `pos-tip-window-system'
 ;;         * Version 0.4.5
@@ -213,29 +218,51 @@
 ;; Settings
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defvar pos-tip-border-width 1
-  "Outer border width of pos-tip's tooltip.")
+(defgroup pos-tip nil
+  "Show tooltip at point"
+  :group 'faces
+  :prefix "pos-tip-")
 
-(defvar pos-tip-internal-border-width 2
-  "Text margin of pos-tip's tooltip.")
+(defcustom pos-tip-border-width 1
+  "Outer border width of pos-tip's tooltip."
+  :type 'integer
+  :group 'pos-tip)
 
-(defvar pos-tip-foreground-color "black"
-  "Default foreground color of pos-tip's tooltip.")
+(defcustom pos-tip-internal-border-width 2
+  "Text margin of pos-tip's tooltip."
+  :type 'integer
+  :group 'pos-tip)
 
-(defvar pos-tip-background-color "lightyellow"
-  "Default background color of pos-tip's tooltip.")
+(defcustom pos-tip-foreground-color nil
+  "Default foreground color of pos-tip's tooltip.
+When `nil', look up the foreground color of the `tooltip' face."
+  :type '(choice (const :tag "Default" nil)
+                 string)
+  :group 'pos-tip)
 
-(defvar pos-tip-tab-width nil
+(defcustom pos-tip-background-color nil
+  "Default background color of pos-tip's tooltip.
+When `nil', look up the background color of the `tooltip' face."
+  :type '(choice (const :tag "Default" nil)
+                 string)
+  :group 'pos-tip)
+
+(defcustom pos-tip-tab-width nil
   "Tab width used for `pos-tip-split-string' and `pos-tip-fill-string'
-to expand tab characters. nil means use default value of `tab-width'.")
+to expand tab characters. nil means use default value of `tab-width'."
+  :type '(choice (const :tag "Default" nil)
+                 integer)
+  :group 'pos-tip)
 
-(defvar pos-tip-use-relative-coordinates nil
+(defcustom pos-tip-use-relative-coordinates nil
   "Non-nil means tooltip location is calculated as a coordinates
 relative to the top left corner of frame. In this case the tooltip
 will always be displayed within the frame.
 
 Note that this variable is automatically set to non-nil if absolute
-coordinates can't be obtained by `pos-tip-compute-pixel-position'.")
+coordinates can't be obtained by `pos-tip-compute-pixel-position'."
+  :type 'boolean
+  :group 'pos-tip)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Functions
@@ -324,7 +351,7 @@ Users can also get the frame coordinates by referring the variable
                            (cdr offset))))))))))
 
 (defun pos-tip-frame-relative-position
-    (frame1 frame2 &optional w32-frame frame-coord1 frame-coord2)
+  (frame1 frame2 &optional w32-frame frame-coord1 frame-coord2)
   "Return the pixel coordinates of FRAME1 relative to FRAME2
 as a cons cell (LEFT . TOP).
 
@@ -365,7 +392,7 @@ was upper than the location specified by the arguments.")
 This doesn't include the taskbar area, so isn't same as actual display size.")
 
 (defun pos-tip-compute-pixel-position
-    (&optional pos window pixel-width pixel-height frame-coordinates dx dy)
+  (&optional pos window pixel-width pixel-height frame-coordinates dx dy)
   "Return pixel position of POS in WINDOW like (X . Y), which indicates
 the absolute or relative coordinates of bottom left corner of the object.
 
@@ -409,7 +436,7 @@ hidden by the tooltip."
                           (progn
                             (setq relative t
                                   pos-tip-use-relative-coordinates t)
-                            '(0 . 0))))
+                          '(0 . 0))))
          (posn (posn-at-point (or pos (window-point window)) window))
          (line (cdr (posn-actual-col-row posn)))
          (line-height (and line
@@ -512,8 +539,32 @@ in FRAME. Return new mouse position like (FRAME . (X . Y))."
           (sit-for 0.0001))))
     (cons mframe (and mpos (cons mx my)))))
 
+(defun pos-tip-compute-foreground-color (tip-color)
+  "Compute the foreground color to use for tooltip.
+
+TIP-COLOR is a face or a cons cell like (FOREGROUND-COLOR . BACKGROUND-COLOR).
+If it is nil, use `pos-tip-foreground-color' or the foreground color of the
+`tooltip' face."
+  (or (and (facep tip-color)
+           (face-attribute tip-color :foreground))
+      (car-safe tip-color)
+      pos-tip-foreground-color
+      (face-foreground 'tooltip)))
+
+(defun pos-tip-compute-background-color (tip-color)
+  "Compute the background color to use for tooltip.
+
+TIP-COLOR is a face or a cons cell like (FOREGROUND-COLOR . BACKGROUND-COLOR).
+If it is nil, use `pos-tip-background-color' or the background color of the
+`tooltip' face."
+  (or (and (facep tip-color)
+           (face-attribute tip-color :background))
+      (cdr-safe tip-color)
+      pos-tip-background-color
+      (face-background 'tooltip)))
+
 (defun pos-tip-show-no-propertize
-    (string &optional tip-color pos window timeout pixel-width pixel-height frame-coordinates dx dy)
+  (string &optional tip-color pos window timeout pixel-width pixel-height frame-coordinates dx dy)
   "Show STRING in a tooltip at POS in WINDOW.
 Analogous to `pos-tip-show' except don't propertize STRING by `pos-tip' face.
 
@@ -570,14 +621,8 @@ Example:
          (rx (if relative ax (- ax (car pos-tip-saved-frame-coordinates))))
          (ry (if relative ay (- ay (cdr pos-tip-saved-frame-coordinates))))
          (retval (cons rx ry))
-         (fg (or (and (facep tip-color)
-                      (face-attribute tip-color :foreground))
-                 (car-safe tip-color)
-                 pos-tip-foreground-color))
-         (bg (or (and (facep tip-color)
-                      (face-attribute tip-color :background))
-                 (cdr-safe tip-color)
-                 pos-tip-background-color))
+         (fg (pos-tip-compute-foreground-color tip-color))
+         (bg (pos-tip-compute-background-color tip-color))
          (use-dxdy (or relative
                        (not x-frame)))
          (spacing (frame-parameter frame 'line-spacing))
@@ -798,10 +843,8 @@ of display. Omitting FRAME means use display that selected frame is in."
                pos-tip-internal-border-width)
             1))))
 
-(make-face 'pos-tip-temp)
-
 (defun pos-tip-show
-    (string &optional tip-color pos window timeout width frame-coordinates dx dy)
+  (string &optional tip-color pos window timeout width frame-coordinates dx dy)
   "Show STRING in a tooltip, which is a small X window, at POS in WINDOW
 using frame's default font with TIP-COLOR.
 
@@ -809,9 +852,9 @@ Return pixel position of tooltip relative to top left corner of frame as
 a cons cell like (X . Y).
 
 TIP-COLOR is a face or a cons cell like (FOREGROUND-COLOR . BACKGROUND-COLOR)
-used to specify *only* foreground-color and background-color of tooltip.
-If omitted, use `pos-tip-foreground-color' and `pos-tip-background-color'
-instead.
+used to specify *only* foreground-color and background-color of tooltip. If
+omitted, use `pos-tip-foreground-color' and `pos-tip-background-color' or the
+foreground and background color of the `tooltip' face instead.
 
 Omitting POS and WINDOW means use current position and selected window,
 respectively.
@@ -848,7 +891,11 @@ See also `pos-tip-show-no-propertize'."
   (let* ((frame (window-frame window))
          (max-width (pos-tip-x-display-width frame))
          (max-height (pos-tip-x-display-height frame))
-         (w-h (pos-tip-string-width-height string)))
+         (w-h (pos-tip-string-width-height string))
+         (fg (pos-tip-compute-foreground-color tip-color))
+         (bg (pos-tip-compute-background-color tip-color))
+         (frame-font (find-font (font-spec :name (frame-parameter frame 'font))))
+         (tip-face-attrs (list :font frame-font :foreground fg :background bg)))
     (cond
      ((and width
            (> (car w-h) width))
@@ -858,11 +905,8 @@ See also `pos-tip-show-no-propertize'."
           (> (cdr w-h) max-height))
       (setq string (pos-tip-truncate-string string max-width max-height)
             w-h (pos-tip-string-width-height string))))
-    (face-spec-reset-face 'pos-tip-temp)
-    (with-selected-window window
-      (set-face-font 'pos-tip-temp (frame-parameter frame 'font)))
     (pos-tip-show-no-propertize
-     (propertize string 'face 'pos-tip-temp)
+     (propertize string 'face tip-face-attrs)
      tip-color pos window timeout
      (pos-tip-tooltip-width (car w-h) (frame-char-width frame))
      (pos-tip-tooltip-height (cdr w-h) (frame-char-height frame) frame)
@@ -888,7 +932,7 @@ Note that this function does't correctly work for X frame and Emacs 22."
          (pos-tip-border-width 0)
          (pos-tip-internal-border-width 1)
          (rpos (pos-tip-show ""
-                             '(nil . (frame-parameter frame 'background-color))
+                             `(nil . ,(frame-parameter frame 'background-color))
                              (window-start window) window
                              nil nil 'relative nil 0)))
     (sit-for 0)
@@ -922,7 +966,7 @@ Note that this function is usable only in Emacs 23 for MS-Windows."
               (cons (frame-pixel-width)
                     (+ (frame-pixel-height)
                        (- (cdr offset) (car offset)))))
-      (if (called-interactively-p nil)
+      (if (called-interactively-p 'interactive)
           (message "%S" pos-tip-w32-saved-max-width-height))
       (unless keep-maximize
         ;; Restore frame
