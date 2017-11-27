@@ -258,6 +258,9 @@
       (sp-local-pair "{|" "|}" :post-handlers '(("||\n[i]" "RET") ("| " "SPC")))
       (sp-local-pair "(" ")" :pre-handlers '(:add cb-smartparens--web-mode-format-paren-after-keyword)))
 
+    (sp-with-modes 'fstar-mode
+      (sp-local-pair "{" nil :pre-handlers nil :post-handlers '(cb-smartparens-add-space-after-sexp-insertion)))
+
     (sp-with-modes 'org-mode
       (sp-local-pair "[" "]" :post-handlers '(("|" "SPC")))
       (sp-local-pair "*" "*" :actions '(insert wrap) :unless '(sp-point-after-word-p sp-point-at-bol-p) :wrap "C-*" :skip-match 'cb-smartparens--org-skip-asterisk)
