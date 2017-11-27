@@ -49,6 +49,14 @@
     (setq company-dabbrev-ignore-case nil)
     (setq company-dabbrev-downcase nil)))
 
+(use-package company-quickhelp
+  :after company
+  :commands (company-quickhelp-mode company-quickhelp-manual-begin)
+  :config
+  (progn
+    (company-quickhelp-mode +1)
+    (define-key company-active-map (kbd "C-h") #'company-quickhelp-manual-begin)))
+
 (provide 'cb-company)
 
 ;;; cb-company.el ends here
