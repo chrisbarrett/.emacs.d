@@ -1,0 +1,7 @@
+*.elc
+.cask/
+/wiki/
+/private/
+/sandbox/
+*.pyc
+__pycache__/
