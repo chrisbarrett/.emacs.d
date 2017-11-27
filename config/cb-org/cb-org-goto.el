@@ -28,6 +28,9 @@
 
 (autoload 'org-agenda-filter-apply "org-agenda")
 
+(defvar cb-org-goto-on-holiday? nil
+  "If nil, show the work agenda during work hours.")
+
 ;;;###autoload
 (defun cb-org-goto-diary ()
   "Switch to the diary file."
@@ -74,7 +77,10 @@
 (defun cb-org-goto-agenda ()
   "Show the agenda fullscreen."
   (interactive)
-  (let ((agenda-key (if (cb-org-goto--is-work-time? (decode-time)) "w" "A")))
+  (let ((agenda-key (if (and (cb-org-goto--is-work-time? (decode-time))
+                             (not cb-org-goto-on-holiday?))
+                        "w"
+                      "A")))
     (org-agenda current-prefix-arg agenda-key))
   (delete-other-windows))
 
