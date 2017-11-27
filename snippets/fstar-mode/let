@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: let
+# key: l
+# condition: (cb-yas/bol?)
+# --
+let ${1:lhs} = $0
