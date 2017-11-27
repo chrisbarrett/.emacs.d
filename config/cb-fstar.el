@@ -13,7 +13,7 @@
   (progn
     (spacemacs-keys-declare-prefix-for-mode 'fstar-mode "m e" "eval")
 
-    (push `((nil . ,(rx bos "fstar-" (group (+ nonl)))) . (nil . "\\1"))
+    (push `((nil . ,(rx bos "fstar-" (? "subp-") (group (+ nonl)))) . (nil . "\\1"))
           which-key-replacement-alist)))
 
 (use-package fstar-mode
