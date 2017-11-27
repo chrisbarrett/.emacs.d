@@ -173,6 +173,7 @@ If argument INTERACTIVE-P is set, log additional information."
 (use-package cb-eyebrowse)
 (use-package cb-nix)
 (use-package cb-tiny)
+(use-package cb-fstar)
 
 (use-package personal-config
   :load-path "~/Sync/emacs")

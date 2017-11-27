@@ -19,6 +19,7 @@
     (add-to-list 'aggressive-indent-excluded-modes 'cb-scala-sbt-file-mode)
     (add-to-list 'aggressive-indent-excluded-modes 'diff-auto-refine-mode)
     (add-to-list 'aggressive-indent-excluded-modes 'dockerfile-mode)
+    (add-to-list 'aggressive-indent-excluded-modes 'fstar-mode)
     (add-to-list 'aggressive-indent-excluded-modes 'graphviz-dot-mode)
     (add-to-list 'aggressive-indent-excluded-modes 'haskell-mode)
     (add-to-list 'aggressive-indent-excluded-modes 'idris-mode)
