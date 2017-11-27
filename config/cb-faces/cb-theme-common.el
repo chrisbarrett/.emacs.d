@@ -238,6 +238,11 @@
     (idris-inline-doc-face
      ((t :inherit font-lock-comment-face)))
 
+    ;; FStar
+
+    (fstar-subp-overlay-processed-face
+     ((t :background ,subtle-bg)))
+
     ;; web-mode
 
     (web-mode-function-call-face
