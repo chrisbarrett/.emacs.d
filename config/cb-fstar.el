@@ -19,7 +19,15 @@
 (use-package fstar-mode
   :config
   (progn
-    (setq fstar-enabled-modules (delq 'prettify fstar-enabled-modules))
+    (setq fstar-enabled-modules
+          (seq-difference fstar-enabled-modules '(prettify)))
+
+    (setq fstar-auto-insert--skeleton
+          '(nil "module " (fstar-auto-insert--infer-module-name) "\n"))
+
+    (setq fstar-auto-insert--alist-form
+          `(("\\.fsti?\\'" . "F* program") . ,fstar-auto-insert--skeleton))
+
     (evil-define-key 'normal fstar-mode-map (kbd "M-.") 'fstar-jump-to-definition)
     (evil-define-key 'insert fstar-mode-map (kbd "M-.") 'fstar-jump-to-definition)
     (evil-define-key 'normal fstar-mode-map (kbd "K") 'fstar-doc-at-point-dwim)
