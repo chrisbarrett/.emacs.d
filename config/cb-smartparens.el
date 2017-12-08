@@ -259,6 +259,7 @@
       (sp-local-pair "(" ")" :pre-handlers '(:add cb-smartparens--web-mode-format-paren-after-keyword)))
 
     (sp-with-modes 'fstar-mode
+      (sp-local-pair "'" nil :actions nil)
       (sp-local-pair "{" nil :pre-handlers nil :post-handlers '(cb-smartparens-add-space-after-sexp-insertion))
       (sp-local-pair "(" nil
                      :pre-handlers '(cb-smartparens-add-space-before-sexp-insertion)
