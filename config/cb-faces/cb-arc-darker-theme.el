@@ -23,7 +23,8 @@
         :header-line-bg "#414a59"
         :error-fg "#cc575d"
         :emphasis-1 cb-theme-common-blue
-        :emphasis-2 "white"))
+        :emphasis-2 "white"
+        :pending-bg "#FFFFAA"))
 
 (provide-theme 'cb-arc-darker)
 

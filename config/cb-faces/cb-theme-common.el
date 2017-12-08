@@ -47,7 +47,8 @@
                        (dark-grey "grey40")
                        (light-grey "grey80")
                        (error-fg cb-theme-common-red)
-                       (dimmed-fg mid-grey))
+                       (dimmed-fg mid-grey)
+                       (pending-bg "#AAAA33"))
   `((default
       ((t
         :background ,default-bg
@@ -242,6 +243,18 @@
 
     (fstar-subp-overlay-processed-face
      ((t :background ,subtle-bg)))
+
+    (fstar-subp-overlay-busy-face
+     ((t :background ,pending-bg)))
+
+    (fstar-structure-face
+     ((t :inherit font-lock-keyword-face)))
+
+    (fstar-subscript-face
+     ((t :height 0.65)))
+
+    (fstar-literate-comment-face
+     ((t :inherit font-lock-comment-face)))
 
     ;; web-mode
 

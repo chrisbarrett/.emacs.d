@@ -24,7 +24,8 @@
         :highlight-bg "gray82"
         :header-line-bg cb-light-theme-violet
         :emphasis-1 cb-theme-common-blue
-        :emphasis-2 "white"))
+        :emphasis-2 "white"
+        :pending-bg "#FFFFAA"))
 
 (provide-theme 'cb-light)
 
