@@ -20,7 +20,9 @@
   :config
   (progn
     (setq fstar-enabled-modules
-          (seq-difference fstar-enabled-modules '(prettify)))
+          (seq-difference fstar-enabled-modules '(prettify
+                                                  overlay-legend
+                                                  spinner)))
 
     (setq fstar-auto-insert--skeleton
           '(nil "module " (fstar-auto-insert--infer-module-name) "\n"))
