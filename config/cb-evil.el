@@ -50,6 +50,7 @@
   :config
   (progn
     (evil-mode +1)
+    (setq evil-mode-line-format nil)
     (setq-default evil-shift-width 2)
     (setq-default evil-symbol-word-search t)
 
