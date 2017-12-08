@@ -265,6 +265,7 @@
       "h d c" #'describe-face
       "h d k" #'describe-key
       "h d m" #'describe-mode
+      "h d p" #'describe-text-properties
       "h f c" #'find-face-definition
       "h f f" #'find-function
       "h f l" #'find-library
