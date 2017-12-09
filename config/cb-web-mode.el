@@ -253,9 +253,13 @@
     (add-hook 'aggressive-indent-stop-here-hook #'cb-web--in-flow-strict-object-type?)))
 
 (use-package indium
-  :commands (indium-interaction-mode)
+  :commands (indium-interaction-mode
+             indium-run-node)
   :init
   (progn
+    (defalias 'run-node #'indium-run-node)
+    (defalias 'node-repl #'indium-run-node)
+
     (add-hook 'cb-web-js-mode-hook #'indium-interaction-mode)
     (add-hook 'js-mode-hook #'indium-interaction-mode)
 
@@ -278,6 +282,7 @@
   :config
   (progn
     (evil-set-initial-state 'indium-inspector-mode 'motion)
+    (evil-set-initial-state 'indium-repl-mode 'insert)
     (evil-define-key 'motion indium-inspector-mode-map (kbd "^") 'indium-inspector-pop)
     (evil-define-key 'motion indium-inspector-mode-map (kbd "r") 'indium-inspector-refresh)
     (define-key cb-web-js-mode-map (kbd "C-c C-l") 'indium-eval-buffer)))
