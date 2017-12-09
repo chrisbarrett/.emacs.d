@@ -71,8 +71,7 @@
                   (rx symbol-start (or "=" "for" "of" "in"
                                        "if" "else" "while"
                                        "return"
-                                       "yield" "yield*"
-                                       "function" "function*")
+                                       "yield" "yield*")
                       (* space) "(")))
         (save-excursion
           (search-backward "(")
