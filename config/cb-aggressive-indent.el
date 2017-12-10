@@ -17,6 +17,7 @@
   :config
   (progn
     (add-to-list 'aggressive-indent-excluded-modes 'cb-scala-sbt-file-mode)
+    (add-to-list 'aggressive-indent-excluded-modes 'cb-web-js-mode)
     (add-to-list 'aggressive-indent-excluded-modes 'diff-auto-refine-mode)
     (add-to-list 'aggressive-indent-excluded-modes 'dockerfile-mode)
     (add-to-list 'aggressive-indent-excluded-modes 'fstar-mode)
