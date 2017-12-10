@@ -27,6 +27,9 @@
   :preface
   (autoload 'sp-local-pair "smartparens")
 
+  :init
+  (setq web-mode-extra-keywords '(("javascript" . ("type"))))
+
   :config
   (progn
     (setq web-mode-code-indent-offset 2)
