@@ -295,6 +295,12 @@
     (push `((nil . ,match-prefix) . (nil . "\\1"))
           which-key-replacement-alist)))
 
+(use-package prettier-js
+  :commands (prettier-js-mode)
+  :init
+  (add-hook 'cb-web-js-mode-hook #'prettier-js-mode))
+
+
 ;; Avro file mode
 
 (autoload 'web-mode "web-mode")
