@@ -80,6 +80,10 @@
 
     (projectile-mode)
 
+    (projectile-register-project-type 'yarn '("yarn.lock")
+                                      :compile "yarn build"
+                                      :test "yarn test")
+
     (add-to-list 'display-buffer-alist
                  `(,(rx bos "*projectile-test*" eos)
                    (display-buffer-reuse-window
