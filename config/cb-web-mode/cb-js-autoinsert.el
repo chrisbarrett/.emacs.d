@@ -43,7 +43,7 @@
 // @flow
 import React from 'react';
 
-type Props = {}
+type Props = {|  |};
 
 const " component-name " = (props: Props) => (
   <div className=\"" (s-snake-case component-name) "\">" component-name "</div>
@@ -70,7 +70,7 @@ export default " container-name ";
 // @flow
 import React from 'react';
 
-type Props = {}
+type Props = {|  |};
 
 const " component-name " = (props: Props) => (
   <div className=\"" (s-snake-case component-name) "\">" component-name "</div>
