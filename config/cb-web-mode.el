@@ -129,7 +129,7 @@
 
        ((and (derived-mode-p 'cb-web-js-mode)
              (buffer-file-name)
-             (memq "components" (f-split (buffer-file-name))))
+             (seq-contains (f-split (buffer-file-name)) "components"))
         (emmet-mode +1))))
 
     (defun cb-web--emmet-move-out-of-squares ()
@@ -158,7 +158,9 @@
         (emmet-expand-yas))))
 
   :init
-  (add-hook 'web-mode-hook #'cb-web--maybe-emmet-mode)
+  (progn
+    (add-hook 'cb-web-js-mode-hook #'cb-web--maybe-emmet-mode)
+    (add-hook 'web-mode-hook #'cb-web--maybe-emmet-mode))
   :config
   (progn
     (setq emmet-move-cursor-between-quotes t)
