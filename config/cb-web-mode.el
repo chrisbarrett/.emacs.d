@@ -55,6 +55,11 @@
     (add-to-list 'web-mode-content-types '("javascript" . "\\.es6\\'"))
     (add-to-list 'web-mode-content-types '("jsx" . "\\.jsx?\\'"))))
 
+(use-package rainbow-mode
+  :commands (rainbow-mode)
+  :config
+  (add-hook 'web-mode-hook #'rainbow-mode))
+
 (use-package cb-web-modes
   :defer t
   :mode (("\\.json\\'" . cb-web-json-mode)
