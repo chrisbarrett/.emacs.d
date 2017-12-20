@@ -631,6 +631,8 @@
       this.broadcastProp(prop, val, false);
     },
     replaceProto: function(proto) {
+      for (var o = proto; o; o = o.proto)
+        if (o == this) return
       if (this.proto && this.maybeProps)
         this.proto.unregPropHandler(this)
       this.proto = proto
@@ -977,6 +979,7 @@
 
   function setFunctionInstantiated(node, fn) {
     // Disconnect the arg avals, so that we can add info to them without side effects
+    var refScope = node.scope;
     for (var i = 0; i < fn.args.length; ++i) fn.args[i] = new AVal;
     fn.self = new AVal;
     fn.computeRet = function(self, args) {
@@ -984,7 +987,7 @@
       return withDisabledComputing(fn, function() {
         var oldOrigin = cx.curOrigin;
         cx.curOrigin = fn.origin;
-        var scope = node.scope
+        var scope = node.scope ? node.scope : refScope;
         var scopeCopy = new Scope(scope.prev, scope.originNode);
         for (var v in scope.props) {
           var local = scopeCopy.defProp(v, scope.props[v].originNode);
@@ -2044,7 +2047,7 @@
       }
     },
     ReturnStatement: function(_parent, node, get) {
-      // tweaking search position to avoid endless recursion 
+      // tweaking search position to avoid endless recursion
       // when looking for definition of key in fn ( return fn ( return object ) )
       // see ternjs/tern#777
       var fnNode = walk.findNodeAround(node.sourceFile.ast, node.start - 1, "Function");
@@ -2088,6 +2091,8 @@
 
   exports.findRefs = function(ast, baseScope, name, refScope, f) {
     function handleId(node, scope, ancestors) {
+      let parent = ancestors[ancestors.length - 2]
+      if (parent.type == "MemberExpression" && !parent.computed) return;
       if (node.name != name ||
           (node == ast.id && ast.type == "FunctionDeclaration")) return;
       for (var s = scope; s; s = s.prev) {
