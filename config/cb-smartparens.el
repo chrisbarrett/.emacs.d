@@ -253,6 +253,7 @@
       (sp-local-pair "<" nil :when '(cb-smartparens-web-mode-is-code-context)))
 
     (sp-with-modes 'cb-web-js-mode
+      (sp-local-pair "\"" "\"" :bind "M-\"")
       ;; Flow strict types
       (sp-local-pair "{|" "|}" :post-handlers '(("||\n[i]" "RET") ("| " "SPC")))
       (sp-local-pair "(" ")" :pre-handlers '(:add cb-smartparens--web-mode-format-paren-after-keyword)))
