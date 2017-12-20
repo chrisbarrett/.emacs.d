@@ -22,6 +22,4 @@
 
 (add-to-list 'company-backends 'company-tern)
 
-(provide 'init)
-
 ;;; init.el ends here
