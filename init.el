@@ -98,7 +98,7 @@ If argument INTERACTIVE-P is set, log additional information."
     (setq Info-default-directory-list (seq-filter #'file-directory-p Info-default-directory-list))
 
     (when interactive-p
-      (if-let (added (seq-difference load-path before))
+      (if-let* ((added (seq-difference load-path before)))
           (message "Load path updated. Added: %S" added)
         (message "No change to load-path")))))
 
