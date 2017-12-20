@@ -32,6 +32,10 @@ JavaScript, and capable of running both
 on <a href="http://nodejs.org">node.js</a> and in
 the <a href="doc/demo/index.html">browser</a>.</p>
 
+<p><strong>NOTE</strong>: This project is looking for a new
+maintainer, since the original author no longer has time to work on
+it.</p>
+
 <h2><a id="plugins"></a>Editor plugins</h2>
 
 <p>There is currently Tern support for the following editors:</p>
@@ -45,6 +49,7 @@ the <a href="doc/demo/index.html">browser</a>.</p>
   <li><a href="https://github.com/angelozerr/tern.java">Eclipse (and general Java API)</a>
   <li><a href="https://github.com/fab1an/JavaScript-Tern-Completion.tmbundle">TextMate</a>
   <li><a href="https://www.sourcelair.com/">SourceLair</a> (built in to the base editor)
+  <li><a href="https://chocolatapp.com">Chocolat</a> (built in to the base editor)
 </ul>
 
 <p>Follow the links to find instructions on how to install the
@@ -85,6 +90,16 @@ of <a href="https://www.youtube.com/watch?v=wW5VbogkDQ4">the talk</a>
 I gave about it at the Curry On conference.</p>
 
 <h2><a id="releases"></a>Release history</h2>
+
+<p class="release">18-02-2017: <a href="https://github.com/ternjs/tern/tree/0.21.0">Version 0.21</a></p>
+
+<ul class="release-note">
+  <li>Support JSDoc-style object property docs in <code>doc_comments</code> plugin.</li>
+  <li>Various fixes and completions in the type definitions.</li>
+  <li>Fix bug where server self-resets left old state on AST.</li>
+  <li>Improve and document the <code>webpack</code> plugin.</li>
+  <li>Fix issue where file offsets were interpreted wrong when the file contained astral plane characters.</li>
+</ul>
 
 <p class="release">16-08-2016: <a href="https://github.com/ternjs/tern/tree/0.20.0">Version 0.20</a></p>
 
