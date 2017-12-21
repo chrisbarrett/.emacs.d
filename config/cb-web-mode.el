@@ -310,6 +310,27 @@
   :init
   (add-hook 'cb-web-js-mode-hook #'prettier-js-mode))
 
+(use-package compile
+  :defer t
+  :config
+  (progn
+    (defconst cb-web--flow-error-rx
+      (rx bol "Error:" (+ space)
+          ;; Filename
+          (group (+? nonl)) ":"
+          ;; Line
+          (group (+ digit))))
+
+    (-let* ((str "Error: src/components/ColorList.js:22")
+            ((whole file line) (s-match cb-web--flow-error-rx str)))
+      (cl-assert (equal whole str))
+      (cl-assert (equal file "src/components/ColorList.js"))
+      (cl-assert (equal line "22")))
+
+    (setf (alist-get 'flow compilation-error-regexp-alist-alist)
+          (list cb-web--flow-error-rx 1 2))
+    (add-to-list 'compilation-error-regexp-alist 'flow)))
+
 
 ;; Avro file mode
 
