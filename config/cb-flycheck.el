@@ -12,18 +12,22 @@
   (require 'use-package))
 
 (autoload 'evil-define-key "evil-core")
+(autoload 'evil-set-initial-state "cb-evil")
 
 (require 'spacemacs-keys)
 
 (use-package flycheck
   :ensure t ; load with package.el
   :defer 1
-  :commands (global-flycheck-mode)
+  :commands (global-flycheck-mode
+             flycheck-list-errors
+             flycheck-error-list-next-error
+             flycheck-error-list-previous-error
+             flycheck-error-list-goto-error)
   :preface
   (progn
     (autoload 'flycheck-error-format-message-and-id "flycheck")
     (autoload 'flycheck-get-error-list-window "flycheck")
-    (autoload 'flycheck-list-errors "flycheck")
     (autoload 'flycheck-may-use-echo-area-p "flycheck")
 
     (defun cb-flycheck-display-error-messages (errors)
