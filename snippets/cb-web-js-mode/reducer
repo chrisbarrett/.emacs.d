@@ -1,0 +1,12 @@
+# key: reducer
+# name: reducer
+# --
+export const ${1:name} = (state: T, action: A): T => {
+  switch (action.type) {
+    case ${2:pat}:
+      return $0;
+
+    default:
+      return state;
+  }
+}
