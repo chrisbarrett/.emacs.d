@@ -223,30 +223,30 @@ export const ${1:$(s-lower-camel-case yas/text)} = () => ({
          (redux-reducer? (member "reducers" (f-split file)))
          (redux-action? (member "actions" (f-split file)))
          (flow-project? (locate-dominating-file file ".flowconfig")))
-    (when-let (snippet
-               (cond
-                ((and react-component? flow-project? container-file-name?)
-                 (cb-js-autoinsert--flow-react-container file))
-                ((and react-component? flow-project?)
-                 (cb-js-autoinsert--flow-react-component file))
+    (when-let* ((snippet
+                 (cond
+                  ((and react-component? flow-project? container-file-name?)
+                   (cb-js-autoinsert--flow-react-container file))
+                  ((and react-component? flow-project?)
+                   (cb-js-autoinsert--flow-react-component file))
 
-                ((and react-component? container-file-name?)
-                 (cb-js-autoinsert--flow-react-container file))
-                (react-component?
-                 (cb-js-autoinsert--flow-react-component file))
+                  ((and react-component? container-file-name?)
+                   (cb-js-autoinsert--flow-react-container file))
+                  (react-component?
+                   (cb-js-autoinsert--flow-react-component file))
 
-                ((and redux-reducer? flow-project?)
-                 (cb-js-autoinsert--flow-redux-reducer file))
-                (redux-reducer?
-                 (cb-js-autoinsert--redux-reducer file))
+                  ((and redux-reducer? flow-project?)
+                   (cb-js-autoinsert--flow-redux-reducer file))
+                  (redux-reducer?
+                   (cb-js-autoinsert--redux-reducer file))
 
-                ((and redux-action? flow-project?)
-                 (cb-js-autoinsert--flow-redux-action file))
-                (redux-action?
-                 (cb-js-autoinsert--redux-action file))
+                  ((and redux-action? flow-project?)
+                   (cb-js-autoinsert--flow-redux-action file))
+                  (redux-action?
+                   (cb-js-autoinsert--redux-action file))
 
-                (flow-project?
-                 (cb-js-autoinsert--flow-standard-source))))
+                  (flow-project?
+                   (cb-js-autoinsert--flow-standard-source)))))
 
       (yas-expand-snippet (s-trim snippet)))))
 
