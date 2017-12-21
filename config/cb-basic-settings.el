@@ -332,6 +332,15 @@ Optional arg JUSTIFY will justify comments and strings."
                (slot            . 1)
                (window-width    . 0.5)))
 
+(add-to-list 'display-buffer-alist
+             `(,(rx bos "*compilation*" eos)
+               (display-buffer-reuse-window
+                display-buffer-in-side-window)
+               (reusable-frames . visible)
+               (side            . bottom)
+               (slot            . 2)
+               (window-width    . 0.3)))
+
 ;; Prevent display-buffer from displaying in new frames.
 
 (setq display-buffer-fallback-action
