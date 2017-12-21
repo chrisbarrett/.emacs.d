@@ -42,22 +42,26 @@
 
 // @flow
 import React from 'react';
+import { connect } from 'react-redux';
 
-type Props = {|  |};
+import type { State } from '../types';
+import type { Action } from '../store/actions';
+
+// Presentational component
+
+type Props = {| |};
 
 const " component-name " = (props: Props) => (
-  <div className=\"" (s-snake-case component-name) "\">" component-name "</div>
+  <div className=\"" (s-snake-case component-name) "\">" component-name "</div>$0
 );
 
-class " container-name " extends React.Component {
-  props: Props;
+// Container component
 
-  render = () => {
-    return (
-      <" component-name " />
-    )
-  };
-}
+const stateToProps = (state: State): $Shape<Props> => ({});
+
+const dispatchToProps = (dispatch: Action => void): $Shape<Props> => ({});
+
+const " container-name " = connect(stateToProps, dispatchToProps)(" component-name ");
 
 export default " container-name ";
 
@@ -70,10 +74,10 @@ export default " container-name ";
 // @flow
 import React from 'react';
 
-type Props = {|  |};
+type Props = {| |};
 
 const " component-name " = (props: Props) => (
-  <div className=\"" (s-snake-case component-name) "\">" component-name "</div>
+  <div className=\"" (s-snake-case component-name) "\">" component-name "</div>$0
 );
 
 export default " component-name ";
@@ -86,18 +90,21 @@ export default " component-name ";
     (concat "
 
 import React from 'react';
+import { connect } from 'react-redux';
 
-const " component-name " = (props) => (
-  <div className=\"" (s-snake-case component-name) "\">" component-name "</div>
+// Presentational component
+
+const " component-name " = props => (
+  <div className=\"" (s-snake-case component-name) "\">" component-name "</div>$0
 );
 
-class " container-name " extends React.Component {
-  render = () => {
-    return (
-      <" component-name " />
-    )
-  };
-}
+// Container component
+
+const stateToProps = state => ({});
+
+const dispatchToProps = dispatch => ({});
+
+const " container-name " = connect(stateToProps, dispatchToProps)(" component-name ");
 
 export default " container-name ";
 
@@ -109,8 +116,8 @@ export default " container-name ";
 
 import React from 'react';
 
-const " component-name " = (props) => (
-  <div className=\"" (s-snake-case component-name) "\">" component-name "</div>
+const " component-name " = props => (
+  <div className=\"" (s-snake-case component-name) "\">" component-name "</div>$0
 );
 
 export default " component-name ";
@@ -133,14 +140,17 @@ $0
     (concat "
 
 // @flow
-import type { Action } from '../actions/Actions';
+import type { Action } from './actions';
 
-type State = {}
+type State = {| |};
 
 const initialState: State = {};
 
 const " function-name " = (state: State = initialState, action: Action): State => {
   switch (action.type) {
+    case $0:
+      return state;
+
     default:
       return state;
   }
@@ -154,7 +164,7 @@ export default " function-name ";
   (let ((function-name (cb-js-autoinsert--reducer-name file)))
     (concat "
 
-import Actions from '../actions/Actions';
+import Actions from './actions';
 
 const initialState = {};
 
@@ -177,12 +187,12 @@ export default " function-name ";
 
 // @flow
 
-export type Action = { type: '${1:CREATE_" filename "$(upcase yas/text)}' }
+export type Action = {| type: '${1:CREATE_" filename "$(upcase yas/text)}' |}
 
 // Action functions
 
 export const ${1:$(s-lower-camel-case yas/text)} = (): Action => ({
-  type: ${1:$(cb-js-autoinsert--screaming-snake yas/text)},
+  type: ${1:$(cb-js-autoinsert--screaming-snake yas/text)},$0
 });
 
 ")))
@@ -199,7 +209,7 @@ export const ${1:CREATE_" filename "$(upcase yas/text)} = '${1:$(cb-js-autoinser
 // Action functions
 
 export const ${1:$(s-lower-camel-case yas/text)} = () => ({
-  type: ${1:$(cb-js-autoinsert--screaming-snake yas/text)},
+  type: ${1:$(cb-js-autoinsert--screaming-snake yas/text)},$0
 });
 
 ")))
