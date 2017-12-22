@@ -688,6 +688,11 @@ Optional arg JUSTIFY will justify comments and strings."
   :config
   (setq url-cookie-file (concat cb-emacs-cache-directory "/cookies")))
 
+(use-package hide-comnt
+  :commands (hide/show-comments-toggle)
+  :init
+  (spacemacs-keys-set-leader-keys "tc" #'hide/show-comments-toggle))
+
 (provide 'cb-basic-settings)
 
 ;;; cb-basic-settings.el ends here
