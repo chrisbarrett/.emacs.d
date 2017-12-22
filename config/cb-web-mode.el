@@ -74,7 +74,7 @@
 
 (use-package rainbow-mode
   :commands (rainbow-mode)
-  :config
+  :init
   (add-hook 'web-mode-hook #'rainbow-mode))
 
 (use-package cb-web-modes
