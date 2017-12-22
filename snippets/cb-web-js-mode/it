@@ -1,0 +1,7 @@
+# key: it
+# name: it
+# condition: (and (cb-yas/bol?) (save-excursion (search-backward-regexp (rx bol (* space) symbol-start "describe" symbol-end) nil t)))
+# --
+it('${1:behaviour}', () => {
+  $0
+});

@@ -2,5 +2,6 @@
 # name: case
 # key: ca
 # --
-case ${1:pat}:
+case ${1:pat}: {
   return $0
+}

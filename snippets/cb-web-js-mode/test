@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: test
+# key: test
+# condition: (cb-yas/bol?)
+# --
+test('${1:behaviour}', () => {
+  $0
+});
