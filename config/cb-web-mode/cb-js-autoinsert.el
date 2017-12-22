@@ -221,8 +221,6 @@ export const ${1:$(s-lower-camel-case yas/text)} = () => ({
 
 // @flow
 
-import { test } from 'jest';
-
 test('${1:feature}', () => {
   $0
 });
