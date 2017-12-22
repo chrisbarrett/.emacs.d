@@ -12,6 +12,7 @@
   (require 'use-package))
 
 (require 'spacemacs-keys)
+(require 'subr-x)
 (autoload 'evil-set-initial-state "cb-evil")
 (autoload 'evil-define-key "evil-core")
 (autoload 'projectile-project-p "projectile")
@@ -25,7 +26,19 @@
   :defer t
 
   :preface
-  (autoload 'sp-local-pair "smartparens")
+  (progn
+    (autoload 'sp-local-pair "smartparens")
+    (autoload 'projectile-project-root "projectile")
+
+    (defun cb-web--node-modules-bin-dir ()
+      (when-let* ((root (projectile-project-root))
+                  (dir (f-join root "node_modules" ".bin")))
+        (when (f-dir? dir)
+          dir)))
+
+    (defun cb-web--add-node-modules-bin-to-exec-path ()
+      (when-let* ((bin (cb-web--node-modules-bin-dir)))
+        (setq-local exec-path (cons bin exec-path)))))
 
   :init
   (setq web-mode-extra-keywords '(("javascript" . ("type"))))
@@ -53,7 +66,11 @@
     ;; Treat es6 files as JS files.
 
     (add-to-list 'web-mode-content-types '("javascript" . "\\.es6\\'"))
-    (add-to-list 'web-mode-content-types '("jsx" . "\\.jsx?\\'"))))
+    (add-to-list 'web-mode-content-types '("jsx" . "\\.jsx?\\'"))
+
+    ;; Run programs out of node_bin
+
+    (add-hook 'web-mode-hook #'cb-web--add-node-modules-bin-to-exec-path)))
 
 (use-package rainbow-mode
   :commands (rainbow-mode)
