@@ -214,17 +214,48 @@ export const ${1:$(s-lower-camel-case yas/text)} = () => ({
 
 ")))
 
+;; Tests
+
+(defun cb-js-autoinsert--flow-jest-test ()
+  (concat "
+
+// @flow
+
+import { test } from 'jest';
+
+test('${1:feature}', () => {
+  $0
+});
+
+"))
+
+(defun cb-js-autoinsert--jest-test ()
+  (concat "
+
+test('${1:feature}', () => {
+  $0
+});
+
+"))
+
 ;; Expansion function
 
 (defun cb-js-autoinsert-template-string ()
   (let* ((file (buffer-file-name))
          (container-file-name? (s-suffix? "Container" (f-no-ext (f-filename file))))
+         (test? (or (s-ends-with? ".test.js" file)
+                    (seq-intersection '("__tests__" "tests" "test") (f-split file))))
          (react-component? (member "components" (f-split file)))
          (redux-reducer? (member "reducers" (f-split file)))
          (redux-action? (member "actions" (f-split file)))
          (flow-project? (locate-dominating-file file ".flowconfig")))
     (when-let* ((snippet
                  (cond
+                  ((and test? flow-project?)
+                   (cb-js-autoinsert--flow-jest-test))
+                  (test?
+                   (cb-js-autoinsert--jest-test))
+
                   ((and react-component? flow-project? container-file-name?)
                    (cb-js-autoinsert--flow-react-container file))
                   ((and react-component? flow-project?)
