@@ -26,6 +26,7 @@
 (defvar org-directory "~/org")
 
 (defconst cb-org-work-file (concat org-directory "/work_movio.org"))
+(defconst cb-org-journal-file (concat org-directory "/journal.org"))
 
 (with-eval-after-load 'which-key
   (with-no-warnings
@@ -613,8 +614,8 @@
 
          (cb-org--capture-template-entry
           "j" "Journal"
-          '(file+datetree org-agenda-diary-file) "%?"
-          :type 'plain)
+          '(file cb-org-journal-file) "* %u\n\n%?"
+          :type 'entry)
 
          (cb-org--capture-template-entry
           "l" "Link"
