@@ -101,9 +101,8 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
         (deferred:try
           (deferred:$
             (deferred:process "git" "add" (shell-quote-argument file))
-            (deferred:process "git" "commit" "-m" (shell-quote-argument (gac--commit-msg (buffer-file-name)))))
-          :finally
-          (deferred:next 'gac-push)))))
+            (deferred:processc it "git" "commit" "-m" (shell-quote-argument (gac--commit-msg (buffer-file-name)))))
+          :finally #'gac-push))))
 
   :config
   (defalias 'gac-after-save-func #'cb-magit--maybe-commit-and-push))
