@@ -619,7 +619,9 @@
          (cb-org--capture-template-entry
           "j" "Journal"
           '(file cb-org-journal-file) "* %u\n\n%?"
-          :type 'entry)
+          :type 'entry
+          :jump-to-captured t
+          :prepend nil)
 
          (cb-org--capture-template-entry
           "l" "Link"
