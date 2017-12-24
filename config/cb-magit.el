@@ -91,7 +91,22 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
 (use-package git-auto-commit-mode
   :commands (git-auto-commit-mode)
   :init
-  (add-to-list 'safe-local-variable-values '(gac-automatically-push-p . t)))
+  (add-to-list 'safe-local-variable-values '(gac-automatically-push-p . t))
+  :preface
+  (progn
+    (require 'async)
+
+    (defun cb-magit--maybe-commit-and-push ()
+      (let* ((buffer-file (buffer-file-name))
+             (file (convert-standard-filename (file-name-nondirectory buffer-file)))
+             (msg (gac--commit-msg buffer-file))
+             (default-directory (file-name-directory buffer-file)))
+        (async-let ((_ (shell-command (format "git add %s" (shell-quote-argument file))))
+                    (_ (shell-command (format "git commit -m %s" (shell-quote-argument msg)))))
+          (gac-push)))))
+
+  :config
+  (defalias 'gac-after-save-func #'cb-magit--maybe-commit-and-push))
 
 (use-package git-timemachine
   :defer t
