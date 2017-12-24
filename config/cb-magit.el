@@ -94,16 +94,18 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
   (add-to-list 'safe-local-variable-values '(gac-automatically-push-p . t))
   :preface
   (progn
-    (require 'async)
+    (require 'deferred)
 
     (defun cb-magit--maybe-commit-and-push ()
-      (let* ((buffer-file (buffer-file-name))
-             (file (convert-standard-filename (file-name-nondirectory buffer-file)))
-             (msg (gac--commit-msg buffer-file))
-             (default-directory (file-name-directory buffer-file)))
-        (async-let ((_ (shell-command (format "git add %s" (shell-quote-argument file))))
-                    (_ (shell-command (format "git commit -m %s" (shell-quote-argument msg)))))
-          (gac-push)))))
+      (let* ((file (convert-standard-filename (file-name-nondirectory (buffer-file-name))))
+             (default-directory (file-name-directory (buffer-file-name))))
+        (deferred:$
+          (deferred:process "git" "add" (shell-quote-argument file))
+          (deferred:process "git" "commit" "-m" (shell-quote-argument (gac--commit-msg (buffer-file-name))))
+          (deferred:error it
+            (lambda (err)
+              (message "git failed: %s" err)))
+          (deferred:next 'gac-push)))))
 
   :config
   (defalias 'gac-after-save-func #'cb-magit--maybe-commit-and-push))
