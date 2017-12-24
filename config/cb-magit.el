@@ -97,14 +97,12 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
     (require 'deferred)
 
     (defun cb-magit--maybe-commit-and-push ()
-      (let* ((file (convert-standard-filename (file-name-nondirectory (buffer-file-name))))
-             (default-directory (file-name-directory (buffer-file-name))))
-        (deferred:$
-          (deferred:process "git" "add" (shell-quote-argument file))
-          (deferred:process "git" "commit" "-m" (shell-quote-argument (gac--commit-msg (buffer-file-name))))
-          (deferred:error it
-            (lambda (err)
-              (message "git failed: %s" err)))
+      (let ((file (convert-standard-filename (file-name-nondirectory (buffer-file-name)))))
+        (deferred:try
+          (deferred:$
+            (deferred:process "git" "add" (shell-quote-argument file))
+            (deferred:process "git" "commit" "-m" (shell-quote-argument (gac--commit-msg (buffer-file-name)))))
+          :finally
           (deferred:next 'gac-push)))))
 
   :config
