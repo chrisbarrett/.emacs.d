@@ -44,6 +44,12 @@
   (find-file org-default-notes-file))
 
 ;;;###autoload
+(defun cb-org-goto-journal ()
+  "Switch to the default notes file."
+  (interactive)
+  (find-file (f-join org-directory "journal.org")))
+
+;;;###autoload
 (defun cb-org-goto-work ()
   "Switch to the work file."
   (interactive)

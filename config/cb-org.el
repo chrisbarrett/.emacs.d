@@ -831,18 +831,20 @@ table tr.tr-even td {
 (use-package cb-org-goto
   :commands (cb-org-goto-agenda
              cb-org-goto-diary
+             cb-org-goto-journal
              cb-org-goto-notes
-             cb-org-goto-work
              cb-org-goto-todo-list
+             cb-org-goto-work
              cb-org-goto-tags-list)
   :init
   (spacemacs-keys-set-leader-keys
-    "oo" #'cb-org-goto-headline
     "oa" #'cb-org-goto-agenda
     "od" #'cb-org-goto-diary
+    "oj" #'cb-org-goto-journal
     "on" #'cb-org-goto-notes
-    "ow" #'cb-org-goto-work
+    "oo" #'cb-org-goto-headline
     "ot" #'cb-org-goto-todo-list
+    "ow" #'cb-org-goto-work
     "ov" #'cb-org-goto-tags-list)
   :config
   (setq cb-org-goto-on-holiday? t))
