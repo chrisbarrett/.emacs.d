@@ -585,13 +585,17 @@
   :preface
   (cl-defun cb-org--capture-template-entry (key label form template
                                           &rest kws
-                                          &key (type 'entry)
+                                          &key
+                                          (type 'entry)
+                                          (prepend t)
+                                          (clock-keep t)
+                                          (empty-lines 1)
                                           &allow-other-keys)
     (append
      (list key label type form template
-           :clock-keep t
-           :empty-lines 1
-           :prepend t)
+           :clock-keep clock-keep
+           :empty-lines empty-lines
+           :prepend prepend)
      kws))
   :config
   (setq org-capture-templates
