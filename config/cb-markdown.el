@@ -22,6 +22,7 @@
 (use-package markdown-mode
   :commands (markdown-mode
              gfm-mode
+             markdown-follow-thing-at-point
              markdown-insert-footnote
              markdown-insert-link
              markdown-insert-image
@@ -84,7 +85,8 @@
     (define-key markdown-mode-map (kbd "M-<left>") #'markdown-promote)
     (define-key markdown-mode-map (kbd "M-<right>") #'markdown-demote)
     (define-key markdown-mode-map (kbd "M-<up>") #'markdown-move-subtree-up)
-    (define-key markdown-mode-map (kbd "M-<down>") #'markdown-move-subtree-down)))
+    (define-key markdown-mode-map (kbd "M-<down>") #'markdown-move-subtree-down)
+    (evil-define-key 'normal markdown-mode-map (kbd "RET") #'markdown-follow-thing-at-point)))
 
 (use-package fence-edit
   :after markdown-mode
