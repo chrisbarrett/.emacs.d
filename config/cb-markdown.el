@@ -22,21 +22,26 @@
 (use-package markdown-mode
   :commands (markdown-mode
              gfm-mode
-             markdown-follow-thing-at-point
-             markdown-insert-footnote
-             markdown-insert-link
-             markdown-insert-image
-             markdown-insert-gfm-code-block
-             markdown-insert-hr
-             markdown-insert-bold
-             markdown-insert-italic
-             markdown-insert-strike-through
-             markdown-insert-header-dwim
-             markdown-insert-header-setext-dwim
-             markdown-promote
              markdown-demote
+             markdown-export
+             markdown-follow-thing-at-point
+             markdown-insert-blockquote
+             markdown-insert-bold
+             markdown-insert-footnote
+             markdown-insert-gfm-code-block
+             markdown-insert-header-dwim
+             markdown-insert-hr
+             markdown-insert-image
+             markdown-insert-italic
+             markdown-insert-kbd
+             markdown-insert-link
+             markdown-insert-strike-through
+             markdown-insert-wiki-link
+             markdown-live-preview-mode
+             markdown-move-subtree-down
              markdown-move-subtree-up
-             markdown-move-subtree-down)
+             markdown-preview
+             markdown-promote)
 
   :mode (("\\.md\\'" . gfm-mode)
          ("\\.markdown\\'" . markdown-mode))
@@ -61,21 +66,28 @@
   (progn
     (setq markdown-command "multimarkdown")
 
-    (spacemacs-keys-declare-prefix-for-mode 'markdown-mode "m i" "insert")
+    (dolist (mode '(markdown-mode gfm-mode))
+      (spacemacs-keys-declare-prefix-for-mode mode "m i" "insert")
 
-    (spacemacs-keys-set-leader-keys-for-major-mode 'markdown-mode
-      "if" #'markdown-insert-footnote
-      "il" #'markdown-insert-link
-      "ii" #'markdown-insert-image
-      "ic" #'markdown-insert-gfm-code-block
-      "i-" #'markdown-insert-hr
+      (spacemacs-keys-set-leader-keys-for-major-mode mode
+        "if" #'markdown-insert-footnote
+        "il" #'markdown-insert-link
+        "ii" #'markdown-insert-image
+        "ic" #'markdown-insert-gfm-code-block
+        "ik" #'markdown-insert-kbd
+        "i-" #'markdown-insert-hr
+        "is" #'markdown-insert-strike-through
+        "iw" #'markdown-insert-wiki-link
 
-      "b" #'markdown-insert-bold
-      "t" #'markdown-insert-italic
-      "s" #'markdown-insert-strike-through
+        "b" #'markdown-insert-bold
+        "t" #'markdown-insert-italic
+        "q" #'markdown-insert-blockquote
 
-      "h" #'markdown-insert-header-dwim
-      "H" #'markdown-insert-header-setext-dwim)
+        "h" #'markdown-insert-header-dwim
+
+        "m" #'markdown-live-preview-mode
+        "p" #'markdown-preview
+        "e" #'markdown-export))
 
     (advice-add 'markdown-insert-header-dwim :after #'cb-markdown--evil-insert-state)
 
