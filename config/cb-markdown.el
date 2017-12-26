@@ -22,6 +22,7 @@
 (use-package markdown-mode
   :commands (markdown-mode
              gfm-mode
+             markdown-cycle
              markdown-demote
              markdown-export
              markdown-follow-thing-at-point
@@ -94,6 +95,7 @@
     (advice-add 'markdown-insert-header-dwim :after #'cb-markdown--evil-insert-state)
 
     (evil-define-key 'insert markdown-mode-map (kbd "`") #'cb-markdown-electric-backquote)
+    (evil-define-key 'normal markdown-mode-map (kbd "TAB") #'markdown-cycle)
 
     (define-key markdown-mode-map (kbd "C-c C-l") #'markdown-insert-link)
     (define-key markdown-mode-map (kbd "M-<left>") #'markdown-promote)
