@@ -38,8 +38,7 @@
              markdown-move-subtree-up
              markdown-move-subtree-down)
 
-  :mode (("README\\.md\\'" . gfm-mode)
-         ("\\.md\\'" . markdown-mode)
+  :mode (("\\.md\\'" . gfm-mode)
          ("\\.markdown\\'" . markdown-mode))
 
   :preface
