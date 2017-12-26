@@ -41,8 +41,7 @@
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
-  :init
-  (setq markdown-command "multimarkdown")
+
   :preface
   (progn
 
@@ -61,6 +60,8 @@
 
   :config
   (progn
+    (setq markdown-command "multimarkdown")
+
     (spacemacs-keys-declare-prefix-for-mode 'markdown-mode "m i" "insert")
 
     (spacemacs-keys-set-leader-keys-for-major-mode 'markdown-mode
