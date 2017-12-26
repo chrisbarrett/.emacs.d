@@ -65,6 +65,8 @@
   :config
   (progn
     (setq markdown-command "multimarkdown")
+    (setq markdown-fontify-code-blocks-natively t)
+    (setq markdown-hide-urls t)
 
     (dolist (mode '(markdown-mode gfm-mode))
       (spacemacs-keys-declare-prefix-for-mode mode "m i" "insert")
