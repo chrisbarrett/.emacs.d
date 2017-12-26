@@ -57,6 +57,9 @@
         :family ,cb-theme-common-font-family
         :height ,cb-theme-common-default-height)))
 
+    (fixed-pitch
+     ((t :family ,cb-theme-common-font-family)))
+
     (success
      ((t :weight normal :foreground ,cb-theme-common-green)))
     (warning
