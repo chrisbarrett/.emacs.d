@@ -43,8 +43,20 @@
   :init
   (setq markdown-command "multimarkdown")
   :preface
-  (defun cb-markdown--evil-insert-state (&rest _)
-    (evil-insert-state))
+  (progn
+
+    (defun cb-markdown--evil-insert-state (&rest _)
+      (evil-insert-state))
+
+    (defun cb-markdown-electric-backquote (&optional arg)
+      "Insert a backquote, possibly expanding to a source block."
+      (interactive "*P")
+      (self-insert-command (prefix-numeric-value arg))
+      (when (and markdown-gfm-use-electric-backquote (looking-back (rx bol (>= 3 "`")) nil))
+        (replace-match "")
+        (when (looking-at (rx (+ "`")))
+          (replace-match ""))
+        (call-interactively #'markdown-insert-gfm-code-block))))
 
   :config
   (progn
@@ -65,6 +77,8 @@
       "H" #'markdown-insert-header-setext-dwim)
 
     (advice-add 'markdown-insert-header-dwim :after #'cb-markdown--evil-insert-state)
+
+    (evil-define-key 'insert markdown-mode-map (kbd "`") #'cb-markdown-electric-backquote)
 
     (define-key markdown-mode-map (kbd "C-c C-l") #'markdown-insert-link)
     (define-key markdown-mode-map (kbd "M-<left>") #'markdown-promote)
