@@ -34,7 +34,7 @@ Fall back to the file name sans extension."
    (file-name-sans-extension (file-name-nondirectory buffer-file-name))))
 
 (defun yas/autoload-file-for-function (sym)
-  (if-let (file (symbol-file (if (stringp sym) (intern sym) sym)))
+  (if-let* ((file (symbol-file (if (stringp sym) (intern sym) sym))))
       (file-name-sans-extension (file-name-nondirectory file))
     ""))
 

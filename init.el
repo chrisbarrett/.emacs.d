@@ -35,9 +35,9 @@
 (defun cb-init-test-tls ()
   "Test whether TLS connections are verified."
   (interactive)
-  (if-let (bad-hosts (seq-filter (lambda (it) (ignore-errors (url-retrieve it (lambda (_) t))))
-                                 `("https://wrong.host.badssl.com/"
-                                   "https://self-signed.badssl.com/")))
+  (if-let* ((bad-hosts (seq-filter (lambda (it) (ignore-errors (url-retrieve it (lambda (_) t))))
+                                   `("https://wrong.host.badssl.com/"
+                                     "https://self-signed.badssl.com/"))))
       (error "TLS appears to be misconfigured. Connected without error:\n\n- %s"
              (string-join bad-hosts "\n- "))
     (url-retrieve "https://badssl.com"
