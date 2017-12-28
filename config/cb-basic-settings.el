@@ -652,15 +652,16 @@ Optional arg JUSTIFY will justify comments and strings."
     (advice-add 'archive-mode :after #'cb-basic-settings--run-archive-mode-hook)
     (add-hook 'archive-mode-hook 'evil-motion-state)
 
-    (evil-define-key 'motion archive-mode-map
-      (kbd "q") 'kill-this-buffer
-      (kbd "RET") 'archive-extract
-      (kbd "o") 'archive-extract-other-window
-      (kbd "m") 'archive-mark
-      (kbd "x") 'archive-expunge
-      (kbd "U") 'archive-unmark-all-files
-      (kbd "j") 'archive-next-line
-      (kbd "k") 'archive-previous-line)))
+    (with-no-warnings
+      (evil-define-key 'motion archive-mode-map
+        (kbd "q") 'kill-this-buffer
+        (kbd "RET") 'archive-extract
+        (kbd "o") 'archive-extract-other-window
+        (kbd "m") 'archive-mark
+        (kbd "x") 'archive-expunge
+        (kbd "U") 'archive-unmark-all-files
+        (kbd "j") 'archive-next-line
+        (kbd "k") 'archive-previous-line))))
 
 (use-package doc-view
   :defer t
