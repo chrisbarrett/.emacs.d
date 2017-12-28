@@ -13,7 +13,6 @@
 
 (require 'f)
 (require 's)
-(require 'noflet)
 
 (require 'cb-emacs)
 (require 'spacemacs-keys)
@@ -159,7 +158,7 @@ Optional arg JUSTIFY will justify comments and strings."
 ;; Do not prompt for confirmation for active processes.
 
 (defun cb-basic-settings--suppress-no-process-prompt (fn &rest args)
-  (noflet ((process-list () nil))
+  (cl-labels ((process-list () nil))
     (apply fn args)))
 
 (advice-add #'save-buffers-kill-emacs :around #'cb-basic-settings--suppress-no-process-prompt)
