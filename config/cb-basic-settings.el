@@ -13,6 +13,7 @@
 
 (require 'f)
 (require 's)
+(require 'subr-x)
 
 (require 'cb-emacs)
 (require 'spacemacs-keys)
@@ -486,8 +487,26 @@ Optional arg JUSTIFY will justify comments and strings."
     (setq compilation-scroll-output 'first-error)))
 
 (use-package mule
+  :preface
+  (progn
+    (defvar quail-current-package)
+
+    (defun cb-basic-settings--set-tex-method-vars ()
+      (when-let* ((quail-current-package (assoc "TeX" quail-package-alist)))
+        (quail-defrule ";" (quail-lookup-key "\\"))
+        (quail-define-rules ((append . t))
+                            ("\\null" ?∅)
+                            ("\\rarr" ?→)
+                            ("\\larr" ?←)
+                            ("\\lr" ?↔)
+                            ("\\lam" ?λ)
+                            ("\\Lam" ?Λ)
+                            ("\\all" ?∀)
+                            ("\\rtack" ?⊢)))))
   :config
-  (setq default-input-method "TeX"))
+  (progn
+    (add-hook 'input-method-activate-hook #'cb-basic-settings--set-tex-method-vars)
+    (setq default-input-method "TeX")))
 
 (use-package comint
   :defer t
@@ -702,7 +721,6 @@ Optional arg JUSTIFY will justify comments and strings."
   (progn
     (async-bytecomp-package-mode +1)
     (dired-async-mode +1)))
-
 
 (provide 'cb-basic-settings)
 
