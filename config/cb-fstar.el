@@ -17,6 +17,7 @@
           which-key-replacement-alist)))
 
 (use-package fstar-mode
+  :mode ("\\.fsti?\\'" . fstar-mode)
   :config
   (progn
     (setq fstar-enabled-modules
