@@ -1,6 +1,6 @@
 SHELL = /bin/sh
-EMACS = emacs
-FILES = $(filter-out evil-tests.el,$(filter-out evil-pkg.el,$(wildcard evil*.el)))
+EMACS ?= emacs
+FILES = $(filter-out evil-test-helpers.el evil-tests.el evil-pkg.el,$(wildcard evil*.el))
 VERSION := $(shell sed -ne '/define-package/,$$p' evil-pkg.el | sed -ne '/^\s*"[[:digit:]]\+\(\.[[:digit:]]\+\)*"\s*$$/ s/^.*"\(.*\)".*$$/\1/p')
 ELPAPKG = evil-$(VERSION)
 PROFILER =
@@ -20,7 +20,7 @@ compile: $(ELCFILES)
 	@echo Compute dependencies
 	@rm -f .depend
 	@for f in $(FILES); do \
-	    sed -n "s/(require '\(evil-.*\))/$${f}c: \1.elc/p" $$f >> .depend;\
+	    sed -n "s/ *(require '\(evil-[^)]*\).*)/$${f}c: \1.elc/p" $$f >> .depend;\
 	done
 
 -include .depend
@@ -68,7 +68,7 @@ tests: compile
 emacs:
 	$(EMACS) -Q -L . $(LIBS) -l goto-chg.el -l evil-tests.el \
 --eval "(evil-mode 1)" \
---eval "(evil-tests-initialize '(${TAG}) '(${PROFILER}) t)" &
+--eval "(evil-tests-initialize '(${TAG}) '(${PROFILER}) t)"
 
 # Load Evil in a terminal Emacs and run all tests.
 term: terminal

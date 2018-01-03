@@ -3,7 +3,7 @@
 ;; Author: Vegard Øye <vegard_oye at hotmail.com>
 ;; Maintainer: Vegard Øye <vegard_oye at hotmail.com>
 
-;; Version: 1.2.12
+;; Version: 1.2.13
 
 ;;
 ;; This file is NOT part of GNU Emacs.
@@ -124,6 +124,7 @@
 (define-key evil-window-map "n" 'evil-window-new)
 (define-key evil-window-map "o" 'delete-other-windows)
 (define-key evil-window-map "p" 'evil-window-mru)
+(define-key evil-window-map "q" 'evil-quit)
 (define-key evil-window-map "r" 'evil-window-rotate-downwards)
 (define-key evil-window-map "R" 'evil-window-rotate-upwards)
 (define-key evil-window-map "s" 'evil-window-split)
@@ -207,7 +208,7 @@
 (define-key evil-motion-state-map "g^" 'evil-first-non-blank-of-visual-line)
 (define-key evil-motion-state-map "gm" 'evil-middle-of-visual-line)
 (define-key evil-motion-state-map "g$" 'evil-end-of-visual-line)
-(define-key evil-motion-state-map "g\C-]" 'find-tag)
+(define-key evil-motion-state-map "g\C-]" 'evil-jump-to-tag)
 (define-key evil-motion-state-map "{" 'evil-backward-paragraph)
 (define-key evil-motion-state-map "}" 'evil-forward-paragraph)
 (define-key evil-motion-state-map "#" 'evil-search-word-backward)
@@ -450,8 +451,8 @@ included in `evil-insert-state-bindings' by default."
 (evil-ex-define-cmd "co[py]" 'evil-copy)
 (evil-ex-define-cmd "t" "copy")
 (evil-ex-define-cmd "m[ove]" 'evil-move)
-(evil-ex-define-cmd "d[elete]" 'evil-delete)
-(evil-ex-define-cmd "y[ank]" 'evil-yank)
+(evil-ex-define-cmd "d[elete]" 'evil-ex-delete)
+(evil-ex-define-cmd "y[ank]" 'evil-ex-yank)
 (evil-ex-define-cmd "go[to]" 'evil-goto-char)
 (evil-ex-define-cmd "j[oin]" 'evil-ex-join)
 (evil-ex-define-cmd "le[ft]" 'evil-align-left)

@@ -2,7 +2,7 @@
 ;; Author: Vegard Øye <vegard_oye at hotmail.com>
 ;; Maintainer: Vegard Øye <vegard_oye at hotmail.com>
 
-;; Version: 1.2.12
+;; Version: 1.2.13
 
 ;;
 ;; This file is NOT part of GNU Emacs.
@@ -175,7 +175,7 @@ To enable Evil globally, do (evil-mode 1)."
     (evil-local-mode 1)
     (evil-initialize-state)))
 
-;;;###autoload (autoload 'evil-mode "evil")
+;;;###autoload (autoload 'evil-mode "evil" nil t)
 (define-globalized-minor-mode evil-mode
   evil-local-mode evil-initialize)
 
@@ -625,7 +625,8 @@ happen when the keymap is accessed from `read-key-sequence'. In
 particular, if it is access from `define-key' the returned
 mapping will always be the ESC prefix map."
   (if (and (not evil-inhibit-esc)
-           (or evil-local-mode (evil-ex-p))
+           (or evil-local-mode (evil-ex-p)
+               (active-minibuffer-window))
            (not (evil-emacs-state-p))
            (let ((keys (this-single-command-keys)))
              (and (> (length keys) 0)
@@ -943,62 +944,135 @@ A return value of t means all states."
 
 (defmacro evil-define-key (state keymap key def &rest bindings)
   "Create a STATE binding from KEY to DEF for KEYMAP.
-STATE is one of `normal', `insert', `visual', `replace',
-`operator', `motion', `emacs', or a list of one or more of
-these. The remaining arguments are like those of
+STATE is one of normal, insert, visual, replace, operator,
+motion, emacs, or a list of one or more of these. Omitting a
+state by using nil corresponds to a standard Emacs binding using
+`define-key'. The remaining arguments are like those of
 `define-key'. For example:
 
     (evil-define-key 'normal foo-map \"a\" 'bar)
 
-This creates a binding from \"a\" to `bar' in Normal state,
-which is active whenever `foo-map' is active. It is possible
-to specify multiple bindings at once:
+This creates a binding from \"a\" to bar in Normal state, which
+is active whenever foo-map is active. Using nil for the state,
+the following lead to identical bindings:
 
-    (evil-define-key 'normal foo-map
+    (evil-define-key nil foo-map \"a\" 'bar)
+
+    (define-key foo-map \"a\" 'bar)
+
+It is possible to specify multiple states and/or bindings at
+once:
+
+    (evil-define-key '(normal visual) foo-map
       \"a\" 'bar
       \"b\" 'foo)
 
 If foo-map has not been initialized yet, this macro adds an entry
-to `after-load-functions', delaying execution as necessary."
+to `after-load-functions', delaying execution as necessary.
+
+KEYMAP may also be a quoted symbol. If the symbol is global, the
+global evil keymap corresponding to the state(s) is used, meaning
+the following lead to identical bindings:
+
+    (evil-define-key 'normal 'global \"a\" 'bar)
+
+    (evil-global-set-key 'normal \"a\" 'bar)
+
+The symbol local may also be used, which corresponds to using
+`evil-local-set-key'. If a quoted symbol is used that is not
+global or local, it is assumed to be the name of a minor mode, in
+which case `evil-define-minor-mode-key' is used."
   (declare (indent defun))
-  `(evil-delay ',(if (symbolp keymap)
-                     `(and (boundp ',keymap) (keymapp ,keymap))
-                   `(keymapp ,keymap))
-       '(evil-define-key* ,state ,keymap ,key ,def ,@bindings)
-     'after-load-functions t nil
-     (format "evil-define-key-in-%s"
-             ',(if (symbolp keymap) keymap 'keymap))))
+  (cond ((member keymap '('global 'local))
+         `(evil-define-key* ,state ,keymap ,key ,def ,@bindings))
+        ((and (consp keymap) (eq (car keymap) 'quote))
+         `(evil-define-minor-mode-key ,state ,keymap ,key ,def ,@bindings))
+        (t
+         `(evil-delay ',(if (symbolp keymap)
+                            `(and (boundp ',keymap) (keymapp ,keymap))
+                          `(keymapp ,keymap))
+              '(condition-case-unless-debug err
+                   (evil-define-key* ,state ,keymap ,key ,def ,@bindings)
+                 (error
+                  (message "error in evil-define-key: %s"
+                           (error-message-string err))))
+            'after-load-functions t nil
+            (format "evil-define-key-in-%s"
+                    ',(if (symbolp keymap) keymap 'keymap))))))
 (defalias 'evil-declare-key 'evil-define-key)
 
 (defun evil-define-key* (state keymap key def &rest bindings)
   "Create a STATE binding from KEY to DEF for KEYMAP.
-STATE is one of `normal', `insert', `visual', `replace',
-`operator', `motion', `emacs', or a list of one or more of these.
+STATE is one of normal, insert, visual, replace, operator,
+motion, emacs, or a list of one or more of these. Omitting a
+state by using nil corresponds to a standard Emacs binding using
+`define-key' The remaining arguments are like those of
+`define-key'. For example:
 
-The use is identical to `evil-define-key' with the exception that
-this is a function and not a macro (and so will not be expanded
-when compiled which can have unintended
+    (evil-define-key* 'normal foo-map \"a\" 'bar)
+
+This creates a binding from \"a\" to bar in Normal state, which
+is active whenever foo-map is active. Using nil for the state,
+the following are equivalent:
+
+    (evil-define-key* nil foo-map \"a\" 'bar)
+
+    (define-key foo-map \"a\" 'bar)
+
+ It is possible to specify multiple states and/or bindings at
+ once:
+
+    (evil-define-key* '(normal visual) foo-map
+      \"a\" 'bar
+      \"b\" 'foo)
+
+KEYMAP may also be a quoted symbol. If the symbol is global, the
+global evil keymap corresponding to the state(s) is used, meaning
+the following are equivalent:
+
+    (evil-define-key* 'normal 'global \"a\" 'bar)
+
+    (evil-global-set-key 'normal \"a\" 'bar)
+
+The symbol local may also be used, which corresponds to using
+`evil-local-set-key'.
+
+The use is nearly identical to `evil-define-key' with the
+exception that this is a function and not a macro (and so will
+not be expanded when compiled which can have unintended
 consequences). `evil-define-key*' also does not defer any
 bindings like `evil-define-key' does using `evil-delay'. This
 allows errors in the bindings to be caught immediately, and makes
 its behavior more predictable."
-  (let ((aux-maps
-         (cond ((listp state)
-                (mapcar
-                 (lambda (st)
-                   (evil-get-auxiliary-keymap keymap st t))
-                 state))
-               (state
-                (list (evil-get-auxiliary-keymap keymap state t)))
-               (t
-                (list keymap)))))
+  (let ((maps
+         (if state
+             (mapcar
+              (lambda (st)
+                (cond ((eq keymap 'global)
+                       (evil-state-property st :keymap t))
+                      ((eq keymap 'local)
+                       (evil-state-property st :local-keymap t))
+                      (t
+                       (evil-get-auxiliary-keymap keymap st t t))))
+              (if (listp state) state (list state)))
+           (list
+            (cond ((eq keymap 'global)
+                   global-map)
+                  ((eq keymap 'local)
+                   ;; see `local-set-key'
+                   (or (current-local-map)
+                       (let ((map (make-sparse-keymap)))
+                         (use-local-map map)
+                         map)))
+                  (t
+                   keymap))))))
     (while key
-      (dolist (map aux-maps)
+      (dolist (map maps)
         (define-key map key def))
       (setq key (pop bindings)
             def (pop bindings)))
     ;; ensure the prompt string comes first
-    (dolist (map aux-maps)
+    (dolist (map maps)
       (evil-set-keymap-prompt map (keymap-prompt map)))))
 
 (defun evil-define-minor-mode-key (state mode key def &rest bindings)
@@ -1015,9 +1089,13 @@ value.
 See `evil-define-key' for the usage of STATE, KEY, DEF and
 BINDINGS."
   (declare (indent defun))
-  (let ((map (evil-get-minor-mode-keymap state mode)))
+  (let ((maps (mapcar
+               (lambda (st)
+                 (evil-get-minor-mode-keymap st mode))
+               (if (listp state) state (list state)))))
     (while key
-      (define-key map key def)
+      (dolist (map maps)
+        (define-key map key def))
       (setq key (pop bindings)
             def (pop bindings)))))
 

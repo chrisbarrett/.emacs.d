@@ -3,7 +3,7 @@
 ;; Author: Frank Fischer <frank fischer at mathematik.tu-chemnitz.de>
 ;; Maintainer: Vegard Øye <vegard_oye at hotmail.com>
 
-;; Version: 1.2.12
+;; Version: 1.2.13
 
 ;;
 ;; This file is NOT part of GNU Emacs.
@@ -42,6 +42,7 @@
 
 (require 'evil-common)
 (require 'evil-states)
+(require 'shell)
 
 ;;; Code:
 
@@ -180,7 +181,7 @@ is appended to the line."
         evil-ex-info-string
         result)
     (minibuffer-with-setup-hook
-        #'evil-ex-setup
+        (if initial-input #'evil-ex-setup-and-update #'evil-ex-setup)
       (setq result
             (read-from-minibuffer
              ":"
@@ -237,6 +238,11 @@ interactive actions during ex state."
         '(evil-ex-command-completion-at-point
           evil-ex-argument-completion-at-point)))
 (put 'evil-ex-setup 'permanent-local-hook t)
+
+(defun evil-ex-setup-and-update ()
+  "Initialize Ex minibuffer with `evil-ex-setup', then call `evil-ex-update'."
+  (evil-ex-setup)
+  (evil-ex-update))
 
 (defun evil-ex-teardown ()
   "Deinitialize Ex minibuffer.
@@ -457,6 +463,13 @@ in case of incomplete or unknown commands."
 (defun evil-ex-argument-completion-at-point ()
   (let ((context (evil-ex-syntactic-context (1- (point)))))
     (when (memq 'argument context)
+      ;; if it's an autoload, load the function; this allows external
+      ;; packages to register autoloaded ex commands which will be
+      ;; loaded when ex argument completion is triggered
+      (let ((binding-definition (symbol-function (evil-ex-binding evil-ex-cmd))))
+        (when (autoloadp binding-definition)
+          (autoload-do-load binding-definition)))
+
       (let* ((beg (or (and evil-ex-argument
                            (get-text-property 0 'ex-index evil-ex-argument))
                       (point)))
@@ -564,9 +577,7 @@ keywords and function:
 This function must be called from the :runner function of some
 argument handler that requires shell completion."
   (when (and (eq flag 'start)
-             (not evil-ex-shell-argument-initialized)
-             (require 'shell nil t)
-             (require 'comint nil t))
+             (not evil-ex-shell-argument-initialized))
     (set (make-local-variable 'evil-ex-shell-argument-initialized) t)
     (cond
      ;; Emacs 24
@@ -840,15 +851,13 @@ START is the start symbol, which defaults to `expression'."
     (when result
       (setq command (car-safe result)
             string (cdr-safe result))
-      ;; check whether the command is followed by a slash and the
-      ;; part before the slash is not a known ex binding
-      ;; (maybe we should check for other characters, too? But only
-      ;; the slash is used commonly in Emacs functions)
+      ;; check whether the parsed command is followed by a slash or
+      ;; number and the part before it is not a known ex binding
       (when (and (> (length string) 0)
-                 (= (aref string 0) ?/)
+                 (string-match-p "^[/[:digit:]]" string)
                  (not (evil-ex-binding command t)))
-        ;; if this is the case, assume the slash and all following
-        ;; symbol characters form an (Emacs-)command
+        ;; if this is the case, assume the slash or number and all
+        ;; following symbol characters form an (Emacs-)command
         (setq result (evil-parser (concat command string)
                                   'emacs-binding
                                   evil-ex-grammar)
