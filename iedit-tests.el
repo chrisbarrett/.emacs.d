@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2010, 2011, 2012 Victor Ren
 
-;; Time-stamp: <2016-09-20 00:28:29 Victor Ren>
+;; Time-stamp: <2017-09-14 23:49:18 Victor Ren>
 ;; Author: Victor Ren <victorhge@gmail.com>
 ;; Version: 0.97
 ;; X-URL: http://www.emacswiki.org/emacs/Iedit
@@ -34,8 +34,8 @@
 
 (ert-deftest iedit-compile-test ()
   (let ((byte-compile-error-on-warn t ))
-    (should (byte-compile-file "~/.emacs.d/site-lisp/iedit/iedit.el"))
-    (delete-file "~/.emacs.d/site-lisp/iedit/iedit.elc" nil)))
+    (should (byte-compile-file "./iedit.el"))
+    (delete-file "./iedit.elc" nil)))
 
 (defmacro with-iedit-test-buffer (buffer-name &rest body)
   (declare (indent 1) (debug t))

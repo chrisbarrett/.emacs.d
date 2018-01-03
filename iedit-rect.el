@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2010, 2011, 2012 Victor Ren
 
-;; Time-stamp: <2016-09-28 00:03:47 Victor Ren>
+;; Time-stamp: <2017-09-15 00:07:28 Victor Ren>
 ;; Author: Victor Ren <victorhge@gmail.com>
 ;; Keywords: occurrence region simultaneous rectangle refactoring
 ;; Version: 0.9.9
@@ -185,4 +185,5 @@ The behavior is the same as `kill-rectangle' in rect mode."
 ;;  LocalWords:  substring cadr keymap defconst purecopy bkm defun princ prev
 ;;  LocalWords:  iso lefttab backtab upcase downcase concat setq autoload arg
 ;;  LocalWords:  refactoring propertize cond goto nreverse progn rotatef eq elp
-;;  LocalWords:  dolist pos unmatch args ov sReplace iedit's cdr quote'ed
+;;  LocalWords:  dolist pos unmatch args ov sReplace iedit's cdr quote'ed Ren
+;;  LocalWords:  cua ctl RET

@@ -1,4 +1,5 @@
 * Iedit - Edit multiple regions in the same way simultaneously
+[[./iedit-demo.gif]]
 ** Introduction
 This package includes Emacs minor modes (iedit-mode and
 iedit-rectangle-mode) based on a API library (iedit-lib) and allows you to edit
@@ -6,17 +7,20 @@ one occurrence of some text in a buffer (possibly narrowed) or region, and
 simultaneously have other occurrences edited in the same way, with visual
 feedback as you type.
 
-Normal scenario of Iedit mode is like:
+Normal work flow of Iedit mode is like:
 
- - Highlight certain contents - by press C-; (The default key binding) All
-   occurrences of a symbol, string or a region in the buffer may be highlighted
-   corresponding to current mark, point and prefix argument.  Refer to the
-   document of `iedit-mode' for details.
+ - Move to certain point and press C-; (The default key binding).  All
+   occurrences of a symbol, string or a region in the buffer are highlighted
+   corresponding to the thing under the point, current mark and prefix argument.
+   Refer to the document of `iedit-mode' for details.
 
  - Edit one of the occurrences
    The change is applied to other occurrences simultaneously.
 
  - Finish - by pressing C-; again
+
+Many other work flows to highlight occurrences are possible, for example,
+activation from isearch, incremental selection and markup tag pair selection.
 
 You can also use Iedit mode as a quick way to temporarily show only the
 buffer lines that match the current text being edited.  This gives you the
