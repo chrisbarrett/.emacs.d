@@ -1,5 +1,10 @@
 ![An extensible vi layer for Emacs](https://raw.githubusercontent.com/emacs-evil/evil/master/doc/logo.png)
 
+[![Build Status](https://travis-ci.org/emacs-evil/evil.svg?branch=master)](https://travis-ci.org/emacs-evil/evil)
+[![MELPA](https://melpa.org/packages/evil-badge.svg)](https://melpa.org/#/evil)
+[![MELPA Stable](https://stable.melpa.org/packages/evil-badge.svg)](https://stable.melpa.org/#/evil)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
 Evil is an **e**xtensible **vi** **l**ayer
 for [Emacs](http://www.gnu.org/software/emacs/). It emulates the main features
 of [Vim](http://www.vim.org/), and provides facilities for writing custom
@@ -10,12 +15,12 @@ extensions. Also see our page on [EmacsWiki](http://emacswiki.org/emacs/Evil).
 Evil lives in a git repository. To download Evil, do
 
 ```
-git clone https://github.com/emacs-evil/evil
+git clone https://github.com/emacs-evil/evil ~/.emacs.d/evil
 ```
 
 # Install
 
-Move Evil to `~/.emacs.d/evil`. Then add the following lines to `~/.emacs`:
+After the download step, add the following lines to `~/.emacs`:
 
 ```elisp
 (add-to-list 'load-path "~/.emacs.d/evil")
@@ -29,7 +34,7 @@ Move Evil to `~/.emacs.d/evil`. Then add the following lines to `~/.emacs`:
 `load-path` for linear undo and undo branches.
 
 * For the motions `g;` `g,` and for the last-change-register `.`, Evil requires the
-[goto-chg.el](https://www.emacswiki.org/emacs/GotoChg) package,
+[goto-chg.el](https://github.com/emacs-evil/goto-chg) package,
 which provides the functions `goto-last-change` and `goto-last-change-reverse`.
 
 # Documentation
@@ -48,49 +53,11 @@ mailing list.
 
 Visit us on `irc.freenode.net #evil-mode`.
 
-# Bug reports
+# Contribution
 
-Bug reports and feature requests should be made on the
-[issue tracker](https://github.com/emacs-evil/evil/issues) here on github.
-
-**Before** sending a bug report, please take note of the following comments.
-
-1. Please provide a full description of the configuration of your system. This includes
-
-  - Emacs version,
-  - Evil version (e.g., the hash in the git repository),
-  - Whether you use Emacs/Evil in X mode or in terminal mode,
-  - Whether you use Emacs/Evil in terminal mode with some terminal multiplexer
-    like **tmux** or **screen** (and see below).
-
-2. Test the bug in a clean Emacs environment without any additional packages
-   loaded (besides Evil itself). You can easily get such an environment by
-   executing either `make emacs` (for X) or `make terminal` (for terminal mode)
-   in Evil's source directory. If your bug is related to some other packages,
-   try to load only this package directly from the clean environment.
-
-3. If you've just updated your Evil from the repository, **do not forget to
-   recompile** Evil by executing `make` in Evil's source directory.
-
-4. If possible, try to give a minimal example how to reproduce the error
-   starting from a fresh Emacs. The minimal example could be some buffer content
-   and a sequence of key-strokes that show up the error.
-
-5. If the bug you want to report is related to the behavior of some commands or
-   motions, please note the following. One goal of Evil is to get a behavior as
-   close to **Vim** as possible unless there is a good reason not to do so. The
-   reason is that many users come from Vim or use both, Vim and Evil, and we
-   want to keep the number of annoying differences between both as small as
-   possible, especially in common commands. In case you get an unexpected
-   behavior, please compare the behavior with plain Vim (i.e., without any
-   customization), if there's a difference please file the bug with a
-   description of this difference (and possibly a reference to Vim's
-   documentation). If you realize that both, Vim and Evil, behave the same but
-   you want a different behavior, you may make a **feature request** for some
-   customization option (but the default behavior will probably not be changed
-   in favor for Vim compatibility). Evil already contains several customization
-   options and sometimes the desired changes can be achieved as easily as
-   redefining some key-bindings.
+See
+[CONTRIBUTING.md](https://github.com/emacs-evil/evil/blob/master/CONTRIBUTING.md)
+for guidelines for issues and pull requests.
 
 # FAQ
 

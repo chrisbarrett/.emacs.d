@@ -1,32 +1,34 @@
 language: generic
-sudo: false
-
-# NOTE: flyspell test
-addons:
-  apt:
-    packages:
-      - aspell
-      - aspell-en
-
-before_install:
-  - curl -fsSkL https://gist.github.com/rejeep/ebcd57c3af83b049833b/raw > x.sh && source ./x.sh
-  - evm install $EVM_EMACS --use --skip
-  - cask --debug
+sudo: true
 
 env:
+  global:
+    - CURL="curl -fsSkL --retry 9 --retry-delay 9"
   matrix:
-    - EVM_EMACS=emacs-24.3-travis
-    - EVM_EMACS=emacs-24.4-travis
-    - EVM_EMACS=emacs-24.5-travis
-    - EVM_EMACS=emacs-25.1-travis
-    - EVM_EMACS=emacs-git-snapshot-travis
+  - EMACS_VERSION=24.3
+  - EMACS_VERSION=24.5
+  - EMACS_VERSION=25.3
+  - EMACS_VERSION=master
 
-# FIXME: Emacs 25.1 segfaults when running make test.
 matrix:
   allow_failures:
-    - env: EVM_EMACS=emacs-25.1-travis
-    - env: EVM_EMACS=emacs-git-snapshot-travis
+    - env: EMACS_VERSION=master
+
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install -y aspell aspell-en # required for flyspell test
+
+install:
+  - $CURL -O https://github.com/npostavs/emacs-travis/releases/download/bins/emacs-bin-${EMACS_VERSION}.tar.gz
+  - tar -xaf emacs-bin-${EMACS_VERSION}.tar.gz -C /
+  - export EMACS=/tmp/emacs/bin/emacs
 
 script:
-  - emacs --version
-  - make test
+  - $EMACS --version
+  - emacs=$EMACS make test
+
+notifications:
+  email:
+    # Default is change, but that includes a new branch's 1st success.
+    on_success: never
+    on_failure: always

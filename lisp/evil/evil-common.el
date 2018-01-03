@@ -2,7 +2,7 @@
 ;; Author: Vegard Øye <vegard_oye at hotmail.com>
 ;; Maintainer: Vegard Øye <vegard_oye at hotmail.com>
 
-;; Version: 1.2.12
+;; Version: 1.2.13
 
 ;;
 ;; This file is NOT part of GNU Emacs.
@@ -28,7 +28,6 @@
 (require 'evil-digraphs)
 (require 'rect)
 (require 'thingatpt)
-(eval-when-compile (require 'cl))
 
 ;;; Code:
 
@@ -47,13 +46,21 @@ window commands not available.")
 
 ;;; Compatibility with different Emacs versions
 
+;; x-set-selection and x-get-selection have been deprecated since 25.1
+;; by gui-set-selection and gui-get-selection
+(defalias 'evil-get-selection
+  (if (fboundp 'gui-get-selection) 'gui-get-selection 'x-get-selection))
+(defalias 'evil-set-selection
+  (if (fboundp 'gui-set-selection) 'gui-set-selection 'x-set-selection))
+
 (defmacro evil-called-interactively-p ()
   "Wrapper for `called-interactively-p'.
 In older versions of Emacs, `called-interactively-p' takes
 no arguments.  In Emacs 23.2 and newer, it takes one argument."
   (called-interactively-p 'any))
 (make-obsolete 'evil-called-interactively-p
-               "please use (called-interactively-p 'any) instead.")
+               "please use (called-interactively-p 'any) instead."
+               "Git commit 222b791")
 
 ;; macro helper
 (eval-and-compile
@@ -723,8 +730,10 @@ has already been started; otherwise TARGET is called."
            (setq this-command #'digit-argument)
            (call-interactively #'digit-argument))
           (t
-           (setq this-command #',target)
-           (call-interactively #',target)))))))
+           (let ((target (or (command-remapping #',target)
+                             #',target)))
+             (setq this-command target)
+             (call-interactively target))))))))
 
 (defun evil-extract-append (file-or-append)
   "Return an (APPEND . FILENAME) pair based on FILE-OR-APPEND.
@@ -1363,48 +1372,42 @@ match-data reflects the last successful match (that caused COUNT
 to reach zero). The behaviour of this functions is similar to
 `up-list'."
   (let* ((count (or count 1))
-         (dir (if (> count 0) +1 -1)))
+         (forwardp (> count 0))
+         (dir (if forwardp +1 -1)))
     (catch 'done
       (while (not (zerop count))
         (let* ((pnt (point))
                (cl (save-excursion
-                     (and (re-search-forward end nil t dir)
+                     (and (re-search-forward (if forwardp end beg) nil t dir)
                           (or (/= pnt (point))
                               (progn
                                 ;; zero size match, repeat search from
                                 ;; the next position
                                 (forward-char dir)
-                                (re-search-forward end nil t dir)))
+                                (re-search-forward (if forwardp end beg) nil t dir)))
                           (point))))
                (match (match-data t))
                (op (save-excursion
-                     (and (re-search-forward beg cl t dir)
+                     (and (not (equal beg end))
+                          (re-search-forward (if forwardp beg end) cl t dir)
                           (or (/= pnt (point))
                               (progn
                                 ;; zero size match, repeat search from
                                 ;; the next position
                                 (forward-char dir)
-                                (re-search-forward beg cl t dir)))
+                                (re-search-forward (if forwardp beg end) cl t dir)))
                           (point)))))
           (cond
-           ((and (not op) (not cl))
-            (goto-char (if (> dir 0) (point-max) (point-min)))
+           ((not cl)
+            (goto-char (if forwardp (point-max) (point-min)))
             (set-match-data nil)
             (throw 'done count))
-           ((> dir 0)
-            (if cl
-                (progn
-                  (setq count (1- count))
-                  (if (zerop count) (set-match-data match))
-                  (goto-char cl))
-              (setq count (1+ count))
-              (goto-char op)))
-           ((< dir 0)
+           (t
             (if op
                 (progn
-                  (setq count (1+ count))
+                  (setq count (if forwardp (1+ count) (1- count)))
                   (goto-char op))
-              (setq count (1- count))
+              (setq count (if forwardp (1- count) (1+ count)))
               (if (zerop count) (set-match-data match))
               (goto-char cl))))))
       0)))
@@ -1529,8 +1532,9 @@ backwards."
         (setq reset-parser t))
       ;; global parser state is out of state, use local one
       (let* ((pnt (point))
-             (state (progn (beginning-of-defun)
-                           (parse-partial-sexp (point) pnt nil nil (syntax-ppss))))
+             (state (save-excursion
+                      (beginning-of-defun)
+                      (parse-partial-sexp (point) pnt nil nil (syntax-ppss))))
              (bnd (bounds-of-evil-string-at-point state)))
         (when (and bnd (< (point) (cdr bnd)))
           ;; currently within a string
@@ -2012,7 +2016,7 @@ The following special registers are supported.
                   (setq request-type (list request-type)))
                 (while (and request-type (not text))
                   (condition-case nil
-                      (setq text (x-get-selection what (pop request-type)))
+                      (setq text (evil-get-selection what (pop request-type)))
                     (error nil)))
                 (when text
                   (remove-text-properties 0 (length text) '(foreign-selection nil) text))
@@ -2084,6 +2088,11 @@ The following special registers are supported.
 If REGISTER is an upcase character then text is appended to that
 register instead of replacing its content."
   (cond
+   ((not (characterp register))
+    (user-error "Invalid register"))
+   ;; don't allow modification of read-only registers
+   ((member register '(?: ?. ?%))
+    (user-error "Can't modify read-only register"))
    ((eq register ?\")
     (kill-new text))
    ((and (<= ?1 register) (<= register ?9))
@@ -2095,9 +2104,9 @@ register instead of replacing its content."
         (current-kill (- register ?1))
         (setcar kill-ring-yank-pointer text))))
    ((eq register ?*)
-    (x-set-selection 'PRIMARY text))
+    (evil-set-selection 'PRIMARY text))
    ((eq register ?+)
-    (x-set-selection 'CLIPBOARD text))
+    (evil-set-selection 'CLIPBOARD text))
    ((eq register ?-)
     (setq evil-last-small-deletion text))
    ((eq register ?_) ; the black hole register
@@ -2330,7 +2339,7 @@ be passed via ARGS."
         (setq endcol (max endcol
                           (min eol-col
                                (1+ (min (1- most-positive-fixnum)
-                                        temporary-goal-column))))))
+                                        (truncate temporary-goal-column)))))))
       ;; start looping over lines
       (goto-char startpt)
       (while (< (point) endpt)
@@ -2431,7 +2440,9 @@ The tracked insertion is set to `evil-last-insertion'."
   "Saves the lines in the region BEG and END into the kill-ring."
   (let* ((text (filter-buffer-substring beg end))
          (yank-handler (list (or yank-handler
-                                 #'evil-yank-line-handler))))
+                                 #'evil-yank-line-handler)
+                             nil
+                             t)))
     ;; Ensure the text ends with a newline. This is required
     ;; if the deleted lines were the last lines in the buffer.
     (when (or (zerop (length text))
@@ -2458,7 +2469,7 @@ The tracked insertion is set to `evil-last-insertion'."
     (let* ((yank-handler (list (or yank-handler
                                    #'evil-yank-block-handler)
                                lines
-                               nil
+                               t
                                'evil-delete-yanked-rectangle))
            (text (propertize (mapconcat #'identity lines "\n")
                              'yank-handler yank-handler)))
@@ -2469,12 +2480,18 @@ The tracked insertion is set to `evil-last-insertion'."
       (unless (eq register ?_)
         (kill-new text)))))
 
+(defun evil-remove-yank-excluded-properties (text)
+  "Removes `yank-excluded-properties' from TEXT."
+  (if (eq yank-excluded-properties t)
+      (set-text-properties 0 (length text) nil text)
+    (remove-list-of-text-properties 0 (length text)
+                                    yank-excluded-properties text)))
+
 (defun evil-yank-line-handler (text)
   "Inserts the current text linewise."
   (let ((text (apply #'concat (make-list (or evil-paste-count 1) text)))
         (opoint (point)))
-    (remove-list-of-text-properties
-     0 (length text) yank-excluded-properties text)
+    (evil-remove-yank-excluded-properties text)
     (cond
      ((eq this-command 'evil-paste-before)
       (evil-move-beginning-of-line)
@@ -2540,13 +2557,12 @@ The tracked insertion is set to `evil-last-insertion'."
           (if (< (evil-column (line-end-position)) col)
               (move-to-column (+ col begextra) t)
             (move-to-column col t)
-            (insert (make-string begextra ? )))
-          (remove-list-of-text-properties 0 (length text)
-                                          yank-excluded-properties text)
+            (insert (make-string begextra ?\s)))
+          (evil-remove-yank-excluded-properties text)
           (insert text)
           (unless (eolp)
             ;; text follows, so we have to insert spaces
-            (insert (make-string endextra ? )))
+            (insert (make-string endextra ?\s)))
           (setq epoint (point)))
         (forward-line 1)))
     (setq evil-last-paste
@@ -2936,12 +2952,10 @@ This can be overridden with TYPE."
 (defun evil-select-inner-object (thing beg end type &optional count line)
   "Return an inner text object range of COUNT objects.
 If COUNT is positive, return objects following point; if COUNT is
-negative, return objects preceding point.  FORWARD is a function
-which moves to the end of an object, and BACKWARD is a function
-which moves to the beginning.  If one is unspecified, the other
-is used with a negative argument.  THING is a symbol understood
-by thing-at-point. BEG, END and TYPE specify the current
-selection. If LINE is non-nil, the text object should be
+negative, return objects preceding point.  If one is unspecified,
+the other is used with a negative argument.  THING is a symbol
+understood by thing-at-point.  BEG, END and TYPE specify the
+current selection.  If LINE is non-nil, the text object should be
 linewise, otherwise it is character wise."
   (let* ((count (or count 1))
          (bnd (or (let ((b (bounds-of-thing-at-point thing)))
@@ -2968,12 +2982,10 @@ linewise, otherwise it is character wise."
 (defun evil-select-an-object (thing beg end type count &optional line)
   "Return an outer text object range of COUNT objects.
 If COUNT is positive, return objects following point; if COUNT is
-negative, return objects preceding point.  FORWARD is a function
-which moves to the end of an object, and BACKWARD is a function
-which moves to the beginning.  If one is unspecified, the other
-is used with a negative argument.  THING is a symbol understood
-by thing-at-point. BEG, END and TYPE specify the current
-selection. If LINE is non-nil, the text object should be
+negative, return objects preceding point.  If one is unspecified,
+the other is used with a negative argument.  THING is a symbol
+understood by thing-at-point.  BEG, END and TYPE specify the
+current selection.  If LINE is non-nil, the text object should be
 linewise, otherwise it is character wise."
   (let* ((dir (if (> (or count 1) 0) +1 -1))
          (count (abs (or count 1)))
@@ -3448,7 +3460,7 @@ is stored in `evil-temporary-undo' instead of `buffer-undo-list'."
            (debug t))
   `(unwind-protect
        (let (buffer-undo-list)
-         (prog1
+         (unwind-protect
              (progn ,@body)
            (setq evil-temporary-undo buffer-undo-list)
            ;; ensure evil-temporary-undo starts with exactly one undo
@@ -3610,26 +3622,26 @@ transformations, usually `regexp-quote' or `replace-quote'."
         (cons repl str)))))
 
 (defconst evil-vim-regexp-replacements
-  '((?n . "\n")           (?r . "\r")
-    (?t . "\t")           (?b . "\b")
-    (?s . "[[:space:]]")  (?S . "[^[:space:]]")
-    (?d . "[[:digit:]]")  (?D . "[^[:digit:]]")
-    (?x . "[[:xdigit:]]") (?X . "[^[:xdigit:]]")
-    (?o . "[0-7]")        (?O . "[^0-7]")
-    (?a . "[[:alpha:]]")  (?A . "[^[:alpha:]]")
-    (?l . "[a-z]")        (?L . "[^a-z]")
-    (?u . "[A-Z]")        (?U . "[^A-Z]")
-    (?y . "\\s")          (?Y . "\\S")
-    (?( . "\\(")          (?) . "\\)")
-    (?{ . "\\{")          (?} . "\\}")
-    (?[ . "[")            (?] . "]")
-    (?< . "\\<")          (?> . "\\>")
-    (?_ . "\\_")
-    (?* . "*")            (?+ . "+")
-    (?? . "?")            (?= . "?")
-    (?. . ".")
-    (?` . "`")            (?^ . "^")
-    (?$ . "$")            (?| . "\\|")))
+  '((?n  . "\n")           (?r  . "\r")
+    (?t  . "\t")           (?b  . "\b")
+    (?s  . "[[:space:]]")  (?S  . "[^[:space:]]")
+    (?d  . "[[:digit:]]")  (?D  . "[^[:digit:]]")
+    (?x  . "[[:xdigit:]]") (?X  . "[^[:xdigit:]]")
+    (?o  . "[0-7]")        (?O  . "[^0-7]")
+    (?a  . "[[:alpha:]]")  (?A  . "[^[:alpha:]]")
+    (?l  . "[a-z]")        (?L  . "[^a-z]")
+    (?u  . "[A-Z]")        (?U  . "[^A-Z]")
+    (?y  . "\\s")          (?Y  . "\\S")
+    (?\( . "\\(")          (?\) . "\\)")
+    (?{  . "\\{")          (?}  . "\\}")
+    (?\[ . "[")            (?\] . "]")
+    (?<  . "\\<")          (?>  . "\\>")
+    (?_  . "\\_")
+    (?*  . "*")            (?+  . "+")
+    (??  . "?")            (?=  . "?")
+    (?.  . ".")
+    (?`  . "`")            (?^  . "^")
+    (?$  . "$")            (?|  . "\\|")))
 
 (defconst evil-regexp-magic "[][(){}<>_dDsSxXoOaAlLuUwWyY.*+?=^$`|nrtb]")
 

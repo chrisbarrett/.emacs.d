@@ -3,7 +3,7 @@
 ;; Author: Frank Fischer <frank.fischer at mathematik.tu-chemnitz.de>
 ;; Maintainer: Vegard Øye <vegard_oye at hotmail.com>
 
-;; Version: 1.2.12
+;; Version: 1.2.13
 
 ;;
 ;; This file is NOT part of GNU Emacs.
@@ -61,7 +61,7 @@
 ;; of all commands that are executed starting and ending in normal
 ;; state.
 ;;
-;; Not all commands are recored. There are several commands that are
+;; Not all commands are recorded. There are several commands that are
 ;; completely ignored and other commands that even abort the currently
 ;; active recording, e.g., commands that change the current buffer.
 ;;

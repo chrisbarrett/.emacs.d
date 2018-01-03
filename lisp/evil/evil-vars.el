@@ -3,7 +3,7 @@
 ;; Author: Vegard Øye <vegard_oye at hotmail.com>
 ;; Maintainer: Vegard Øye <vegard_oye at hotmail.com>
 
-;; Version: 1.2.12
+;; Version: 1.2.13
 
 ;;
 ;; This file is NOT part of GNU Emacs.
@@ -151,7 +151,7 @@ commands."
   :prefix 'evil-)
 
 (defcustom evil-auto-indent t
-  "Whether to auto-indent when entering Insert state."
+  "Whether to auto-indent when opening lines."
   :type  'boolean
   :group 'evil)
 (make-variable-buffer-local 'evil-auto-indent)
@@ -213,6 +213,18 @@ moves the cursor."
 (defcustom evil-move-beyond-eol nil
   "Whether the cursor is allowed to move past the last character of \
 a line."
+  :type 'boolean
+  :group 'evil)
+
+(defcustom evil-respect-visual-line-mode nil
+  "Whether to remap movement commands when `visual-line-mode' is active.
+This variable must be set before evil is loaded. The commands
+swapped are
+
+`evil-next-line'         <-> `evil-next-visual-line'
+`evil-previous-line'     <-> `evil-previous-visual-line'
+`evil-beginning-of-line' <-> `evil-beginning-of-visual-line'
+`evil-end-of-line'       <-> `evil-end-of-visual-line'"
   :type 'boolean
   :group 'evil)
 
@@ -384,6 +396,13 @@ this list contains the symbol 'not then its meaning is inverted,
 i.e., all states listed here highlight the closing parenthesis
 before point."
   :type '(repeat symbol)
+  :group 'evil)
+
+(defcustom evil-kill-on-visual-paste t
+  "Whether `evil-visual-paste' adds the replaced text to the kill
+ring, making it the default for the next paste. The default, t,
+replicates the default vim behavior."
+  :type 'boolean
   :group 'evil)
 
 (defcustom evil-want-C-i-jump t
@@ -608,6 +627,7 @@ If STATE is nil, Evil is disabled in the buffer."
     cfw:calendar-mode
     completion-list-mode
     Custom-mode
+    custom-theme-choose-mode
     debugger-mode
     delicious-search-mode
     desktop-menu-blist-mode
@@ -782,7 +802,6 @@ If STATE is nil, Evil is disabled in the buffer."
     Man-mode
     speedbar-mode
     undo-tree-visualizer-mode
-    view-mode
     woman-mode)
   "Modes that should come up in Motion state."
   :type  '(repeat symbol)
@@ -1205,12 +1224,6 @@ and `evil-scroll-down'.
 Determines how many lines should be scrolled.
 Default value is 0 - scroll half the screen.")
 
-(evil-define-local-var evil-scroll-line-count 1
-  "Holds last used prefix for `evil-scroll-line-up'
-and `evil-scroll-line-down'.
-Determines how many lines should be scrolled.
-Default value is 1 line.")
-
 (evil-define-local-var evil-state nil
   "The current Evil state.
 To change the state, use `evil-change-state'
@@ -1267,6 +1280,11 @@ having higher priority.")
 (defvar evil-command-properties nil
   "Specifications made by `evil-define-command'.")
 
+(defvar evil-change-commands '(evil-change)
+  "Commands that wrap or replace `evil-change'.
+This list exists to apply an inconsistency with vim's change command
+to commands that wrap or redefine it. See emacs-evil/evil#916.")
+
 (defvar evil-transient-vars '(cua-mode transient-mark-mode select-active-regions)
   "List of variables pertaining to Transient Mark mode.")
 
@@ -1302,7 +1320,7 @@ type.")
 (evil-define-local-var evil-this-register nil
   "Current register.")
 
-(evil-define-local-var evil-this-macro nil
+(defvar evil-this-macro nil
   "Current macro register.")
 
 (evil-define-local-var evil-this-operator nil
@@ -1632,7 +1650,14 @@ Elements have the form (NAME . FUNCTION).")
      :toggle     ,(lambda () (origami-toggle-node (current-buffer) (point)))
      :open       ,(lambda () (origami-open-node (current-buffer) (point)))
      :open-rec   ,(lambda () (origami-open-node-recursively (current-buffer) (point)))
-     :close      ,(lambda () (origami-close-node (current-buffer) (point)))))
+     :close      ,(lambda () (origami-close-node (current-buffer) (point))))
+    ((vdiff-mode)
+     :open-all   vdiff-open-all-folds
+     :close-all  vdiff-close-all-folds
+     :toggle     nil
+     :open       ,(lambda () (call-interactively 'vdiff-open-fold))
+     :open-rec   ,(lambda () (call-interactively 'vdiff-open-fold))
+     :close      ,(lambda () (call-interactively 'vdiff-close-fold))))
   "Actions to be performed for various folding operations.
 
 The value should be a list of fold handlers, were a fold handler has
@@ -1805,6 +1830,7 @@ Otherwise the previous command is assumed as substitute.")
 
 (defvar evil-ex-search-keymap (make-sparse-keymap)
   "Keymap used in ex-search-mode.")
+(define-key evil-ex-search-keymap [escape] 'abort-recursive-edit)
 (set-keymap-parent evil-ex-search-keymap minibuffer-local-map)
 
 (defconst evil-version
@@ -1812,31 +1838,26 @@ Otherwise the previous command is assumed as substitute.")
     (with-temp-buffer
       (let ((dir (file-name-directory (or load-file-name
                                           byte-compile-current-file))))
-        (cond
-         ;; git repository
-         ((and (file-exists-p (concat dir "/.git"))
-               (condition-case nil
+        ;; git repository
+        (if (and (file-exists-p (concat dir "/.git"))
+                 (ignore-errors
                    (zerop (call-process "git" nil '(t nil) nil
                                         "rev-parse"
-                                        "--short" "HEAD"))
-                 (error nil)))
-          (goto-char (point-min))
-          (concat "evil-git-"
-                  (buffer-substring (point-min)
-                                    (line-end-position))))
-         ;; mercurial repository
-         ((and (file-exists-p (concat dir "/.hg"))
-               (condition-case nil
-                   (zerop (call-process "hg" nil '(t nil) nil
-                                        "parents"
-                                        "--template"
-                                        "evil-hg-{node|short}"))
-                 (error nil)))
-          (goto-char (point-min))
-          (buffer-substring (point-min) (line-end-position)))
-         ;; no repo, use plain version
-         (t "1.2.12")))))
+                                        "--short" "HEAD"))))
+            (progn
+              (goto-char (point-min))
+              (concat "evil-git-"
+                      (buffer-substring (point-min)
+                                        (line-end-position))))
+          ;; no repo, use plain version
+          "1.2.13"))))
   "The current version of Evil")
+
+(defcustom evil-want-integration t
+  "Whether to load evil-integration.el.
+This variable must be set before evil is loaded."
+  :type 'boolean
+  :group 'evil)
 
 (defun evil-version ()
   (interactive)
