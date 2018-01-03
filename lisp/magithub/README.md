@@ -6,37 +6,30 @@
 [![Build Status](https://travis-ci.org/vermiculus/magithub.svg?branch=master)](https://travis-ci.org/vermiculus/magithub)
 [![Gitter](https://badges.gitter.im/vermiculus/magithub.svg)](https://gitter.im/vermiculus/magithub)
 [![MELPA Stable Status](http://melpa-stable.milkbox.net/packages/magithub-badge.svg)](http://melpa-stable.milkbox.net/#/magithub)
-[![GitHub Commits](https://img.shields.io/github/commits-since/vermiculus/magithub/0.1.2.svg)](//github.com/vermiculus/magithub/releases)
+[![GitHub Commits](https://img.shields.io/github/commits-since/vermiculus/magithub/0.1.3.svg)](//github.com/vermiculus/magithub/releases)
 
-Magithub is a collection of interfaces to GitHub.
+Magithub is a collection of interfaces to GitHub integrated into
+[Magit][magit] workflows:
 
-Integrated into [Magit][magit] workflows, Magithub allows easy GitHub
-repository management.  Supported actions from the status buffer
-include:
+- Repository creation
+- Forking
+- Pull request listing and creation
+- Issue listing and creation
+- Labeling
+- Status checks
+- Notifications
+- ...
 
- - `H H` open the current repo in the browser
- - `H c` push brand-new local repositories up to GitHub
- - `H f` create forks of existing repositories
- - `H p` submit pull requests upstream
- - `H i` create issues
- - `L` on an issue (or pull request) updates its labels
- - `RET` on an issue to open that issue in GitHub
- - `RET` on the CI header to open your CI dashboard
-
-For when you're on the run, you can set `magithub-cache` to `t` to
-activate 'offline mode' (or use `H O` from the status buffer).  This
-will inhibit all API requests and instead rely on cached data.
+as well as support for working offline.
 
 Happy hacking!
 
-## Installation
+## Quick Start
 
-The package can be installed from MELPA.  Otherwise, simply place
-`magithub.el` in your `load-path` and `(require 'magithub)`.  Use the
-function `magithub-feature-autoinject` to add full Magit workflow
-integration.
-
-If you use [use-package][gh-use-package], you should instead use:
+GitHub rate-limits unauthenticated requests heavily, so Magithub does
+not support making such requests.  Consequently, `ghub` must be
+authenticated before using Magithub -- [see its README][ghub] for
+those instructions.
 
 ```elisp
 (use-package magithub
@@ -44,27 +37,20 @@ If you use [use-package][gh-use-package], you should instead use:
   :config (magithub-feature-autoinject t))
 ```
 
-To authenticate `ghub`, [see its README][ghub].  However, since its
-authentication approach is still in flux, you might consider setting
-the following variables appropriately until it's stable:
-```elisp
-ghub-base-url     ;; base API url; customize if GitHub Enterprise
-ghub-username     ;; your username
-ghub-token        ;; your personal access token
-```
-See [GitHub's settings][token] for information on how to create tokens.
+See [the full documentation][magithub-org] for more details.
 
-For some advanced trickery features, Magithub still requires the `hub`
-utility to work -- so before trying to use those features, follow the
-installation instructions at [hub.github.com][hub].  To force `hub` to
-authenticate, you can use `hub browse` in a terminal (inside a GitHub
-repo).
+## Getting Help
+
+See [the FAQ][magithub-org-faq] in the full documentation.  If your
+question isn't answered there, [drop by the Gitter
+room]((https://gitter.im/vermiculus/magithub)).
 
 ## Support
 
 I'm gainfully and happily employed with a company that frowns on
-moonlighting, so unfortunately I can't accept any donations myself.
-Instead, [please direct any and all support to Magit itself][magit-donate]!
+moonlighting, so unfortunately I can't accept any monetary support.
+Instead, [please direct any and all support to Magit
+itself][magit-donate]!
 
 ## Note
 
@@ -88,3 +74,5 @@ package's name will not be changing.
 [old-magithub-11]: //github.com/nex3/magithub/issues/11
 [old-magithub-13]: //github.com/nex3/magithub/issues/13
 [melpa-1126]: //github.com/melpa/melpa/issues/1126
+[magithub-org]: https://github.com/vermiculus/magithub/blob/master/magithub.org
+[magithub-org-faq]: https://github.com/vermiculus/magithub/blob/master/magithub.org#faq

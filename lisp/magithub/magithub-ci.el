@@ -31,14 +31,17 @@
 (require 's)
 
 (require 'magithub-core)
-(require 'magithub-cache)
+(require 'magithub-issue)
 
 (defun magithub-ci-enabled-p ()
   "Non-nil if CI is enabled for this repository.
 If magithub.ci.enabled is not set, CI is considered to be enabled."
-  (member (magit-get "magithub" "ci" "enabled") '(nil "yes")))
+  (member (magit-get "magithub" "ci" "enabled") '(nil "yes" "true")))
 (defun magithub-ci--set-enabled (val)
-  (magit-set (if val "yes" "no") "magithub" "ci" "enabled"))
+  (magit-set (if val "true" "false") "magithub" "ci" "enabled")
+  (message (concat "Status integration "
+                   (if val "enabled" "disabled")
+                   " in this repository.")))
 (defun magithub-ci-disable ()
   "Disable CI for this repository."
   (magithub-ci--set-enabled nil))
@@ -47,9 +50,12 @@ If magithub.ci.enabled is not set, CI is considered to be enabled."
   (magithub-ci--set-enabled t))
 
 (defun magithub-maybe-insert-ci-status-header ()
-  "If this is a GitHub repository, insert the CI status header."
+  "If this is a Github repository, insert the CI status header."
   (when (and (magithub-ci-enabled-p)
-             (magithub-usable-p))
+             (magithub-usable-p)
+             (let ((b (magit-get-current-branch)))
+               (or (magit-get-upstream-remote b)
+                   (magit-get-push-remote b))))
     (magithub-insert-ci-status-header)))
 
 (defun magithub-ci-toggle ()
@@ -61,17 +67,74 @@ If magithub.ci.enabled is not set, CI is considered to be enabled."
   (when (derived-mode-p 'magit-status-mode)
     (magit-refresh)))
 
-(magit-define-popup-action 'magithub-dispatch-popup
-  ?~ "Toggle CI for this repository" #'magithub-ci-toggle ?`)
+(defvar magithub-ci--status-last-refreshed nil
+  "An alist of alists: repos to refs to times.
+For efficiency, repos are represented only by their full names.")
+
+(defun magithub-ci--status-last-refreshed-time (repo ref)
+  "The last time the statuses for REPO@REF were retrieved.
+This is a generalized variable and can be set with `setf'."
+  (declare (gv-setter
+            (lambda (time)
+              `(let ((repo (magithub-repo-name ,repo)))
+                 (if-let ((statuses (assoc repo magithub-ci--status-last-refreshed)))
+                     (if-let ((status (assoc ,ref (cdr statuses))))
+                         (setcdr status ,time)
+                       (push (cons ,ref ,time) (cdr statuses)))
+                   (push (cons repo (list (cons ,ref ,time)))
+                         magithub-ci--status-last-refreshed))))))
+  '(thread-last magithub-ci--status-last-refreshed
+     (assoc (magithub-repo-name repo)) (cdr)
+     (assoc ref) (cdr))
+  (cdr (assoc ref (cdr (assoc (magithub-repo-name repo)
+                              magithub-ci--status-last-refreshed)))))
+
+(defun magithub-pull-request-pr->branch (pull-request)
+  "Does not handle cases where the local branch has been renamed."
+  (let-alist pull-request .head.ref))
+
+(define-error 'magithub-error-ambiguous-branch "Ambiguous Branch" 'magithub-error)
+(defun magithub-pull-request-branch->pr--ghub (branch)
+  "This is a hueristic; it's not 100% accurate.
+It may fail if the fork has multiple branches named BRANCH."
+  (let ((repo (magithub-repo-from-remote (magit-get-push-remote branch))))
+    (when (alist-get 'fork repo)
+      (let* ((guess-head (format "%s:%s" (magit-get-push-remote branch) branch))
+             (prs (magithub-cache :ci-status
+                    `(magithub-request
+                      (ghubp-get-repos-owner-repo-pulls ',(magithub-repo) :head ,guess-head)))))
+        (pcase (length prs)
+          (0)    ; this branch does not seem to correspond to any PR
+          (1 (magit-set (number-to-string (alist-get 'number (car prs)))
+                        "branch" branch "magithub" "sourcePR")
+             (car prs))
+          (_ ;; todo: currently unhandled
+           (signal 'magithub-error-ambiguous-branch
+                   (list :prs prs
+                         :guess-head guess-head
+                         :repo-from-remote (alist-get 'full_name repo)
+                         :source-repo (alist-get 'full_name (magithub-repo))))))))))
+
+(defun magithub-pull-request-branch->pr--gitconfig (branch)
+  "Gets a pull request object from branch.BRANCH.magithub.sourcePR"
+  (when-let ((source (magit-get "branch" branch "magithub" "sourcePR")))
+    (magithub-pull-request (magithub-repo) (string-to-number source))))
 
 (defun magithub-ci-status--get-default-ref (&optional branch)
-  "The remote branch name to use for CI status based on BRANCH.
+  "The ref to use for CI status based on BRANCH.
 
 Handles cases where the local branch's name is different than its
 remote counterpart."
-  (when-let ((push-branch (magit-get-push-branch
-                           (or branch (magit-get-current-branch)))))
-    (cdr (magit-split-branch-name push-branch))))
+  (setq branch (or branch (magit-get-current-branch)))
+  (if-let ((pull-request
+            (or (magithub-pull-request-branch->pr--gitconfig branch)
+                (and (not (magithub-offline-p))
+                     (with-demoted-errors "Error: %S"
+                       (magithub-pull-request-branch->pr--ghub branch))))))
+      (let-alist pull-request .head.sha)
+    (when-let ((push-branch (magit-get-push-branch branch)))
+      (when (magit-branch-p push-branch)
+        (cdr (magit-split-branch-name push-branch))))))
 
 (defun magithub-ci-status (ref)
   (when (stringp ref)
@@ -80,11 +143,19 @@ remote counterpart."
         (magithub-debug-message "skipping CI status checks while in rebase")
       (condition-case _
           (magithub-cache :ci-status
-            `(ghubp-get-repos-owner-repo-commits-ref-status
-              ',(magithub-source-repo) ,ref)
+            `(magithub-request
+              (ghubp-get-repos-owner-repo-commits-ref-status
+               ',(magithub-repo) ,ref))
+            :message
             (format "Getting CI status for %s..."
                     (if (magit-branch-p ref) (format "branch `%s'" ref)
-                      (s-left ref 6))))
+                      (substring ref 0 6)))
+            :after-update
+            (lambda (status &rest _)
+              (setf (magithub-ci--status-last-refreshed-time (magithub-repo) ref)
+                    (current-time))
+              (message "(magithub): new statuses retrieved -- overall: %s"
+                       (alist-get 'state status))))
         (ghub-404
          '((state . "error")
            (total_count . 0)
@@ -98,36 +169,6 @@ remote counterpart."
     ("success" . ((display . "Success") (face . magithub-ci-success)))))
 (defconst magithub-ci-status--unknown
   '((face . magithub-ci-unknown)))
-
-(defface magithub-ci-no-status
-  '((((class color)) :inherit magit-dimmed))
-  "Face used when CI status is `no-status'."
-  :group 'magithub-faces)
-
-(defface magithub-ci-error
-  '((((class color)) :inherit magit-signature-untrusted))
-  "Face used when CI status is `error'."
-  :group 'magithub-faces)
-
-(defface magithub-ci-pending
-  '((((class color)) :inherit magit-signature-untrusted))
-  "Face used when CI status is `pending'."
-  :group 'magithub-faces)
-
-(defface magithub-ci-success
-  '((((class color)) :inherit magit-signature-good))
-  "Face used when CI status is `success'."
-  :group 'magithub-faces)
-
-(defface magithub-ci-failure
-  '((((class color)) :inherit magit-signature-bad))
-  "Face used when CI status is `'"
-  :group 'magithub-faces)
-
-(defface magithub-ci-unknown
-  '((((class color)) :inherit magit-signature-untrusted))
-  "Face used when CI status is `unknown'."
-  :group 'magithub-faces)
 
 (defun magithub-ci-visit (ref)
   "Jump to CI with `browse-url'."
@@ -163,21 +204,24 @@ remote counterpart."
 
 (defvar magit-magithub-ci-status-section-map
   (let ((map (make-sparse-keymap)))
+    (set-keymap-parent map magithub-map)
     (define-key map [remap magit-visit-thing] #'magithub-ci-visit)
+    (define-key map [remap magithub-browse-thing] #'magithub-ci-visit)
     (define-key map [remap magit-refresh] #'magithub-ci-refresh)
     map)
   "Keymap for `magithub-ci-status' header section.")
 
-(defun magithub-ci-refresh (even-if-offline)
+(defun magithub-ci-refresh ()
   "Invalidate the CI cache and refresh the buffer.
 If EVEN-IF-OFFLINE is non-nil, we'll still refresh (that is,
 we'll hit the API) if Magithub is offline."
-  (interactive "P")
-  (let ((magithub-cache (if even-if-offline nil magithub-cache)))
-    (magithub-cache-without-cache :ci-status
-      (ignore (magithub-ci-status (magithub-ci-status--get-default-ref)))))
-  (when (derived-mode-p 'magit-status-mode)
-    (magit-refresh)))
+  (interactive)
+  (when (and (magithub-offline-p)
+             (not (y-or-n-p "Magithub offline; refresh statuses anyway? ")))
+    (user-error "Aborted"))
+  (magithub-cache-without-cache :ci-status
+    (magithub-ci-status (magithub-ci-status--get-default-ref)))
+  (magit-refresh))
 
 (defun magithub-insert-ci-status-header ()
   (let* ((ref (magithub-ci-status--get-default-ref))
@@ -187,33 +231,31 @@ we'll hit the API) if Magithub is offline."
       (magit-insert-section (magithub-ci-status
                              `(magithub-ci-ref . ,ref)
                              'collapsed)
-        (insert (format "%-10s" "CI: "))
-        (insert (magithub-ci--status-header checks))
+        (insert (format "%-10s%s %s %s%s" "Status:"
+                        (magithub-ci--status-header checks)
+                        (propertize "on ref" 'face 'magit-dimmed)
+                        (propertize ref 'face 'magit-refname)
+                        (propertize "..." 'face 'magit-dimmed)))
         (magit-insert-heading)
-        (magit-insert-section (magithub-ci-status-meta
-                               `(magithub-ci-ref . ,ref))
-          (insert
-           (propertize
-            (concat
-             indent
-             (propertize (concat "Checks for ref: "
-                                 (propertize ref 'face 'magit-branch-local))
-                         'face 'magit-dimmed))
-            'keymap magit-magithub-ci-status-section-map))
-          (magit-insert-heading))
+        (insert (propertize
+                 (format "%-10sas of %s\n" ""
+                         (if-let ((time (magithub-ci--status-last-refreshed-time (magithub-repo) ref)))
+                             (magithub--format-time time)
+                           "???"))
+                 'face 'magit-dimmed))
         (dolist (status (alist-get 'statuses checks))
           (magit-insert-section (magithub-ci-status
                                  `(magithub-ci-url . ,(alist-get 'target_url status)))
-            (insert indent)
-            (insert (magithub-ci--status-propertized status))
+            (insert indent (magithub-ci--status-propertized status "*"))
             (magit-insert-heading)))))))
 
 (defun magithub-ci--status-header (checks)
   (pcase (alist-get 'total_count checks)
-    (0 (format "%s  (%s)"
+    (0 (format "%s  %s"
                (magithub-ci--status-propertized checks)
                (or (alist-get 'magithub-message checks)
-                   "it seems checks have not yet begun")))
+                   (propertize "it seems checks have not yet begun"
+                               'face 'magit-dimmed))))
     (1 (magithub-ci--status-propertized checks))
     (_ (let* ((overall-status (alist-get 'state checks))
               (status-spec (magithub-ci--status-spec overall-status))
@@ -228,12 +270,14 @@ we'll hit the API) if Magithub is offline."
   (or (cdr (assoc-string status-string magithub-ci-status-alist))
       magithub-ci-status--unknown))
 
-(defun magithub-ci--status-propertized (status)
+(defun magithub-ci--status-propertized (status &optional override-status-text)
   (let ((status-string (alist-get 'state status))
         (description   (alist-get 'description status))
         (context       (alist-get 'context status)))
     (let-alist (magithub-ci--status-spec status-string)
-      (concat (propertize (or .display status-string)
+      (concat (propertize (or override-status-text
+                              .display
+                              status-string)
                           'face .face)
               (when description
                 (format " %s" description))
@@ -241,10 +285,8 @@ we'll hit the API) if Magithub is offline."
                 (propertize (format " %s" context)
                             'face 'magit-dimmed))))))
 
-(magithub--deftoggle magithub-toggle-ci-status-header
-  magit-status-headers-hook #'magithub-maybe-insert-ci-status-header "the CI header")
-
-(magithub-toggle-ci-status-header)
+(magithub--deftoggle magithub-toggle-ci-status-header "CI header" t
+  magit-status-headers-hook #'magithub-maybe-insert-ci-status-header)
 
 (provide 'magithub-ci)
 ;;; magithub-ci.el ends here
