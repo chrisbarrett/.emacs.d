@@ -1,95 +1,21 @@
-Minuscule client for the Github API
-===================================
+Minuscule client library for the Github API
+===========================================
 
-This library just provides the HTTP verbs.  Instead of wrapping
-every resource, I recommend https://developer.github.com/v3.
+Ghub is a library that provides basic support for using the Github API
+from Emacs packages.  It abstracts access to API resources using only
+a handful of functions that are not resource-specific.
 
-Initial configuration
----------------------
+It also handles the creation, storage and use of access tokens using a
+setup wizard, to make it easier for users to get started and to reduce
+the support burden imposed on package maintainers.  It also comes with
+a comprehensive manual to address the cases when things don't just
+work as expected.
 
-```shell
-$ git config --global github.user <username>
-$ emacs ~/.authinfo.gpg
-```
+Ghub is intentionally limited to only provide these two essential
+features — basic request functions and guided setup — to avoid being
+too opinionated, which would hinder wide adaption.  It is assumed that
+wide adoption would make life easier for users and maintainers alike,
+because then all packages that talk to the Github API could be
+configured the same way.
 
-```
-# -*- epa-file-encrypt-to: ("A.U.Thor@example.com") -*-
-machine api.github.com login <login> password <token>
-```
-
-To acquire a token, go to https://github.com/settings/tokens.  Note
-that currently the same token is shared by all Emacs packages that
-use `ghub.el`.
-
-Usage examples
---------------
-
-* Getting details about a repository:
-
-  ```lisp
-  (ghub-get "/repos/tarsius/ghub")
-  ```
-
-* Listing names of all repositories of a user:
-
-  ```lisp
-  (--keep (cdr (assq 'name it))
-          (let ((ghub-unpaginate t))
-             (ghub-get "/users/tarsius/repos")))
-  ```
-
-* Making an unauthenticated request:
-
-  ```lisp
-  (let ((ghub-authenticate nil))
-    (ghub-get "/orgs/magit/repos"))
-  ```
-
-* Making a request using basic authentication:
-
-  ```lisp
-  (let ((ghub-authenticate 'basic))
-    (ghub-get "/orgs/magit/repos"))
-  ```
-
-
-Github Enterprise support
--------------------------
-
-* Initial configuration:
-
-  ```shell
-  $ cd /path/to/repository
-  $ git config eg_example_com.user employee
-  $ emacs ~/.authinfo.gpg
-  ```
-
-  ```
-  # -*- epa-file-encrypt-to: ("employee@example.com") -*-
-  machine gh.example.com/api/v3 login employee password <token>
-  ```
-
-Note that unlike for Github.com, which uses `github.user`, the Git
-variable used to store the username for an Enterprise instance is
-named `HOST.user`, where HOST is the host part of the `URI`, with
-dots replaced with underscores.
-
-* Making a request:
-
-  ```lisp
-  (let ((ghub-base-url "https://example.com/api/v3"))
-    (ghub-get "/users/employee/repos"))
-  ```
-
-Alternatives
-------------
-
-If you like this, then you might never-the-less prefer `ghub+.el`;
-a thick GitHub API client built on `ghub.el'.
-See https://github.com/vermiculus/ghub-plus.
-
-If you like this, then you might also like `glab.el`; a minuscule
-client for the Gitlab API.  See https://gitlab.com/tarsius/glab.
-
-If you don't like this, then you might instead like `gh.el`; a big
-client for the Github API.  See https://github.com/sigma/gh.el.
+Consulting the [manual](https://magit.vc/manual/ghub) can be benefitial.
