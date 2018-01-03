@@ -11,6 +11,7 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'cb-emacs)
 (require 'spacemacs-keys)
 (require 'evil-transient-state)
 
@@ -76,6 +77,7 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
   :commands (magithub-feature-autoinject)
   :config
   (progn
+    (setq magithub-cache-file (concat cb-emacs-cache-directory "/magithub"))
     (magithub-feature-autoinject t)
     (setq magithub-api-timeout 5)))
 
