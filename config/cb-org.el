@@ -851,9 +851,7 @@ table tr.tr-even td {
     "oo" #'cb-org-goto-headline
     "ot" #'cb-org-goto-todo-list
     "ow" #'cb-org-goto-work
-    "ov" #'cb-org-goto-tags-list)
-  :config
-  (setq cb-org-goto-on-holiday? t))
+    "ov" #'cb-org-goto-tags-list))
 
 (use-package cb-org-ctrl-c-ret
   :after org
