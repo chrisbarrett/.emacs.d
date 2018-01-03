@@ -235,7 +235,7 @@ If a project you are working on is recognized incorrectly or you want to add you
 
 ```el
 (projectile-register-project-type 'npm '("package.json")
-				  :compile "npm build"
+				  :compile "npm install"
 				  :test "npm test"
 				  :run "npm start"
 				  :test-suffix ".spec")
@@ -243,10 +243,24 @@ If a project you are working on is recognized incorrectly or you want to add you
 What this does is:
 1. add your own type of project, in this case `npm` package.
 2. add a file in a root of the project that helps to identify the type, in this case it is `package.json`.
-3. add *compile-command*, in this case it is `npm build`.
+3. add *compile-command*, in this case it is `npm install`.
 4. add *test-command*, in this case it is `npm test`.
 5. add *run-command*, in this case it is `npm start`.
 6. add test files suffix for toggling between implementation/test files, in this case it is `.spec`, so the implementation/test file pair could be `service.js`/`service.spec.js` for example.
+
+The available options are:
+
+Option           | Documentation
+---------------- | -------------------------------------------------------------------------------------------
+:compilation-dir | A path, relative to the project root, from where to run the tests and compilation commands.
+:compile         | A command to compile the project.
+:configure       | A command to configure the project. `%s` will be substituted with the project root.
+:run             | A command to run the project.
+:src-dir         | A path, relative to the project root, where the source code lives.
+:test            | A command to test the project.
+:test-dir        | A path, relative to the project root, where the test code lives.
+:test-prefix     | A prefix to generate test files names.
+:test-suffix     | A suffix to generate test files names.
 
 ### Customizing project root files
 
