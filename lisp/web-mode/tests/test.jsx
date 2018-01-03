@@ -1,6 +1,122 @@
+return (
+  <ModalTrigger modal={<InviteForm auth={this.props.auth} />} />
+);
+
+return (
+  <li>
+    <ModalTrigger modal={ <InviteForm auth={this.props.auth} /> }>
+      <a href="#">Invite Representative</a>
+    </ModalTrigger>
+  </li>
+);
+
+return (
+  <div>
+    <div>xs</div>
+    <OtherComponent/>
+    <OtherComponent class="toto"
+                    {...props}
+                    id="fr" />
+  </div>;
+);
+
+const Demo = () => (
+  <ListItem
+    leftAvatar={
+      <Avatar
+        src=""
+      />
+    }
+  >
+  </ListItem>
+);
+
+import React, {Component} from 'react';
+class Confirm extends Component {
+  render() {
+    const project = this.props.project;
+    return (
+      <Route exac path='/' render={(matchProps) => (
+        <DefaultLayout>
+          <Home {...matchProps} />
+        </DefaultLayout>
+      )} />
+    )
+  },
+  render() {
+    const project = this.props.project;
+    return (
+      <Foo
+        someLongValue='x'
+        text={
+          <Text>
+            text
+          </Text>
+        }
+      />
+    )
+  }
+}
+
+import React, {Component} from 'react';
+class Confirm extends Component {
+  render() {
+    const project = this.props.project;
+    return (
+      <Route
+        exact
+        path="/"
+        render={ matchProps => (
+          <Home {...matchProps} />)
+        }
+      />
+    )
+  }
+};
+
+class Test extends Component {
+  render() {
+    return (
+      <Router>
+        <Switch>
+          <Route
+            exact
+            path="/"
+            render={matchProps => (
+              <DefaultLayout>
+                <Home {...matchProps} />
+              </DefaultLayout>
+            )} />
+          <Route
+            path="/settings"
+            render={matchProps => (
+              <DefaultLayout>
+                <Settings {...matchProps} />
+              </DefaultLayout>
+            )} />
+        </Switch>
+      </Router>
+    )
+  }
+};
+
+import React from 'react';
+
+const Front = props => {
+  return <div>
+    <span>hello</span>
+  </div>;
+};
+
 /** @jsx React.DOM **/
 var React = require('react/addons');
 var Component = require('./component');
+
+function f() {
+  return true
+      && <E b={true} />
+      || <E />;
+}
 
 export default class Header extends Component {
   render() {
@@ -13,6 +129,19 @@ export default class Header extends Component {
   }
 }
 
+import * as React from 'react';
+
+interface Props {
+  name: string
+}
+
+class MyThing extends React.Component<Props, {}> {
+  render() {
+    return <span>hi</span>;
+  }
+}
+
+export default MyThing as React.ComponentClass<Props>;
 
 export default React.createClass({
   getInitialState() {
@@ -33,15 +162,53 @@ export default React.createClass({
 
 function foo() {
   return <label>
-      First Name:
-      <Input name="name"
-             type="text"
-             validators={[
-               required('You must supply a first name!'),
-               (value) => value > 15 ? 'too long!': null
-             ]} />
+    First Name:
+    <Input name="name"
+           type="text"
+           validators={[
+             required('You must supply a first name!'),
+             (value) => value > 15 ? 'too long!': null
+           ]} />
   </label>;
 }
+
+import React, {Component} from 'react';
+class Confirm extends Component {
+  render() {
+    const project = this.props.project;
+    return (
+      <Switch>
+        <Route
+          path={'/home'}
+          render={ (props) => (
+            <Home {...props} />
+          )} />
+      </Switch>
+    )
+  }
+}
+
+// #870
+import React, {Component} from 'react';
+class Confirm extends Component {
+  render() {
+    const project = this.props.project;
+    return (
+      <form onSubmit="">
+        <fieldset>
+          {project.foo && (
+             <div>Foo</div>
+          )}
+          {project.bar && (
+             <p>Bar</p>
+          )}
+        </fieldset>
+      </form>
+    );
+  }
+}
+export default Confirm;
+
 
 var React = require('react')
 

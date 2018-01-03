@@ -8,6 +8,28 @@ let newList = list.skipWhile(f)
 a()
 b()
 
+Relay.createContainer(Story, {
+  initialVariables: {
+    numCommentsToShow: 10,
+    showComments: false,
+  },
+  fragments: {
+    story: (variables) => Relay.QL`
+      fragment on Story {
+        comments(first: $numCommentsToShow) @include(if: $showComments) {
+          edges {
+            node {
+              author { name },
+              id,
+              text,
+            },
+          },
+        },
+      }
+    `,
+  }
+});
+
 var cs = {completed: this.props.todo.completed,
           editing: this.props.editing};
 
@@ -119,7 +141,7 @@ if (true) {
   var x = y,
       cd = 3;
   export const {x, y} = z,
-      a = 10;
+               a = 10;
 }
 
 var pathData = this.barData
