@@ -29,6 +29,10 @@
 
 (require 'magit)
 
+(eval-when-compile (require 'subr-x))
+
+(defvar bookmark-make-record-function)
+
 ;;; Options
 
 (defgroup magit-status nil
@@ -80,10 +84,10 @@ all."
     magit-insert-stashes
     magit-insert-unpulled-from-upstream
     magit-insert-unpulled-from-pushremote
-    magit-insert-unpushed-to-upstream
+    magit-insert-unpushed-to-upstream-or-recent
     magit-insert-unpushed-to-pushremote)
   "Hook run to insert sections into a status buffer."
-  :package-version '(magit . "2.4.0")
+  :package-version '(magit . "2.12.0")
   :group 'magit-status
   :type 'hook)
 
@@ -149,7 +153,7 @@ Non-interactively DIRECTORY is (re-)initialized unconditionally."
                       (read-directory-name "Create repository in: ")))))
      (-when-let (toplevel (magit-toplevel directory))
        (setq toplevel (expand-file-name toplevel))
-       (unless (y-or-n-p (if (string-equal toplevel directory)
+       (unless (y-or-n-p (if (file-equal-p toplevel directory)
                              (format "Reinitialize existing repository %s? "
                                      directory)
                            (format "%s is a repository.  Create another in %s? "
@@ -162,30 +166,45 @@ Non-interactively DIRECTORY is (re-)initialized unconditionally."
   (magit-status-internal directory))
 
 ;;;###autoload
-(defun magit-status (&optional directory)
+(defun magit-status (&optional directory cache)
   "Show the status of the current Git repository in a buffer.
 With a prefix argument prompt for a repository to be shown.
 With two prefix arguments prompt for an arbitrary directory.
-If that directory isn't the root of an existing repository
+If that directory isn't the root of an existing repository,
 then offer to initialize it as a new repository."
   (interactive
-   (list (and (or current-prefix-arg (not (magit-toplevel)))
-              (magit-read-repository
-               (>= (prefix-numeric-value current-prefix-arg) 16)))))
-  (if directory
-      (let ((toplevel (magit-toplevel directory)))
-        (setq directory (file-name-as-directory (expand-file-name directory)))
-        (if (and toplevel (string-equal directory toplevel))
-            (magit-status-internal directory)
-          (when (y-or-n-p
-                 (if toplevel
-                     (format "%s is a repository.  Create another in %s? "
-                             toplevel directory)
-                   (format "Create repository in %s? " directory)))
-            (magit-init directory))))
-    (magit-status-internal default-directory)))
+   (let ((magit--refresh-cache (list (cons 0 0))))
+     (list (and (or current-prefix-arg (not (magit-toplevel)))
+                (magit-read-repository
+                 (>= (prefix-numeric-value current-prefix-arg) 16)))
+           magit--refresh-cache)))
+  (let ((magit--refresh-cache (or cache (list (cons 0 0)))))
+    (if directory
+        (let ((toplevel (magit-toplevel directory)))
+          (setq directory (file-name-as-directory
+                           (expand-file-name directory)))
+          (if (and toplevel (file-equal-p directory toplevel))
+              (magit-status-internal directory)
+            (when (y-or-n-p
+                   (if toplevel
+                       (format "%s is a repository.  Create another in %s? "
+                               toplevel directory)
+                     (format "Create repository in %s? " directory)))
+              ;; Creating a new repository will invalidate cached
+              ;; values.
+              (setq magit--refresh-cache nil)
+              (magit-init directory))))
+      (magit-status-internal default-directory))))
 
 (put 'magit-status 'interactive-only 'magit-status-internal)
+
+(defalias 'magit 'magit-status
+  "An alias for `magit-status' for better discoverability.
+
+Instead of invoking this alias for `magit-status' using
+\"M-x magit RET\", you should bind a key to `magit-status'
+and read the info node `(magit)Getting Started', which
+also contains other useful hints.")
 
 ;;;###autoload
 (defun magit-status-internal (directory)
@@ -205,7 +224,7 @@ then offer to initialize it as a new repository."
             (display-warning 'magit (format "\
 Magit requires Git >= %s, but on %s the version is %s.
 
-If multiple Git versions are installed on the host then the
+If multiple Git versions are installed on the host, then the
 problem might be that TRAMP uses the wrong executable.
 
 First check the value of `magit-git-executable'.  Its value is
@@ -274,25 +293,15 @@ Type \\[magit-commit-popup] to create a commit.
 \\{magit-status-mode-map}"
   :group 'magit-status
   (hack-dir-local-variables-non-file-buffer)
-  ;; Avoid listing all files as deleted when visiting a bare repo.
-  (when (magit-bare-repo-p)
-    (make-local-variable 'magit-status-sections-hook)
-    (remove-hook 'magit-status-sections-hook #'magit-insert-staged-changes
-                 'local)))
-
-(defvar magit-status-sections-hook-1 nil)
+  (setq imenu-create-index-function
+        'magit-imenu--status-create-index-function)
+  (setq-local bookmark-make-record-function
+              #'magit-bookmark--status-make-record))
 
 (defun magit-status-refresh-buffer ()
   (magit-git-exit-code "update-index" "--refresh")
   (magit-insert-section (status)
-    (if (-all-p #'functionp magit-status-sections-hook)
-        (run-hooks 'magit-status-sections-hook)
-      (message "`magit-status-sections-hook' contains entries that are \
-no longer valid.\nUsing standard value instead.  Please re-configure")
-      (sit-for 5)
-      (let ((magit-status-sections-hook-1
-             (eval (car (get 'magit-status-sections-hook 'standard-value)))))
-        (run-hooks 'magit-status-sections-hook-1))))
+    (magit-run-section-hook 'magit-status-sections-hook))
   (run-hooks 'magit-status-refresh-hook))
 
 (defun magit-status-maybe-update-revision-buffer (&optional _)
@@ -380,16 +389,16 @@ detached `HEAD'."
           (_       (setq rebase (magit-get-boolean "pull.rebase"))))
         (insert (format "%-10s" (or keyword (if rebase "Rebase: " "Merge: ")))))
       (--when-let (and magit-status-show-hashes-in-headers
+                       (not (string-match-p " " pull))
                        (magit-rev-format "%h" pull))
-        (insert (propertize it 'face 'magit-hash) ?\s))
-      (insert (propertize pull 'face
-                          (if (string= (magit-get "branch" branch "remote") ".")
-                              'magit-branch-local
-                            'magit-branch-remote)))
-      (insert ?\s)
-      (if (magit-rev-verify pull)
-          (insert (or (magit-rev-format "%s" pull) ""))
-        (insert (propertize "is missing" 'face 'font-lock-warning-face)))
+        (insert (propertize it 'face 'magit-hash) " "))
+      (if (string-match-p " " pull)
+          (pcase-let ((`(,url ,branch) (split-string pull " ")))
+            (insert branch " from " url " "))
+        (insert pull " ")
+        (if (magit-rev-verify pull)
+            (insert (or (magit-rev-format "%s" pull) ""))
+          (insert (propertize "is missing" 'face 'font-lock-warning-face))))
       (insert ?\n))))
 
 (cl-defun magit-insert-push-branch-header
@@ -456,10 +465,7 @@ detached `HEAD'."
 If no remote is configured for the current branch, then fall back
 showing the \"origin\" remote, or if that does not exist the first
 remote in alphabetic order."
-  (-when-let* ((name (or (magit-get-remote)
-                         (let ((remotes (magit-list-remotes)))
-                           (or (car (member "origin" remotes))
-                               (car remotes)))))
+  (-when-let* ((name (magit-get-some-remote))
                ;; Under certain configurations it's possible for url
                ;; to be nil, when name is not, see #2858.
                (url (magit-get "remote" name "url")))

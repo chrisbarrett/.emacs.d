@@ -8,13 +8,11 @@ include default.mk
 	test test-interactive magit \
 	clean clean-lisp clean-docs clean-archives \
 	stats bump-version melpa-post-release \
-	dist magit-$(VERSION).tar.gz
+	dist versionlib magit-$(VERSION).tar.gz
 
 all: lisp docs
 
 help:
-	$(info )
-	$(info Current version: magit-$(VERSION))
 	$(info )
 	$(info See default.mk for variables you might want to set.)
 	$(info )
@@ -106,6 +104,7 @@ install-info: info
 
 test:
 	@$(BATCH) --eval "(progn\
+        $$suppress_warnings\
 	(load-file \"t/magit-tests.el\")\
 	(ert-run-tests-batch-and-exit))"
 
@@ -135,7 +134,7 @@ clean-docs:
 	@$(MAKE) -C Documentation clean
 
 clean-archives:
-	@$(RM) git-commit-*.el *.tar.gz *.tar
+	@$(RM) *.tar.gz *.tar lisp/magit-version.el
 	@$(RMDIR) magit-$(VERSION)
 
 clean-all: clean clean-stats
@@ -168,6 +167,9 @@ publish-manuals:
 
 dist: magit-$(VERSION).tar.gz
 
+versionlib:
+	@$(MAKE) -C lisp versionlib
+
 DIST_ROOT_FILES = COPYING default.mk Makefile README.md
 DIST_LISP_FILES = $(addprefix lisp/,$(ELS) magit-version.el Makefile)
 DIST_DOCS_FILES = $(addprefix Documentation/,$(TEXIPAGES) AUTHORS.md Makefile)
@@ -175,7 +177,7 @@ ifneq ("$(wildcard Documentation/RelNotes/$(VERSION).txt)","")
   DIST_DOCS_FILES += Documentation/RelNotes/$(VERSION).txt
 endif
 
-magit-$(VERSION).tar.gz: lisp info
+magit-$(VERSION).tar.gz: lisp versionlib info
 	@printf "Packing $@\n"
 	@$(MKDIR) magit-$(VERSION)
 	@$(CP) $(DIST_ROOT_FILES) magit-$(VERSION)
@@ -187,53 +189,65 @@ magit-$(VERSION).tar.gz: lisp info
 	@$(RMDIR) magit-$(VERSION)
 
 define set_package_requires
-(require 'dash)
-(dolist (lib (list "git-commit" "magit-popup" "magit"))
-  (with-current-buffer (find-file-noselect (format "lisp/%s.el" lib))
-    (goto-char (point-min))
-    (re-search-forward "^;; Package-Requires: ")
-    (let ((s (read (buffer-substring (point) (line-end-position)))))
-      (--when-let (assq 'async       s) (setcdr it (list async-version)))
-      (--when-let (assq 'dash        s) (setcdr it (list dash-version)))
-      (--when-let (assq 'with-editor s) (setcdr it (list with-editor-version)))
-      (--when-let (assq 'git-commit  s) (setcdr it (list git-commit-version)))
-      (--when-let (assq 'magit-popup s) (setcdr it (list magit-popup-version)))
-      (delete-region (point) (line-end-position))
-      (insert (format "%S" s))
-      (save-buffer))))
+(with-temp-file "lisp/git-commit.el"
+  (insert-file-contents "lisp/git-commit.el")
+  (re-search-forward "^;; Package-Requires: ")
+  (delete-region (point) (line-end-position))
+  (insert (format "%S"
+`((emacs "24.4") ;`
+  (dash ,dash-version)
+  (with-editor ,with-editor-version))))
+(with-temp-file "lisp/magit-pkg.el"
+  (insert (pp-to-string
+`(define-package "magit" "2.12.0" ;`
+   "A Git porcelain inside Emacs."
+   '((emacs "24.4") ;'
+     (async ,async-version)
+     (dash ,dash-version)
+     (ghub ,ghub-version)
+     (git-commit ,git-commit-version)
+     (let-alist ,let-alist-version)
+     (magit-popup ,magit-popup-version)
+     (with-editor ,with-editor-version)))))
+  (goto-char (point-min))
+  (re-search-forward " \"A")
+  (goto-char (match-beginning 0))
+  (insert "\n ")))
 endef
 export set_package_requires
 
-define set_manual_version
-(let ((version (split-string "$(MAGIT_VERSION)" "\\.")))
-  (setq version (concat (car version) "." (cadr version)))
-  (dolist (file (list "magit-popup" "magit"))
-    (with-current-buffer (find-file-noselect (format "Documentation/%s.org" file))
-      (goto-char (point-min))
-      (re-search-forward "^#\\+SUBTITLE: for version ")
-      (delete-region (point) (line-end-position))
-      (insert version)
-      (save-buffer))))
-endef
-export set_manual_version
-
 bump-versions: bump-versions-1 texi
 bump-versions-1:
-	@$(BATCH) --eval "(progn\
-        (setq async-version \"$(ASYNC_VERSION)\")\
-        (setq dash-version \"$(DASH_VERSION)\")\
-        (setq with-editor-version \"$(WITH_EDITOR_VERSION)\")\
-        (setq git-commit-version \"$(GIT_COMMIT_VERSION)\")\
-        (setq magit-popup-version \"$(MAGIT_POPUP_VERSION)\")\
-        $$set_package_requires\
-        $$set_manual_version)"
+	@$(BATCH) --eval "(let (\
+        (async-version \"$(ASYNC_VERSION)\")\
+        (dash-version \"$(DASH_VERSION)\")\
+        (ghub-version \"$(GHUB_VERSION)\")\
+        (git-commit-version \"$(GIT_COMMIT_VERSION)\")\
+        (let-alist-version \"$(LET_ALIST_VERSION)\")\
+        (magit-popup-version \"$(MAGIT_POPUP_VERSION)\")\
+        (with-editor-version \"$(WITH_EDITOR_VERSION)\"))\
+        $$set_package_requires)"
 
 bump-snapshots:
-	@$(BATCH) --eval "(progn\
-        (setq async-version \"$(ASYNC_MELPA_SNAPSHOT)\")\
-        (setq dash-version \"$(DASH_MELPA_SNAPSHOT)\")\
-        (setq with-editor-version \"$(WITH_EDITOR_MELPA_SNAPSHOT)\")\
-        (setq git-commit-version \"$(GIT_COMMIT_MELPA_SNAPSHOT)\")\
-        (setq magit-popup-version \"$(MAGIT_POPUP_MELPA_SNAPSHOT)\")\
+	@$(BATCH) --eval "(let (\
+        (async-version \"$(ASYNC_MELPA_SNAPSHOT)\")\
+        (dash-version \"$(DASH_MELPA_SNAPSHOT)\")\
+        (ghub-version \"$(GHUB_MELPA_SNAPSHOT)\")\
+        (git-commit-version \"$(GIT_COMMIT_MELPA_SNAPSHOT)\")\
+        (let-alist-version \"$(LET_ALIST_VERSION)\")\
+        (magit-popup-version \"$(MAGIT_POPUP_MELPA_SNAPSHOT)\")\
+        (with-editor-version \"$(WITH_EDITOR_MELPA_SNAPSHOT)\"))\
         $$set_package_requires)"
-	git commit -a -m "Reset Package-Requires for Melpa"
+	@git commit -a -m "Reset Package-Requires for Melpa"
+
+define suppress_warnings
+(fset 'original-message (symbol-function 'message))
+(fset 'message ;'
+      (lambda (f &rest a)
+        (unless (or (equal f "Wrote %s")
+                    (equal f "pcase-memoize: equal first branch, yet different")
+                    (and (equal f "Warning: Unknown defun property `%S' in %S")
+                         (memq (car a) '(pure side-effect-free interactive-only))))
+          (apply 'original-message f a))))
+endef
+export suppress_warnings

@@ -141,7 +141,7 @@ conflicts, including those already resolved by Git, use
          (let ((bufC ediff-buffer-C)
                (bufS smerge-ediff-buf))
            (with-current-buffer bufS
-             (when (yes-or-no-p (format "Conflict resolution finished; save %s?"
+             (when (yes-or-no-p (format "Conflict resolution finished; save %s? "
                                         buffer-file-name))
                (erase-buffer)
                (insert-buffer-substring bufC)
@@ -159,8 +159,8 @@ conflicts, including those already resolved by Git, use
   "Stage and unstage changes to FILE using Ediff.
 FILE has to be relative to the top directory of the repository."
   (interactive
-   (list (magit-completing-read "Selectively stage file" nil
-                                (magit-tracked-files) nil nil nil
+   (list (magit-completing-read "Selectively stage file"
+                                (magit-tracked-files) nil nil nil nil
                                 (magit-current-file))))
   (magit-with-toplevel
     (let* ((conf (current-window-configuration))
@@ -206,7 +206,7 @@ FILE has to be relative to the top directory of the repository."
   "Compare REVA:FILEA with REVB:FILEB using Ediff.
 
 FILEA and FILEB have to be relative to the top directory of the
-repository.  If REVA or REVB is nil then this stands for the
+repository.  If REVA or REVB is nil, then this stands for the
 working tree state.
 
 If the region is active, use the revisions on the first and last
@@ -300,22 +300,23 @@ mind at all, then it asks the user for a command to run."
          (`unstaged (setq command #'magit-ediff-show-unstaged))
          (`staged (setq command #'magit-ediff-show-staged))
          (`(commit . ,value)
-          (setq command #'magit-ediff-show-commit
-                revB value))
+          (setq command #'magit-ediff-show-commit)
+          (setq revB value))
          (`(stash . ,value)
-          (setq command #'magit-ediff-show-stash
-                revB value))
+          (setq command #'magit-ediff-show-stash)
+          (setq revB value))
          ((pred stringp)
           (-let [(a b) (magit-ediff-compare--read-revisions range)]
-            (setq command #'magit-ediff-compare
-                  revA a
-                  revB b)))
+            (setq command #'magit-ediff-compare)
+            (setq revA a)
+            (setq revB b)))
          (_
           (when (derived-mode-p 'magit-diff-mode)
             (pcase (magit-diff-type)
               (`committed (-let [(a b) (magit-ediff-compare--read-revisions
                                         (car magit-refresh-args))]
-                            (setq revA a revB b)))
+                            (setq revA a)
+                            (setq revB b)))
               ((guard (not magit-ediff-dwim-show-on-hunks))
                (setq command #'magit-ediff-stage))
               (`unstaged  (setq command #'magit-ediff-show-unstaged))
@@ -380,7 +381,7 @@ and discard changes using Ediff, use `magit-ediff-stage'.
 FILE must be relative to the top directory of the repository."
   (interactive
    (list (magit-read-file-choice "Show unstaged changes for file"
-                                 (magit-modified-files)
+                                 (magit-unstaged-files)
                                  "No unstaged files")))
   (magit-with-toplevel
     (let ((conf (current-window-configuration))

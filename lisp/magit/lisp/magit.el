@@ -16,7 +16,6 @@
 ;;	Rémi Vanicat      <vanicat@debian.org>
 ;;	Yann Hodique      <yann.hodique@gmail.com>
 
-;; Package-Requires: ((emacs "24.4") (async "20170219.942") (dash "20170207.2056") (with-editor "20170111.609") (git-commit "20170214.347") (magit-popup "20170214.347"))
 ;; Keywords: git tools vc
 ;; Homepage: https://github.com/magit/magit
 
@@ -75,7 +74,15 @@
 
 (defface magit-header-line
   '((t :inherit magit-section-heading))
-  "Face for the `header-line'."
+  "Face for the `header-line' in some Magit modes.
+Note that some modes, such as `magit-log-select-mode', have their
+own faces for the `header-line', or for parts of the
+`header-line'."
+  :group 'magit-faces)
+
+(defface magit-header-line-key
+  '((t :inherit magit-popup-key))
+  "Face for keys in the `header-line'."
   :group 'magit-faces)
 
 (defface magit-dimmed
@@ -100,6 +107,12 @@
   '((((class color) (background light)) :foreground "DarkOliveGreen4")
     (((class color) (background  dark)) :foreground "DarkSeaGreen2"))
   "Face for remote branch head labels shown in log buffer."
+  :group 'magit-faces)
+
+(defface magit-branch-remote-head
+  '((((class color) (background light)) :inherit magit-branch-remote :box t)
+    (((class color) (background  dark)) :inherit magit-branch-remote :box t))
+  "Face for current branch."
   :group 'magit-faces)
 
 (defface magit-branch-local
@@ -134,6 +147,11 @@
 (defface magit-refname-wip
   '((t :inherit magit-refname))
   "Face for wip refnames."
+  :group 'magit-faces)
+
+(defface magit-keyword
+  '((t :inherit font-lock-string-face))
+  "Face for parts of commit messages inside brackets."
   :group 'magit-faces)
 
 (defface magit-signature-good
@@ -229,7 +247,7 @@ merge.
   "Merge commit REV into the current branch; and edit message.
 Perform the merge and prepare a commit message but let the user
 edit it.
-\n(git merge --edit --no-ff [ARGS] rev)"
+\n(git merge --edit --no-ff [ARGS] REV)"
   (interactive (list (magit-read-other-branch-or-commit "Merge")
                      (magit-merge-arguments)))
   (magit-merge-assert)
@@ -242,7 +260,7 @@ edit it.
   "Merge commit REV into the current branch; pretending it failed.
 Pretend the merge failed to give the user the opportunity to
 inspect the merge and change the commit message.
-\n(git merge --no-commit --no-ff [ARGS] rev)"
+\n(git merge --no-commit --no-ff [ARGS] REV)"
   (interactive (list (magit-read-other-branch-or-commit "Merge")
                      (magit-merge-arguments)))
   (magit-merge-assert)
@@ -263,10 +281,9 @@ inspect the merge and change the commit message.
 (defun magit-merge-preview-refresh-buffer (rev)
   (let* ((branch (magit-get-current-branch))
          (head (or branch (magit-rev-verify "HEAD"))))
-    (setq header-line-format
-          (propertize (format "Preview merge of %s into %s"
-                              rev (or branch "HEAD"))
-                      'face 'magit-header-line))
+    (magit-set-header-line-format (format "Preview merge of %s into %s"
+                                          rev
+                                          (or branch "HEAD")))
     (magit-insert-section (diffbuf)
       (magit-git-wash #'magit-diff-wash-diffs
         "merge-tree" (magit-git-string "merge-base" head rev) head rev))))
@@ -309,7 +326,7 @@ inspect the merge and change the commit message.
   (file-exists-p (magit-git-dir "MERGE_HEAD")))
 
 (defun magit-merge-assert ()
-  (or (not (magit-anything-modified-p))
+  (or (not (magit-anything-modified-p t))
       (magit-confirm 'merge-dirty
         "Merging with dirty worktree is risky.  Continue")
       (user-error "Abort")))
@@ -415,8 +432,9 @@ With a prefix argument also reset the working tree.
   "Popup console for tag commands."
   :man-page "git-tag"
   :switches '((?a "Annotate" "--annotate")
-              (?s "Sign"     "--sign")
-              (?f "Force"    "--force"))
+              (?f "Force"    "--force")
+              (?s "Sign"     "--sign"))
+  :options  '((?f "Sign"     "--local-user=" magit-read-gpg-secret-key))
   :actions  '((?t "Create"   magit-tag)
               (?k "Delete"   magit-tag-delete)
               (?p "Prune"    magit-tag-prune))
@@ -428,10 +446,7 @@ With a prefix argument also reset the working tree.
 With a prefix argument annotate the tag.
 \n(git tag [--annotate] NAME REV)"
   (interactive (list (magit-read-tag "Tag name")
-                     (or (and (memq 'magit-tag magit-no-confirm-default)
-                              (or (magit-branch-or-commit-at-point)
-                                  (magit-get-current-branch)))
-                         (magit-read-branch-or-commit "Place tag on"))
+                     (magit-read-branch-or-commit "Place tag on")
                      (let ((args (magit-tag-arguments)))
                        (when current-prefix-arg
                          (cl-pushnew "--annotate" args))
@@ -445,9 +460,11 @@ If the region marks multiple tags (and nothing else), then offer
 to delete those, otherwise prompt for a single tag to be deleted,
 defaulting to the tag at point.
 \n(git tag -d TAGS)"
-  (interactive (list (--if-let (magit-region-values 'tag)
-                         (magit-confirm t nil "Delete %i tags" it)
-                       (magit-read-tag "Delete tag" t))))
+  (interactive
+   (list (--if-let (magit-region-values 'tag)
+             (or (magit-confirm t "Delete %s" "Delete %i tags" it)
+                 (user-error "Abort"))
+           (magit-read-tag "Delete tag" t))))
   (magit-run-git "tag" "-d" tags))
 
 (defun magit-tag-prune (tags remote-tags remote)
@@ -507,6 +524,7 @@ defaulting to the tag at point.
              (?y "Show Refs"       magit-show-refs-popup)
              (?z "Stashing"        magit-stash-popup)
              (?! "Running"         magit-run-popup)
+             (?% "Worktree"        magit-worktree-popup)
              "Applying changes"
              (?a "Apply"           magit-apply)
              (?s "Stage"           magit-stage)
@@ -583,7 +601,7 @@ This affects `magit-git-command', `magit-git-command-topdir',
 
 ;;;###autoload
 (defun magit-git-command (command)
-  "Execute COMMAND asynchonously; display output.
+  "Execute COMMAND asynchronously; display output.
 
 Interactively, prompt for COMMAND in the minibuffer. \"git \" is
 used as initial input, but can be deleted to run another command.
@@ -595,7 +613,7 @@ of the current working tree, otherwise in `default-directory'."
 
 ;;;###autoload
 (defun magit-git-command-topdir (command)
-  "Execute COMMAND asynchonously; display output.
+  "Execute COMMAND asynchronously; display output.
 
 Interactively, prompt for COMMAND in the minibuffer. \"git \" is
 used as initial input, but can be deleted to run another command.
@@ -607,7 +625,7 @@ working tree."
 
 ;;;###autoload
 (defun magit-shell-command (command)
-  "Execute COMMAND asynchonously; display output.
+  "Execute COMMAND asynchronously; display output.
 
 Interactively, prompt for COMMAND in the minibuffer.  With a
 prefix argument COMMAND is run in the top-level directory of
@@ -617,7 +635,7 @@ the current working tree, otherwise in `default-directory'."
 
 ;;;###autoload
 (defun magit-shell-command-topdir (command)
-  "Execute COMMAND asynchonously; display output.
+  "Execute COMMAND asynchronously; display output.
 
 Interactively, prompt for COMMAND in the minibuffer.  COMMAND
 is run in the top-level directory of the current working tree."
@@ -636,7 +654,7 @@ is run in the top-level directory of the current working tree."
   (let ((dir (abbreviate-file-name
               (if (or toplevel current-prefix-arg)
                   (or (magit-toplevel)
-                      (user-error "Not inside a Git repository"))
+                      (magit--not-inside-repository-error))
                 default-directory))))
     (read-shell-command (if magit-shell-command-verbose-prompt
                             (format "Async shell command in %s: " dir)
@@ -668,7 +686,7 @@ the index number.  That number is incremented by one, and becomes
 the index number of the entry to be inserted.  If you don't want
 to number the inserted revisions, then use nil for INDEX-REGEXP.
 
-If INDEX-REGEXP is non-nil then both POINT-FORMAT and EOB-FORMAT
+If INDEX-REGEXP is non-nil, then both POINT-FORMAT and EOB-FORMAT
 should contain \"%N\", which is replaced with the number that was
 determined in the previous step.
 
@@ -700,7 +718,7 @@ the current buffer according to `magit-pop-revision-stack-format'.
 Revisions can be put on the stack using `magit-copy-section-value'
 and `magit-copy-buffer-revision'.
 
-If the stack is empty or with a prefix argument instead read a
+If the stack is empty or with a prefix argument, instead read a
 revision in the minibuffer.  By using the minibuffer history this
 allows selecting an item which was popped earlier or to insert an
 arbitrary reference or revision without first pushing it onto the
@@ -737,11 +755,11 @@ the minibuffer too."
                             "1"))))
               pnt-args eob-args)
           (when (listp pnt-format)
-            (setq pnt-args (cdr pnt-format)
-                  pnt-format (car pnt-format)))
+            (setq pnt-args (cdr pnt-format))
+            (setq pnt-format (car pnt-format)))
           (when (listp eob-format)
-            (setq eob-args (cdr eob-format)
-                  eob-format (car eob-format)))
+            (setq eob-args (cdr eob-format))
+            (setq eob-format (car eob-format)))
           (when pnt-format
             (when idx-format
               (setq pnt-format
@@ -881,7 +899,7 @@ Use the function by the same name instead of this variable.")
 ;;;###autoload
 (defun magit-version (&optional print-dest)
   "Return the version of Magit currently in use.
-If optional argument PRINT-DEST is non-nil output
+If optional argument PRINT-DEST is non-nil, output
 stream (interactively, the echo area, or the current buffer with
 a prefix argument), also print the used versions of Magit, Git,
 and Emacs to it."
@@ -966,13 +984,14 @@ See info node `(magit)Debugging Tools' for more information."
   (with-current-buffer (get-buffer-create "*magit-git-debug*")
     (pop-to-buffer (current-buffer))
     (erase-buffer)
-    (insert (format "magit-git-executable: %S" magit-git-executable)
-            (unless (file-name-absolute-p magit-git-executable)
-              (format " [%S]" (executable-find magit-git-executable)))
-            (format " (%s)\n"
-                    (let* ((errmsg nil)
-                           (magit-git-debug (lambda (err) (setq errmsg err))))
-                      (or (magit-git-version t) errmsg))))
+    (insert (concat
+             (format "magit-git-executable: %S" magit-git-executable)
+             (and (not (file-name-absolute-p magit-git-executable))
+                  (format " [%S]" (executable-find magit-git-executable)))
+             (format " (%s)\n"
+                     (let* ((errmsg nil)
+                            (magit-git-debug (lambda (err) (setq errmsg err))))
+                       (or (magit-git-version t) errmsg)))))
     (insert (format "exec-path: %S\n" exec-path))
     (--when-let (cl-set-difference
                  (-filter #'file-exists-p (remq nil (parse-colon-path
@@ -1063,7 +1082,12 @@ library getting in the way.  Then restart Emacs.\n"
     (require 'magit-subtree)
     (require 'magit-ediff)
     (require 'magit-extras)
-    (require 'git-rebase)))
+    (require 'git-rebase)
+    (require 'magit-imenu)
+    (require 'magit-bookmark)))
+
+(eval-after-load 'bookmark
+  '(require 'magit-bookmark))
 
 (if after-init-time
     (progn (magit-startup-asserts)

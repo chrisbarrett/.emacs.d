@@ -73,11 +73,15 @@ specify the depth directly.")
   :options '(hl-line-mode))
 
 (defcustom magit-repolist-columns
-  '(("Name"    25 magit-repolist-column-ident                  nil)
-    ("Version" 25 magit-repolist-column-version                nil)
-    ("L<U"      3 magit-repolist-column-unpulled-from-upstream ((:right-align t)))
-    ("L>U"      3 magit-repolist-column-unpushed-to-upstream   ((:right-align t)))
-    ("Path"    99 magit-repolist-column-path                   nil))
+  '(("Name"    25 magit-repolist-column-ident nil)
+    ("Version" 25 magit-repolist-column-version nil)
+    ("B<U"      3 magit-repolist-column-unpulled-from-upstream
+     ((:right-align t)
+      (:help-echo "Upstream changes not in branch")))
+    ("B>U"      3 magit-repolist-column-unpushed-to-upstream
+     ((:right-align t)
+      (:help-echo "Local changes not in upstream")))
+    ("Path"    99 magit-repolist-column-path nil))
   "List of columns displayed by `magit-list-repositories'.
 
 Each element has the form (HEADER WIDTH FORMAT PROPS).
@@ -87,8 +91,10 @@ of the column.  FORMAT is a function that is called with one
 argument, the repository identification (usually its basename),
 and with `default-directory' bound to the toplevel of its working
 tree.  It has to return a string to be inserted or nil.  PROPS is
-an alist that supports the keys `:right-align' and `:pad-right'."
-  :package-version '(magit . "2.8.0")
+an alist that supports the keys `:right-align' and `:pad-right'.
+Some entries also use `:help-echo', but `tabulated-list' does not
+actually support that yet."
+  :package-version '(magit . "2.12.0")
   :group 'magit-repolist
   :type `(repeat (list :tag "Column"
                        (string   :tag "Header Label")
@@ -152,13 +158,17 @@ control which repositories are displayed."
   "Major mode for browsing a list of Git repositories."
   (setq x-stretch-cursor        nil)
   (setq tabulated-list-padding  0)
-  (setq tabulated-list-sort-key (cons "Name" nil))
+  (setq tabulated-list-sort-key (cons "Path" nil))
   (setq tabulated-list-format
         (vconcat (mapcar (-lambda ((title width _fn props))
                            (nconc (list title width t)
                                   (-flatten props)))
                          magit-repolist-columns)))
-  (tabulated-list-init-header))
+  (tabulated-list-init-header)
+  (setq imenu-prev-index-position-function
+        'magit-imenu--repolist-prev-index-position-function)
+  (setq imenu-extract-index-name-function
+        'magit-imenu--repolist-extract-index-name-function))
 
 ;;;; Columns
 
@@ -197,7 +207,7 @@ Show U if there is at least one unstaged file.
 Show S if there is at least one staged file.
 Only one letter is shown, the first that applies."
   (cond ((magit-untracked-files) "N")
-        ((magit-modified-files)  "U")
+        ((magit-unstaged-files)  "U")
         ((magit-staged-files)    "S")))
 
 (defun magit-repolist-column-unpulled-from-upstream (_id)
@@ -223,6 +233,16 @@ Only one letter is shown, the first that applies."
   (--when-let (magit-get-push-branch nil t)
     (let ((n (car (magit-rev-diff-count "HEAD" it))))
       (propertize (number-to-string n) 'face (if (> n 0) 'bold 'shadow)))))
+
+(defun magit-repolist-column-branches (_id)
+  "Insert number of branches."
+  (let ((n (length (magit-list-local-branches))))
+    (propertize (number-to-string n) 'face (if (> n 1) 'bold 'shadow))))
+
+(defun magit-repolist-column-stashes (_id)
+  "Insert number of stashes."
+  (let ((n (length (magit-list-stashes))))
+    (propertize (number-to-string n) 'face (if (> n 0) 'bold 'shadow))))
 
 ;;; Read Repository
 

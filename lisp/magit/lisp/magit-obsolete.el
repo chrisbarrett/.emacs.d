@@ -121,5 +121,21 @@ use `magit-pre-refresh-hook', `magit-post-refresh-hook',
 (define-obsolete-function-alias 'magit-checkout-file
   'magit-file-checkout "Magit 2.9.1")
 
+;;; Obsolete since v2.11.0
+
+(define-obsolete-function-alias 'magit-modified-files
+  'magit-unstaged-files "Magit 2.11.0")
+
+(define-obsolete-function-alias 'magit-insert-submodules
+  'magit-insert-modules-overview "Magit 2.11.0")
+
+;;; Obsolete since v2.12.0
+
+(define-obsolete-function-alias 'magit-insert-unpulled-from-upstream-or-recent
+  'magit-insert-unpulled-from-upstream "Magit 2.12.0")
+
+(make-obsolete-variable 'magit-no-confirm-default
+                        'magit-dwim-selection "Magit 2.12.0")
+
 (provide 'magit-obsolete)
 ;;; magit-obsolete.el ends here

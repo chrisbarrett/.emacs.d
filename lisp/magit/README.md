@@ -27,7 +27,41 @@
 <hr>
 
 <div align="center">
-  Keeping its user <a href= "https://magit.vc/quotes">this excited</a> is
+  <a href="https://www.kickstarter.com/projects/1681258897/its-magit-the-magical-git-client/updates">
+    <img src="https://magit.vc/assets/kickstarter-k.png">
+  </a>
+</div>
+<br>
+<div align="justify">
+  Thanks to 1987 backers the Kickstarter campaign was a huge success!
+  This September was very exciting and I would like to thank you all
+  for your generosity and enthusiastic support!
+</div>
+<div align="center">
+  <em><b>Thank you!</b> &mdash; Jonas Bernoulli</em><br><br>
+  <img src="https://magit.vc/assets/pixel-heart.png">
+</div>
+<br>
+<div align="center">
+  <em>My thanks also go to these three sponsors!</em><br><br>
+  <a href="https://www.mojotech.com/about">
+    <img title="Mojotech"
+         alt="Mojotech"
+         src="https://magit.vc/assets/mojotech.png"></a>
+  <a href="https://opensource.google.com">
+    <img title="Google Open Source"
+         alt="Google Open Source"
+         src="https://magit.vc/assets/google-os.png"></a>
+  <a href="http://www.directangular.com">
+    <img title="Directangular"
+         alt="Directangular"
+         src="https://magit.vc/assets/directangular.png"></a>
+</div>
+<br>
+<hr>
+
+<div align="center">
+  Keeping its users <a href= "https://magit.vc/quotes">this excited</a> is
   <a href="https://magit.vc/stats/authors.html#cumulated_added_lines_of_code_per_author">
     a lot of work
   </a>.
@@ -51,11 +85,10 @@
 		 style="height: 50px; width: auto;"
          src="https://magit.vc/assets/patreon-50px.png"></a>
   &nbsp;&nbsp;
-  <a href="https://salt.bountysource.com/teams/magit">
-    <img title="Donate monthly using Bountysource"
-         alt="Donate monthly using Bountysource"
-		 style="height: 50px; width: auto;"
-         src="https://magit.vc/assets/bountysource-50px.png"></a>
+  <a href="https://liberapay.com/magit">
+     <img title="Donate weekly using Liberapay"
+          alt="Donate weekly using Liberapay"
+          src="https://magit.vc//assets/liberapay.png"></a>
 </div>
 <br>
 <div align="center">
