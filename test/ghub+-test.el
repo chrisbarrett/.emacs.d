@@ -1,8 +1,4 @@
-(require 'ghub)
 (require 'ghub+)
-
-;;; No apparent way to provide testing for authenticated requests
-(setq ghub-authenticate nil)
 
 (ert-deftest basic ()
   (should
@@ -10,6 +6,15 @@
                   (name . "ghub-plus")))
           (repo  (ghubp-get-repos-owner-repo repo)))
      (= 82884749 (alist-get 'id repo)))))
+
+(ert-deftest ghubp-test-ratelimit-utils ()
+  (let ((ghub-response-headers
+         '(("X-RateLimit-Limit" . "5000")
+           ("X-RateLimit-Remaining" . "4774")
+           ("X-RateLimit-Reset" . "1501809984"))))
+    (let-alist (ghubp-ratelimit)
+      (should (equal .remaining 4774))
+      (should (equal .reset '(22915 52544))))))
 
 (ert-deftest lint-unused-args ()
   (should (lint "ghub+.el" #'lint-unused-args 'per-form)))
