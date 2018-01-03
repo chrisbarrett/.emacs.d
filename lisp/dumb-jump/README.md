@@ -25,6 +25,7 @@ There is currently basic support for the following languages:
 * Clojure
 * CoffeeScript
 * Coq
+* Crystal
 * Elixir
 * Emacs Lisp
 * Erlang
@@ -45,6 +46,7 @@ There is currently basic support for the following languages:
 * Ruby
 * Rust
 * Scala
+* Scheme
 * Swift
 
 If you have any issues with the existing languages, or you want support for another one, then please [open an issue](https://github.com/jacktasia/dumb-jump/issues). PRs are also welcome. If you'd like to add a language these PRs for [lua](https://github.com/jacktasia/dumb-jump/pull/33) and [rust](https://github.com/jacktasia/dumb-jump/pull/57) are good examples.
@@ -128,6 +130,32 @@ I personally no longer use the `dumb-jump-mode` keybindings that were inspired b
       :config (setq dumb-jump-selector 'ivy) ;; (setq dumb-jump-selector 'helm)
       :ensure)
 
+##### Hydra for effieciency
+
+If you have [Hydra](https://github.com/abo-abo/hydra) installed, the following is an example hydra for easily using Dumb-Jump and not needing to remember the bindings or function names:
+
+```el
+(defhydra dumb-jump-hydra (:color blue :columns 3)
+    "Dumb Jump"
+    ("j" dumb-jump-go "Go")
+    ("o" dumb-jump-go-other-window "Other window")
+    ("e" dumb-jump-go-prefer-external "Go external")
+    ("x" dumb-jump-go-prefer-external-other-window "Go external other window")
+    ("i" dumb-jump-go-prompt "Prompt")
+    ("l" dumb-jump-quick-look "Quick look")
+    ("b" dumb-jump-back "Back"))
+```
+
+It can be explicitly bound or used inside another hydra (if you already use something like [Avy](https://github.com/abo-abo/avy)/[Ace](https://github.com/winterTTr/ace-jump-mode) or similar for general "jumping").
+      
+#### Debugging a jump
+
+1. <kbd>M-x</kbd> `set-variable dumb-jump-debug t`
+1. try to jump
+1. go to buffer `*Messages*`
+
+More details [here](http://p.cweiske.de/506). Thanks to @cweiske and @Glumanda99 
+
 ## Why?
 
 I wanted "jump to definition" functionality to "just work" in emacs. I use IntelliJ for Java and this functionality is basically the only thing I miss when I switch back to emacs for work in other languages. There are certainly other packages that offer this type of functionality, but they all require significantly more configuration and are often limited to a particular language. An alternative may be worth setting up if you are in a specific project or language often (see [alternatives](#alternatives)).
@@ -147,7 +175,7 @@ Requires [Cask](https://github.com/cask/cask).
 
 Here is a list of potential alternative packages for emacs:
 
-* [Tags](http://www.gnu.org/software/emacs/manual/html_node/emacs/Tags.html) supports multiple languages
+* [Tags](https://www.gnu.org/software/emacs/manual/html_node/emacs/Tags-Tables.html) supports multiple languages
 * [GNU Global](http://www.gnu.org/software/global/) supports multiple languages
 * [Tern](http://ternjs.net/) for JavaScript
 * [elpy](https://github.com/jorgenschaefer/elpy) for Python
