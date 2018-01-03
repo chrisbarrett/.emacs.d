@@ -1,4 +1,5 @@
-language: emacs-lisp
+#language: emacs-lisp
+language: python
 
 sudo: false
 
@@ -21,8 +22,10 @@ before_install:
   - wget 'https://raw.githubusercontent.com/flycheck/emacs-travis/master/emacs-travis.mk'
   - make -f emacs-travis.mk install_emacs
   - make -f emacs-travis.mk install_cask
+  - emacs --version
+  - cask exec emacs --version
 install:
-  - cask install
+  - cask --verbose install
 
 script:
   - cask exec ert-runner

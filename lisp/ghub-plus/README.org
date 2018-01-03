@@ -1,4 +1,4 @@
-#+Title: GHub+  [[https://travis-ci.org/vermiculus/ghub-plus][https://travis-ci.org/vermiculus/ghub-plus.svg?branch=master]]
+#+Title: GHub+  [[https://travis-ci.org/vermiculus/ghub-plus][https://travis-ci.org/vermiculus/ghub-plus.svg?branch=master]] [[https://melpa.org/#/ghub%2B][file:https://melpa.org/packages/ghub+-badge.svg]]
 
 GHub+ is a thick GitHub API client built using =API-Wrap.el= on =ghub=,
 [[https://github.com/tarsius/ghub][the minuscule GitHub API client]].
