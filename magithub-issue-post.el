@@ -1,15 +1,16 @@
 (require 'magithub-core)
 (require 'magithub-issue)
-(require 'magithub-issue-status)
 (require 'magithub-label)
 
 (require 'widget)
 (eval-and-compile
   (require 'wid-edit))
 
+(declare-function magithub-issue-view "magithub-issue-view.el" (issue))
+
 (define-derived-mode magithub-issue-post-mode nil
   "Magithub Issue Post"
-  "Major mode for posting GitHub issues and pull requests.")
+  "Major mode for posting Github issues and pull requests.")
 
 (defvar-local magithub-issue--extra-data nil)
 (defvar-local magithub-issue--widgets nil
@@ -121,7 +122,7 @@ properties are respected and prepopulate the form."
                     (let ((w (apply #'widget-create 'magithub-issue-labels
                                     (mapcar (lambda (label) `(item ,(alist-get 'name label)))
                                             (magithub-label-list)))))
-                      (widget-value-set w (magithub-get-in-all '(name) .issue.labels))
+                      (widget-value-set w (ghubp-get-in-all '(name) .issue.labels))
                       w))
               magithub-issue--widgets))
 
@@ -141,7 +142,7 @@ properties are respected and prepopulate the form."
 
 (defun magithub-issue-new (repo title labels)
   (interactive
-   (let-alist (setq repo (magithub-source-repo))
+   (let-alist (setq repo (magithub-repo))
      (list repo
            (read-string (format "Issue title (%s): " .full_name))
            (when .permissions.push
@@ -181,14 +182,55 @@ See also URL
         (push (expand-file-name tryname trydir) combinations)))
     (-find #'file-readable-p combinations)))
 
-(defun magithub-pull-request-new (repo title base head)
-  (interactive
-   (let-alist (setq repo (magithub-source-repo))
-     (list repo
-           (read-string (format "Pull request title (%s/%s): " .owner.login .name))
-           (magit-read-branch "Base branch" (magit-get-upstream-branch))
-           (format "%s:%s" (ghub--username) (magit-read-branch "Head")))))
+(defun magithub-remote-branches (remote)
+  "Return a list of branches on REMOTE."
+  (let ((regexp (concat (regexp-quote remote) (rx "/" (group (* any))))))
+    (--map (and (string-match regexp it)
+                (match-string 1 it))
+           (magit-list-remote-branch-names remote))))
 
+(defun magithub-remote-branches-choose (prompt remote &optional default)
+  "Using PROMPT, choose a branch on REMOTE."
+  (magit-completing-read
+   (format "[%s] %s"
+           (magithub-repo-name (magithub-repo-from-remote remote))
+           prompt)
+   (magithub-remote-branches remote)
+   nil t nil nil default))
+
+(defun magithub-pull-request-new-arguments ()
+  (let* ((this-repo   (magithub-read-repo "Fork's remote (this is you!)"))
+         (this-repo-owner (let-alist this-repo .owner.login))
+         (parent-repo (or (alist-get 'parent this-repo) this-repo))
+         (this-remote (car (magithub-repo-remotes-for-repo this-repo)))
+         (on-this-remote (string= (magit-get-push-remote) this-remote))
+         (base-remote (car (magithub-repo-remotes-for-repo parent-repo)))
+         (head        (magithub-remote-branches-choose
+                       "Head branch" this-remote
+                       (when on-this-remote
+                         (magit-get-current-branch))))
+         (base        (magithub-remote-branches-choose
+                       "Base branch" base-remote
+                       (when on-this-remote
+                         (magit-get-upstream-branch head))))
+         (head (if (string= this-remote base-remote)
+                   head
+                 (format "%s:%s" this-repo-owner head))))
+    (unless (y-or-n-p (format "You are about to create a pull request to merge branch `%s' into %s:%s; is this what you wanted to do?"
+                              head (magithub-repo-name parent-repo) base))
+      (user-error "Aborting"))
+    (let-alist parent-repo
+      (list parent-repo base head
+            (read-string (format "Pull request title (%s/%s): "
+                                 .owner.login .name))))))
+
+(defun magithub-pull-request-new (repo base head title)
+  "Create a new pull request."
+  (interactive (magithub-pull-request-new-arguments))
+  (when (ghubp-get-repos-owner-repo-pulls repo nil :head head)
+    (user-error "A pull request on %s already exists for head %s"
+                (magithub-repo-name repo)
+                head))
   (let-alist repo
     (with-current-buffer
         (magithub-issue--new-form
@@ -222,9 +264,11 @@ See also URL
     (when (s-blank-p (alist-get 'title issue))
       (user-error "Title is required"))
     (when (yes-or-no-p "Are you sure you want to submit this issue? ")
-      (magithub-issue-browse
-       (ghubp-post-repos-owner-repo-issues (magithub-source-repo) issue))
-      (kill-buffer-and-window))))
+      (let ((issue (magithub-request
+                    (ghubp-post-repos-owner-repo-issues (magithub-repo) issue))))
+        (kill-buffer-and-window)
+        (magithub-issue-view issue)))))
+
 (defun magithub-issue-wsubmit-pull-request (&rest _)
   (interactive)
   (let ((pull-request `((title  . ,(s-trim (magithub-issue--widget-value 'title)))
@@ -236,9 +280,13 @@ See also URL
     (when (yes-or-no-p "Are you sure you want to submit this pull request? ")
       (when (y-or-n-p "Allow maintainers to modify this pull request? ")
         (push (cons 'maintainer_can_modify t) pull-request))
-      (magithub-issue-browse
-       (ghubp-post-repos-owner-repo-pulls (magithub-source-repo) pull-request))
-      (kill-buffer-and-window))))
+      (let ((pr (condition-case err
+                    (magithub-request
+                     (ghubp-post-repos-owner-repo-pulls (magithub-repo) pull-request))
+                  (ghub-422
+                   (user-error "This pull request already exists!")))))
+        (kill-buffer-and-window)
+        (magithub-issue-view pr)))))
 
 (defun magithub-issue-wcancel (&rest _)
   (interactive)
