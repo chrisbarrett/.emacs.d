@@ -31,6 +31,7 @@
 
 ;;; Code:
 
+(require 'ansi-color)
 (require 'cl-lib)
 (require 'dash)
 
@@ -100,8 +101,9 @@ When this is nil, no sections are ever removed."
 
 (defcustom magit-credential-cache-daemon-socket
   (--some (-let [(prog . args) (split-string it)]
-            (if (string-match-p
-                 "\\`\\(?:\\(?:/.*/\\)?git-credential-\\)?cache\\'" prog)
+            (if (and prog
+                     (string-match-p
+                      "\\`\\(?:\\(?:/.*/\\)?git-credential-\\)?cache\\'" prog))
                 (or (cl-loop for (opt val) on args
                              if (string= opt "--socket")
                              return val)
@@ -197,6 +199,11 @@ non-nil, then the password is read from the user instead."
   "Face for non-zero exit-status."
   :group 'magit-faces)
 
+(defface magit-mode-line-process
+  '((t :inherit mode-line-emphasis))
+  "Face for `mode-line-process' status when Git is running for side-effects."
+  :group 'magit-faces)
+
 ;;; Process Mode
 
 (defvar magit-process-mode-map
@@ -208,7 +215,11 @@ non-nil, then the password is read from the user instead."
 (define-derived-mode magit-process-mode magit-mode "Magit Process"
   "Mode for looking at Git process output."
   :group 'magit-process
-  (hack-dir-local-variables-non-file-buffer))
+  (hack-dir-local-variables-non-file-buffer)
+  (setq imenu-prev-index-position-function
+        'magit-imenu--process-prev-index-position-function)
+  (setq imenu-extract-index-name-function
+        'magit-imenu--process-extract-index-name-function))
 
 (defun magit-process-buffer (&optional nodisplay)
   "Display the current repository's process buffer.
@@ -286,8 +297,12 @@ as well as the current repository's status buffer are refreshed.
 
 Process output goes into a new section in the buffer returned by
 `magit-process-buffer'."
-  (magit-call-git args)
-  (magit-refresh))
+  (let ((magit--refresh-cache (list (cons 0 0))))
+    (magit-call-git args)
+    (when (member (car args) '("init" "clone"))
+      ;; Creating a new repository invalidates the cache.
+      (setq magit--refresh-cache nil))
+    (magit-refresh)))
 
 (defvar magit-pre-call-git-hook nil)
 
@@ -349,6 +364,10 @@ option `magit-git-global-arguments' specifies constant arguments.
 The remaining arguments ARGS specify arguments to Git, they are
 flattened before use."
   (declare (indent 1))
+  (when (eq system-type 'windows-nt)
+    ;; On w32, git expects UTF-8 encoded input, ignore any user
+    ;; configuration telling us otherwise (see #3250).
+    (encode-coding-region (point-min) (point-max) 'utf-8-unix))
   (if (file-remote-p default-directory)
       ;; We lack `process-file-region', so fall back to asynch +
       ;; waiting in remote case.
@@ -487,6 +506,10 @@ Magit status buffer."
     (with-editor-set-process-filter process #'magit-process-filter)
     (set-process-sentinel process #'magit-process-sentinel)
     (set-process-buffer   process process-buf)
+    (when (eq system-type 'windows-nt)
+      ;; On w32, git expects UTF-8 encoded input, ignore any user
+      ;; configuration telling us otherwise.
+      (set-process-coding-system process 'utf-8-unix))
     (process-put process 'section section)
     (process-put process 'command-buf (current-buffer))
     (process-put process 'default-dir default-directory)
@@ -586,7 +609,8 @@ Magit status buffer."
               (magit-refresh))
           (with-temp-buffer
             (setq default-directory (process-get process 'default-dir))
-            (magit-refresh)))))))
+            (magit-refresh)))))
+    (force-mode-line-update t)))
 
 (defun magit-sequencer-process-sentinel (process event)
   "Special sentinel used by `magit-run-git-sequencer'."
@@ -695,7 +719,7 @@ instead."
 (defun magit-process-match-prompt (prompts string)
   "Match STRING against PROMPTS and set match data.
 Return the matched string suffixed with \": \", if needed."
-  (when (--any? (string-match it string) prompts)
+  (when (--any-p (string-match it string) prompts)
     (let ((prompt (match-string 0 string)))
       (cond ((string-suffix-p ": " prompt) prompt)
             ((string-suffix-p ":"  prompt) (concat prompt " "))
@@ -772,29 +796,35 @@ as argument."
 (defun magit-process-set-mode-line (program args)
   (when (equal program magit-git-executable)
     (setq args (nthcdr (length magit-git-global-arguments) args)))
-  (let ((str (concat " " program (and args (concat " " (car args))))))
+  (let ((str (concat " " (propertize
+                          (concat program (and args (concat " " (car args))))
+                          'face 'magit-mode-line-process))))
     (dolist (buf (magit-mode-get-buffers))
-      (with-current-buffer buf (setq mode-line-process str)))))
+      (with-current-buffer buf
+        (setq mode-line-process str)))))
 
 (defun magit-process-unset-mode-line ()
   (dolist (buf (magit-mode-get-buffers))
     (with-current-buffer buf (setq mode-line-process nil))))
 
-(defvar magit-process-error-message-re
-  (concat "^\\(?:error\\|fatal\\|git\\): \\(.*\\)" paragraph-separate))
+(defvar magit-process-error-message-regexps
+  (list "^\\*ERROR\\*: Canceled by user$"
+        "^\\(?:error\\|fatal\\|git\\): \\(.*\\)$"))
 
 (define-error 'magit-git-error "Git error")
 
 (defvar-local magit-this-error nil)
 
+(defvar magit-process-finish-apply-ansi-colors nil)
+
 (defun magit-process-finish (arg &optional process-buf command-buf
                                  default-dir section)
   (unless (integerp arg)
-    (setq process-buf (process-buffer arg)
-          command-buf (process-get arg 'command-buf)
-          default-dir (process-get arg 'default-dir)
-          section     (process-get arg 'section)
-          arg         (process-exit-status arg)))
+    (setq process-buf (process-buffer arg))
+    (setq command-buf (process-get arg 'command-buf))
+    (setq default-dir (process-get arg 'default-dir))
+    (setq section     (process-get arg 'section))
+    (setq arg         (process-exit-status arg)))
   (when (featurep 'dired)
     (dired-uncache default-dir))
   (when (buffer-live-p process-buf)
@@ -812,6 +842,9 @@ as argument."
                                         'magit-process-ok
                                       'magit-process-ng)))
           (set-marker-insertion-type marker t))
+        (when magit-process-finish-apply-ansi-colors
+          (ansi-color-apply-on-region (magit-section-content section)
+                                      (magit-section-end section)))
         (if (= (magit-section-end section)
                (+ (line-end-position) 2))
             (save-excursion
@@ -824,17 +857,25 @@ as argument."
                                      (window-list))))
               (magit-section-hide section)))))))
   (unless (= arg 0)
-    (let ((msg (or (and (buffer-live-p process-buf)
-                        (with-current-buffer process-buf
-                          (save-excursion
-                            (goto-char (magit-section-end section))
-                            (--when-let (magit-section-content section)
-                              (when (re-search-backward
-                                     magit-process-error-message-re it t)
-                                (match-string-no-properties 1))))))
-                   "Git failed")))
-      (if magit-process-raise-error
-          (signal 'magit-git-error (list (format "%s (in %s)" msg default-dir)))
+    (let ((msg
+           (or (and (buffer-live-p process-buf)
+                    (with-current-buffer process-buf
+                      (and (magit-section-content section)
+                           (save-excursion
+                             (goto-char (magit-section-end section))
+                             (run-hook-wrapped
+                              'magit-process-error-message-regexps
+                              (lambda (re)
+                                (save-excursion
+                                  (and (re-search-backward re nil t)
+                                       (or (match-string-no-properties 1)
+                                           (and (not magit-process-raise-error)
+                                                'suppressed))))))))))
+               "Git failed")))
+      (cond
+       (magit-process-raise-error
+        (signal 'magit-git-error (list (format "%s (in %s)" msg default-dir))))
+       ((not (eq msg 'suppressed))
         (when (buffer-live-p process-buf)
           (with-current-buffer process-buf
             (-when-let (status-buf (magit-mode-get-buffer 'magit-status-mode))
@@ -847,7 +888,7 @@ as argument."
                                             'magit-process-buffer)))))
                      (format "Hit %s to see" (key-description key))
                    "See")
-                 (buffer-name process-buf)))))
+                 (buffer-name process-buf))))))
   arg)
 
 (defun magit-process-display-buffer (process)

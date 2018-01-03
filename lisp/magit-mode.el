@@ -142,7 +142,7 @@ which in turn uses the function specified here."
   :type '(radio (function-item magit-generate-buffer-name-default-function)
                 (function :tag "Function")))
 
-(defcustom magit-buffer-name-format "*%M%v: %t"
+(defcustom magit-buffer-name-format "*%M%v: %T"
   "The format string used to name Magit buffers.
 
 The following %-sequences are supported:
@@ -152,25 +152,28 @@ The following %-sequences are supported:
 
 `%M' Like \"%m\" but abbreviate `magit-status-mode' as `magit'.
 
-`%v' The value the buffer is locked to, in parentheses, or an empty
-     string if the buffer is not locked to a value.
+`%v' The value the buffer is locked to, in parentheses, or an
+     empty string if the buffer is not locked to a value.
 
-`%V' Like \"%v\", but the string is prefixed with a space, unless it
-     is an empty string.
+`%V' Like \"%v\", but the string is prefixed with a space, unless
+     it is an empty string.
 
 `%t' The top-level directory of the working tree of the
      repository, or if `magit-uniquify-buffer-names' is non-nil
      an abbreviation of that.
 
-The value should always contain either \"%m\" or \"%M\" as well as
-\"%t\".  If `magit-uniquify-buffer-names' is non-nil, then the
-value must end with \"%t\".
+`%T' Like \"%t\", but append an asterisk if and only if
+     `magit-uniquify-buffer-names' is nil.
+
+The value should always contain \"%m\" or \"%M\", \"%v\" or \"%V\",
+and \"%t\" or \"%T\".  If `magit-uniquify-buffer-names' is non-nil,
+then the value must end with \"%t\" or \"%T\" (see issue #2841).
 
 This is used by `magit-generate-buffer-name-default-function'.
 If another `magit-generate-buffer-name-function' is used, then
 it may not respect this option, or on the contrary it may
 support additional %-sequences."
-  :package-version '(magit . "2.3.0")
+  :package-version '(magit . "2.12.0")
   :group 'magit-buffers
   :type 'string)
 
@@ -188,6 +191,43 @@ support additional %-sequences."
                 (function-item magit-mode-quit-window)
                 (function-item magit-restore-window-configuration)
                 (function :tag "Function")))
+
+(defcustom magit-use-sticky-arguments t
+  "How to reuse arguments from existing diff and log buffers.
+
+nil       Always use the default value of the variable
+          `magit-log-arguments' for log commands.  Likewise,
+          always use the default value of the variable
+          `magit-diff-arguments' for diff command calls.
+
+current   If the mode of the current buffer is derived from
+          `magit-log-mode' or `magit-diff-mode', reuse the
+          arguments from that buffer instead of those given by
+          the variable `magit-log-arguments' or
+          `magit-diff-arguments', respectively.
+
+t         Like `current', but if the mode of the current buffer
+          is not derived from `magit-log-mode' or
+          `magit-diff-mode', use the arguments from the current
+          repository's active (i.e. non-locked) `magit-log-mode'
+          or `magit-diff-mode' buffer, respectively, if it
+          exists.
+
+          Note that commands that generate a
+          `magit-revision-mode' or `magit-stash-mode' buffer will
+          also collect their diff arguments from the active
+          `magit-diff-mode' buffer.
+
+In general, there is a separation between the \"sticky\"
+arguments for log and diff buffers, but there is one special
+case: if the current buffer is a log buffer,
+`magit-show-commit' (considered a diff command) uses the file
+filter from the log buffer."
+  :package-version '(magit . "2.11.0")
+  :group 'magit-buffers
+  :type '(choice (const :tag "disabled" nil)
+                 (const :tag "sticky for current" current)
+                 (const :tag "sticky" t)))
 
 (defcustom magit-region-highlight-hook
   '(magit-section-update-region magit-diff-update-hunk-region)
@@ -230,10 +270,10 @@ improve performance."
 (defcustom magit-save-repository-buffers t
   "Whether to save file-visiting buffers when appropriate.
 
-If non-nil then all modified file-visiting buffers belonging
+If non-nil, then all modified file-visiting buffers belonging
 to the current repository may be saved before running Magit
 commands and before creating or refreshing Magit buffers.
-If `dontask' then this is done without user intervention, for
+If `dontask', then this is done without user intervention, for
 any other non-nil value the user has to confirm each save.
 
 The default is t to avoid surprises, but `dontask' is the
@@ -320,10 +360,8 @@ starts complicating other things, then it will be removed."
            (define-key map (kbd "C-i") 'magit-section-toggle)
            (define-key map [C-tab]     'magit-section-cycle)
            (define-key map [M-tab]     'magit-section-cycle-diffs)
-           (define-key map [S-tab]     'magit-section-cycle-global)
-           ;; Next two are for backward compatibility.
-           (define-key map [s-tab]     'magit-section-cycle-global)
-           (define-key map   [backtab] 'magit-section-cycle-global)
+           ;; [backtab] is the most portable binding for Shift+Tab.
+           (define-key map [backtab]   'magit-section-cycle-global)
            (define-key map (kbd   "^") 'magit-section-up)
            (define-key map (kbd   "p") 'magit-section-backward)
            (define-key map (kbd   "n") 'magit-section-forward)
@@ -348,6 +386,7 @@ starts complicating other things, then it will be removed."
     (define-key map (kbd "M-3") 'magit-section-show-level-3-all)
     (define-key map (kbd "M-4") 'magit-section-show-level-4-all)
     (define-key map "$" 'magit-process-buffer)
+    (define-key map "%" 'magit-worktree-popup)
     (define-key map "a" 'magit-cherry-apply)
     (define-key map "A" 'magit-cherry-pick-popup)
     (define-key map "b" 'magit-branch-popup)
@@ -508,7 +547,11 @@ Magit is documented in info node `(magit)'."
   (magit-delete-region-overlays)
   (if (and (run-hook-with-args-until-success 'magit-region-highlight-hook
                                              (magit-current-section))
-           (not magit-keep-region-overlay))
+           (not magit-keep-region-overlay)
+           (not (= (line-number-at-pos start)
+                   (line-number-at-pos end)))
+           ;; (not (eq (car-safe last-command-event) 'mouse-movement))
+           )
       (funcall (default-value 'redisplay-unhighlight-region-function) rol)
     (funcall (default-value 'redisplay-highlight-region-function)
              start end window rol)))
@@ -726,7 +769,7 @@ thinking a buffer belongs to a repo that it doesn't.")
           (and create
                (let ((default-directory topdir))
                  (magit-generate-new-buffer mode value))))
-    (user-error "Not inside a Git repository")))
+    (magit--not-inside-repository-error)))
 
 (defun magit-generate-new-buffer (mode &optional value)
   (let* ((name (funcall magit-generate-buffer-name-function mode value))
@@ -753,17 +796,19 @@ The returned name is based on `magit-buffer-name-format' and
 takes `magit-uniquify-buffer-names' and VALUE, if non-nil, into
 account."
   (let ((m (substring (symbol-name mode) 0 -5))
-        (v (and value (format "%s" (if (listp value) value (list value))))))
+        (v (and value (format "%s" (if (listp value) value (list value)))))
+        (n (if magit-uniquify-buffer-names
+               (file-name-nondirectory
+                (directory-file-name default-directory))
+             (abbreviate-file-name default-directory))))
     (format-spec
      magit-buffer-name-format
      `((?m . ,m)
        (?M . ,(if (eq mode 'magit-status-mode) "magit" m))
        (?v . ,(or v ""))
        (?V . ,(if v (concat " " v) ""))
-       (?t . ,(if magit-uniquify-buffer-names
-                  (file-name-nondirectory
-                   (directory-file-name default-directory))
-                (abbreviate-file-name default-directory)))))))
+       (?t . ,n)
+       (?T . ,(if magit-uniquify-buffer-names n (concat n "*")))))))
 
 (defun magit-toggle-buffer-lock ()
   "Lock the current buffer to its value or unlock it.
@@ -800,9 +845,34 @@ latter is displayed in its place."
                                   major-mode value)))
       (user-error "Buffer has no value it could be locked to"))))
 
+(defvar magit-buffer-lock-functions nil
+  "Provide buffer-locking support for third-party modes.
+An alist of symbols to functions.
+
+The symbol must be the major-mode the locked buffer will have.
+
+The function must take a list of arguments and return a value
+that identifies the buffer (i.e., its 'lock value').  If the
+third-party mode is invoked as
+
+    (magit-mode-setup-internal #\\='my-mode \\='(1 2 3) t)
+
+the function will be invoked as
+
+    (apply lock-func \\='(1 2 3))
+
+if the cons (my-mode . lock-func) is in this list.
+
+This variable is intended for third-party extensions;
+`magit-buffer-lock-value' implements all built-in behavior.
+
+See also `magit-toggle-buffer-lock'.")
+
 (cl-defun magit-buffer-lock-value
     (&optional (mode major-mode)
                (args magit-refresh-args))
+  "Find an appropriate buffer lock value for MODE under ARGS.
+See also `magit-buffer-lock-functions'."
   (cl-case mode
     (magit-cherry-mode
      (-let [(upstream head) args]
@@ -830,7 +900,10 @@ latter is displayed in its place."
     ((magit-reflog-mode   ; (ref ~args)
       magit-stash-mode    ; (stash _const _args _files)
       magit-stashes-mode) ; (ref)
-     (car args))))
+     (car args))
+    (t
+     (--when-let (cdr (assq mode magit-buffer-lock-functions))
+       (apply it args)))))
 
 (defun magit-mode-bury-buffer (&optional kill-buffer)
   "Bury the current buffer.
@@ -876,7 +949,8 @@ Run hooks `magit-pre-refresh-hook' and `magit-post-refresh-hook'."
   (interactive)
   (unless inhibit-magit-refresh
     (let ((start (current-time))
-          (magit--refresh-cache (list (cons 0 0))))
+          (magit--refresh-cache (or magit--refresh-cache
+                                    (list (cons 0 0)))))
       (when magit-refresh-verbose
         (message "Refreshing magit..."))
       (magit-run-hook-with-benchmark 'magit-pre-refresh-hook)
@@ -1036,14 +1110,16 @@ buffer which visits a file in the current repository.  Optional
 argument (the prefix) non-nil means save all with no questions."
   (interactive "P")
   (-when-let (topdir (magit-rev-parse-safe "--show-toplevel"))
-    (save-some-buffers
-     arg (-partial (lambda (topdir)
-                     (and buffer-file-name
-                          ;; Avoid needlessly connecting to unrelated remotes.
-                          (string-prefix-p topdir (file-truename buffer-file-name))
-                          (equal (magit-rev-parse-safe "--show-toplevel")
-                                 topdir)))
-                   topdir))))
+    (let ((remote (file-remote-p topdir)))
+      (save-some-buffers
+       arg (lambda ()
+             (and buffer-file-name
+                  ;; Avoid needlessly connecting to unrelated remotes.
+                  (equal (file-remote-p buffer-file-name)
+                         remote)
+                  (string-prefix-p topdir (file-truename buffer-file-name))
+                  (equal (magit-rev-parse-safe "--show-toplevel")
+                         topdir)))))))
 
 ;;; Restore Window Configuration
 

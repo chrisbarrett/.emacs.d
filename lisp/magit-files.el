@@ -227,15 +227,22 @@ directory, while reading the FILENAME."
 (magit-define-popup magit-file-popup
   "Popup console for Magit commands in file-visiting buffers."
   :actions '((?s "Stage"     magit-stage-file)
-             (?d "Diff"      magit-diff-buffer-file)
-             (?l "Log"       magit-log-buffer-file)
-             (?b "Blame"     magit-blame-popup)
-             (?u "Unstage"   magit-unstage-file)
              (?D "Diff..."   magit-diff-buffer-file-popup)
              (?L "Log..."    magit-log-buffer-file-popup)
-             (?p "Find blob" magit-blob-previous)
-             (?c "Commit"    magit-commit-popup))
-  :max-action-columns 4)
+             (?B "Blame..."  magit-blame-popup) nil
+             (?u "Unstage"   magit-unstage-file)
+             (?d "Diff"      magit-diff-buffer-file)
+             (?l "Log"       magit-log-buffer-file)
+             (?b "Blame"     magit-blame)
+             (?p "Prev blob" magit-blob-previous)
+             (?c "Commit"    magit-commit-popup) nil nil
+             (?r (lambda ()
+                   (with-current-buffer magit-pre-popup-buffer
+                     (and (not buffer-file-name)
+                          (propertize "...reverse" 'face 'default))))
+                 magit-blame-reverse)
+             (?n "Next blob" magit-blob-next))
+  :max-action-columns 5)
 
 (defvar magit-file-mode-lighter "")
 
@@ -267,10 +274,14 @@ Currently this only adds the following key bindings.
   (let ((map (make-sparse-keymap)))
     (cond ((featurep 'jkl)
            (define-key map "i" 'magit-blob-previous)
-           (define-key map "k" 'magit-blob-next))
+           (define-key map "k" 'magit-blob-next)
+           (define-key map "j" 'magit-blame)
+           (define-key map "l" 'magit-blame-reverse))
           (t
            (define-key map "p" 'magit-blob-previous)
-           (define-key map "n" 'magit-blob-next)))
+           (define-key map "n" 'magit-blob-next)
+           (define-key map "b" 'magit-blame)
+           (define-key map "f" 'magit-blame-reverse)))
     (define-key map "q" 'magit-kill-this-buffer)
     map)
   "Keymap for `magit-blob-mode'.")
@@ -335,7 +346,7 @@ Currently this only adds the following key bindings.
 
 (defun magit-file-rename (file newname)
   "Rename the FILE to NEWNAME.
-If FILE isn't tracked in Git fallback to using `rename-file'."
+If FILE isn't tracked in Git, fallback to using `rename-file'."
   (interactive
    (let* ((file (magit-read-file "Rename file"))
           (newname (read-file-name (format "Rename %s to file: " file))))
@@ -359,24 +370,38 @@ If FILE isn't tracked in Git fallback to using `rename-file'."
     (rename-file file newname current-prefix-arg)
     (magit-refresh)))
 
-(defun magit-file-untrack (file)
-  "Untrack FILE.
-Stop tracking FILE in Git but do not remove it from the working
-tree."
-  (interactive (list (magit-read-tracked-file "Untrack file")))
-  (magit-run-git "rm" "--cached" "--" file))
+(defun magit-file-untrack (files &optional force)
+  "Untrack the selected FILES or one file read in the minibuffer.
 
-(defun magit-file-delete (file &optional force)
-  "Delete FILE.
-With a prefix argument FORCE do so even when FILE has uncommitted
-changes.
+With a prefix argument FORCE do so even when the files have
+staged as well as unstaged changes."
+  (interactive (list (or (--if-let (magit-region-values 'file t)
+                             (progn
+                               (or (magit-file-tracked-p (car it))
+                                   (user-error "Already untracked"))
+                               (or (magit-confirm-files 'untrack it "Untrack")
+                                   (user-error "Abort")))
+                           (list (magit-read-tracked-file "Untrack file"))))
+                     current-prefix-arg))
+  (magit-run-git "rm" "--cached" (and force "--force") "--" files))
 
-If FILE isn't tracked in Git fallback to using `delete-file'."
-  (interactive (list (magit-read-file "Delete file")))
-  (if (magit-file-tracked-p file)
-      (magit-run-git "rm" (and force "--force") "--" file)
-    (delete-file (expand-file-name file (magit-toplevel)) t)
-    (magit-refresh)))
+(defun magit-file-delete (files &optional force)
+  "Delete the selected FILES or one file read in the minibuffer.
+
+With a prefix argument FORCE do so even when the files have
+uncommitted changes.  When the files aren't being tracked in
+Git, then fallback to using `delete-file'."
+  (interactive (list (--if-let (magit-region-values 'file t)
+                         (or (magit-confirm-files 'delete it "Delete")
+                             (user-error "Abort"))
+                       (list (magit-read-file "Delete file")))
+                     current-prefix-arg))
+  (if (magit-file-tracked-p (car files))
+      (magit-call-git "rm" (and force "--force") "--" files)
+    (let ((topdir (magit-toplevel)))
+      (dolist (file files)
+        (delete-file (expand-file-name file topdir) t))))
+  (magit-refresh))
 
 ;;;###autoload
 (defun magit-file-checkout (rev file)
@@ -438,6 +463,80 @@ If DEFAULT is non-nil, use this as the default value instead of
              (completing-read-multiple (or prompt "File,s: ")
                                        (magit-list-files)
                                        nil nil initial-contents) ","))
+
+;;; Patch File
+
+(defcustom magit-patch-save-arguments '(exclude "--stat")
+  "Arguments used by `magit-patch-save-arguments' (which see)"
+  :package-version '(magit . "2.12.0")
+  :group 'magit-diff
+  :type '(choice (const :tag "use buffer arguments" buffer)
+                 (cons :tag "use buffer arguments except"
+                       (const :format "" exclude)
+                       (repeat :format "%v%i\n"
+                               (string :tag "Argument")))
+                 (repeat :tag "use constant arguments"
+                         (string :tag "Argument"))))
+
+(magit-define-popup magit-patch-apply-popup
+  "Popup console for applying a patch file."
+  :man-page "git-apply"
+  :switches '((?i "Also apply to index"     "--index")
+              (?c "Only apply to index"     "--cached")
+              (?3 "Fall back on 3way merge" "--3way"))
+  :actions  '((?a "Apply patch" magit-patch-apply))
+  :default-action 'magit-patch-apply)
+
+(defun magit-patch-apply (file &rest args)
+  "Apply the patch file FILE."
+  (interactive (list (expand-file-name
+                      (read-file-name "Apply patch: "
+                                      default-directory nil nil
+                                      (--when-let (magit-file-at-point)
+                                        (file-relative-name it))))
+                     (magit-patch-apply-arguments)))
+  (magit-run-git "apply" args "--" file))
+
+(defun magit-patch-save (file &optional arg)
+  "Write current diff into patch FILE.
+
+What arguments are used to create the patch depends on the value
+of `magit-patch-save-arguments' and whether a prefix argument is
+used.
+
+If the value is the symbol `buffer', then use the same arguments
+as the buffer.  With a prefix argument use no arguments.
+
+If the value is a list beginning with the symbol `exclude', then
+use the arguments as the buffer except for those matched by
+entries in the cdr of the list.  The comparison is done using
+`string-prefix-p'.  With a prefix argument use the same arguments
+as the buffer.
+
+If the value is a list of strings (including the empty list),
+then use those arguments.  With a prefix argument use the same
+arguments as the buffer.
+
+Of course the arguments that are required to actually show the
+same differences as those shown in the buffer are always used."
+  (interactive (list (read-file-name "Write patch file: " default-directory)
+                     current-prefix-arg))
+  (unless (derived-mode-p 'magit-diff-mode)
+    (user-error "Only diff buffers can be saved as patches"))
+  (pcase-let ((`(,rev ,const ,args ,files) magit-refresh-args))
+    (when (derived-mode-p 'magit-revision-mode)
+      (setq rev (format "%s~..%s" rev rev)))
+    (cond ((eq magit-patch-save-arguments 'buffer)
+           (when arg
+             (setq args nil)))
+          ((eq (car-safe magit-patch-save-arguments) 'exclude)
+           (unless arg
+             (setq args (-difference args (cdr magit-patch-save-arguments)))))
+          ((not arg)
+           (setq args magit-patch-save-arguments)))
+    (with-temp-file file
+      (magit-git-insert "diff" rev "-p" const args "--" files)))
+  (magit-refresh))
 
 (provide 'magit-files)
 ;;; magit-files.el ends here

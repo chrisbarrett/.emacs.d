@@ -58,7 +58,7 @@ Then show the status buffer for the new repository."
    (let  ((url (magit-read-string-ns "Clone repository")))
      (list url (read-directory-name
                 "Clone to: " nil nil nil
-                (and (string-match "\\([^./]+\\)\\(\\.git\\)?$" url)
+                (and (string-match "\\([^/:]+?\\)\\(/?\\.git\\)?$" url)
                      (match-string 1 url))))))
   (setq directory (file-name-as-directory (expand-file-name directory)))
   (magit-run-git-async "clone" repository
@@ -83,7 +83,8 @@ Then show the status buffer for the new repository."
        (with-current-buffer (process-get process 'command-buf)
          (magit-status-internal directory))))))
 
-;;; Setup
+;;; Remote
+;;;; Options
 
 (defcustom magit-remote-add-set-remote.pushDefault 'ask-if-unset
   "Whether to set the value of `remote.pushDefault' after adding a remote.
@@ -100,17 +101,35 @@ variable isn't already set."
                  (string :tag "set if named")
                  (const  :tag "don't set")))
 
+(defcustom magit-remote-popup-show-variables t
+  "Whether the `magit-remote-popup' shows Git variables.
+When set to nil, no variables are displayed directly in this
+popup, instead the sub-popup `magit-remote-config-popup' has
+to be used to view and change remote related variables."
+  :package-version '(magit . "2.12.0")
+  :group 'magit-commands
+  :type 'boolean)
+
+;;;; Popup
+
+(defvar magit-remote-config-variables)
+
 ;;;###autoload (autoload 'magit-remote-popup "magit-remote" nil t)
 (magit-define-popup magit-remote-popup
   "Popup console for remote commands."
   :man-page "git-remote"
   :default-arguments '("-f")
+  :variables (lambda ()
+               (and magit-remote-popup-show-variables
+                    magit-remote-config-variables))
   :switches '("Switches for add"
               (?f "Fetch after add" "-f"))
-  :actions  '((?a "Add"     magit-remote-add)
-              (?r "Rename"  magit-remote-rename)
-              (?k "Remove"  magit-remote-remove)
-              (?u "Set url" magit-remote-set-url)))
+  :actions  '((?a "Add"          magit-remote-add)
+              (?r "Rename"       magit-remote-rename)
+              (?k "Remove"       magit-remote-remove)
+              (?C "Configure..." magit-remote-config-popup)))
+
+;;;; Commands
 
 (defun magit-read-url (prompt &optional initial-input)
   (let ((url (magit-read-string-ns prompt initial-input)))
@@ -144,15 +163,6 @@ variable isn't already set."
     (magit-run-git "remote" "rename" old new)))
 
 ;;;###autoload
-(defun magit-remote-set-url (remote url)
-  "Change the url of the remote named REMOTE to URL."
-  (interactive
-   (let  ((remote (magit-read-remote "Set url of remote")))
-     (list remote (magit-read-url
-                   "Url" (magit-get "remote" remote "url")))))
-  (magit-run-git "remote" "set-url" remote url))
-
-;;;###autoload
 (defun magit-remote-remove (remote)
   "Delete the remote named REMOTE."
   (interactive (list (magit-read-remote "Delete remote")))
@@ -179,6 +189,143 @@ doing that."
 Delete the symbolic-ref \"refs/remotes/<remote>/HEAD\"."
   (interactive (list (magit-read-remote "Unset HEAD for remote")))
   (magit-run-git "remote" "set-head" remote "--delete"))
+
+;;;; Config Popup
+
+(defvar magit-remote-config--remote nil)
+
+;;;###autoload
+(defun magit-remote-config-popup (remote)
+  "Popup console for setting remote variables."
+  (interactive
+   (list (if (or current-prefix-arg
+                 (and (eq magit-current-popup 'magit-remote-popup)
+                      magit-remote-popup-show-variables))
+             (magit-read-remote "Configure remote")
+           (magit-remote-config--remote-1))))
+  (let ((magit-remote-config--remote remote))
+    (magit-invoke-popup 'magit-remote-config-popup nil nil)))
+
+(defvar magit-remote-config-variables
+  '((lambda ()
+      (concat
+       (propertize "Configure " 'face 'magit-popup-heading)
+       (propertize (magit-remote-config--remote) 'face 'magit-branch-remote)))
+    (?u "remote.%s.url"
+        magit-set-remote*url
+        magit-format-remote*url)
+    (?U "remote.%s.fetch"
+        magit-set-remote*fetch
+        magit-format-remote*fetch)
+    (?s "remote.%s.pushurl"
+        magit-set-remote*pushurl
+        magit-format-remote*pushurl)
+    (?S "remote.%s.push"
+        magit-set-remote*push
+        magit-format-remote*push)
+    (?O "remote.%s.tagOpt"
+        magit-cycle-remote*tagOpt
+        magit-format-remote*tagOpt)))
+
+(defvar magit-remote-config-popup
+  `(:man-page "git-remote"
+    :variables ,magit-remote-config-variables
+    :setup-function magit-remote-config-popup-setup))
+
+(defun magit-remote-config-popup-setup (val def)
+  (magit-popup-default-setup val def)
+  (setq-local magit-remote-config--remote magit-remote-config--remote))
+
+(defun magit-remote-config--remote (&optional prompt)
+  (if prompt
+      (or (and (not current-prefix-arg)
+               (or magit-remote-config--remote
+                   (magit-remote-config--remote-1)))
+          (magit-read-remote prompt))
+    (or magit-remote-config--remote
+        (magit-remote-config--remote-1)
+        "<name>")))
+
+(defun magit-remote-config--remote-1 ()
+  (let ((remote (magit-get-upstream-remote)))
+    (if (or (not remote)
+            (equal remote "."))
+        (and (magit-remote-p "origin") "origin")
+      remote)))
+
+;;;; Config Commands and Inserters
+
+(defun magit-set-remote*url (remote urls)
+  "Set the variable `url' for the remote named REMOTE to URLS."
+  (interactive (magit-remote-config--read-args "url" "Urls: "))
+  (magit-remote-config--set-url remote "url" urls))
+
+(defun magit-set-remote*fetch (remote values)
+  "Set the variable `fetch' for the remote named REMOTE to VALUES."
+  (interactive (magit-remote-config--read-args "fetch" "Fetch specs: "))
+  (magit-set-all values "remote" remote "fetch")
+  (magit-refresh))
+
+(defun magit-set-remote*pushurl (remote urls)
+  "Set the variable `pushurl' for the remote named REMOTE to URLS."
+  (interactive (magit-remote-config--read-args "pushurl" "Urls: "))
+  (magit-remote-config--set-url remote "pushurl" urls "--push"))
+
+(defun magit-set-remote*push (remote values)
+  "Set the variable `push' for the remote named REMOTE to VALUES."
+  (interactive (magit-remote-config--read-args "push" "Push specs: "))
+  (magit-set-all values "remote" remote "push")
+  (magit-refresh))
+
+(defun magit-cycle-remote*tagOpt (remote)
+  (interactive (list (magit-remote-config--remote)))
+  (magit--set-popup-variable (format "remote.%s.tagOpt" remote)
+                             '("--no-tags" "--tags") nil))
+
+(defun magit-format-remote*url ()
+  (magit-remote-config--format-variable "url"))
+
+(defun magit-format-remote*fetch ()
+  (magit-remote-config--format-variable "fetch"))
+
+(defun magit-format-remote*pushurl ()
+  (magit-remote-config--format-variable "pushurl"))
+
+(defun magit-format-remote*push ()
+  (magit-remote-config--format-variable "push"))
+
+(defun magit-format-remote*tagOpt ()
+  (let ((remote (magit-remote-config--remote)))
+    (magit--format-popup-variable:choices
+     (format "remote.%s.tagOpts" remote)
+     '("--no-tags" "--tags") nil nil
+     (+ (length remote) 16))))
+
+(defun magit-remote-config--read-args (var prompt)
+  (let* ((remote (magit-remote-config--remote (format "Set `%s' of remote" var)))
+         (value (magit-get-all "remote" remote var)))
+    (list remote
+          (mapcar (lambda (url)
+                    (if (string-prefix-p "~" url)
+                        (expand-file-name url)
+                      url))
+                  (completing-read-multiple
+                   prompt nil nil nil
+                   (and value (mapconcat #'identity value ",")))))))
+
+(defun magit-remote-config--set-url (remote var values &optional arg)
+  (let ((old (magit-get-all "remote" remote var)))
+    (dolist (v (-difference values old))
+      (magit-call-git "remote" "set-url" arg "--add" remote v))
+    (dolist (v (-difference old values))
+      (magit-call-git "remote" "set-url" arg "--delete" remote
+                      (concat "^" (regexp-quote v) "$"))))
+  (magit-refresh))
+
+(defun magit-remote-config--format-variable (variable)
+  (magit--format-popup-variable:values
+   (format "remote.%s.%s" (magit-remote-config--remote) variable)
+   25))
 
 ;;; Fetch
 
@@ -352,10 +499,10 @@ missing.  To add them use something like:
   :max-action-columns 1)
 
 (defun magit-pull-format-branch*rebase ()
-  (magit-popup-format-variable (format "branch.%s.rebase"
-                                       (or (magit-get-current-branch) "<name>"))
-                               '("true" "false")
-                               "false" "pull.rebase"))
+  (magit--format-popup-variable:choices
+   (format "branch.%s.rebase" (or (magit-get-current-branch) "<name>"))
+   '("true" "false")
+   "false" "pull.rebase"))
 
 (defun magit-git-pull (source args)
   (run-hooks 'magit-credential-hook)
@@ -729,7 +876,7 @@ changes introduced by that commit (unlike 'git format-patch'
 which creates patches for all commits that are reachable from
 `HEAD' but not from the specified commit)."
   (interactive
-   (list (-if-let (revs (magit-region-values 'commit))
+   (list (-if-let (revs (magit-region-values 'commit t))
              (concat (car (last revs)) "^.." (car revs))
            (let ((range (magit-read-range-or-commit "Format range or commit")))
              (if (string-match-p "\\.\\." range)

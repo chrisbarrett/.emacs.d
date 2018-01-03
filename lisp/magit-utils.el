@@ -57,18 +57,24 @@
 (defcustom magit-completing-read-function 'magit-builtin-completing-read
   "Function to be called when requesting input from the user.
 
-For Helm users, the simplest way to get Helm completion is to
-turn on `helm-mode' and leave this option set to the default
-value.  However, if you prefer to not use `helm-mode' but still
-want Magit to use Helm for completion, you can set this option to
-`helm--completing-read-default'."
+If you have enabled `ivy-mode' or `helm-mode', then you don't
+have to customize this option; `magit-builtin-completing-read'
+will work just fine.  However, if you use Ido completion, then
+you do have to use `magit-ido-completion-read', because Ido is
+less well behaved than the former, more modern alternatives.
+
+If you would like to use Ivy or Helm completion with Magit but
+not enable the respective modes globally, then customize this
+option to use `ivy-completing-read'
+or `helm--completing-read-default'."
   :group 'magit-essentials
   :type '(radio (function-item magit-builtin-completing-read)
                 (function-item magit-ido-completing-read)
+                (function-item ivy-completing-read)
                 (function-item helm--completing-read-default)
-                (function :tag "Other")))
+                (function :tag "Other function")))
 
-(defcustom magit-no-confirm-default nil
+(defvar magit-no-confirm-default nil
   "A list of commands which should just use the default choice.
 
 Many commands let the user choose the target they act on offering
@@ -76,8 +82,7 @@ a sensible default as default choice.  If you think that that
 default is so sensible that it should always be used without even
 offering other choices, then add that command here.
 
-Commands have to explicitly support this option.  Currently only
-these commands do:
+Only the following commands support this option:
   `magit-branch'
   `magit-branch-and-checkout'
   `magit-branch-orphan'
@@ -85,25 +90,59 @@ these commands do:
     For these four commands `magit-branch-read-upstream-first'
     must be non-nil, or adding them here has no effect.
   `magit-branch-rename'
-  `magit-tag'"
-  :package-version '(magit . "2.9.0")
-  :group 'magit-miscellaneous
-  :type '(list :convert-widget custom-hook-convert-widget)
-  :options '(magit-branch
-             magit-branch-and-checkout
-             magit-branch-orphan
-             magit-branch-rename
-             magit-worktree-branch
-             magit-tag))
+  `magit-tag'")
+
+(defcustom magit-dwim-selection
+  '((magit-stash-apply        nil t)
+    (magit-stash-branch       nil t)
+    (magit-stash-branch-here  nil t)
+    (magit-stash-format-patch nil t)
+    (magit-stash-drop         nil ask)
+    (magit-stash-pop          nil ask))
+  "When not to offer alternatives and ask for confirmation.
+
+Many commands by default ask the user to select from a list of
+possible candidates.  They do so even when there is a thing at
+point that they can act on, which is then offered as the default.
+
+This option can be used to tell certain commands to use the thing
+at point instead of asking the user to select a candidate to act
+on, with or without confirmation.
+
+The value has the form ((COMMAND nil|PROMPT DEFAULT)...).
+
+- COMMAND is the command that should not prompt for a choice.
+  To have an effect, the command has to use the function
+  `magit-completing-read' or a utility function which in turn uses
+  that function.
+
+- If the command uses `magit-completing-read' multiple times, then
+  PROMPT can be used to only affect one of these uses.  PROMPT, if
+  non-nil, is a regular expression that is used to match against
+  the PROMPT argument passed to `magit-completing-read'.
+
+- DEFAULT specifies how to use the default.  If it is t, then
+  the DEFAULT argument passed to `magit-completing-read' is used
+  without confirmation.  If it is `ask', then the user is given
+  a chance to abort.  DEFAULT can also be nil, in which case the
+  entry has no effect."
+  :package-version '(magit . "2.12.0")
+  :group 'magit-commands
+  :type '(repeat (list command
+                       (regexp :tag "Prompt regexp")
+                       (choice (const "Offer other choices" nil)
+                               (const "Require confirmation" ask)
+                               (const "Use default without confirmation" t)))))
 
 (defconst magit--confirm-actions
   '((const reverse)           (const discard)
     (const rename)            (const resurrect)
-    (const trash)             (const delete)
-    (const abort-rebase)
+    (const untrack)           (const trash)
+    (const delete)            (const abort-rebase)
     (const abort-merge)       (const merge-dirty)
     (const drop-stashes)      (const resect-bisect)
     (const kill-process)      (const delete-unmerged-branch)
+    (const delete-pr-branch)
     (const stage-all-changes) (const unstage-all-changes)
     (const safe-with-wip)))
 
@@ -147,6 +186,8 @@ Files:
   \"deleting\" the deletion, which is done using the same command
   that was used to delete the same file in the first place.
 
+  `untrack' Untracking a file can be undone by tracking it again.
+
   `rename' Renaming a file can easily be undone.
 
 Sequences:
@@ -173,6 +214,13 @@ References:
   choice (or selecting another branch), but when a branch has
   not been merged yet, also make sure the user is aware of that.
 
+  `delete-pr-branch' When deleting a branch that was created from
+  a pull request and if no other branches still exist on that
+  remote, then `magit-branch-delete' offers to delete the remote
+  as well.  This should be safe because it only happens if no
+  other refs exist in the remotes namespace, and you can recreate
+  the remote if necessary.
+
   `drop-stashes' Dropping a stash is dangerous because Git stores
   stashes in the reflog.  Once a stash is removed, there is no
   going back without using low-level recovery tools provided by
@@ -198,7 +246,7 @@ Global settings:
   When `magit-wip-before-change-mode' is enabled then these actions
   can fairly easily be undone: `discard', `reverse',
   `stage-all-changes', and `unstage-all-changes'.  If and only if
-  this mode is enabled then `safe-with-wip' has the same effect
+  this mode is enabled, then `safe-with-wip' has the same effect
   as adding all of these symbols individually."
   :package-version '(magit . "2.1.0")
   :group 'magit-essentials
@@ -292,41 +340,81 @@ and delay of your graphical environment or operating system."
 
 ;;; User Input
 
-(defun magit-completing-read
-  (prompt collection &optional predicate require-match initial-input hist def)
-  "Magit wrapper around `completing-read' or an alternative function.
+(defvar magit-completing-read--silent-default nil)
 
-Option `magit-completing-read-function' can be used to wrap
-around another `completing-read'-like function.  Unless it
-doesn't have the exact same signature, an additional wrapper is
-required.  Even if it has the same signature it might be a good
-idea to wrap it, so that `magit-prompt-with-default' can be used.
+(defun magit-completing-read (prompt collection &optional
+                                     predicate require-match initial-input
+                                     hist def fallback)
+  "Read a choice in the minibuffer, or use the default choice.
 
-See `completing-read' for the meanings of the arguments, but note
-that this wrapper makes the following changes:
+This is the function that Magit commands use when they need the
+user to select a single thing to act on.  The arguments have the
+same meaning as for `completing-read', except for FALLBACK, which
+is unique to this function and is described below.
+
+Instead of asking the user to choose from a list of possible
+candidates, this function may instead just return the default
+specified by DEF, with or without requiring user confirmation.
+Whether that is the case depends on PROMPT, `this-command' and
+`magit-dwim-selection'.  See the documentation of the latter for
+more information.
+
+If it does use the default without the user even having to
+confirm that, then `magit-completing-read--silent-default' is set
+to t, otherwise nil.
+
+If it does read a value in the minibuffer, then this function
+acts similarly to `completing-read', except for the following:
 
 - If REQUIRE-MATCH is nil and the user exits without a choice,
-  then return nil instead of an empty string.
+  then nil is returned instead of an empty string.
 
 - If REQUIRE-MATCH is non-nil and the users exits without a
-  choice, then raise an user-error.
+  choice, an user-error is raised.
+
+- FALLBACK specifies a secondary default that is only used if
+  the primary default DEF is nil.  The secondary default is not
+  subject to `magit-dwim-selection' — if DEF is nil but FALLBACK
+  is not, then this function always asks the user to choose a
+  candidate, just as if both defaults were nil.
 
 - \": \" is appended to PROMPT.
 
-- If a `magit-completing-read-function' is used which in turn
-  uses `magit-prompt-with-completion' and DEF is non-nil, then
-  PROMPT is modified to end with \" (default DEF): \".
-
-The use of another completing function and/or wrapper obviously
-results in additional differences."
-  (let ((reply (funcall magit-completing-read-function
-                        (concat prompt ": ") collection predicate
-                        require-match initial-input hist def)))
-    (if (string= reply "")
-        (if require-match
-            (user-error "Nothing selected")
-          nil)
-      reply)))
+- PROMPT is modified to end with \" (default DEF|FALLBACK): \"
+  provided that DEF or FALLBACK is non-nil, that neither
+  `ivy-mode' nor `helm-mode' is enabled, and that
+  `magit-completing-read-function' is set to its default value of
+  `magit-builtin-completing-read'."
+  (setq magit-completing-read--silent-default nil)
+  (-if-let (dwim (and def
+                      (or (nth 2 (-first (lambda (arg)
+                                           (pcase-let ((`(,cmd ,re ,_) arg))
+                                             (and (eq this-command cmd)
+                                                  (or (not re)
+                                                      (string-match-p re prompt)))))
+                                         magit-dwim-selection))
+                          (memq this-command
+                                (with-no-warnings magit-no-confirm-default)))))
+      (if (eq dwim 'ask)
+          (if (y-or-n-p (format "%s %s? " prompt def))
+              def
+            (user-error "Abort"))
+        (setq magit-completing-read--silent-default t)
+        def)
+    (unless def
+      (setq def fallback))
+    (let ((reply (funcall magit-completing-read-function
+                          (concat prompt ": ")
+                          (if (and def (not (member def collection)))
+                              (cons def collection)
+                            collection)
+                          predicate
+                          require-match initial-input hist def)))
+      (if (string= reply "")
+          (if require-match
+              (user-error "Nothing selected")
+            nil)
+        reply))))
 
 (defun magit--completion-table (collection)
   (lambda (string pred action)
@@ -339,7 +427,10 @@ results in additional differences."
   "Magit wrapper for standard `completing-read' function."
   (cl-letf (((symbol-function 'completion-pcm--all-completions)
              #'magit-completion-pcm--all-completions))
-    (completing-read (magit-prompt-with-default prompt def)
+    (completing-read (if (or (bound-and-true-p helm-mode)
+                             (bound-and-true-p ivy-mode))
+                         prompt
+                       (magit-prompt-with-default prompt def))
                      (magit--completion-table choices)
                      predicate require-match
                      initial-input hist def)))
@@ -474,8 +565,8 @@ ACTION is a member of option `magit-slow-confirm'."
 
 (cl-defun magit-confirm (action &optional prompt prompt-n (items nil sitems))
   (declare (indent defun))
-  (setq prompt-n (format (concat (or prompt-n prompt) "? ") (length items))
-        prompt   (format (concat (or prompt (magit-confirm-make-prompt action))
+  (setq prompt-n (format (concat (or prompt-n prompt) "? ") (length items)))
+  (setq prompt   (format (concat (or prompt (magit-confirm-make-prompt action))
                                  "? ")
                          (car items)))
   (cond ((and (not (eq action t))
@@ -551,7 +642,7 @@ See info node `(magit)Debugging Tools' for more information."
   "Bind variables to submatches according to VARLIST then evaluate BODY.
 Bind the symbols in VARLIST to submatches of the current match
 data, starting with 1 and incrementing by 1 for each symbol.  If
-the last match was against a string then that has to be provided
+the last match was against a string, then that has to be provided
 as STRING."
   (declare (indent 2) (debug (listp form body)))
   (let ((s (cl-gensym "string"))
@@ -567,7 +658,7 @@ as STRING."
 
 (defun magit-delete-match (&optional num)
   "Delete text matched by last search.
-If optional NUM is specified only delete that subexpression."
+If optional NUM is specified, only delete that subexpression."
   (delete-region (match-beginning (or num 0))
                  (match-end (or num 0))))
 
@@ -586,6 +677,48 @@ Unless optional argument KEEP-EMPTY-LINES is t, trim all empty lines."
     (with-temp-buffer
       (insert-file-contents file)
       (split-string (buffer-string) "\n" (not keep-empty-lines)))))
+
+(defun magit-set-header-line-format (string)
+  "Set the header-line using STRING.
+Propertize STRING with the `magit-header-line' face if no face is
+present, and pad the left and right sides of STRING equally such
+that it will align with the text area."
+  (let* ((header-line
+          (concat (propertize " "
+                              'display
+                              '(space :align-to 0))
+                  string
+                  (propertize
+                   " "
+                   'display
+                   `(space :width (+ left-fringe
+                                     left-margin
+                                     ,@(and (eq (car (window-current-scroll-bars))
+                                                'left)
+                                            '(scroll-bar)))))))
+         (len (length header-line)))
+    (setq header-line-format
+          (if (text-property-not-all 0 len 'face nil header-line)
+              (let ((face (get-text-property 0 'face string)))
+                (when (and (atom face)
+                           (magit-face-property-all face string))
+                  (add-face-text-property 0 1 face nil header-line)
+                  (add-face-text-property (1- len) len face nil header-line))
+                header-line)
+            (propertize header-line
+                        'face
+                        'magit-header-line)))))
+
+(defun magit-face-property-all (face string)
+  "Return non-nil if FACE is present in all of STRING."
+  (cl-loop for pos = 0 then (next-single-property-change pos 'face string)
+           unless pos
+             return t
+           for current = (get-text-property pos 'face string)
+           unless (if (consp current)
+                      (memq face current)
+                    (eq face current))
+             return nil))
 
 ;;; Missing from Emacs
 
@@ -641,43 +774,6 @@ and https://github.com/magit/magit/issues/2295."
           ;; `completion-pcm--all-completions' that shipped with Emacs 25.1.
           (nreverse poss))))))
 
-;;; Kludges for Org
-
-(eval-when-compile
-  (require 'org-element nil t)
-  (require 'ox-extra nil t))
-(declare-function org-element-adopt-elements  "org-element"
-                  (parent &rest children))
-(declare-function org-element-contents        "org-element" (element))
-(declare-function org-element-extract-element "org-element" (element))
-(declare-function org-element-map             "org-element"
-                  (data types fun &optional info
-                        first-match no-recursion with-affiliated))
-(declare-function org-element-type            "org-element" (element))
-
-(with-eval-after-load 'ox-extra ; see #2914
-  (defun org-extra--merge-sections (data _backend info)
-    (org-element-map data 'headline
-      (lambda (hl)
-        (let ((sections
-               (cl-loop
-                for el in (org-element-map (org-element-contents hl)
-                              '(headline section) #'identity info)
-                until (eq (org-element-type el) 'headline)
-                collect el)))
-          (when (and sections
-                     (> (length sections) 1))
-            (apply #'org-element-adopt-elements
-                   (car sections)
-                   (cl-mapcan (lambda (s) (org-element-contents s))
-                              (cdr sections)))
-            (mapc #'org-element-extract-element (cdr sections)))))
-      info))
-
-  (advice-add 'org-export-ignore-headlines :after
-              'org-extra--merge-sections
-              '((name . "org-export-ignore-headlines--merge-sections"))))
-
 ;;; Kludges for Incompatible Modes
 
 (defvar whitespace-mode)
@@ -723,7 +819,7 @@ or (last of all) the value of EXP."
     ;; Called by `custom-initialize-reset' on behalf of `symbol's
     ;; `defcustom', which is being evaluated for the first time to
     ;; set the initial value, but there's already a default value,
-    ;; which most likely was stablished by one or more `add-hook'
+    ;; which most likely was established by one or more `add-hook'
     ;; calls.
     ;;
     ;; We combine the `standard-value' and the current value, while
