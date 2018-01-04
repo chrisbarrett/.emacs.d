@@ -727,6 +727,13 @@ Optional arg JUSTIFY will justify comments and strings."
   :config
   (setq url-cache-directory (concat cb-emacs-cache-directory "/url")))
 
+(use-package shr
+  :defer t
+  :config
+  ;; Undefine key that prevents forward-word in evil
+  (define-key shr-map (kbd "w") nil))
+
+
 (provide 'cb-basic-settings)
 
 ;;; cb-basic-settings.el ends here
