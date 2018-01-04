@@ -326,7 +326,8 @@
     (evil-set-initial-state 'indium-repl-mode 'insert)
     (evil-define-key 'motion indium-inspector-mode-map (kbd "^") 'indium-inspector-pop)
     (evil-define-key 'motion indium-inspector-mode-map (kbd "r") 'indium-inspector-refresh)
-    (define-key cb-web-js-mode-map (kbd "C-c C-l") 'indium-eval-buffer)))
+    (with-eval-after-load 'cb-web-modes
+      (define-key cb-web-js-mode-map (kbd "C-c C-l") 'indium-eval-buffer))))
 
 (use-package which-key
   :config
