@@ -722,6 +722,11 @@ Optional arg JUSTIFY will justify comments and strings."
     (async-bytecomp-package-mode +1)
     (dired-async-mode +1)))
 
+(use-package url-cache
+  :defer t
+  :config
+  (setq url-cache-directory (concat cb-emacs-cache-directory "/url")))
+
 (provide 'cb-basic-settings)
 
 ;;; cb-basic-settings.el ends here
