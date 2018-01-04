@@ -1,4 +1,4 @@
-;;; cb-ag.el --- Configuration for ag and related utils.  -*- lexical-binding: t; -*-
+;;; cb-search.el --- Configuration for rg, ag etc.  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2016  Chris Barrett
 
@@ -14,13 +14,18 @@
 (use-package ag
   :commands ag)
 
+(use-package rg
+  :commands rg)
+
 (use-package wgrep
-  :defer t
+  :commands (wgrep-setup)
+  :init
+  (add-hook 'grep-setup-hook #'wgrep-setup)
   :preface
   (progn
     (autoload 'wgrep-finish-edit "wgrep")
 
-    (defun cb-ag-wgrep-finish-edit-kill-buffer ()
+    (defun cb-search-wgrep-finish-edit-kill-buffer ()
       "Finish the current wgrep edit and kill the wgrep buffer."
       (interactive)
       (let ((buf (current-buffer)))
@@ -29,12 +34,13 @@
 
   :config
   (progn
+    (setq wgrep-enable-key (kbd "C-c C-e"))
     (setq wgrep-auto-save-buffer t)
-    (define-key wgrep-mode-map [remap wgrep-finish-edit] #'cb-ag-wgrep-finish-edit-kill-buffer)))
+    (define-key wgrep-mode-map [remap wgrep-finish-edit] #'cb-search-wgrep-finish-edit-kill-buffer)))
 
 (use-package wgrep-ag
   :after ag)
 
-(provide 'cb-ag)
+(provide 'cb-search)
 
-;;; cb-ag.el ends here
+;;; cb-search.el ends here
