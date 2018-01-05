@@ -297,10 +297,16 @@
 (use-package indium
   :commands (indium-interaction-mode
              indium-run-node)
+  :preface
+  (defun node-repl (arg)
+    "Run node. With prefix ARG, prompt for the command to run."
+    (interactive "P")
+    (if arg
+        (call-interactively #'indium-run-node)
+      (indium-run-node "node")))
   :init
   (progn
-    (defalias 'run-node #'indium-run-node)
-    (defalias 'node-repl #'indium-run-node)
+    (defalias 'run-node #'node-repl)
 
     (add-hook 'cb-web-js-mode-hook #'indium-interaction-mode)
     (add-hook 'js-mode-hook #'indium-interaction-mode)
