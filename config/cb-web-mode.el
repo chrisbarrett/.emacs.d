@@ -28,10 +28,10 @@
   :preface
   (progn
     (autoload 'sp-local-pair "smartparens")
-    (autoload 'projectile-project-root "projectile")
+    (autoload 'projectile-project-p "projectile")
 
     (defun cb-web--node-modules-bin-dir ()
-      (when-let* ((root (projectile-project-root))
+      (when-let* ((root (projectile-project-p))
                   (dir (f-join root "node_modules" ".bin")))
         (when (f-dir? dir)
           dir)))
