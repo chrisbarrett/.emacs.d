@@ -13,11 +13,12 @@
 
 (require 'spacemacs-keys)
 (require 'subr-x)
-(autoload 'evil-set-initial-state "cb-evil")
+(require 's)
+(require 'f)
+
 (autoload 'evil-define-key "evil-core")
+(autoload 'evil-set-initial-state "cb-evil")
 (autoload 'projectile-project-p "projectile")
-(autoload 'f-join "f")
-(autoload 'f-split "f")
 
 (use-package web-mode
   :defines (web-mode-markup-indent-offset
