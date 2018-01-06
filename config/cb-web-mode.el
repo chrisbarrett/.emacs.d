@@ -89,10 +89,40 @@
          ("\\.css\\'"  . cb-web-css-mode)
          ("\\.mustache\\'"  . cb-web-mustache-mode)
          ("\\.scss\\'"  . cb-web-css-mode)
-         ("\\.html\\'" . cb-web-html-mode))
-  :defines (flycheck-html-tidy-executable)
+         ("\\.html\\'" . cb-web-html-mode)))
+
+(use-package flycheck
+  :defer t
+  :commands (flycheck-select-checker)
+  :functions (flycheck-add-next-checker flycheck-add-mode)
+  :preface
+  (progn
+    (defun cb-web--disable-flycheck-for-node-modules ()
+      (when (and (buffer-file-name)
+                 (s-contains-p "node_modules" (buffer-file-name))
+                 (boundp 'flycheck-checkers)
+                 (boundp 'flycheck-disabled-checkers))
+        (let* ((js-checkers (seq-filter (lambda (checker)
+                                          (string-prefix-p "javascript" (symbol-name checker)))
+                                        flycheck-checkers))
+               (updated (cl-union flycheck-disabled-checkers js-checkers)))
+          (setq flycheck-disabled-checkers updated))))
+
+    (defun cb-web--add-node-modules-bin-to-path ()
+      "Use binaries from node_modules, where available."
+      (when-let* ((root (locate-dominating-file default-directory "package.json")))
+        (make-local-variable 'exec-path)
+        (add-to-list 'exec-path (f-join root "node_modules" ".bin")))))
+
   :config
-  (with-eval-after-load 'flycheck
+  (progn
+    (add-to-list 'flycheck-disabled-checkers 'javascript-jshint)
+    (add-to-list 'flycheck-disabled-checkers 'json-jsonlint)
+
+    (add-hook 'cb-web-typescript-mode-hook #'cb-web--add-node-modules-bin-to-path)
+    (add-hook 'cb-web-js-mode-hook #'cb-web--add-node-modules-bin-to-path)
+    (add-hook 'cb-web-js-mode-hook #'cb-web--disable-flycheck-for-node-modules)
+
     (let ((tidy-bin "/usr/local/Cellar/tidy-html5/5.2.0/bin/tidy"))
       (when (file-exists-p tidy-bin)
         (setq flycheck-html-tidy-executable tidy-bin)))
@@ -107,26 +137,6 @@
     (flycheck-add-mode 'css-csslint 'cb-web-css-mode)
     (flycheck-add-mode 'json-jsonlint 'cb-web-json-mode)
     (flycheck-add-mode 'html-tidy 'cb-web-html-mode)))
-
-(use-package flycheck
-  :defer t
-  :commands (flycheck-select-checker)
-  :functions (flycheck-add-next-checker flycheck-add-mode)
-  :preface
-
-  (defun cb-web--add-node-modules-bin-to-path ()
-    "Use binaries from node_modules, where available."
-    (when-let (root (projectile-project-p))
-      (make-local-variable 'exec-path)
-      (add-to-list 'exec-path (f-join root "node_modules" ".bin"))))
-
-  :config
-  (progn
-    (add-to-list 'flycheck-disabled-checkers 'javascript-jshint)
-    (add-to-list 'flycheck-disabled-checkers 'json-jsonlint)
-
-    (add-hook 'cb-web-typescript-mode-hook #'cb-web--add-node-modules-bin-to-path)
-    (add-hook 'cb-web-js-mode-hook #'cb-web--add-node-modules-bin-to-path)))
 
 (use-package emmet-mode
   :defer t
