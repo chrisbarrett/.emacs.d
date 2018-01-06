@@ -25,6 +25,7 @@
 
 
 (defalias #'yes-or-no-p #'y-or-n-p)
+(defalias #'view-hello-file #'ignore)
 
 (global-unset-key (kbd "C-z"))
 
