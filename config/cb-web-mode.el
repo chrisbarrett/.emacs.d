@@ -89,7 +89,14 @@
          ("\\.css\\'"  . cb-web-css-mode)
          ("\\.mustache\\'"  . cb-web-mustache-mode)
          ("\\.scss\\'"  . cb-web-css-mode)
-         ("\\.html\\'" . cb-web-html-mode)))
+         ("\\.html\\'" . cb-web-html-mode))
+  :preface
+  (defun cb-web--enable-readonly-mode-in-node-modules ()
+    (when (and (buffer-file-name)
+               (string-match-p (rx "/node_modules/") (buffer-file-name)))
+      (read-only-mode +1)))
+  :init
+  (add-hook 'find-file-hook #'cb-web--enable-readonly-mode-in-node-modules))
 
 (use-package flycheck
   :defer t
