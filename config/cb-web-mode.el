@@ -356,8 +356,12 @@
 
 (use-package prettier-js
   :commands (prettier-js-mode)
+  :preface
+  (defun cb-web--maybe-enable-prettier ()
+    (unless (and (buffer-file-name) (string-match-p "/node_modules/" (buffer-file-name)))
+      (prettier-js-mode +1)))
   :init
-  (add-hook 'cb-web-js-mode-hook #'prettier-js-mode))
+  (add-hook 'cb-web-js-mode-hook #'cb-web--maybe-enable-prettier))
 
 (use-package compile
   :defer t
