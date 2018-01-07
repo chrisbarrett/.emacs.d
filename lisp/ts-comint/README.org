@@ -1,0 +1,61 @@
+* ts-comint.el (v0.0.1)
+Run a TypeScript interpreter in an inferior process window
+
+This repo is directly forked from
+[[https://github.com/redguardtoo/js-comint][js-comint]] to support
+TypeScript instead.
+
+* Prerequisites
+
+ts-comint depends on the following components:
+
+- NodeJS
+- [[https://github.com/HerringtonDarkholme/typescript-repl][TypeScript REPL]]
+
+To use ts-comint these components must be installed on your system.
+
+To install these run the following commands, or whatever equivalents
+your system provides:
+
+#+BEGIN_SRC sh
+  apt-get install node
+  npm install -g tsun
+#+END_SRC
+
+* Installation
+
+** From MELPA
+
+To install it all you need to do is issue the following command:
+
+~M-x package-install<RET>ts-comint~
+
+** From Source
+
+You can also download the source and use that directly.
+
+To do that, place the ~ts-comint.el~-file somewhere (say ~$HOME/mylisp/~)
+and then insert the following code in your ~$HOME/.emacs.d/init.el~-file:
+
+#+BEGIN_SRC elisp
+(add-to-list 'load-path "~/mylisp/")
+(require 'ts-comint)
+#+END_SRC
+
+* Usage
+After installation, do ~M-x run-ts~ to create a comint buffer with the
+Typescript interpreter.
+
+You can add the following couple of lines to your .emacs to take
+advantage of cool key bindings for sending things to the Typescript
+interpreter inside of typescript-mode.
+
+#+BEGIN_SRC elisp
+(add-hook 'typescript-mode-hook
+          (lambda ()
+            (local-set-key (kbd "C-x C-e") 'ts-send-last-sexp)
+            (local-set-key (kbd "C-M-x") 'ts-send-last-sexp-and-go)
+            (local-set-key (kbd "C-c b") 'ts-send-buffer)
+            (local-set-key (kbd "C-c C-b") 'ts-send-buffer-and-go)
+            (local-set-key (kbd "C-c l") 'ts-load-file-and-go)))
+#+END_SRC
