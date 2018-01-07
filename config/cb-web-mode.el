@@ -392,7 +392,6 @@
 
 (use-package tide
   :commands (tide-setup
-             tide-format-before-save
              tide-restart-server
              tide-references
              tide-documentation-at-point
@@ -406,8 +405,7 @@
   (defun cb-web--setup-ts-mode ()
     (tide-setup)
     (with-no-warnings
-      (setq-local evil-lookup-func #'tide-documentation-at-point))
-    (add-hook 'before-save-hook 'tide-format-before-save nil t))
+      (setq-local evil-lookup-func #'tide-documentation-at-point)))
   :init
   (progn
     (add-hook 'cb-web-ts-mode-hook #'cb-web--setup-ts-mode)
