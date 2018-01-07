@@ -428,6 +428,7 @@
 (use-package ts-comint
   :commands (run-ts
              ts-send-last-sexp
+             ts-send-last-sexp-and-go
              ts-send-buffer
              ts-send-buffer-and-go
              ts-load-file-and-go)
@@ -436,11 +437,11 @@
     (spacemacs-keys-declare-prefix-for-mode 'cb-web-ts-mode "e" "eval")
 
     (spacemacs-keys-set-leader-keys-for-major-mode 'cb-web-ts-mode
-      "l" #'tide-load-file-and-go
-      "eb" #'tide-send-buffer
-      "eB" #'tide-send-buffer-and-go
-      "es" #'tide-send-last-sexp-and-go
-      "eS" #'tide-send-last-sexp-and-go)
+      "l" #'ts-load-file-and-go
+      "eb" #'ts-send-buffer
+      "eB" #'ts-send-buffer-and-go
+      "es" #'ts-send-last-sexp
+      "eS" #'ts-send-last-sexp-and-go)
 
     (with-eval-after-load 'cb-web-modes
       (let ((km cb-web-ts-mode-map))
