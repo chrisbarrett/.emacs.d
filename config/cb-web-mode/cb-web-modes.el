@@ -12,16 +12,18 @@
 (require 'web-mode)
 
 ;;;###autoload
-(define-derived-mode cb-web-js-mode web-mode "JS"
+(define-derived-mode cb-web-js-base-mode web-mode "JS"
   "Derived mode for editing JavaScript files."
   (when (seq-contains '("" "html") web-mode-content-type)
     (setq-local web-mode-content-type "javascript")))
 
 ;;;###autoload
-(define-derived-mode cb-web-typescript-mode web-mode "TS"
-  "Derived mode for editing JavaScript files."
-  (when (seq-contains '("" "html") web-mode-content-type)
-    (setq-local web-mode-content-type "javascript")))
+(define-derived-mode cb-web-js-mode cb-web-js-base-mode "JS"
+  "Derived mode for editing JavaScript files.")
+
+;;;###autoload
+(define-derived-mode cb-web-ts-mode cb-web-js-base-mode "TS"
+  "Derived mode for editing JavaScript files.")
 
 ;;;###autoload
 (define-derived-mode cb-web-json-mode web-mode "JSON"

@@ -255,7 +255,7 @@
     (sp-with-modes '(cb-web-json-mode
                      cb-web-html-mode
                      cb-web-css-mode
-                     cb-web-typescript-mode)
+                     cb-web-ts-mode)
       (sp-local-pair "\"" "\"" :bind "M-\""))
 
     (sp-with-modes 'cb-web-js-mode

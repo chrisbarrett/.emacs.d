@@ -84,7 +84,7 @@
          ("\\.eslintrc\\'" . cb-web-json-mode)
          ("\\.babelrc\\'" . cb-web-json-mode)
          ("\\.es6\\'"  . cb-web-js-mode)
-         ("\\.tsx?\\'"  . cb-web-typescript-mode)
+         ("\\.tsx?\\'"  . cb-web-ts-mode)
          ("\\.jsx?\\'" . cb-web-js-mode)
          ("\\.css\\'"  . cb-web-css-mode)
          ("\\.mustache\\'"  . cb-web-mustache-mode)
@@ -126,7 +126,7 @@
     (add-to-list 'flycheck-disabled-checkers 'javascript-jshint)
     (add-to-list 'flycheck-disabled-checkers 'json-jsonlint)
 
-    (add-hook 'cb-web-typescript-mode-hook #'cb-web--add-node-modules-bin-to-path)
+    (add-hook 'cb-web-ts-mode-hook #'cb-web--add-node-modules-bin-to-path)
     (add-hook 'cb-web-js-mode-hook #'cb-web--add-node-modules-bin-to-path)
     (add-hook 'cb-web-js-mode-hook #'cb-web--disable-flycheck-for-node-modules)
 
@@ -134,7 +134,7 @@
       (when (file-exists-p tidy-bin)
         (setq flycheck-html-tidy-executable tidy-bin)))
 
-    (flycheck-add-mode 'typescript-tslint 'cb-web-typescript-mode)
+    (flycheck-add-mode 'typescript-tslint 'cb-web-ts-mode)
 
     (flycheck-add-mode 'javascript-eslint 'cb-web-js-mode)
     (flycheck-add-mode 'javascript-jscs 'cb-web-js-mode)
@@ -310,6 +310,48 @@
     (add-to-list 'aggressive-indent-dont-indent-if '(cb-web--in-flow-strict-object-type?))
     (add-hook 'aggressive-indent-stop-here-hook #'cb-web--in-flow-strict-object-type?)))
 
+(use-package which-key
+  :config
+  (let* ((boring-prefixes '("indium" "cb-flow" "tide"))
+         (match-prefix (rx-to-string `(and bos (or ,@boring-prefixes) "-" (group (+ nonl)))
+                                     t)))
+    (push `((nil . ,match-prefix) . (nil . "\\1"))
+          which-key-replacement-alist)))
+
+(use-package prettier-js
+  :commands (prettier-js-mode)
+  :preface
+  (defun cb-web--maybe-enable-prettier ()
+    (unless (and (buffer-file-name) (string-match-p "/node_modules/" (buffer-file-name)))
+      (prettier-js-mode +1)))
+  :init
+  (progn
+    (add-hook 'cb-web-js-mode-hook #'cb-web--maybe-enable-prettier)
+    (add-hook 'cb-web-ts-mode-hook #'cb-web--maybe-enable-prettier)))
+
+(use-package compile
+  :defer t
+  :config
+  (progn
+    (defconst cb-web--flow-error-rx
+      (rx bol "Error:" (+ space)
+          ;; Filename
+          (group (+? nonl)) ":"
+          ;; Line
+          (group (+ digit))))
+
+    (-let* ((str "Error: src/components/ColorList.js:22")
+            ((whole file line) (s-match cb-web--flow-error-rx str)))
+      (cl-assert (equal whole str))
+      (cl-assert (equal file "src/components/ColorList.js"))
+      (cl-assert (equal line "22")))
+
+    (setf (alist-get 'flow compilation-error-regexp-alist-alist)
+          (list cb-web--flow-error-rx 1 2))
+    (add-to-list 'compilation-error-regexp-alist 'flow)))
+
+;; Node
+
 (use-package indium
   :commands (indium-interaction-mode
              indium-run-node)
@@ -352,43 +394,49 @@
     (with-eval-after-load 'cb-web-modes
       (define-key cb-web-js-mode-map (kbd "C-c C-l") 'indium-eval-buffer))))
 
-(use-package which-key
-  :config
-  (let* ((boring-prefixes '("indium" "cb-flow"))
-         (match-prefix (rx-to-string `(and bos (or ,@boring-prefixes) "-" (group (+ nonl)))
-                                     t)))
-    (push `((nil . ,match-prefix) . (nil . "\\1"))
-          which-key-replacement-alist)))
+;; Typescript
 
-(use-package prettier-js
-  :commands (prettier-js-mode)
+(use-package tide
+  :commands (tide-setup
+             tide-format-before-save
+             tide-restart-server
+             tide-references
+             tide-rename-symbol
+             tide-fix
+             tide-refactor
+             tide-jump-to-definition
+             tide-jump-back)
   :preface
-  (defun cb-web--maybe-enable-prettier ()
-    (unless (and (buffer-file-name) (string-match-p "/node_modules/" (buffer-file-name)))
-      (prettier-js-mode +1)))
+  (defun cb-web--setup-ts-mode ()
+    (tide-setup)
+    (add-hook 'before-save-hook 'tide-format-before-save nil t))
   :init
-  (add-hook 'cb-web-js-mode-hook #'cb-web--maybe-enable-prettier))
-
-(use-package compile
-  :defer t
-  :config
   (progn
-    (defconst cb-web--flow-error-rx
-      (rx bol "Error:" (+ space)
-          ;; Filename
-          (group (+? nonl)) ":"
-          ;; Line
-          (group (+ digit))))
+    (add-hook 'cb-web-ts-mode-hook #'cb-web--setup-ts-mode)
+    (add-hook 'typescript-mode-hook #'cb-web--setup-ts-mode)
 
-    (-let* ((str "Error: src/components/ColorList.js:22")
-            ((whole file line) (s-match cb-web--flow-error-rx str)))
-      (cl-assert (equal whole str))
-      (cl-assert (equal file "src/components/ColorList.js"))
-      (cl-assert (equal line "22")))
+    (spacemacs-keys-set-leader-keys-for-major-mode 'cb-web-ts-mode
+      "x" #'tide-restart-server
+      "r" #'tide-references
+      "R" #'tide-rename-symbol
+      "=" #'tide-fix
+      "f" #'tide-refactor)
 
-    (setf (alist-get 'flow compilation-error-regexp-alist-alist)
-          (list cb-web--flow-error-rx 1 2))
-    (add-to-list 'compilation-error-regexp-alist 'flow)))
+    (evil-define-key 'normal cb-web-ts-mode-map
+      (kbd "M-.") #'tide-jump-to-definition
+      (kbd "M-,") #'tide-jump-back)))
+
+(use-package ts-comint
+  :commands (run-ts
+             ts-send-last-sexp
+             ts-send-buffer
+             ts-load-file-and-go)
+  :init
+  (with-eval-after-load 'cb-web-modes
+    (let ((km cb-web-ts-mode-map))
+      (define-key km (kbd "C-x C-e") #'ts-send-last-sexp)
+      (define-key km (kbd "C-c C-b") #'ts-send-buffer)
+      (define-key km (kbd "C-c C-l") #'ts-load-file-and-go))))
 
 
 ;; Avro file mode
