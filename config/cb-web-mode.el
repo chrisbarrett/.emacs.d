@@ -395,42 +395,61 @@
              tide-format-before-save
              tide-restart-server
              tide-references
+             tide-documentation-at-point
              tide-rename-symbol
              tide-fix
              tide-refactor
              tide-jump-to-definition
-             tide-jump-back)
+             tide-jump-back
+             tide-jsdoc-template)
   :preface
   (defun cb-web--setup-ts-mode ()
     (tide-setup)
+    (with-no-warnings
+      (setq-local evil-lookup-func #'tide-documentation-at-point))
     (add-hook 'before-save-hook 'tide-format-before-save nil t))
   :init
   (progn
     (add-hook 'cb-web-ts-mode-hook #'cb-web--setup-ts-mode)
     (add-hook 'typescript-mode-hook #'cb-web--setup-ts-mode)
+    (spacemacs-keys-declare-prefix-for-mode 'cb-web-ts-mode "r" "refactor")
 
     (spacemacs-keys-set-leader-keys-for-major-mode 'cb-web-ts-mode
+      "d" #'tide-jsdoc-template
       "x" #'tide-restart-server
-      "r" #'tide-references
-      "R" #'tide-rename-symbol
-      "=" #'tide-fix
-      "f" #'tide-refactor)
+      "f" #'tide-references
+      "rn" #'tide-rename-symbol
+      "rr" #'tide-refactor
+      "rf" #'tide-fix)
 
-    (evil-define-key 'normal cb-web-ts-mode-map
-      (kbd "M-.") #'tide-jump-to-definition
-      (kbd "M-,") #'tide-jump-back)))
+    (with-eval-after-load 'cb-web-modes
+      (evil-define-key 'normal cb-web-ts-mode-map
+        (kbd "K") #'tide-documentation-at-point
+        (kbd "M-.") #'tide-jump-to-definition
+        (kbd "M-,") #'tide-jump-back))))
 
 (use-package ts-comint
   :commands (run-ts
              ts-send-last-sexp
              ts-send-buffer
+             ts-send-buffer-and-go
              ts-load-file-and-go)
   :init
-  (with-eval-after-load 'cb-web-modes
-    (let ((km cb-web-ts-mode-map))
-      (define-key km (kbd "C-x C-e") #'ts-send-last-sexp)
-      (define-key km (kbd "C-c C-b") #'ts-send-buffer)
-      (define-key km (kbd "C-c C-l") #'ts-load-file-and-go))))
+  (progn
+    (spacemacs-keys-declare-prefix-for-mode 'cb-web-ts-mode "e" "eval")
+
+    (spacemacs-keys-set-leader-keys-for-major-mode 'cb-web-ts-mode
+      "l" #'tide-load-file-and-go
+      "eb" #'tide-send-buffer
+      "eB" #'tide-send-buffer-and-go
+      "es" #'tide-send-last-sexp-and-go
+      "eS" #'tide-send-last-sexp-and-go)
+
+    (with-eval-after-load 'cb-web-modes
+      (let ((km cb-web-ts-mode-map))
+        (define-key km (kbd "C-x C-e") #'ts-send-last-sexp)
+        (define-key km (kbd "C-c C-b") #'ts-send-buffer)
+        (define-key km (kbd "C-c C-l") #'ts-load-file-and-go)))))
 
 
 ;; Avro file mode
