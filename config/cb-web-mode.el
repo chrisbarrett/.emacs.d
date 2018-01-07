@@ -387,6 +387,9 @@
 
 ;; Typescript
 
+(with-eval-after-load 'typescript-mode
+  (defalias 'typescript-mode #'cb-web-ts-mode))
+
 (use-package tide
   :commands (tide-setup
              tide-format-before-save
