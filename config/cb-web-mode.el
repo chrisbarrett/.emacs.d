@@ -103,31 +103,22 @@
   :commands (flycheck-select-checker)
   :functions (flycheck-add-next-checker flycheck-add-mode)
   :preface
-  (progn
-    (defun cb-web--disable-flycheck-for-node-modules ()
-      (when (and (buffer-file-name)
-                 (s-contains-p "node_modules" (buffer-file-name))
-                 (boundp 'flycheck-checkers)
-                 (boundp 'flycheck-disabled-checkers))
-        (let* ((js-checkers (seq-filter (lambda (checker)
-                                          (string-prefix-p "javascript" (symbol-name checker)))
-                                        flycheck-checkers))
-               (updated (cl-union flycheck-disabled-checkers js-checkers)))
-          (setq flycheck-disabled-checkers updated))))
-
-    (defun cb-web--add-node-modules-bin-to-path ()
-      "Use binaries from node_modules, where available."
-      (when-let* ((root (locate-dominating-file default-directory "package.json")))
-        (make-local-variable 'exec-path)
-        (add-to-list 'exec-path (f-join root "node_modules" ".bin")))))
+  (defun cb-web--disable-flycheck-for-node-modules ()
+    (when (and (buffer-file-name)
+               (s-contains-p "node_modules" (buffer-file-name))
+               (boundp 'flycheck-checkers)
+               (boundp 'flycheck-disabled-checkers))
+      (let* ((js-checkers (seq-filter (lambda (checker)
+                                        (string-prefix-p "javascript" (symbol-name checker)))
+                                      flycheck-checkers))
+             (updated (cl-union flycheck-disabled-checkers js-checkers)))
+        (setq flycheck-disabled-checkers updated))))
 
   :config
   (progn
     (add-to-list 'flycheck-disabled-checkers 'javascript-jshint)
     (add-to-list 'flycheck-disabled-checkers 'json-jsonlint)
 
-    (add-hook 'cb-web-ts-mode-hook #'cb-web--add-node-modules-bin-to-path)
-    (add-hook 'cb-web-js-mode-hook #'cb-web--add-node-modules-bin-to-path)
     (add-hook 'cb-web-js-mode-hook #'cb-web--disable-flycheck-for-node-modules)
 
     (let ((tidy-bin "/usr/local/Cellar/tidy-html5/5.2.0/bin/tidy"))
