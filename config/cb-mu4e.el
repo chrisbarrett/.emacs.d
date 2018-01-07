@@ -95,6 +95,7 @@
 
     (evil-set-initial-state 'mu4e-view-mode 'motion)
     (evil-define-key 'motion mu4e-view-mode-map
+      (kbd "F") #'mu4e-compose-forward
       (kbd "J") #'mu4e~view-headers-jump-to-maildir
       (kbd "n") #'mu4e-view-headers-next
       (kbd "p") #'mu4e-view-headers-prev
