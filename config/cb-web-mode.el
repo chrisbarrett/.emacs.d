@@ -409,7 +409,6 @@
   :init
   (progn
     (add-hook 'cb-web-ts-mode-hook #'cb-web--setup-ts-mode)
-    (add-hook 'typescript-mode-hook #'cb-web--setup-ts-mode)
     (spacemacs-keys-declare-prefix-for-mode 'cb-web-ts-mode "r" "refactor")
 
     (spacemacs-keys-set-leader-keys-for-major-mode 'cb-web-ts-mode
