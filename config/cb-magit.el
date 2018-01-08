@@ -73,6 +73,7 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
     (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)))
 
 (use-package magithub
+  :disabled t
   :after magit
   :commands (magithub-feature-autoinject)
   :config
