@@ -17,6 +17,15 @@
   :commands (restclient-mode
              restclient-http-send-current
              restclient-http-send-current-stay-in-window)
+  :preface
+  (defun cb-restclient--delete-trailing-comments ()
+    (when (derived-mode-p 'js-mode 'js2-mode 'cb-web-js-base-mode 'cb-web-json-mode 'yaml-mode)
+      (save-excursion
+        (goto-char (point-max))
+        (forward-line -1)
+        (search-backward-regexp (rx bol (* space) eol))
+        (delete-region (line-beginning-position) (point-max)))))
+
   :config
   (progn
     (spacemacs-keys-set-leader-keys-for-major-mode 'restclient-mode
@@ -24,6 +33,8 @@
       "o" #'restclient-http-send-current-stay-in-window)
 
     (setq restclient-same-buffer-response-name "*restclient*")
+
+    (add-hook 'restclient-response-loaded-hook #'cb-restclient--delete-trailing-comments)
 
     (with-eval-after-load 'which-key
       (with-no-warnings
