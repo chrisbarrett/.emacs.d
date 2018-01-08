@@ -482,6 +482,9 @@ Optional arg JUSTIFY will justify comments and strings."
   (progn
     (add-hook 'compilation-filter-hook #'cb-basic-settings-colorize-compilation-buffer)
 
+    ;; h (help) binding interferes with evil navigation.
+    (evil-define-key 'motion compilation-mode-map (kbd "h") #'evil-backward-char)
+
     (setq compilation-environment '("TERM=screen-256color"))
     (setq compilation-always-kill t)
     (setq compilation-ask-about-save nil)
