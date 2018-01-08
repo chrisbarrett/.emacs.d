@@ -423,7 +423,13 @@
       (evil-define-key 'normal cb-web-ts-mode-map
         (kbd "K") #'tide-documentation-at-point
         (kbd "M-.") #'tide-jump-to-definition
-        (kbd "M-,") #'tide-jump-back))))
+        (kbd "M-,") #'tide-jump-back)))
+  :config
+  (with-eval-after-load 'flycheck
+    (flycheck-add-mode 'typescript-tide 'cb-web-ts-mode)
+    (flycheck-add-mode 'javascript-tide 'cb-web-js-mode)
+    (flycheck-add-mode 'jsx-tide 'cb-web-js-mode)
+    (flycheck-add-mode 'tsx-tide 'cb-web-js-mode)))
 
 (use-package ts-comint
   :commands (run-ts
