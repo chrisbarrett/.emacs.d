@@ -3,4 +3,4 @@
 # key: v
 # condition: (cb-yas/bol?)
 # --
-val ${1:ident} = $0
+val ${1:ident} = ${2:value}

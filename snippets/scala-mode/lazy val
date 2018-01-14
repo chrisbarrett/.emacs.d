@@ -4,4 +4,4 @@
 # binding: direct-keybinding
 # condition: (cb-yas/bol?)
 # --
-lazy val ${1:name} = $0
+lazy val ${1:name} = ${2:value}

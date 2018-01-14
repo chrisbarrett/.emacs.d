@@ -1,4 +1,4 @@
 # key: plv
 # name: private lazy val
 # --
-private lazy val ${1:name} = $0
+private lazy val ${1:name} = ${2:value}

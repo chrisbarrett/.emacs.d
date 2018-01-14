@@ -4,4 +4,4 @@
 # binding: direct-keybinding
 # condition: (cb-yas/bol?)
 # --
-var ${1:ident} = $0
+var ${1:ident} = ${2:value}

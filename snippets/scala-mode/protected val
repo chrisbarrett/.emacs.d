@@ -3,4 +3,4 @@
 # key: pv
 # binding: direct-keybinding
 # --
-protected val ${1:ident} = $0
+protected val ${1:ident} = ${2:value}

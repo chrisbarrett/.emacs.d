@@ -4,4 +4,4 @@
 # binding: direct-keybinding
 # condition: (cb-yas/bol?)
 # --
-import $0
+import ${2:pkg}

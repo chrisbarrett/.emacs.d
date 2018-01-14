@@ -4,4 +4,4 @@
 # binding: direct-keybinding
 # condition: (cb-yas/bol?)
 # --
-override val ${1:ident} = $0
+override val ${1:ident} = ${2:value}
