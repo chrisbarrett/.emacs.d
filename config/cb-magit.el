@@ -17,6 +17,8 @@
 
 (autoload 'evil-define-key "evil-core")
 
+(add-to-list 'auto-mode-alist '("\\.gitignore\\'" . conf-unix-mode))
+
 (use-package magit
   :defer t
   :commands (magit-status magit-blame magit-branch-and-checkout)
