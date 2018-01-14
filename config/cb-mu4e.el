@@ -105,6 +105,10 @@
       ;; (kbd "b") #'evil-backward-word-begin
       (kbd "RET") #'cb-mu4e-view-ret)
 
+    ;; Evil delete command is super slow for some reason. :(
+    (evil-define-key 'insert mu4e-compose-mode-map
+      (kbd "<backspace>") #'backward-delete-char)
+
     ;; Set variables
 
     (setq mu4e-use-fancy-chars t)
