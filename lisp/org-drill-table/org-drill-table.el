@@ -268,9 +268,9 @@ Return a list of OrgDrillCard."
 (defun org-drill-table--table->cards (heading type instructions)
   "Convert the drill-table tree at point to a list of OrgDrillCards. "
   (--map (OrgDrillCard
-           (if (string= "" heading)
-             (cdr (car it)) heading)
-           type instructions it)
+          (if (string= "" heading)
+              (cdr (car it)) heading)
+          type instructions it)
          (org-drill-table--drill-table-rows)))
 
 (defun org-drill-table--get-or-read-prop (name read-fn)
