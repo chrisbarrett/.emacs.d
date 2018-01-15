@@ -183,9 +183,7 @@ prompt for REMOTE if it cannot be determined."
 
     (cb-emacs--with-signal-handlers "Pushing subtree..."
       (magit-process-buffer)
-      (magit-run-git-async "subtree" "push" "--prefix" prefix remote branch))
-
-    (message "Subtree `%s' pushed successfully." prefix)))
+      (magit-run-git-async "subtree" "push" "--prefix" prefix remote branch))))
 
 (defun cb-emacs-compile-subtree (subtree)
   "Force the byte compilation of SUBTREE."
