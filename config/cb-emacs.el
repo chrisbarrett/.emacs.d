@@ -49,6 +49,10 @@
 
 ;; Commands for working with config subtrees
 
+(defalias 'update-subtree #'cb-emacs-update-subtree)
+(defalias 'add-subtree #'cb-emacs-add-subtree)
+(defalias 'push-subtree #'cb-emacs-push-subtree)
+
 (defun cb-emacs--find-subtree-remote (subtree)
   (--find (equal (-last-item (s-split "/" it)) subtree)
           (magit-list-remotes)))
