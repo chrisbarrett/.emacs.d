@@ -110,7 +110,7 @@
 (require 's)
 (require 'cl-lib)
 (require 'org)
-(require 'org-drill)
+(require 'org-drill nil t)
 
 (defgroup org-drill-table nil
   "Generate drill cards from org tables."
