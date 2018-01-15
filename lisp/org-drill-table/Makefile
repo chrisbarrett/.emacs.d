@@ -39,8 +39,8 @@ $(PRECOMMIT_HOOK) :
 compile : $(OBJECTS)
 
 # Run ert tests.
-.PHONY: check
-check : compile
+.PHONY: test
+test : compile
 	$(CASK) exec $(EMACS) $(EMACSFLAGS)  \
 	$(patsubst %,-l % , $(SRCS))\
 	$(patsubst %,-l % , $(TESTS))\
