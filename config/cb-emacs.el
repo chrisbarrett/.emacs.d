@@ -153,6 +153,36 @@ prompt for REMOTE if it cannot be determined."
 
       (message "Subtree `%s' updated successfully." prefix))))
 
+(defun cb-emacs-push-subtree (subtree &optional branch remote)
+  "Push to the SUBTREE to BRANCH at REMOTE.
+
+When called interactively, prompt for the subtree, then only
+prompt for REMOTE if it cannot be determined."
+  (interactive  (let* ((default-directory user-emacs-directory)
+                       (subtree (completing-read
+                                 "Select subtree to update: "
+                                 (-map #'f-filename (f-directories cb-emacs-lisp-directory))
+                                 t)))
+                  (list subtree
+                        (read-string "Branch: " "master")
+                        (or (cb-emacs--find-subtree-remote subtree)
+                            (cb-emacs--read-new-remote)))))
+  (let* ((default-directory user-emacs-directory)
+         (prefix (format "lisp/%s" subtree))
+         (fullpath (f-join cb-emacs-lisp-directory subtree)))
+
+    (unless (y-or-n-p (format "Commits under %s will be pushed to %s at %s. Continue? "
+                              (f-short fullpath) remote branch))
+      (user-error "Aborted"))
+
+    (run-hooks 'magit-credential-hook)
+
+    (cb-emacs--with-signal-handlers "Pushing subtree..."
+      (magit-process-buffer)
+      (magit-run-git-async "subtree" "push" "--prefix" prefix remote branch))
+
+    (message "Subtree `%s' pushed successfully." prefix)))
+
 (defun cb-emacs-compile-subtree (subtree)
   "Force the byte compilation of SUBTREE."
   (interactive (list
