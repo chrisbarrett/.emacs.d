@@ -297,11 +297,11 @@ INSTRUCTIONS is a string describing how to use the card."
     (org-drill-table--get-or-read-prop
      "DRILL_CARD_TYPE"
      (lambda ()
-       (ido-completing-read "Type: "
-                            (-keep 'car org-drill-card-type-alist)
-                            nil
-                            t
-                            "twosided")))
+       (completing-read "Type: "
+                        (-keep 'car org-drill-card-type-alist)
+                        nil
+                        t
+                        "twosided")))
     (org-drill-table--get-or-read-prop
      "DRILL_INSTRUCTIONS" (lambda () (read-string "Card instructions: ")))))
 
