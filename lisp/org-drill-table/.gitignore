@@ -1,8 +1,11 @@
-# Generated files
+# Compiled
 *.elc
-*-pkg.el
-*.tar
-TAGS
-elpa
-doc/skeletor.texi
-doc/skeletor.info
+
+# Packaging
+.cask
+
+# Backup files
+*~
+
+# Undo-tree save-files
+*.~undo-tree
