@@ -327,11 +327,13 @@ INSTRUCTIONS is a string describing how to use the card."
     (let ((len (length new-cards)))
 
       (if (zerop len)
-          (message "No new cards to insert")
+          (when (called-interactively-p nil)
+            (message "No new cards to insert"))
         (org-align-all-tags)
-        (message "Inserted %s new card%s"
-                 len
-                 (if (= 1 len) "" "s"))))))
+        (when (called-interactively-p nil)
+          (message "Inserted %s new card%s"
+                   len
+                   (if (= 1 len) "" "s")))))))
 
 ;;;###autoload
 (defun org-drill-table-update ()
