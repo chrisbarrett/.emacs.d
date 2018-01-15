@@ -124,6 +124,10 @@
 
 ;; -----------------------------------------------------------------------------
 
+;; Silence byte-compiler warning.
+(defvar org-drill-card-type-alist nil)
+
+
 (cl-defstruct (OrgDrillCard
                (:constructor OrgDrillCard (heading type instructions subheadings)))
   "Defines a card to generate for use with org-drill.
