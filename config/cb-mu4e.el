@@ -142,8 +142,8 @@
              "Last 30 days" ?m)
             ("m:/walrus/inbox"
              "Inbox" ?i)
-            ("m:/walrus/inbox OR m:/movio/inbox"
-             "All Inboxes" ?I)
+            ("m:/movio/inbox"
+             "Work" ?I)
             ("m:/walrus/sent OR m:/movio/sent"
              "Sent messages" ?s)
             ("bitbucket OR github"
