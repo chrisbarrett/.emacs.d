@@ -235,6 +235,7 @@
       "SPC" #'execute-extended-command
       "TAB" #'cb/alternate-buffer
       "|"   #'cb/toggle-window-split
+      ":"   #'eval-expression
 
       "!"   #'shell-command
 
