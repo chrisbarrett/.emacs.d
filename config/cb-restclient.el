@@ -18,13 +18,25 @@
              restclient-http-send-current
              restclient-http-send-current-stay-in-window)
   :preface
-  (defun cb-restclient--delete-trailing-comments ()
-    (when (derived-mode-p 'js-mode 'js2-mode 'cb-web-js-base-mode 'cb-web-json-mode 'yaml-mode)
-      (save-excursion
-        (goto-char (point-max))
-        (forward-line -1)
-        (search-backward-regexp (rx bol (* space) eol))
-        (delete-region (line-beginning-position) (point-max)))))
+  (progn
+    (defconst cb-restclient--js-modes
+      '(js-mode js2-mode cb-web-js-base-mode cb-web-json-mode yaml-mode))
+
+    (defun cb-restclient--delete-trailing-comments ()
+      (cl-labels
+          ((current-line
+            ()
+            (buffer-substring (line-beginning-position) (line-end-position)))
+           (at-commented-line-p
+            ()
+            (string-match-p (rx bol "//") (current-line))))
+
+        (when (apply #'derived-mode-p cb-restclient--js-modes)
+          (save-excursion
+            (goto-char (point-max))
+            (while (or (at-commented-line-p) (string-empty-p (current-line)))
+              (forward-line -1))
+            (delete-region (line-beginning-position) (point-max)))))))
 
   :config
   (progn
