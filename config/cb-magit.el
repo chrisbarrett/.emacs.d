@@ -39,16 +39,17 @@
 
     (defun cb-magit-diff-buffer-file (&optional arg)
       (interactive "P")
-      (cond
-       (arg
-        (call-interactively 'magit-diff-buffer-file-popup))
-       ((magit-file-relative-name)
-        (let ((magit-diff-arguments (magit-popup-import-file-args
-                                     (default-value 'magit-diff-arguments)
-                                     (list (magit-file-relative-name)))))
-          (magit-diff-dwim magit-diff-arguments)))
-       (t
-        (user-error "Buffer isn't visiting a file"))))
+      (let* ((file (magit-file-relative-name))
+             (magit-diff-arguments
+              (when file
+                (magit-popup-import-file-args (default-value 'magit-diff-arguments) (list file)))))
+        (cond
+         (arg
+          (call-interactively #'magit-diff-buffer-file-popup))
+         (file
+          (call-interactively #'magit-diff))
+         (t
+          (user-error "Buffer isn't visiting a file")))))
 
     (evil-transient-state-define git-blame
       :title "Git Blame Transient State"
