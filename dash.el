@@ -1324,7 +1324,7 @@ combinations created by taking one element from each list in
 order.  The results are flattened, ignoring the tensor structure
 of the result.  This is equivalent to calling:
 
-  (-flatten-n (1- (length lists)) (apply '-table fn lists))
+  (-flatten-n (1- (length lists)) (apply \\='-table fn lists))
 
 but the implementation here is much more efficient.
 
@@ -2046,7 +2046,7 @@ execute body."
   "Tests for equality use this function or `equal' if this is nil.
 It should only be set using dynamic scope with a let, like:
 
-  (let ((-compare-fn #'=)) (-union numbers1 numbers2 numbers3)")
+  (let ((-compare-fn #\\='=)) (-union numbers1 numbers2 numbers3)")
 
 (defun -distinct (list)
   "Return a new list with all duplicates removed.
@@ -2114,6 +2114,12 @@ or with `-compare-fn' if that's non-nil."
 (defun -tails (list)
   "Return all suffixes of LIST"
   (-reductions-r-from 'cons nil list))
+
+(defun -common-prefix (&rest lists)
+  "Return the longest common prefix of LISTS."
+  (declare (pure t) (side-effect-free t))
+  (--reduce (--take-while (and acc (equal (pop acc) it)) it)
+            lists))
 
 (defun -contains? (list element)
   "Return non-nil if LIST contains ELEMENT.
@@ -2687,6 +2693,7 @@ structure such as plist or alist."
                              "-permutations"
                              "-inits"
                              "-tails"
+                             "-common-prefix"
                              "-contains?"
                              "-contains-p"
                              "-same-items?"

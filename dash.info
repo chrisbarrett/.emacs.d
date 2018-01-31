@@ -1,4 +1,4 @@
-This is dash.info, produced by makeinfo version 6.4 from dash.texi.
+This is dash.info, produced by makeinfo version 6.5 from dash.texi.
 
 This manual is for ‘dash.el’ version 2.12.1.
 
@@ -802,6 +802,70 @@ Functions reducing lists into single value.
           (--reduce-r (format "%s-%s" acc it) '(1 2 3))
               ⇒ "3-2-1"
 
+ -- Function: -reductions-from (fn init list)
+     Return a list of the intermediate values of the reduction.
+
+     See ‘-reduce-from’ (*note -reduce-from::) for explanation of the
+     arguments.
+
+     See also: ‘-reductions’ (*note -reductions::), ‘-reductions-r’
+     (*note -reductions-r::), ‘-reduce-r’ (*note -reduce-r::)
+
+          (-reductions-from (lambda (a i) (format "(%s FN %s)" a i)) "INIT" '(1 2 3 4))
+              ⇒ '("INIT" "(INIT FN 1)" "((INIT FN 1) FN 2)" "(((INIT FN 1) FN 2) FN 3)" "((((INIT FN 1) FN 2) FN 3) FN 4)")
+          (-reductions-from 'max 0 '(2 1 4 3))
+              ⇒ '(0 2 2 4 4)
+          (-reductions-from '* 1 '(1 2 3 4))
+              ⇒ '(1 1 2 6 24)
+
+ -- Function: -reductions-r-from (fn init list)
+     Return a list of the intermediate values of the reduction.
+
+     See ‘-reduce-r-from’ (*note -reduce-r-from::) for explanation of
+     the arguments.
+
+     See also: ‘-reductions-r’ (*note -reductions-r::), ‘-reductions’
+     (*note -reductions::), ‘-reduce’ (*note -reduce::)
+
+          (-reductions-r-from (lambda (i a) (format "(%s FN %s)" i a)) "INIT" '(1 2 3 4))
+              ⇒ '("(1 FN (2 FN (3 FN (4 FN INIT))))" "(2 FN (3 FN (4 FN INIT)))" "(3 FN (4 FN INIT))" "(4 FN INIT)" "INIT")
+          (-reductions-r-from 'max 0 '(2 1 4 3))
+              ⇒ '(4 4 4 3 0)
+          (-reductions-r-from '* 1 '(1 2 3 4))
+              ⇒ '(24 24 12 4 1)
+
+ -- Function: -reductions (fn list)
+     Return a list of the intermediate values of the reduction.
+
+     See ‘-reduce’ (*note -reduce::) for explanation of the arguments.
+
+     See also: ‘-reductions-from’ (*note -reductions-from::),
+     ‘-reductions-r’ (*note -reductions-r::), ‘-reduce-r’ (*note
+     -reduce-r::)
+
+          (-reductions (lambda (a i) (format "(%s FN %s)" a i)) '(1 2 3 4))
+              ⇒ '(1 "(1 FN 2)" "((1 FN 2) FN 3)" "(((1 FN 2) FN 3) FN 4)")
+          (-reductions '+ '(1 2 3 4))
+              ⇒ '(1 3 6 10)
+          (-reductions '* '(1 2 3 4))
+              ⇒ '(1 2 6 24)
+
+ -- Function: -reductions-r (fn list)
+     Return a list of the intermediate values of the reduction.
+
+     See ‘-reduce-r’ (*note -reduce-r::) for explanation of the
+     arguments.
+
+     See also: ‘-reductions-r-from’ (*note -reductions-r-from::),
+     ‘-reductions’ (*note -reductions::), ‘-reduce’ (*note -reduce::)
+
+          (-reductions-r (lambda (i a) (format "(%s FN %s)" i a)) '(1 2 3 4))
+              ⇒ '("(1 FN (2 FN (3 FN 4)))" "(2 FN (3 FN 4))" "(3 FN 4)" 4)
+          (-reductions-r '+ '(1 2 3 4))
+              ⇒ '(10 9 7 4)
+          (-reductions-r '* '(1 2 3 4))
+              ⇒ '(24 24 12 4)
+
  -- Function: -count (pred list)
      Counts the number of items in LIST where (PRED item) is non-nil.
 
@@ -820,6 +884,18 @@ Functions reducing lists into single value.
           (-sum '(1 2 3 4))
               ⇒ 10
 
+ -- Function: -running-sum (list)
+     Return a list with running sums of items in LIST.
+
+     LIST must be non-empty.
+
+          (-running-sum '(1 2 3 4))
+              ⇒ '(1 3 6 10)
+          (-running-sum '(1))
+              ⇒ '(1)
+          (-running-sum '())
+              ⇒ error
+
  -- Function: -product (list)
      Return the product of LIST.
 
@@ -829,6 +905,48 @@ Functions reducing lists into single value.
               ⇒ 1
           (-product '(1 2 3 4))
               ⇒ 24
+
+ -- Function: -running-product (list)
+     Return a list with running products of items in LIST.
+
+     LIST must be non-empty.
+
+          (-running-product '(1 2 3 4))
+              ⇒ '(1 2 6 24)
+          (-running-product '(1))
+              ⇒ '(1)
+          (-running-product '())
+              ⇒ error
+
+ -- Function: -inits (list)
+     Return all prefixes of LIST.
+
+          (-inits '(1 2 3 4))
+              ⇒ '(nil (1) (1 2) (1 2 3) (1 2 3 4))
+          (-inits nil)
+              ⇒ '(nil)
+          (-inits '(1))
+              ⇒ '(nil (1))
+
+ -- Function: -tails (list)
+     Return all suffixes of LIST
+
+          (-tails '(1 2 3 4))
+              ⇒ '((1 2 3 4) (2 3 4) (3 4) (4) nil)
+          (-tails nil)
+              ⇒ '(nil)
+          (-tails '(1))
+              ⇒ '((1) nil)
+
+ -- Function: -common-prefix (&rest lists)
+     Return the longest common prefix of LISTS.
+
+          (-common-prefix '(1))
+              ⇒ '(1)
+          (-common-prefix '(1 2) nil '(1 2))
+              ⇒ nil
+          (-common-prefix '(1 2) '(1 2 3) '(1 2 3 4))
+              ⇒ '(1 2)
 
  -- Function: -min (list)
      Return the smallest value from LIST of numbers or markers.
@@ -2763,6 +2881,7 @@ Index
 * -butlast:                              Other list operations.
                                                             (line 311)
 * -clone:                                Tree operations.   (line 123)
+* -common-prefix:                        Reductions.        (line 225)
 * -compose:                              Function combinators.
                                                             (line  42)
 * -concat:                               List to list.      (line  22)
@@ -2772,7 +2891,7 @@ Index
                                                             (line  93)
 * -contains?:                            Predicates.        (line  57)
 * -copy:                                 Maps.              (line 135)
-* -count:                                Reductions.        (line  89)
+* -count:                                Reductions.        (line 153)
 * -cut:                                  Function combinators.
                                                             (line 106)
 * -cycle:                                Other list operations.
@@ -2814,6 +2933,7 @@ Index
 * -group-by:                             Partitioning.      (line 187)
 * -if-let:                               Binding.           (line  37)
 * -if-let*:                              Binding.           (line  50)
+* -inits:                                Reductions.        (line 205)
 * -insert-at:                            List to list.      (line 109)
 * -interleave:                           Other list operations.
                                                             (line  66)
@@ -2844,10 +2964,10 @@ Index
 * -map-last:                             Maps.              (line  52)
 * -map-when:                             Maps.              (line  21)
 * -mapcat:                               Maps.              (line 124)
-* -max:                                  Reductions.        (line 141)
-* -max-by:                               Reductions.        (line 151)
-* -min:                                  Reductions.        (line 117)
-* -min-by:                               Reductions.        (line 127)
+* -max:                                  Reductions.        (line 259)
+* -max-by:                               Reductions.        (line 269)
+* -min:                                  Reductions.        (line 235)
+* -min-by:                               Reductions.        (line 245)
 * -non-nil:                              Sublist selection. (line  80)
 * -none?:                                Predicates.        (line  30)
 * -not:                                  Function combinators.
@@ -2875,11 +2995,15 @@ Index
 * -powerset:                             Set operations.    (line  44)
 * -prodfn:                               Function combinators.
                                                             (line 212)
-* -product:                              Reductions.        (line 107)
+* -product:                              Reductions.        (line 183)
 * -reduce:                               Reductions.        (line  46)
 * -reduce-from:                          Reductions.        (line   8)
 * -reduce-r:                             Reductions.        (line  66)
 * -reduce-r-from:                        Reductions.        (line  27)
+* -reductions:                           Reductions.        (line 121)
+* -reductions-from:                      Reductions.        (line  89)
+* -reductions-r:                         Reductions.        (line 137)
+* -reductions-r-from:                    Reductions.        (line 105)
 * -remove:                               Sublist selection. (line  23)
 * -remove-at:                            List to list.      (line 146)
 * -remove-at-indices:                    List to list.      (line 159)
@@ -2896,6 +3020,8 @@ Index
                                                             (line   8)
 * -rpartial:                             Function combinators.
                                                             (line  20)
+* -running-product:                      Reductions.        (line 193)
+* -running-sum:                          Reductions.        (line 171)
 * -same-items?:                          Predicates.        (line  72)
 * -second-item:                          Other list operations.
                                                             (line 257)
@@ -2919,11 +3045,12 @@ Index
 * -split-on:                             Partitioning.      (line  28)
 * -split-when:                           Partitioning.      (line  46)
 * -split-with:                           Partitioning.      (line  17)
-* -sum:                                  Reductions.        (line  97)
+* -sum:                                  Reductions.        (line 161)
 * -table:                                Other list operations.
                                                             (line 161)
 * -table-flat:                           Other list operations.
                                                             (line 180)
+* -tails:                                Reductions.        (line 215)
 * -take:                                 Sublist selection. (line 102)
 * -take-last:                            Sublist selection. (line 113)
 * -take-while:                           Sublist selection. (line 147)
@@ -3004,141 +3131,150 @@ Ref: -reduce-from22701
 Ref: -reduce-r-from23487
 Ref: -reduce24272
 Ref: -reduce-r25080
-Ref: -count25996
-Ref: -sum26220
-Ref: -product26409
-Ref: -min26618
-Ref: -min-by26844
-Ref: -max27367
-Ref: -max-by27592
-Node: Unfolding28120
-Ref: -iterate28359
-Ref: -unfold28804
-Node: Predicates29612
-Ref: -any?29736
-Ref: -all?30056
-Ref: -none?30386
-Ref: -only-some?30688
-Ref: -contains?31173
-Ref: -same-items?31562
-Ref: -is-prefix?31947
-Ref: -is-suffix?32270
-Ref: -is-infix?32593
-Node: Partitioning32947
-Ref: -split-at33135
-Ref: -split-with33420
-Ref: -split-on33823
-Ref: -split-when34499
-Ref: -separate35139
-Ref: -partition35581
-Ref: -partition-all36033
-Ref: -partition-in-steps36461
-Ref: -partition-all-in-steps36958
-Ref: -partition-by37443
-Ref: -partition-by-header37825
-Ref: -partition-after-pred38429
-Ref: -partition-before-pred38800
-Ref: -partition-before-item39178
-Ref: -partition-after-item39489
-Ref: -group-by39795
-Node: Indexing40232
-Ref: -elem-index40434
-Ref: -elem-indices40829
-Ref: -find-index41212
-Ref: -find-last-index41701
-Ref: -find-indices42205
-Ref: -grade-up42613
-Ref: -grade-down43016
-Node: Set operations43426
-Ref: -union43609
-Ref: -difference44051
-Ref: -intersection44468
-Ref: -powerset44905
-Ref: -permutations45118
-Ref: -distinct45418
-Node: Other list operations45742
-Ref: -rotate45967
-Ref: -repeat46262
-Ref: -cons*46525
-Ref: -snoc46912
-Ref: -interpose47325
-Ref: -interleave47623
-Ref: -zip-with47992
-Ref: -zip48709
-Ref: -zip-fill49515
-Ref: -unzip49838
-Ref: -cycle50372
-Ref: -pad50745
-Ref: -table51068
-Ref: -table-flat51858
-Ref: -first52867
-Ref: -some53239
-Ref: -last53548
-Ref: -first-item53882
-Ref: -second-item54298
-Ref: -third-item54578
-Ref: -fourth-item54856
-Ref: -fifth-item55122
-Ref: -last-item55384
-Ref: -butlast55676
-Ref: -sort55923
-Ref: -list56411
-Ref: -fix56742
-Node: Tree operations57282
-Ref: -tree-seq57478
-Ref: -tree-map58336
-Ref: -tree-map-nodes58779
-Ref: -tree-reduce59634
-Ref: -tree-reduce-from60516
-Ref: -tree-mapreduce61117
-Ref: -tree-mapreduce-from61977
-Ref: -clone63263
-Node: Threading macros63591
-Ref: ->63736
-Ref: ->>64228
-Ref: -->64733
-Ref: -as->65294
-Ref: -some->65749
-Ref: -some->>66123
-Ref: -some-->66559
-Node: Binding67030
-Ref: -when-let67242
-Ref: -when-let*67727
-Ref: -if-let68255
-Ref: -if-let*68650
-Ref: -let69267
-Ref: -let*74060
-Ref: -lambda75001
-Node: Side-effects75803
-Ref: -each75997
-Ref: -each-while76404
-Ref: -each-indexed76764
-Ref: -dotimes77282
-Ref: -doto77585
-Node: Destructive operations78012
-Ref: !cons78185
-Ref: !cdr78391
-Node: Function combinators78586
-Ref: -partial78860
-Ref: -rpartial79255
-Ref: -juxt79657
-Ref: -compose80089
-Ref: -applify80647
-Ref: -on81094
-Ref: -flip81617
-Ref: -const81929
-Ref: -cut82273
-Ref: -not82759
-Ref: -orfn83069
-Ref: -andfn83503
-Ref: -iteratefn83998
-Ref: -fixfn84701
-Ref: -prodfn86270
-Node: Development87336
-Node: Contribute87685
-Node: Changes88433
-Node: Contributors91432
-Node: Index93056
+Ref: -reductions-from25996
+Ref: -reductions-r-from26711
+Ref: -reductions27436
+Ref: -reductions-r28061
+Ref: -count28696
+Ref: -sum28920
+Ref: -running-sum29109
+Ref: -product29402
+Ref: -running-product29611
+Ref: -inits29924
+Ref: -tails30172
+Ref: -common-prefix30419
+Ref: -min30713
+Ref: -min-by30939
+Ref: -max31462
+Ref: -max-by31687
+Node: Unfolding32215
+Ref: -iterate32454
+Ref: -unfold32899
+Node: Predicates33707
+Ref: -any?33831
+Ref: -all?34151
+Ref: -none?34481
+Ref: -only-some?34783
+Ref: -contains?35268
+Ref: -same-items?35657
+Ref: -is-prefix?36042
+Ref: -is-suffix?36365
+Ref: -is-infix?36688
+Node: Partitioning37042
+Ref: -split-at37230
+Ref: -split-with37515
+Ref: -split-on37918
+Ref: -split-when38594
+Ref: -separate39234
+Ref: -partition39676
+Ref: -partition-all40128
+Ref: -partition-in-steps40556
+Ref: -partition-all-in-steps41053
+Ref: -partition-by41538
+Ref: -partition-by-header41920
+Ref: -partition-after-pred42524
+Ref: -partition-before-pred42895
+Ref: -partition-before-item43273
+Ref: -partition-after-item43584
+Ref: -group-by43890
+Node: Indexing44327
+Ref: -elem-index44529
+Ref: -elem-indices44924
+Ref: -find-index45307
+Ref: -find-last-index45796
+Ref: -find-indices46300
+Ref: -grade-up46708
+Ref: -grade-down47111
+Node: Set operations47521
+Ref: -union47704
+Ref: -difference48146
+Ref: -intersection48563
+Ref: -powerset49000
+Ref: -permutations49213
+Ref: -distinct49513
+Node: Other list operations49837
+Ref: -rotate50062
+Ref: -repeat50357
+Ref: -cons*50620
+Ref: -snoc51007
+Ref: -interpose51420
+Ref: -interleave51718
+Ref: -zip-with52087
+Ref: -zip52804
+Ref: -zip-fill53610
+Ref: -unzip53933
+Ref: -cycle54467
+Ref: -pad54840
+Ref: -table55163
+Ref: -table-flat55953
+Ref: -first56962
+Ref: -some57334
+Ref: -last57643
+Ref: -first-item57977
+Ref: -second-item58393
+Ref: -third-item58673
+Ref: -fourth-item58951
+Ref: -fifth-item59217
+Ref: -last-item59479
+Ref: -butlast59771
+Ref: -sort60018
+Ref: -list60506
+Ref: -fix60837
+Node: Tree operations61377
+Ref: -tree-seq61573
+Ref: -tree-map62431
+Ref: -tree-map-nodes62874
+Ref: -tree-reduce63729
+Ref: -tree-reduce-from64611
+Ref: -tree-mapreduce65212
+Ref: -tree-mapreduce-from66072
+Ref: -clone67358
+Node: Threading macros67686
+Ref: ->67831
+Ref: ->>68323
+Ref: -->68828
+Ref: -as->69389
+Ref: -some->69844
+Ref: -some->>70218
+Ref: -some-->70654
+Node: Binding71125
+Ref: -when-let71337
+Ref: -when-let*71822
+Ref: -if-let72350
+Ref: -if-let*72745
+Ref: -let73362
+Ref: -let*78155
+Ref: -lambda79096
+Node: Side-effects79898
+Ref: -each80092
+Ref: -each-while80499
+Ref: -each-indexed80859
+Ref: -dotimes81377
+Ref: -doto81680
+Node: Destructive operations82107
+Ref: !cons82280
+Ref: !cdr82486
+Node: Function combinators82681
+Ref: -partial82955
+Ref: -rpartial83350
+Ref: -juxt83752
+Ref: -compose84184
+Ref: -applify84742
+Ref: -on85189
+Ref: -flip85712
+Ref: -const86024
+Ref: -cut86368
+Ref: -not86854
+Ref: -orfn87164
+Ref: -andfn87598
+Ref: -iteratefn88093
+Ref: -fixfn88796
+Ref: -prodfn90365
+Node: Development91431
+Node: Contribute91780
+Node: Changes92528
+Node: Contributors95527
+Node: Index97151
 
 End Tag Table
 
