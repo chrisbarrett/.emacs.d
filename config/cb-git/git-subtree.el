@@ -158,7 +158,8 @@ If INTERACTIVE-P is set, messages will be logged indicating progress."
   (interactive  (let ((default-directory (magit-toplevel)))
                   (git-subtree--assert-tree-not-dirty)
                   (let* ((remote (git-subtree--read-new-remote))
-                         (subtree-path (read-file-name "Create at: " (git-subtree--subtree-path-for-remote remote))))
+                         (subtree-path (file-relative-name
+                                        (read-file-name "Create at: " (git-subtree--subtree-path-for-remote remote)))))
                     (list subtree-path
                           remote
                           (read-string "Rev: " (git-subtree--rev-for-subtree subtree-path))
