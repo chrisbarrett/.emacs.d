@@ -12,18 +12,15 @@
 (require 'f)
 (require 's)
 
-(autoload 'magit-anything-modified-p "magit-git")
-(autoload 'magit-list-remotes "magit-git")
-(autoload 'magit-process-buffer "magit-process")
-(autoload 'magit-read-string-ns "magit-utils")
-(autoload 'magit-read-url "magit-remote")
-(autoload 'magit-run-git "magit-process")
+(autoload 'git-subtree-add "git-subtree")
+(autoload 'git-subtree-push "git-subtree")
+(autoload 'git-subtree-update "git-subtree")
 
 (defvar magit-process-raise-error)
 
-(defconst cb-emacs-pinned-subtree-versions
-  '((ensime-emacs . "v2.0.1")))
-
+(defun cb-emacs-pinned-subtrees (subtree-path)
+  (pcase subtree-path
+    ("lisp/ensime-emacs" "v2.0.1")))
 
 ;; Config Paths
 
@@ -49,141 +46,46 @@
 
 ;; Commands for working with config subtrees
 
-(defalias 'update-subtree #'cb-emacs-update-subtree)
-(defalias 'add-subtree #'cb-emacs-add-subtree)
-(defalias 'push-subtree #'cb-emacs-push-subtree)
+(defalias 'emacs-update-subtree #'cb-emacs-update-subtree)
+(defalias 'emacs-add-subtree #'cb-emacs-add-subtree)
+(defalias 'emacs-push-subtree #'cb-emacs-push-subtree)
 
-(defun cb-emacs--find-subtree-remote (subtree)
-  (--find (equal (-last-item (s-split "/" it)) subtree)
-          (magit-list-remotes)))
+;; Declare dynamic vars to satisfy byte compiler.
+(defvar git-subtree-prefix nil)
+(defvar git-subtree-subtree-to-rev-function nil)
 
-(defmacro cb-emacs--with-signal-handlers (step &rest body)
-  (declare (indent 1))
-  `(condition-case _
-       (let ((magit-process-raise-error t))
-         (message "%s" ,step)
-         ,@body)
-     (magit-git-error
-      (error "%sfailed.  See %s" ,step (magit-process-buffer t)))
-     (error
-      (error "%sfailed" ,step ))))
-
-(defun cb-emacs--read-new-remote ()
-  (let* ((name (magit-read-string-ns "Remote name"))
-         (url (magit-read-url "Remote url" (format "https://github.com/%s.git" name))))
-    (unless (member name (magit-list-remotes))
-      (cb-emacs--with-signal-handlers "Adding remote..."
-        (magit-run-git "remote" "add" name url)))
-    name))
-
-(defun cb-emacs--assert-tree-not-dirty ()
-  (require 'magit)
-  (when (magit-anything-modified-p)
-    (user-error "`%s' has uncommitted changes.  Aborting" default-directory)))
-
-(defun cb-emacs-add-subtree (subtree remote version)
-  "Add a new SUBTREE at REMOTE at VERSION."
-  (interactive  (let ((default-directory user-emacs-directory))
-                  (cb-emacs--assert-tree-not-dirty)
-                  (let* ((remote (cb-emacs--read-new-remote))
-                         (subtree (file-name-nondirectory remote))
-                         (ref (read-string "Ref: " (alist-get (intern subtree) cb-emacs-pinned-subtree-versions "master"))))
-                    (list subtree remote ref))))
-  (let ((default-directory user-emacs-directory))
-    (cb-emacs--assert-tree-not-dirty)
-    (run-hooks 'magit-credential-hook)
-
-    (let* ((prefix (format "lisp/%s" subtree))
-           (fullpath (f-join cb-emacs-lisp-directory subtree))
-           (commit-message (format "Add %s@master to %s" remote prefix)))
-
-      (unless (y-or-n-p (format "%s at %s will be merged to %s. Continue? " remote version fullpath))
-        (user-error "Aborted"))
-
-      (cb-emacs--with-signal-handlers "Fetching remote..."
-        (magit-run-git "fetch" "-q" remote))
-
-      (cb-emacs--with-signal-handlers "Importing subtree..."
-        (magit-run-git "subtree" "-q" "add" "--prefix" prefix remote version "--squash" "-m" commit-message))
-
-      (cb-emacs--with-signal-handlers "Compiling..."
-        (byte-recompile-directory fullpath 0))
-
-      (cb-init/init-load-path)
-
-      (message "Subtree `%s' added successfully." prefix))))
-
-(defun cb-emacs-update-subtree (subtree &optional remote)
-  "Update SUBTREE at REMOTE.
-
-When called interactively, prompt for the subtree, then only
-prompt for REMOTE if it cannot be determined."
-  (interactive  (let ((default-directory user-emacs-directory))
-                  (cb-emacs--assert-tree-not-dirty)
-                  (let ((subtree (completing-read
-                                  "Select subtree to update: "
-                                  (-map #'f-filename (f-directories cb-emacs-lisp-directory))
-                                  t)))
-                    (list subtree
-                          (or (cb-emacs--find-subtree-remote subtree)
-                              (cb-emacs--read-new-remote))))))
-
-  (let ((default-directory user-emacs-directory))
-    (cb-emacs--assert-tree-not-dirty)
-
-    (let* ((prefix (format "lisp/%s" subtree))
-           (fullpath (f-join cb-emacs-lisp-directory subtree))
-           (version (alist-get (intern subtree) cb-emacs-pinned-subtree-versions "master"))
-           (commit-message (format "Merge %s@%s into %s" remote version prefix)))
-
-      (unless (y-or-n-p (format "%s at %s will be merged to %s. Continue? " remote version fullpath))
-        (user-error "Aborted"))
-
-      (run-hooks 'magit-credential-hook)
-
-      (cb-emacs--with-signal-handlers "Fetching remote..."
-        (magit-run-git "fetch" "-q" remote))
-
-      (cb-emacs--with-signal-handlers "Importing subtree..."
-        (magit-run-git "subtree" "-q" "pull" "--prefix" prefix remote version "--squash" "-m" commit-message))
-
-      (cb-emacs--with-signal-handlers "Removing existing byte-compiled files..."
-        (ignore-errors
-          (let ((elc-files (f-files fullpath (lambda (f) (f-ext? f "elc")) t)))
-            (-each elc-files #'f-delete))))
-
-      (cb-emacs--with-signal-handlers "Compiling..."
-        (byte-recompile-directory fullpath 0))
-
-      (message "Subtree `%s' updated successfully." prefix))))
-
-(defun cb-emacs-push-subtree (subtree &optional branch remote)
-  "Push to the SUBTREE to BRANCH at REMOTE.
-
-When called interactively, prompt for the subtree, then only
-prompt for REMOTE if it cannot be determined."
-  (interactive  (let* ((default-directory user-emacs-directory)
-                       (subtree (completing-read
-                                 "Select subtree to update: "
-                                 (-map #'f-filename (f-directories cb-emacs-lisp-directory))
-                                 t)))
-                  (list subtree
-                        (read-string "Branch: " "master")
-                        (or (cb-emacs--find-subtree-remote subtree)
-                            (cb-emacs--read-new-remote)))))
+(defun cb-emacs-add-subtree ()
+  "Add a new subtree to .emacs.d/lisp."
+  (interactive)
   (let* ((default-directory user-emacs-directory)
-         (prefix (format "lisp/%s" subtree))
-         (fullpath (f-join cb-emacs-lisp-directory subtree)))
+         (git-subtree-prefix "lisp")
+         (git-subtree-subtree-to-rev-function #'cb-emacs-pinned-subtrees)
+         (subtree-fullpath (call-interactively #'git-subtree-add)))
+    (message "Recompiling lisp files...")
+    (byte-recompile-directory subtree-fullpath 0)
+    (cb-init/init-load-path)
+    (message "Finished.")))
 
-    (unless (y-or-n-p (format "Commits under %s will be pushed to %s at %s. Continue? "
-                              (f-short fullpath) remote branch))
-      (user-error "Aborted"))
+(defun cb-emacs-update-subtree ()
+  "Update an existing subtree in .emacs.d/lisp."
+  (interactive)
+  (let ((default-directory user-emacs-directory))
+    (let* ((git-subtree-prefix "lisp")
+           (git-subtree-subtree-to-rev-function #'cb-emacs-pinned-subtrees)
+           (subtree-fullpath (call-interactively #'git-subtree-update)))
+      (message "Recompiling lisp files...")
+      (ignore-errors
+        (let ((elc-files (f-files subtree-fullpath (lambda (f) (f-ext? f "elc")) t)))
+          (-each elc-files #'f-delete)))
+      (byte-recompile-directory subtree-fullpath 0)
+      (message "Finished."))))
 
-    (run-hooks 'magit-credential-hook)
-
-    (cb-emacs--with-signal-handlers "Pushing subtree..."
-      (magit-process-buffer)
-      (magit-run-git-async "subtree" "push" "--prefix" prefix remote branch))))
+(defun cb-emacs-push-subtree ()
+  "Push existing subtree in .emacs.d/lisp."
+  (interactive)
+  (let* ((default-directory user-emacs-directory)
+         (git-subtree-prefix "lisp"))
+    (call-interactively #'git-subtree-push)))
 
 (defun cb-emacs-compile-subtree (subtree)
   "Force the byte compilation of SUBTREE."
