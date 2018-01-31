@@ -19,6 +19,9 @@
 
 (add-to-list 'auto-mode-alist '("\\.gitignore\\'" . conf-unix-mode))
 
+(use-package git-subtree
+  :commands (git-subtree-add git-subtree-update git-subtree-push))
+
 (use-package magit
   :defer t
   :commands (magit-status magit-blame magit-branch-and-checkout)
