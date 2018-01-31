@@ -738,6 +738,8 @@ Optional arg JUSTIFY will justify comments and strings."
   ;; Undefine key that prevents forward-word in evil
   (define-key shr-map (kbd "w") nil))
 
+(use-package unfill
+  :commands (unfill-region unfill-paragraph unfill-toggle))
 
 (provide 'cb-basic-settings)
 
