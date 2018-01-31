@@ -23,6 +23,13 @@
 ;;; Commentary:
 
 ;; Provides commands for working with git subtrees.
+;;
+;; The basic idea is that you add, update and push subtrees with the commands
+;; from this package. When you add a subtree, a corresponding remote will be
+;; added, which will be used automatically for subsequent operations.
+;;
+;; You can pin subtrees to specific revs by setting up an alist of subtree paths
+;; to git revs as a directory local variable. See `git-subtree-rev-alist'.
 
 ;;; Code:
 
@@ -38,10 +45,12 @@
   :prefix "git-subtree-")
 
 (defcustom git-subtree-prefix nil
-  "The directory in which subtrees will be created, relative to the git root.
+  "The directory in which new subtrees will be created.
 
-Dynamically binding this var before calling `git-subtree-add'
-allows you to prepopulate the parent directory for the subtree."
+This directory is relative to the git root.
+
+When calling `git-subtree-add' from Lisp, setting this variable
+will populate the prompt for the new subtree's parent directory."
   :group 'git-subtree
   :type '(choice (const nil) string)
   :safe #'stringp)
@@ -52,11 +61,7 @@ allows you to prepopulate the parent directory for the subtree."
 Keys are the subtree paths, which are relative to the root of the
 repo. Values are strings, which are interpreted as git revisions.
 
-Dynamically binding this var before calling `git-subtree-add'
-allows you to prepopulate the revision.
-
-If this var is bound when calling `git-subtree-update', the alist
-lookup result will be used as the rev, falling back to master."
+This variable is suitable for use as a directory variable."
   :group 'git-subtree
   :type '(alist :key-type string :value-type string)
   :safe #'listp)
