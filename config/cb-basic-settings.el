@@ -22,6 +22,7 @@
 (autoload 'ansi-color-apply-on-region "ansi-color")
 (autoload 'evil-define-key "evil-core")
 (autoload 'evil-set-initial-state "evil-core")
+(autoload 'evil-backward-char "evil-commands")
 
 
 (defalias #'yes-or-no-p #'y-or-n-p)
