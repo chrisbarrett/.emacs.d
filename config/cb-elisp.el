@@ -13,6 +13,7 @@
 
 (require 'spacemacs-keys)
 (require 'evil)
+(require 'subr-x)
 
 (define-derived-mode dir-locals-mode emacs-lisp-mode "dir-locals")
 (add-to-list 'auto-mode-alist '("\\.dir-locals.el\\'" . dir-locals-mode))
@@ -34,7 +35,34 @@
       "ee" #'eval-expression))
 
   :config
-  (advice-add #'eval-buffer :after #'cb-elisp--message-on-eval-buffer))
+  (progn
+    (advice-add #'eval-buffer :after #'cb-elisp--message-on-eval-buffer)
+    (define-key emacs-lisp-mode-map (kbd "C-c C-z") #'ielm)))
+
+(use-package ielm
+  :commands ielm
+  :preface
+  (defun cb-elisp-pop-to-elisp-buffer ()
+    (interactive)
+    (if-let* ((buf (seq-find (lambda (buf)
+                               (with-current-buffer buf
+                                 (derived-mode-p 'emacs-lisp-mode)))
+                             (buffer-list))))
+        (pop-to-buffer buf)
+      (user-error "No Emacs Lisp buffers")))
+  :config
+  (progn
+    (add-to-list 'display-buffer-alist
+                 `(,(rx bos "*ielm*" eos)
+                   (display-buffer-reuse-window
+                    display-buffer-in-side-window)
+                   (reusable-frames . visible)
+                   (side            . bottom)
+                   (slot            . 0)
+                   (window-height   . 0.2)))
+    (define-key inferior-emacs-lisp-mode-map (kbd "C-c C-z") #'cb-elisp-pop-to-elisp-buffer)))
+
+
 
 (use-package which-key
   :preface
