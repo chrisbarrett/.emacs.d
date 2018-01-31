@@ -32,13 +32,21 @@
 
 ;; Dynamically-bindable variables
 
-(defvar git-subtree-prefix nil
+(defgroup git-subtree nil
+  "Commands for working with git subtrees"
+  :group 'git
+  :prefix "git-subtree-")
+
+(defcustom git-subtree-prefix nil
   "The directory in which subtrees will be created, relative to the git root.
 
 Dynamically-bind this var before calling `git-subtree-add' to
-prepopulate the parent directory for the subtree.")
+prepopulate the parent directory for the subtree."
+  :group 'git-subtree
+  :type '(choice (const nil) string)
+  :safe #'stringp)
 
-(defvar git-subtree-subtree-to-rev-function nil
+(defcustom git-subtree-subtree-to-rev-function nil
   "Function used to determine which rev to pull or update.
 
 It takes a single argument, which is the relative path of the
@@ -49,7 +57,10 @@ Dynamically-bind this var before calling `git-subtree-add' to
 prepopulate the rev.
 
 If this var is bound when calling `git-subtree-update', and if it
-returns non-nil, the return value will be used as the rev.")
+returns non-nil, the return value will be used as the rev."
+  :group 'git-subtree
+  :type '(choice (const nil) function)
+  :risky t)
 
 ;; Utilities
 
