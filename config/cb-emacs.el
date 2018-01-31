@@ -12,9 +12,9 @@
 (require 'f)
 (require 's)
 
-(autoload 'git-subtree-add "git-subtree")
-(autoload 'git-subtree-push "git-subtree")
-(autoload 'git-subtree-update "git-subtree")
+(autoload 'git-subtree-add "git-subtree" nil t)
+(autoload 'git-subtree-push "git-subtree" nil t)
+(autoload 'git-subtree-update "git-subtree" nil t)
 
 (defvar magit-process-raise-error)
 
