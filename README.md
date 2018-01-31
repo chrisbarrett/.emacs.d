@@ -15,6 +15,7 @@ Rust. For some introduction and benchmarks, see
 
 This package let you run `ripgrep` like `grep` from within Emacs.
 
+![screenshot](screenshot.png)
 
 ## Installation
 
@@ -143,7 +144,8 @@ Custom type patterns as for rgrep are supported via customizing of
 
 ### `rg-command-line-flags`
 Additional command line flags that will be appended to the ripgrep
-command line.
+command line. Must either be a list of flags or a function that
+returns a list of flags.
 
 ### `rg-group-result`
 Controls the layout of the results buffer. If non `nil`, each file
@@ -199,6 +201,22 @@ default and bound to <kbd>I</kbd> in `rg` result buffer.
 Creates a function named `rg-custom-toggle-flag-context` that is off by
 default and bound to <kbd>C-c c</kbd> in `rg` result buffer.
 
+### `rg-define-search`
+This macro can be used to define custom search functions in a
+declarative style. Default implementations for common behavior is
+available and custom forms can also be used. See the package
+documentation for details.
+
+Example:
+
+``` el
+(rg-define-search search-home-dir-in-elisp
+  "Doc string."
+  :query ask
+  :format literal
+  :files "elisp"
+  :dir (getenv "HOME"))
+```
 
 ## Contribute
 

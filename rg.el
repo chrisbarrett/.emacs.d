@@ -6,7 +6,7 @@
 ;;
 ;; Author: David Landell <david.landell@sunnyhill.email>
 ;;         Roland McGrath <roland@gnu.org>
-;; Version: 1.4.1
+;; Version: 1.5.0
 ;; URL: https://github.com/dajva/rg.el
 ;; Package-Requires: ((cl-lib "0.5") (emacs "24") (s "1.10.0"))
 ;; Keywords: matching, tools
@@ -70,6 +70,9 @@
 ;; flag for the rg command line.  Such flags can then be toggled from
 ;; the results buffer to repeat the search with updated flags.
 
+;; The `rg-define-search' macro can be used to define custom search
+;; functions that is not available in this package.
+
 ;; The two `rg-save-search' functions will allow for saving search
 ;; result buffers with or without custom naming.
 ;; `rg-list-searches' will display a list of all search buffers with
@@ -105,8 +108,9 @@
   :group 'rg)
 
 (defcustom rg-command-line-flags nil
-  "List of command line flags for rg."
-  :type '(repeat string)
+  "List of command line flags for rg.
+Alternatively a function returning a list of flags."
+  :type '(choice function (repeat string))
   :group 'rg)
 
 (defcustom rg-group-result nil
@@ -342,7 +346,9 @@ added as a '--type-add' parameter to the rg command line."
                          "--heading"
                        "--no-heading"))
                (rg-build-type-add-args)
-               rg-command-line-flags
+               (if (functionp rg-command-line-flags)
+                   (funcall rg-command-line-flags)
+                 rg-command-line-flags)
                rg-toggle-command-line-flags
                (list "-e" "<R>"))))
     (when rg-literal
@@ -400,21 +406,13 @@ included."
            (rg-get-type-aliases t)))
      '("all" . "*"))))
 
-(defun rg-read-input (&optional literal)
-  "Prompt user for input and return a list of the results.
-If LITERAL is non nil prompt for literal pattern."
-  (let* ((pattern (rg-read-pattern nil literal))
-         (files (rg-read-files pattern))
-         (dir (read-directory-name "In directory: "
-                                   nil default-directory t)))
-    (list pattern files dir)))
-
-(defun rg-read-files (pattern)
+(defun rg-read-files (&optional pattern)
   "Read files argument for interactive rg.  PATTERN is the search string."
-  (let ((default-alias (rg-default-alias)))
+  (let ((default-alias (rg-default-alias))
+        (pattern-string (if pattern (concat "for \"" pattern "\" ")
+                          "")))
     (completing-read
-     (concat "Search for \"" pattern
-             "\" in files"
+     (concat "Search " pattern-string "in files"
              (if default-alias
                  (concat
                   " (default: [" (car default-alias) "] = "
@@ -543,7 +541,7 @@ Commands:
   (make-local-variable 'rg-hit-count)
   (make-local-variable 'rg-toggle-command-line-flags)
   (make-local-variable 'rg-literal)
-  (rg-update-header-line)
+  (rg-create-header-line)
   (add-hook 'compilation-filter-hook 'rg-filter nil t) )
 
 (defun rg-project-root (file)
@@ -596,47 +594,57 @@ Returns the new list."
            files)
           " ."))
 
-(defun rg-header-render-label (name &optional nameface)
+(defun rg-header-render-label (labelform)
   "Return a fontified header label.
-NAME is the label text NAMEFACE is a custom face that will be applied
-to NAME."
-  (concat (propertize "[" 'font-lock-face `(header-line bold))
-          (propertize name 'font-lock-face `(,nameface header-line bold ))
-          (propertize "]" 'font-lock-face `(header-line bold))
-          ": "))
-
-(defun rg-header-render-value (value)
-  "Return a fontified header VALUE."
-  (propertize value 'font-lock-face '(header-line)))
+LABELFORM is either a string to render or a form where the `car' is a
+conditional and the two following items are then and else specs.
+Specs are lists where the the `car' is the labels string and the
+`cadr' is font to use for that string."
+  (list '(:propertize "[" font-lock-face (header-line bold))
+        (cond
+         ((stringp labelform)
+          `(:propertize ,labelform font-lock-face (header-line bold)))
+         ((listp labelform)
+          (let* ((condition (nth 0 labelform))
+                 (then (nth 1 labelform))
+                 (else (nth 2 labelform)))
+            `(,condition
+              (:propertize ,(nth 0 then) font-lock-face (,(nth 1 then) header-line bold))
+              (:propertize ,(nth 0 else) font-lock-face (,(nth 1 else) header-line bold)))))
+         (t (error "Not a string or list")))
+        '(:propertize "]" font-lock-face (header-line bold))
+        '(": ")))
 
 (defun rg-header-render-toggle (on)
   "Return a fontified toggle symbol.
-If ON is render \"on\" string, otherwise render \"off\"."
-  (let ((value (if on "on " "off"))
-        (face (if on 'rg-toggle-on-face 'rg-toggle-off-face)))
-    (propertize value 'font-lock-face `(bold ,face))))
+If ON is non nil, render \"on\" string, otherwise render \"off\"
+string."
+    `(:eval (let* ((on ,on)
+                   (value (if on "on " "off"))
+                   (face (if on 'rg-toggle-on-face 'rg-toggle-off-face)))
+      (propertize value 'font-lock-face `(bold ,face)))))
 
-;; TODO: Improve header structure to alloow for auto updates
-(defun rg-update-header-line ()
-  "Update the header line if `rg-show-header' is enabled."
+(defun rg-create-header-line ()
+  "Create the header line if `rg-show-header' is enabled."
   (when rg-show-header
-    (let ((type (if rg-literal "literal" "regexp"))
-          (typeface (if rg-literal 'rg-literal-face 'rg-regexp-face))
-          (itemspace "  "))
+    (let ((itemspace "  "))
       (setq header-line-format
             (if (null rg-last-search)
-                (concat
-                 (rg-header-render-label "command line")
-                 (rg-header-render-value "no refinement"))
-              (concat
-               (rg-header-render-label type typeface)
-               (rg-header-render-value (nth 0 rg-last-search)) itemspace
+                (list (rg-header-render-label "command line") "no refinement")
+              (list
+               (rg-header-render-label '(rg-literal ("literal" rg-literal-face)
+                                                    ("regexp" rg-regexp-face)))
+               '(:eval (nth 0 rg-last-search)) itemspace
                (rg-header-render-label "files")
-               (rg-header-render-value (nth 1 rg-last-search)) itemspace
+               '(:eval (nth 1 rg-last-search)) itemspace
                (rg-header-render-label "case")
-               (rg-header-render-toggle (not (member "-i" rg-toggle-command-line-flags))) itemspace
+               (rg-header-render-toggle
+               '(not (member "-i" rg-toggle-command-line-flags))) itemspace
                (rg-header-render-label "ign")
-               (rg-header-render-toggle (not (member "--no-ignore" rg-toggle-command-line-flags)))))))))
+               (rg-header-render-toggle
+               '(not (member "--no-ignore" rg-toggle-command-line-flags))) itemspace
+               (rg-header-render-label "hits")
+               '(:eval (format "%d" rg-hit-count))))))))
 
 (defun rg-run (pattern files dir &optional literal  confirm)
   "Execute rg command with supplied PATTERN, FILES and DIR.
@@ -684,8 +692,7 @@ executing."
     ;; default-directory is used as the base for file paths.
     (setq compilation-directory dir)
     (setq default-directory compilation-directory)
-    (rg-recompile)
-    (rg-update-header-line)))
+    (rg-recompile)))
 
 (defmacro rg-rerun-with-changes (varplist &rest body)
   "Rerun last search with changed parameters.
@@ -1007,67 +1014,229 @@ prefix is not supplied `rg-keymap-prefix' is used."
     (message "Global key bindings for `rg' enabled with prefix: %s"
              (edmacro-format-keys prefix))))
 
+(eval-and-compile
+  (defun rg-search-parse-body (args)
+    "Parse a function ARGS into (DECLARATIONS . EXPS)."
+    (let ((decls ()))
+      (while (and (cdr args)
+                  (let ((e (car args)))
+                    (or (stringp e)
+                        (memq (car-safe e)
+                              '(:documentation declare interactive cl-declare)))))
+        (push (pop args) decls))
+      (cons (nreverse decls) args))))
+
+(eval-and-compile
+  (defun rg-set-search-defaults (args)
+    "Set defaults for required search options missing from ARGS.
+If the :confirm option is missing, set it to NEVER, if
+the :format option is missing, set it to REGEXP, and if
+the :query option is missing, set it to ASK"
+    (unless (plist-get args :confirm)
+      (setq args (plist-put args :confirm 'never)))
+
+    (unless (plist-get args :format)
+      (setq args (plist-put args :format 'regexp)))
+
+    (unless (plist-get args :query)
+      (setq args (plist-put args :query 'ask)))
+
+    (unless (plist-get args :files)
+      (setq args (plist-put args :files 'ask)))
+
+    (unless (plist-get args :dir)
+      (setq args (plist-put args :dir 'ask)))
+    args))
+
+(eval-and-compile
+  (defun rg-search-parse-local-bindings (search-cfg)
+    "Parse local bindings for search functions from SEARCH-CFG."
+    (let* ((confirm-opt (plist-get search-cfg :confirm))
+           (format-opt (plist-get search-cfg :format))
+           (query-opt (plist-get search-cfg :query))
+           (alias-opt (plist-get search-cfg :files))
+           (dir-opt (plist-get search-cfg :dir))
+           (binding-list `((literal ,(eq format-opt 'literal)))))
+
+      ;; confirm binding
+      (cond ((eq confirm-opt 'never)
+             (setq binding-list (append binding-list `((confirm nil)))))
+
+            ((eq confirm-opt 'always)
+             (setq binding-list (append binding-list `((confirm t)))))
+
+            ((eq confirm-opt 'prefix)
+             (setq binding-list (append binding-list
+                                        '((confirm (equal current-prefix-arg
+                                                          '(4))))))))
+
+      ;; query binding
+      (unless (eq query-opt 'ask)
+        (let ((query (cond ((eq query-opt 'point) '(grep-tag-default))
+                           (t query-opt))))
+          (setq binding-list (append binding-list `((query ,query))))))
+
+      ;; dir binding
+      (unless (eq dir-opt 'ask)
+        (let ((dirs (cond ((eq dir-opt 'project) '(rg-project-root
+                                                   buffer-file-name))
+                          ((eq dir-opt 'current) 'default-directory)
+                          (t dir-opt))))
+          (setq binding-list (append binding-list `((dir ,dirs))))))
+
+      ;; file alias binding
+      (unless (eq alias-opt 'ask)
+        (let ((files (if (eq alias-opt 'current)
+                         '(car (rg-default-alias))
+                       alias-opt)))
+          (setq binding-list (append binding-list `((files ,files))))))
+
+      binding-list)))
+
+(eval-and-compile
+  (defun rg-search-parse-interactive-args (search-cfg)
+    "Parse interactive args from SEARCH-CFG for search functions."
+    (let* ((query-opt (plist-get search-cfg :query))
+           (format-opt (plist-get search-cfg :format))
+           (literal (eq format-opt 'literal))
+           (dir-opt (plist-get search-cfg :dir))
+           (files-opt (plist-get search-cfg :files))
+           (iargs '()))
+
+      (when (eq query-opt 'ask)
+        (setq iargs
+              (append iargs `((query . (rg-read-pattern nil ,literal))))))
+
+      (when (eq files-opt 'ask)
+        (setq iargs
+              (append iargs '((files . (rg-read-files))))))
+
+      (when (eq dir-opt 'ask)
+        (setq iargs
+              (append iargs
+                      '((dir . (read-directory-name
+                                "In directory: " nil default-directory t))))))
+
+      iargs)))
+
+(defconst rg-elisp-font-lock-keywords
+  '(("(\\(rg-define-search\\)\\_>[ \t']*\\(\\(?:\\sw\\|\\s_\\)+\\)?"
+     (1 font-lock-keyword-face)
+     (2 font-lock-function-name-face nil t))))
+
+(font-lock-add-keywords 'emacs-lisp-mode rg-elisp-font-lock-keywords)
+
 ;;;###autoload
-(defun rg-project (regexp files)
+(defmacro rg-define-search (name &rest args)
+  "Define an rg search functions named NAME.
+ARGS is a search specification that defines parameters of a search.
+It optionally starts with a string that is used as the docstring for
+the defined function.  The rest of ARGS contains key value pairs
+according to the specification below.  All keys are optional with
+specified default if left out.
+
+:query      Method for retrieving the search string.  Allowed values
+            are `point' which means extract thing at point and `ask'
+            which means prompt the user for a string.  Any form that
+            evaulates to a string is allowed.
+            Default is `ask'.
+:format     Specifies if :query is interpreted literally (`literal')
+            or as a regexp (`regexp').
+            Default is `regexp'.
+:files      Form that evaluates to a file alias or custom file glob.
+            `current' means extract alias from current buffer file name,
+            `ask' will prompt the user.
+            Default is `ask'.
+:dir        Root search directory.  Allowed values are `ask' for user
+            prompt, `current' for current dir and `project' for project
+            root.  Any form that evaulates to a directory string is
+            also allowed.
+            Default is `ask'.
+:confirm    `never', `always', or `prefix' are allowed values.  Specifies
+            if the the final search command line string can be modified
+            and confirmed by the user.
+            Default is `never'.
+
+Example:
+\(rg-define-search search-home-dir-in-elisp
+  \"Doc string.\"
+  :query ask
+  :format literal
+  :files \"elisp\"
+  :dir (getenv \"HOME\"\)\)"
+  (declare (indent defun))
+  (let* ((body (rg-search-parse-body args))
+         (decls (car body))
+         (search-cfg (rg-set-search-defaults (cdr body)))
+         (local-bindings (rg-search-parse-local-bindings search-cfg))
+         (iargs (rg-search-parse-interactive-args search-cfg)))
+    `(defun ,name ,(mapcar 'car iargs)
+       ,@decls
+       (interactive
+        (list ,@(mapcar 'cdr iargs)))
+       (let ,local-bindings
+         (rg-run query files dir literal confirm)))))
+
+;;;###autoload (autoload 'rg-project "rg.el" "" t)
+(rg-define-search rg-project
   "Run ripgrep in current project searching for REGEXP in FILES.
 The project root will will be determined by either common project
 packages like projectile and `find-file-in-project' or the source
 version control system."
-  (interactive
-   (progn
-     (let* ((regexp (rg-read-pattern))
-            (files (rg-read-files regexp)))
-       (list regexp files))))
-  (let ((root (rg-project-root buffer-file-name)))
-    (if root
-        (rg-run regexp files root)
-      (signal 'user-error '("No project root found")))))
+  :dir project)
+
+;;;###autoload (autoload 'rg-dwim-project-dir "rg.el" "" t)
+(rg-define-search rg-dwim-project-dir
+  "Search for thing at point in files matching the current file
+under the project root directory."
+  :query point
+  :format literal
+  :files current
+  :dir project)
+
+;;;###autoload (autoload 'rg-dwim-current-dir "rg.el" "" t)
+(rg-define-search rg-dwim-current-dir
+  "Search for thing at point in files matching the current file
+under the current directory."
+  :query point
+  :format literal
+  :files current
+  :dir current)
 
 ;;;###autoload
 (defun rg-dwim (&optional curdir)
   "Run ripgrep without user interaction figuring out the intention by magic(!).
-The default magic searches for thing at point in files matching
-current file under project root directory.
-
-With \\[universal-argument] prefix (CURDIR), search is done in current dir
-instead of project root."
+The default magic searches for thing at
+point in files matching current file under project root
+directory.  With \\[universal-argument] prefix (CURDIR), search is
+done in current dir instead of project root."
   (interactive "P")
-  (let* ((literal (grep-tag-default))
-         (files (car (rg-default-alias)))
-         (dir (or (when curdir default-directory)
-                  (rg-project-root buffer-file-name))))
-    (rg-run literal files dir 'literal)))
+  (if curdir
+      (rg-dwim-current-dir)
+    (rg-dwim-project-dir)))
 
-(defun rg-literal (pattern files dir &optional confirm)
+;;;###autoload (autoload 'rg-literal "rg.el" "" t)
+(rg-define-search rg-literal
   "Run ripgrep, searching for literal PATTERN in FILES in directory DIR.
 With \\[universal-argument] prefix (CONFIRM), you can edit the
 constructed shell command line before it is executed."
-  (interactive
-   (progn
-     (append (rg-read-input 'literal)
-             (list (equal current-prefix-arg '(4))))))
-  (rg-run pattern files dir 'literal confirm))
+  :format literal
+  :confirm prefix)
 
-;;;###autoload
-(defun rg (regexp files dir &optional confirm)
+;;;###autoload (autoload 'rg "rg.el" "" t)
+(rg-define-search rg
   "Run ripgrep, searching for REGEXP in FILES in directory DIR.
 The search is limited to file names matching shell pattern FILES.
-FILES may use abbreviations defined in `rg-custom-type-aliases' or
-ripgrep builtin type aliases, e.g.  entering `elisp' is equivalent to `*.el'.
-
-REGEXP is a regexp as defined by the ripgrep executable.
-
-With \\[universal-argument] prefix (CONFIRM), you can edit the
-constructed shell command line before it is executed.
-
-Collect output in a buffer.  While ripgrep runs asynchronously, you
-can use \\[next-error] (M-x `next-error'), or \\<grep-mode-map>\\[compile-goto-error] \
-in the rg output buffer, to go to the lines where rg found matches."
-  (interactive
-   (progn
-     (append (rg-read-input)
-             (list (equal current-prefix-arg '(4))))))
-  (rg-run regexp files dir nil confirm))
+FILES may use abbreviations defined in `rg-custom-type-aliases'
+or ripgrep builtin type aliases, e.g. entering `elisp' is
+equivalent to `*.el'. REGEXP is a regexp as defined by the
+ripgrep executable. With \\[universal-argument] prefix (CONFIRM),
+you can edit the constructed shell command line before it is
+executed. Collect output in a buffer. While ripgrep runs
+asynchronously, you can use \\[next-error] (M-x `next-error'), or
+\\<grep-mode-map>\\[compile-goto-error] \ in the rg output
+buffer, to go to the lines where rg found matches."
+  :confirm prefix)
 
 (provide 'rg)
 
