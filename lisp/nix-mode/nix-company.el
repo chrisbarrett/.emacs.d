@@ -7,17 +7,19 @@
 ;;; Code:
 
 (require 'nix-repl)
-(require 'cl)
+(require 'cl-lib)
+(require 'company)
 
+;;;###autoload
 (defun company-nix (command &optional arg &rest _)
   "Company backend for Nix.
 
 COMMAND company command
 ARG company argument"
   (interactive '(interactive))
-  (case command
+  (cl-case command
     (interactive (company-begin-backend 'company-nix))
-    (prefix (and (member major-mode '(nix-mode nix-repl-mode))
+    (prefix (and (derived-mode-p 'nix-mode 'nix-repl-mode)
                  (nix-grab-attr-path)))
     (candidates
      (nix-get-completions (get-buffer-process (nix--get-company-buffer)) arg))
@@ -28,9 +30,9 @@ ARG company argument"
   (if (looking-at "[^a-zA-Z0-9'\\-_\\.]")
       (buffer-substring (point) (save-excursion (skip-chars-backward "a-zA-Z0-9'\\-_\\.")
                                                 (point)))
-    (unless (and (char-after)
-                 (string-match "[a-zA-Z0-9'\\-_]" (char-to-string (char-after)))
-                 ""))))
+    (and (char-after)
+         (string-match "[a-zA-Z0-9'\\-_]" (char-to-string (char-after)))
+         "")))
 
 (defun nix--get-company-buffer (&optional buffer)
   "Get the Nix repl buffer for company.
@@ -67,7 +69,9 @@ BUFFER check for Nix-REPL in current buffer"
                (setq nix--company-last-buffer (buffer-name))))
       backend-buf)))
 
-(add-to-list 'company-backends 'company-nix)
+;; install nix-company
+(add-hook 'nix-mode-hook (lambda ()
+                           (setq-local company-backends '(company-nix))))
 
 (provide 'nix-company)
 ;;; nix-company.el ends here
