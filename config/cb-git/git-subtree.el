@@ -40,27 +40,26 @@
 (defcustom git-subtree-prefix nil
   "The directory in which subtrees will be created, relative to the git root.
 
-Dynamically-bind this var before calling `git-subtree-add' to
-prepopulate the parent directory for the subtree."
+Dynamically binding this var before calling `git-subtree-add'
+allows you to prepopulate the parent directory for the subtree."
   :group 'git-subtree
   :type '(choice (const nil) string)
   :safe #'stringp)
 
-(defcustom git-subtree-subtree-to-rev-function nil
-  "Function used to determine which rev to pull or update.
+(defcustom git-subtree-subtree-to-rev-alist nil
+  "Alist used to determine which rev to pull or update.
 
-It takes a single argument, which is the relative path of the
-subtree as a string. It is expected to return the git revision to
-use, as a string.
+Keys are the subtree paths, which are relative to the root of the
+repo. Values are strings, which are interpreted as git revisions.
 
-Dynamically-bind this var before calling `git-subtree-add' to
-prepopulate the rev.
+Dynamically binding this var before calling `git-subtree-add'
+allows you to prepopulate the revision.
 
-If this var is bound when calling `git-subtree-update', and if it
-returns non-nil, the return value will be used as the rev."
+If this var is bound when calling `git-subtree-update', the alist
+lookup result will be used as the rev, falling back to master."
   :group 'git-subtree
-  :type '(choice (const nil) function)
-  :risky t)
+  :type '(alist :key-type string :value-type string)
+  :safe #'listp)
 
 ;; Utilities
 
@@ -150,9 +149,7 @@ better user feedback."
     (file-name-nondirectory remote)))
 
 (defun git-subtree--rev-for-subtree (subtree-path)
-  (or (when git-subtree-subtree-to-rev-function
-        (funcall git-subtree-subtree-to-rev-function subtree-path))
-      "master"))
+  (alist-get subtree-path git-subtree-subtree-to-rev-alist "master" nil #'string=))
 
 (defun git-subtree-add (subtree-path remote &optional rev interactive-p)
   "Add a new subtree.

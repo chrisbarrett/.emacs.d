@@ -18,9 +18,12 @@
 
 (defvar magit-process-raise-error)
 
-(defun cb-emacs-pinned-subtrees (subtree-path)
-  (pcase subtree-path
-    ("lisp/ensime-emacs" "v2.0.1")))
+(defconst cb-emacs-pinned-subtrees
+  '(("lisp/ensime-emacs" . "v2.0.1")))
+
+;; Declare dynamic vars to satisfy byte compiler.
+(defvar git-subtree-prefix nil)
+(defvar git-subtree-subtree-to-rev-alist nil)
 
 ;; Config Paths
 
@@ -46,20 +49,12 @@
 
 ;; Commands for working with config subtrees
 
-(defalias 'emacs-update-subtree #'cb-emacs-update-subtree)
-(defalias 'emacs-add-subtree #'cb-emacs-add-subtree)
-(defalias 'emacs-push-subtree #'cb-emacs-push-subtree)
-
-;; Declare dynamic vars to satisfy byte compiler.
-(defvar git-subtree-prefix nil)
-(defvar git-subtree-subtree-to-rev-function nil)
-
 (defun cb-emacs-add-subtree ()
   "Add a new subtree to .emacs.d/lisp."
   (interactive)
   (let* ((default-directory user-emacs-directory)
          (git-subtree-prefix "lisp")
-         (git-subtree-subtree-to-rev-function #'cb-emacs-pinned-subtrees)
+         (git-subtree-subtree-to-rev-alist cb-emacs-pinned-subtrees)
          (subtree-fullpath (call-interactively #'git-subtree-add)))
     (message "Recompiling lisp files...")
     (byte-recompile-directory subtree-fullpath 0)
@@ -69,16 +64,16 @@
 (defun cb-emacs-update-subtree ()
   "Update an existing subtree in .emacs.d/lisp."
   (interactive)
-  (let ((default-directory user-emacs-directory))
-    (let* ((git-subtree-prefix "lisp")
-           (git-subtree-subtree-to-rev-function #'cb-emacs-pinned-subtrees)
-           (subtree-fullpath (call-interactively #'git-subtree-update)))
-      (message "Recompiling lisp files...")
-      (ignore-errors
-        (let ((elc-files (f-files subtree-fullpath (lambda (f) (f-ext? f "elc")) t)))
-          (-each elc-files #'f-delete)))
-      (byte-recompile-directory subtree-fullpath 0)
-      (message "Finished."))))
+  (let* ((default-directory user-emacs-directory)
+         (git-subtree-prefix "lisp")
+         (git-subtree-subtree-to-rev-alist cb-emacs-pinned-subtrees)
+         (subtree-fullpath (call-interactively #'git-subtree-update)))
+    (message "Recompiling lisp files...")
+    (ignore-errors
+      (let ((elc-files (f-files subtree-fullpath (lambda (f) (f-ext? f "elc")) t)))
+        (-each elc-files #'f-delete)))
+    (byte-recompile-directory subtree-fullpath 0)
+    (message "Finished.")))
 
 (defun cb-emacs-push-subtree ()
   "Push existing subtree in .emacs.d/lisp."
