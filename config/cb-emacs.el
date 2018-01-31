@@ -8,15 +8,11 @@
 
 ;;; Code:
 
-(require 'dash)
 (require 'f)
-(require 's)
 
 (autoload 'git-subtree-add "git-subtree" nil t)
 (autoload 'git-subtree-push "git-subtree" nil t)
 (autoload 'git-subtree-update "git-subtree" nil t)
-
-(defvar magit-process-raise-error)
 
 (defconst cb-emacs-pinned-subtrees
   '(("lisp/ensime-emacs" . "v2.0.1")))
@@ -70,13 +66,12 @@
          (subtree-fullpath (call-interactively #'git-subtree-update)))
     (message "Recompiling lisp files...")
     (ignore-errors
-      (let ((elc-files (f-files subtree-fullpath (lambda (f) (f-ext? f "elc")) t)))
-        (-each elc-files #'f-delete)))
+      (seq-do #'f-delete (f-files subtree-fullpath (lambda (f) (f-ext? f "elc")) t)))
     (byte-recompile-directory subtree-fullpath 0)
     (message "Finished.")))
 
 (defun cb-emacs-push-subtree ()
-  "Push existing subtree in .emacs.d/lisp."
+  "Push an existing subtree in .emacs.d/lisp to a remote."
   (interactive)
   (let* ((default-directory user-emacs-directory)
          (git-subtree-prefix "lisp"))
@@ -86,7 +81,7 @@
   "Force the byte compilation of SUBTREE."
   (interactive (list
                 (completing-read "Select subtree to byte-recompile: "
-                                 (-map #'f-filename (f-directories cb-emacs-lisp-directory))
+                                 (seq-map #'f-filename (f-directories cb-emacs-lisp-directory))
                                  t)))
   (byte-recompile-directory (f-join cb-emacs-lisp-directory subtree) 0 t))
 
