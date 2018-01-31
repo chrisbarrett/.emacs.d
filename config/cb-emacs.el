@@ -19,7 +19,7 @@
 
 ;; Declare dynamic vars to satisfy byte compiler.
 (defvar git-subtree-prefix nil)
-(defvar git-subtree-subtree-to-rev-alist nil)
+(defvar git-subtree-rev-alist nil)
 
 ;; Config Paths
 
@@ -50,7 +50,7 @@
   (interactive)
   (let* ((default-directory user-emacs-directory)
          (git-subtree-prefix "lisp")
-         (git-subtree-subtree-to-rev-alist cb-emacs-pinned-subtrees)
+         (git-subtree-rev-alist cb-emacs-pinned-subtrees)
          (subtree-fullpath (call-interactively #'git-subtree-add)))
     (message "Recompiling lisp files...")
     (byte-recompile-directory subtree-fullpath 0)
@@ -62,7 +62,7 @@
   (interactive)
   (let* ((default-directory user-emacs-directory)
          (git-subtree-prefix "lisp")
-         (git-subtree-subtree-to-rev-alist cb-emacs-pinned-subtrees)
+         (git-subtree-rev-alist cb-emacs-pinned-subtrees)
          (subtree-fullpath (call-interactively #'git-subtree-update)))
     (message "Recompiling lisp files...")
     (ignore-errors

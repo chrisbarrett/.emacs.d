@@ -46,7 +46,7 @@ allows you to prepopulate the parent directory for the subtree."
   :type '(choice (const nil) string)
   :safe #'stringp)
 
-(defcustom git-subtree-subtree-to-rev-alist nil
+(defcustom git-subtree-rev-alist nil
   "Alist used to determine which rev to pull or update.
 
 Keys are the subtree paths, which are relative to the root of the
@@ -149,7 +149,7 @@ better user feedback."
     (file-name-nondirectory remote)))
 
 (defun git-subtree--rev-for-subtree (subtree-path)
-  (alist-get subtree-path git-subtree-subtree-to-rev-alist "master" nil #'string=))
+  (alist-get subtree-path git-subtree-rev-alist "master" nil #'string=))
 
 (defun git-subtree-add (subtree-path remote &optional rev interactive-p)
   "Add a new subtree.
