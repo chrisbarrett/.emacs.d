@@ -125,7 +125,7 @@ If argument INTERACTIVE-P is set, log additional information."
 (use-package cb-projectile)
 (use-package cb-elisp)
 (use-package cb-smartparens)
-(use-package cb-magit)
+(use-package cb-git)
 (use-package cb-company)
 (use-package cb-autoinsert)
 (use-package cb-undo-tree)

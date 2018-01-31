@@ -1,4 +1,4 @@
-;;; cb-magit.el --- Configuration for magit.  -*- lexical-binding: t; -*-
+;;; cb-git.el --- Configuration for git.  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2016  Chris Barrett
 
@@ -31,13 +31,13 @@
     (autoload 'magit-find-file-other-window "magit-files")
     (autoload 'magit-popup-import-file-args "magit-popup")
 
-    (defun cb-magit-find-file (&optional arg)
+    (defun cb-git-find-file (&optional arg)
       (interactive "P")
       (if arg
           (call-interactively #'magit-find-file)
         (call-interactively #'magit-find-file-other-window)))
 
-    (defun cb-magit-diff-buffer-file (&optional arg)
+    (defun cb-git-diff-buffer-file (&optional arg)
       (interactive "P")
       (let* ((file (magit-file-relative-name))
              (magit-diff-arguments
@@ -66,8 +66,8 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
   :init
   (spacemacs-keys-set-leader-keys
     "gs" #'magit-status
-    "gd" #'cb-magit-diff-buffer-file
-    "gf" #'cb-magit-find-file
+    "gd" #'cb-git-diff-buffer-file
+    "gf" #'cb-git-find-file
     "gt" #'git-time-machine-transient-state/body
     "gb" #'git-blame-transient-state/body)
   :config
@@ -103,7 +103,7 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
   (progn
     (require 'deferred)
 
-    (defun cb-magit--maybe-commit-and-push ()
+    (defun cb-git--maybe-commit-and-push ()
       (let ((file (convert-standard-filename (file-name-nondirectory (buffer-file-name)))))
         (deferred:try
           (deferred:$
@@ -112,7 +112,7 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
           :finally #'gac-push))))
 
   :config
-  (defalias 'gac-after-save-func #'cb-magit--maybe-commit-and-push))
+  (defalias 'gac-after-save-func #'cb-git--maybe-commit-and-push))
 
 (use-package git-timemachine
   :defer t
@@ -175,6 +175,6 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
     (global-diff-hl-mode)))
 
 
-(provide 'cb-magit)
+(provide 'cb-git)
 
-;;; cb-magit.el ends here
+;;; cb-git.el ends here
