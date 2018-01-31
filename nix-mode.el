@@ -15,7 +15,8 @@
 
 ;;; Code:
 
-(require 'nix-format nil 'noerror)
+(require 'nix-format)
+(require 'nix-shebang)
 
 (defgroup nix nil
   "Nix-related customizations"
@@ -29,6 +30,36 @@
   "Nix faces."
   :group 'nix
   :group 'faces)
+
+(defface nix-keyword-face
+  '((t :inherit font-lock-keyword-face))
+  "Face used to highlight Nix keywords."
+  :group 'nix-faces)
+
+(defface nix-keyword-warning-face
+  '((t :inherit font-lock-warning-face))
+  "Face used to highlight Nix warning keywords."
+  :group 'nix-faces)
+
+(defface nix-builtin-face
+  '((t :inherit font-lock-builtin-face))
+  "Face used to highlight Nix builtins."
+  :group 'nix-faces)
+
+(defface nix-constant-face
+  '((t :inherit font-lock-constant-face))
+  "Face used to highlight Nix constants."
+  :group 'nix-faces)
+
+(defface nix-attribute-face
+  '((t :inherit font-lock-variable-name-face))
+  "Face used to highlight Nix attributes."
+  :group 'nix-faces)
+
+(defface nix-antiquote-face
+  '((t :inherit font-lock-preprocessor-face))
+  "Face used to highlight Nix antiquotes."
+  :group 'nix-faces)
 
 (defvar nix-system-types
   '("x86_64-linux" "i686-linux" "aarch64-linux" "x86_64-darwin")
@@ -64,22 +95,26 @@
   "<[a-zA-Z0-9._\\+-]+\\(/[a-zA-Z0-9._\\+-]+\\)*>")
 
 (defconst nix-re-variable-assign
-  "\\<\\([a-zA-Z_][a-zA-Z0-9_'\-\.]*\\)[ \t]*=")
+  "\\<\\([a-zA-Z_][a-zA-Z0-9_'\-\.]*\\)[ \t]*=[^=]")
 
 (defconst nix-font-lock-keywords
   `(
-    (,(regexp-opt nix-keywords 'symbols) . font-lock-keyword-face)
-    (,(regexp-opt nix-warning-keywords 'symbols) . font-lock-warning-face)
-    (,(regexp-opt nix-builtins 'symbols) . font-lock-builtin-face)
-    (,nix-re-url . font-lock-constant-face)
-    (,nix-re-file-path . font-lock-constant-face)
-    (,nix-re-variable-assign 1 font-lock-variable-name-face)
-    (,nix-re-bracket-path . font-lock-constant-face)
-    (nix--syntax-match-antiquote 0 font-lock-preprocessor-face t)
+    (,(regexp-opt nix-keywords 'symbols) 0 'nix-keyword-face)
+    (,(regexp-opt nix-warning-keywords 'symbols) 0 'nix-keyword-warning-face)
+    (,(regexp-opt nix-builtins 'symbols) 0 'nix-builtin-face)
+    (,nix-re-url 0 'nix-constant-face)
+    (,nix-re-file-path 0 'nix-constant-face)
+    (,nix-re-variable-assign 1 'nix-attribute-face)
+    (,nix-re-bracket-path 0 'nix-constant-face)
+    (nix--syntax-match-antiquote 0 'nix-antiquote-face t)
     )
   "Font lock keywords for nix.")
 
 (defconst nix--variable-char "[a-zA-Z0-9_'\-]")
+
+(defvar nix-mode-abbrev-table
+  (make-abbrev-table)
+  "Abbrev table for Nix mode.")
 
 (makunbound 'nix-mode-syntax-table)
 
@@ -426,9 +461,16 @@ STRING-TYPE type of string based off of Emacs syntax table types"
 (nix-create-keymap)
 (nix-create-menu)
 
-(when (require 'company nil 'noerror) (require 'nix-company nil 'noerror))
-
-(when (require 'mmm-mode nil 'noerror) (require 'nix-mode-mmm nil 'noerror))
+;;;###autoload
+(defun nix-build (&optional attr dir)
+  "Run nix-build.
+ATTR is the attribute to build.
+DIR is the directory containing the Nix default.nix expression."
+  (interactive "sNix attribute: ")
+  (unless dir (setq dir default-directory))
+  (if attr
+      (async-shell-command (format "nix-build %s -A %s" dir attr))
+    (async-shell-command (format "nix-build %s" dir))))
 
 ;;;###autoload
 (define-derived-mode nix-mode prog-mode "Nix"
@@ -452,7 +494,9 @@ The hook `nix-mode-hook' is run when Nix mode is started.
 
 \\{nix-mode-map}
 "
+  :group 'nix-mode
   :syntax-table nix-mode-syntax-table
+  :abbrev-table nix-mode-abbrev-table
 
   ;; Disable hard tabs and set tab to 2 spaces
   ;; Recommended by nixpkgs manual: https://nixos.org/nixpkgs/manual/#sec-syntax
@@ -488,6 +532,12 @@ The hook `nix-mode-hook' is run when Nix mode is started.
 (progn
   (add-to-list 'auto-mode-alist '("\\.nix\\'" . nix-mode))
   (add-to-list 'auto-mode-alist '("\\.nix.in\\'" . nix-mode)))
+
+(when (featurep 'smartparens)
+  (sp-with-modes 'nix-mode
+    (sp-local-pair "'" "'" :unless '(sp-in-comment-p sp-in-string-quotes-p))
+    (sp-local-pair "\"" "\"")
+    (sp-local-pair "''" "''" :unless '(sp-in-comment-p sp-in-string-quotes-p))))
 
 (provide 'nix-mode)
 ;;; nix-mode.el ends here
