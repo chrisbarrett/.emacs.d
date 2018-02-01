@@ -128,9 +128,6 @@
   :config
   (add-to-list 'auto-insert-alist cb-go-autoinsert-form))
 
-(use-package go-peg-mode
-  :mode ("\\.peg\\'" . go-peg-mode))
-
 (provide 'cb-go)
 
 ;;; cb-go.el ends here
