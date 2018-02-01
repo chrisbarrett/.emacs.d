@@ -32,6 +32,7 @@
   (progn
     (autoload 'magit-status "magit")
     (autoload '-const "dash-functional")
+    (autoload 'projectile-register-project-type "projectile")
 
     (defun cb-projectile-test-project (arg)
       (interactive "P")
@@ -40,6 +41,9 @@
 
   :init
   (progn
+    (defvar projectile-cache-file (concat cb-emacs-cache-directory "/projectile.cache"))
+    (defvar projectile-known-projects-file (concat cb-emacs-cache-directory "/projectile-bookmarks.eld"))
+
     (spacemacs-keys-set-leader-keys
       "p!" #'projectile-run-shell-command-in-root
       "p&" #'projectile-run-async-shell-command-in-root
@@ -56,7 +60,6 @@
     (setq projectile-completion-system 'ivy)
     (setq projectile-switch-project-action (lambda ()
                                              (dired (projectile-project-p))))
-    (setq projectile-cache-file (concat cb-emacs-cache-directory "/projectile.cache"))
     (setq projectile-enable-caching t)
 
     (setq projectile-globally-ignored-files '("TAGS" ".DS_Store"))
