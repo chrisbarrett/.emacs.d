@@ -878,13 +878,13 @@ table tr.tr-even td {
   (progn
     ;; Remove weird keybindings.
     (evil-define-key 'insert evil-org-mode-map
-      "M-l" nil
-      "M-h" nil)
+      (kbd "M-l") nil
+      (kbd "M-h") nil)
     (evil-define-key 'normal evil-org-mode-map
-      "J" nil
-      "O" nil
-      "M-l" nil
-      "M-h" nil)))
+      (kbd "J") nil
+      (kbd "O") nil
+      (kbd "M-l") nil
+      (kbd "M-h") nil)))
 
 (use-package org-indent
   :after org
