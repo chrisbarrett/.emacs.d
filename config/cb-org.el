@@ -10,7 +10,6 @@
 
 (eval-when-compile
   (require 'use-package)
-  (require 'cb-use-package-extensions)
   (require 'cb-emacs)
   (autoload 'evil-define-key "evil-core")
   (defconst cb-org-load-path (concat cb-emacs-lisp-directory "/org-mode/lisp"))
@@ -43,9 +42,6 @@
         ("M-p" . org-metaup)
         ("M-n" . org-metadown)
         ("C-c c" . org-columns))
-
-  :evil-bind
-  (:map org-mode-map :state normal ("RET" . org-return))
 
   :preface
   (progn
@@ -169,6 +165,8 @@
 
     (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
 
+    (evil-define-key 'normal org-mode-map (kbd "RET") #'org-return)
+
     (advice-add 'org-add-log-note :before #'cb-org--exit-minibuffer)
     (advice-add 'org-toggle-heading :after #'cb-org--toggle-heading-goto-eol)))
 
@@ -270,6 +268,9 @@
 
   :preface
   (progn
+    (autoload 'org-get-deadline-time "org")
+    (autoload 'org-goto-sibling "org")
+    (autoload 'outline-next-heading "outline")
 
     (defun cb-org--exclude-tasks-on-hold (tag)
       (and (equal tag "hold") (concat "-" tag)))
@@ -841,7 +842,8 @@ table tr.tr-even td {
              cb-org-goto-notes
              cb-org-goto-todo-list
              cb-org-goto-work
-             cb-org-goto-tags-list)
+             cb-org-goto-tags-list
+             cb-org-goto-headline)
   :init
   (spacemacs-keys-set-leader-keys
     "oa" #'cb-org-goto-agenda
@@ -855,32 +857,34 @@ table tr.tr-even td {
 
 (use-package cb-org-ctrl-c-ret
   :after org
-  :evil-bind (:map org-mode-map
-                   :state normal ("C-c RET" . cb-org-ctrl-c-ret)
-                   :state emacs ("C-c RET" . cb-org-ctrl-c-ret)))
+  :commands (cb-org-ctrl-c-ret)
+  :config
+  (progn
+    (evil-define-key 'normal org-mode-map (kbd "C-c RET") #'cb-org-ctrl-c-ret)
+    (evil-define-key 'emacs org-mode-map (kbd "C-c RET") #'cb-org-ctrl-c-ret)))
 
 (use-package cb-org-ctrl-c-ctrl-k
   :after org
-  :evil-bind (:map org-mode-map :state normal ("C-c C-k" . cb-org-ctrl-c-ctrl-k)))
+  :commands (cb-org-ctrl-c-ctrl-k)
+  :config
+  (evil-define-key 'normal org-mode-map (kbd "C-c C-k") #'cb-org-ctrl-c-ctrl-k))
 
 (use-package cb-diary-utils
   :after org)
 
 (use-package evil-org
   :after org
-  :evil-bind
-  (:map evil-org-mode-map
-        :state normal
-        ("M-l" . nil)
-        ("M-h" . nil)
-        :state insert
-        ("M-l" . nil)
-        ("M-h" . nil))
   :config
   (progn
     ;; Remove weird keybindings.
-    (evil-define-key 'normal evil-org-mode-map (kbd "J") nil)
-    (evil-define-key 'normal evil-org-mode-map (kbd "O") nil)))
+    (evil-define-key 'insert evil-org-mode-map
+      "M-l" nil
+      "M-h" nil)
+    (evil-define-key 'normal evil-org-mode-map
+      "J" nil
+      "O" nil
+      "M-l" nil
+      "M-h" nil)))
 
 (use-package org-indent
   :after org
