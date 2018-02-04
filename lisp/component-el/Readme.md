@@ -1,4 +1,4 @@
-# component.el
+# component.el [![Build Status](https://travis-ci.org/chrisbarrett/component-el.svg?branch=master)](https://travis-ci.org/chrisbarrett/component-el)
 
 An implementation of declarable, reusable components for building UIs in Emacs.
 
