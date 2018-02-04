@@ -6,6 +6,7 @@
   (require 'company nil t)
   (require 'use-package))
 
+(autoload 'f-ext? "f")
 (autoload 'evil-set-initial-state "evil-core")
 
 (use-package nix-mode
@@ -39,9 +40,15 @@
 
 (use-package company-nixos-options
   :after nix-mode
-  :config
+  :init
   (with-eval-after-load 'company
-    (add-to-list 'company-backends 'company-nixos-options)))
+    (add-to-list 'company-backends 'company-nixos-options))
+  :config
+  ;; KLUDGE: Redefine function that throws error.
+  (defun company-nixos--in-nix-context-p ()
+    (or (derived-mode-p 'nix-mode)
+        (when (buffer-file-name)
+          (f-ext? (buffer-file-name) "nix")))))
 
 (provide 'cb-nix)
 
