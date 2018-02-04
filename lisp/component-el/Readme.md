@@ -14,69 +14,68 @@ loaded asynchronously.
 
 ;; Define a command to asynchronously fetch a web resource, and populate some state.
 
-(defconst lorem-ipsum-state (make-hash-table))
+(defun lorem-ipsum-fetch-async (key state)
+  (let ((update-state
+         (lambda (&rest _)
+           (search-forward "\n\n")
+           (fill-region (point) (point-max))
+           (let ((str (string-trim (buffer-substring (point) (point-max)))))
+             (puthash key str state)))))
+    (url-retrieve "https://loripsum.net/api/2/short/plaintext" update-state nil t t)))
 
-(defun lorem-ipsum-fetch-async (state-var)
-  (url-retrieve "https://loripsum.net/api/2/short/plaintext"
-                (lambda (&rest _)
-                  (search-forward "\n\n")
-                  (fill-region (point) (point-max))
-                  (puthash state-var (string-trim (buffer-substring (point) (point-max))) lorem-ipsum-state))
-                nil t t))
 
-;; Define components to display that text.
+;; Define components to display state.
 
 (component-define lorem-ipsum-loading ()
   `(line (propertize (face magit-dimmed) "Loading...")))
 
-(component-define lorem-ipsum-loading-container (state-var)
-  (if-let* ((str (gethash state-var lorem-ipsum-state)))
+(component-define lorem-ipsum-loading-container (key state)
+  (if-let* ((str (gethash key state)))
       `(line ,str)
     `(lorem-ipsum-loading)))
 
-(component-define lorem-ipsum-section (title state-var)
-  `(section (,state-var)
+(component-define lorem-ipsum-section (title key state)
+  `(section (,key)
             (heading ,title)
             (indent
-             (lorem-ipsum-loading-container ,state-var))))
+             (lorem-ipsum-loading-container ,key ,state))))
 
-(component-define lorem-ipsum-example ()
+(component-define lorem-ipsum-example (state)
   `(section (root)
-            (lorem-ipsum-section "Introduction" :introduction)
+            (lorem-ipsum-section "Introduction" :introduction ,state)
             (padding)
-            (lorem-ipsum-section "History" :history)
+            (lorem-ipsum-section "History" :history ,state)
             (padding)
-            (lorem-ipsum-section "Notes" :notes)
+            (lorem-ipsum-section "Notes" :notes ,state)
             (padding)))
 
-;; Define a command to start web requests and render them a buffer.
 
-(defconst lorem-ipsum-buffer-name "*lorem-ipsum*")
+;; Define a command to start web requests and render them into a buffer.
 
-(defun lorem-ipsum-loaded-p ()
-  (and (gethash :introduction lorem-ipsum-state)
-       (gethash :history lorem-ipsum-state)
-       (gethash :notes lorem-ipsum-state)))
+(defun lorem-ipsum-loaded-p (state)
+  (and (gethash :introduction state)
+       (gethash :history state)
+       (gethash :notes state)))
 
-(defun lorem-ipsum-render ()
-  (when-let* ((buf (get-buffer lorem-ipsum-buffer-name)))
-    (component-render buf `(lorem-ipsum-example))
-    (if (lorem-ipsum-loaded-p)
+(defun lorem-ipsum-render (buf state)
+  (when (buffer-live-p buf)
+    (component-render buf `(lorem-ipsum-example ,state))
+    (if (lorem-ipsum-loaded-p state)
         (message "Finished loading")
-      (run-with-timer 0.1 nil #'lorem-ipsum-render))))
+      (run-with-timer 0.3 nil #'lorem-ipsum-render buf state))))
 
 (defun lorem-ipsum ()
   "Show a mocked up UI using placeholder text."
   (interactive)
+  (let ((buf (get-buffer-create "*lorem-ipsum*"))
+        (state (make-hash-table)))
 
-  ;; Reset state and start web requests.
-  (clrhash lorem-ipsum-state)
-  (lorem-ipsum-fetch-async :introduction)
-  (lorem-ipsum-fetch-async :history)
-  (lorem-ipsum-fetch-async :notes)
+    ;; Start web requests to populate state.
+    (lorem-ipsum-fetch-async :introduction state)
+    (lorem-ipsum-fetch-async :history state)
+    (lorem-ipsum-fetch-async :notes state)
 
-  ;; Begin rendering sequence.
-  (let ((buf (get-buffer-create lorem-ipsum-buffer-name)))
-    (lorem-ipsum-render)
+    ;; Begin the rendering sequence.
+    (lorem-ipsum-render buf state)
     (display-buffer buf)))
 ```
