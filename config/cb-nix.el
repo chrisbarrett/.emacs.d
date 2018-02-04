@@ -3,6 +3,7 @@
 ;;; Code:
 
 (eval-when-compile
+  (require 'company nil t)
   (require 'use-package))
 
 (autoload 'evil-set-initial-state "evil-core")
@@ -15,6 +16,12 @@
   ;; needed to get nix to work.
   (when (equal system-type 'darwin)
     (setenv "NIX_REMOTE" "daemon")))
+
+(use-package nix-company
+  :after nix-mode
+  :init
+  (with-eval-after-load 'company
+    (add-to-list 'company-backends 'company-nix)))
 
 (use-package nix-repl
   :commands nix-repl-show
