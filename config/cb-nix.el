@@ -5,6 +5,8 @@
 (eval-when-compile
   (require 'use-package))
 
+(autoload 'evil-set-initial-state "evil-core")
+
 (use-package nix-mode
   :mode (("\\.nix\\'" . nix-mode)
          ("\\.nix.in\\'" . nix-mode))
@@ -13,6 +15,20 @@
   ;; needed to get nix to work.
   (when (equal system-type 'darwin)
     (setenv "NIX_REMOTE" "daemon")))
+
+(use-package nix-repl
+  :commands nix-repl-show
+  :config
+  (progn
+    (evil-set-initial-state 'nix-repl-mode 'insert)
+    (add-to-list 'display-buffer-alist
+                 `(,(rx bos "*Nix-REPL*" eos)
+                   (display-buffer-reuse-window
+                    display-buffer-in-side-window)
+                   (reusable-frames . visible)
+                   (side            . bottom)
+                   (slot            . 1)
+                   (window-height   . 0.4)))))
 
 (use-package company-nixos-options
   :after nix-mode
