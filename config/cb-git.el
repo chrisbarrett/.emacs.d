@@ -20,7 +20,9 @@
 (add-to-list 'auto-mode-alist '("\\.gitignore\\'" . conf-unix-mode))
 
 (use-package git-subtree
-  :commands (git-subtree-add git-subtree-update git-subtree-push))
+  :commands (git-subtree-add git-subtree-update git-subtree-push)
+  :init
+  (put 'git-subtree-rev-alist 'safe-local-variable #'listp))
 
 (use-package magit
   :defer t
