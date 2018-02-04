@@ -1,4 +1,6 @@
 (source melpa)
+(source gnu)
+
 (package-file "component.el")
 
 (development
