@@ -1,0 +1,5 @@
+language: emacs-lisp
+env:
+  - EMACS=emacs25
+script:
+  - make EMACS=${EMACS} test
