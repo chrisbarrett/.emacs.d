@@ -9,6 +9,7 @@
 ;;; Code:
 
 (eval-when-compile
+  (require 'comint)
   (require 'use-package))
 
 (use-package company
@@ -27,7 +28,12 @@
              company-show-doc-buffer)
 
   :init
-  (add-hook 'after-init-hook #'global-company-mode)
+  (progn
+    (with-eval-after-load 'comint
+      (define-key comint-mode-map [remap indent-for-tab-command]
+        #'company-manual-begin))
+
+    (add-hook 'after-init-hook #'global-company-mode))
 
   :config
   (progn
