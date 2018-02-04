@@ -7,7 +7,12 @@
 
 (use-package nix-mode
   :mode (("\\.nix\\'" . nix-mode)
-         ("\\.nix.in\\'" . nix-mode)))
+         ("\\.nix.in\\'" . nix-mode))
+  :init
+  ;; Emacs.app on macOS doesn't inherit from a shell, so setting NIX_REMOTE is
+  ;; needed to get nix to work.
+  (when (equal system-type 'darwin)
+    (setenv "NIX_REMOTE" "daemon")))
 
 (use-package company-nixos-options
   :after nix-mode
