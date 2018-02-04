@@ -17,7 +17,7 @@
 (require 'f)
 
 (autoload 'evil-define-key "evil-core")
-(autoload 'evil-set-initial-state "cb-evil")
+(autoload 'evil-set-initial-state "evil-core")
 (autoload 'projectile-project-p "projectile")
 
 (use-package web-mode

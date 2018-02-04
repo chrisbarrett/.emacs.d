@@ -12,7 +12,7 @@
   (require 'use-package))
 
 (autoload 'evil-define-key "evil-core")
-(autoload 'evil-set-initial-state "cb-evil")
+(autoload 'evil-set-initial-state "evil-core")
 
 (require 'spacemacs-keys)
 
