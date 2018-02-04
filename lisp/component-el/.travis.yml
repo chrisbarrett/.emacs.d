@@ -1,5 +1,8 @@
 language: emacs-lisp
 env:
   - EMACS=emacs25
+before_install:
+  - git clone --depth=1 https://github.com/cask/cask.git "${HOME}/.cask"
+  - ln -s "${HOME}/.cask/bin/cask" "${HOME}/bin/cask"
 script:
   - make EMACS=${EMACS} test
