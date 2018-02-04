@@ -1,6 +1,6 @@
 # component.el [![Build Status](https://travis-ci.org/chrisbarrett/component-el.svg?branch=master)](https://travis-ci.org/chrisbarrett/component-el)
 
-An implementation of declarable, reusable components for building UIs in Emacs.
+An implementation of declarative, reusable components for building UIs in Emacs.
 
 I use this for my own toy projects and stuff in my personal config. YMMV.
 
