@@ -312,13 +312,12 @@
       (sp-local-pair "{-#" "#-}" :post-handlers '(("||\n[i]" "RET") ("-# " "SPC"))))
 
     (sp-with-modes '(nix-mode nix-repl-mode)
-
       (sp-local-pair "(" nil
                      :pre-handlers '(cb-smartparens-add-space-before-sexp-insertion)
                      :post-handlers '(cb-smartparens-add-space-after-sexp-insertion))
       (sp-local-pair "[" nil
                      :pre-handlers '(cb-smartparens-add-space-before-sexp-insertion)
-                     :post-handlers '(cb-smartparens-add-space-after-sexp-insertion)))
+                     :post-handlers '(cb-smartparens-add-space-after-sexp-insertion ("||\n[i]" "RET") ("| " "SPC"))))
 
     (sp-with-modes 'web-mode
       (sp-local-pair "<" nil :when '(cb-smartparens-web-mode-is-code-context)))
