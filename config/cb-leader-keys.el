@@ -249,10 +249,11 @@
 
       "f d" #'cb/copy-buffer-directory
       "f D" #'cb/delete-current-buffer-and-file
-      "f F" #'find-file-other-window
       "f R" #'cb/rename-file-and-buffer
       "f e" #'cb/sudo-edit
       "f f" #'find-file
+      "f o" #'find-file-other-window
+      "f p" #'find-file-at-point
       "f s" #'save-buffer
       "f S" #'save-some-buffers
       "f W" #'write-file
