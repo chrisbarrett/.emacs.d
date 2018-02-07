@@ -23,6 +23,15 @@
 (use-package exec-path-from-shell
   :if window-system
   :functions (exec-path-from-shell-initialize)
+  :init
+  (defconst exec-path-from-shell-variables
+    '("PATH"
+      "MANPATH"
+      "NIX_REMOTE"
+      "NIX_USER_PROFILE_DIR"
+      "NIX_PROFILES"
+      "NIX_SSL_CERT_FILE"
+      "NIX_PATH"))
   :config
   (exec-path-from-shell-initialize))
 
