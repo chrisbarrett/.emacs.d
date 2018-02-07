@@ -14,6 +14,9 @@
   :mode (("\\.nix\\'" . nix-mode)
          ("\\.nix.in\\'" . nix-mode)))
 
+(use-package nix-shell
+  :commands nix-shell)
+
 (use-package nix-company
   :after nix-mode
   :init
