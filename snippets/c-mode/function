@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: function
+# key: f
+# condition: (cb-yas/bol?)
+# --
+${1:void} ${2:fname}(${3:args}) {
+  $0
+}
