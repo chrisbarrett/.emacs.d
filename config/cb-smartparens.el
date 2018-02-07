@@ -89,25 +89,82 @@
                                       (buffer-substring (point) inside-end)))))
         (cond
          ;; Collapse horizontal space in empty pairs.
+         ;;
+         ;; [  |  ] -> [|]
+         ;;
          ((when op (string-match-p (rx bos (+ space) eos) inside))
           (delete-region inside-start inside-end))
 
          ;; Delete contents for multiline pairs that were just inserted, e.g. braces.
+         ;;
+         ;; {
+         ;;   |
+         ;; }
+         ;;
+         ;; ->
+         ;;
+         ;; {|}
          ((when op (string-match-p (rx bos (* space) "\n" (* space) "\n" (* space) eos) inside))
           (delete-region inside-start inside-end))
 
+         ;; Delete back from end of the line.
+         ;;
+         ;;
+         ;; foo |
+         ;; ->
+         ;; foo|
+
+         ;; foo      |
+         ;; ->
+         ;; foo |
+         ((string-empty-p line-after-pt)
+          (if (string-match-p (rx space space eos) line-before-pt)
+              (while (looking-back (rx space space) (line-beginning-position))
+                (delete-char -1))
+            (funcall f args)))
+
          ;; Don't aggressively delete whitespace if there's a comment
          ;; following pt.
-         ((string-match-p (rx (syntax comment-start)) line-after-pt)
+         ;;
+         ;;
+         ;; foo |  // bar
+         ;;
+         ;; ->
+         ;;
+         ;; foo|  // bar
+         ;;
+         ((string-match-p (rx (* nonl) (syntax comment-start)) line-after-pt)
           (funcall f args))
 
+         ;; foo | bar -> foo|bar
+         ((and (string-match-p (rx (or bol (not space)) space eos) line-before-pt)
+               (string-match-p (rx bos space (or eol (not space))) line-after-pt))
+          (delete-horizontal-space))
+
+         ;; Delete if there is a single preceding space.
+         ;;
+         ;; foo |bar -> foo|bar
+         ;;
+         ;; but not:
+         ;;
+         ;; foo| bar -> foo|bar
+         ;;
+         ((and (string-match-p (rx (or bol (not space)) space eos) line-before-pt)
+               (string-match-p (rx bos (not space)) line-after-pt))
+          (delete-char -1))
+
          ;; Delete surrounding whitespace beyond a certain length.
-         ((or (string-match-p (rx (>= 2 space) eos) line-before-pt)
-              (and (string-match-p (rx space eos) line-before-pt)
-                   (string-match-p (rx bos space) line-after-pt)))
-          (skip-chars-forward " ")
-          (while (looking-back (rx space space) (line-beginning-position))
-            (delete-char -1)))
+         ;;
+         ;; foo    |bar      -> foo |bar
+         ;; foo    |    bar  -> foo | bar
+         ((string-match-p (rx (+ space) eos) line-before-pt)
+          (let ((has-space? (eq (char-after) ? )))
+            (skip-chars-forward " ")
+            (while (looking-back (rx space space) (line-beginning-position))
+              (delete-char -1))
+            (when has-space?
+              (insert " ")
+              (forward-char -1))))
 
          (t
           (funcall f args)))))
