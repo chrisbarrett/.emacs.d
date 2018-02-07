@@ -6,6 +6,7 @@
   (require 'company nil t)
   (require 'use-package))
 
+(require 'spacemacs-keys)
 (autoload 'f-ext? "f")
 (autoload 'evil-set-initial-state "evil-core")
 
@@ -21,6 +22,8 @@
 
 (use-package nix-repl
   :commands nix-repl-show
+  :init
+  (spacemacs-keys-set-leader-keys "an" #'nix-repl-show)
   :config
   (progn
     (evil-set-initial-state 'nix-repl-mode 'insert)
