@@ -136,10 +136,16 @@
          ((string-match-p (rx (* nonl) (syntax comment-start)) line-after-pt)
           (funcall f args))
 
+         ;; Collapse surrounding space, but preserve padding inside pairs.
+         ;;
          ;; foo | bar -> foo|bar
+         ;;
+         ;; foo | }   -> foo| }
+         ;;
          ((and (string-match-p (rx (or bol (not space)) space eos) line-before-pt)
                (string-match-p (rx bos space (or eol (not space))) line-after-pt))
-          (delete-horizontal-space))
+          (let ((backward-only? (string-match-p (rx bos space) inside)))
+            (delete-horizontal-space backward-only?)))
 
          ;; Delete if there is a single preceding space.
          ;;
