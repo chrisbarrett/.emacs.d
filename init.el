@@ -20,6 +20,7 @@
 (unless noninteractive
   (message "Loading %s..." load-file-name))
 
+(setenv "INSIDE_EMACS" "true")
 
 ;; Harden Emacs TLS verification.
 

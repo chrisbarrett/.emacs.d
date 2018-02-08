@@ -13,8 +13,6 @@
 
 (require 'spacemacs-keys)
 
-(setenv "INSIDE_EMACS" "true")
-
 (use-package term
   :commands (ansi-term)
   :preface
