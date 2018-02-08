@@ -12,13 +12,13 @@
   (require 'use-package))
 
 (use-package ispell
+  :defer t
   :preface
   (autoload 'ispell-find-aspell-dictionaries "ispell")
   :config
   (progn
-    (when (executable-find "aspell")
-      (setq ispell-program-name "aspell")
-      (setq ispell-dictionary "british"))
+    (setq ispell-program-name "aspell")
+    (ispell-check-version)
     (setq ispell-dictionary-alist (ispell-find-aspell-dictionaries))
     (setq ispell-silently-savep t)))
 
