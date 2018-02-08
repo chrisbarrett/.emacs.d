@@ -128,7 +128,6 @@
     (flycheck-add-mode 'typescript-tslint 'cb-web-ts-mode)
 
     (flycheck-add-mode 'javascript-eslint 'cb-web-js-mode)
-    (flycheck-add-mode 'javascript-jscs 'cb-web-js-mode)
     (flycheck-add-mode 'javascript-jshint 'cb-web-js-mode)
     (flycheck-add-mode 'javascript-standard 'cb-web-js-mode)
 
