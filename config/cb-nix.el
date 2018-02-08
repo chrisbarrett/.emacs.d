@@ -19,9 +19,8 @@
 
 (use-package nix-company
   :after nix-mode
-  :init
-  (with-eval-after-load 'company
-    (add-to-list 'company-backends 'company-nix)))
+  :config
+  (add-to-list 'company-backends 'company-nix))
 
 (use-package nix-repl
   :commands nix-repl-show
@@ -41,15 +40,15 @@
 
 (use-package company-nixos-options
   :after nix-mode
-  :init
-  (with-eval-after-load 'company
-    (add-to-list 'company-backends 'company-nixos-options))
   :config
-  ;; KLUDGE: Redefine function that throws error.
-  (defun company-nixos--in-nix-context-p ()
-    (or (derived-mode-p 'nix-mode)
-        (when (buffer-file-name)
-          (f-ext? (buffer-file-name) "nix")))))
+  (progn
+    (add-to-list 'company-backends 'company-nixos-options)
+
+    ;; KLUDGE: Redefine function that throws error.
+    (defun company-nixos--in-nix-context-p ()
+      (or (derived-mode-p 'nix-mode)
+          (when (buffer-file-name)
+            (f-ext? (buffer-file-name) "nix"))))))
 
 (provide 'cb-nix)
 
