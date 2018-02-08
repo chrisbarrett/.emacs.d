@@ -6,6 +6,6 @@
 { stdenv }:
 
 stdenv.mkDerivation rec {
-  name = "$0-${version}";
+  name = "$0-\${version}";
   version = "";
 }
