@@ -38,10 +38,21 @@
 (unless package-archive-contents
   (package-refresh-contents))
 
+;; Ungh. Compatability macro definitions.
+
+(require 'subr-x)
+
+(eval-when-compile
+  (when (version< emacs-version "26")
+    (defalias 'if-let* 'if-let)
+    (defalias 'when-let* 'when-let)
+
+    (put 'if-let* 'lisp-indent-function 2)
+    (put 'when-let* 'lisp-indent-function 1)))
+
 ;; Bootstrap use-package.
 
 (require 'seq)
-(require 'subr-x)
 
 (defun cb-init/init-load-path (&optional interactive-p)
   "Add select subdirs of `user-emacs-directory' to the `load-path'.
