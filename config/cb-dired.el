@@ -25,6 +25,10 @@
     (autoload 'diredp-next-line "dired+")
     (autoload 'diredp-previous-line "dired+")
 
+    (defun cb-dired-load-dired-plus ()
+      (unless (bound-and-true-p diredp-loaded-p)
+        (load-file (concat cb-emacs-lisp-directory "/dired-plus/dired+.el"))))
+
     (defun cb-dired--sort-directories-first (&rest _)
       "Sort dired listings with directories first."
       (save-excursion
@@ -43,6 +47,7 @@
       "si" 'dired-insert-subdir
       "sd" 'dired-kill-subdir)
 
+    (add-hook 'dired-mode-hook #'cb-dired-load-dired-plus)
     (add-hook 'dired-mode-hook #'dired-hide-details-mode))
 
   :config
@@ -54,9 +59,6 @@
     (setq-default dired-listing-switches "-alhv")
     (setq dired-dwim-target t)
     (advice-add 'dired-readin :after #'cb-dired--sort-directories-first)
-
-    (unless (bound-and-true-p diredp-loaded-p)
-      (load-file (concat cb-emacs-lisp-directory "/dired-plus/dired+.el")))
 
     (evil-define-key 'normal dired-mode-map (kbd "$") #'end-of-line)
     (evil-define-key 'normal dired-mode-map (kbd "j") #'diredp-next-line)
