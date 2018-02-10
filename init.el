@@ -22,34 +22,6 @@
 
 (setenv "INSIDE_EMACS" "true")
 
-;; Harden Emacs TLS verification.
-
-(require 'gnutls)
-(require 'tls)
-(require 'subr-x)
-
-(setq gnutls-trustfiles '("/etc/ssl/certs/ca-certificates.crt" "/etc/ssl/cert.pem"))
-(setq gnutls-verify-error t)
-(setq tls-checktrust t)
-(setq tls-program "gnutls-cli --x509cafile %t -p %p %h")
-
-(defun cb-init-test-tls ()
-  "Test whether TLS connections are verified."
-  (interactive)
-  (if-let* ((bad-hosts (seq-filter (lambda (it) (ignore-errors (url-retrieve it (lambda (_) t))))
-                                   `("https://wrong.host.badssl.com/"
-                                     "https://self-signed.badssl.com/"))))
-      (error "TLS appears to be misconfigured. Connected without error:\n\n- %s"
-             (string-join bad-hosts "\n- "))
-    (url-retrieve "https://badssl.com"
-                  (lambda (status)
-                    (if (or (not status) (plist-member status :error))
-                        (warn "Something went wrong.\n\n%s" (pp-to-string status))
-                      (message "Trust roots are configured correctly"))))))
-
-;; (cb-init-test-tls)
-
-
 ;; Initialize package.el
 ;;
 ;; Most packages are installed using git subtrees, but some packages (such as
