@@ -152,19 +152,15 @@
     (cb-header-line-format--project-info))))
 
 (defun cb-header-line-format--major-mode-icon ()
-  (let* ((args (list :height 0.8
-                     :v-adjust
-                     (cond
-                      ((derived-mode-p 'web-mode)
-                       0.05)
-                      ((derived-mode-p 'emacs-lisp-mode)
-                       -0.1)
-                      (t
-                       0.05))))
+  (let* ((v-adjust
+          (cond
+           ((derived-mode-p 'web-mode) 0.05)
+           ((derived-mode-p 'emacs-lisp-mode) -0.1)
+           (t 0.05)))
          (icon
           (if (derived-mode-p 'web-mode)
-              (apply #'all-the-icons-icon-for-file (buffer-name) args)
-            (apply #'all-the-icons-icon-for-mode major-mode args))))
+              (all-the-icons-icon-for-file (buffer-name) :v-adjust v-adjust)
+            (all-the-icons-icon-for-mode major-mode :v-adjust v-adjust))))
 
     (concat icon " ")))
 

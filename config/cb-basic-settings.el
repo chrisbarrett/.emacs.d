@@ -742,6 +742,12 @@ Optional arg JUSTIFY will justify comments and strings."
 (use-package unfill
   :commands (unfill-region unfill-paragraph unfill-toggle))
 
+
+(use-package all-the-icons
+  :defer t
+  :init
+  (defvar all-the-icons-scale-factor 1.0))
+
 (provide 'cb-basic-settings)
 
 ;;; cb-basic-settings.el ends here

@@ -46,13 +46,13 @@
 
   :config
   (progn
-    (setq neo-window-width 25)
+    (setq neo-window-width 30)
     (setq neo-create-file-auto-open t)
     (setq neo-banner-message "Press ? for neotree help")
     (setq neo-show-updir-line nil)
     (setq neo-mode-line-type 'nerd)
     (setq neo-smart-open t)
-    (setq neo-theme 'ascii)
+    (setq neo-theme 'icons)
     (setq neo-persist-show nil)
     (setq neo-show-hidden-files nil)
     (setq neo-vc-integration nil)
