@@ -154,7 +154,9 @@ better user feedback."
     (file-name-nondirectory remote)))
 
 (defun git-subtree--rev-for-subtree (subtree-path)
-  (alist-get subtree-path git-subtree-rev-alist "master" nil #'string=))
+  (let ((pair (seq-find (lambda (it) (equal subtree-path (car it)))
+                        git-subtree-rev-alist)))
+    (or (cdr pair) "master")))
 
 (defun git-subtree-add (subtree-path remote &optional rev interactive-p)
   "Add a new subtree.
