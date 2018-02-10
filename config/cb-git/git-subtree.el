@@ -279,24 +279,6 @@ If INTERACTIVE-P is set, log extra progress information."
       (magit-run-git-async "subtree" "push" "--prefix" subtree-path remote branch))
     fullpath))
 
-;; cbf writing an ert test suite right now.
-
-(cl-assert (equal (git-subtree--default-name-for-url "https://github.com/foo/bar.git") "foo/bar"))
-
-(cl-assert (equal (git-subtree--default-name-for-url "git@github.com:foo/bar.git") "foo/bar"))
-
-(cl-assert (equal (git-subtree--guess-remotes "foo/bar/baz/" '("remote/bar" "remote/baz"))
-                  '("remote/baz"))
-           t)
-
-(cl-assert (equal (git-subtree--guess-remotes "foo/bar/baz" '("remote/baz" "remote/bar"))
-                  '("remote/baz"))
-           t)
-
-(cl-assert (equal (git-subtree--guess-remotes "baz" '("a/baz" "b/baz"))
-                  '("a/baz" "b/baz"))
-           t)
-
 (provide 'git-subtree)
 
 ;;; git-subtree.el ends here
