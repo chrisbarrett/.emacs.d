@@ -193,7 +193,7 @@ If INTERACTIVE-P is set, messages will be logged indicating progress."
           (user-error "Aborted")))
 
       (git-subtree--with-signal-handlers interactive-p "Fetching remote..."
-        (magit-run-git "fetch" "-q" remote))
+        (magit-run-git "fetch" "-q" remote rev))
 
       (git-subtree--with-signal-handlers interactive-p "Importing subtree..."
         (magit-run-git "subtree" "-q" "add" "--prefix" subtree-path remote rev "--squash" "-m" commit-message))
@@ -235,7 +235,7 @@ If INTERACTIVE-P is set, messages will be logged indicating progress."
       (run-hooks 'magit-credential-hook)
 
       (git-subtree--with-signal-handlers interactive-p "Fetching remote..."
-        (magit-run-git "fetch" "-q" remote))
+        (magit-run-git "fetch" "-q" remote rev))
 
       (git-subtree--with-signal-handlers interactive-p "Importing subtree..."
         (magit-run-git "subtree" "-q" "pull" "--prefix" subtree-path remote rev "--squash" "-m" commit-message))
