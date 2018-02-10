@@ -129,14 +129,6 @@ better user feedback."
     (nreverse)
     (string-join "/")))
 
-(defun git-subtree--read-new-remote ()
-  (let* ((url (magit-read-url "Remote url"))
-         (name (magit-read-string-ns "Remote name" (git-subtree--default-name-for-url url))))
-    (unless (member name (magit-list-remotes))
-      (git-subtree--with-signal-handlers t "Adding remote..."
-        (magit-run-git "remote" "add" name url)))
-    name))
-
 (defun git-subtree--read-existing-remote (subtree-path)
   (let ((remotes (magit-list-remotes)))
     (pcase (git-subtree--guess-remotes subtree-path remotes)
@@ -158,24 +150,25 @@ better user feedback."
                         git-subtree-rev-alist)))
     (or (cdr pair) "master")))
 
-(defun git-subtree-add (subtree-path remote &optional rev interactive-p)
+(defun git-subtree-add (subtree-path remote-url remote &optional rev interactive-p)
   "Add a new subtree.
 
 SUBTREE-PATH is the path where the subtree will be pulled to,
 relative to the root of the git repository.
 
-REMOTE is the remote name. When called interactively, a remote
-will be added at a given URL.
+REMOTE-URL is the URL for the new remote. REMOTE is the remote name.
 
 If REV is nil, the value defaults to \"master\".
 
 If INTERACTIVE-P is set, messages will be logged indicating progress."
   (interactive  (let ((default-directory (magit-toplevel)))
                   (git-subtree--assert-tree-not-dirty)
-                  (let* ((remote (git-subtree--read-new-remote))
+                  (let* ((remote-url (magit-read-url "Remote url"))
+                         (remote (magit-read-string-ns "Remote name" (git-subtree--default-name-for-url remote-url)))
                          (subtree-path (file-relative-name
                                         (read-file-name "Create at: " (git-subtree--subtree-path-for-remote remote)))))
                     (list subtree-path
+                          remote-url
                           remote
                           (read-string "Rev: " (git-subtree--rev-for-subtree subtree-path))
                           'interactive-p))))
@@ -192,8 +185,9 @@ If INTERACTIVE-P is set, messages will be logged indicating progress."
         (unless (y-or-n-p (format "%s at %s will be merged to %s. Continue? " remote rev fullpath))
           (user-error "Aborted")))
 
-      (git-subtree--with-signal-handlers interactive-p "Fetching remote..."
-        (magit-run-git "fetch" "-q" remote rev))
+      (unless (member remote (magit-list-remotes))
+        (git-subtree--with-signal-handlers t "Adding remote..."
+          (magit-run-git "remote" "add" "-f" remote remote-url)))
 
       (git-subtree--with-signal-handlers interactive-p "Importing subtree..."
         (magit-run-git "subtree" "-q" "add" "--prefix" subtree-path remote rev "--squash" "-m" commit-message))
