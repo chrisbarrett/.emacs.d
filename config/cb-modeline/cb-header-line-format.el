@@ -77,7 +77,7 @@
 (defun cb-header-line-format--current-branch-internal (_directory)
   (magit-get-current-branch))
 
-(memoize #'cb-header-line-format--current-branch-internal "10 seconds")
+(memoize #'cb-header-line-format--current-branch-internal "3 seconds")
 
 (defun cb-header-line-format--current-branch ()
   (require 'magit)
