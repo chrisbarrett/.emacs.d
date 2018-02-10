@@ -123,7 +123,7 @@ better user feedback."
 
 (defun git-subtree--default-name-for-url (url)
   (thread-first (file-name-sans-extension url)
-    (split-string "[/]")
+    (split-string "[:/]")
     (nreverse)
     (seq-take 2)
     (nreverse)
@@ -282,6 +282,8 @@ If INTERACTIVE-P is set, log extra progress information."
 ;; cbf writing an ert test suite right now.
 
 (cl-assert (equal (git-subtree--default-name-for-url "https://github.com/foo/bar.git") "foo/bar"))
+
+(cl-assert (equal (git-subtree--default-name-for-url "git@github.com:foo/bar.git") "foo/bar"))
 
 (cl-assert (equal (git-subtree--guess-remotes "foo/bar/baz/" '("remote/bar" "remote/baz"))
                   '("remote/baz"))
