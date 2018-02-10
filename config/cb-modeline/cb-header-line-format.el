@@ -9,8 +9,9 @@
 ;;; Code:
 
 (require 'dash)
+(require 'memoize)
 (require 's)
-(require 'subr-x)
+
 (require 'cb-theme-common)
 
 (autoload 'all-the-icons-icon-for-file "all-the-icons")
@@ -71,63 +72,29 @@
 (defun cb-header-line-format--window-selected? ()
   (eq cb-header-line-format--window-for-redisplay (get-buffer-window)))
 
-;;; Cache variable lookups to improve speed
-
-(defconst cb-header-line-format--cache-duration-seconds 10)
-
-(defun cb-header-line-format--make-cache-key ()
-  (cons (current-time) default-directory))
-
-(defun cb-header-line-format--cache-expired? (key)
-  (-let* (((time . key-directory) key)
-          (expiry-time (time-add time cb-header-line-format--cache-duration-seconds)))
-
-    (or (time-less-p expiry-time (current-time))
-        (not (equal default-directory key-directory)))))
-
 ;; Cache the git branch.
 
-(defvar-local cb-header-line-format--branch nil
-  "A cons of (cache-key . branch-name) or nil")
+(defun cb-header-line-format--current-branch-internal (_directory)
+  (magit-get-current-branch))
 
-(defun cb-header-line-format--update-branch ()
-  (let ((key (cb-header-line-format--make-cache-key))
-        (branch (magit-get-current-branch)))
-    (setq cb-header-line-format--branch (cons key branch))
-    branch))
+(memoize #'cb-header-line-format--current-branch-internal "10 seconds")
 
 (defun cb-header-line-format--current-branch ()
   (require 'magit)
-  (-if-let ((key . branch) cb-header-line-format--branch)
-      (cond
-       ((cb-header-line-format--cache-expired? key)
-        (cb-header-line-format--update-branch))
-       (t
-        branch))
-    (cb-header-line-format--update-branch)))
+  (cb-header-line-format--current-branch-internal default-directory))
 
 ;; Cache the projectile project.
 ;;
 ;; Projectile maintains its own cache of project info, but it still does file IO
 ;; as part of its checks.
 
-(defvar-local cb-header-line-format--project nil
-  "A cons of (cache-key . project-name) or nil")
+(defun cb-header-line-format--current-project-internal (_directory)
+  (projectile-project-p))
 
-(defun cb-header-line-format--update-project ()
-  (let ((key (cb-header-line-format--make-cache-key))
-        (project (projectile-project-p)))
-    (setq cb-header-line-format--project (cons key project))
-    project))
+(memoize #'cb-header-line-format--current-project-internal "10 seconds")
 
 (defun cb-header-line-format--current-project ()
-  (-if-let ((key . project) cb-header-line-format--project)
-      (cond
-       ((cb-header-line-format--cache-expired? key)
-        (cb-header-line-format--update-project))
-       (t
-        project))
-    (cb-header-line-format--update-project)))
+  (cb-header-line-format--current-project-internal default-directory))
 
 ;;; Construction functions
 
