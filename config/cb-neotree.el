@@ -59,7 +59,7 @@
 
     (add-to-list 'neo-hidden-regexp-list "target$")
     (add-to-list 'neo-hidden-regexp-list "__pycache__$")
-    (add-to-list 'neo-hidden-regexp-list "scala-2\\.11$")
+    (add-to-list 'neo-hidden-regexp-list "scala-2\\.[0-9]+$")
 
     ;; Enable leader key in neotree
     (define-key neotree-mode-map (kbd "SPC") spacemacs-keys-default-map)
