@@ -184,7 +184,7 @@ If argument INTERACTIVE-P is set, log additional information."
 
 ;;; Post init setup.
 
-(unless (f-dir? org-directory)
+(unless (file-directory-p org-directory)
   (when (y-or-n-p (format "`org-directory' does not exist. Create at %s? " org-directory))
     (mkdir org-directory)))
 
