@@ -31,7 +31,8 @@
       "NIX_USER_PROFILE_DIR"
       "NIX_PROFILES"
       "NIX_SSL_CERT_FILE"
-      "NIX_PATH"))
+      "NIX_PATH"
+      "SSH_AGENT_PID"))
   :config
   (exec-path-from-shell-initialize))
 
