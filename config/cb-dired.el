@@ -58,6 +58,7 @@
 
     (setq-default dired-listing-switches "-alhv")
     (setq dired-dwim-target t)
+    (setq dired-hide-details-hide-symlink-targets nil)
     (advice-add 'dired-readin :after #'cb-dired--sort-directories-first)
 
     (evil-define-key 'normal dired-mode-map (kbd "$") #'end-of-line)
