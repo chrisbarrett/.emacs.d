@@ -13,6 +13,11 @@
   (interactive)
   (find-file (concat user-emacs-directory "init.el")))
 
+(defun cb-goto-nix-packages ()
+  "Open the nix packages file."
+  (interactive)
+  (find-file "~/Sync/nix/packages.nix"))
+
 (defun cb-goto-personal-config ()
   "Open the personal configuration file."
   (interactive)

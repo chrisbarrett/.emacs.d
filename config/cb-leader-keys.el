@@ -262,6 +262,7 @@
 
       "g i" #'cb-goto-init-file
       "g m" #'cb-goto-messages
+      "g n" #'cb-goto-nix-packages
       "g p" #'cb-goto-personal-config
 
       "h d c" #'describe-face
