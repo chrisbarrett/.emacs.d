@@ -76,6 +76,11 @@
     (fringe
      ((t :background ,default-bg)))
 
+    (vertical-border
+     ((t
+       :background ,header-line-bg
+       :foreground ,header-line-bg)))
+
     (header-line
      ((t
        :background ,header-line-bg
