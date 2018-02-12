@@ -12,8 +12,6 @@
 
 (require 'cb-theme-common)
 
-(defconst cb-light-theme-violet "#6c71c4")
-
 (apply #'custom-theme-set-faces 'cb-light
        (cb-theme-common-make-theme
         :default-fg "black"
@@ -22,7 +20,8 @@
         :subtle-bg "#e1dddd"
         :paren-match cb-theme-common-cyan
         :highlight-bg "gray82"
-        :header-line-bg cb-light-theme-violet
+        :header-line-bg "#c6c6c6"
+        :header-line-fg "#4d4d4c"
         :emphasis-1 cb-theme-common-blue
         :emphasis-2 "white"
         :pending-bg "#FFFFAA"))

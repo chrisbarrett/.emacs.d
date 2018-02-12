@@ -12,20 +12,23 @@
 
 (require 'cb-theme-common)
 
+(defconst cb-dark-theme-orange "#de935f")
+(defconst cb-dark-theme-red "#cc6666")
+
 (apply #'custom-theme-set-faces 'cb-dark
        (cb-theme-common-make-theme
-        :default-fg "#f88"
-        :default-bg "#200505"
-        :region-bg "#533"
-        :subtle-bg "#311"
-        :dimmed-fg "#a55"
+        :default-fg "#c5c8c6"
+        :default-bg "#1d1f21"
+        :region-bg "#373b41"
+        :subtle-bg "#22a224a427a7"
+        :dimmed-fg "#555856"
         :paren-match "white"
-        :emphasis-1 cb-theme-common-orange
+        :emphasis-1 cb-dark-theme-orange
         :emphasis-2 "black"
-        :highlight-bg "#2c1a1a"
-        :error-fg cb-theme-common-pink
-        :header-line-fg "#f88"
-        :header-line-bg "#533"))
+        :highlight-bg "#3c3a3a"
+        :error-fg cb-dark-theme-red
+        :header-line-fg "#c5c8c6"
+        :header-line-bg "#373b41"))
 
 (provide-theme 'cb-dark)
 

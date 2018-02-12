@@ -442,7 +442,7 @@
      ((t :inherit default)))
 
     (org-meta-line
-     ((t :foreground ,dimmed-fg)))
+     ((t :foreground ,dimmed-fg :weight light)))
 
     (org-agenda-structure
      ((t :weight demibold)))
@@ -654,9 +654,6 @@
      ((t :weight light :foreground ,dimmed-fg)))
 
     ;; Misc faces
-
-    (vi-tilde-fringe-face
-     ((t :inherit default)))
 
     (page-break-lines
      ((t :weight light :foreground ,dimmed-fg)))
