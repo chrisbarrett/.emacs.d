@@ -35,8 +35,10 @@
   :group 'cb-header-line-format)
 
 (defface cb-header-line-format-accent-element
-  `((t
-     (:inhert header-line :foreground ,cb-theme-common-yellow)))
+  `((((background light))
+     :weight light :foreground ,cb-theme-common-cyan)
+    (((background dark))
+     :inhert header-line :foreground ,cb-theme-common-orange))
   "Face for accented elements in the header line."
   :group 'cb-header-line-format)
 
