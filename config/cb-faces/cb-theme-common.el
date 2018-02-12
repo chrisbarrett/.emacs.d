@@ -87,7 +87,7 @@
        :foreground ,header-line-fg :weight demibold
        :box (:line-width 3 :color ,header-line-bg))))
 
-    (cb-header-line-format-nonemphased-element
+    (cb-header-line-format-nonemphasised-element
      ((t :weight light)))
 
     (mode-line

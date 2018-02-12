@@ -28,7 +28,7 @@
   :group 'themes
   :prefix "cb-header-line-format-")
 
-(defface cb-header-line-format-nonemphased-element
+(defface cb-header-line-format-nonemphasised-element
   '((t
      (:inherit header-line)))
   "Face for non-emphasised elements in the header line."
@@ -101,7 +101,7 @@
 ;;; Construction functions
 
 (defun cb-header-line-format--nonemphasised (str)
-  (propertize str 'face 'cb-header-line-format-nonemphased-element))
+  (propertize str 'face 'cb-header-line-format-nonemphasised-element))
 
 (defun cb-header-line-format--access-mode-info ()
   (let ((str (concat
@@ -174,7 +174,7 @@
 (defun cb-header-line-format--buffer-name ()
   (if (cb-header-line-format--window-selected?)
       (buffer-name)
-    (propertize (buffer-name) 'face 'cb-header-line-format-nonemphased-element)))
+    (propertize (buffer-name) 'face 'cb-header-line-format-nonemphasised-element)))
 
 (defun cb-header-line-format--line-info ()
   (let ((str "%2l"))
@@ -197,7 +197,7 @@
     ;; Current line, padded
     (:eval (cb-header-line-format--line-info))
     "  "
-    (:propertize "%6p " face cb-header-line-format-nonemphased-element)
+    (:propertize "%6p " face cb-header-line-format-nonemphasised-element)
 
     ;; Modification indicator.
     (:eval (cb-header-line-format--access-mode-info))
