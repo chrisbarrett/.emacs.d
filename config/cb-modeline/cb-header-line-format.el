@@ -12,8 +12,6 @@
 (require 'memoize)
 (require 's)
 
-(require 'cb-theme-common)
-
 (autoload 'all-the-icons-icon-for-file "all-the-icons")
 (autoload 'all-the-icons-icon-for-mode "all-the-icons")
 (autoload 'all-the-icons-octicon "all-the-icons")
@@ -34,11 +32,9 @@
   "Face for non-emphasised elements in the header line."
   :group 'cb-header-line-format)
 
-(defface cb-header-line-format-accent-element
-  `((((background light))
-     :weight light :foreground ,cb-theme-common-cyan)
-    (((background dark))
-     :inhert header-line :foreground ,cb-theme-common-orange))
+(defface cb-header-line-format-emphasised-element
+  '((t
+     (:inherit header-line)))
   "Face for accented elements in the header line."
   :group 'cb-header-line-format)
 
@@ -108,7 +104,7 @@
               (if (and (buffer-file-name) (file-remote-p (buffer-file-name))) "@" "")
               (if buffer-read-only "%" "")
               (if (buffer-modified-p) "*" ""))))
-    (propertize (s-pad-right 2 " " str) 'face 'cb-header-line-format-accent-element)))
+    (propertize (s-pad-right 2 " " str) 'face 'cb-header-line-format-emphasised-element)))
 
 (defun cb-header-line-format--narrowing-info ()
   (if (buffer-narrowed-p)
@@ -180,7 +176,7 @@
   (let ((str "%2l"))
     (if (cb-header-line-format--window-selected?)
         str
-      (propertize str 'face 'cb-header-line-format-nonemphased-element))))
+      (propertize str 'face 'cb-header-line-format-nonemphasised-element))))
 
 (defconst cb-header-line-format
   '(

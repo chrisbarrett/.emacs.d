@@ -90,6 +90,9 @@
     (cb-header-line-format-nonemphasised-element
      ((t :weight light)))
 
+    (cb-header-line-format-emphasised-element
+     ((t :weight light :foreground ,emphasis)))
+
     (mode-line
      ((t :inherit header-line
          :foreground ,header-line-bg
