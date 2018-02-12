@@ -87,7 +87,10 @@
      ((t :weight light)))
 
     (mode-line
-     ((t :inherit header-line :height 20)))
+     ((t :inherit header-line
+         :foreground ,header-line-bg
+         :box (:line-width 1 :color ,header-line-bg)
+         :height 0.1)))
 
     (mode-line-inactive
      ((t :inherit header-line :height 20)))
