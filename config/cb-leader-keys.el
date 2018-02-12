@@ -23,6 +23,7 @@
 (autoload 'cb/toggle-window-split "cb-toggle-window-split")
 (autoload 'cb-goto-init-file "cb-goto")
 (autoload 'cb-goto-messages "cb-goto")
+(autoload 'cb-goto-nix-packages "cb-goto")
 (autoload 'cb-goto-personal-config "cb-goto")
 (autoload 'org-narrow-to-subtree "org")
 
