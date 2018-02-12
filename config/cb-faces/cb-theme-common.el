@@ -41,8 +41,7 @@
                        subtle-bg
                        highlight-bg
                        paren-match
-                       emphasis-1
-                       emphasis-2
+                       emphasis
                        (header-line-fg default-bg)
                        (mid-grey "grey60")
                        (dark-grey "grey40")
@@ -180,7 +179,7 @@
      ((t :inherit dired-header)))
 
     (diredp-dir-name
-     ((t :foreground ,emphasis-1)))
+     ((t :foreground ,emphasis)))
 
     (diredp-file-name
      ((t :inherit default)))
@@ -291,7 +290,7 @@
      ((t :foreground ,default-fg)))
 
     (ivy-current-match
-     ((t :foreground ,emphasis-1 :background ,highlight-bg)))
+     ((t :foreground ,emphasis :background ,highlight-bg)))
 
     (ivy-minibuffer-match-face-1
      ((t :background ,subtle-bg)))
@@ -318,7 +317,7 @@
      ((t :inherit highlight :background nil)))
 
     (highlight-thing
-     ((t :weight demibold :foreground ,emphasis-1)))
+     ((t :weight demibold :foreground ,emphasis)))
 
     (hexl-ascii-region
      ((t (:inherit highlight-thing))))
@@ -415,7 +414,7 @@
      ((t :underline t)))
 
     (org-agenda-date-today
-     ((t :foreground ,emphasis-1 :weight demibold)))
+     ((t :foreground ,emphasis :weight demibold)))
 
     (org-agenda-date-weekend
      ((t :inherit org-agenda-date)))
@@ -424,7 +423,7 @@
      ((t :inherit warning)))
 
     (org-upcoming-deadline
-     ((t :foreground ,emphasis-1 :weight normal)))
+     ((t :foreground ,emphasis :weight normal)))
 
     (org-scheduled-previously
      ((t :foreground ,error-fg)))
@@ -501,7 +500,7 @@
      ((t :weight demibold)))
 
     (mu4e-highlight-face
-     ((t :foreground ,emphasis-1 :weight demibold)))
+     ((t :foreground ,emphasis :weight demibold)))
 
     (mu4e-header-highlight-face
      ((t :inherit highlight)))
@@ -529,10 +528,10 @@
     ;; Neotree
 
     (neo-root-dir-face
-     ((t :foreground ,emphasis-1)))
+     ((t :foreground ,emphasis)))
 
     (neo-banner-face
-     ((t :foreground ,emphasis-1 :weight light)))
+     ((t :foreground ,emphasis :weight light)))
 
     (neo-file-link-face
      ((t :weight light)))
@@ -569,7 +568,7 @@
      ((t :foreground ,default-fg)))
 
     (term-color-blue
-     ((t :foreground ,emphasis-1)))
+     ((t :foreground ,emphasis)))
 
     (term-color-bold
      ((t :weight demibold)))
@@ -598,7 +597,7 @@
     ;; Markdown
 
     (markdown-line-break-face
-     ((t :underline ,emphasis-1)))
+     ((t :underline ,emphasis)))
 
     ;; Kubernetes
 
@@ -616,7 +615,7 @@
     ;; Git time machine
 
     (git-timemachine-minibuffer-detail-face
-     ((t :foreground ,emphasis-1)))
+     ((t :foreground ,emphasis)))
 
     (git-timemachine-minibuffer-author-face
      ((t :inherit default)))
@@ -648,7 +647,7 @@
      ((t :inherit warning)))
 
     (font-latex-sectioning-5-face
-     ((t :foreground ,emphasis-1 :weight demibold)))
+     ((t :foreground ,emphasis :weight demibold)))
 
     (font-latex-sedate-face
      ((t :weight light :foreground ,dimmed-fg)))
