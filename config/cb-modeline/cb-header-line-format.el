@@ -167,9 +167,9 @@
     (concat icon " ")))
 
 (defun cb-header-line-format--major-mode-info ()
-  (if (derived-mode-p 'turn-on-evil-mode)
-      ""
-    (cb-header-line-format--major-mode-icon)))
+  (if (cb-header-line-format--window-selected?)
+      (cb-header-line-format--major-mode-icon)
+    "   "))
 
 (defun cb-header-line-format--buffer-name ()
   (if (cb-header-line-format--window-selected?)
