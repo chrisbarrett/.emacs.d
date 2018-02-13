@@ -14,6 +14,23 @@
   :mode (("\\.nix\\'" . nix-mode)
          ("\\.nix.in\\'" . nix-mode)))
 
+(use-package compile
+  :defer t
+  :config
+  (progn
+    (defconst cb-nix--compile-error-regexp
+      (rx bol "error:" (+? nonl) symbol-start "at "
+          (group (+? nonl))
+          ":"
+          (group (+? digit))
+          ":"
+          (group (+? digit))
+          eol))
+
+    (add-to-list 'compilation-error-regexp-alist 'nix-env)
+    (add-to-list 'compilation-error-regexp-alist-alist
+                 `(nix-env . (,cb-nix--compile-error-regexp 1 2 3)))))
+
 (use-package nix-shell
   :commands nix-shell)
 
