@@ -57,6 +57,8 @@
 
   :config
   (progn
+    (setq projectile-cache-file (concat cb-emacs-cache-directory "/projectile.cache"))
+    (setq projectile-known-projects-file (concat cb-emacs-cache-directory "/projectile-bookmarks.eld"))
     (setq projectile-completion-system 'ivy)
     (setq projectile-switch-project-action (lambda ()
                                              (dired (projectile-project-p))))
