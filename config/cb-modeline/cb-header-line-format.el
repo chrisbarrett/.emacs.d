@@ -160,7 +160,7 @@
               (all-the-icons-icon-for-file (buffer-name) :v-adjust v-adjust)
             (all-the-icons-icon-for-mode major-mode :v-adjust v-adjust))))
 
-    (concat icon " ")))
+    (concat (if (symbolp icon) "" icon) " ")))
 
 (defun cb-header-line-format--major-mode-info ()
   (if (cb-header-line-format--window-selected?)
@@ -178,32 +178,52 @@
         str
       (propertize str 'face 'cb-header-line-format-nonemphasised-element))))
 
+(defconst cb-header-line-format--flycheck-icon (all-the-icons-octicon "terminal" :v-adjust 0.05))
+(defconst cb-header-line-format--neotree-icon (all-the-icons-octicon "file-directory" :v-adjust 0.05))
+(defconst cb-header-line-format--org-icon (all-the-icons-icon-for-mode 'org-mode :v-adjust 0.05))
+
 (defconst cb-header-line-format
-  '(
-    ;; Print error on low memory
-    "%e"
-    " "
+  '((:eval (pcase (buffer-name)
+             ;; Special buffers
+             ("*Help*"
+              (concat " " (cb-header-line-format--major-mode-icon) " Help"))
+             ("*Flycheck errors*"
+              (concat " " cb-header-line-format--flycheck-icon " Errors"))
+             ("*Org Select*"
+              (concat " " cb-header-line-format--org-icon " *Org Select*"))
+             ("*compilation*"
+              (concat " " (cb-header-line-format--major-mode-icon) " Compile"))
+             (" *NeoTree*"
+              (concat " " cb-header-line-format--neotree-icon " Filesystem"))
+             ((guard (string-match-p (rx "-popup*" eos) (buffer-name)))
+              (concat " " (cb-header-line-format--major-mode-icon) (buffer-name)))
 
-    ;; Emacsclient info
-    mode-line-client
+             (_
+              '(
+                ;; Print error on low memory
+                "%e"
+                " "
 
-    ;; Major mode icon
-    (:eval (cb-header-line-format--major-mode-info))
+                ;; Emacsclient info
+                mode-line-client
 
-    ;; Current line, padded
-    (:eval (cb-header-line-format--line-info))
-    "  "
-    (:propertize "%6p " face cb-header-line-format-nonemphasised-element)
+                ;; Major mode icon
+                (:eval (cb-header-line-format--major-mode-info))
 
-    ;; Modification indicator.
-    (:eval (cb-header-line-format--access-mode-info))
+                ;; Current line, padded
+                (:eval (cb-header-line-format--line-info))
+                "  "
+                (:propertize "%6p " face cb-header-line-format-nonemphasised-element)
 
-    ;; Buffer name, with braces on recursive edit
-    "  %[" (:eval (cb-header-line-format--buffer-name)) "%] "
+                ;; Modification indicator.
+                (:eval (cb-header-line-format--access-mode-info))
 
-    (:eval (cb-header-line-format--narrowing-info))
+                ;; Buffer name, with braces on recursive edit
+                "  %[" (:eval (cb-header-line-format--buffer-name)) "%] "
 
-    (:eval (cb-header-line-format--context-info))))
+                (:eval (cb-header-line-format--narrowing-info))
+
+                (:eval (cb-header-line-format--context-info))))))))
 
 (provide 'cb-header-line-format)
 
