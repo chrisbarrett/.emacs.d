@@ -30,19 +30,11 @@
 
 (defun cb-light-theme ()
   (interactive)
-  (pcase system-type
-    (`darwin
-     (load-theme 'cb-light t))
-    (_
-     (load-theme 'cb-arc-darker t))))
+  (load-theme 'cb-light t))
 
 (defun cb-dark-theme ()
   (interactive)
-  (pcase system-type
-    (`darwin
-     (load-theme 'cb-dark t))
-    (_
-     (load-theme 'cb-arc-dark t))))
+  (load-theme 'cb-dark t))
 
 (cb-dark-theme)
 

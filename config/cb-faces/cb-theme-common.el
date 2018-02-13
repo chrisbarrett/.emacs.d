@@ -31,7 +31,7 @@
     (`darwin
      145)
     (_
-     120)))
+     130)))
 
 (cl-defun cb-theme-common-make-theme (&key
                        default-fg
