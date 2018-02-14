@@ -140,7 +140,6 @@ If argument INTERACTIVE-P is set, log additional information."
 (use-package cb-coffeescript)
 (use-package cb-web-mode)
 (use-package cb-markdown)
-(use-package cb-apidoc)
 (use-package cb-restclient)
 (use-package cb-calc)
 (use-package cb-haskell)
