@@ -1,12 +1,12 @@
-;;; magithub.el --- Magit interfaces for Github  -*- lexical-binding: t; -*-
+;;; magithub.el --- Magit interfaces for GitHub  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2016-2017  Sean Allred
 
 ;; Author: Sean Allred <code@seanallred.com>
 ;; Keywords: git, tools, vc
 ;; Homepage: https://github.com/vermiculus/magithub
-;; Package-Requires: ((emacs "25") (magit "2.8") (s "1.12.0") (ghub+ "0.2") (git-commit "2.8") (markdown-mode "2.3"))
-;; Package-Version: 0.1.4
+;; Package-Requires: ((emacs "25") (magit "2.8") (s "1.12.0") (ghub+ "0.2.1") (git-commit "2.8") (markdown-mode "2.3"))
+;; Package-Version: 0.1.5
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -23,18 +23,21 @@
 
 ;;; Commentary:
 
-;; Magithub is a Magit-based interface to Github.
+;; Magithub is a Magit-based interface to GitHub.
 ;;
-;; Integrated into Magit workflows, Magithub allows easy Github
-;; repository management.  Supported actions include:
+;; Integrated into Magit workflows, Magithub lets you interact with
+;; your GitHub repositories and manage your work/play from emacs:
 ;;
-;;  - pushing brand-new local repositories up to Github
-;;  - creating forks of existing repositories
-;;  - submitting pull requests upstream
-;;  - viewing and creating issues
-;;  - seeing status checks
-;;
-;; all from the `magit-status' buffer.
+;;  - push brand-new local repositories up to GitHub
+;;  - create forks of existing repositories
+;;  - submit pull requests upstream
+;;  - view and create issues
+;;  - view, create, and edit comments
+;;  - view status checks (e.g., Travis CI)
+;;  - manage labels and assignees
+;;  - view/visit notifications
+;;  - write personal notes on issues for reference later
+;;  - and probably more...
 ;;
 ;; Press `H' in the status buffer to get started -- happy hacking!
 
@@ -51,7 +54,6 @@
 (require 'magithub-core)
 (require 'magithub-issue)
 (require 'magithub-ci)
-(require 'magithub-proxy)
 (require 'magithub-issue-post)
 (require 'magithub-issue-tricks)
 (require 'magithub-orgs)
@@ -61,22 +63,21 @@
 (magit-define-popup magithub-dispatch-popup
   "Popup console for dispatching other Magithub popups."
   'magithub-commands
+  :variables '((?C "Settings..." magithub-settings-popup))
   :actions '("Actions"
              (?d "Dashboard" magithub-dashboard)
-             (?H "Browse on Github" magithub-browse)
-             (?c "Create" magithub-create)
-             (?f "Fork" magithub-fork)
-             (?i "Issues" magithub-issue-new)
+             (?H "Browse on GitHub" magithub-browse)
+             (?c "Create on GitHub" magithub-create)
+             (?f "Fork this repo" magithub-fork)
+             (?i "Submit an issue" magithub-issue-new)
              (?p "Submit a pull request" magithub-pull-request-new)
-             (?x "Use a proxy repository for issues/PRs" magithub-proxy-set)
              (?O "Toggle online/offline" magithub-toggle-online)
              "Meta"
-             (?` "Toggle Magithub-Status integration" magithub-enabled-toggle)
-             (?~ "Toggle CI status header" magithub-ci-toggle)
              (?& "Request a feature or report a bug" magithub--meta-new-issue)
              (?h "Ask for help on Gitter" magithub--meta-help)))
 
-(eval-after-load "magit"
+;;;###autoload
+(eval-after-load 'magit
   '(progn
      (magit-define-popup-action 'magit-dispatch-popup
        ?H "Magithub" #'magithub-dispatch-popup ?!)
@@ -87,17 +88,17 @@
   "Open the repository in your browser."
   (interactive)
   (unless (magithub-github-repository-p)
-    (user-error "Not a Github repository"))
+    (user-error "Not a GitHub repository"))
   (magithub-repo-visit (magithub-repo)))
 
 (defvar magithub-after-create-messages
   '("Don't be shy!"
     "Don't let your dreams be dreams!")
   "One of these messages will be displayed after you create a
-Github repository.")
+GitHub repository.")
 
 (defun magithub-create (repo &optional org)
-  "Create REPO on Github.
+  "Create REPO on GitHub.
 
 If ORG is non-nil, it is an organization object under which to
 create the new repository.  You must be a member of this
@@ -106,7 +107,7 @@ organization."
                    (list nil nil)
                  (let* ((ghub-username (ghubp-username)) ;performance
                         (account (magithub--read-user-or-org))
-                        (priv (yes-or-no-p "Will this be a private repository? "))
+                        (priv (magithub-confirm-no-error 'create-repo-as-private))
                         (reponame (magithub--read-repo-name account))
                         (desc (read-string "Description (optional): ")))
                    (list
@@ -116,18 +117,18 @@ organization."
                     (unless (string= ghub-username account)
                       `((login . ,account)))))))
   (when (magithub-github-repository-p)
-    (error "Already in a Github repository"))
+    (error "Already in a GitHub repository"))
   (if (not (magit-toplevel))
-      (when (y-or-n-p "Not inside a Git repository; initialize one here? ")
+      (when (magithub-confirm-no-error 'init-repo-after-create)
         (magit-init default-directory)
         (call-interactively #'magithub-create))
-    (with-temp-message "Creating repository on Github..."
+    (with-temp-message "Creating repository on GitHub..."
       (setq repo
             (magithub-request
              (if org
                  (ghubp-post-orgs-org-repos org repo)
                (ghubp-post-user-repos repo)))))
-    (magithub--random-message "Creating repository on Github...done!")
+    (magithub--random-message "Creating repository on GitHub...done!")
     (magit-status-internal default-directory)
     (magit-remote-add "origin" (magithub-repo--clone-url repo))
     (magit-refresh)
@@ -171,24 +172,25 @@ be returned without prompting the user."
     (if prefix (format "%s  %s" prefix msg) msg)))
 
 (defun magithub-fork ()
-  "Fork 'origin' on Github."
+  "Fork 'origin' on GitHub."
   (interactive)
   (unless (magithub-github-repository-p)
-    (user-error "Not a Github repository"))
+    (user-error "Not a GitHub repository"))
+  (magithub-confirm 'fork)
   (let* ((repo (magithub-repo))
-         (fork (with-temp-message "Forking repository on Github..."
+         (fork (with-temp-message "Forking repository on GitHub..."
                  (magithub-request
                   (ghubp-post-repos-owner-repo-forks repo)))))
-    (when (y-or-n-p "Create a spinoff branch? ")
+    (when (magithub-confirm-no-error 'fork-create-spinoff)
       (call-interactively #'magit-branch-spinoff))
     (magithub--random-message
      (let-alist repo (format "%s/%s forked!" .owner.login .name)))
     (let-alist fork
-      (when (y-or-n-p (format "Add %s as a remote in this repository? " .owner.login))
+      (when (magithub-confirm-no-error 'fork-add-me-as-remote .owner.login)
         (magit-remote-add .owner.login (magithub-repo--clone-url fork))
         (magit-set .owner.login "branch" (magit-get-current-branch) "pushRemote")))
     (let-alist repo
-      (when (y-or-n-p (format "Set upstream to %s? " .owner.login))
+      (when (magithub-confirm-no-error 'fork-set-upstream-to-me .owner.login)
         (call-interactively #'magit-set-branch*merge/remote)))))
 
 (defun magithub-clone--get-repo ()
@@ -201,7 +203,7 @@ Returns a sparse repository object."
     (while (not (and repo (string-match repo-regexp repo)))
       (setq repo (read-from-minibuffer
                   (concat
-                   "Clone Github repository "
+                   "Clone GitHub repository "
                    (if repo "(format is \"user/repo\"; C-g to quit)" "(user/repo)")
                    ": ")
                   (when user (concat user "/")))))
@@ -216,52 +218,43 @@ When nil, the current directory at invocation is used."
 
 (defun magithub-clone (repo dir)
   "Clone REPO.
-Banned inside existing Github repositories if
+Banned inside existing GitHub repositories if
 `magithub-clone-default-directory' is nil.
 
 See also `magithub-preferred-remote-method'."
-  (interactive (if (and (not magithub-clone-default-directory)
-                        (magithub-github-repository-p))
-                   (user-error "Already in a Github repo")
-                 (let ((repo (magithub-clone--get-repo)))
-                   (condition-case _
-                       (let* ((repo (magithub-request
-                                     (ghubp-get-repos-owner-repo repo)))
-                              (dirname (read-directory-name
-                                        "Destination: "
-                                        magithub-clone-default-directory
-                                        (alist-get 'name repo))))
-                         (list repo dirname))
-                     (ghub-404 (let-alist repo
-                                 (user-error "Repository %s/%s does not exist"
-                                             .owner.login .name)))))))
+  (interactive (let* ((repo (magithub-clone--get-repo))
+                      (repo (or (magithub-request
+                                 (ghubp-get-repos-owner-repo repo))
+                                (let-alist repo
+                                  (user-error "Repository %s/%s does not exist"
+                                              .owner.login .name))))
+                      (name (alist-get 'name repo))
+                      (dirname (read-directory-name
+                                "Destination: "
+                                magithub-clone-default-directory
+                                name nil name)))
+                 (list repo dirname)))
   ;; Argument validation
   (unless (called-interactively-p 'any)
-    (condition-case _
-        (setq repo (magithub-request
-                    (ghubp-get-repos-owner-repo repo)))
-      (ghub-404
-       (let-alist repo
-         (user-error "Repository %s/%s does not exist"
-                     .owner.login .name)))))
+    (unless (setq repo (magithub-request
+                        (ghubp-get-repos-owner-repo repo)))
+      (let-alist repo
+        (user-error "Repository %s/%s does not exist"
+                    .owner.login .name))))
   (unless (file-writable-p dir)
     (user-error "%s does not exist or is not writable" dir))
 
   (let-alist repo
-    (when (y-or-n-p (format "Clone %s to %s? " .full_name dir))
-      (let ((default-directory dir)
-            (magit-clone-set-remote.pushDefault t)
-            set-upstream set-proxy)
-
+    (when (magithub-confirm-no-error 'clone .full_name dir)
+      (let (set-upstream set-proxy)
         (setq set-upstream
-              (and .fork (y-or-n-p (format (concat "This repository appears to be a fork of %s; "
-                                                   "set upstream to that remote?")
-                                           .parent.full_name)))
+              (and .fork (magithub-confirm-no-error 'clone-fork-set-upstream-to-parent
+                                                    .parent.full_name))
               set-proxy
-              (and set-upstream (y-or-n-p "Use upstream as a proxy for issues, etc.? ")))
-
+              (and set-upstream (magithub-confirm-no-error 'clone-fork-set-proxy-to-upstream)))
         (condition-case _
-            (progn
+            (let ((default-directory dir)
+                  (magit-clone-set-remote.pushDefault t))
               (mkdir dir t)
               (magit-clone (magithub-repo--clone-url repo) dir)
               (while (process-live-p magit-this-process)
@@ -270,40 +263,14 @@ See also `magithub-preferred-remote-method'."
                 (sit-for 1))
               (when set-upstream
                 (let ((upstream "upstream"))
-                  (when set-proxy (magithub-proxy-set upstream))
+                  (when set-proxy (magit-set upstream "magithub.proxy"))
                   (magit-remote-add upstream (magithub-repo--clone-url .parent))
                   (magit-set-branch*merge/remote (magit-get-current-branch) upstream)))))))))
 
 (defun magithub-clone--finished (user repo dir)
   "After finishing the clone, allow the user to jump to their new repo."
-  (when (y-or-n-p (format "%s/%s has finished cloning to %s.  Open? " user repo dir))
+  (when (magithub-confirm-no-error 'clone-open-magit-status user repo dir)
     (magit-status-internal (s-chop-suffix "/" dir))))
-
-(defun magithub-feature-autoinject (feature)
-  "Configure FEATURE to recommended settings.
-If FEATURE is `all' or t, all known features will be loaded.
-
-Features:
-
-- `pull-request-merge'
-  (`magithub-pull-request-merge' inserted into `magit-am-popup')
-
-- `pull-request-checkout'
-  (`magithub-pull-request-checkout' inserted into `magit-branch-popup')"
-  (if (memq feature '(t all))
-      (mapc #'magithub-feature-autoinject magithub-feature-list)
-    (cl-case feature
-
-      (pull-request-merge
-       (magit-define-popup-action 'magit-am-popup
-         ?P "Apply patches from pull request" #'magithub-pull-request-merge))
-
-      (pull-request-checkout
-       (magit-define-popup-action 'magit-branch-popup
-         ?P "Checkout pull request" #'magithub-pull-request-checkout))
-
-      (t (user-error "unknown feature %S" feature)))
-    (add-to-list 'magithub-features (cons feature t))))
 
 (defun magithub-visit-thing ()
   (interactive)

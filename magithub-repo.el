@@ -25,10 +25,9 @@
 ;;; Code:
 
 (require 'magit)
-(require 'magithub-core)
+(require 'thingatpt)
 
-(defvar-local magithub-repo nil
-  "Repo object.")
+(require 'magithub-core)
 
 (defvar magit-magithub-repo-section-map
   (let ((m (make-sparse-keymap)))
@@ -37,7 +36,7 @@
     m))
 
 (defun magithub-repo-browse (repo)
-  (interactive (list (magithub-thing-at-point 'repo)))
+  (interactive (list (thing-at-point 'github-repo)))
   (unless repo
     (user-error "No repository found at point"))
   (let-alist repo

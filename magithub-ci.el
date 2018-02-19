@@ -33,39 +33,15 @@
 (require 'magithub-core)
 (require 'magithub-issue)
 
-(defun magithub-ci-enabled-p ()
-  "Non-nil if CI is enabled for this repository.
-If magithub.ci.enabled is not set, CI is considered to be enabled."
-  (member (magit-get "magithub" "ci" "enabled") '(nil "yes" "true")))
-(defun magithub-ci--set-enabled (val)
-  (magit-set (if val "true" "false") "magithub" "ci" "enabled")
-  (message (concat "Status integration "
-                   (if val "enabled" "disabled")
-                   " in this repository.")))
-(defun magithub-ci-disable ()
-  "Disable CI for this repository."
-  (magithub-ci--set-enabled nil))
-(defun magithub-ci-enable ()
-  "Enable CI for this repository."
-  (magithub-ci--set-enabled t))
-
+;;;###autoload
 (defun magithub-maybe-insert-ci-status-header ()
-  "If this is a Github repository, insert the CI status header."
-  (when (and (magithub-ci-enabled-p)
+  "If this is a GitHub repository, insert the CI status header."
+  (when (and (magithub-settings-include-status-p)
              (magithub-usable-p)
              (let ((b (magit-get-current-branch)))
                (or (magit-get-upstream-remote b)
                    (magit-get-push-remote b))))
     (magithub-insert-ci-status-header)))
-
-(defun magithub-ci-toggle ()
-  "Toggle CI integration."
-  (interactive)
-  (if (magithub-ci-enabled-p)
-      (magithub-ci-disable)
-    (magithub-ci-enable))
-  (when (derived-mode-p 'magit-status-mode)
-    (magit-refresh)))
 
 (defvar magithub-ci--status-last-refreshed nil
   "An alist of alists: repos to refs to times.
@@ -117,7 +93,7 @@ It may fail if the fork has multiple branches named BRANCH."
 
 (defun magithub-pull-request-branch->pr--gitconfig (branch)
   "Gets a pull request object from branch.BRANCH.magithub.sourcePR"
-  (when-let ((source (magit-get "branch" branch "magithub" "sourcePR")))
+  (when-let* ((source (magit-get "branch" branch "magithub" "sourcePR")))
     (magithub-pull-request (magithub-repo) (string-to-number source))))
 
 (defun magithub-ci-status--get-default-ref (&optional branch)
@@ -132,7 +108,7 @@ remote counterpart."
                      (with-demoted-errors "Error: %S"
                        (magithub-pull-request-branch->pr--ghub branch))))))
       (let-alist pull-request .head.sha)
-    (when-let ((push-branch (magit-get-push-branch branch)))
+    (when-let* ((push-branch (magit-get-push-branch branch)))
       (when (magit-branch-p push-branch)
         (cdr (magit-split-branch-name push-branch))))))
 
@@ -170,12 +146,23 @@ remote counterpart."
 (defconst magithub-ci-status--unknown
   '((face . magithub-ci-unknown)))
 
+(defun magithub-ci-pr-status (pr)
+  (interactive (list (thing-at-point 'github-pull-request)))
+  (unless pr
+    (user-error "no pr at point"))
+  (message "state of #%d: %s"
+           (let-alist pr .number)
+           (let-alist (ghubp-get-repos-owner-repo-commits-ref-status
+                          (magithub-repo)
+                          (let-alist pr .head.sha))
+             .state)))
+
 (defun magithub-ci-visit (ref)
   "Jump to CI with `browse-url'."
   (interactive (list (magit-rev-parse (magit-commit-at-point))))
   (let (done)
     (when (null ref)
-      (pcase (magit-section-value (magit-current-section))
+      (pcase (oref (magit-current-section) value)
         (`(magithub-ci-url . ,url)
          (browse-url url)
          (setq done t))
@@ -216,9 +203,8 @@ remote counterpart."
 If EVEN-IF-OFFLINE is non-nil, we'll still refresh (that is,
 we'll hit the API) if Magithub is offline."
   (interactive)
-  (when (and (magithub-offline-p)
-             (not (y-or-n-p "Magithub offline; refresh statuses anyway? ")))
-    (user-error "Aborted"))
+  (when (magithub-offline-p)
+    (magithub-confirm 'ci-refresh-when-offline))
   (magithub-cache-without-cache :ci-status
     (magithub-ci-status (magithub-ci-status--get-default-ref)))
   (magit-refresh))
@@ -284,9 +270,6 @@ we'll hit the API) if Magithub is offline."
               (when context
                 (propertize (format " %s" context)
                             'face 'magit-dimmed))))))
-
-(magithub--deftoggle magithub-toggle-ci-status-header "CI header" t
-  magit-status-headers-hook #'magithub-maybe-insert-ci-status-header)
 
 (provide 'magithub-ci)
 ;;; magithub-ci.el ends here

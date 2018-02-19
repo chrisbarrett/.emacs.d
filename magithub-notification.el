@@ -24,6 +24,8 @@
 
 ;;; Code:
 
+(require 'thingatpt)
+
 (require 'magithub-issue-view)
 
 (defvar magit-magithub-notification-section-map
@@ -71,8 +73,12 @@ See also Info node `(elisp)Time of Day'."
     (magit-refresh))
   (message "(magithub) notifcations refreshed"))
 
-(defun magithub-notification-unread-p (notification)
+(defun magithub-notification-read-p (notification)
   "Non-nil if NOTIFICATION has been read."
+  (not (magithub-notification-unread-p notification)))
+
+(defun magithub-notification-unread-p (notification)
+  "Non-nil if NOTIFICATION has been not been read."
   (alist-get 'unread notification))
 
 (defconst magithub-notification-reasons
@@ -86,7 +92,7 @@ See also Info node `(elisp)Time of Day'."
     ("subscribed" . "You're watching the repository.")
     ("team_mention" . "You were on a team that was mentioned."))
   "Human-readable description of possible notification reasons.
-Stripped from the Github API Docs:
+Stripped from the GitHub API Docs:
 
     URL `https://developer.github.com/v3/activity/notifications/#notification-reasons'.")
 
@@ -103,18 +109,19 @@ get a more verbose explanation."
 (defalias 'magithub-notification-visit #'magithub-notification-browse)
 (defun magithub-notification-browse (notification)
   "Visits the URL pointed to by NOTIFICATION."
-  (interactive (list (magithub-thing-at-point 'notification)))
-  (if notification
-      (let-alist notification
-        (cond
-         ((or (string= .subject.type "Issue")
-              (string= .subject.type "PullRequest"))
-          (magithub-issue-view (magithub-request (ghubp-follow-get .subject.url))))
-         (t (if-let ((url (or .subject.latest_comment_url .subject.url))
-                     (html-url (alist-get 'html_url (magithub-request (ghubp-follow-get url)))))
-                (browse-url html-url)
-              (user-error "No target URL found")))))
-    (user-error "No notification here")))
+  (interactive (list (thing-at-point 'github-notification)))
+  (magithub-request
+   (if notification
+       (let-alist notification
+         (cond
+          ((member .subject.type '("Issue" "PullRequest"))
+           (ghubp-patch-notifications-threads-id notification)
+           (magithub-issue-view (ghubp-follow-get .subject.url)))
+          (t (if-let ((url (or .subject.latest_comment_url .subject.url))
+                      (html-url (alist-get 'html_url (ghubp-follow-get url))))
+                 (browse-url html-url)
+               (user-error "No target URL found")))))
+     (user-error "No notification here"))))
 
 (defvar magithub-notification-details-hook
   '(magithub-notification-detail-insert-type
