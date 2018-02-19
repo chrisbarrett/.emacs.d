@@ -59,7 +59,7 @@
       (unless (git-commit-jira-prefix--message-contains-ticket-number? ticket)
         (goto-char (point-min))
         (goto-char (line-beginning-position))
-        (insert (format "%s:" ticket))
+        (insert (format "%s " ticket))
         (just-one-space)
         t))))
 
