@@ -26,6 +26,7 @@
 
 (require 'ghub+)
 (require 'cl-lib)
+(require 'thingatpt)
 
 (require 'magithub-core)
 
@@ -72,35 +73,32 @@
   (let-alist `((repo . ,(magithub-issue-repo issue))
                (issue . ,issue)
                (user . ,user))
-    (if (yes-or-no-p (format "Assign '%s' to %s#%d? "
-                             .user.login
-                             (magithub-repo-name .repo)
-                             .issue.number))
-        (prog1 (magithub-request
-                (ghubp-post-repos-owner-repo-issues-number-assignees
-                 .repo .issue (list .user)))
-          (let ((sec (magit-current-section)))
-            (magithub-cache-without-cache :issues
-              (magit-refresh-buffer))
-            (magit-section-show sec)))
-      (user-error "Aborted"))))
+    (magithub-confirm 'assignee-add
+                      .user.login
+                      (magithub-repo-name .repo)
+                      .issue.number)
+    (prog1 (magithub-request
+            (ghubp-post-repos-owner-repo-issues-number-assignees
+                .repo .issue (list .user)))
+      (let ((sec (magit-current-section)))
+        (magithub-cache-without-cache :issues
+          (magit-refresh-buffer))
+        (magit-section-show sec)))))
 
 (defun magithub-assignee-remove (issue user)
   (interactive (when (magithub-assignee--verify-manage)
-                 (list (magithub-thing-at-point 'issue)
-                       (magithub-thing-at-point 'user))))
+                 (list (thing-at-point 'github-issue)
+                       (thing-at-point 'github-user))))
   (let-alist `((repo . ,(magithub-issue-repo issue))
                (issue . ,issue)
                (user . ,user))
-    (if (yes-or-no-p (format "Remove '%s' from %s#%d? "
-                             .user.login
-                             (magithub-repo-name .repo)
-                             .issue.number))
-        (prog1 (magithub-request
-                (ghubp-delete-repos-owner-repo-issues-number-assignees .repo .issue (list .user)))
-          (magithub-cache-without-cache :issues
-            (magit-refresh-buffer)))
-      (user-error "Aborted"))))
+    (magithub-confirm .user.login
+                      (magithub-repo-name .repo)
+                      .issue.number)
+    (prog1 (magithub-request
+            (ghubp-delete-repos-owner-repo-issues-number-assignees .repo .issue (list .user)))
+      (magithub-cache-without-cache :issues
+        (magit-refresh-buffer)))))
 
 (defun magithub-user-choose (prompt &optional default-user)
   (let (ret-user new-username)
@@ -110,7 +108,7 @@
              (concat prompt
                      (if new-username (format " ['%s' not found]" new-username)))
              (alist-get 'login default-user)))
-      (when-let ((try (condition-case _
+      (when-let* ((try (condition-case _
                           (magithub-request
                            (ghubp-get-users-username `((login . ,new-username))))
                         (ghub-404 nil))))
@@ -127,27 +125,25 @@
 
 (defalias 'magithub-user-visit #'magithub-user-browse)
 (defun magithub-user-browse (user)
-  "Open USER on Github."
-  (interactive (list (magithub-thing-at-point 'user)))
+  "Open USER on GitHub."
+  (interactive (list (thing-at-point 'github-user)))
   (if user
       (browse-url (alist-get 'html_url user))
     (user-error "No user here")))
 
 (defun magithub-user-email (user)
   "Email USER."
-  (interactive (list (magithub-thing-at-point 'user)))
-  (when (and (string= (alist-get 'login (magithub-user-me))
-                      (alist-get 'login user))
-             (not (y-or-n-p "Email yourself? ")))
-    (user-error "Aborted"))
+  (interactive (list (thing-at-point 'github-user)))
+  (when (string= (alist-get 'login (magithub-user-me))
+                 (alist-get 'login user))
+    (magithub-confirm 'user-email-self))
   (unless user
     (user-error "No user here"))
   (let-alist user
     (unless .email
       (user-error "No email found; target user may be private"))
-    (if (y-or-n-p (format "Email @%s at \"%s\"? " .login .email))
-        (browse-url (format "mailto:%s" .email))
-      (user-error "Aborted"))))
+    (magithub-confirm 'user-email .login .email)
+    (browse-url (format "mailto:%s" .email))))
 
 (provide 'magithub-user)
 ;;; magithub-user.el ends here

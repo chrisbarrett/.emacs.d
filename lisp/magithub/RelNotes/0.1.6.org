@@ -1,0 +1,126 @@
+#+Title: Magithub Release 0.1.6
+#+Date:
+
+#+LINK: PR https://www.github.com/vermiculus/magithub/pull/%s
+
+* Breaking Changes
+- If you were using ~magit-header-line~ to customize the appearance of
+  the =Issues= and =Pull Requests= section headers, those now use the
+  ~magit-section-heading~ face.  [[PR:196]]
+- Many functions related to issue/post creation have been reworked.
+  Instead of the widget framework, we now use =magithub-edit-mode=.  See
+  more details in 'New Features'.  [[PR:204]]
+- =magithub-dashboard-show-unread-notifications= is now called
+  =magithub-dashboard-show-read-notifications= and all functionality
+  pertaining to that variable has been updated.  [[PR:251]]
+- Most settings, like the inclusion of sections in ~magit-status~, are
+  now controlled by various =git config= properties.  These settings are
+  reachable under =H C=.  The following functions/variables no longer
+  exist:
+  - ~magithub-ci-enabled-p~ (now ~magithub-settings-include-status-p~)
+  - ~magithub-ci--set-enabled~
+  - ~magithub-ci-disable~
+  - ~magithub-ci-enable~
+  - ~magithub-toggle-ci-status-header~
+  - =magithub-cache= (now =magithub-settings-cache-behavior-override=;
+    ~magithub-settings-cache-behavior~)
+  - ~magithub-toggle-online~
+  - ~magithub-go-online~
+  - ~magithub-go-offline~
+  - ~magithub-source--remote~
+  - ~magithub--deftoggle~
+  - ~magithub-toggle-pull-requests~
+  - ~magithub-toggle-issues~
+  - ~magithub-proxy-set~
+  - ~magithub-proxy-set-default~
+  - ~magithub-enable~
+  - ~magithub-disable~
+  - ~magithub-enabled-toggle~
+  - =magithub-enabled-by-default=
+
+  The various integration sections are now added to the appropriate
+  hooks by ~magithub-feature-autoinject~ via =magithub-feature-list=.
+
+  For more details on how to set configure Magithub now, consult the
+  documentation inside ~magithub-settings-popup~ (=? KEY=) or read
+  =magithub-settings.el=.  [[PR:265]]
+
+* New Features
+- Browse commits by using =w= on a commit section.  If the current
+  section's value cannot be understood as a valid commit, use the
+  =git-revision= at point.
+- ~magithub-feature-autoinject~ can now take a list of features to load.
+- Many symbols are now supported by ~thing-at-point~:
+  - =github-user=
+  - =github-issue=
+  - =github-label=
+  - =github-comment=
+  - =github-repository=
+  - =github-pull-request=
+  - =github-notification=
+  These symbols should allow other GitHub-sensitive packages to use
+  the work Magithub has already done without depending on Magithub
+  directly.  [[PR:201]]
+- The widget interface for writing issues and pull requests is gone!
+  Now, everything uses the framework debuted for writing comments.
+  For issues and pull requests, the first line (i.e., everything up to
+  the first newline character) is parsed as the title; everything else
+  as the body.  Now issues, pull requests, and comments use a common
+  interface that supports submitting, canceling, and saving drafts to
+  finish later.  [[PR:204]]
+- You can now edit comments using =e= on a comment section.  [[PR:206]]
+- When submitting pull requests of a single commit, the commit message
+  is defaulted into the pull request body.  Multiple commits?
+  ~magit-log~ shows you the changes you want to merge.  [[PR:239]]
+- Headers in issue-view mode are now easier to navigate.  [[PR:250]]
+- Notifications are marked as read when visited in Emacs.  [[PR:252]]
+- ~magithub-repo~ can now take a string of the form =user/repo=.  This is
+  helpful when writing other code that uses Magithub functionality.  [[PR:253]]
+- New command ~magithub-pull-request-new-from-issue~ can create pull
+  requests from issues.  This creates a new pull request by copying
+  the title/body from the source issue.  (To be honest, this API
+  endpoint is not what I thought it would be.)  [[PR:256]]
+- Confirmation messages can now be skipped (or the default question
+  behavior otherwise altered) using =git config= properties.  See
+  ~magithub-confirm-set-default-behavior~ or configure your settings
+  locally (or globally) interactively when they're asked.  [[PR:268]]
+  [[PR:270]]
+- Use default branch of the repository as =BASE= if there's no upstream
+  for the current branch.  [[PR:269]]
+- Completion of issue numbers ("#123"), and user names ("@purcell") is
+  supported in edit and commit message buffers via the standard
+  ~completion-at-point~ mechanism, and therefore also via ~company~'s ~capf~
+  backend.  This is enabled by default in certain buffers via the
+  ~magithub-features~ mechanism.  [[PR:263]], [[PR:278]]
+
+* Bug Fixes
+- In ~magithub-repo~, an API request is no longer made when the
+  repository context cannot be determined.
+- The list of labels is now correctly cached per-repository.  [[PR:203]]
+- The full list of labels is now available for use when modifying
+  issues and pull requests.  [[PR:203]]
+- The cache (and other files in =magithub-dir=) are no longer added to
+  the =recentf= list.  [[PR:210]]
+- Consistently use ~magithub-request~.  [[PR:229]]
+- ~magit-magithub-pull-request-section-map~ is now defined in terms of
+  ~magit-magithub-issue-section-map~.  [[PR:238]]
+- Fix autoloads to load and install the dispatch with Magit.  [[PR:238]]
+- Remove awkward blank lines from the end of the dashboard.  [[PR:238]]
+- Issue/PR drafts are deleted appropriately after successful
+  submission.  [[PR:247]]
+- Various performance improvements.  [[PR:255]]
+- Ghub+ is now required in core.  This should help users who utilize
+  deferred loading.  [[PR:260]]
+- Submitting pull requests to other repositories in some scenarios
+  should now be fixed.  [[PR:272]]
+- ~magithub-clone~ now correctly provides a default destination.  [[PR:273]]
+- ~magithub-pull-request-new~ now uses a better check to test for pull
+  requests of a single commit:  [[PR:274]]
+  #+BEGIN_SRC sh
+    git rev-list --count BASE..
+  #+END_SRC
+- Authenticate correctly when marking notifications as read.  [[PR:277]]
+- Don't call ~magit-get~ in a non-existent directory in ~magithub-clone~.
+  [[PR:282]]
+- Pull requests now work in repositories with remotes that point to
+  non-GitHub locations.  [[PR:285]]

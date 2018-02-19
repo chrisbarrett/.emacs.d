@@ -38,7 +38,7 @@
     m))
 
 (define-derived-mode magithub-issue-view-mode magit-mode
-  "Issue View" "View Github issues with Magithub.")
+  "Issue View" "View GitHub issues with Magithub.")
 
 (defvar magithub-issue-view-headers-hook
   '(magithub-issue-view-insert-title
@@ -106,10 +106,12 @@ See also `magithub-issue-view--lock-value'."
 
 ;;;###autoload
 (defun magithub-issue-view (issue)
-  "View ISSUE in a new buffer."
+  "View ISSUE in a new buffer.
+Return the new buffer."
   (interactive (list (magithub-interactive-issue)))
   (let ((magit-generate-buffer-name-function #'magithub-issue-view--buffer-name))
-    (magit-mode-setup-internal #'magithub-issue-view-mode (list issue) t)))
+    (magit-mode-setup-internal #'magithub-issue-view-mode (list issue) t)
+    (current-buffer)))
 
 (cl-defun magithub-issue-view-insert--generic (title text &optional type section-value &key face)
   "Insert a generic header line with TITLE: VALUE"
@@ -118,7 +120,8 @@ See also `magithub-issue-view--lock-value'."
   (magit-insert-section ((eval type) section-value)
     (insert (format "%-10s" title)
             (or (and face (propertize text 'face face))
-                text))
+                text)
+            ?\n)
     (magit-insert-heading)))
 
 (defun magithub-issue-view-insert-title ()
@@ -128,10 +131,11 @@ See also `magithub-issue-view--lock-value'."
 
 (defun magithub-issue-view-insert-author ()
   "Insert issue author."
+  (insert (format "%-10s" "Author:"))
   (let-alist magithub-issue
-    (magithub-issue-view-insert--generic "Author:" .user.login
-      'magithub-user .user
-      :face 'magithub-user)))
+    (magit-insert-section (magithub-user .user)
+      (insert (propertize .user.login 'face 'magithub-user) ?\n)
+      (magit-insert-heading))))
 
 (defun magithub-issue-view-insert-state ()
   "Insert issue state (either \"open\" or \"closed\")."
@@ -147,10 +151,9 @@ See also `magithub-issue-view--lock-value'."
 
 (defun magithub-issue-view-insert-labels ()
   "Insert labels."
-  (magit-insert-section (magithub-label)
-    (insert (format "%-10s" "Labels:"))
-    (magithub-label-insert-list (alist-get 'labels magithub-issue))
-    (magit-insert-heading)))
+  (insert (format "%-10s" "Labels:"))
+  (magithub-label-insert-list (alist-get 'labels magithub-issue))
+  (insert ?\n))
 
 (defun magithub-issue-view-insert-body ()
   "Insert issue body."

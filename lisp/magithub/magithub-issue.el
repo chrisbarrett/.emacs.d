@@ -29,15 +29,13 @@
 (require 'ghub+)
 (require 'cl-lib)
 (require 'magit)
+(require 'thingatpt)
 
 (require 'magithub-core)
 (require 'magithub-user)
 (require 'magithub-label)
 
 (declare-function magithub-issue-view "magithub-issue-view.el" (issue))
-
-(defvar-local magithub-issue nil
-  "The issue object associated with a buffer.")
 
 (defvar magit-magithub-repo-issues-section-map
   (let ((m (make-sparse-keymap)))
@@ -91,8 +89,8 @@ See also `ghubp-get-repos-owner-repo-issues'."
     `(magithub-request
       (ghubp-unpaginate
        (ghubp-get-repos-owner-repo-issues
-        ',(magithub-repo)
-        ,@params)))
+           ',(magithub-repo)
+           ,@params)))
     :message
     "Retrieving issue list..."))
 
@@ -157,19 +155,19 @@ default."
                              t default))
 (defun magithub-issue-completing-read-issues (&optional default)
   "Read an issue in the minibuffer with completion."
-  (interactive (list (magithub-thing-at-point 'issue)))
+  (interactive (list (thing-at-point 'github-issue)))
   (magithub-issue--completing-read
    "Issue: " default (list #'magithub-issue--issue-is-issue-p)))
 (defun magithub-issue-completing-read-pull-requests (&optional default)
   "Read a pull request in the minibuffer with completion."
-  (interactive (list (magithub-thing-at-point 'pull-request)))
+  (interactive (list (thing-at-point 'github-pull-request)))
   (magithub-issue--completing-read
    "Pull Request: " default (list #'magithub-issue--issue-is-pull-p)))
 (defun magithub-interactive-issue ()
-  (or (magithub-thing-at-point 'issue)
+  (or (thing-at-point 'github-issue)
       (magithub-issue-completing-read-issues)))
 (defun magithub-interactive-pull-request ()
-  (or (magithub-thing-at-point 'pull-request)
+  (or (thing-at-point 'github-pull-request)
       (magithub-issue-completing-read-pull-requests)))
 
 (defun magithub-issue-find (number)
@@ -188,7 +186,7 @@ object, the same issue is retrieved."
     (magithub-cache :issues
       `(magithub-request
         (ghubp-get-repos-owner-repo-issues-number
-         ',repo '((number . ,num))))
+            ',repo '((number . ,num))))
       :message
       (format "Getting issue %s#%d..." (magithub-repo-name repo) num))))
 
@@ -399,7 +397,8 @@ Each function takes two arguments:
 If EVEN-IF-OFFLINE is non-nil, we'll still refresh (that is,
 we'll hit the API) if Magithub is offline."
   (interactive "P")
-  (let ((magithub-cache (if even-if-offline nil magithub-cache)))
+  (let ((magithub-settings-cache-behavior-override
+         (if even-if-offline nil (magithub-settings-cache-behavior))))
     (magithub-cache-without-cache :issues
       (ignore (magithub--issue-list))))
   (when (derived-mode-p 'magit-status-mode)
@@ -423,14 +422,13 @@ we'll hit the API) if Magithub is offline."
     (define-key map [remap magithub-browse-thing] #'magithub-issue-browse)
     (define-key map [remap magit-refresh] #'magithub-issue-refresh)
     map)
-  "Keymap for `magithub-issue-list' sections.")
+  "Keymap for `magithub-issues-list' sections.")
 
 (defvar magit-magithub-pull-request-section-map
   (let ((map (make-sparse-keymap)))
-    (set-keymap-parent map magithub-map)
-    (define-key map [remap magit-visit-thing] #'magithub-pull-visit)
-    (define-key map [remap magithub-browse-thing] #'magithub-pull-browse)
-    (define-key map "L" #'magithub-issue-add-labels)
+    (set-keymap-parent map magit-magithub-issues-list-section-map)
+    (define-key map [remap magithub-issue-visit] #'magithub-pull-visit)
+    (define-key map [remap magithub-issue-browse] #'magithub-pull-browse)
     map)
   "Keymap for `magithub-pull-request' sections.")
 
@@ -467,8 +465,8 @@ buffer."
   (interactive
    (when (magithub-verify-manage-labels t)
      (let* ((fmt (lambda (l) (alist-get 'name l)))
-            (issue (or (magithub-thing-at-point 'issue)
-                       (magithub-thing-at-point 'pull-request)))
+            (issue (or (thing-at-point 'github-issue)
+                       (thing-at-point 'github-pull-request)))
             (current-labels (alist-get 'labels issue))
             (to-remove (magithub--completing-read-multiple
                         "Remove labels: " current-labels fmt)))
@@ -478,14 +476,16 @@ buffer."
                     nil nil current-labels)))))
   (when (magithub-request
          (ghubp-patch-repos-owner-repo-issues-number
-          (magithub-repo) issue `((labels . ,labels))))
+             (magithub-repo) issue `((labels . ,labels))))
     (setcdr (assq 'labels issue) labels))
   (when (derived-mode-p 'magit-status-mode)
     (magit-refresh)))
 
+;;;###autoload
 (defun magithub-issue--insert-issue-section ()
-  "Insert Github issues if appropriate."
-  (when (and (magithub-usable-p)
+  "Insert GitHub issues if appropriate."
+  (when (and (magithub-settings-include-issues-p)
+             (magithub-usable-p)
              (alist-get 'has_issues (magithub-repo)))
     (magithub-issue--insert-generic-section
      (magithub-issues-list)
@@ -493,12 +493,13 @@ buffer."
      (magithub-issues)
      magithub-issue-issue-filter-functions)))
 
+;;;###autoload
 (defun magithub-issue--insert-pr-section ()
-  "Insert Github pull requests if appropriate."
-  (when (magithub-usable-p)
+  "Insert GitHub pull requests if appropriate."
+  (when (and (magithub-settings-include-pull-requests-p)
+             (magithub-usable-p))
     (magithub-feature-maybe-idle-notify
-     'pull-request-merge
-     'pull-request-checkout)
+     'pull-request-merge)
     (magithub-issue--insert-generic-section
      (magithub-pull-requests-list)
      "Pull Requests"
@@ -508,10 +509,10 @@ buffer."
 (defmacro magithub-issue--insert-generic-section
     (spec title list filters)
   (let ((sym-filtered (cl-gensym)))
-    `(when-let ((,sym-filtered (magithub-filter-all ,filters ,list)))
+    `(when-let* ((,sym-filtered (magithub-filter-all ,filters ,list)))
        (magit-insert-section ,spec
          (insert (format "%s%s:"
-                         (propertize ,title 'face 'magit-header-line)
+                         (propertize ,title 'face 'magit-section-heading)
                          (if ,filters
                              (propertize " (filtered)" 'face 'magit-dimmed)
                            "")))
@@ -546,7 +547,7 @@ Interactively, this finds the pull request at point."
 (defun magithub-issue--browse (issue-or-pr)
   "Visits ISSUE-OR-PR in the browser.
 Interactively, this finds the issue at point."
-  (when-let ((url (alist-get 'html_url issue-or-pr)))
+  (when-let* ((url (alist-get 'html_url issue-or-pr)))
     (browse-url url)))
 
 (defun magithub-repolist-column-issue (_id)
@@ -559,11 +560,6 @@ Interactively, this finds the issue at point."
   (when (magithub-usable-p)
     (number-to-string (length (magithub-pull-requests)))))
 
-(magithub--deftoggle magithub-toggle-pull-requests "pull requests" t
-  magit-status-sections-hook #'magithub-issue--insert-pr-section)
-(magithub--deftoggle magithub-toggle-issues "issues" t
-  magit-status-sections-hook #'magithub-issue--insert-issue-section)
-
 ;; Pull Request handling
 
 (defun magithub-pull-request (repo number)
@@ -571,7 +567,7 @@ Interactively, this finds the issue at point."
   (magithub-cache :issues
     `(magithub-request
       (ghubp-get-repos-owner-repo-pulls-number
-       ',repo '((number . ,number))))
+          ',repo '((number . ,number))))
     :message
     (format "Getting pull request %s#%d..."
             (magithub-repo-name repo)
@@ -593,45 +589,8 @@ Interactively, this finds the issue at point."
            (magit-branch-p branch)
            (string= remote (magit-get-push-remote branch))))))
 
-(defun magithub-pull-request-checkout (pull-request)
-  "Checkout PULL-REQUEST.
-PULL-REQUEST is the full object; not just the issue subset."
-  (interactive (list
-                (let ((pr (or (magithub-thing-at-point 'pull-request)
-                              (magithub-issue-completing-read-pull-requests))))
-                  (magithub-request
-                   (ghubp-get-repos-owner-repo-pulls-number
-                    (magithub-repo)
-                    `((number . ,(alist-get 'number pr))))))))
-  (let-alist pull-request
-    (let ((remote .user.login)
-          (branch (format "%s/%s" .user.login .head.ref)))
-      (cond
-       ((magithub-pull-request-checked-out pull-request)
-        (with-temp-message (format "PR#%d is already checked out somewhere; checking out %s"
-                                   .number branch)
-          (magit-checkout branch)
-          (magit-fetch remote (magit-fetch-arguments))))
-       ((magit-branch-p branch)
-        (user-error "Cannot checkout pull request: branch `%s' already exists; rename branch on remote" branch))
-       (t
-        (magithub--run-git-synchronously
-         ;; get remote
-         (unless (magit-remote-p remote)
-           (magit-remote-add remote (magithub-repo--clone-url .head.repo)))
-         (magit-fetch remote (magit-fetch-arguments))
-         ;; create branch
-         (magit-git-success "branch" branch .base.sha)  ; also sets upstream to base ref
-         ;; set push to remote branch
-         (magit-set (concat "refs/heads/" .base.ref) "branch" branch "merge")
-         (magit-set "." "branch" branch "remote") ;same as merge
-         (magit-set remote "branch" branch "pushRemote")
-         (magit-set (number-to-string .number) "branch" branch "magithub" "sourcePR")
-         ;; set descripiton
-         (magit-set (concat "PR: " .title) "branch" branch "description")
-         ;; Checkout
-         (magit-git-success "checkout" branch)
-         (magit-refresh)))))))
+(make-obsolete 'magithub-pull-request-checkout 'magit-checkout-pull-request "0.1.6")
+(defalias 'magithub-pull-request-checkout #'magit-checkout-pull-request)
 
 (provide 'magithub-issue)
 ;;; magithub-issue.el ends here

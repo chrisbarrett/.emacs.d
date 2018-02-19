@@ -1,4 +1,6 @@
+(require 'thingatpt)
 (require 'ghub+)
+
 (require 'magithub-core)
 
 (defvar magit-magithub-label-section-map
@@ -16,8 +18,9 @@
   "Return a list of issue and pull-request labels."
   (magithub-cache :label
     `(magithub-request
-      (ghubp-get-repos-owner-repo-labels
-       (magithub-repo)))
+      (ghubp-unpaginate
+       (ghubp-get-repos-owner-repo-labels
+        ',(magithub-repo))))
     :message
     "Loading labels..."))
 
@@ -41,11 +44,11 @@ prompted for again."
   "Visit LABEL with `browse-url'.
 In the future, this will likely be replaced with a search on
 issues and pull requests with the label LABEL."
-  (interactive (list (magithub-thing-at-point 'label)))
+  (interactive (list (thing-at-point 'github-label)))
   (unless label
     (user-error "No label found at point to browse"))
   (unless (string= (ghubp-host) ghub-default-host)
-    (user-error "Label browsing not yet supported on Github Enterprise; pull requests welcome!"))
+    (user-error "Label browsing not yet supported on GitHub Enterprise; pull requests welcome!"))
   (let-alist (magithub-repo)
     (browse-url (format "%s/%s/%s/labels/%s"
                         (ghubp-base-html-url)
@@ -54,7 +57,7 @@ issues and pull requests with the label LABEL."
 (defcustom magithub-label-color-replacement-alist nil
   "Make certain label colors easier to see.
 In your theme, you may find that certain colors are very
-difficult to see.  Customize this list to map Github's label
+difficult to see.  Customize this list to map GitHub's label
 colors to their Emacs replacements."
   :group 'magithub
   :type '(alist :key-type color :value-type color))
@@ -78,14 +81,14 @@ from `magithub-label'.  Customize that to affect all labels."
 (defun magithub-label-color-replace (label new-color)
   "For LABEL, define a NEW-COLOR to use in the buffer."
   (interactive
-   (list (magithub-thing-at-point 'label)
+   (list (thing-at-point 'github-label)
          (magithub-core-color-completing-read "Replace label color: ")))
   (let ((label-color (concat "#" (alist-get 'color label))))
     (if-let ((cell (assoc-string label-color magithub-label-color-replacement-alist)))
         (setcdr cell new-color)
       (push (cons label-color new-color)
             magithub-label-color-replacement-alist)))
-  (when (y-or-n-p "Save customization? ")
+  (when (magithub-confirm-no-error 'label-save-customized-colors)
     (customize-save-variable 'magithub-label-color-replacement-alist
                              magithub-label-color-replacement-alist
                              "Auto-saved by `magithub-label-color-replace'"))
@@ -99,37 +102,35 @@ from `magithub-label'.  Customize that to affect all labels."
 (defun magithub-label-remove (issue label)
   "From ISSUE, remove LABEL."
   (interactive (and (magithub-label--verify-manage)
-                    (list (magithub-thing-at-point 'issue)
-                          (magithub-thing-at-point 'label))))
+                    (list (thing-at-point 'github-issue)
+                          (thing-at-point 'github-label))))
   (unless issue
     (user-error "No issue here"))
   (unless label
     (user-error "No label here"))
   (let-alist label
-    (if (yes-or-no-p (format "Remove label %S from this issue? " .name))
-        (prog1 (magithub-request
-                (ghubp-delete-repos-owner-repo-issues-number-labels-name
-                 (magithub-issue-repo issue) issue label))
-          (magithub-cache-without-cache :issues
-            (magit-refresh-buffer)))
-      (user-error "Aborted"))))
+    (magithub-confirm 'remove-label .name)
+    (prog1 (magithub-request
+            (ghubp-delete-repos-owner-repo-issues-number-labels-name
+                (magithub-issue-repo issue) issue label))
+      (magithub-cache-without-cache :issues
+        (magit-refresh-buffer)))))
 
 (defun magithub-label-add (issue labels)
   "To ISSUE, add LABELS."
-  (interactive (list (magithub-thing-at-point 'issue)
+  (interactive (list (thing-at-point 'github-issue)
                      (magithub-label-read-labels "Add labels: ")))
   (if (not (and issue labels))
       (user-error "No issue/labels")
-    (if (yes-or-no-p (format "Add {%s} to %s#%s? "
-                             (s-join "," (ghubp-get-in-all '(name) labels))
-                             (magithub-repo-name (magithub-issue-repo issue))
-                             (alist-get 'number issue)))
-        (prog1 (magithub-request
-                (ghubp-post-repos-owner-repo-issues-number-labels
-                 (magithub-issue-repo issue) issue labels))
-          (magithub-cache-without-cache :issues
-            (magit-refresh)))
-      (user-error "Aborted"))))
+    (magithub-confirm 'add-label
+                      (s-join "," (ghubp-get-in-all '(name) labels))
+                      (magithub-repo-name (magithub-issue-repo issue))
+                      (alist-get 'number issue))
+    (prog1 (magithub-request
+            (ghubp-post-repos-owner-repo-issues-number-labels
+                (magithub-issue-repo issue) issue labels))
+      (magithub-cache-without-cache :issues
+        (magit-refresh)))))
 
 (defun magithub-label-insert (label)
   "Insert LABEL into the buffer.

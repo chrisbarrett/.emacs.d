@@ -29,12 +29,22 @@
 (require 's)
 (require 'subr-x)
 (require 'ghub)
+(require 'ghub+)
 (require 'bug-reference)
 (require 'cl-lib)
 (require 'markdown-mode)
 (require 'parse-time)
+(require 'thingatpt)
+(require 'recentf)
 
+(require 'magithub-settings)
 (require 'magithub-faces)
+
+;; Compatibility
+(eval-and-compile
+  (when (version< emacs-version "26")
+    (defalias 'if-let* #'if-let)
+    (defalias 'when-let* #'when-let)))
 
 (defconst magithub-github-token-scopes '(repo user notifications)
   "The authentication scopes Magithub requests.")
@@ -80,95 +90,26 @@ root of this directory.
 If it does not exist, it will be created."
   :group 'magithub
   :type 'directory)
+(add-to-list 'recentf-exclude
+             (lambda (filename)
+               (file-in-directory-p filename magithub-dir)))
 
 ;;; Turning Magithub on/off
-(defun magithub-enable ()
-  "Enable Magithub for this repository."
-  (interactive)
-  (magit-set "true" "magithub" "enabled")
-  (magit-refresh)
-  (message "Magithub is now enabled in this repository"))
-
 (defmacro magithub-in-data-dir (&rest forms)
   "Execute forms in `magithub-dir'.
 If `magithub-dir' does not yet exist, it and its parents will be
 created automatically."
+  (declare (debug t))
   `(progn
      (unless (file-directory-p magithub-dir)
        (mkdir magithub-dir t))
      (let ((default-directory magithub-dir))
        ,@forms)))
 
-(defun magithub-disable ()
-  "Disable Magithub for this repository."
-  (interactive)
-  (magit-set "false" "magithub" "enabled")
-  (magit-refresh)
-  (message "Magithub is now disabled in this repository"))
-
-(defcustom magithub-enabled-by-default t
-  "Non-nil if Magithub is enabled by default."
-  :group 'magithub
-  :type 'boolean)
-
-(defun magithub-enabled-p ()
-  "Returns non-nil when Magithub is enabled for this repository."
-  (let ((enabled (magit-get "magithub" "enabled")))
-    (cond
-     ((member enabled '("yes" "true")) t)
-     ((member enabled '("no" "false")) nil)
-     (t magithub-enabled-by-default))))
-
-(defun magithub-enabled-toggle ()
-  "Toggle Magithub integration."
-  (interactive)
-  (if (magithub-enabled-p)
-      (magithub-disable)
-    (magithub-enable)))
-
 ;;; Caching; Online/Offline mode
-(defvar magithub-cache 'when-present
-  "Determines how the cache behaves.
-
-If nil, the cache will not be used to read cached data.  It will
-still be updated and written to disk.
-
-If t, *only* the cache will be used.  This constitutes Magithub's
-'offline' mode.
-
-If `when-present', we'll use the cached value when present, but
-we'll make a request if there's no appropriate value.  (Note that
-an API response of nil is considered an appropriate value.)")
-
 (defun magithub-offline-p ()
   "Non-nil if Magithub is not supposed to make API requests."
-  (memq magithub-cache '(t refreshing-when-offline)))
-
-(defun magithub-toggle-online ()
-  "Toggle online status.
-Runs either `magithub-go-online' or `magithub-go-offline'
-depending on `magithub-offline-p'."
-  (interactive)
-  (if (magithub-offline-p)
-      (magithub-go-online)
-    (magithub-go-offline)))
-
-(defun magithub-go-online ()
-  "Take Magithub online.
-API requests will be made to refresh expired caches."
-  (interactive)
-  (setq magithub-cache 'when-present)
-  (magit-refresh)
-  (message "Magithub is now online everywhere"))
-
-(defun magithub-go-offline ()
-  "Take Magithub offline.
-No API requests will be made; all information displayed will be
-retrieved from the cache."
-  (interactive)
-  (setq magithub-cache t)
-  (magit-refresh)
-  (message "Magithub is now offline everywhere"))
+  (memq (magithub-settings-cache-behavior) '(t refreshing-when-offline)))
 
 (defcustom magithub-cache-file "cache"
   "Use this file for Magithub's persistent cache."
@@ -207,6 +148,7 @@ If t, all classes are ignored.")
 (defvar magithub-cache--refreshed-forms nil
   "Forms that have been refreshed this session.
 See also `magithub-refresh'.")
+
 (cl-defun magithub-cache (class form &key message after-update)
   "The cached value for FORM if available.
 
@@ -220,9 +162,10 @@ this with `with-temp-message' while the form is evaluating.
 
 AFTER-UPDATE is a function to run after the cache is updated."
   (declare (indent defun))
-  (let* ((entry (list (ghubp-get-context) class form))
-         (refreshing (memq magithub-cache '(refreshing refreshing-when-offline)))
-         (recalc (or (null magithub-cache)
+  (let* ((behavior (magithub-settings-cache-behavior))
+         (entry (list (ghubp-get-context) class form))
+         (refreshing (memq behavior '(refreshing refreshing-when-offline)))
+         (recalc (or (null behavior)
                      (and refreshing
                           (not (member entry magithub-cache--refreshed-forms)))
                      (and magithub-cache-ignore-class
@@ -233,7 +176,7 @@ AFTER-UPDATE is a function to run after the cache is updated."
     (unless recalc
       (setq no-value-sym (cl-gensym)
             cached-value (gethash entry magithub-cache--cache no-value-sym)
-            recalc (and (not (eq magithub-cache t))
+            recalc (and (not (eq behavior t))
                         (eq cached-value no-value-sym))
             cached-value (if (eq cached-value no-value-sym) nil cached-value)))
 
@@ -265,7 +208,7 @@ the age of the oldest cached information."
              (magithub-offline-p))
     (magit-insert-section (magithub nil t)
       (insert
-       (format "Magithub: %s; use %s to refresh Github content or %s to go back online%s\n"
+       (format "Magithub: %s; use %s to refresh GitHub content or %s to go back online%s\n"
                (propertize "OFFLINE" 'face 'magit-head)
                (propertize
                 (substitute-command-keys "\\[universal-argument] \\[magit-refresh]")
@@ -282,7 +225,7 @@ the age of the oldest cached information."
                                'face 'magit-header-line-key))))
         (insert (format "%s\n" (replace-regexp-in-string (rx bol) (make-string 10 ?\ ) msg)))))))
 
-(eval-after-load "magit"
+(eval-after-load 'magit
   '(add-hook 'magit-status-headers-hook
              #'magithub-maybe-report-offline-mode
              'append))
@@ -333,7 +276,7 @@ See also `magithub-cache-ignore-class'."
   ;; (eval-when-compile (date-to-time "1/1/1970"))
   '(14445 17280)
   "The last time the API was available.
-Used to avoid pinging Github multiple times a second.")
+Used to avoid pinging GitHub multiple times a second.")
 
 (defcustom magithub-api-timeout 3
   "Number of seconds we'll wait for the API to respond."
@@ -425,7 +368,7 @@ Pings the API a maximum of once every ten seconds."
                                                response))
 
                    ;; Sometimes, the API can take a long time to respond
-                   ;; (whether that's Github not responding or requests being
+                   ;; (whether that's GitHub not responding or requests being
                    ;; blocked by some client-side firewal).  Handle this
                    ;; possibility gracefully.
                    (magithub-api-timeout
@@ -445,7 +388,7 @@ Pings the API a maximum of once every ten seconds."
 
                  api-status)))
       (when magithub--api-offline-reason
-        (magithub-go-offline)
+        (magit-set "false" "magithub.online")
         (run-with-idle-timer 2 nil #'magithub--api-offline-reason)))))
 
 (defun magithub--api-offline-reason ()
@@ -462,8 +405,8 @@ See `magithub--api-offline-reason'."
 
 ;;; Repository parsing
 (defun magithub-github-repository-p ()
-  "Non-nil if \"origin\" points to Github or a whitelisted domain."
-  (when-let ((origin (magit-get "remote" "origin" "url")))
+  "Non-nil if \"origin\" points to GitHub or a whitelisted domain."
+  (when-let* ((origin (magit-get "remote" (magithub-settings-context-remote) "url")))
     (-some? (lambda (domain) (s-contains? domain origin))
             (cons "github.com" (magit-get-all "hub" "host")))))
 
@@ -518,12 +461,8 @@ URL may be of several different formats:
                                (name . ,(match-string 3 url))))))))
 
 (defun magithub--url->repo (url)
-  "Tries to parse a remote url into a Github repository object"
+  "Tries to parse a remote url into a GitHub repository object"
   (cdr (assq 'sparse-repo (magithub--repo-parse-url url))))
-
-(defun magithub-source--remote ()
-  "Tries to determine the correct remote to use for issue-tracking."
-  (or (magit-get "magithub" "proxy") "origin"))
 
 (defun magithub-source--sparse-repo ()
   "Returns the sparse repository object for the current context.
@@ -531,10 +470,11 @@ URL may be of several different formats:
 Only information that can be determined without API calls will be
 included in the returned object."
   (magithub-repo-from-remote--sparse
-   (magithub-source--remote)))
+   (magithub-settings-context-remote)))
 
 (defun magithub-repo-from-remote (remote)
-  (magithub-repo (magithub-repo-from-remote--sparse remote)))
+  (when-let* ((repo (magithub-repo-from-remote--sparse remote)))
+    (magithub-repo repo)))
 
 (defun magithub-repo-from-remote--sparse (remote)
   (magithub--url->repo (magit-get "remote" remote "url")))
@@ -543,20 +483,33 @@ included in the returned object."
 (make-obsolete 'magithub-source-repo 'magithub-repo "0.1.4")
 (defun magithub-repo (&optional sparse-repo)
   "Turn SPARSE-REPO into a full repository object.
-If SPARSE-REPO is null, the current context is used."
-  (let ((sparse-repo (or sparse-repo (magithub-source--sparse-repo))))
-    (or (magithub-cache :repo-demographics
-          `(condition-case e
-               (or (magithub-request
-                    (ghubp-get-repos-owner-repo ',sparse-repo))
-                   (and (not (magithub--api-available-p))
-                        sparse-repo))
-             ;; Repo may not exist; ignore 404
-             (ghub-404 nil)))
-        (when (memq magithub-cache '(when-present refreshing-when-offline))
-          (let ((magithub-cache nil))
-            (magithub-repo sparse-repo)))
-        sparse-repo)))
+If SPARSE-REPO is null, the current context is used.
+
+SPARSE-REPO may either be a partial repository object (with at
+least the `.owner.login' and `.name' keys) or a string identifier
+of the form `owner/name' (as in `vermiculus/magithub')."
+  (if (and (stringp sparse-repo)
+           (string-match (rx bos
+                             (group (+? (| alnum "-" "." "_"))) ;owner.login -- vermiculus
+                             "/"
+                             (group (+? (| alnum "-" "." "_"))) ;name -- magithub
+                             eos)
+                         sparse-repo))
+      (magithub-repo `((owner (login . ,(match-string 1 sparse-repo)))
+                       (name . ,(match-string 2 sparse-repo))))
+    (when-let* ((sparse-repo (or sparse-repo (magithub-source--sparse-repo))))
+      (or (magithub-cache :repo-demographics
+            `(condition-case e
+                 (or (magithub-request
+                      (ghubp-get-repos-owner-repo ',sparse-repo))
+                     (and (not (magithub--api-available-p))
+                          sparse-repo))
+               ;; Repo may not exist; ignore 404
+               (ghub-404 nil)))
+          (when (memq (magithub-settings-cache-behavior) '(when-present refreshing-when-offline))
+            (let ((magithub-settings-cache-behavior-override nil))
+              (magithub-repo sparse-repo)))
+          sparse-repo))))
 
 ;;; Repository utilities
 (defvar magit-magithub-repo-section-map
@@ -565,15 +518,15 @@ If SPARSE-REPO is null, the current context is used."
     m))
 
 (defun magithub-repo-visit (repo)
-  "Visit REPO on Github."
-  (interactive (list (magithub-thing-at-point 'repo)))
+  "Visit REPO on GitHub."
+  (interactive (list (thing-at-point 'github-repository)))
   (if-let ((url (alist-get 'html_url repo)))
       (browse-url url)
     (user-error "No URL for repo")))
 
 (defun magithub-repo-visit-issues (repo)
-  "Visit REPO's issues on Github."
-  (interactive (list (magithub-thing-at-point 'repo)))
+  "Visit REPO's issues on GitHub."
+  (interactive (list (thing-at-point 'github-repository)))
   (if-let ((url (alist-get 'html_url repo)))
       (browse-url (format "%s/issues" url))
     (user-error "No URL for repo")))
@@ -587,13 +540,13 @@ concatenate `.owner.login' and `.name' with `/'."
 (defun magithub-repo-admin-p (&optional repo)
   "Non-nil if the currently-authenticated user can manage REPO.
 REPO defaults to the current repository."
-  (let-alist (magithub-repo (or repo (magithub-thing-at-point 'repo)))
+  (let-alist (magithub-repo (or repo (thing-at-point 'github-repository)))
     .permissions.admin))
 
 (defun magithub-repo-push-p (&optional repo)
   "Non-nil if the currently-authenticated user can manage REPO.
 REPO defaults to the current repository."
-  (let-alist (magithub-repo (or repo (magithub-thing-at-point 'repo)))
+  (let-alist (magithub-repo (or repo (thing-at-point 'github-repository)))
     .permissions.push))
 
 (defun magithub--repo-simplify (repo)
@@ -607,14 +560,14 @@ REPO defaults to the current repository."
       (name . ,name))))
 
 (defun magithub-repo-remotes ()
-  "Return Github repositories in this repository.
+  "Return GitHub repositories in this repository.
 `magit-list-remotes' is filtered to those remotes that point to
-Github repositories."
+GitHub repositories."
   (delq nil (mapcar (lambda (r) (cons r (magithub-repo-from-remote r)))
                     (magit-list-remotes))))
 
 (defun magithub-read-repo (prompt)
-  "Using PROMPT, read a Github repository.
+  "Using PROMPT, read a GitHub repository.
 See also `magithub-repo-remotes'."
   (let* ((remotes (magithub-repo-remotes))
          (maxlen (->> remotes
@@ -639,15 +592,71 @@ See also `magithub-repo-remotes'."
            (magit-list-remotes)))
 
 ;;; Feature checking
+(declare-function magithub-pull-request-merge "magithub-issue-tricks"
+                  (pull-request &optional args))
+(declare-function magithub-maybe-insert-ci-status-header "magithub-ci" ())
+(declare-function magithub-issue--insert-pr-section "magithub-issue" ())
+(declare-function magithub-issue--insert-issue-section "magithub-issue" ())
+(declare-function magithub-completion-enable "magithub-completion" ())
 (defconst magithub-feature-list
-  '(pull-request-merge pull-request-checkout)
-  "All magit-integration features of Magithub.
+  ;; features must only return nil if they fail to install
+  `((pull-request-merge . ,(lambda ()
+                             (magit-define-popup-action 'magit-am-popup
+                               ?P "Apply patches from pull request"
+                               #'magithub-pull-request-merge)
+                             t))
 
-`pull-request-merge'
-Apply patches from pull request
+    (commit-browse . ,(lambda ()
+                        (define-key magit-commit-section-map "w"
+                          #'magithub-commit-browse)
+                        t))
 
-`pull-request-checkout'
-Checkout pull requests as new branches")
+    (status-checks-header . ,(lambda ()
+                               (add-hook 'magit-status-headers-hook
+                                         #'magithub-maybe-insert-ci-status-header
+                                         t)
+                               t))
+
+    (completion . ,(lambda ()
+                     (dolist (hook '(git-commit-setup-hook magithub-edit-mode-hook))
+                       (add-hook hook #'magithub-completion-enable))
+                     t))
+
+    ;; order is important in this list; pull request section should
+    ;; come before issues section by default
+    (pull-requests-section . ,(lambda ()
+                                (add-hook 'magit-status-sections-hook
+                                          #'magithub-issue--insert-pr-section
+                                          t)
+                                t))
+
+    (issues-section . ,(lambda ()
+                         (add-hook 'magit-status-sections-hook
+                                   #'magithub-issue--insert-issue-section
+                                   t)
+                         t)))
+  "All Magit-integration features of Magithub.
+See `magithub-feature-autoinject'.
+
+- `pull-request-merge'
+  Apply patches from pull requests.
+  (`magithub-pull-request-merge' inserted into `magit-am-popup')
+
+- `commit-browse'
+  Browse commits using \\<magithub-map>\\[magithub-browse-thing].
+
+- `completion'
+  Enable `completion-at-point' support for #issue and @user references
+  where possible.
+
+- `issues-section'
+  View issues in the `magit-status' buffer.
+
+- `pull-requests-section'
+  View pull requests in the `magit-status' buffer.
+
+- `status-checks-header'
+  View project status in the `magit-status' buffer (e.g., CI).")
 
 (defvar magithub-features nil
   "An alist of feature-symbols to Booleans.
@@ -662,9 +671,30 @@ Example:
 signals that `pull-request-merge' is a loaded feature and
 `other-feature' has not been loaded and will not be loaded.
 
-To enable all features, see `magithub-feature-autoinject'.
+See `magithub-feature-list'.")
 
-See `magithub-feature-list' for a list and description of features.")
+;;;###autoload
+(defun magithub-feature-autoinject (feature)
+  "Configure FEATURE to recommended settings.
+If FEATURE is `all' or t, all known features will be loaded.  If
+FEATURE is a list, then it is a list of FEATURE symbols to load.
+
+See `magithub-feature-list' for a list of available features and
+`magithub-features' for a list of currently-installed features."
+  (cond
+   ((memq feature '(t all))
+    (mapc #'magithub-feature-autoinject
+          (mapcar #'car magithub-feature-list)))
+   ((listp feature)
+    (mapc #'magithub-feature-autoinject feature))
+   (t
+    (if-let ((install (cdr (assq feature magithub-feature-list))))
+        (if (functionp install)
+            (if-let ((result (funcall install)))
+                (add-to-list 'magithub-features (cons feature t))
+              (error "feature %S failed to install: %S" feature result))
+          (error "install form for %S not a function: %S" feature install))
+      (user-error "unknown feature %S" feature)))))
 
 (defun magithub-feature-check (feature)
   "Check if a Magithub FEATURE has been configured.
@@ -697,10 +727,23 @@ See /.github/ISSUE_TEMPLATE.md in this repository."
   (interactive)
   (browse-url "https://gitter.im/vermiculus/magithub"))
 
-(defun magithub-error (err-message tag &optional trace)
-  "Report a Magithub error."
-  (setq trace (or trace (with-output-to-string (backtrace))))
-  (when (y-or-n-p (concat tag "  Report?  (A bug report will be placed in your clipboard.)"))
+(defun magithub-error (err-message &optional tag trace)
+  "Report a Magithub error.
+
+ERR-MESSAGE is a string to be shown to the user.
+
+TAG, if provided, is a user-friendly description of the error.
+It defaults to ERR-MESSAGE.
+
+If TRACE is provided, it should be an appropriate backtrace to
+describe the error.  If not provided, it is retrieved."
+  (unless (stringp err-message)
+    ;; just in case.  it'd be embarassing if the bug-reporter was
+    ;; perceived as buggy
+    (setq err-message (prin1-to-string err-message)))
+  (setq trace (or trace (with-output-to-string (backtrace)))
+        tag (or tag err-message))
+  (when (magithub-confirm-no-error 'report-error tag)
     (with-current-buffer-window
      (get-buffer-create "*magithub issue*")
      #'display-buffer-pop-up-window nil
@@ -709,6 +752,8 @@ See /.github/ISSUE_TEMPLATE.md in this repository."
       (kill-new
        (format
         "## Automated error report
+
+%s
 
 ### Description
 
@@ -719,6 +764,7 @@ See /.github/ISSUE_TEMPLATE.md in this repository."
 ```
 %s```
 "
+        err-message
         (read-string "Briefly describe what you were doing: ")
         trace))))
     (magithub--meta-new-issue))
@@ -787,26 +833,6 @@ allowed."
        (magithub-github-repository-p)
        (magithub-source--sparse-repo)))
 
-(defmacro magithub--deftoggle (name doc on-by-default hook func)
-  "Define a section-toggle command."
-  (declare (indent defun))
-  (let ((Senabled (cl-gensym)))
-    `(prog1 (defun ,name ()
-              ,(concat "Toggle the " doc " section.")
-              (interactive)
-              (let (,Senabled)
-                (setq ,Senabled (not (memq ,func ,hook)))
-                (if ,Senabled
-                    (remove-hook ',hook ,func)
-                  (add-hook ',hook ,func t))
-                (magit-refresh)
-                (message (concat ,(concat doc " section ") (if ,Senabled "enabled" "disabled")))
-                ,Senabled))
-       ,(when on-by-default
-          `(eval-after-load "magit"
-             '(let ((inhibit-magit-refresh t))
-                (add-hook ',hook ,func t)))))))
-
 (defun magithub--zip-case (p e)
   "Get an appropriate value for element E given property/function P."
   (cond
@@ -850,21 +876,35 @@ For example, if
   (eq (magit-section-type SECTION) \\='magithub-issue)
 
 return the interned symbol `issue'."
-  (let* ((type (magit-section-type section))
+  (let* ((type (oref section type))
          (name (symbol-name type)))
     (and (string-prefix-p "magithub-" name)
          (intern (substring name 9)))))
 
-(defvar magithub-thing-type-specializations
+(defvar magithub--section-value-at-point-specializations
   '((user assignee))
   "Alist of general types to specific types.
 Specific types offer more relevant functionality to a given
-section, but are inconvenient for `magithub-thing-at-point'.
-This alist defines equivalencies such that a search for the
-general type will also return sections of a specialized type.")
+section, but are inconvenient for
+`magithub--section-value-at-point'.  This alist defines
+equivalencies such that a search for the general type will also
+return sections of a specialized type.")
 
-(defun magithub-thing-at-point (type)
-  "Determine the thing of TYPE at point."
+(define-obsolete-function-alias
+  'magithub-thing-at-point
+  #'magithub--section-value-at-point
+  "0.1.5")
+
+;;;###autoload
+(defun magithub--section-value-at-point (type)
+  "Determine the thing of TYPE at point.
+This is intended for use as a resolving function for
+`thing-at-point'.
+
+The following symbols are defined, but other values may work with
+this function: `github-user', `github-issue', `github-label',
+`github-comment', `github-repository', `github-pull-request',
+`github-notification',"
   (let ((search-sym (intern (concat "magithub-" (symbol-name type))))
         this-section)
     (if (and (boundp search-sym) (symbol-value search-sym))
@@ -876,11 +916,67 @@ general type will also return sections of a specialized type.")
                           ;; exact match
                           (eq type this-type)
                           ;; equivalency
-                          (thread-last magithub-thing-type-specializations
+                          (thread-last magithub--section-value-at-point-specializations
                             (alist-get type)
                             (memq this-type))))))
-        (setq this-section (magit-section-parent this-section)))
-      (and this-section (magit-section-value this-section)))))
+        (setq this-section (oref this-section parent)))
+      (and this-section (oref this-section value)))))
+
+(defvar-local magithub-issue nil
+  "Issue object.")
+
+(defvar-local magithub-comment nil
+  "Comment object.")
+
+(defvar-local magithub-repo nil
+  "Repository object.")
+
+;;;###autoload
+(put 'github-user 'thing-at-point
+     (lambda ()
+       (magithub--section-value-at-point 'user)))
+
+;;;###autoload
+(put 'github-issue 'thing-at-point
+     (lambda ()
+       (or magithub-issue
+           (magithub--section-value-at-point 'issue))))
+
+;;;###autoload
+(put 'github-label 'thing-at-point
+     (lambda ()
+       (magithub--section-value-at-point 'label)))
+
+;;;###autoload
+(put 'github-comment 'thing-at-point
+     (lambda ()
+       (or magithub-comment
+           (magithub--section-value-at-point 'comment))))
+
+;;;###autoload
+(put 'github-notification 'thing-at-point
+     (lambda ()
+       (magithub--section-value-at-point 'notification)))
+
+;;;###autoload
+(put 'github-repository   'thing-at-point
+     (lambda ()
+       (or (magithub--section-value-at-point 'repository)
+           magithub-repo
+           (magithub-repo))))
+
+;;;###autoload
+(put 'github-pull-request 'thing-at-point
+     (lambda ()
+       (or (magithub--section-value-at-point 'pull-request)
+           (when-let* ((issue (thing-at-point 'github-issue)))
+             (and
+              (magithub-issue--issue-is-pull-p issue)
+              (magithub-cache :issues
+                `(magithub-request
+                  (ghubp-get-repos-owner-repo-pulls-number
+                      ',(magithub-issue-repo issue)
+                      ',issue))))))))
 
 (defun magithub-verify-manage-labels (&optional interactive)
   "Verify the user has permission to manage labels.
@@ -889,17 +985,17 @@ be signaled.
 
 If INTERACTIVE is non-nil, a `user-error' will be raised instead
 of a signal (e.g., for interactive forms)."
-  (let-alist (magithub-repo)
+  (let-alist (thing-at-point 'github-repository)
     (if .permissions.push t
       (if interactive
           (user-error "You're not allowed to manage labels in %s" .full_name)
         (signal 'error `(unauthorized manage-labels ,(progn .full_name)))))))
 
 (defun magithub-bug-reference-mode-on ()
-  "In Github repositories, configure `bug-reference-mode'."
+  "In GitHub repositories, configure `bug-reference-mode'."
   (interactive)
   (when (magithub-usable-p)
-    (when-let ((repo (magithub-repo)))
+    (when-let* ((repo (magithub-repo)))
       (bug-reference-mode 1)
       (setq-local bug-reference-bug-regexp "#\\(?2:[0-9]+\\)")
       (setq-local bug-reference-url-format
@@ -1027,28 +1123,29 @@ COMPARE is used on the application of ACCESSOR to each argument."
   (magit-section-show-level -5))
 
 (defun magithub-refresh ()
-  "Refresh Github data.
+  "Refresh GitHub data.
 Use directly at your own peril; this is intended for use with
 `magit-pre-refresh-hook'."
   (interactive (user-error (substitute-command-keys "This is no longer an interactive function; use \\[universal-argument] \\[magit-refresh] instead :-)")))
   (when (and current-prefix-arg
              (magithub-usable-p)
-             (y-or-n-p "Refresh Github data? ")
+             (magithub-confirm-no-error 'refresh)
              (or (magithub--api-available-p)
-                 (y-or-n-p "Github doesn't seem to be responding, are you sure? ")))
-    (let ((old-cache-value magithub-cache))
-      ;; `magithub-refresh' is part of `magit-pre-refresh-hook' and
-      ;; our requests are made as part of `magit-refresh'.  There's no
-      ;; way we can let-bind `magithub-cache' around that entire form,
-      ;; so we do the next best thing: as soon as emacs is idle (i.e.,
-      ;; magit is done refreshing), we reset magithub-cache back to
-      ;; its old value.
-      (setq magithub-cache (pcase old-cache-value
-                             (`t 'refreshing-when-offline)
-                             (`nil nil)
-                             (`when-present 'refreshing)))
+                 (magithub-confirm-no-error 'refresh-when-API-unresponsive)))
+    (let ((old-override-value magithub-settings-cache-behavior-override)
+          (old-behavior (magithub-settings-cache-behavior)))
+      ;; `magithub-refresh' is part of `magit-pre-refresh-hook' and our requests
+      ;; are made as part of `magit-refresh'.  There's no way we can let-bind
+      ;; `magithub-settings-cache-behavior-override' around that entire form, so
+      ;; we do the next best thing: as soon as emacs is idle (i.e., magit is
+      ;; done refreshing), we reset the override back to its old value.
+      (setq magithub-settings-cache-behavior-override
+            (pcase old-behavior
+              (`t 'refreshing-when-offline)
+              (`nil nil)
+              (`when-present 'refreshing)))
       (run-with-idle-timer 0 nil (lambda ()
-                                   (setq magithub-cache old-cache-value
+                                   (setq magithub-settings-cache-behavior-override old-override-value
                                          magithub-cache--refreshed-forms nil)
                                    (message "(magithub): buffer data refreshed"))))))
 
@@ -1076,16 +1173,39 @@ Use directly at your own peril; this is intended for use with
   "Indent TEXT by INDENT spaces."
   (replace-regexp-in-string (rx bol) (make-string indent ?\ ) text))
 
+(defun magithub-commit-browse (rev)
+  "Browse REV on GitHub.
+Interactively, this is the commit at point."
+  (interactive (list (or (when-let* ((rev (magit-rev-verify (oref (magit-current-section) value))))
+                           rev)
+                         (thing-at-point 'git-revision))))
+  (if-let ((parsed (magit-rev-parse rev)))
+      (if-let ((commits (magithub-request
+                         (ghubp-get-repos-owner-repo-commits
+                             (magithub-repo) nil
+                           :sha parsed))))
+          (let-alist (car commits)
+            (browse-url .html_url))
+        (user-error "No commit %s on remote" parsed))
+    (error "Could not parse %S" rev)))
+
 (defun magithub-add-thing ()
+  "Conceptual command to add a thing (e.g., label, assignee, ...)"
   (interactive)
   (user-error "There is no thing at point that could be added to"))
+
 (defun magithub-browse-thing ()
+  "Conceptual command to browse a thing on GitHub"
   (interactive)
   (user-error "There is no thing at point that could be browsed"))
+
 (defun magithub-edit-thing ()
+  "Conceptual command to edit a thing (e.g., comment)"
   (interactive)
-  (user-error "There is no thing at point that could be replied to"))
+  (user-error "There is no thing at point that could be edited"))
+
 (defun magithub-reply-thing ()
+  "Conceptual command to reply to a thing (e.g., comment)"
   (interactive)
   (user-error "There is no thing at point that could be replied to"))
 
@@ -1095,7 +1215,8 @@ Use directly at your own peril; this is intended for use with
     (define-key m "w" #'magithub-browse-thing)
     (define-key m "e" #'magithub-edit-thing)
     (define-key m "r" #'magithub-reply-thing)
-    m))
+    m)
+  "Parent keymap for Magithub sections.")
 
 (defmacro magithub-request (&rest body)
   "Execute BODY authenticating as Magithub."
@@ -1105,9 +1226,9 @@ Use directly at your own peril; this is intended for use with
 
 (defun magithub-debug-section (section)
   (interactive (list (magit-current-section)))
-  (pp-eval-expression `(magit-section-value ,section)))
+  (pp-eval-expression `(oref ,section value)))
 
-(eval-after-load "magit"
+(eval-after-load 'magit
   '(progn
      (dolist (hook '(magit-revision-mode-hook git-commit-setup-hook))
        (add-hook hook #'magithub-bug-reference-mode-on))

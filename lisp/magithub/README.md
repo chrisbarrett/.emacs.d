@@ -11,13 +11,13 @@
 Magithub is a collection of interfaces to GitHub integrated into
 [Magit][magit] workflows:
 
-- Repository creation
-- Forking
-- Pull request listing and creation
-- Issue listing and creation
-- Labeling
-- Status checks
-- Notifications
+- Push new repositories
+- Fork existing ones
+- List and create issues and pull requests
+- Keep offline notes for your eyes only
+- Write comments
+- Manage labels and assignees
+- Stay up-to-date with status checks (e.g., CI) and notifications
 - ...
 
 as well as support for working offline.
@@ -34,7 +34,9 @@ those instructions.
 ```elisp
 (use-package magithub
   :after magit
-  :config (magithub-feature-autoinject t))
+  :config
+  (magithub-feature-autoinject t)
+  (setq magithub-clone-default-directory "~/github"))
 ```
 
 See [the full documentation][magithub-org] for more details.

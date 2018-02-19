@@ -25,6 +25,8 @@
 ;;; Code:
 
 (require 'magit)
+(require 'markdown-mode)
+(require 'thingatpt)
 
 (require 'magithub-core)
 (require 'magithub-repo)
@@ -40,10 +42,11 @@
     (define-key m [remap magit-delete-thing] #'magithub-comment-delete)
     (define-key m (kbd "SPC") #'magithub-comment-view)
     (define-key m [remap magithub-reply-thing] #'magithub-comment-reply)
+    (define-key m [remap magithub-edit-thing] #'magithub-comment-edit)
     m))
 
 (defun magithub-comment-browse (comment)
-  (interactive (list (magithub-thing-at-point 'comment)))
+  (interactive (list (thing-at-point 'github-comment)))
   (unless comment
     (user-error "No comment found"))
   (let-alist comment
@@ -51,7 +54,7 @@
 
 (declare-function face-remap-remove-relative "face-remap.el" (cookie))
 (defun magithub-comment-delete (comment)
-  (interactive (list (magithub-thing-at-point 'comment)))
+  (interactive (list (thing-at-point 'github-comment)))
   (unless comment
     (user-error "No comment found"))
   (let ((repo (magithub-comment-source-repo comment))
@@ -67,9 +70,7 @@
                                            ;;
                                            'magithub-deleted-thing
                                            )))
-      (unwind-protect
-          (unless (yes-or-no-p "Are you sure you wish to delete this comment? ")
-            (user-error "Aborted"))
+      (unwind-protect (magithub-confirm 'comment-delete)
         (face-remap-remove-relative cookie)))
     (magithub-request
      (ghubp-delete-repos-owner-repo-issues-comments-id repo comment))
@@ -84,38 +85,6 @@
 
 (defun magithub-comment-source-repo (comment)
   (magithub-issue-repo (magithub-comment-source-issue comment)))
-
-(defun magithub-comment-draft-file (repo issue)
-  "Get the filepath of the comment draft for REPO/ISSUE."
-  (let-alist issue
-    (expand-file-name (format "%s-comment" .number)
-                      (magithub-repo-data-dir repo))))
-
-(defun magithub-comment-draft-save (repo issue comment)
-  "Save a draft reply to REPO/ISSUE as COMMENT."
-  (interactive (list (magithub-thing-at-point 'repo)
-                     (magithub-thing-at-point 'issue)
-                     (buffer-string)))
-  (make-directory (magithub-repo-data-dir repo) t)
-  (with-temp-buffer
-    (insert comment)
-    (write-file (magithub-comment-draft-file repo issue)))
-  (set-buffer-modified-p nil)
-  (message "Draft saved"))
-
-(defun magithub-comment-draft-load (repo issue)
-  "Load the draft reply to REPO/ISSUE."
-  (let ((file (magithub-comment-draft-file repo issue)))
-    (and (file-exists-p file)
-         (with-temp-buffer
-           (insert-file-contents file)
-           (buffer-string)))))
-
-(defun magithub-comment-draft-delete (repo issue)
-  "Delete the draft file for REPO/ISSUE if it exists."
-  (let ((f (magithub-comment-draft-file repo issue)))
-    (when (file-exists-p f)
-      (delete-file f magit-delete-by-moving-to-trash))))
 
 (defun magithub-comment-insert (comment)
   "Insert a single issue COMMENT."
@@ -135,12 +104,12 @@
 
 (defvar magithub-gfm-view-mode-map
   (let ((m (make-sparse-keymap)))
-    (define-key m [remap magit-mode-bury-buffer] #'magithub-comment-view-close)
+    (define-key m [remap kill-this-buffer] #'magithub-comment-view-close)
     m)
   "Keymap for `magithub-gfm-view-mode'.")
 
 (define-derived-mode magithub-gfm-view-mode gfm-view-mode "M:GFM-View"
-  "Major mode for viewing Github markdown content.")
+  "Major mode for viewing GitHub markdown content.")
 
 (defvar-local magithub-comment-view--parent-buffer nil
   "The 'parent' buffer of the current comment-view.
@@ -150,31 +119,23 @@ the comment; see `magithub-comment-view' and
 
 (defun magithub-comment-view (comment)
   "View COMMENT in a new buffer."
-  (interactive (list (magithub-thing-at-point 'comment)))
+  (interactive (list (thing-at-point 'github-comment)))
   (let ((prev (current-buffer)))
     (with-current-buffer (get-buffer-create "*comment*")
       (magithub-gfm-view-mode)
       (setq-local magithub-comment-view--parent-buffer prev)
-      (insert (magithub-wash-gfm (alist-get 'body comment)))
+      (let ((inhibit-read-only t))
+        (erase-buffer)
+        (insert (magithub-wash-gfm (alist-get 'body comment))))
       (goto-char 0)
-      (read-only-mode)
-      (switch-to-buffer-other-window (current-buffer)))))
+      (magit-display-buffer (current-buffer)))))
 
 (defun magithub-comment-view-close ()
   "Close the current buffer."
   (interactive)
-  (when (derived-mode-p 'magithub-gfm-view-mode)
-    (let ((buf (current-buffer))
-          (prev magithub-comment-view--parent-buffer))
-      (when-let ((window (get-buffer-window prev)))
-        (select-window window))
-      (kill-buffer buf))))
-
-(defvar magithub-comment-edit-map
-  (let ((m (make-sparse-keymap)))
-    (define-key m [remap save-buffer] #'magithub-comment-draft-save)
-    m)
-  "Local map for comment-edit buffers.")
+  (let ((oldbuf magithub-comment-view--parent-buffer))
+    (kill-this-buffer)
+    (magit-display-buffer oldbuf)))
 
 ;;;###autoload
 (defun magithub-comment-new (issue &optional discard-draft initial-content)
@@ -189,36 +150,59 @@ initial contents of the reply if there is no draft."
                    (unless (derived-mode-p 'magithub-issue-view-mode)
                      (magithub-issue-view issue)))))
   (let* ((issueref (magithub-issue-reference issue))
-         (repo (magithub-issue-repo issue))
-         (draft (magithub-comment-draft-load repo issue)))
-    (when (and draft discard-draft)
-      (with-current-buffer (get-buffer-create " *draft*")
-        (insert draft)
-        (view-buffer-other-window (current-buffer))
-        (when (yes-or-no-p "Discard this draft? ")
-          (magithub-comment-draft-delete repo issue)
-          (setq draft nil))
-        (kill-buffer (current-buffer))))
-    (magithub-edit-new
-        (concat "reply to " issueref)
-        #'magithub-issue-comment-submit
-        #'magithub-issue-comment-cancel
-        magithub-comment-edit-map
-      (lambda ()
-        (setq-local magithub-issue issue)
-        (setq-local magithub-repo repo)
-        (magit-set-header-line-format
-         (substitute-command-keys
-          (format "replying to %s | %s | %s"
-                  issueref
-                  "submit: \\[magithub-edit-submit]"
-                  "cancel: \\[magithub-edit-cancel]")))
-        (if (and (null draft) initial-content)
-            (insert initial-content)
-          (when draft
-            (insert draft)
-            (message "Loaded existing draft")))
-        (goto-char (point-max))))))
+         (repo (magithub-issue-repo issue)))
+    (with-current-buffer
+        (magithub-edit-new (concat "reply to " issueref)
+          :header (concat "replying to " issueref)
+          :submit #'magithub-issue-comment-submit
+          :content initial-content
+          :prompt-discard-draft discard-draft
+          :file (magithub-comment--draft-file issue repo))
+      (setq-local magithub-issue issue)
+      (setq-local magithub-repo repo)
+      (magit-display-buffer (current-buffer)))))
+
+(defun magithub-comment--draft-file (issue repo)
+  "Get an appropriate draft file for ISSUE in REPO."
+  (let-alist issue
+    (expand-file-name (format "%s-comment" .number)
+                      (magithub-repo-data-dir repo))))
+
+(defun magithub-comment--submit-edit (comment repo new-body)
+  (interactive (list (thing-at-point 'github-comment)
+                     (thing-at-point 'github-repository)
+                     (buffer-string)))
+  (when (string= new-body "")
+    (user-error "Can't post an empty comment; try deleting it instead"))
+  (magithub-confirm 'comment-edit)
+  (magithub-request
+   (ghubp-patch-repos-owner-repo-issues-comments-id
+       repo comment
+       `((body . ,new-body)))))
+
+(defun magithub-comment-edit (comment issue repo)
+  "Edit COMMENT."
+  (interactive (list (thing-at-point 'github-comment)
+                     (or (thing-at-point 'github-issue)
+                         (thing-at-point 'github-pull-request))
+                     (thing-at-point 'github-repository)))
+  (let ((updated (magithub-request (ghubp-follow-get (alist-get 'url comment)))))
+    (with-current-buffer
+        (magithub-edit-new (format "*%s: editing comment by %s (%s)*"
+                                   (magithub-issue-reference issue)
+                                   (let-alist comment .user.login)
+                                   (alist-get 'id comment))
+          :submit #'magithub-comment--submit-edit
+          :content (alist-get 'body updated)
+          :file (magithub-comment--draft-file issue repo))
+      (setq-local magithub-issue issue)
+      (setq-local magithub-repo repo)
+      (setq-local magithub-comment updated)
+      (magit-display-buffer (current-buffer)))
+
+    (unless (string= (alist-get 'body comment)
+                     (alist-get 'body updated))
+      (message "Comment has changed since information was cached; updated content pulled in for edit"))))
 
 (defun magithub-comment-reply (comment &optional discard-draft issue)
   "Reply to COMMENT on ISSUE.
@@ -227,24 +211,22 @@ will deleted.
 
 If ISSUE is not provided, it will be determined from context or
 from COMMENT."
-  (interactive (list (magithub-thing-at-point 'comment)
+  (interactive (list (thing-at-point 'github-comment)
                      current-prefix-arg
-                     (magithub-thing-at-point 'issue)))
+                     (thing-at-point 'github-issue)))
   (let-alist comment
     (magithub-comment-new
      (or issue (magithub-request (ghubp-follow-get .issue_url)))
      discard-draft
-     (with-temp-buffer
-       (insert (string-trim (magithub-wash-gfm .body)))
-       (markdown-blockquote-region (point-min) (point-max))
-       (goto-char (point-max))
-       (insert "\n\n")
-       (buffer-string)))))
-
-(defun magithub-issue-comment-cancel ()
-  "Cancel current comment."
-  (interactive)
-  (call-interactively #'magithub-comment-draft-save))
+     (let ((reply-body (if (use-region-p)
+                           (buffer-substring (region-beginning) (region-end))
+                           .body)))
+      (with-temp-buffer
+        (insert (string-trim (magithub-wash-gfm reply-body)))
+        (markdown-blockquote-region (point-min) (point-max))
+        (goto-char (point-max))
+        (insert "\n\n")
+        (buffer-string))))))
 
 (defun magithub-issue-comment-submit (issue comment &optional repo)
   "On ISSUE, submit a new COMMENT.
@@ -253,28 +235,25 @@ COMMENT is the text of the new comment.
 
 REPO is an optional repo object; it will be deduced from ISSUE if
 not provided."
-  (interactive (list (magithub-thing-at-point 'issue)
+  (interactive (list (thing-at-point 'github-issue)
                      (save-restriction
                        (widen)
                        (buffer-substring-no-properties (point-min) (point-max)))
-                     (magithub-thing-at-point 'repo)))
+                     (thing-at-point 'github-repository)))
   (unless issue
     (user-error "No issue provided"))
   (setq repo (or repo
                  (magithub-issue-repo issue)
-                 (magithub-thing-at-point 'repo)))
+                 (thing-at-point 'github-repository)))
   (unless repo
     (user-error "No repo detected"))
   ;; all required args provided
-  (unless (y-or-n-p (format "Submit this comment to %s? "
-                            (magithub-issue-reference issue)))
-    (user-error "Aborted"))
-  ;; confirmed; submit the issue
+  (magithub-confirm 'comment (magithub-issue-reference issue))
   (magithub-request
    (ghubp-post-repos-owner-repo-issues-number-comments
-    repo issue `((body . ,comment))))
-  (message "Success")
-  (magithub-comment-draft-delete repo issue))
+       repo issue `((body . ,comment))))
+  (magithub-edit-delete-draft)
+  (message "Success"))
 
 (provide 'magithub-comment)
 ;;; magithub-comment.el ends here

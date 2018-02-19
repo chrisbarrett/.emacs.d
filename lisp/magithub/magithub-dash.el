@@ -20,7 +20,7 @@
 
 ;;; Commentary:
 
-;; Magithub-Dash is a dashboard for your Github activity.
+;; Magithub-Dash is a dashboard for your GitHub activity.
 
 ;;; Code:
 
@@ -31,8 +31,8 @@
 
 (declare-function magithub-dispatch-popup "magithub.el")
 
-(defcustom magithub-dashboard-show-unread-notifications nil
-  "Show unread notifications in the dashboard."
+(defcustom magithub-dashboard-show-read-notifications t
+  "Show read notifications in the dashboard."
   :type 'boolean
   :group 'magithub)
 
@@ -40,18 +40,18 @@
   "Popup console for the dashboard."
   'magithub-commands
   :actions '("Notifications"
-             (?r "Toggle showing unread notifications"
-                 magithub-dashboard-show-unread-notifications-toggle)))
+             (?r "Toggle showing read notifications"
+                 magithub-dashboard-show-read-notifications-toggle)))
 
-(defun magithub-dashboard-show-unread-notifications-toggle ()
+(defun magithub-dashboard-show-read-notifications-toggle ()
   (interactive)
-  (setq magithub-dashboard-show-unread-notifications
-        (not magithub-dashboard-show-unread-notifications))
+  (setq magithub-dashboard-show-read-notifications
+        (not magithub-dashboard-show-read-notifications))
   (magit-refresh-buffer))
 
 ;;;###autoload
 (defun magithub-dashboard ()
-  "View your Github dashboard."
+  "View your GitHub dashboard."
   (interactive)
   (let ((magit-generate-buffer-name-function
          (lambda (&rest _) "*magithub-dash*")))
@@ -69,7 +69,7 @@
 
 (define-derived-mode magithub-dash-mode
   magit-mode "Magithub-Dash"
-  "Major mode for your Github dashboard."
+  "Major mode for your GitHub dashboard."
   (use-local-map magithub-dash-map))
 
 (defun magithub-dash-refresh-buffer (&rest _args)
@@ -77,7 +77,11 @@
 Runs `magithub-dash-sections-hook'."
   (interactive)
   (magit-insert-section (magithub-dash-buf)
-    (run-hooks 'magithub-dash-sections-hook)))
+    (run-hooks 'magithub-dash-sections-hook))
+  (let ((inhibit-read-only t))
+    (save-excursion
+      (goto-char (point-max))
+      (delete-blank-lines))))
 
 (defvar magithub-dash-sections-hook
   '(magithub-dash-insert-headers
@@ -112,7 +116,7 @@ See also `magithub-dash-headers-hook'."
 (defun magithub-dash-insert-ratelimit-header ()
   "If API requests are being rate-limited, insert relevant information."
   (magithub-request
-   (when-let ((ratelimit (ghubp-ratelimit)))
+   (when-let* ((ratelimit (ghubp-ratelimit)))
      (when (time-less-p (alist-get 'reset ratelimit) (current-time))
        (ghub-get "/rate_limit" nil :auth 'magithub)))
    (let-alist (ghubp-ratelimit)
@@ -135,21 +139,23 @@ See also `magithub-dash-headers-hook'."
 (defun magithub-dash-insert-notifications (&optional notifications)
   "Insert NOTIFICATIONS into the buffer bucketed by repository."
   (setq notifications (or notifications (magithub-notifications
-                                         magithub-dashboard-show-unread-notifications)))
+                                         magithub-dashboard-show-read-notifications)))
   (if notifications
       (let* ((bucketed (magithub-core-bucket notifications (apply-partially #'alist-get 'repository)))
-             (unread (-filter #'magithub-notification-unread-p notifications))
-             (hide (null unread)))
+             (unread (if magithub-dashboard-show-read-notifications
+                         (-filter #'magithub-notification-unread-p notifications)
+                       notifications))
+             (hide (not unread))
+             (heading (if magithub-dashboard-show-read-notifications
+                          (format "%s (%d unread of %d)"
+                                  (propertize "Notifications" 'face 'magit-section-heading)
+                                  (length unread)
+                                  (length notifications))
+                        (format "%s (%d)"
+                                (propertize "Notifications" 'face 'magit-section-heading)
+                                (length notifications)))))
         (magit-insert-section (magithub-notifications notifications hide)
-          (magit-insert-heading
-            (if magithub-dashboard-show-unread-notifications
-                (format "%s (%d unread of %d)"
-                        (propertize "Notifications" 'face 'magit-section-heading)
-                        (length unread)
-                        (length notifications))
-              (format "%s (%d)"
-                      (propertize "Notifications" 'face 'magit-section-heading)
-                      (length notifications))))
+          (magit-insert-heading heading)
           (magithub-for-each-bucket bucketed repo repo-notifications
             (setq hide (null (-filter #'magithub-notification-unread-p repo-notifications)))
             (magit-insert-section (magithub-repo repo hide)
@@ -161,7 +167,7 @@ See also `magithub-dash-headers-hook'."
           (insert "\n")))
     (magit-insert-section (magithub-notifications)
       (magit-insert-heading "Notifications")
-      (insert (propertize (if magithub-dashboard-show-unread-notifications
+      (insert (propertize (if magithub-dashboard-show-read-notifications
                               "No notifications"
                             "No unread notifications")
                           'face 'magit-dimmed)
@@ -176,11 +182,11 @@ will be used."
    (setq issues (or issues (magithub-cache :issues `(magithub-request
                                                      (ghubp-get-issues))))
          title (or title "Issues Assigned to Me"))
-   (when-let ((user-repo-issue-buckets
-               ;; bucket by user then by repo
-               (magithub-core-bucket-multi issues
-                 #'magithub-issue-repo
-                 (lambda (repo) (alist-get 'owner repo)))))
+   (when-let* ((user-repo-issue-buckets
+                ;; bucket by user then by repo
+                (magithub-core-bucket-multi issues
+                  #'magithub-issue-repo
+                  (lambda (repo) (alist-get 'owner repo)))))
      (magit-insert-section (magithub-users-repo-issue-buckets)
        (magit-insert-heading (format "%s (%d)"
                                      (propertize title 'face 'magit-section-heading)
