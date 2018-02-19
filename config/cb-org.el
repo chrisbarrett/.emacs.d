@@ -24,7 +24,7 @@
 
 (defvar org-directory "~/org")
 
-(defconst cb-org-work-file (concat org-directory "/work_movio.org"))
+(defconst cb-org-work-file (concat org-directory "/work_pushpay.org"))
 (defconst cb-org-journal-file (concat org-directory "/journal.org"))
 
 (with-eval-after-load 'which-key
