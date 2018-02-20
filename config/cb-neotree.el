@@ -59,6 +59,7 @@
 
     (add-to-list 'neo-hidden-regexp-list "target$")
     (add-to-list 'neo-hidden-regexp-list "__pycache__$")
+    (add-to-list 'neo-hidden-regexp-list "/flycheck_$")
     (add-to-list 'neo-hidden-regexp-list "scala-2\\.[0-9]+$")
 
     ;; Enable leader key in neotree
