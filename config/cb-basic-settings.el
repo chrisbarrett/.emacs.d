@@ -742,6 +742,9 @@ Optional arg JUSTIFY will justify comments and strings."
 (use-package unfill
   :commands (unfill-region unfill-paragraph unfill-toggle))
 
+(use-package auth-sources
+  :config
+  (setq auth-sources '("~/.authinfo.gpg")))
 
 (use-package all-the-icons
   :defer t
