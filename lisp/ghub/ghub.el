@@ -1,6 +1,6 @@
 ;;; ghub.el --- minuscule client library for the Github API  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2016-2017  Jonas Bernoulli
+;; Copyright (C) 2016-2018  Jonas Bernoulli
 
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
 ;; Homepage: https://github.com/magit/ghub
@@ -35,7 +35,7 @@
 
 ;; Ghub is intentionally limited to only provide these two essential
 ;; features — basic request functions and guided setup — to avoid being
-;; too opinionated, which would hinder wide adaption.  It is assumed that
+;; too opinionated, which would hinder wide adoption.  It is assumed that
 ;; wide adoption would make life easier for users and maintainers alike,
 ;; because then all packages that talk to the Github API could be
 ;; configured the same way.
@@ -166,13 +166,16 @@ Like calling `ghub-request' (which see) with \"DELETE\" as METHOD."
 (define-error 'ghub-401 "Unauthorized" 'ghub-http-error)
 (define-error 'ghub-403 "Forbidden" 'ghub-http-error)
 (define-error 'ghub-404 "Not Found" 'ghub-http-error)
+(define-error 'ghub-405 "Method Not Allowed" 'ghub-http-error) ; gitlab only
+(define-error 'ghub-409 "Conflict" 'ghub-http-error)
+(define-error 'ghub-412 "Precondition Failed" 'ghub-http-error) ; gitlab only
 (define-error 'ghub-422 "Unprocessable Entity" 'ghub-http-error)
 (define-error 'ghub-500 "Internal Server Error" 'ghub-http-error)
 
 (cl-defun ghub-request (method resource &optional params
                                &key query payload headers
                                unpaginate noerror reader
-                               username auth host)
+                               username auth host forge)
   "Make a request for RESOURCE and return the response body.
 
 Also place the response header in `ghub-response-headers'.
@@ -191,13 +194,16 @@ Use PARAMS to automatically transmit like QUERY or PAYLOAD would
   depending on METHOD.
 Use QUERY to explicitly transmit data as a query.
 Use PAYLOAD to explicitly transmit data as a payload.
+  Instead of an alist, PAYLOAD may also be a string, in which
+  case it gets encoded as UTF-8 but is otherwise transmitted as-is.
 Use HEADERS for those rare resources that require that the data
   is transmitted as headers instead of as a query or payload.
-  When that is the case, then the api documentation usually
+  When that is the case, then the API documentation usually
   mentions it explicitly.
 
 If UNPAGINATE is non-nil, then make multiple requests if necessary
-  to get all items at RESOURCE.
+  to get all items at RESOURCE.  For forward-compatibility avoid
+  using a function as value.
 If NOERROR is non-nil, then do not raise an error if the request
   fails and return nil instead.
 If READER is non-nil, then it is used to read and return from the
@@ -235,11 +241,16 @@ If HOST is non-nil, then connect to that Github instance.  This
   defaults to \"api.github.com\".  When a repository is connected
   to a Github Enterprise instance, then it is better to specify
   that using the Git variable `github.host' instead of using this
-  argument."
+  argument.
+
+If FORGE is `gitlab', then connect to Gitlab.com or, depending
+  on HOST to another Gitlab instance.  This is only intended for
+  internal use.  Instead of using this argument you should use
+  function `glab-request' and other `glab-*' functions."
   (unless (string-prefix-p "/" resource)
     (setq resource (concat "/" resource)))
   (unless host
-    (setq host (ghub--host)))
+    (setq host (ghub--host forge)))
   (cond
    ((not params))
    ((memq method '("GET" "HEAD"))
@@ -250,14 +261,15 @@ If HOST is non-nil, then connect to that Github instance.  This
     (when payload
       (error "PARAMS and PAYLOAD are mutually exclusive for METHOD %S" method))
     (setq payload params)))
-  (when (and payload (not (stringp payload)))
-    (setq payload (encode-coding-string (json-encode-list payload) 'utf-8)))
+  (when payload
+    (unless (stringp payload)
+      (setq payload (json-encode-list payload)))
+    (setq payload (encode-coding-string payload 'utf-8)))
   (let* ((qry (and query (concat "?" (ghub--url-encode-params query))))
          (buf (let ((url-request-extra-headers
                      `(("Content-Type" . "application/json")
                        ,@(and (not (eq auth 'none))
-                              (list (cons "Authorization"
-                                          (ghub--auth host auth username))))
+                              (list (ghub--auth host auth username forge)))
                        ,@headers))
                     ;; Encode in case caller used (symbol-name 'GET).  #35
                     (url-request-method (encode-coding-string method 'utf-8))
@@ -288,7 +300,9 @@ If HOST is non-nil, then connect to that Github instance.  This
             (goto-char (1+ url-http-end-of-headers))
             (setq body (funcall (or reader 'ghub--read-json-response)
                                 url-http-response-status))
-            (unless (or noerror (= (/ url-http-response-status 100) 2))
+            (unless (or noerror
+                        (= (/ url-http-response-status 100) 2)
+                        (= url-http-response-status 304)) ; gitlab only
               (let ((data (list method resource qry payload body)))
                 (pcase url-http-response-status
                   (301 (signal 'ghub-301 data))
@@ -296,6 +310,9 @@ If HOST is non-nil, then connect to that Github instance.  This
                   (401 (signal 'ghub-401 data))
                   (403 (signal 'ghub-403 data))
                   (404 (signal 'ghub-404 data))
+                  (405 (signal 'ghub-405 data)) ; gitlab only
+                  (409 (signal 'ghub-409 data))
+                  (412 (signal 'ghub-412 data)) ; gitlab only
                   (422 (signal 'ghub-422 data))
                   (500 (signal 'ghub-500 data))
                   (_   (signal 'ghub-http-error
@@ -318,8 +335,8 @@ If HOST is non-nil, then connect to that Github instance.  This
 
 DURATION specifies how many seconds to wait at most.  It defaults
 to 64 seconds.  The first attempt is made immediately, the second
-after two seconds, and each subequent attemts are made after
-waiting as long as we already waited between all preceding
+after two seconds, and each subsequent attempt is made after
+waiting as long again as we already waited between all preceding
 attempts combined.
 
 See `ghub-request' for information about the other arguments."
@@ -341,6 +358,19 @@ See `ghub-request' for information about the other arguments."
                 (sit-for wait)
                 (cl-incf total wait))
             (sit-for (setq total 2))))))))
+
+(cl-defun ghub-graphql (graphql &optional variables &key username auth host)
+  "Make a GraphQL request using GRAPHQL and VARIABLES.
+Return the response as a json-like alist.  Even if the response
+contains `errors', do not raise an error.  GRAPHQL is a GraphQL
+string.  VARIABLES is a json-like alist.  The other arguments
+behave like for `ghub-request' (which see)."
+  (cl-assert (stringp graphql))
+  (cl-assert (not (stringp variables)))
+  (ghub-request "POST" "/graphql" nil :payload
+                (json-encode `(("query" . ,graphql)
+                               ,@(and variables `(("variables" ,variables)))))
+                :username username :auth auth :host host))
 
 ;;;; Internal
 
@@ -444,27 +474,33 @@ has to provide several values including their password."
 
 ;;;; Internal
 
-(defun ghub--auth (host auth &optional username)
+(defun ghub--auth (host auth &optional username forge)
   (unless username
     (setq username (ghub--username host)))
   (if (eq auth 'basic)
-      (ghub--basic-auth host username)
-    (concat "token "
-            (encode-coding-string
-             (cl-typecase auth
-               (string auth)
-               (null   (ghub--token host username 'ghub))
-               (symbol (ghub--token host username auth))
-               (t (signal 'wrong-type-argument
-                          `((or stringp symbolp) ,auth))))
-             'utf-8))))
+      (if (eq forge 'gitlab)
+          (error "Gitlab does not support basic authentication")
+        (cons "Authorization" (ghub--basic-auth host username)))
+    (cons (if (eq forge 'gitlab)
+              "Private-Token"
+            "Authorization")
+          (concat
+           (and (not (eq forge 'gitlab)) "token ")
+           (encode-coding-string
+            (cl-typecase auth
+              (string auth)
+              (null   (ghub--token host username 'ghub nil forge))
+              (symbol (ghub--token host username auth  nil forge))
+              (t (signal 'wrong-type-argument
+                         `((or stringp symbolp) ,auth))))
+            'utf-8)))))
 
 (defun ghub--basic-auth (host username)
   (let ((url (url-generic-parse-url (concat "https://" host))))
     (setf (url-user url) username)
     (url-basic-auth url t)))
 
-(defun ghub--token (host username package &optional nocreate)
+(defun ghub--token (host username package &optional nocreate forge)
   (let ((user (ghub--ident username package)))
     (or (ghub--auth-source-get :secret :host host :user user)
         (progn
@@ -476,16 +512,25 @@ has to provide several values including their password."
           (auth-source-forget (list :max 1 :host host :user
           user))
           (and (not nocreate)
-               (ghub--confirm-create-token host username package))))))
+               (if (eq forge 'gitlab)
+                   (error
+                    (concat "Required Gitlab token does not exist.  See "
+                            "https://magit.vc/manual/ghub/Gitlab-Support.html "
+                            "for instructions."))
+                 (ghub--confirm-create-token host username package)))))))
 
-(defun ghub--host ()
-  (or (ignore-errors (car (process-lines "git" "config" "github.host")))
-      ghub-default-host))
+(defun ghub--host (&optional forge)
+  (if (eq forge 'gitlab)
+      (or (ignore-errors (car (process-lines "git" "config" "gitlab.host")))
+          (bound-and-true-p glab-default-host))
+    (or (ignore-errors (car (process-lines "git" "config" "github.host")))
+        ghub-default-host)))
 
-(defun ghub--username (host)
-  (let ((var (if (string-prefix-p "api.github.com" host)
-                 "github.user"
-               (format "github.%s.user" host))))
+(defun ghub--username (host &optional forge)
+  (let ((var (cond ((string-prefix-p "api.github.com" host) "github.user")
+                   ((string-prefix-p "gitlab.com/api" host) "gitlab.user")
+                   ((eq forge 'gitlab)     (format "gitlab.%s.user" host))
+                   (t                      (format "github.%s.user" host)))))
     (condition-case nil
         (car (process-lines "git" "config" var))
       (error
@@ -505,7 +550,10 @@ has to provide several values including their password."
           (or ghub-override-system-name (system-name))))
 
 (defun ghub--package-scopes (package)
-  (symbol-value (intern (format "%s-github-token-scopes" package))))
+  (let ((var (intern (format "%s-github-token-scopes" package))))
+    (if (boundp var)
+        (symbol-value var)
+      (error "%s fails to define %s" package var))))
 
 (defun ghub--confirm-create-token (host username package)
   (let* ((ident (ghub--ident-github package))
@@ -527,7 +575,8 @@ has to provide several values including their password."
 WARNING: If you have enabled two-factor authentication then
          you have to abort and create the token manually.
 
-If in doubt, then abort and view the documentation first.
+If in doubt, then abort and first view the section of the Ghub
+documentation called \"Manually Creating and Storing a Token\".
 
 Otherwise confirm and then provide your Github username and
 password at the next two prompts.  Depending on the backend
