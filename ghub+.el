@@ -5,8 +5,8 @@
 ;; Author: Sean Allred <code@seanallred.com>
 ;; Keywords: extensions, multimedia, tools
 ;; Homepage: https://github.com/vermiculus/ghub-plus
-;; Package-Requires: ((emacs "25") (ghub "1.2") (apiwrap "0.3"))
-;; Package-Version: 0.2
+;; Package-Requires: ((emacs "25") (ghub "1.2") (apiwrap "0.4"))
+;; Package-Version: 0.2.1
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -119,6 +119,7 @@ DATA is an alist."
 
   (apiwrap-new-backend "GitHub" "ghubp"
     '((repo . "REPO is a repository alist of the form returned by `ghubp-get-user-repos'.")
+      (branch . "BRANCH is a branch object of the form returned by `ghubp-get-repos-owner-repo-branches-branch'.")
       (org  . "ORG is an organization alist of the form returned by `ghubp-get-user-orgs'.")
       (thread . "THREAD is a thread object of the form returned by `ghubp-get-repos-owner-repo-comments'.")
       (issue . "ISSUE is an issue object of the form returned by `ghubp-get-issues'.")
@@ -745,7 +746,19 @@ organization."
 (defapiget-ghubp "/repos/:owner/:repo"
   "Get a specific repository object."
   "repos/#get"
-  (repo) "/repos/:repo.owner.login/:repo.name")
+  (repo) "/repos/:repo.owner.login/:repo.name"
+  :condition-case
+  ((ghub-404 nil)))
+
+
+;;; Branches:
+
+(defapiget-ghubp "/repos/:owner/:repo/branches/:branch"
+  "Get branch"
+  "repos/branches/#get-branch"
+  (repo branch) "/repos/:repo.owner.login/:repo.name/branches/:branch.name"
+  :condition-case
+  ((ghub-404 nil)))
 
 
 ;;; Users:
@@ -885,11 +898,10 @@ This is accessible by anyone."
   "Get the user's notifications."
   "activity/notifications/#list-your-notifications")
 
-(defapiget-ghubp
-  "/repos/:owner/:repo/notifications"
+(defapiget-ghubp "/repos/:owner/:repo/notifications"
   "List your notifications in a repository."
   "activity/notifications/#list-your-notifications-in-a-repository"
-  (user repo) "/repos/:user.login/:repo.name/notifications")
+  (repo) "/repos/:repo.owner.login/:repo.name/notifications")
 
 (defapiput-ghubp "/notifications"
   "Mark as read.
@@ -902,7 +914,7 @@ view on GitHub."
 Marking all notifications in a repository as \"read\" removes
 them from the default view on GitHub."
   "activity/notifications/#mark-notifications-as-read-in-a-repository"
-  (user repo) "/repos/:user.login/:repo.name/notifications")
+  (repo) "/repos/:repo.owner.login/:repo.name/notifications")
 
 (defapiget-ghubp "/notifications/threads/:id"
   "View a single thread."
@@ -956,6 +968,11 @@ notifications (until you comment or get @mentioned once more)."
   "Post a comment to an issue"
   "issues/comments/#create-a-comment"
   (repo issue) "/repos/:repo.owner.login/:repo.name/issues/:issue.number/comments")
+
+(defapiget-ghubp "/repos/:owner/:repo/commits"
+  "List commits on a repository"
+  "repos/commits/#list-commits-on-a-repository"
+  (repo) "/repos/:repo.owner.login/:repo.name/commits")
 
 (defun ghubp-url-parse (url)
   "Parse URL for its type and API callback.
