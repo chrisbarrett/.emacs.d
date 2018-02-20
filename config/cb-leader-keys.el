@@ -260,6 +260,7 @@
       "f W" #'write-file
       "f v" #'cb-leader-keys/reload-file
       "f y" #'cb/copy-buffer-path
+      "f Y" #'cb/copy-buffer-name
 
       "g i" #'cb-goto-init-file
       "g m" #'cb-goto-messages

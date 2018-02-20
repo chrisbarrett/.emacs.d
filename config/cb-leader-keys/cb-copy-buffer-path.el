@@ -18,6 +18,14 @@
       (message (kill-new path))
     (error "Buffer not visiting a file")))
 
+(defun cb/copy-buffer-name ()
+  "Show and copy the full path to the current file in the minibuffer."
+  (interactive)
+  (let ((name (if-let ((path (buffer-file-name)))
+                  (file-name-nondirectory path)
+                (buffer-name))))
+    (message (kill-new name))))
+
 (defun cb/copy-buffer-directory ()
   "Show and copy the directory of the current file in the minibuffer."
   (interactive)
