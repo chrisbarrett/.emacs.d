@@ -86,7 +86,7 @@
       (kbd "q")   #'neotree-hide
       (kbd "r")   #'neotree-rename-node
       (kbd "R")   #'neotree-change-root
-      (kbd "?")   #'cb-neotree-neotree-transient-state/body
+      (kbd "?")   #'cb-neotree-transient-state/body
       (kbd "s")   #'neotree-hidden-file-toggle))
 
   :init
