@@ -23,7 +23,7 @@
 
 (defconst cb-theme-common-font-family
   (--first (find-font (font-spec :name it))
-           '("Source Code Pro" "DejaVu Sans Mono" "Menlo")))
+           '("Source Code Pro" "Source Code Variable" "DejaVu Sans Mono" "Menlo")))
 
 ;; TODO: Maybe move this into a host-specific way of setting config.
 (defconst cb-theme-common-default-height
