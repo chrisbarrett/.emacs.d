@@ -144,7 +144,7 @@
          ;;
          ((and (string-match-p (rx (or bol (not space)) space eos) line-before-pt)
                (string-match-p (rx bos space (or eol (not space))) line-after-pt))
-          (let ((backward-only? (string-match-p (rx bos space) inside)))
+          (let ((backward-only? (when inside (string-match-p (rx bos space) inside))))
             (delete-horizontal-space backward-only?)))
 
          ;; Delete if there is a single preceding space.
