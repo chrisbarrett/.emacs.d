@@ -34,6 +34,14 @@
     (autoload '-const "dash-functional")
     (autoload 'projectile-register-project-type "projectile")
 
+    (defconst cb-projectile-ignored-base-dirs
+      '("/nix/store/"))
+
+    (defun cb-projectile--project-is-ignored-subdir-p (project)
+      (seq-find (lambda (base)
+                  (f-child-of-p project base))
+                cb-projectile-ignored-base-dirs))
+
     (defun cb-projectile-test-project (arg)
       (interactive "P")
       (let ((compilation-buffer-name-function (-const "*projectile-test*")))
@@ -66,6 +74,8 @@
 
     (setq projectile-globally-ignored-files '("TAGS" ".DS_Store"))
     (setq projectile-globally-ignored-file-suffixes '("gz" "zip" "tar" "elc"))
+    (setq projectile-ignored-project-function #'cb-projectile--project-is-ignored-subdir-p)
+
     (setq projectile-globally-ignored-directories
           '(".bzr"
             ".ensime_cache"
