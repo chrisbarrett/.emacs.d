@@ -13,6 +13,16 @@
 
 (require 'spacemacs-keys)
 
+(use-package all-the-icons
+  :defer t
+  :init
+  (defvar all-the-icons-scale-factor 1.0)
+  :config
+  (dolist (spec '((nix-mode all-the-icons-faicon "file-o" :height 0.8 :v-adjust 0.0 :face all-the-icons-dsilver)
+                  (makefile-mode all-the-icons-fileicon "gnu" :face all-the-icons-dorange)
+                  (makefile-bsdmake-mode all-the-icons-fileicon "gnu" :face all-the-icons-dorange)))
+    (add-to-list 'all-the-icons-mode-icon-alist spec)))
+
 (use-package cb-header-line-format
   :defines cb-header-line-format
   :config
