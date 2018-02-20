@@ -1,7 +1,7 @@
-#language: emacs-lisp
-language: python
+language: emacs-lisp
 
-sudo: false
+sudo: required
+dist: trusty
 
 cache:
   - directories:
