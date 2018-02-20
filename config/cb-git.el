@@ -82,13 +82,15 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
     (setq magit-log-section-commit-count 0)))
 
 (use-package magithub
-  :disabled t
   :after magit
   :commands (magithub-feature-autoinject)
   :config
   (progn
     (setq magithub-cache-file (concat cb-emacs-cache-directory "/magithub"))
-    (magithub-feature-autoinject t)
+
+    (let ((features (remq 'completion (seq-map #'car magithub-feature-list))))
+      (magithub-feature-autoinject features))
+
     (setq magithub-api-timeout 5)))
 
 (use-package git-commit-jira-prefix
