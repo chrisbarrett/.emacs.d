@@ -82,6 +82,7 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
     (setq magit-log-section-commit-count 0)))
 
 (use-package magithub
+  :disabled t
   :after magit
   :commands (magithub-feature-autoinject)
   :config
