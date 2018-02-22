@@ -23,6 +23,7 @@
 (use-package web-mode
   :defines (web-mode-markup-indent-offset
             web-mode-css-indent-offset)
+  :mode (("\\.php\\'" . web-mode))
 
   :defer t
 
