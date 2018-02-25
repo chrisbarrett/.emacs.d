@@ -132,6 +132,25 @@
 (use-package cb-rust-faces
   :after rust-mode)
 
+;; Rust backtraces sometimes contain absolute paths from travis builds. Rewrite
+;; these to paths relative to the rustup sources directory.
+
+(use-package compile
+  :preface
+  (progn
+    (defun cb-rust--rewrite-backtrace-paths (&optional buf &rest _)
+      (with-current-buffer (or buf (current-buffer))
+        (save-excursion
+          (goto-char (or compilation-filter-start (point-min)))
+          (let ((inhibit-read-only t)
+                (bad-path "/Users/travis/build/rust-lang/rust/"))
+            (while (search-forward-regexp bad-path nil t)
+              (replace-match "" t t)))))))
+  :config
+  (with-eval-after-load 'rust-mode
+    (add-hook 'compilation-filter-hook #'cb-rust--rewrite-backtrace-paths)
+    (add-to-list 'compilation-finish-functions #'cb-rust--rewrite-backtrace-paths)))
+
 
 ;; Snippet Utilities
 
