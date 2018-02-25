@@ -73,6 +73,10 @@
     (add-hook 'rust-mode-hook #'racer-mode))
   :config
   (progn
+    ;; Teach compile.el about sources installed via rustup.
+    (let ((base (file-name-directory racer-rust-src-path)))
+      (add-to-list 'compilation-search-path base t))
+
     (with-eval-after-load 'rust-mode
       (evil-define-key 'normal rust-mode-map (kbd "K") #'racer-describe)
       (evil-define-key 'normal rust-mode-map (kbd "M-.") #'racer-find-definition))))
