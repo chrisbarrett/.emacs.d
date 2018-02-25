@@ -54,6 +54,11 @@
   :init
   (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
 
+(use-package which-key
+  :config
+  (let ((match-suffix (rx bos "cargo-process-" (group (+ nonl)))))
+    (push `((nil . ,match-suffix) . (nil . "\\1"))
+          which-key-replacement-alist)))
 
 (use-package racer
   :defer t
