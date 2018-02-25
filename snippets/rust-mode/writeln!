@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: writeln!
+# key: wl
+# --
+writeln!(${1:std::io::stderr()}, "$0").unwrap();

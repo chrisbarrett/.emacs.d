@@ -1,4 +1,4 @@
-# key: i
+# key: ie
 # name: if...else
 # --
 if ${1:pred} {
