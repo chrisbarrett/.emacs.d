@@ -34,7 +34,11 @@
         (delete-horizontal-space))))
 
   :config
-  (evil-define-key 'normal rust-mode-map (kbd "J") #'cb-rust-join-line))
+  (progn
+    ;; Enable backtraces in rust programs run from Emacs.
+    (setenv "RUST_BACKTRACE" "1")
+
+    (evil-define-key 'normal rust-mode-map (kbd "J") #'cb-rust-join-line)))
 
 (use-package company
   :defer t
