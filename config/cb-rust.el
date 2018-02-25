@@ -44,14 +44,10 @@
   :defer t
   :commands (company-indent-or-complete-common)
   :config
-  (progn
-    (with-eval-after-load 'rust-mode
-      (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
-      (evil-define-key 'insert rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
-      (evil-define-key 'normal rust-mode-map (kbd "TAB") #'company-indent-or-complete-common))
-
-    (add-hook 'rust-mode-hook (lambda ()
-                                (setq company-minimum-prefix-length 2)))))
+  (with-eval-after-load 'rust-mode
+    (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
+    (evil-define-key 'insert rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
+    (evil-define-key 'normal rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)))
 
 (use-package flycheck-rust
   :commands (flycheck-rust-setup)
