@@ -64,9 +64,6 @@
     (add-hook 'rust-mode-hook #'racer-mode))
   :config
   (progn
-    (unless (getenv "RUST_SRC_PATH")
-      (setenv "RUST_SRC_PATH" racer-rust-src-path))
-
     (with-eval-after-load 'rust-mode
       (evil-define-key 'normal rust-mode-map (kbd "K") #'racer-describe)
       (evil-define-key 'normal rust-mode-map (kbd "M-.") #'racer-find-definition))))
