@@ -69,6 +69,8 @@
     (add-hook 'rust-mode-hook #'racer-mode))
   :config
   (progn
+    (evil-set-initial-state 'racer-help-mode 'motion)
+
     ;; Teach compile.el about sources installed via rustup.
     (let ((base (file-name-directory racer-rust-src-path)))
       (add-to-list 'compilation-search-path base t))
