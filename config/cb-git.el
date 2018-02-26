@@ -183,6 +183,16 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
     (global-diff-hl-mode)))
 
 
+(use-package magit-gpg
+  :after magit
+  :functions (magit-gpg-insert-revision-gpg)
+  :config
+  (magit-add-section-hook 'magit-revision-sections-hook
+                          #'magit-gpg-insert-revision-gpg
+                          #'magit-insert-revision-headers
+                          t))
+
+
 (provide 'cb-git)
 
 ;;; cb-git.el ends here
