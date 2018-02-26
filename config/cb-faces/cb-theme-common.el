@@ -276,6 +276,9 @@
 
     ;; web-mode
 
+    (web-mode-json-context-face
+     ((t :inherit default)))
+
     (web-mode-function-call-face
      ((t :weight normal)))
 
