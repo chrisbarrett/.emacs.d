@@ -1,6 +1,6 @@
 ;;; magit-bisect.el --- bisect support for Magit  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2011-2017  The Magit Project Contributors
+;; Copyright (C) 2011-2018  The Magit Project Contributors
 ;;
 ;; You should have received a copy of the AUTHORS.md file which
 ;; lists all contributors.  If not, see http://magit.vc/authors.
@@ -89,9 +89,9 @@ other actions from the bisect popup (\
 (defun magit-bisect-reset ()
   "After bisecting, cleanup bisection state and return to original `HEAD'."
   (interactive)
-  (when (magit-confirm 'reset-bisect)
-    (magit-run-git "bisect" "reset")
-    (ignore-errors (delete-file (magit-git-dir "BISECT_CMD_OUTPUT")))))
+  (magit-confirm 'reset-bisect)
+  (magit-run-git "bisect" "reset")
+  (ignore-errors (delete-file (magit-git-dir "BISECT_CMD_OUTPUT"))))
 
 ;;;###autoload
 (defun magit-bisect-good ()
@@ -192,7 +192,7 @@ bisect run'."
         (save-restriction
           (narrow-to-region beg (point))
           (goto-char (point-min))
-          (magit-insert-section (bisect-log heading t)
+          (magit-insert-section (bisect-item heading t)
             (insert (propertize heading 'face 'magit-section-secondary-heading))
             (magit-insert-heading)
             (magit-wash-sequence
@@ -203,7 +203,7 @@ bisect run'."
            "# first bad commit: \\[\\([a-z0-9]\\{40\\}\\)\\] [^\n]+\n" nil t)
       (magit-bind-match-strings (hash) nil
         (magit-delete-match)
-        (magit-insert-section (bisect-log)
+        (magit-insert-section (bisect-item)
           (insert hash " is the first bad commit\n"))))))
 
 (provide 'magit-bisect)

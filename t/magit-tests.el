@@ -1,6 +1,6 @@
 ;;; magit-tests.el --- tests for Magit
 
-;; Copyright (C) 2011-2017  The Magit Project Contributors
+;; Copyright (C) 2011-2018  The Magit Project Contributors
 ;;
 ;; License: GPLv3
 
@@ -182,7 +182,12 @@
     (should     (magit-get-boolean "a" "b"))
     (magit-git "config" "a.b" "false")
     (should-not (magit-get-boolean "a.b"))
-    (should-not (magit-get-boolean "a" "b"))))
+    (should-not (magit-get-boolean "a" "b"))
+    ;; Multiple values, last one wins.
+    (magit-git "config" "--add" "a.b" "true")
+    (should     (magit-get-boolean "a.b"))
+    (let ((magit--refresh-cache (list (cons 0 0))))
+     (should    (magit-get-boolean "a.b")))))
 
 (ert-deftest magit-get-{current|next}-tag ()
   (magit-with-test-repository
@@ -254,9 +259,9 @@
 
 (defun magit-test-get-section (list file)
   (magit-status-internal default-directory)
-  (--first (equal (magit-section-value it) file)
-           (magit-section-children
-            (magit-get-section `(,list (status))))))
+  (--first (equal (oref it value) file)
+           (oref (magit-get-section `(,list (status)))
+                 children)))
 
 (ert-deftest magit-status:file-sections ()
   (magit-with-test-repository

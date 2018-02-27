@@ -1,6 +1,6 @@
 ;;; magit-commit.el --- create Git commits  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2008-2017  The Magit Project Contributors
+;; Copyright (C) 2008-2018  The Magit Project Contributors
 ;;
 ;; You should have received a copy of the AUTHORS.md file which
 ;; lists all contributors.  If not, see http://magit.vc/authors.
@@ -34,12 +34,6 @@
 
 (eval-when-compile (require 'epa)) ; for `epa-protocol'
 (eval-when-compile (require 'epg))
-(declare-function epg-sub-key-id 'epg)
-(declare-function epg-key-sub-key-list 'epg)
-(declare-function epg-key-user-id-list 'epg)
-(declare-function epg-user-id-string 'epg)
-(declare-function epg-decode-dn 'epg)
-(declare-function epg-list-keys 'epg)
 
 ;;; Options
 

@@ -1,6 +1,6 @@
 ;;; magit-files.el --- finding files  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2010-2017  The Magit Project Contributors
+;; Copyright (C) 2010-2018  The Magit Project Contributors
 ;;
 ;; You should have received a copy of the AUTHORS.md file which
 ;; lists all contributors.  If not, see http://magit.vc/authors.
@@ -226,22 +226,7 @@ directory, while reading the FILENAME."
 ;;;###autoload (autoload 'magit-file-popup "magit" nil t)
 (magit-define-popup magit-file-popup
   "Popup console for Magit commands in file-visiting buffers."
-  :actions '((?s "Stage"     magit-stage-file)
-             (?D "Diff..."   magit-diff-buffer-file-popup)
-             (?L "Log..."    magit-log-buffer-file-popup)
-             (?B "Blame..."  magit-blame-popup) nil
-             (?u "Unstage"   magit-unstage-file)
-             (?d "Diff"      magit-diff-buffer-file)
-             (?l "Log"       magit-log-buffer-file)
-             (?b "Blame"     magit-blame)
-             (?p "Prev blob" magit-blob-previous)
-             (?c "Commit"    magit-commit-popup) nil nil
-             (?r (lambda ()
-                   (with-current-buffer magit-pre-popup-buffer
-                     (and (not buffer-file-name)
-                          (propertize "...reverse" 'face 'default))))
-                 magit-blame-reverse)
-             (?n "Next blob" magit-blob-next))
+  :actions magit-file-popup-actions
   :max-action-columns 5)
 
 (defvar magit-file-mode-lighter "")
@@ -352,13 +337,15 @@ If FILE isn't tracked in Git, fallback to using `rename-file'."
           (newname (read-file-name (format "Rename %s to file: " file))))
      (list (expand-file-name file (magit-toplevel))
            (expand-file-name newname))))
-  (if (magit-file-tracked-p file)
+  (if (magit-file-tracked-p (magit-convert-filename-for-git file))
       (let ((oldbuf (get-file-buffer file)))
         (when (and oldbuf (buffer-modified-p oldbuf))
           (user-error "Save %s before moving it" file))
         (when (file-exists-p newname)
           (user-error "%s already exists" newname))
-        (magit-run-git "mv" file newname)
+        (magit-run-git "mv"
+                       (magit-convert-filename-for-git file)
+                       (magit-convert-filename-for-git newname))
         (when oldbuf
           (with-current-buffer oldbuf
             (let ((buffer-read-only buffer-read-only))
@@ -377,10 +364,9 @@ With a prefix argument FORCE do so even when the files have
 staged as well as unstaged changes."
   (interactive (list (or (--if-let (magit-region-values 'file t)
                              (progn
-                               (or (magit-file-tracked-p (car it))
-                                   (user-error "Already untracked"))
-                               (or (magit-confirm-files 'untrack it "Untrack")
-                                   (user-error "Abort")))
+                               (unless (magit-file-tracked-p (car it))
+                                 (user-error "Already untracked"))
+                               (magit-confirm-files 'untrack it "Untrack"))
                            (list (magit-read-tracked-file "Untrack file"))))
                      current-prefix-arg))
   (magit-run-git "rm" "--cached" (and force "--force") "--" files))
@@ -392,8 +378,7 @@ With a prefix argument FORCE do so even when the files have
 uncommitted changes.  When the files aren't being tracked in
 Git, then fallback to using `delete-file'."
   (interactive (list (--if-let (magit-region-values 'file t)
-                         (or (magit-confirm-files 'delete it "Delete")
-                             (user-error "Abort"))
+                         (magit-confirm-files 'delete it "Delete")
                        (list (magit-read-file "Delete file")))
                      current-prefix-arg))
   (if (magit-file-tracked-p (car files))
@@ -495,7 +480,7 @@ If DEFAULT is non-nil, use this as the default value instead of
                                       (--when-let (magit-file-at-point)
                                         (file-relative-name it))))
                      (magit-patch-apply-arguments)))
-  (magit-run-git "apply" args "--" file))
+  (magit-run-git "apply" args "--" (magit-convert-filename-for-git file)))
 
 (defun magit-patch-save (file &optional arg)
   "Write current diff into patch FILE.

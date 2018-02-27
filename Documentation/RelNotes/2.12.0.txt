@@ -152,7 +152,7 @@ Changes since v2.11.0
   still visit the commit at point using "RET".  #2949
 
 * The documentation regarding completion, confirmation, the selection,
-  and the hunk-internal region were significantly extended.  It might
+  and the hunk-internal region was significantly extended.  It might
   be worth reading that.
 
 * Added new option `magit-dwim-selection', which allows configuring
@@ -200,14 +200,26 @@ Changes since v2.11.0
   with `magit-branch-pull-request' or `magit-checkout-pull-request',
   provided that remote has no other tracking branches.  #3134
 
-* Added new face `magit-mode-line-process' which is applied to the
-  mode line process status indicator shown while Git is running for
-  side-effects.  This improves the visibility of pending asynchronous
+* The mode line process indicator, displayed in the mode line when Git
+  is run for side-effects, is now more visible than before, and is
+  additionally used to highlight process errors.
+
+  New face `magit-mode-line-process' is applied to the mode line
+  process indicator to improve the visibility of pending asynchronous
   processes (in particular), as Magit remains responsive after
   initiating such commands (for instance fetching or rebasing), but
   will not update its buffers until the process has completed, which
   might take longer than anticipated.  Customize this face if you wish
   to make this indicator more (or less) visible.  #3284
+
+  If the Git process returns an error, the mode line process indicator
+  is no longer removed, and new face `magit-mode-line-process-error`
+  is applied to highlight the error status.  Details of the error from
+  the process buffer are also provided as a tooltip.  The error
+  indicator will remain visible in the mode line until a magit buffer
+  is refreshed.  If you do not want errors to be indicated in the mode
+  line, customize the `magit-process-display-mode-line-error' user
+  option.  #3297
 
 * When staging and unstaging at the file level and there are arguments
   that cause whitespace differences to be hidden, then apply the
@@ -237,6 +249,74 @@ Changes since v2.11.0
   done to preserves space.  The option `magit-refs-show-remote-prefix'
   can be used to revert this change.
 
+* The commands `magit-remote-remove' and `magit-branch-delete' now
+  unset the relevant push-remote related variables, which Git fails to
+  do, unlike for other variable affected by the removal of a remote or
+  branch.  #2850
+
+* Likewise the command `magit-remote-rename' now renames such
+  variables.  #2850
+
+* Depending on the value of the new `magit-branch-rename-push-target'
+  option the command `magit-branch-rename' may now also preserve the
+  local branch's push-remote or even rename the push branch on the
+  remote.  The default is to do both.  #2850
+
+* The section visibility is now being cached for all sections.
+  Previously this was only done for some sections.  When a section
+  disappeared and later appeared again, then it went back to its
+  initial visibility.  The option `magit-section-cache-visibility' can
+  be used to restrict the cache to certain sections again.  #2780
+
+* The section visibility cache can now also remember that a section
+  should be expanded instead of being hidden when the latter is the
+  default and the section reappears.  Previously only the opposite
+  was possible.  #2780
+
+* For `magit-status-mode' and `magit-refs-mode' buffers the visibility
+  cache now persists when killing the buffer.  #2780
+
+* Added command `magit-remote-prune-refspec', which is necessary
+  because Git does not ignore invalid refspecs and instead refuses
+  to fetch using only the refspecs that are still valid.  #3134
+
+* The terminology about modules as used by Git is ambigious.  Magit
+  now avoids the term "initialized" and instead uses the term
+  "populated" to refer to a module whose working directory exists.
+  The names of commands have been adjusted accordingly.  For example,
+  unlike "git submodule init", which does *not* actually "initialize"
+  a module, `magit-submodule-popuplate' does "populate" a module
+  (using "git submodule update --init").  #2911
+
+* Most module commands now default to act on the selected modules or
+  if no modules are selected the current module, if any.  Otherwise
+  they fall back to read a single module from the user.  Previously
+  some of these commands acted on all modules and it was not possible
+  to perform the respective actions on a subset of modules.  Acting
+  on all suitable modules is still possible using a prefix argument.
+  #2911
+
+* Many arguments have been added to the module popup.  #2911
+
+* Added option `magit-refs-filter-alist', which allows omitting some
+  references from being displayed in `magit-refs-mode' buffers.
+
+* Added commands `magit-merge-absorb' and `magit-merge-into', which
+  not only merge a local branch into another but also remove the
+  merged branch.  #2922.
+
+* Added commands `magit-cherry-harvest', `magit-cherry-donate',
+  `magit-cherry-spinout' and `magit-cherry-spinoff', which move
+  commits from one branch to another and also remove them from the
+  branch where they were previously located.  #2921
+
+* Added commands `magit-branch-shelve' and `magit-branch-unshelve'.
+  You might want to add them to the branch popup.
+
+* The look of `magit-refs-mode' buffers was changed to save horizonal
+  space and two new options `magit-refs-primary-column-width' and
+  `magit-refs-focus-column-width' were added.  #3378
+
 Fixes since v2.11.0
 -------------------
 
@@ -258,3 +338,6 @@ Fixes since v2.11.0
 
 * Fixed encoding of non-ascii filename arguments to git on
   `windows-nt' systems.  #3250
+
+* The command `magit-worktree-delete' failed to delete a worktree when
+  its directory no longer existed.  #3355

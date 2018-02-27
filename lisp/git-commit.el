@@ -1,6 +1,6 @@
 ;;; git-commit.el --- Edit Git commit messages  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2010-2017  The Magit Project Contributors
+;; Copyright (C) 2010-2018  The Magit Project Contributors
 ;;
 ;; You should have received a copy of the AUTHORS.md file which
 ;; lists all contributors.  If not, see http://magit.vc/authors.
@@ -124,13 +124,15 @@
 
 ;;;; Declarations
 
+(defvar diff-default-read-only)
 (defvar flyspell-generic-check-word-predicate)
 (defvar font-lock-beg)
 (defvar font-lock-end)
 
-(declare-function magit-expand-git-file-name 'magit-git)
-(declare-function magit-list-local-branch-names 'magit-git)
-(declare-function magit-list-remote-branch-names 'magit-git)
+(declare-function magit-expand-git-file-name "magit-git" (filename))
+(declare-function magit-list-local-branch-names "magit-git" ())
+(declare-function magit-list-remote-branch-names "magit-git"
+                  (&optional remote relative))
 
 ;;; Options
 ;;;; Variables
@@ -497,12 +499,13 @@ finally check current non-comment text."
   (turn-on-flyspell)
   (setq flyspell-generic-check-word-predicate
         'git-commit-flyspell-verify)
-  (let (end)
+  (let ((end)
+        (comment-start-regex (format "^\\(%s\\|$\\)" comment-start)))
     (save-excursion
       (goto-char (point-max))
-      (while (and (not (bobp)) (looking-at "^\\(#\\|$\\)"))
+      (while (and (not (bobp)) (looking-at comment-start-regex))
         (forward-line -1))
-      (unless (looking-at "^\\(#\\|$\\)")
+      (unless (looking-at comment-start-regex)
         (forward-line))
       (setq end (point)))
     (flyspell-region (point-min) end)))
@@ -554,7 +557,7 @@ With a numeric prefix ARG, go back ARG comments."
   (save-restriction
     (goto-char (point-min))
     (narrow-to-region (point)
-                      (if (re-search-forward (concat "^" comment-start))
+                      (if (re-search-forward (concat "^" comment-start) nil t)
                           (max 1 (- (point) 2))
                         (point-max)))
     (log-edit-previous-comment arg)))
@@ -788,10 +791,13 @@ Added to `font-lock-extend-region-functions'."
   (setq-local comment-use-syntax nil)
   (setq-local git-commit--branch-name-regexp
               (if (featurep 'magit-git)
-                  ;; Font-Lock wants every submatch to succeed.
-                  (format "\\(%s\\|\\)\\(%s\\|\\)"
-                          (regexp-opt (magit-list-local-branch-names))
-                          (regexp-opt (magit-list-remote-branch-names)))
+                  (progn
+                    ;; Make sure the below functions are available.
+                    (require 'magit)
+                    ;; Font-Lock wants every submatch to succeed.
+                    (format "\\(%s\\|\\)\\(%s\\|\\)"
+                            (regexp-opt (magit-list-local-branch-names))
+                            (regexp-opt (magit-list-remote-branch-names))))
                 "\\([^']*\\)"))
   (setq-local font-lock-multiline t)
   (add-hook 'font-lock-extend-region-functions
@@ -800,6 +806,7 @@ Added to `font-lock-extend-region-functions'."
   (font-lock-add-keywords nil git-commit-font-lock-keywords t))
 
 (defun git-commit-propertize-diff ()
+  (require 'diff-mode)
   (save-excursion
     (goto-char (point-min))
     (when (re-search-forward "^diff --git" nil t)

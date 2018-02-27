@@ -1,6 +1,6 @@
 ;;; git-rebase.el --- Edit Git rebase files  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2010-2017  The Magit Project Contributors
+;; Copyright (C) 2010-2018  The Magit Project Contributors
 ;;
 ;; You should have received a copy of the AUTHORS.md file which
 ;; lists all contributors.  If not, see http://magit.vc/authors.
@@ -494,7 +494,7 @@ running 'man git-rebase' at the command line) for details."
 (defun git-rebase-cancel-confirm (force)
   (or (not (buffer-modified-p))
       force
-      (magit-confirm 'abort-rebase "Abort this rebase")))
+      (magit-confirm 'abort-rebase "Abort this rebase" nil 'noabort)))
 
 (defun git-rebase-autostash-save ()
   (--when-let (magit-file-line (magit-git-dir "rebase-merge/autostash"))
@@ -556,7 +556,7 @@ By default, this is the same except for the \"pick\" command."
               (replace-match
                (format "%-8s"
                        (mapconcat #'key-description
-                                  (--filter (not (eq (elt it 0) 'menu-bar))
+                                  (--remove (eq (elt it 0) 'menu-bar)
                                             (reverse (where-is-internal cmd)))
                                   ", "))
                t t nil 2))))))))
