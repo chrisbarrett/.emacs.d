@@ -34,6 +34,7 @@
       "NIX_SSL_CERT_FILE"
       "NIX_PATH"
       "SSH_AGENT_PID"
+      "GPG_TTY"
       "RUST_SRC_PATH"))
   :config
   (exec-path-from-shell-initialize))
