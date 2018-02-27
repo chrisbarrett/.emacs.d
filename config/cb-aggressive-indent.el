@@ -35,6 +35,7 @@
       scala-mode
       sql-mode
       stylus-mode
+      terraform-mode
       text-mode
       toml-mode
       yaml-mode))
