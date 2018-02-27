@@ -1,0 +1,11 @@
+Revision history for hcl-mode.el
+
+Revision 0.03 2017/01/01 syohex
+   - Rewrite here document highlighting
+   - Drop older Emacs support
+
+Revision 0.02 2016/05/03 syohex
+   - Support here document syntax highlighting
+
+Revision 0.01 2015/10/06 syohex
+   - Initial version
