@@ -1,13 +1,13 @@
 #+TITLE: Magit User Manual
 #+AUTHOR: Jonas Bernoulli
 #+EMAIL: jonas@bernoul.li
-#+DATE: 2015-2017
+#+DATE: 2015-2018
 #+LANGUAGE: en
 
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Magit: (magit).
 #+TEXINFO_DIR_DESC: Using Git from Emacs with Magit.
-#+SUBTITLE: for version 2.11.0 (2.11.0-356-gebd8c651+1)
+#+SUBTITLE: for version 2.11.0 (2.11.0-566-g7c534123c+1)
 #+BIND: ox-texinfo+-before-export-hook ox-texinfo+-update-version-strings
 
 #+TEXINFO_DEFFN: t
@@ -22,10 +22,10 @@ directly from within Emacs.  While many fine Git clients exist, only
 Magit and Git itself deserve to be called porcelains.
 
 #+TEXINFO: @noindent
-This manual is for Magit version 2.11.0 (2.11.0-356-gebd8c651+1).
+This manual is for Magit version 2.11.0 (2.11.0-566-g7c534123c+1).
 
 #+BEGIN_QUOTE
-Copyright (C) 2015-2017 Jonas Bernoulli <jonas@bernoul.li>
+Copyright (C) 2015-2018 Jonas Bernoulli <jonas@bernoul.li>
 
 You can redistribute this document and/or modify it under the terms
 of the GNU General Public License as published by the Free Software
@@ -568,14 +568,21 @@ buffers whose major-modes derive from ~magit-mode~.
     The top-level directory of the working tree of the repository, or
     if ~magit-uniquify-buffer-names~ is non-nil an abbreviation of that.
 
+  - ~%x~
+
+    If ~magit-uniquify-buffer-names~ is nil "*", otherwise the empty
+    string.  Due to limitations of the ~uniquify~ package, buffer names
+    must end with the path.
+
   - ~%T~
 
-    Like ~%t~, but append an asterisk if and only if
-    ~magit-uniquify-buffer-names~ is nil.
+    Obsolete, use "%t%x" instead.  Like ~%t~, but append an asterisk if
+    and only if ~magit-uniquify-buffer-names~ is nil.
 
-  The value should always contain ~%m~ or ~%M~, ~%v~ or ~%V~, and ~%t~ or ~%T~.
-  If ~magit-uniquify-buffer-names~ is non-nil, then the value must end
-  with ~%t~ or ~%T~ (see issue #2841).
+  The value should always contain ~%m~ or ~%M~, ~%v~ or ~%V~, and ~%t~ (or the
+  obsolete ~%T~).  If ~magit-uniquify-buffer-names~ is non-nil, then the
+  value must end with ~%t~ or ~%t%x~ (or the obsolete ~%T~).  See issue
+  #2841.
 
 - User Option: magit-uniquify-buffer-names
 
@@ -1045,6 +1052,33 @@ while others are not.  This is hard coded.  When a buffer is refreshed
 then the previous visibility is preserved. The initial visibility of
 certain sections can also be overwritten using the hook
 ~magit-section-set-visibility-hook~.
+
+- User Option: magit-section-initial-visibility-alist
+
+  This options can be used to override the initial visibility of
+  sections.  In the future it will also be used to define the
+  defaults, but currently a section's default is still hardcoded.
+
+  The value is an alist.  Each element maps a section type or lineage
+  to the initial visibility state for such sections.  The state has to
+  be one of ~show~ or ~hide~, or a function that returns one of these
+  symbols.  A function is called with the section as the only argument.
+
+  Use the command ~magit-describe-section~ to determine a section's
+  lineage or type.  The vector in the output is the section lineage
+  and the type is the first element of that vector.  Wildcards can be
+  used, see ~magit-section-match~.
+
+- User Option: magit-section-cache-visibility
+
+  This option controls for which sections the previous visibility
+  state should be restored if a section disappears and later appears
+  again.  The value is a boolean or a list of section types.  If t,
+  then the visibility of all sections is cached.  Otherwise this is
+  only done for sections whose type matches one of the listed types.
+
+  This requires that the function ~magit-section-cached-visibility~ is
+  a member of ~magit-section-set-visibility-hook~.
 
 - Variable: magit-section-set-visibility-hook
 
@@ -1551,12 +1585,14 @@ will also have to install the ~ido-completing-read+~ package and use
 *** Viewing Git Output
 
 Magit runs Git either for side-effects (e.g. when pushing) or to get
-some value (e.g. the name of the current branch).  When Git is run for
-side-effects, the mode line displays a process status indicator (using
-the ~magit-mode-line-process~ face), and the process output goes into
-a per-repository log buffer, which can be consulted when things don't
-go as expected.  Process errors are indicated at the top of the status
-buffer.
+some value (e.g. the name of the current branch).
+
+When Git is run for side-effects, the process output is logged in a
+per-repository log buffer, which can be consulted using the
+~magit-process~ command when things don't go as expected.
+
+The output/errors for up to `magit-process-log-max' Git commands are
+retained.
 
 - Key: $, magit-process
 
@@ -1575,6 +1611,26 @@ sections are available.  There is one additional command.
   When this is non-nil then the output of all calls to git are logged
   in the process buffer.  This is useful when debugging, otherwise it
   just negatively affects performance.
+
+*** Git Process Status
+
+When a Git process is running for side-effects, Magit displays an
+indicator in the mode line, using the ~magit-mode-line-process~ face.
+
+If the Git process exits successfully, the process indicator is
+removed from the mode line immediately.
+
+In the case of a Git error, the process indicator is not removed, but
+is instead highlighted with the ~magit-mode-line-process-error~ face,
+and the error details from the process buffer are provided as a
+tooltip for mouse users.  This error indicator persists in the mode
+line until the next magit buffer refresh.
+
+If you do not wish process errors to be indicated in the mode line,
+customize the ~magit-process-display-mode-line-error~ user option.
+
+Process errors are additionally indicated at the top of the status
+buffer.
 
 *** Running Git Manually
 
@@ -2012,11 +2068,11 @@ variable.
   inserted, and option ~magit-module-sections-nested~ controls whether
   they are wrapped in an additional section.
 
-- Option: magit-module-sections-hook
+- User Option: magit-module-sections-hook
 
   Hook run by ~magit-insert-modules~.
 
-- Option: magit-module-sections-nested
+- User Option: magit-module-sections-nested
 
   This option controls whether ~magit-insert-modules~ wraps inserted
   sections in an additional section.
@@ -2346,6 +2402,12 @@ relationship visible.  For example:
   feature origin/feature
   [blue-] [green-------]
 #+END_EXAMPLE
+
+Also note that while the popup features the ~--show-signature~ argument,
+that won't actually be used when enabled, because Magit defaults to
+use just one line per commit.  Instead the commit colorized to
+indicate the validity of the signed commit object, using the faces
+named ~magit-signature-*~ (which see).
 
 For a description of ~magit-log-margin~ see [[*Log Margin]].
 
@@ -3040,6 +3102,54 @@ information on how to use Ediff itself, see info:ediff.
 
   The default is ~nil~ because anything else can be very expensive.
 
+- User Option: magit-refs-pad-commit-counts
+
+  Whether to pad all commit counts on all sides in Magit-Refs mode
+  buffers.
+
+  If this is nil, then some commit counts are displayed right next to
+  one of the branches that appear next to the count, without any space
+  in between.  This might look bad if the branch name faces look too
+  similar to ~magit-dimmed~.
+
+  If this is non-nil, then spaces are placed on both sides of all
+  commit counts.
+
+- User Option: magit-refs-show-remote-prefix
+
+  Whether to show the remote prefix in lists of remote branches.
+
+  Showing the prefix is redundant because the name of the remote is
+  already shown in the heading preceeding the list of its branches.
+
+- User Option: magit-refs-primary-column-width
+
+  Width of the primary column in `magit-refs-mode' buffers.  The
+  primary column is the column that contains the name of the branch
+  that the current row is about.
+
+  If this is an integer, then the column is that many columns wide.
+  Otherwise it has to be a cons-cell of two integers.  The first
+  specifies the minimal width, the second the maximal width.  In that
+  case the actual width is determined using the length of the names of
+  the shown local branches.  (Remote branches and tags are not taken
+  into account when calculating to optimal width.)
+
+- User Option: magit-refs-focus-column-width
+
+  Width of the focus column in `magit-refs-mode' buffers.
+
+  The focus column is the first column, which marks one branch
+  (usually the current branch) as the focused branch using ~*~ or ~@~.
+  For each other reference, this column optionally shows how many
+  commits it is ahead of the focused branch and ~<~, or if it isn't
+  ahead then the commits it is behind and ~>~, or if it isn't behind
+  either, then a ~=~.
+
+  This column may also display only ~*~ or ~@~ for the focused branch, in
+  which case this option is ignored.  Use ~L v~ to change the verbosity
+  of this column.
+
 - User Option: magit-refs-margin
 
   This option specifies whether the margin is initially shown in
@@ -3084,22 +3194,22 @@ should also change the others to keep things aligned.  The following
 - ~%U~ Upstream of this local branch and additional local vs. upstream
   information.
 
-- Variable: magit-refs-local-branch-format
+- User Option: magit-refs-filter-alist
 
-  Format used for local branches in refs buffers.
+  This alist controls which tags and branches are omitted from being
+  displayed in ~magit-refs-mode~ buffers.  If it is ~nil~, then all refs
+  are displayed (subject to ~magit-refs-sections-hook~).
 
-- Variable: magit-refs-remote-branch-format
+  All keys are tried in order until one matches.  Then its value is
+  used and subsequent elements are ignored.  If the value is non-nil,
+  then the reference is displayed, otherwise it is not.  If no element
+  matches, then the reference is displayed.
 
-  Format used for remote branches in refs buffers.
-
-- Variable: magit-refs-tags-format
-
-  Format used for tags in refs buffers.
-
-- Variable: magit-refs-indent-cherry-lines
-
-  Indentation of cherries in refs buffers.  This should be N-1 where N
-  is taken from "%Nc" in the above format strings.
+  A key can either be a regular expression that the refname has to
+  match, or a function that takes the refname as only argument and
+  returns a boolean.  Contrary to how they are displayed in the
+  buffer, for comparison each tag begins with "tags/" and each remote
+  branch with "<remote>/".
 
 - Key: RET, magit-visit-ref
 
@@ -4477,6 +4587,29 @@ man:git-config Also see [[man:git-branch]], [[man:git-checkout]] and [[*Pushing]
   ~magit-read-starting-point~, which includes all commands that change
   the upstream and many which create new branches.
 
+*** Auxillary Branch Commands
+
+These commands are not available from the branch popup by default.
+
+- Command: magit-branch-shelve
+
+  This command shelve a branch.  This is done by deleting the branch,
+  and creating a new reference "refs/shelved/BRANCH-NAME" pointing at
+  the same commit as the branch pointed at.  If the deleted branch had
+  a reflog, then that is preserved as the reflog of the new reference.
+
+  This is useful if you want to move a branch out of sight, but are
+  not ready to completely discard it yet.
+
+- Command: magit-branch-unshelve
+
+  This command unshelve a branch that was previously shelved using
+  ~magit-branch-shelve~.  This is done by deleting the reference
+  "refs/shelved/BRANCH-NAME" and creating a branch "BRANCH-NAME"
+  pointing at the same commit as the deleted reference pointed at.
+  If the deleted reference had a reflog, then that is restored as
+  the reflog of the branch.
+
 ** Merging
 
 Also see [[man:git-merge]]  For information on how to resolve
@@ -4492,11 +4625,11 @@ following commands.
 
 - Key: m m, magit-merge
 
-  Merge another branch or an arbitrary revision into the current
-  branch.  The branch or revision to be merged is read in the
-  minibuffer and defaults to the one at point.
+  This command merges another branch or an arbitrary revision into the
+  current branch.  The branch or revision to be merged is read in the
+  minibuffer and defaults to the branch at point.
 
-  Unless there are conflicts or a prefix argument is used, the
+  Unless there are conflicts or a prefix argument is used, then the
   resulting merge commit uses a generic commit message, and the user
   does not get a chance to inspect or change it before the commit is
   created.  With a prefix argument this does not actually create the
@@ -4505,34 +4638,66 @@ following commands.
 
 - Key: m e, magit-merge-editmsg
 
-  Merge another branch or an arbitrary revision into the current
-  branch and open a commit message buffer, so that the user can make
-  adjustments.  The commit is not actually created until the user
-  finishes with ~C-c C-c~.
+  This command merges another branch or an arbitrary revision into the
+  current branch and opens a commit message buffer, so that the user
+  can make adjustments.  The commit is not actually created until the
+  user finishes with ~C-c C-c~.
 
 - Key: m n, magit-merge-nocommit
 
-  Merge another branch or an arbitrary revision into the current
-  branch, but do not actually create the commit.  The user can then
-  further adjust the merge, even when automatic conflict resolution
-  succeeded and/or adjust the commit message.
+  This command merges another branch or an arbitrary revision into the
+  current branch, but does not actually create the merge commit.  The
+  user can then further adjust the merge, even when automatic conflict
+  resolution succeeded and/or adjust the commit message.
+
+- Key: m a, magit-merge-absorb
+
+  This command merges another local branch into the current branch and
+  then removes the former.
+
+  Before the source branch is merged, it is first force pushed to its
+  push-remote, provided the respective remote branch already exists.
+  This ensures that the respective pull-request (if any) won't get
+  stuck on some obsolete version of the commits that are being merged.
+  Finally, if ~magit-branch-pull-request~ was used to create the merged
+  branch, then the respective remote branch is also removed.
+
+- Key: m i, magit-merge-into
+
+  This command merges the current branch into another local branch and
+  then removes the former.  The latter becomes the new current branch.
+
+  Before the source branch is merged, it is first force pushed to its
+  push-remote, provided the respective remote branch already exists.
+  This ensures that the respective pull-request (if any) won't get
+  stuck on some obsolete version of the commits that are being merged.
+  Finally, if ~magit-branch-pull-request~ was used to create the merged
+  branch, then the respective remote branch is also removed.
+
+- Key: m s, magit-merge-squash
+
+  This command squashes the changes introduced by another branch or an
+  arbitrary revision into the current branch.  This only applies the
+  changes made by the squashed commits.  No information is preserved
+  that would allow creating an actual merge commit.  Instead of this
+  command you should probably use a command from the apply popup.
 
 - Key: m p, magit-merge-preview
 
-  Preview result of merging another branch or an arbitrary revision
-  into the current branch.
+  This command shows a preview of merging another branch or an
+  arbitrary revision into the current branch.
 
 When a merge is in progress, then the popup buffer features these
 commands instead.
 
 - Key: m m, magit-merge
 
-  After resolving conflicts, proceed with the merge.  If there are
-  still conflicts, then this fails.
+  After the user resolved conflicts, this command proceeds with the
+  merge.  If some conflicts weren't resolved, then this command fails.
 
 - Key: m a, magit-merge-abort
 
-  Abort the current merge operation.
+  This command aborts the current merge operation.
 
 ** Resolving Conflicts
 
@@ -5055,6 +5220,59 @@ features the following commands.
   This command also has a top-level binding, which can be invoked without
   using the popup by typing ~a~ at the top-level.
 
+The following commands not only apply some commits to some branch, but
+also remove them from some other branch.  The removal is performed
+using either ~git-update-ref~ or if necessary ~git-rebase~.  Both applying
+commits as well as removing them using ~git-rebase~ can lead to
+conflicts.  If that happens, then these commands abort and you not
+only have to resolve the conflicts but also finish the process the
+same way you would have to if these commands didn't exist at all.
+
+- Key: A h, magit-cherry-harvest
+
+  This command moves the selected COMMITS that must be located on
+  another BRANCH onto the current branch instead, removing them from
+  the former.  When this command succeeds, then the same branch is
+  current as before.
+
+  Applying the commits on the current branch or removing them from the
+  other branch can lead to conflicts.  When that happens, then this
+  command stops and you have to resolve the conflicts and then finish
+  the process manually.
+
+- Key: A d, magit-cherry-donate
+
+  This command moves the selected COMMITS from the current branch onto
+  another existing BRANCH, removing them from the former.  When this
+  command succeeds, then the same branch is current as before.
+
+  Applying the commits on the other branch or removing them from the
+  current branch can lead to conflicts.  When that happens, then this
+  command stops and you have to resolve the conflicts and then finish
+  the process manually.
+
+- Key: A n, magit-cherry-spinout
+
+  This command moves the selected COMMITS from the current branch onto
+  a new branch BRANCH, removing them from the former.  When this
+  command succeeds, then the same branch is current as before.
+
+  Applying the commits on the other branch or removing them from the
+  current branch can lead to conflicts.  When that happens, then this
+  command stops and you have to resolve the conflicts and then finish
+  the process manually.
+
+- Key: A s, magit-cherry-spinoff
+
+  This command moves the selected COMMITS from the current branch onto
+  a new branch BRANCH, removing them from the former.  When this
+  command succeeds, then the new branch is checked out.
+
+  Applying the commits on the other branch or removing them from the
+  current branch can lead to conflicts.  When that happens, then this
+  command stops and you have to resolve the conflicts and then finish
+  the process manually.
+
 When a cherry-pick or revert is in progress, then the popup buffer
 features these commands instead.
 
@@ -5316,6 +5534,12 @@ Also see [[man:git-remote]]
 - Key: M k, magit-remote-remove
 
   Delete a remote, read from the minibuffer.
+
+- Key: M p, magit-remote-prune-refspecs
+
+  Remove stale refspecs and tracking branches for REMOTE.  If there
+  are only stale refspecs, then offer to either delete the remote or
+  replace the refspecs with the default refspec instead.
 
 - User Option: magit-remote-add-set-remote.pushDefault
 
@@ -5730,7 +5954,7 @@ The command ~magit-list-submodules~ displays a list of the current
 repository's submodules in a separate buffer.  It's also possible to
 display information about submodules directly in the status buffer of
 the super-repository by adding ~magit-insert-submodules~ to the hook
-~magit-status-sections-hook~.
+~magit-status-sections-hook~ as described in [[*Status Module Sections]].
 
 - Command: magit-list-submodules
 
@@ -5771,37 +5995,59 @@ the super-repository by adding ~magit-insert-submodules~ to the hook
   This prefix command shows the following suffix commands along with
   the appropriate infix arguments in a popup buffer.
 
+Some of the below commands default to act on the modules that are
+selected using the region.  For brevity their description talk about
+"the selected modules", but if no modules are selected, then they act
+on the current module instead, or if point isn't on a module, then the
+read a single module to act on.  With a prefix argument these commands
+ignore the selection and the current module and instead act on all
+suitable modules.
+
 - Key: o a, magit-submodule-add
 
-  Add the repository at URL as a submodule.  Optional PATH is the path
-  to the submodule relative to the root of the super-project. If it is
-  nil then the path is determined based on URL.
+  This commands adds the repository at URL as a module.  Optional PATH
+  is the path to the module relative to the root of the super-project.
+  If it is nil then the path is determined based on URL.
 
-- Key: o b, magit-submodule-setup
+- Key: o r, magit-submodule-register
 
-  Clone and register missing submodules and checkout appropriate
-  commits.
+  This command registers the selected modules by copying their urls
+  from ".gitmodules" to "$GIT_DIR/config".  These values can then be
+  edited before running ~magit-submodule-populate~.  If you don't need
+  to edit any urls, then use the latter directly.
 
-- Key: o i, magit-submodule-init
+- Key: o p, magit-submodule-populate
 
-  Register submodules listed in ".gitmodules" into ".git/config".
+  This command creates the working directory or directories of the
+  selected modules, checking out the recorded commits.
 
 - Key: o u, magit-submodule-update
 
-  Clone missing submodules and checkout appropriate commits.  With a
-  prefix argument also register submodules in ".git/config".
+  This command updates the selected modules checking out the recorded
+  commits.
 
-- Key: o s, magit-submodule-sync
+- Key: o s, magit-submodule-synchronize
 
-  Update each submodule's remote URL according to ".gitmodules".
+  This command synchronizes the urls of the selected modules, copying
+  the values from ".gitmodules" to the ".git/config" of the
+  super-project as well those of the modules.
 
-- Key: o f, magit-submodule-fetch
+- Key: o d, magit-submodule-unpopulate
 
-  Fetch submodule.  With a prefix argument fetch all remotes.
+  This command removes the working directory of the selected modules.
 
-- Key: o d, magit-submodule-deinit
+- Key: o l, magit-list-submodules
 
-  Unregister the submodule at PATH.
+  This command displays a list of the current repository's modules.
+
+- Key: o f, magit-fetch-modules
+
+  This command fetches all modules.
+
+  Option ~magit-fetch-modules-jobs~ controls how many submodules are
+  being fetched in parallel.  Also fetch the super-repository, because
+  ~git fetch~ does not support not doing that.  With a prefix argument
+  fetch all remotes.
 
 ** Subtree
 
@@ -7449,6 +7695,9 @@ issue.
   packages are loaded.  This makes it easier to determine whether some
   issue lays with Magit or something else.
 
+  If you run Magit from its Git repository, then you should be able to
+  use ~make emacs-Q~ instead of the output of this command.
+
 - Key: M-x magit-debug-git-executable, magit-debug-git-executable
 
   This command displays a buffer containing information about the
@@ -7496,7 +7745,7 @@ Please also see the [[*FAQ]].
 :END:
 
 #+BEGIN_QUOTE
-Copyright (C) 2015-2017 Jonas Bernoulli <jonas@bernoul.li>
+Copyright (C) 2015-2018 Jonas Bernoulli <jonas@bernoul.li>
 
 You can redistribute this document and/or modify it under the terms
 of the GNU General Public License as published by the Free Software

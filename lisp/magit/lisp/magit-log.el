@@ -1,6 +1,6 @@
 ;;; magit-log.el --- inspect Git history  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2010-2017  The Magit Project Contributors
+;; Copyright (C) 2010-2018  The Magit Project Contributors
 ;;
 ;; You should have received a copy of the AUTHORS.md file which
 ;; lists all contributors.  If not, see http://magit.vc/authors.
@@ -32,12 +32,16 @@
 (require 'magit-core)
 (require 'magit-diff)
 
-(declare-function magit-blob-visit 'magit)
-(declare-function magit-insert-head-branch-header 'magit)
-(declare-function magit-insert-upstream-branch-header 'magit)
-(declare-function magit-read-file-from-rev 'magit)
-(declare-function magit-show-commit 'magit)
-(defvar magit-refs-indent-cherry-lines)
+(declare-function magit-blob-visit "magit-files" (blob-or-file line))
+(declare-function magit-insert-head-branch-header "magit-status"
+                  (&optional branch))
+(declare-function magit-insert-upstream-branch-header "magit-status"
+                  (&optional branch pull keyword))
+(declare-function magit-read-file-from-rev "magit-files"
+                  (rev prompt &optional default))
+(declare-function magit-show-commit "magit-diff"
+                  (arg1 &optional arg2 arg3 arg4))
+(defvar magit-refs-focus-column-width)
 (defvar magit-refs-margin)
 (defvar magit-refs-show-commit-count)
 (defvar magit-buffer-margin)
@@ -773,9 +777,9 @@ is displayed in the current frame."
   (interactive "p")
   (when (derived-mode-p 'magit-log-mode)
     (magit-section-when commit
-      (let ((parent-rev (format "%s^%s" (magit-section-value it) (or n 1))))
+      (let ((parent-rev (format "%s^%s" (oref it value) (or n 1))))
         (-if-let (parent-hash (magit-rev-parse "--short" parent-rev))
-            (-if-let (section (--first (equal (magit-section-value it)
+            (-if-let (section (--first (equal (oref it value)
                                               parent-hash)
                                        (magit-section-siblings it 'next)))
                 (magit-section-goto section)
@@ -963,6 +967,8 @@ Do not add this to a hook variable."
 
 (defvar magit-log-count nil)
 
+(defvar magit-log-format-message-function 'magit-log-propertize-keywords)
+
 (defun magit-log-wash-log (style args)
   (setq args (-flatten args))
   (when (and (member "--graph" args)
@@ -1019,13 +1025,13 @@ Do not add this to a hook variable."
         (cl-return-from magit-log-wash-rev t))
       (magit-insert-section section (commit hash)
         (pcase style
-          (`stash      (setf (magit-section-type section) 'stash))
-          (`module     (setf (magit-section-type section) 'module-commit))
+          (`stash      (oset section type 'stash))
+          (`module     (oset section type 'module-commit))
           (`bisect-log (setq hash (magit-rev-parse "--short" hash))))
         (when cherry
           (when (and (derived-mode-p 'magit-refs-mode)
                      magit-refs-show-commit-count)
-            (insert (make-string magit-refs-indent-cherry-lines ?\s)))
+            (insert (make-string (1- magit-refs-focus-column-width) ?\s)))
           (insert (propertize cherry 'face (if (string= cherry "-")
                                                'magit-cherry-equivalent
                                              'magit-cherry-unmatched)))
@@ -1059,7 +1065,7 @@ Do not add this to a hook variable."
                                     (?Y 'magit-signature-expired-key)
                                     (?R 'magit-signature-revoked)
                                     (?E 'magit-signature-error)))))
-          (insert (magit-log-propertize-keywords msg)))
+          (insert (funcall magit-log-format-message-function hash msg)))
         (when (and refs magit-log-show-refname-after-summary)
           (insert ?\s)
           (insert (magit-format-ref-labels refs)))
@@ -1098,7 +1104,7 @@ Do not add this to a hook variable."
               (let ((limit (save-excursion
                              (and (re-search-forward non-graph-re nil t)
                                   (match-beginning 0)))))
-                (unless (magit-section-content magit-insert-section--current)
+                (unless (oref magit-insert-section--current content)
                   (magit-insert-heading))
                 (delete-char (if (looking-at "\n") 1 4))
                 (magit-diff-wash-diffs (list "--stat") limit))
@@ -1123,7 +1129,7 @@ Do not add this to a hook variable."
                 (insert graph ?\n))))))))
   t)
 
-(defun magit-log-propertize-keywords (msg)
+(defun magit-log-propertize-keywords (_rev msg)
   (let ((start 0))
     (while (string-match "\\[[^[]*\\]" msg start)
       (setq start (match-end 0))
@@ -1143,7 +1149,7 @@ having to press \"+\".
 
 This function is called by `magit-section-movement-hook' and
 exists mostly for backward compatibility reasons."
-  (when (and (eq (magit-section-type section) 'longer)
+  (when (and (eq (oref section type) 'longer)
              magit-log-auto-more)
     (magit-log-double-commit-limit)
     (forward-line -1)
@@ -1204,13 +1210,12 @@ If there is no blob buffer in the same frame, then do nothing."
 (defun magit-log-goto-same-commit ()
   (-when-let* ((prev magit-previous-section)
                (rev  (cond ((magit-section-match 'commit prev)
-                            (magit-section-value prev))
+                            (oref prev value))
                            ((magit-section-match 'branch prev)
-                            (magit-rev-format
-                             "%h" (magit-section-value prev)))))
-               (same (--first (equal (magit-section-value it) rev)
-                              (magit-section-children magit-root-section))))
-    (goto-char (magit-section-start same))))
+                            (magit-rev-format "%h" (oref prev value)))))
+               (same (--first (equal (oref it value) rev)
+                              (oref magit-root-section children))))
+    (goto-char (oref same start))))
 
 ;;; Log Margin
 
@@ -1531,7 +1536,7 @@ then show the last `magit-log-section-commit-count' commits."
                          '((unpushed . "@{upstream}..")
                            (status))
                          magit-insert-section--oldroot))
-             (magit-section-hidden it)
+             (oref it hidden)
            nil))
       (magit-insert-unpushed-to-upstream
        (--if-let (and magit-insert-section--oldroot
@@ -1540,7 +1545,7 @@ then show the last `magit-log-section-commit-count' commits."
                                             magit-log-section-commit-count))
                          (status))
                        magit-insert-section--oldroot))
-           (magit-section-hidden it)
+           (oref it hidden)
          t)))))
 
 (defun magit-insert-unpushed-to-upstream (&optional collapse)

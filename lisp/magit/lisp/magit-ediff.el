@@ -1,6 +1,6 @@
 ;;; magit-ediff.el --- Ediff extension for Magit  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2010-2017  The Magit Project Contributors
+;; Copyright (C) 2010-2018  The Magit Project Contributors
 ;;
 ;; You should have received a copy of the AUTHORS.md file which
 ;; lists all contributors.  If not, see http://magit.vc/authors.
@@ -285,7 +285,7 @@ mind at all, then it asks the user for a command to run."
   (interactive)
   (magit-section-case
     (hunk (save-excursion
-            (goto-char (magit-section-start (magit-section-parent it)))
+            (goto-char (oref (oref it parent) start))
             (magit-ediff-dwim)))
     (t
      (let ((range (magit-diff--dwim))

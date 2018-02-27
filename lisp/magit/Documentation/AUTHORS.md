@@ -78,6 +78,7 @@ Contributors
 - Chillar Anand <anand21nanda@gmail.com>
 - Chris Bernard <cebernard@gmail.com>
 - Chris Done <chrisdone@gmail.com>
+- Chris LaRose <cjlarose@gmail.com>
 - Chris Moore <dooglus@gmail.com>
 - Chris Ring <chris@ringthis.com>
 - Chris Shoemaker <chris@mojotech.com>
@@ -91,7 +92,9 @@ Contributors
 - Dan Erikson <derikson3@gmail.com>
 - Daniel Brockman <daniel@gointeractive.se>
 - Daniel Farina <drfarina@acm.org>
+- Daniel Gröber <daniel@dps.uibk.ac.at>
 - Daniel Hackney <dan@haxney.org>
+- Daniel Kraus <daniel@kraus.my>
 - Daniel Mai <daniel@danielmai.net>
 - Dan LaManna <dan.lamanna@gmail.com>
 - Dato Simó <dato@net.com.org.es>
@@ -115,6 +118,7 @@ Contributors
 - Feng Li <fengli@blackmagicdesign.com>
 - Florian Ragwitz <rafl@debian.org>
 - Fritz Grabo <fritz.grabo@gmail.com>
+- Fritz Stelzer <brotzeitmacher@gmail.com>
 - Geoff Shannon <geoffpshannon@gmail.com>
 - George Kadianakis <desnacked@gmail.com>
 - Graham Clark <grclark@gmail.com>
@@ -150,6 +154,7 @@ Contributors
 - Justin Guenther <jguenther@gmail.com>
 - Justin Thomas <justin.thomas1@gmail.com>
 - Kan-Ru Chen <kanru@kanru.info>
+- Kenny Ballou <kballou@devnulllabs.io>
 - Keshav Kini <keshav.kini@gmail.com>
 - Kévin Le Gouguec <kevin.legouguec@gmail.com>
 - Kimberly Wolk <kimwolk@hotmail.com>
@@ -203,6 +208,7 @@ Contributors
 - Noam Postavsky <npostavs@users.sourceforge.net>
 - Ole Arndt <oliver.arndt@cegedim.com>
 - Oleh Krehel <ohwoeowho@gmail.com>
+- Orivej Desh <orivej@gmx.fr>
 - Óscar Fuentes <ofv@wanadoo.es>
 - Paul Stadig <paul@stadig.name>
 - Pavel Holejsovsky <pavel.holejsovsky@upek.com>
@@ -275,11 +281,13 @@ Contributors
 - Tom Feist <shabble@metavore.org>
 - Tunc Uzlu <bb2020@users.noreply.github.com>
 - Vineet Naik <vineet@helpshift.com>
+- Vladimir Panteleev <git@thecybershadow.net>
 - Wei Huang <weih@opera.com>
 - Wilfred Hughes <me@wilfred.me.uk>
 - Win Treese <treese@acm.org>
 - Wouter Bolsterlee <wouter@bolsterl.ee>
 - Xavier Noria <fxn@hashref.com>
+- Xu Chunyang <mail@xuchunyang.me>
 - Yann Hodique <yann.hodique@gmail.com>
 - York Zhao <gtdplatform@gmail.com>
 - Yuichi Higashi <aaa707b@gmail.com>

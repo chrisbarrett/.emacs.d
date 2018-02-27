@@ -1,6 +1,6 @@
 ;;; magit-obsolete.el --- obsolete definitions  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2010-2017  The Magit Project Contributors
+;; Copyright (C) 2010-2018  The Magit Project Contributors
 ;;
 ;; You should have received a copy of the AUTHORS.md file which
 ;; lists all contributors.  If not, see http://magit.vc/authors.
@@ -134,8 +134,26 @@ use `magit-pre-refresh-hook', `magit-post-refresh-hook',
 (define-obsolete-function-alias 'magit-insert-unpulled-from-upstream-or-recent
   'magit-insert-unpulled-from-upstream "Magit 2.12.0")
 
+(define-obsolete-function-alias 'magit-get-submodules
+  'magit-list-module-paths "Magit 2.12.0")
+
 (make-obsolete-variable 'magit-no-confirm-default
-                        'magit-dwim-selection "Magit 2.12.0")
+                        'magit-dwim-selection
+                        "Magit 2.12.0")
+
+(make-obsolete-variable 'magit-status-expand-stashes
+                        'magit-section-initial-visibility-alist
+                        "Magit 2.12.0")
+
+(make-obsolete 'magit-section-type     "use (oref ... type) instead"     "Magit 2.12.0")
+(make-obsolete 'magit-section-value    "use (oref ... value) instead"    "Magit 2.12.0")
+(make-obsolete 'magit-section-start    "use (oref ... start) instead"    "Magit 2.12.0")
+(make-obsolete 'magit-section-content  "use (oref ... content) instead"  "Magit 2.12.0")
+(make-obsolete 'magit-section-end      "use (oref ... end) instead"      "Magit 2.12.0")
+(make-obsolete 'magit-section-hidden   "use (oref ... hidden) instead"   "Magit 2.12.0")
+(make-obsolete 'magit-section-washer   "use (oref ... washer) instead"   "Magit 2.12.0")
+(make-obsolete 'magit-section-parent   "use (oref ... parent) instead"   "Magit 2.12.0")
+(make-obsolete 'magit-section-children "use (oref ... children) instead" "Magit 2.12.0")
 
 (provide 'magit-obsolete)
 ;;; magit-obsolete.el ends here

@@ -1,6 +1,6 @@
 ;;; magit-worktree.el --- worktree support  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2010-2017  The Magit Project Contributors
+;; Copyright (C) 2010-2018  The Magit Project Contributors
 ;;
 ;; You should have received a copy of the AUTHORS.md file which
 ;; lists all contributors.  If not, see http://magit.vc/authors.
@@ -76,15 +76,15 @@ The primary worktree cannot be deleted."
   (if (file-directory-p (expand-file-name ".git" worktree))
       (user-error "Deleting %s would delete the shared .git directory" worktree)
     (let ((primary (file-name-as-directory (caar (magit-list-worktrees)))))
-      (when (if magit-delete-by-moving-to-trash
-                (magit-confirm-files 'trash (list "worktree"))
-              (magit-confirm-files 'delete (list "worktree")))
+      (magit-confirm-files (if magit-delete-by-moving-to-trash 'trash 'delete)
+                           (list "worktree"))
+      (when (file-exists-p worktree)
         (let ((delete-by-moving-to-trash magit-delete-by-moving-to-trash))
-          (delete-directory worktree t magit-delete-by-moving-to-trash))
-        (if (file-exists-p default-directory)
-            (magit-run-git "worktree" "prune")
-          (let ((default-directory primary))
-            (magit-run-git "worktree" "prune")))))))
+          (delete-directory worktree t magit-delete-by-moving-to-trash)))
+      (if (file-exists-p default-directory)
+          (magit-run-git "worktree" "prune")
+        (let ((default-directory primary))
+          (magit-run-git "worktree" "prune"))))))
 
 (defun magit-worktree-status (worktree)
   "Show the status for the worktree at point.
