@@ -406,6 +406,22 @@
     (magithub-ci-success
      ((t :inherit success)))
 
+    ;; compilation
+
+    (cb-compilation-base-face
+     ((t :foreground ,dimmed-fg)))
+
+    ;; rg
+
+    (rg-file-tag-face
+     ((t :foreground ,dimmed-fg)))
+
+    (rg-filename-face
+     ((t :foreground ,emphasis)))
+
+    (rg-match-face
+     ((t :inherit highlight)))
+
     ;; Outline, Org
 
     (org-link

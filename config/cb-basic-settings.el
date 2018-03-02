@@ -479,11 +479,18 @@ Optional arg JUSTIFY will justify comments and strings."
     (defun cb-basic-settings-colorize-compilation-buffer ()
       (unless (derived-mode-p 'rg-mode)
         (let ((inhibit-read-only t))
-          (ansi-color-apply-on-region compilation-filter-start (point))))))
+          (ansi-color-apply-on-region compilation-filter-start (point)))))
+
+    (defface cb-compilation-base-face nil
+      "Base face for compilation highlights"
+      :group 'cb-basic-settings))
 
   :config
   (progn
     (add-hook 'compilation-filter-hook #'cb-basic-settings-colorize-compilation-buffer)
+
+    ;; Clear default underline text properties applied to compilation highlights.
+    (setq compilation-message-face 'cb-compilation-base-face)
 
     ;; h (help) binding interferes with evil navigation.
     (evil-define-key 'motion compilation-mode-map (kbd "h") #'evil-backward-char)
