@@ -15,7 +15,9 @@
   :commands ag)
 
 (use-package rg
-  :commands rg)
+  :commands rg
+  :config
+  (setq rg-group-result t))
 
 (use-package wgrep
   :commands (wgrep-setup)
@@ -39,7 +41,9 @@
     (define-key wgrep-mode-map [remap wgrep-finish-edit] #'cb-search-wgrep-finish-edit-kill-buffer)))
 
 (use-package wgrep-ag
-  :after ag)
+  :after (ag rg)
+  :init
+  (add-hook 'rg-mode-hook 'wgrep-ag-setup))
 
 (provide 'cb-search)
 
