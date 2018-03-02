@@ -132,7 +132,7 @@
     (setq message-send-mail-function #'message-send-mail-with-sendmail)
 
     (setq mu4e-bookmarks
-          '(("flag:unread AND ((s:JIRA AND b:chrisb) OR (NOT (s:JIRA OR s:jenkins))) AND (NOT (m:/walrus/trash OR m:/movio/trash))"
+          '(("flag:unread AND ((s:JIRA AND b:chrisb) OR (NOT (s:JIRA OR s:jenkins))) AND (NOT m:/walrus/trash)"
              "Unread messages" ?u)
             ("d:today..now AND NOT (s:JIRA OR s:jenkins)"
              "Today's messages" ?t)
@@ -142,16 +142,10 @@
              "Last 30 days" ?m)
             ("m:/walrus/inbox"
              "Inbox" ?i)
-            ("m:/movio/inbox"
-             "Work" ?I)
-            ("m:/walrus/sent OR m:/movio/sent"
+            ("m:/walrus/sent"
              "Sent messages" ?s)
             ("bitbucket OR github"
-             "Code & PRs" ?c)
-            ("d:7d..now AND s:JIRA AND b:chrisb AND m:/movio/jira"
-             "JIRA - mentions" ?j)
-            ("d:7d..now AND m:/movio/jira"
-             "JIRA - all" ?J)))
+             "Code & PRs" ?c)))
 
     ;; All my mailservers use IMAP. Use mbsync to synchronise mail between the
     ;; server and my local machine.
