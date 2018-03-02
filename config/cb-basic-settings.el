@@ -477,8 +477,9 @@ Optional arg JUSTIFY will justify comments and strings."
     (defvar compiation-filter-start)
 
     (defun cb-basic-settings-colorize-compilation-buffer ()
-      (let ((inhibit-read-only t))
-        (ansi-color-apply-on-region compilation-filter-start (point)))))
+      (unless (derived-mode-p 'rg-mode)
+        (let ((inhibit-read-only t))
+          (ansi-color-apply-on-region compilation-filter-start (point))))))
 
   :config
   (progn
