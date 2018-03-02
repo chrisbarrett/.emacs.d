@@ -474,7 +474,7 @@ Optional arg JUSTIFY will justify comments and strings."
   (progn
     (autoload 'ansi-color-apply-on-region "ansi-color")
 
-    (defvar compiation-filter-start)
+    (defvar compilation-filter-start)
 
     (defun cb-basic-settings-colorize-compilation-buffer ()
       (unless (derived-mode-p 'rg-mode)
