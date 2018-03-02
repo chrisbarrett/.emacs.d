@@ -370,6 +370,16 @@
     (magit-signature-untrusted
      ((t :foreground ,cb-theme-common-cyan)))
 
+    (magit-blame-heading
+     ((((background light))
+       :background "#cceecc"
+       :foreground "#22aa22"
+       :weight light)
+      (((background dark))
+       :background "#1a331a"
+       :foreground "#cceecc"
+       :weight light)))
+
     (magit-diff-file-heading
      ((t :weight normal)))
 
