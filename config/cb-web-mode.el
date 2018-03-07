@@ -455,6 +455,12 @@
         (define-key km (kbd "C-c C-b") #'ts-send-buffer)
         (define-key km (kbd "C-c C-l") #'ts-load-file-and-go)))))
 
+(use-package nvm
+  :after cb-web-modes
+  :functions (nvm-use-for-buffer)
+  :config
+  (add-hook 'web-mode-hook #'nvm-use-for-buffer))
+
 
 ;; Avro file mode
 
