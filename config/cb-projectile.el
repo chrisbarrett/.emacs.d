@@ -37,6 +37,25 @@
     (defconst cb-projectile-ignored-base-dirs
       '("/nix/store/"))
 
+    (defun cb-projectile--file-is-child-of-test-dir (&optional has-test-prefix-or-suffix)
+      (or has-test-prefix-or-suffix
+          (when-let* ((file (buffer-file-name)))
+            (seq-contains (f-split file) "test"))))
+
+    (defun cb-projectile--substitute-test-with-impl-dir (&optional existing)
+      (or existing
+          (when-let* ((file (buffer-file-name))
+                      (impl-dir (if (f-dir? (f-join (projectile-project-root) "lib"))
+                                    "/lib/"
+                                  "/src/")))
+
+            (s-replace "/test/" impl-dir file))))
+
+    (defun cb-projectile--substitute-impl-with-test-dir (&optional existing)
+      (or existing
+          (when-let* ((file (buffer-file-name)))
+            (replace-regexp-in-string (rx "/" (or "lib" "src") "/") "/test/" file t t))))
+
     (defun cb-projectile--project-is-ignored-subdir-p (project)
       (seq-find (lambda (base)
                   (f-child-of-p project base))
@@ -53,6 +72,7 @@
     (defvar projectile-known-projects-file (concat cb-emacs-cache-directory "/projectile-bookmarks.eld"))
 
     (spacemacs-keys-set-leader-keys
+      "p TAB" #'projectile-toggle-between-implementation-and-test
       "p!" #'projectile-run-shell-command-in-root
       "p&" #'projectile-run-async-shell-command-in-root
       "pI" #'projectile-invalidate-cache
@@ -71,6 +91,7 @@
     (setq projectile-switch-project-action (lambda ()
                                              (dired (projectile-project-p))))
     (setq projectile-enable-caching t)
+    (setq projectile-create-missing-test-files t)
 
     (setq projectile-globally-ignored-files '("TAGS" ".DS_Store"))
     (setq projectile-globally-ignored-file-suffixes '("gz" "zip" "tar" "elc"))
@@ -98,6 +119,11 @@
     (projectile-register-project-type 'yarn '("yarn.lock")
                                       :compile "yarn build"
                                       :test "yarn test")
+
+    ;; Teach projectile how to resolve npm srcs and tests.
+    (advice-add #'projectile-test-file-p :filter-return #'cb-projectile--file-is-child-of-test-dir)
+    (advice-add #'projectile-find-matching-file :filter-return #'cb-projectile--substitute-test-with-impl-dir)
+    (advice-add #'projectile-find-matching-test :filter-return #'cb-projectile--substitute-impl-with-test-dir)
 
     (add-to-list 'display-buffer-alist
                  `(,(rx bos "*projectile-test*" eos)
