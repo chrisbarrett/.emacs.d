@@ -73,6 +73,7 @@
 
     (spacemacs-keys-set-leader-keys
       "p TAB" #'projectile-toggle-between-implementation-and-test
+      "p <backtab>" #'projectile-find-implementation-or-test-other-window
       "p!" #'projectile-run-shell-command-in-root
       "p&" #'projectile-run-async-shell-command-in-root
       "pI" #'projectile-invalidate-cache
