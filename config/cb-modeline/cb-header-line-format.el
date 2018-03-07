@@ -157,7 +157,9 @@
            (t 0.05)))
          (icon
           (if (derived-mode-p 'web-mode)
-              (all-the-icons-icon-for-file (buffer-name) :v-adjust v-adjust)
+              (all-the-icons-icon-for-file (or (ignore-errors (buffer-file-name))
+                                               (buffer-name))
+                                           :v-adjust v-adjust)
             (all-the-icons-icon-for-mode major-mode :v-adjust v-adjust))))
 
     (concat (if (symbolp icon) "" icon) " ")))
