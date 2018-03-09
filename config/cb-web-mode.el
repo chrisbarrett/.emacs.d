@@ -52,6 +52,9 @@
     (setq web-mode-markup-indent-offset 2)
     (setq web-mode-enable-auto-quoting nil)
 
+    (add-to-list 'web-mode-comment-formats '("jsx" . "//" ))
+    (add-to-list 'web-mode-comment-formats '("javascript" . "//" ))
+
     ;; Disable web-mode-reload binding
     (define-key web-mode-map (kbd "C-c C-r") nil)
 
