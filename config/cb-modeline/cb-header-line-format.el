@@ -108,7 +108,7 @@
 
 (defun cb-header-line-format--narrowing-info ()
   (if (buffer-narrowed-p)
-      (propertize " (Narrowed) " 'face 'cb-header-line-format-narrowing)
+      (propertize " (Narrowed) " 'face 'cb-header-line-format-emphasised-element)
     ""))
 
 (defun cb-header-line-format--project-info ()
