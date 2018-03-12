@@ -15,7 +15,8 @@
 (autoload 'git-subtree-update "git-subtree" nil t)
 
 (defconst cb-emacs-pinned-subtrees
-  '(("lisp/ensime-emacs" . "v2.0.1")))
+  '(("lisp/ensime-emacs" . "v2.0.1")
+    ("lisp/mu" . "v1.0")))
 
 ;; Declare dynamic vars to satisfy byte compiler.
 (defvar git-subtree-prefix nil)
