@@ -39,8 +39,7 @@
 (defconst cb-emacs-config-directory
   (concat user-emacs-directory "config"))
 
-(defconst cb-emacs-site-lisp-directory
-  (file-truename "~/.nix-profile/share/emacs/site-lisp"))
+(defconst cb-emacs-site-lisp-directory "~/.nix-profile/share/emacs/site-lisp")
 
 (add-to-list 'load-path cb-emacs-site-lisp-directory)
 

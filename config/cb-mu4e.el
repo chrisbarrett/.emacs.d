@@ -16,7 +16,7 @@
 (require 'evilified-state)
 (require 'f)
 
-(add-to-list 'load-path (concat cb-emacs-lisp-directory "/mu/mu4e") t)
+(push (f-join cb-emacs-site-lisp-directory "mu4e") load-path)
 
 (use-package mu4e
   :commands (mu4e mu4e-compose-new)
