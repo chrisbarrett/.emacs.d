@@ -461,8 +461,12 @@
 (use-package nvm
   :after cb-web-modes
   :functions (nvm-use-for-buffer)
+  :preface
+  (defun cb-web-maybe-use-nvm ()
+    (when (locate-dominating-file default-directory ".nvmrc")
+      (nvm-use-for-buffer)))
   :config
-  (add-hook 'web-mode-hook #'nvm-use-for-buffer))
+  (add-hook 'web-mode-hook #'cb-web-maybe-use-nvm))
 
 
 ;; Avro file mode
