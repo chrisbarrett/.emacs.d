@@ -34,6 +34,17 @@
     (autoload '-const "dash-functional")
     (autoload 'projectile-register-project-type "projectile")
 
+    (defun cb-projectile--save-modified-buffers (fn &rest args)
+      (condition-case err
+          (apply fn args)
+        (user-error
+         (let ((msg (error-message-string err)))
+           (cond ((equal "All files processed" msg)
+                  (projectile-save-project-buffers)
+                  (message "%s" msg))
+                 (t
+                  (user-error msg)))))))
+
     (defun cb-projectile--find-files-with-string-using-rg (fn string directory)
       (if (and (projectile-unixy-system-p) (executable-find "rg"))
           (let* ((search-term (shell-quote-argument string))
@@ -136,6 +147,10 @@
 
     ;; Teach projectile to prefer rg for finding files containing strings
     (advice-add 'projectile-files-with-string :around #'cb-projectile--find-files-with-string-using-rg)
+
+    ;; Save files after performing replacements
+    (advice-add 'projectile-replace :around #'cb-projectile--save-modified-buffers)
+    (advice-add 'projectile-replace-regexp :around #'cb-projectile--save-modified-buffers)
 
     (add-to-list 'display-buffer-alist
                  `(,(rx bos "*projectile-test*" eos)
