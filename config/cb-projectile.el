@@ -34,6 +34,14 @@
     (autoload '-const "dash-functional")
     (autoload 'projectile-register-project-type "projectile")
 
+    (defun cb-projectile--find-files-with-string-using-rg (fn string directory)
+      (if (and (projectile-unixy-system-p) (executable-find "rg"))
+          (let* ((search-term (shell-quote-argument string))
+                 (cmd (concat "rg --fixed-strings --color=never --no-heading --files-with-matches -- " search-term)))
+
+            (projectile-files-from-cmd cmd directory))
+        (funcall fn string directory)))
+
     (defconst cb-projectile-ignored-base-dirs
       '("/nix/store/"))
 
@@ -125,6 +133,9 @@
     (advice-add #'projectile-test-file-p :filter-return #'cb-projectile--file-is-child-of-test-dir)
     (advice-add #'projectile-find-matching-file :filter-return #'cb-projectile--substitute-test-with-impl-dir)
     (advice-add #'projectile-find-matching-test :filter-return #'cb-projectile--substitute-impl-with-test-dir)
+
+    ;; Teach projectile to prefer rg for finding files containing strings
+    (advice-add 'projectile-files-with-string :around #'cb-projectile--find-files-with-string-using-rg)
 
     (add-to-list 'display-buffer-alist
                  `(,(rx bos "*projectile-test*" eos)
