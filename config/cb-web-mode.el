@@ -314,14 +314,21 @@
 
 (use-package prettier-js
   :commands (prettier-js-mode)
+  :after cb-web-modes
   :preface
-  (defun cb-web--maybe-enable-prettier ()
-    (unless (and (buffer-file-name) (string-match-p "/node_modules/" (buffer-file-name)))
-      (prettier-js-mode +1)))
-  :init
   (progn
-    (add-hook 'cb-web-js-mode-hook #'cb-web--maybe-enable-prettier)
-    (add-hook 'cb-web-ts-mode-hook #'cb-web--maybe-enable-prettier)))
+    (defun cb-web--child-file-of-node-modules-p ()
+      (and (buffer-file-name) (string-match-p "/node_modules/" (buffer-file-name))))
+
+    (defun cb-web--maybe-enable-prettier ()
+      (when (and (derived-mode-p 'cb-web-js-mode 'cb-web-ts-mode)
+                 (not (cb-web--child-file-of-node-modules-p)))
+        (prettier-js-mode +1)))
+
+    (define-globalized-minor-mode prettier-js-global-mode
+      prettier-js-mode cb-web--maybe-enable-prettier))
+  :config
+  (prettier-js-global-mode +1))
 
 (use-package compile
   :defer t
