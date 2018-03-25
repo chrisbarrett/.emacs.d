@@ -150,16 +150,7 @@
 
     ;; Save files after performing replacements
     (advice-add 'projectile-replace :around #'cb-projectile--save-modified-buffers)
-    (advice-add 'projectile-replace-regexp :around #'cb-projectile--save-modified-buffers)
-
-    (add-to-list 'display-buffer-alist
-                 `(,(rx bos "*projectile-test*" eos)
-                   (display-buffer-reuse-window
-                    display-buffer-in-side-window)
-                   (reusable-frames . visible)
-                   (side            . bottom)
-                   (slot            . 1)
-                   (window-height   . 0.2)))))
+    (advice-add 'projectile-replace-regexp :around #'cb-projectile--save-modified-buffers)))
 
 (use-package counsel-projectile
   :defer t
