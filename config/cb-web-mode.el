@@ -306,7 +306,7 @@
 
 (use-package which-key
   :config
-  (let* ((boring-prefixes '("indium" "cb-flow" "tide"))
+  (let* ((boring-prefixes '("indium" "cb-flow" "tide" "cb-js-refactor-commands"))
          (match-prefix (rx-to-string `(and bos (or ,@boring-prefixes) "-" (group (+ nonl)))
                                      t)))
     (push `((nil . ,match-prefix) . (nil . "\\1"))
@@ -351,6 +351,19 @@
           (list cb-web--flow-error-rx 1 2))
     (add-to-list 'compilation-error-regexp-alist 'flow)))
 
+(use-package cb-js-refactor-commands
+  :commands (cb-js-refactor-commands-organize-imports
+             cb-js-refactor-commands-group-and-sort-imports
+             cb-js-refactor-commands-expand-comma-bindings
+             cb-js-refactor-commands-align-object-literal-values)
+  :init
+  (dolist (mode '(cb-web-js-mode cb-web-ts-mode))
+    (spacemacs-keys-declare-prefix-for-mode mode "mr" "refactor")
+    (spacemacs-keys-set-leader-keys-for-major-mode mode
+      "ro" #'cb-js-refactor-commands-organize-imports
+      "ra" #'cb-js-refactor-commands-align-object-literal-values
+      "re" #'cb-js-refactor-commands-expand-comma-bindings)))
+
 ;; Node
 
 (use-package indium
@@ -373,7 +386,7 @@
     (dolist (mode '(cb-web-js-mode js-mode))
       (spacemacs-keys-declare-prefix-for-mode mode "md" "debugger")
       (spacemacs-keys-declare-prefix-for-mode mode "mi" "flow")
-      (spacemacs-keys-declare-prefix-for-mode mode "mr" "run")
+      (spacemacs-keys-declare-prefix-for-mode mode "mx" "run")
       (spacemacs-keys-set-leader-keys-for-major-mode mode
         "d b" 'indium-add-breakpoint
         "d B" 'indium-add-conditional-breakpoint
@@ -383,8 +396,8 @@
         "d l" 'indium-list-breakpoints
         "d d" 'indium-deactivate-breakpoints
         "d a" 'indium-activate-breakpoints
-        "r n" 'indium-run-node
-        "r c" 'indium-run-chrome)))
+        "x n" 'indium-run-node
+        "x c" 'indium-run-chrome)))
 
   :config
   (progn
