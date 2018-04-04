@@ -36,6 +36,7 @@
 
 (use-package nix-company
   :after nix-mode
+  :disabled t
   :config
   (add-to-list 'company-backends 'company-nix))
 
