@@ -160,6 +160,14 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
              diff-hl-previous-hunk
              diff-hl-revert-hunk
              diff-hl-goto-hunk)
+  :preface
+  (progn
+    (defun cb-git--diff-hl-mode-on ()
+      (diff-hl-mode -1))
+
+    (defun cb-git--diff-hl-mode-off ()
+      (diff-hl-mode +1)))
+
   :init
   (progn
 
@@ -177,8 +185,14 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
       ("q" nil :exit t))
 
     (spacemacs-keys-set-leader-keys "gh" 'git-hunks-transient-state/body))
+
   :config
   (progn
+    ;; Diff-hl interferes with iedit. Disable diff-hl temporarily while iedit is
+    ;; enabled.
+    (add-hook 'iedit-mode-hook #'cb-git--diff-hl-mode-on)
+    (add-hook 'iedit-mode-end-hook #'cb-git--diff-hl-mode-off)
+
     (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
     (global-diff-hl-mode)))
 
