@@ -17,6 +17,12 @@
 (autoload 'evil-define-key "evil-core")
 (autoload 'evil-first-non-blank "evil-commands")
 
+(use-package which-key
+  :config
+  (push `(dired-mode
+          ((nil . ,(rx bos "dired-" (group (+ nonl)))) . (nil . "\\1")))
+        which-key-replacement-alist))
+
 (use-package dired
   :defer t
   :commands (dired dired-hide-details-mode)
@@ -39,7 +45,7 @@
 
   :init
   (progn
-    (spacemacs-keys-declare-prefix-for-mode 'dired-mode "s" "subdir")
+    (spacemacs-keys-declare-prefix-for-mode 'dired-mode "ms" "subdir")
     (spacemacs-keys-set-leader-keys "d" #'dired)
     (spacemacs-keys-set-leader-keys-for-major-mode
       'dired-mode
