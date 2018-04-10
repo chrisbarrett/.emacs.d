@@ -61,19 +61,40 @@
           (when-let* ((file (buffer-file-name)))
             (seq-contains (f-split file) "test"))))
 
-    (defun cb-projectile--substitute-test-with-impl-dir (&optional existing)
+    (defun cb-projectile--substitute-test-with-impl (&optional existing)
       (or existing
           (when-let* ((file (buffer-file-name))
                       (impl-dir (if (f-dir? (f-join (projectile-project-root) "lib"))
                                     "/lib/"
-                                  "/src/")))
+                                  "/src/"))
+                      (guess (s-replace-all `((".test" . "")
+                                              ("/test/" . ,impl-dir))
+                                            file)))
+            (if (file-directory-p (f-no-ext guess))
+                (f-join (f-no-ext guess) "index.js")
+              guess))))
 
-            (s-replace "/test/" impl-dir file))))
-
-    (defun cb-projectile--substitute-impl-with-test-dir (&optional existing)
+    (defun cb-projectile--substitute-impl-with-test (&optional existing)
       (or existing
-          (when-let* ((file (buffer-file-name)))
-            (replace-regexp-in-string (rx "/" (or "lib" "src") "/") "/test/" file t t))))
+          (when-let* ((file (buffer-file-name))
+                      (guess (replace-regexp-in-string (rx "/" (or "lib" "src") "/") "/test/" file t t)))
+            (cond
+             ((file-exists-p guess)
+              guess)
+
+             ((equal "index.js" (file-name-nondirectory file))
+              (let ((dir (file-name-directory (directory-file-name (file-name-directory guess))))
+                    (base (file-name-base (directory-file-name (file-name-directory guess))))
+                    (ext (file-name-extension guess)))
+                (f-join dir (format "%s.test.%s" base ext))))
+
+             ((equal "js" (file-name-extension guess))
+              (let ((dir (file-name-directory guess))
+                    (base (file-name-nondirectory (file-name-sans-extension guess)))
+                    (ext (file-name-extension guess)))
+                (f-join dir (format "%s.test.%s" base ext))))
+             (t
+              guess)))))
 
     (defun cb-projectile--project-is-ignored-subdir-p (project)
       (seq-find (lambda (base)
@@ -142,8 +163,8 @@
 
     ;; Teach projectile how to resolve npm srcs and tests.
     (advice-add #'projectile-test-file-p :filter-return #'cb-projectile--file-is-child-of-test-dir)
-    (advice-add #'projectile-find-matching-file :filter-return #'cb-projectile--substitute-test-with-impl-dir)
-    (advice-add #'projectile-find-matching-test :filter-return #'cb-projectile--substitute-impl-with-test-dir)
+    (advice-add #'projectile-find-matching-file :filter-return #'cb-projectile--substitute-test-with-impl)
+    (advice-add #'projectile-find-matching-test :filter-return #'cb-projectile--substitute-impl-with-test)
 
     ;; Teach projectile to prefer rg for finding files containing strings
     (advice-add 'projectile-files-with-string :around #'cb-projectile--find-files-with-string-using-rg)
