@@ -4,7 +4,7 @@ A helper library that automatically prepends the JIRA ticket number to your
 commit messages in Magit.
 
 It extracts the JIRA ticket number from the current branch name, and prepends
-that number to each commit messages.
+that number to each commit message.
 
 ## Why not use a git hook?
 
