@@ -3,7 +3,9 @@
 ;; Copyright (C) 2016  Chris Barrett
 
 ;; Author: Chris Barrett <chris+emacs@walrus.cool>
-;; Package-Requires: ((s "1.10.0") (dash "2.12.1") (magit "20160320.152"))
+;; Package-Requires: ((emacs "24") (s "1.10.0") (dash "2.12.0") (magit "2.12.1"))
+
+;; Version: 0.0.1
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -20,11 +22,39 @@
 
 ;;; Commentary:
 
-;; Extract the JIRA ticket number from the current branch name, and prepend
-;; commit messages with that ticket number.
+;; A helper library that automatically prepends the JIRA ticket number to your
+;; commit messages in Magit.
 
-;; Add `(git-commit-jira-prefix-init)' to your Emacs configuration to initialise the package. If you
-;; use `use-package', the form below will do the right thing:
+;; It extracts the JIRA ticket number from the current branch name, and prepends
+;; the ticket number to each commit messages.
+
+;;; Installation:
+
+;; This package depends on other packages on MELPA. Make sure you have MELPA
+;; configured as a package repository in your init.el:
+;;
+;;   (require 'package)
+;;
+;;   (setq package-archives
+;;         '(("gnu" . "https://elpa.gnu.org/packages/")
+;;           ("melpa" . "https://melpa.org/packages/")))
+;;
+;;   (package-initialize)
+;;
+;;   (unless package-archive-contents
+;;     (package-refresh-contents))
+;;
+;;
+;; Then, install this file with `M-x package-install-file <path-to-this-file>'.
+;;
+;; Add `(git-commit-jira-prefix-init)' to your Emacs configuration to initialise the package.
+;;
+;;   (autoload 'git-commit-jira-prefix-init 'git-commit-jira-prefix)
+;;
+;;   (with-eval-after-load 'git-commit
+;;     (git-commit-jira-prefix-init))
+;;
+;; Alternatively, if you use `use-package', the form below will do the right thing:
 ;;
 ;;   (use-package git-commit-jira-prefix
 ;;     :after git-commit
