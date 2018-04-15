@@ -20,6 +20,12 @@ task :tests do
     " --batch -f ert-run-tests-batch-and-exit"
 end
 
+desc "run test in interactive mode"
+task :itests do
+  sh "#{$EMACS} -Q -L . -l yasnippet-tests.el" +
+     " --eval \"(call-interactively 'ert)\""
+end
+
 desc "create a release package"
 task :package do
   release_dir = "pkg/yasnippet-#{$version}"
@@ -44,6 +50,10 @@ task :release => [:package, 'doc:archive'] do
   raise "Not implemented for github yet!"
 end
 
+# rake doc[../htmlize]
+#
+# To do this interactively, load doc/yas-doc-helper, open one of the
+# org files, and do `C-c C-e P'.
 desc "Generate document"
 task :doc, [:htmlize] do |t, args|
   load_path = '-L .'
@@ -94,14 +104,22 @@ end
 desc "Compile yasnippet.el into yasnippet.elc"
 
 rule '.elc' => '.el' do |t|
-  set_warnings = ""
+  cmdline = $EMACS + ' --batch -L .'
   if ENV['warnings']
-    set_warnings = " --eval \"(setq byte-compile-warnings #{ENV['warnings']})\""
+    cmdline += " --eval \"(setq byte-compile-warnings #{ENV['warnings']})\""
   end
-  sh "#{$EMACS} --batch -L . --eval \"(setq byte-compile-error-on-warn t)\"" +
-     "#{set_warnings} -f batch-byte-compile #{t.source}"
+  if ENV['Werror']
+    cmdline += " --eval \"(setq byte-compile-error-on-warn #{ENV['Werror']})\""
+  end
+  if ENV['Wlexical']
+    cmdline += " --eval \"(setq byte-compile-force-lexical-warnings #{ENV['Wlexical']})\""
+  end
+  cmdline +=" -f batch-byte-compile #{t.source}"
+
+  sh cmdline
 end
 task :compile => FileList["yasnippet.el"].ext('elc')
+task :compile_all => FileList["*.el"].ext('elc')
 
 task :default => :doc
 
