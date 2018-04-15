@@ -50,7 +50,7 @@
   (when (search-forward-regexp (rx (+? nonl) (group (any ",;")) (* space) eol) nil t)
     (replace-match ";" t nil nil 1)))
 
-(defun cb-js-refactor-commands-expand-comma-bindings (start-pos)
+(defun cb-js-refactor-commands-expand-comma-bindings (start-pos &optional interactive)
   "Rewrite bindings at point from comma-separated to independent bindings.
 
 E.g.:
@@ -67,20 +67,24 @@ Is rewritten to:
 
 START-POS is the point in the buffer at which to begin the
 rewrite. When called interactively, it is the beginning of the
-current line."
-  (interactive (list (line-beginning-position)))
+current line.
+
+If INTERACTIVE is set, raise an error if not at a binding site."
+  (interactive (list (line-beginning-position) t))
   (goto-char start-pos)
+  (cond ((cb-js-refactor-commands--binding-keyword-at-pt)
+         ;; Create a marker pointing to the end of the binding group.
+         (cb-js-refactor-commands--forward-to-end-of-binder)
+         (let ((marker (make-marker)))
+           (set-marker marker (point))
 
-  ;; Create a marker pointing to the end of the binding group.
-  (cb-js-refactor-commands--forward-to-end-of-binder)
-  (let ((marker (make-marker)))
-    (set-marker marker (point))
-
-    (cb-js-refactor-commands--back-to-binding-keyword)
-    (let ((target-column (current-column)))
-      (while (< (point) (marker-position marker))
-        (cb-js-refactor-commands--rewrite-comma-sep-binding-line "const" target-column)
-        (forward-line)))))
+           (cb-js-refactor-commands--back-to-binding-keyword)
+           (let ((target-column (current-column)))
+             (while (< (point) (marker-position marker))
+               (cb-js-refactor-commands--rewrite-comma-sep-binding-line "const" target-column)
+               (forward-line)))))
+        (interactive
+         (user-error "Not an expandable binding site"))))
 
 (defun cb-js-refactor-commands--import-start-position ()
   (save-excursion
