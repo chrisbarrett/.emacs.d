@@ -9,6 +9,8 @@
 ;;; Code:
 
 (require 'dash)
+(require 'dash-functional)
+(require 's)
 (require 'seq)
 (require 'smartparens)
 (require 'subr-x)
@@ -83,9 +85,15 @@ current line."
 (defun cb-js-refactor-commands--import-start-position ()
   (save-excursion
     (goto-char (point-min))
-    (search-forward-regexp (rx (or "import" "const" "var" "let")))
+    (search-forward-regexp (rx bol (* space) (or "import" "const" "var" "let")))
     (back-to-indentation)
     (point)))
+
+(defun cb-js-refactor-commands--import-line-p (line)
+  (string-match-p (rx bol (* space)
+                      (or "import"
+                          (and (or "const" "let" "var") (+ space) (+? nonl) "=" (* space) "require" (* space) "(")))
+                  line))
 
 (defun cb-js-refactor-commands--forward-to-end-of-imports ()
   (cl-labels
@@ -94,8 +102,7 @@ current line."
     (let ((continue t))
       (while (and continue (not (eobp)))
         (if (or (string-blank-p (current-line))
-                (string-match-p (rx bol (* space) (or "import" "const"))
-                                (current-line)))
+                (cb-js-refactor-commands--import-line-p (current-line)))
             (forward-line)
           (setq continue nil)))
       (point))))
@@ -113,6 +120,38 @@ current line."
       (replace-match " " nil nil nil 1)
       (replace-match " " nil nil nil 2))
     (buffer-string)))
+
+(defun cb-js-refactor-commands--rewrite-require-to-destructure (line)
+  (-if-let ((_ kw module member)
+            (s-match (rx
+                      bol (* space)
+                      (group (or "const" "let" "var"))
+                      (+ space)
+                      (and (not (any "{")) (*? nonl))
+                      "=" (* space) "require" (* space) "(" (group (+? nonl)) ")"
+                      (* space) "."
+                      (group (+? (not (any "."))))
+                      ";")
+                     line))
+      (format "%s { %s } = require(%s);" kw member module)
+    line))
+
+(defun cb-js-refactor-commands--format-imports (import-lines)
+  (-let [(absolutes relatives)
+         (->> import-lines
+              (-map (-compose #'cb-js-refactor-commands--rewrite-require-to-destructure #'cb-js-refactor-commands--tidy-import-whitespace))
+              (-group-by #'cb-js-refactor-commands--import-relative-p)
+              (-map #'cdr)
+              (--map (-sort #'string< it)))]
+    (concat
+     (when absolutes
+       (string-join absolutes "\n"))
+     (when (and relatives absolutes)
+       "\n\n")
+     (when relatives
+       (string-join relatives "\n"))
+     (when (or relatives absolutes)
+       "\n\n"))))
 
 (defun cb-js-refactor-commands-group-and-sort-imports (start-pos)
   "Rewrite bindings at point from comma-separated to independent bindings.
@@ -140,27 +179,12 @@ current line."
 
   (-let* ((end-pos (cb-js-refactor-commands--forward-to-end-of-imports))
           (region (buffer-substring-no-properties start-pos end-pos))
-
-          ((absolutes relatives)
-           (->> (split-string region (rx (any "\r\n")) t (rx space))
-                (-map #'cb-js-refactor-commands--tidy-import-whitespace)
-                (-partition-by #'cb-js-refactor-commands--import-relative-p)
-                (--map (-sort #'string< it)))))
+          (import-lines (split-string region (rx (any "\r\n")) t (rx space)))
+          (formatted-imports (cb-js-refactor-commands--format-imports import-lines)))
 
     (goto-char start-pos)
     (delete-region start-pos end-pos)
-
-    (when absolutes
-      (insert (string-join absolutes "\n")))
-
-    (when (and relatives absolutes)
-      (newline 2))
-
-    (when relatives
-      (insert (string-join relatives "\n")))
-
-    (when (or relatives absolutes)
-      (newline 2))))
+    (insert formatted-imports)))
 
 (defun cb-js-refactor-commands-organize-imports (start-pos)
   "Clean up and reorder import declarations at the start of the buffer.
