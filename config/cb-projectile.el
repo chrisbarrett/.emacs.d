@@ -54,7 +54,9 @@
         (funcall fn string directory)))
 
     (defconst cb-projectile-ignored-base-dirs
-      '("/nix/store/"))
+      '("/nix/store/"
+        "~/.rustup/"
+        "~/tmp/"))
 
     (defun cb-projectile--file-is-child-of-test-dir (&optional has-test-prefix-or-suffix)
       (or has-test-prefix-or-suffix
