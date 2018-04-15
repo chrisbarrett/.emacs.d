@@ -111,9 +111,36 @@ If INTERACTIVE is set, raise an error if not at a binding site."
           (setq continue nil)))
       (point))))
 
-(defun cb-js-refactor-commands--import-relative-p (line)
-  (when (string-match-p (rx "./") line)
-    t))
+(defvar cb-js-refactor-commands-root-import-prefixes
+  '("actions"
+    "components"
+    "constants"
+    "dispatcher"
+    "models"
+    "routes"
+    "selectors"
+    "services"
+    "stores"
+    "types"
+    "utils")
+  "The names of root directories in the script tree available without qualification.")
+
+(defconst cb-js-refactor-commands--match-relative-import
+  (rx-to-string
+   `(or "./"
+        ;; ... require('foo')
+        (and "require" (* space) "(" (any "\"'") (or ,@cb-js-refactor-commands-root-import-prefixes) "/")
+        ;; import ... = 'foo'
+        (and bol "import" (+? nonl) "=" (* space) (any "\"'") (or ,@cb-js-refactor-commands-root-import-prefixes) "/"))))
+
+(defun cb-js-refactor-commands--import-kind (line)
+  (cond
+   ((string-match-p (rx bol (* space) "import" (* space) "type" (* space)) line)
+    'flow-type)
+   ((string-match-p cb-js-refactor-commands--match-relative-import line)
+    'relative)
+   (t
+    'absolute)))
 
 (defun cb-js-refactor-commands--tidy-import-whitespace (line)
   (with-temp-buffer
@@ -141,21 +168,17 @@ If INTERACTIVE is set, raise an error if not at a binding site."
     line))
 
 (defun cb-js-refactor-commands--format-imports (import-lines)
-  (-let [(absolutes relatives)
-         (->> import-lines
-              (-map (-compose #'cb-js-refactor-commands--rewrite-require-to-destructure #'cb-js-refactor-commands--tidy-import-whitespace))
-              (-group-by #'cb-js-refactor-commands--import-relative-p)
-              (-map #'cdr)
-              (--map (-sort #'string< it)))]
-    (concat
-     (when absolutes
-       (string-join absolutes "\n"))
-     (when (and relatives absolutes)
-       "\n\n")
-     (when relatives
-       (string-join relatives "\n"))
-     (when (or relatives absolutes)
-       "\n\n"))))
+  (-let* ((format-import (-compose #'cb-js-refactor-commands--rewrite-require-to-destructure #'cb-js-refactor-commands--tidy-import-whitespace))
+          ((&alist 'absolute absolutes 'relative relatives 'flow-type types)
+           (-group-by #'cb-js-refactor-commands--import-kind (-map format-import import-lines))))
+    (cl-labels ((format-group
+                 (lines)
+                 (when-let ((sorted-imports (string-join (-sort #'string< lines) "\n")))
+                   (concat sorted-imports "\n\n"))))
+      (concat
+       (format-group absolutes)
+       (format-group types)
+       (format-group relatives)))))
 
 (defun cb-js-refactor-commands-group-and-sort-imports (start-pos)
   "Rewrite bindings at point from comma-separated to independent bindings.
