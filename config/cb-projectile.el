@@ -108,9 +108,6 @@
 
   :init
   (progn
-    (defvar projectile-cache-file (concat cb-emacs-cache-directory "/projectile.cache"))
-    (defvar projectile-known-projects-file (concat cb-emacs-cache-directory "/projectile-bookmarks.eld"))
-
     (spacemacs-keys-set-leader-keys
       "p TAB" #'projectile-toggle-between-implementation-and-test
       "p <backtab>" #'projectile-find-implementation-or-test-other-window
@@ -128,6 +125,8 @@
   (progn
     (setq projectile-cache-file (concat cb-emacs-cache-directory "/projectile.cache"))
     (setq projectile-known-projects-file (concat cb-emacs-cache-directory "/projectile-bookmarks.eld"))
+    (projectile-load-known-projects)
+
     (setq projectile-completion-system 'ivy)
     (setq projectile-switch-project-action (lambda ()
                                              (dired (projectile-project-p))))
