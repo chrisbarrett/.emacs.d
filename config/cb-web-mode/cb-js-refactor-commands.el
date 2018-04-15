@@ -235,7 +235,7 @@ interactively, it is set to the start of the first import group."
                       (or "[" (* space) (+ (syntax symbol)) (* space) "]")
                       ;; Symbol, number, string, etc.
                       (+ (not (any space)))
-                      ":")
+                      (or ":" ","))
                   (buffer-substring beg end)))
 
 (defun cb-js-refactor-commands--object-literal-bounds ()
@@ -249,7 +249,7 @@ interactively, it is set to the start of the first import group."
 
 BEG and END are the bounds of the object in the buffer."
   (interactive (cb-js-refactor-commands--object-literal-bounds))
-  (align-regexp beg end ":\\(\\s-*\\)\\s-" 1))
+  (align-regexp beg end ":\\(\\s-*\\)" 1))
 
 (provide 'cb-js-refactor-commands)
 
