@@ -247,6 +247,24 @@ interactively, it is set to the start of the first import group."
 (defun cb-js-refactor-commands-align-object-literal-values (beg end)
   "Line up the values in an object literal.
 
+E.g.:
+
+  const foo = {
+    a: 1,
+    b:2,
+    c:        3,
+    dd: 4,
+  }
+
+Is rewritten to:
+
+  const foo = {
+    a:  1,
+    b:  2,
+    c:  3,
+    dd: 4,
+  }
+
 BEG and END are the bounds of the object in the buffer."
   (interactive (cb-js-refactor-commands--object-literal-bounds))
   (align-regexp beg end ":\\(\\s-*\\)" 1))
