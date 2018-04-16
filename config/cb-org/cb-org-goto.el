@@ -4,7 +4,7 @@
 
 ;; Author: Chris Barrett <chris.d.barrett@me.com>
 
-;; Package-Requires: ((org "8.3.5") (dash "2.12.1"))
+;; Package-Requires: ((org "8.3.5") (dash "2.12.0"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by

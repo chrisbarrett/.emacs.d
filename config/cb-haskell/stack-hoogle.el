@@ -3,7 +3,7 @@
 ;; Copyright (C) 2016  Chris Barrett
 
 ;; Author: Chris Barrett <chris+emacs@walrus.cool>
-;; Package-Requires: ((s "1.10.0") (dash "2.12.1") (haskell-mode "20160804.216"))
+;; Package-Requires: ((s "1.10.0") (dash "2.12.0") (haskell-mode "20160804.216"))
 
 ;;; Commentary:
 

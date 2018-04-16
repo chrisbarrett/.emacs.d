@@ -1,7 +1,7 @@
 ;;; cb-evil-ispell.el --- Evil configuration for ispell  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2016  Chris Barrett
-;; Package-Requires: ((s "1.10.0") (dash "2.12.1"))
+;; Package-Requires: ((s "1.10.0") (dash "2.12.0"))
 ;; Author: Chris Barrett <chris+emacs@walrus.cool>
 
 ;;; Commentary:
