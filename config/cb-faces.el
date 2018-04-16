@@ -53,6 +53,7 @@
   (progn
     (add-hook 'prog-mode-hook #'cb-ligatures-init)
     (add-hook 'text-mode-hook #'cb-ligatures-init)
+    (add-hook 'org-agenda-mode-hook #'cb-ligatures-init)
     (global-prettify-symbols-mode +1)))
 
 (use-package page-break-lines

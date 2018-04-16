@@ -22,50 +22,37 @@
 
 ;;; Code:
 
-(autoload '-union "dash")
+(require 'dash)
+(require 'memoize)
 
-(defconst cb-ligatures-alist
-  '(("&&" . #XE100)
-    ("***" . #XE101)
-    ("*>" . #XE102)
-    ("\\\\" . #XE103)
-    ("||" . #XE104)
-    ("|>" . #XE105)
-    ("::" . #XE106)
-    ("==" . #XE107)
-    ("===" . #XE108)
-    ("==>" . #XE109)
-    ("=>" . #XE10A)
-    ("=<<" . #XE10B)
-    ("!!" . #XE10C)
-    (">>" . #XE10D)
-    (">>=" . #XE10E)
-    (">>>" . #XE10F)
-    (">>-" . #XE110)
-    (">-" . #XE111)
-    ("->" . #XE112)
-    ("-<" . #XE113)
-    ("-<<" . #XE114)
-    ("<*" . #XE115)
-    ("<*>" . #XE116)
-    ("<|" . #XE117)
-    ("<|>" . #XE118)
-    ("<$>" . #XE119)
-    ("<>" . #XE11A)
-    ("<-" . #XE11B)
-    ("<<" . #XE11C)
-    ("<<<" . #XE11D)
-    ("<+>" . #XE11E)
-    (".." . #XE11F)
-    ("..." . #XE120)
-    ("++" . #XE121)
-    ("+++" . #XE122)
-    ("/=" . #XE123)))
+(defconst cb-ligatures-list
+  '("&&" "***" "*>" "\\\\" "||" "|>" "::"
+    "==" "===" "==>" "=>" "=<<" "!!" ">>"
+    ">>=" ">>>" ">>-" ">-" "->" "-<" "-<<"
+    "<*" "<*>" "<|" "<|>" "<$>" "<>" "<-"
+    "<<" "<<<" "<+>" ".." "..." "++" "+++"
+    "/=" ":::" ">=>" "->>" "<=>" "<=<" "<->")
+  "A list of ligatures to enable.
+
+See https://github.com/i-tu/Hasklig/blob/master/GlyphOrderAndAliasDB#L1588")
+
+(defmemoize cb-ligatures-alist ()
+  (cb-ligatures--fix-symbol-bounds (cb-ligatures--ligature-list cb-ligatures-list #Xe100)))
+
+(defun cb-ligatures--fix-symbol-bounds (pretty-alist)
+  (-map (-lambda ((symbol . codepoint))
+          (cons symbol
+                `(?\s (Br . Bl) ?\s (Br . Br) ,codepoint)))
+        pretty-alist))
+
+(defun cb-ligatures--ligature-list (ligatures codepoint-start)
+  (let ((codepoints (-iterate '1+ codepoint-start (length ligatures))))
+    (-zip-pair ligatures codepoints)))
 
 ;;;###autoload
 (defun cb-ligatures-init ()
   (when (equal 'Hasklig (ignore-errors (font-get (face-attribute 'default :font) :family)))
-    (setq prettify-symbols-alist (-union prettify-symbols-alist cb-ligatures-alist))
+    (setq prettify-symbols-alist (-union prettify-symbols-alist (cb-ligatures-alist)))
     ;; Refresh symbol rendering.
     (prettify-symbols-mode -1)
     (prettify-symbols-mode +1)))
