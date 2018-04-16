@@ -161,7 +161,7 @@ If INTERACTIVE is set, raise an error if not at a binding site."
                       (and (not (any "{")) (*? nonl))
                       "=" (* space) "require" (* space) "(" (group (+? nonl)) ")"
                       (* space) "."
-                      (group (+? (not (any "."))))
+                      (group (+? (not (any "(" "."))))
                       ";")
                      line))
       (format "%s { %s } = require(%s);" kw member module)
