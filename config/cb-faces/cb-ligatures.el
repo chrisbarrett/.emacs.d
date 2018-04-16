@@ -3,7 +3,9 @@
 ;; Copyright (C) 2016  Chris Barrett
 
 ;; Author: Chris Barrett <chris+emacs@walrus.cool>
-;; Package-Requires: ((dash "2.12.0"))
+;; Package-Requires: ((dash "2.12.0") (memoize "1.1") (emacs "24"))
+
+;; Version: 0.1.0
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
