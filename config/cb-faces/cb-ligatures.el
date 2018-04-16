@@ -39,11 +39,16 @@ See https://github.com/i-tu/Hasklig/blob/master/GlyphOrderAndAliasDB#L1588")
 (defmemoize cb-ligatures-alist ()
   (cb-ligatures--fix-symbol-bounds (cb-ligatures--ligature-list cb-ligatures-list #Xe100)))
 
-(defun cb-ligatures--fix-symbol-bounds (pretty-alist)
+(defun cb-ligatures--fix-symbol-bounds (alist)
   (-map (-lambda ((symbol . codepoint))
           (cons symbol
-                `(?\s (Br . Bl) ?\s (Br . Br) ,codepoint)))
-        pretty-alist))
+                (cond ((equal 2 (length symbol))
+                       `(?\s (Br . Bl) ?\s (Br . Br) ,codepoint))
+                      ((equal 3 (length symbol))
+                       `(?\s (Br . Bl) ?\s (Br . Bc) ?\s (Br . Br) ,codepoint))
+                      (t
+                       (string ?\t codepoint)))))
+        alist))
 
 (defun cb-ligatures--ligature-list (ligatures codepoint-start)
   (let ((codepoints (-iterate '1+ codepoint-start (length ligatures))))
