@@ -217,6 +217,14 @@
 (use-package ob-gnuplot
   :after org)
 
+(use-package org-habit
+  :after org-agenda
+  :config
+  (progn
+    (setq org-habit-graph-column 68)
+    (setq org-habit-preceding-days 7)
+    (setq org-habit-following-days 5)))
+
 (use-package gnuplot
   :ensure t
   :defer t)
