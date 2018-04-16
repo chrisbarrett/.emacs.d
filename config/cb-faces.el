@@ -40,7 +40,6 @@
 
 (spacemacs-keys-set-leader-keys
   "t t" #'cb-faces/toggle-dark-mode
-  "t g" #'cb-green-theme
   "t d" #'cb-dark-theme
   "t l" #'cb-light-theme)
 
