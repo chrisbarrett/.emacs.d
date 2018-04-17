@@ -288,7 +288,7 @@ BEG and END are the bounds of the object in the buffer."
 (defun cb-js-refactor-commands--at-flow-type-p (pos)
   (save-excursion
     (goto-char pos)
-    (string-match-p (rx bol (* space) (? "export") (+ space) "type" symbol-end)
+    (string-match-p (rx bol (* space) (? "export" (+ space)) "type" symbol-end)
                     (buffer-substring (line-beginning-position) (line-end-position)))))
 
 (defun cb-js-refactor-commands--strict-object-type-bounds ()
