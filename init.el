@@ -43,6 +43,7 @@
 
 ;; Bootstrap use-package.
 
+(require 'subr-x)
 (require 'seq)
 
 (defun cb-init/init-load-path (&optional interactive-p)
