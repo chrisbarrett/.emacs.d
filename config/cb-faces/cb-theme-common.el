@@ -356,6 +356,12 @@
      ((t :inherit highlight)))
     (ediff-odd-diff-C
      ((t :inherit highlight)))
+    (ediff-even-diff-A
+     ((t :inherit highlight)))
+    (ediff-even-diff-B
+     ((t :inherit highlight)))
+    (ediff-even-diff-C
+     ((t :inherit highlight)))
 
     (ediff-current-diff-C
      ((((background light)) :background "#ffffaa")
