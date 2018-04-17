@@ -71,6 +71,7 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
   :init
   (spacemacs-keys-set-leader-keys
     "gs" #'magit-status
+    "gl" #'magit-log-buffer-file
     "gd" #'cb-git-diff-buffer-file
     "gf" #'cb-git-find-file
     "gt" #'git-time-machine-transient-state/body
