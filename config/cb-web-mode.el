@@ -355,14 +355,16 @@
   :commands (cb-js-refactor-commands-organize-imports
              cb-js-refactor-commands-group-and-sort-imports
              cb-js-refactor-commands-expand-comma-bindings
-             cb-js-refactor-commands-align-object-literal-values)
+             cb-js-refactor-commands-align-object-literal-values
+             cb-js-refactor-commands-toggle-sealed-object-type)
   :init
   (dolist (mode '(cb-web-js-mode cb-web-ts-mode))
     (spacemacs-keys-declare-prefix-for-mode mode "mr" "refactor")
     (spacemacs-keys-set-leader-keys-for-major-mode mode
       "ro" #'cb-js-refactor-commands-organize-imports
       "ra" #'cb-js-refactor-commands-align-object-literal-values
-      "re" #'cb-js-refactor-commands-expand-comma-bindings)))
+      "re" #'cb-js-refactor-commands-expand-comma-bindings
+      "rs" #'cb-js-refactor-commands-toggle-sealed-object-type)))
 
 ;; Node
 

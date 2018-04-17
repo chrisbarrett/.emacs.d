@@ -269,6 +269,55 @@ BEG and END are the bounds of the object in the buffer."
   (interactive (cb-js-refactor-commands--object-literal-bounds))
   (align-regexp beg end ":\\(\\s-*\\)" 1))
 
+(defun cb-js-refactor-commands--seal-object (beg end)
+  (save-excursion
+    (goto-char (1- end))
+    (insert "|")
+    (goto-char (1+ beg))
+    (insert "|")))
+
+(defun cb-js-refactor-commands--unseal-object (beg end)
+  (save-excursion
+    (goto-char end)
+    (forward-char -1)
+    (delete-char -1)
+    (goto-char beg)
+    (forward-char 1)
+    (delete-char 1)))
+
+(defun cb-js-refactor-commands--at-flow-type-p (pos)
+  (save-excursion
+    (goto-char pos)
+    (string-match-p (rx bol (* space) (? "export") (+ space) "type" symbol-end)
+                    (buffer-substring (line-beginning-position) (line-end-position)))))
+
+(defun cb-js-refactor-commands--strict-object-type-bounds ()
+  (-when-let ((plist &as &plist :op op) (sp-get-enclosing-sexp))
+    (if (equal op "{|")
+        plist
+      (sp-backward-up-sexp)
+      (cb-js-refactor-commands--strict-object-type-bounds))))
+
+(defun cb-js-refactor-commands-toggle-sealed-object-type ()
+  "Toggle between a sealed or unsealed flow type.
+
+BEG and END are the bounds of the object type at point."
+  (interactive)
+  (save-excursion
+    (-let* (((object-bounds &as &plist :beg b1 :end e1) (save-excursion (cb-js-refactor-commands--enclosing-curlies)))
+            ((strict-type-bounds &as &plist :beg b2 :end e2) (save-excursion (cb-js-refactor-commands--strict-object-type-bounds)))
+            (beg (or b1 b2))
+            (end (or e1 e2)))
+      (cond
+       ((not beg)
+        (user-error "Not at a flow object type declaration"))
+       ((not (cb-js-refactor-commands--at-flow-type-p beg))
+        (user-error "Not at a flow type declaration"))
+       (strict-type-bounds
+        (cb-js-refactor-commands--unseal-object beg end))
+       (object-bounds
+        (cb-js-refactor-commands--seal-object beg end))))))
+
 (provide 'cb-js-refactor-commands)
 
 ;;; cb-js-refactor-commands.el ends here
