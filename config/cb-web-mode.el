@@ -67,6 +67,7 @@
     (setf (cdr (assoc "lineup-args" web-mode-indentation-params)) nil)
     (setf (cdr (assoc "lineup-concats" web-mode-indentation-params)) nil)
     (setf (cdr (assoc "lineup-calls" web-mode-indentation-params)) nil)
+    (setf (cdr (assoc "lineup-ternary" web-mode-indentation-params)) nil)
 
     ;; Treat es6 files as JS files.
 
