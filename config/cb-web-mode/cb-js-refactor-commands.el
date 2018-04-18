@@ -173,7 +173,7 @@ If INTERACTIVE is set, raise an error if not at a binding site."
            (-group-by #'cb-js-refactor-commands--import-kind (-map format-import import-lines))))
     (cl-labels ((format-group
                  (lines)
-                 (when-let ((sorted-imports (-sort #'string< lines)))
+                 (when-let* ((sorted-imports (-sort #'string< lines)))
                    (concat (string-join sorted-imports "\n") "\n\n"))))
       (concat
        (format-group absolutes)

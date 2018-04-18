@@ -74,7 +74,7 @@
         (realgud:cmd-terminate)
         (when (buffer-live-p cmd-buffer)
           (with-current-buffer cmd-buffer
-            (when-let (windows (get-buffer-window-list cmd-buffer))
+            (when-let* ((windows (get-buffer-window-list cmd-buffer)))
               (ignore-errors
                 (dolist (w windows)
                   (delete-window w))))

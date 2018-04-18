@@ -271,7 +271,7 @@
     (defun cb-scala--display-ensime-process-buffer-on-error (&rest _)
       (let* ((bufname (format "*ENSIME-%s*" (projectile-project-name)))
              (buf (get-buffer-create bufname)))
-        (when-let (proc (get-buffer-process buf))
+        (when-let* ((proc (get-buffer-process buf)))
           (set-process-sentinel proc
                                 (lambda (p _)
                                   (when (and (/= 0 (process-exit-status p))

@@ -72,8 +72,8 @@
 
     (defun cb-org--mark-next-parent-tasks-todo ()
       "Visit each parent task and change state to TODO."
-      (when-let (mystate (or (bound-and-true-p org-state)
-                             (nth 2 (org-heading-components))))
+      (when-let* ((mystate (or (bound-and-true-p org-state)
+                               (nth 2 (org-heading-components)))))
         (save-excursion
           (while (org-up-heading-safe)
             (when (-contains? '("WAITING" "MAYBE")

@@ -37,7 +37,7 @@
 
     (defun cb-yasnippet--maybe-goto-field-end ()
       "Move to the end of the current field if it has been modified."
-      (when-let (field (cb-yasnippet--current-field))
+      (when-let* ((field (cb-yasnippet--current-field)))
         (when (and (yas--field-modified-p field)
                    (yas--field-contains-point-p field))
           (goto-char (cb-yasnippet--end-of-field)))))
@@ -55,23 +55,23 @@
            (overlay-get yas--active-field-overlay 'yas--field)))
 
     (defun cb-yasnippet--start-of-field ()
-      (when-let (field (cb-yasnippet--current-field))
+      (when-let* ((field (cb-yasnippet--current-field)))
         (marker-position (yas--field-start field))))
 
     (defun cb-yasnippet--end-of-field ()
-      (when-let (field (cb-yasnippet--current-field))
+      (when-let* ((field (cb-yasnippet--current-field)))
         (marker-position (yas--field-end field))))
 
     (defun cb-yasnippet--current-field-text ()
       "Return the text in the active snippet field."
-      (when-let (field (cb-yasnippet--current-field))
+      (when-let* ((field (cb-yasnippet--current-field)))
         (yas--field-text-for-display field)))
 
     (defun cb-yasnippet-clear-blank-field (&rest _)
       "Clear the current field if it is blank."
-      (when-let ((beg (cb-yasnippet--start-of-field))
-                 (end (cb-yasnippet--end-of-field))
-                 (str (cb-yasnippet--current-field-text)))
+      (when-let* ((beg (cb-yasnippet--start-of-field))
+                  (end (cb-yasnippet--end-of-field))
+                  (str (cb-yasnippet--current-field-text)))
         (when (s-matches? (rx bos (+ space) eos) str)
           (delete-region beg end)
           t)))
