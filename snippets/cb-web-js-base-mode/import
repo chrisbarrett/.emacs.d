@@ -2,4 +2,4 @@
 # name: import
 # key: im
 # --
-import ${1:Module} from '$0';
+import ${1:Module} from '${2:${1:$(cb-web-module-name-for-binding yas-text)}}';

@@ -2,9 +2,4 @@
 # name: require
 # key: req
 # --
-const ${1:$(pcase yas-text
-  ("" "NAME")
-  ("lodash" "_")
-  ("power-assert" "assert")
-  (_ (s-upper-camel-case (s-replace "/" "_" yas-text))))
-} = require('$1');
+const ${1:Module} = require('${2:${1:$(cb-web-module-name-for-binding yas-text)}}');

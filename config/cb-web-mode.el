@@ -20,6 +20,19 @@
 (autoload 'evil-set-initial-state "evil-core")
 (autoload 'projectile-project-p "projectile")
 
+(defun cb-web-module-name-for-binding (yas-text)
+  (pcase yas-text
+    ('nil      "")
+    (""        "")
+    ("Promise" "bluebird")
+    ("assert"  "power-assert")
+    ("_"       "lodash")
+
+    ((pred (apply-partially #'s-contains? "{"))
+     "MODULE")
+    (s
+     (s-downcase (s-dashed-words s)))))
+
 (use-package web-mode
   :defines (web-mode-markup-indent-offset
             web-mode-css-indent-offset)
