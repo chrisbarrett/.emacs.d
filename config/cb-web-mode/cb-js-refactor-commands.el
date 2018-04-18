@@ -167,13 +167,19 @@ If INTERACTIVE is set, raise an error if not at a binding site."
       (format "%s { %s } = require(%s);" kw member module)
     line))
 
+(defun cb-js-refactor-commands--import-binder (import-string)
+  (-let [(_ binder)
+         (s-match (rx (or "import" "const") (+ space) (group (+? nonl)) (* space) (or "from" "="))
+                  import-string)]
+    binder))
+
 (defun cb-js-refactor-commands--format-imports (import-lines)
   (-let* ((format-import (-compose #'cb-js-refactor-commands--rewrite-require-to-destructure #'cb-js-refactor-commands--tidy-import-whitespace))
           ((&alist 'absolute absolutes 'relative relatives 'flow-type types)
            (-group-by #'cb-js-refactor-commands--import-kind (-map format-import import-lines))))
     (cl-labels ((format-group
                  (lines)
-                 (when-let* ((sorted-imports (-sort #'string< lines)))
+                 (when-let* ((sorted-imports (seq-sort-by #'cb-js-refactor-commands--import-binder #'string< lines)))
                    (concat (string-join sorted-imports "\n") "\n\n"))))
       (concat
        (format-group absolutes)
