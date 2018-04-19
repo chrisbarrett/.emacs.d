@@ -754,6 +754,12 @@ Optional arg JUSTIFY will justify comments and strings."
   :config
   (setq auth-sources '("~/.authinfo.gpg")))
 
+(use-package nsm
+  :defer t
+  :config
+  ;; Do not query the user to accept insecure connections. Just disconnect them.
+  (setq nsm-noninteractive t))
+
 (provide 'cb-basic-settings)
 
 ;;; cb-basic-settings.el ends here
