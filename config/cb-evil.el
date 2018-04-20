@@ -83,6 +83,10 @@
 
     ;; Initial states
 
+    (with-eval-after-load 'replace
+      (evil-set-initial-state 'occur-mode 'motion)
+      (evil-add-hjkl-bindings occur-mode-map))
+
     (with-eval-after-load 'tar-mode
       (evil-set-initial-state 'tar-mode 'emacs)
       (evil-add-hjkl-bindings tar-mode-map))
