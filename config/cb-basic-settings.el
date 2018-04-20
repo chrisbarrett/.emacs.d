@@ -760,6 +760,20 @@ Optional arg JUSTIFY will justify comments and strings."
   ;; Do not query the user to accept insecure connections. Just disconnect them.
   (setq nsm-noninteractive t))
 
+(use-package page-break-lines
+  :commands (global-page-break-lines-mode)
+  :demand t
+  :config
+  (progn
+    (setq page-break-lines-modes
+          '(prog-mode
+            text-mode
+            compilation-mode
+            help-mode
+            org-agenda-mode))
+
+    (global-page-break-lines-mode)))
+
 (provide 'cb-basic-settings)
 
 ;;; cb-basic-settings.el ends here

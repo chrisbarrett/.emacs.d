@@ -335,6 +335,7 @@
     ;; Enable leader key in agenda.
     (define-key org-agenda-mode-map (kbd "SPC") spacemacs-keys-default-map)
 
+    (setq org-agenda-block-separator "")
     (setq org-agenda-include-diary nil)
     (setq org-agenda-start-on-weekday nil)
     (setq org-agenda-auto-exclude-function #'cb-org--exclude-tasks-on-hold)
