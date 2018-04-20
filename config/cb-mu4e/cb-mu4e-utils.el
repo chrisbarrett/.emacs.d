@@ -24,11 +24,21 @@
   (let ((browse-url-browser-function #'browse-url-default-browser))
     (mu4e-action-view-in-browser msg)))
 
+(defun cb-mu4e-utils--refile-to-sent-maildir-p (sent-dir msg)
+  (-let [(&plist :maildir message-dir :from ((_ . from-address))) msg]
+    (or (equal message-dir sent-dir)
+        (mu4e-user-mail-address-p from-address)
+        (string-match-p (rx "@walrus.cool" eos) from-address))))
+
 (defun cb-mu4e-utils-read-and-archive-action (docid msg _target)
   ;; Must come before proc-move since retag runs 'sed' on the file
   (mu4e-action-retag-message msg "-\\Inbox")
-  (-let (((_ . dest) (assoc 'mu4e-refile-folder (mu4e-context-vars (mu4e-context-current)))))
-    (mu4e~proc-move docid dest "+S-u-N")))
+  ;; Move to refile dir, unless this is a sent message (which can happen if I
+  ;; attempt to archive a thread).
+  (let* ((refile-dir (mu4e-get-refile-folder msg))
+         (sent-dir (mu4e-get-sent-folder msg))
+         (target-dir (if (cb-mu4e-utils--refile-to-sent-maildir-p sent-dir msg) sent-dir refile-dir)))
+    (mu4e~proc-move docid target-dir "+S-u-N")))
 
 (provide 'cb-mu4e-utils)
 
