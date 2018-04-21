@@ -1,0 +1,10 @@
+foo bar _baz foo_bar_baz
+-----------------------------------
+((ident "foo")
+ (space 1)
+ (ident "bar")
+ (space 1)
+ (ident "_baz")
+ (space 1)
+ (ident "foo_bar_baz")
+ (newline 1))

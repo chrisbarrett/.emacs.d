@@ -1,0 +1,8 @@
+`hello ${world}!`
+---------------------------------
+((i-string "`hello ")
+ (interp-open "${")
+ (ident "world")
+ (interp-close "}")
+ (i-string "!`")
+ (newline 1))

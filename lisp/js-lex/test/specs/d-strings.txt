@@ -1,0 +1,8 @@
+foo "hello world!" bar
+---------------------------------
+((ident "foo")
+ (space 1)
+ (d-string "\"hello world!\"")
+ (space 1)
+ (ident "bar")
+ (newline 1))
