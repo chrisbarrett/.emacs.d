@@ -279,6 +279,10 @@
     (autoload 'org-get-deadline-time "org")
     (autoload 'org-goto-sibling "org")
     (autoload 'outline-next-heading "outline")
+    (autoload 'page-break-lines--update-display-tables "page-break-lines")
+
+    (defun cb-org--draw-separator (&rest _)
+      (page-break-lines--update-display-tables))
 
     (defun cb-org--exclude-tasks-on-hold (tag)
       (and (equal tag "hold") (concat "-" tag)))
@@ -368,6 +372,8 @@
            :step 'week))
 
     (add-hook 'org-finalize-agenda-hook #'org-agenda-to-appt)
+
+    (advice-add 'org-agenda-redo :after #'cb-org--draw-separator)
 
     (setq org-agenda-custom-commands
           '(("A" "Agenda and next actions"
