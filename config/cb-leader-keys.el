@@ -240,6 +240,8 @@
 
       "!"   #'shell-command
 
+      "a i" #'toggle-input-method
+
       "b d" #'kill-this-buffer
       "b b" #'bury-buffer
       "b v" #'cb-leader-keys/reload-file
