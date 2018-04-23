@@ -22,11 +22,26 @@
 
 (use-package ediff
   :defer t
-  :functions
   :preface
-  (autoload 'ediff-setup-windows-plain "ediff-wind")
+  (progn
+    (autoload 'ediff-setup-windows-plain "ediff-wind")
+    (autoload 'ediff-copy-diff "ediff-util")
+    (autoload 'ediff-get-region-contents "ediff-util")
+
+    (defun cb-diff-setup-keybinds ()
+      (define-key ediff-mode-map (kbd "B") #'cb-diff-ediff-copy-both-to-C))
+
+    (defun cb-diff-ediff-copy-both-to-C ()
+      (interactive)
+      (let ((str
+             (concat
+              (ediff-get-region-contents ediff-current-difference 'A ediff-control-buffer)
+              (ediff-get-region-contents ediff-current-difference 'B ediff-control-buffer))))
+        (ediff-copy-diff ediff-current-difference nil 'C nil str))))
   :config
-  (setq ediff-window-setup-function #'ediff-setup-windows-plain))
+  (progn
+    (add-hook 'ediff-keymap-setup-hook #'cb-diff-setup-keybinds)
+    (setq ediff-window-setup-function #'ediff-setup-windows-plain)))
 
 (provide 'cb-diff)
 
