@@ -273,6 +273,7 @@
 
     (evil-define-key 'normal tern-mode-keymap
       (kbd "K") 'tern-get-docs
+      (kbd "gd")  'tern-find-definition
       (kbd "M-.") 'tern-find-definition
       (kbd "M-,") 'tern-pop-find-definition)
 
