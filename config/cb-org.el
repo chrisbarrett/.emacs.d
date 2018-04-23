@@ -373,6 +373,10 @@
 
     (add-hook 'org-finalize-agenda-hook #'org-agenda-to-appt)
 
+    ;; Ensure the separator line is rendered whenever the org agenda view
+    ;; changes. This is needed for page-break-lines to render the separator
+    ;; correctly.
+    (advice-add 'org-agenda :after #'cb-org--draw-separator)
     (advice-add 'org-agenda-redo :after #'cb-org--draw-separator)
 
     (setq org-agenda-custom-commands
