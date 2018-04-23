@@ -505,6 +505,12 @@ Optional arg JUSTIFY will justify comments and strings."
   (progn
     (defvar quail-current-package)
 
+    (defun cb-basic-settings--echo-input-method ()
+      (message (concat "Input method: " (propertize current-input-method 'face 'warning 'bold t))))
+
+    (defun cb-basic-settings--echo-input-method-cleared ()
+      (message (concat "Input method: " (propertize "cleared" 'face 'success))))
+
     (defun cb-basic-settings--set-tex-method-vars ()
       (when-let* ((quail-current-package (assoc "TeX" quail-package-alist)))
         (quail-defrule ";" (quail-lookup-key "\\"))
@@ -519,6 +525,8 @@ Optional arg JUSTIFY will justify comments and strings."
                             ("\\rtack" ?⊢)))))
   :config
   (progn
+    (add-hook 'input-method-activate-hook #'cb-basic-settings--echo-input-method)
+    (add-hook 'input-method-deactivate-hook #'cb-basic-settings--echo-input-method-cleared)
     (add-hook 'input-method-activate-hook #'cb-basic-settings--set-tex-method-vars)
     (setq default-input-method "TeX")))
 
