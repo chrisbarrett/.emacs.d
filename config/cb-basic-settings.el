@@ -217,14 +217,6 @@ Optional arg JUSTIFY will justify comments and strings."
 (advice-add #'completion--file-name-table :filter-return #'cb-basic-settings--hide-boring-files-in-completion)
 
 
-;; Generate random passwords.
-
-(defun cb-generate-password ()
-  "Generate a random password and copy it to the kill ring."
-  (interactive)
-  (kill-new (s-trim (shell-command-to-string "gpg --gen-random --armor 1 30")))
-  (message "Password copied to kill-ring."))
-
 ;; Line transposition
 
 (autoload 'org-move-item-down "org-list")
@@ -781,6 +773,10 @@ Optional arg JUSTIFY will justify comments and strings."
             org-agenda-mode))
 
     (global-page-break-lines-mode)))
+
+(use-package generate-password
+  :commands (generate-password))
+
 
 (provide 'cb-basic-settings)
 
