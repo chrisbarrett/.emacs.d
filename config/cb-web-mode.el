@@ -173,11 +173,6 @@
         (emmet-mode +1))
 
        ((equal web-mode-content-type "html")
-        (emmet-mode +1))
-
-       ((and (derived-mode-p 'cb-web-js-mode)
-             (buffer-file-name)
-             (seq-contains (f-split (buffer-file-name)) "components"))
         (emmet-mode +1))))
 
     (defun cb-web--emmet-move-out-of-squares ()
@@ -207,7 +202,7 @@
 
   :init
   (progn
-    (add-hook 'cb-web-js-mode-hook #'cb-web--maybe-emmet-mode)
+    (evil-leader/set-key-for-mode 'cb-web-js-mode (kbd "e") #'emmet-mode)
     (add-hook 'web-mode-hook #'cb-web--maybe-emmet-mode))
   :config
   (progn
