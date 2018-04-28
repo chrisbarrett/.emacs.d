@@ -130,8 +130,8 @@ If INTERACTIVE is set, raise an error if not at a binding site."
    `(or "./"
         ;; ... require('foo')
         (and "require" (* space) "(" (any "\"'") (or ,@cb-js-refactor-commands-root-import-prefixes) "/")
-        ;; import ... = 'foo'
-        (and bol "import" (+? nonl) "=" (* space) (any "\"'") (or ,@cb-js-refactor-commands-root-import-prefixes) "/"))))
+        ;; import ... from 'foo'
+        (and bol "import" (+? nonl) "from" (* space) (any "\"'") (or ,@cb-js-refactor-commands-root-import-prefixes) "/"))))
 
 (defun cb-js-refactor-commands--import-kind (line)
   (cond
