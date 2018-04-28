@@ -150,7 +150,6 @@
             ".idea"
             ".stack-work"
             ".svn"
-            "build"
             "dist"
             "node_modules"
             "jars"
