@@ -34,6 +34,9 @@
     (autoload 'projectile-project-p "projectile")
     (autoload 'projectile-process-current-project-buffers "projectile")
 
+    (defun cb-flycheck--inhibit-if-query-replacing (result)
+      (and result (not cb-etags-in-query-replace-session-p)))
+
     (defun cb-flycheck--check-all-project-buffers ()
       (unless cb-etags-in-query-replace-session-p
         (when (and (bound-and-true-p projectile-mode)
@@ -64,6 +67,8 @@
   :config
   (progn
     (global-flycheck-mode +1)
+
+    (advice-add #'flycheck-may-enable-mode :filter-return #'cb-flycheck--inhibit-if-query-replacing)
 
     (add-hook 'after-save-hook #'cb-flycheck--check-all-project-buffers)
 
