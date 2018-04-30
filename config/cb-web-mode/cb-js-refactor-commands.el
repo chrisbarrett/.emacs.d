@@ -128,6 +128,14 @@ If INTERACTIVE is set, raise an error if not at a binding site."
 (defconst cb-js-refactor-commands--match-relative-import
   (rx-to-string
    `(or "./"
+        ;; ... require('./foo')
+        (and "require" (* space) "(" (any "\"'") (or "./" "../"))
+        ;; import ... from './foo'
+        (and bol "import" (+? nonl) "from" (* space) (any "\"'") (or "./" "../")))))
+
+(defconst cb-js-refactor-commands--match-rewriteable-relative-import
+  (rx-to-string
+   `(or "./"
         ;; ... require('foo')
         (and "require" (* space) "(" (any "\"'") (or ,@cb-js-refactor-commands-root-import-prefixes) "/")
         ;; import ... from 'foo'
@@ -139,6 +147,8 @@ If INTERACTIVE is set, raise an error if not at a binding site."
     'flow-type)
    ((string-match-p cb-js-refactor-commands--match-relative-import line)
     'relative)
+   ((string-match-p cb-js-refactor-commands--match-rewriteable-relative-import line)
+    'relative-rewritten)
    (t
     'absolute)))
 
@@ -175,7 +185,7 @@ If INTERACTIVE is set, raise an error if not at a binding site."
 
 (defun cb-js-refactor-commands--format-imports (import-lines)
   (-let* ((format-import (-compose #'cb-js-refactor-commands--rewrite-require-to-destructure #'cb-js-refactor-commands--tidy-import-whitespace))
-          ((&alist 'absolute absolutes 'relative relatives 'flow-type types)
+          ((&alist 'absolute absolutes 'relative-rewritten relatives-rewritten 'relative relatives 'flow-type types)
            (-group-by #'cb-js-refactor-commands--import-kind (-map format-import import-lines))))
     (cl-labels ((format-group
                  (lines)
@@ -184,6 +194,7 @@ If INTERACTIVE is set, raise an error if not at a binding site."
       (concat
        (format-group absolutes)
        (format-group types)
+       (format-group relatives-rewritten)
        (format-group relatives)))))
 
 (defun cb-js-refactor-commands-group-and-sort-imports (start-pos)
