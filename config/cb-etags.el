@@ -17,16 +17,18 @@
     (defvar tags-loop-operate nil)
 
     (defun cb-etags--save-and-cleanup-buffers (f &rest args)
-      (let* ((existing-buffers (buffer-list))
-             ;; Wrap the original tags-loop program cleanup logic.
-             (tags-loop-operate
-              `(let ((continue-p ,tags-loop-operate))
-                 (save-buffer)
-                 (unless (seq-contains (list ,@existing-buffers) (current-buffer))
-                   (kill-buffer))
-                 (setq cb-etags-in-query-replace-session-p (not (null continue-p)))
-                 continue-p)))
-        (apply f args))))
+      (unwind-protect
+          (let* ((existing-buffers (buffer-list))
+                 ;; Wrap the original tags-loop program cleanup logic.
+                 (tags-loop-operate
+                  `(let ((continue-p ,tags-loop-operate))
+                     (save-buffer)
+                     (unless (seq-contains (list ,@existing-buffers) (current-buffer))
+                       (kill-buffer))
+                     (setq cb-etags-in-query-replace-session-p (not (null continue-p)))
+                     continue-p)))
+            (apply f args))
+        (setq cb-etags-in-query-replace-session-p nil))))
 
   :config
   (advice-add 'tags-loop-continue :around #'cb-etags--save-and-cleanup-buffers))
