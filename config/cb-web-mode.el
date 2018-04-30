@@ -333,16 +333,22 @@
   :after cb-web-modes
   :preface
   (progn
+    (defvar prettier-js-inhibited-for-project nil)
+
+    (put 'prettier-js-inhibited-for-project 'safe-local-variable 'symbolp)
+
     (defun cb-web--child-file-of-node-modules-p ()
       (and (buffer-file-name) (string-match-p "/node_modules/" (buffer-file-name))))
 
     (defun cb-web--maybe-enable-prettier ()
-      (when (and (derived-mode-p 'cb-web-js-mode 'cb-web-ts-mode)
-                 (not (cb-web--child-file-of-node-modules-p)))
-        (prettier-js-mode +1)))
+      (unless prettier-js-inhibited-for-project
+        (when (and (derived-mode-p 'cb-web-js-mode 'cb-web-ts-mode)
+                   (not (cb-web--child-file-of-node-modules-p)))
+          (prettier-js-mode +1))))
 
     (define-globalized-minor-mode prettier-js-global-mode
       prettier-js-mode cb-web--maybe-enable-prettier))
+
   :config
   (prettier-js-global-mode +1))
 
