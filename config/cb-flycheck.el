@@ -9,6 +9,7 @@
 ;;; Code:
 
 (eval-when-compile
+  (require 'cb-etags)
   (require 'use-package))
 
 (autoload 'evil-define-key "evil-core")
@@ -34,13 +35,14 @@
     (autoload 'projectile-process-current-project-buffers "projectile")
 
     (defun cb-flycheck--check-all-project-buffers ()
-      (when (and (bound-and-true-p projectile-mode)
-                 (projectile-project-p))
-        (projectile-process-current-project-buffers
-         (lambda (buf)
-           (with-current-buffer buf
-             (when (bound-and-true-p flycheck-mode)
-               (flycheck-buffer)))))))
+      (unless cb-etags-in-query-replace-session-p
+        (when (and (bound-and-true-p projectile-mode)
+                   (projectile-project-p))
+          (projectile-process-current-project-buffers
+           (lambda (buf)
+             (with-current-buffer buf
+               (when (bound-and-true-p flycheck-mode)
+                 (flycheck-buffer))))))))
 
     (defun cb-flycheck-display-error-messages (errors)
       (unless (flycheck-get-error-list-window 'current-frame)
