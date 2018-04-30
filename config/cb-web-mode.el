@@ -9,6 +9,7 @@
 ;;; Code:
 
 (eval-when-compile
+  (require 'cb-etags)
   (require 'use-package))
 
 (require 'spacemacs-keys)
@@ -245,11 +246,13 @@
 
 (use-package tern
   :commands (tern-mode)
-  :init
-  (add-hook 'cb-web-js-mode-hook #'tern-mode)
   :preface
   (progn
     (autoload 'flycheck-overlay-errors-at "flycheck")
+
+    (defun cb-web--maybe-enable-tern ()
+      (unless cb-etags-in-query-replace-session-p
+        (tern-mode +1)))
 
     (defun cb-web--flycheck-errors-at-point-p ()
       (when (bound-and-true-p flycheck-mode)
@@ -258,6 +261,9 @@
     (defun cb-web--maybe-suppress-tern-hints (f &rest args)
       (unless (cb-web--flycheck-errors-at-point-p)
         (apply f args))))
+
+  :init
+  (add-hook 'cb-web-js-mode-hook #'cb-web--maybe-enable-tern)
 
   :config
   (progn
