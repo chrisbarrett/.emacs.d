@@ -9,7 +9,8 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'use-package))
+  (require 'use-package)
+  (require 'subr-x))
 
 (require 'cb-emacs)
 (require 'spacemacs-keys)
@@ -33,6 +34,20 @@
     (autoload 'magit-status "magit")
     (autoload '-const "dash-functional")
     (autoload 'projectile-register-project-type "projectile")
+    (autoload 'tags-loop-continue "etags")
+
+    ;; Redeclare var from etags.el
+    (defvar tags-loop-operate nil)
+
+    (defun cb-projectile--cleanup-buffers (f &rest args)
+      (let* ((existing-buffers (buffer-list))
+             (tags-loop-operate
+              ;; Wrap the original tags-loop program cleanup logic.
+              `(prog1 ,tags-loop-operate
+                 (save-buffer)
+                 (unless (seq-contains (list ,@existing-buffers) (current-buffer))
+                   (kill-buffer)))))
+        (apply f args)))
 
     (defun cb-projectile--save-modified-buffers (fn &rest args)
       (condition-case err
@@ -168,6 +183,9 @@
 
     ;; Teach projectile to prefer rg for finding files containing strings
     (advice-add 'projectile-files-with-string :around #'cb-projectile--find-files-with-string-using-rg)
+
+    ;; Close buffers after performing a project replacement
+    (advice-add 'tags-loop-continue :around #'cb-projectile--cleanup-buffers)
 
     ;; Save files after performing replacements
     (advice-add 'projectile-replace :around #'cb-projectile--save-modified-buffers)
