@@ -151,6 +151,7 @@ If argument INTERACTIVE-P is set, log additional information."
 (use-package cb-fstar)
 (use-package cb-terraform)
 (use-package cb-manpages)
+(use-package cb-etags)
 
 (use-package personal-config
   :load-path "~/Sync/emacs")

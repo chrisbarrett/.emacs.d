@@ -34,20 +34,6 @@
     (autoload 'magit-status "magit")
     (autoload '-const "dash-functional")
     (autoload 'projectile-register-project-type "projectile")
-    (autoload 'tags-loop-continue "etags")
-
-    ;; Redeclare var from etags.el
-    (defvar tags-loop-operate nil)
-
-    (defun cb-projectile--cleanup-buffers (f &rest args)
-      (let* ((existing-buffers (buffer-list))
-             (tags-loop-operate
-              ;; Wrap the original tags-loop program cleanup logic.
-              `(prog1 ,tags-loop-operate
-                 (save-buffer)
-                 (unless (seq-contains (list ,@existing-buffers) (current-buffer))
-                   (kill-buffer)))))
-        (apply f args)))
 
     (defun cb-projectile--find-files-with-string-using-rg (fn string directory)
       (if (and (projectile-unixy-system-p) (executable-find "rg"))
@@ -171,10 +157,7 @@
     (advice-add #'projectile-find-matching-test :filter-return #'cb-projectile--substitute-impl-with-test)
 
     ;; Teach projectile to prefer rg for finding files containing strings
-    (advice-add 'projectile-files-with-string :around #'cb-projectile--find-files-with-string-using-rg)
-
-    ;; Close buffers after performing a project replacement
-    (advice-add 'tags-loop-continue :around #'cb-projectile--cleanup-buffers)))
+    (advice-add 'projectile-files-with-string :around #'cb-projectile--find-files-with-string-using-rg)))
 
 (use-package counsel-projectile
   :defer t
