@@ -49,17 +49,6 @@
                    (kill-buffer)))))
         (apply f args)))
 
-    (defun cb-projectile--save-modified-buffers (fn &rest args)
-      (condition-case err
-          (apply fn args)
-        (user-error
-         (let ((msg (error-message-string err)))
-           (cond ((equal "All files processed" msg)
-                  (projectile-save-project-buffers)
-                  (message "%s" msg))
-                 (t
-                  (user-error msg)))))))
-
     (defun cb-projectile--find-files-with-string-using-rg (fn string directory)
       (if (and (projectile-unixy-system-p) (executable-find "rg"))
           (let* ((search-term (shell-quote-argument string))
@@ -185,11 +174,7 @@
     (advice-add 'projectile-files-with-string :around #'cb-projectile--find-files-with-string-using-rg)
 
     ;; Close buffers after performing a project replacement
-    (advice-add 'tags-loop-continue :around #'cb-projectile--cleanup-buffers)
-
-    ;; Save files after performing replacements
-    (advice-add 'projectile-replace :around #'cb-projectile--save-modified-buffers)
-    (advice-add 'projectile-replace-regexp :around #'cb-projectile--save-modified-buffers)))
+    (advice-add 'tags-loop-continue :around #'cb-projectile--cleanup-buffers)))
 
 (use-package counsel-projectile
   :defer t
