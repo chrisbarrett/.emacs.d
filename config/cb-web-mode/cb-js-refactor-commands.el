@@ -193,8 +193,8 @@ If INTERACTIVE is set, raise an error if not at a binding site."
                    (concat (string-join sorted-imports "\n") "\n\n"))))
       (concat
        (format-group absolutes)
-       (format-group types)
        (format-group relatives-rewritten)
+       (format-group types)
        (format-group relatives)))))
 
 (defun cb-js-refactor-commands-group-and-sort-imports (start-pos)
