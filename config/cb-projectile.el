@@ -12,6 +12,7 @@
   (require 'use-package)
   (require 'subr-x))
 
+(require 'dash-functional)
 (require 'cb-emacs)
 (require 'spacemacs-keys)
 
@@ -32,8 +33,16 @@
   :preface
   (progn
     (autoload 'magit-status "magit")
-    (autoload '-const "dash-functional")
     (autoload 'projectile-register-project-type "projectile")
+
+    (defun cb-projectile--delete-duplicate-files (projects)
+      (if (sequencep projects)
+          (thread-last projects
+            (seq-group-by #'file-truename)
+            (seq-remove (-compose #'cb-projectile--project-is-ignored-subdir-p #'car))
+            (seq-map #'cadr)
+            (seq-sort #'string<))
+        projects))
 
     (defun cb-projectile--find-files-with-string-using-rg (fn string directory)
       (if (and (projectile-unixy-system-p) (executable-find "rg"))
@@ -45,6 +54,9 @@
 
     (defconst cb-projectile-ignored-base-dirs
       '("/nix/store/"
+        "~/.nvm/"
+        "~/.ghc/"
+        "~/.stack/"
         "~/.rustup/"
         "~/tmp/"))
 
@@ -117,6 +129,10 @@
   (progn
     (setq projectile-cache-file (concat cb-emacs-cache-directory "/projectile.cache"))
     (setq projectile-known-projects-file (concat cb-emacs-cache-directory "/projectile-bookmarks.eld"))
+
+    ;; Ensure projectile's known projects list doesn't contain duplicates.
+    (advice-add #'projectile-unserialize :filter-return #'cb-projectile--delete-duplicate-files)
+
     (projectile-load-known-projects)
 
     (setq projectile-completion-system 'ivy)
