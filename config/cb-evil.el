@@ -111,13 +111,14 @@
   :config (evil-terminal-cursor-changer-activate))
 
 (use-package evil-surround
-  :after evil
   :commands (global-evil-surround-mode
              evil-surround-region)
 
   :preface
   (autoload 'evil-substitute "evil-commands")
-
+  :init
+  (with-eval-after-load 'evil
+    (global-evil-surround-mode))
   :config
   (progn
     (setq-default evil-surround-pairs-alist
@@ -137,7 +138,6 @@
                     (?< . surround-read-tag)
                     (?f . surround-function)))
 
-    (global-evil-surround-mode)
     (evil-define-key 'visual evil-surround-mode-map "s" #'evil-surround-region)
     (evil-define-key 'visual evil-surround-mode-map "S" #'evil-substitute)))
 
