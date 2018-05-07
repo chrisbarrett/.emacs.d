@@ -14,8 +14,24 @@
 (require 'spacemacs-keys)
 (require 'subr-x)
 
+(use-package hydra
+  :preface
+  (defun cb-leader-keys-set-up-hydra-buffer (&rest _)
+    (when-let* ((buf (get-buffer " *LV*")))
+      (when (buffer-live-p buf)
+        (with-current-buffer buf
+          (setq-local mode-line-format nil)
+          (setq-local header-line-format nil)
+          (force-mode-line-update)))))
+  :config
+  (advice-add 'lv-window :after #'cb-leader-keys-set-up-hydra-buffer))
+
+(require 'hydra)
+
+(autoload 'cb-basic-settings--echo-input-method-cleared "cb-basic-settings")
 (autoload 'evil-window-rotate-downwards "evil-commands")
 (autoload 'cb/alternate-buffer "cb-alternate-buffer")
+(autoload 'cb/copy-buffer-name "cb-copy-buffer-path")
 (autoload 'cb/copy-buffer-path "cb-copy-buffer-path")
 (autoload 'cb/copy-buffer-directory "cb-copy-buffer-path")
 (autoload 'cb/rename-file-and-buffer "cb-rename-file-and-buffer")
@@ -26,6 +42,12 @@
 (autoload 'cb-goto-nix-packages "cb-goto")
 (autoload 'cb-goto-personal-config "cb-goto")
 (autoload 'org-narrow-to-subtree "org")
+
+(defhydra cb/select-input-method (:color blue :help nil)
+  "Select input method"
+  ("a" (progn (set-input-method "arabic") (message "Arabic input method activated")) "arabic")
+  ("t" (progn (set-input-method "TeX") (message "TeX input method activated")) "TeX")
+  ("SPC" (progn (deactivate-input-method) (message "Input method cleared")) "clear"))
 
 (use-package cb-delete-current-buffer-and-file
   :commands (cb/delete-current-buffer-and-file)
@@ -70,10 +92,13 @@
 
     ;; Strip cb prefixes from commands shown in which-key.
 
-    (push `((nil . ,(rx bos "cb" (*? nonl) "/" (group (+ nonl))))
+    (push `((nil . ,(rx bos "cb" (*? nonl) "/" (group (+? nonl))
+                        (? "/body") eos))
             .
             (nil . "\\1"))
           which-key-replacement-alist)
+
+    ;; Strip hydra body suffixes
 
     ;; Clean up comments entries
 
@@ -240,7 +265,7 @@
 
       "!"   #'shell-command
 
-      "a i" #'toggle-input-method
+      "a i" #'cb/select-input-method/body
 
       "b d" #'kill-this-buffer
       "b b" #'bury-buffer
@@ -317,19 +342,6 @@
     "bn" #'cb-buffer-transient-state/next-buffer
     "bN" #'cb-buffer-transient-state/previous-buffer
     "bp" #'cb-buffer-transient-state/previous-buffer))
-
-(use-package hydra
-  :defer t
-  :preface
-  (defun cb-leader-keys-set-up-hydra-buffer (&rest _)
-    (when-let* ((buf (get-buffer " *LV*")))
-      (when (buffer-live-p buf)
-        (with-current-buffer buf
-          (setq-local mode-line-format nil)
-          (setq-local header-line-format nil)
-          (force-mode-line-update)))))
-  :config
-  (advice-add 'lv-window :after #'cb-leader-keys-set-up-hydra-buffer))
 
 (provide 'cb-leader-keys)
 
