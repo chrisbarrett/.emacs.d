@@ -131,6 +131,7 @@ should be a string suitable for `kbd'."
 (defvar evil-magit-untouched-modes
   '(git-popup-mode
     magit-blame-mode
+    magit-blame-read-only-mode
     magit-popup-mode
     magit-popup-sequence-mode)
   "Modes whose evil states are unchanged")
@@ -181,6 +182,8 @@ evil-magit was loaded."
 (defvar evil-magit-section-maps
   '(magit-branch-section-map
     magit-commit-section-map
+    magit-commit-message-section-map
+    magit-error-section-map
     magit-file-section-map
     magit-hunk-section-map
     magit-module-commit-section-map
@@ -204,6 +207,7 @@ evil-magit was loaded."
     magit-processbuf-section-map
     magit-process-section-map
     magit-pulls-section-map
+    magit-unmerged-section-map
     magit-status-section-map
     magit-worktree-section-map)
   "All magit section maps. For testing purposes only at the
@@ -275,9 +279,6 @@ moment.")
        (,states magit-mode-map "C-f"   evil-scroll-page-down)
        (,states magit-mode-map "C-b"   evil-scroll-page-up)
        (,states magit-mode-map ":"     evil-ex)
-       (,states magit-mode-map "/"     evil-search-forward)
-       (,states magit-mode-map "n"     evil-search-next)
-       (,states magit-mode-map "N"     evil-search-previous)
 
        ;; these are to fix the priority of the log mode map and the magit mode map
        ;; FIXME: Conflict between this and revert. Revert seems more important here
@@ -289,6 +290,14 @@ moment.")
 
        ((,evil-magit-state) magit-mode-map "C-z"      evil-emacs-state)
        ((,evil-magit-state) magit-mode-map "<escape>" magit-mode-bury-buffer))
+
+     (if (eq evil-search-module 'evil-search)
+         `((,states magit-mode-map "/" evil-ex-search-forward)
+           (,states magit-mode-map "n" evil-ex-search-next)
+           (,states magit-mode-map "N" evil-ex-search-previous))
+       `((,states magit-mode-map "/" evil-search-forward)
+         (,states magit-mode-map "n" evil-search-next)
+         (,states magit-mode-map "N" evil-search-previous)))
 
      `((,states magit-status-mode-map "gz"  magit-jump-to-stashes                  "jz")
        (,states magit-status-mode-map "gt"  magit-jump-to-tracked                  "jt")
@@ -345,14 +354,14 @@ denotes the original magit key for this command.")
     ((,evil-magit-state visual) magit-blob-mode-map "gk" magit-blob-previous "p")
     ((,evil-magit-state visual) git-commit-mode-map "gk" git-commit-prev-message "M-p")
     ((,evil-magit-state visual) git-commit-mode-map "gj" git-commit-next-message "M-n")
-    ((normal) magit-blame-mode-map "j"    evil-next-visual-line)
-    ((normal) magit-blame-mode-map "C-j"  magit-blame-next-chunk                 "n")
-    ((normal) magit-blame-mode-map "gj"   magit-blame-next-chunk                 "n")
-    ((normal) magit-blame-mode-map "gJ"   magit-blame-next-chunk-same-commit     "N")
-    ((normal) magit-blame-mode-map "k"    evil-previous-visual-line)
-    ((normal) magit-blame-mode-map "C-k"  magit-blame-previous-chunk             "p")
-    ((normal) magit-blame-mode-map "gk"   magit-blame-previous-chunk             "p")
-    ((normal) magit-blame-mode-map "gK"   magit-blame-previous-chunk-same-commit "P"))
+    ((normal) magit-blame-read-only-mode-map "j"    evil-next-visual-line)
+    ((normal) magit-blame-read-only-mode-map "C-j"  magit-blame-next-chunk                 "n")
+    ((normal) magit-blame-read-only-mode-map "gj"   magit-blame-next-chunk                 "n")
+    ((normal) magit-blame-read-only-mode-map "gJ"   magit-blame-next-chunk-same-commit     "N")
+    ((normal) magit-blame-read-only-mode-map "k"    evil-previous-visual-line)
+    ((normal) magit-blame-read-only-mode-map "C-k"  magit-blame-previous-chunk             "p")
+    ((normal) magit-blame-read-only-mode-map "gk"   magit-blame-previous-chunk             "p")
+    ((normal) magit-blame-read-only-mode-map "gK"   magit-blame-previous-chunk-same-commit "P"))
   "Evil-magit bindings for minor modes. Each element of
 this list takes the form
 
@@ -387,13 +396,19 @@ denotes the original magit key for this command.")
                                     'all
                                   evil-magit-state)))
 
-(evil-make-overriding-map magit-blame-mode-map 'normal)
+(evil-make-overriding-map magit-blame-read-only-mode-map 'normal)
 
 (eval-after-load 'magit-gh-pulls
   `(evil-make-overriding-map magit-gh-pulls-mode-map ',evil-magit-state))
 
 ;; Need to refresh evil keymaps when blame mode is entered.
 (add-hook 'magit-blame-mode-hook 'evil-normalize-keymaps)
+
+(evil-set-initial-state 'magit-repolist-mode 'motion)
+(evil-define-key 'motion magit-repolist-mode-map
+  (kbd "RET") 'magit-repolist-status
+  (kbd "gr")  'magit-list-repositories)
+(add-hook 'magit-repolist-mode-hook 'evil-normalize-keymaps)
 
 (eval-after-load 'git-rebase
   `(progn
@@ -479,69 +494,36 @@ evil-magit affects.")
 (defvar evil-magit-popup-changes
   (append
    (when evil-magit-want-horizontal-movement
-     '((magit-dispatch-popup :actions "l" "L" magit-log-popup)))
+     '((magit-dispatch-popup :actions "L" "\C-l" magit-log-refresh-popup)
+       (magit-dispatch-popup :actions "l" "L" magit-log-popup)))
    '((magit-branch-popup :actions "x" "X" magit-branch-reset)
      (magit-branch-popup :actions "k" "x" magit-branch-delete)
+     (magit-dispatch-popup :actions "o" "'" magit-submodule-popup)
+     (magit-dispatch-popup :actions "O" "\"" magit-subtree-popup)
+     (magit-dispatch-popup :actions "V" "_" magit-revert-popup)
+     (magit-dispatch-popup :actions "X" "O" magit-reset-popup)
+     (magit-dispatch-popup :actions "v" "-" magit-reverse)
+     (magit-dispatch-popup :actions "k" "x" magit-discard)
      (magit-remote-popup :actions "k" "x" magit-remote-remove)
      (magit-revert-popup :actions "v" "o" magit-revert-no-commit)
      (magit-revert-popup :actions "V" "O" magit-revert)
      (magit-revert-popup :sequence-actions "V" "O" magit-sequencer-continue)
      (magit-tag-popup    :actions "k" "x" magit-tag-delete)))
-  "Changes to popup keys, excluding `magit-dispatch-popup'.")
+  "Changes to popup keys")
+
+(defun evil-magit-change-popup-key (popup type from to _)
+  "Wrap `magit-change-popup-key'."
+  (magit-change-popup-key popup type (string-to-char from) (string-to-char to))
+  ;; Support C-a -- C-z
+  (when (and (>= (string-to-char to) 1)
+             (<= (string-to-char to) 26))
+    (define-key magit-popup-mode-map to #'magit-invoke-popup-action)))
 
 (defun evil-magit-adjust-popups ()
   "Adjust popup keys to match evil-magit."
-  (plist-put magit-dispatch-popup
-             :actions '("Popup and dwim commands"
-                        (?A "Cherry-picking"  magit-cherry-pick-popup)
-                        (?b "Branching"       magit-branch-popup)
-                        (?B "Bisecting"       magit-bisect-popup)
-                        (?c "Committing"      magit-commit-popup)
-                        (?d "Diffing"         magit-diff-popup)
-                        (?D "Change diffs"    magit-diff-refresh-popup)
-                        (?e "Ediff dwimming"  magit-ediff-dwim)
-                        (?E "Ediffing"        magit-ediff-popup)
-                        (?f "Fetching"        magit-fetch-popup)
-                        (?F "Pulling"         magit-pull-popup)
-                        (?l "Logging"         magit-log-popup)
-                        (?L "Change logs"     magit-log-refresh-popup)
-                        (?m "Merging"         magit-merge-popup)
-                        (?M "Remoting"        magit-remote-popup)
-                        (?O "Resetting"       magit-reset-popup)
-                        (?P "Pushing"         magit-push-popup)
-                        (?r "Rebasing"        magit-rebase-popup)
-                        (?t "Tagging"         magit-tag-popup)
-                        (?T "Notes"           magit-notes-popup)
-                        (?w "Apply patches"   magit-am-popup)
-                        (?W "Format patches"  magit-patch-popup)
-                        (?y "Show Refs"       magit-show-refs-popup)
-                        (?z "Stashing"        magit-stash-popup)
-                        (?! "Running"         magit-run-popup)
-                        (?' "Submodules"      magit-submodule-popup)
-                        (?\" "Subtrees"       magit-subtree-popup)
-                        (?_ "Reverting"       magit-revert-popup)
-                        "Applying changes"
-                        (?a "Apply"           magit-apply)
-                        (?s "Stage"           magit-stage)
-                        (?u "Unstage"         magit-unstage)
-                        nil
-                        (?- "Reverse"         magit-reverse)
-                        (?S "Stage all"       magit-stage-modified)
-                        (?U "Unstage all"     magit-unstage-all)
-                        nil
-                        (?x "Discard"         magit-discard)
-                        "\
- gr     refresh current buffer
- TAB    toggle section at point
- RET    visit thing at point
-
- C-h m  show all key bindings" nil))
-
   (unless evil-magit-popup-keys-changed
     (dolist (change evil-magit-popup-changes)
-      (magit-change-popup-key
-       (nth 0 change) (nth 1 change)
-       (string-to-char (nth 2 change)) (string-to-char (nth 3 change))))
+      (apply #'evil-magit-change-popup-key change))
     (setq evil-magit-popup-keys-changed t)))
 
 (defun evil-magit-revert-popups ()
@@ -582,9 +564,11 @@ using `evil-magit-toggle-text-mode'"
   :keymap (make-sparse-keymap))
 
 (evil-define-key 'normal evil-magit-toggle-text-minor-mode-map
-  "\C-t" 'evil-magit-toggle-text-mode)
+  "\C-t" 'evil-magit-toggle-text-mode
+  "\\"   'evil-magit-toggle-text-mode)
 (evil-define-key evil-magit-state magit-mode-map
-  "\C-t" 'evil-magit-toggle-text-mode)
+  "\C-t" 'evil-magit-toggle-text-mode
+  "\\"   'evil-magit-toggle-text-mode)
 
 (defvar evil-magit-last-mode nil
   "Used to store last magit mode before entering text mode using
