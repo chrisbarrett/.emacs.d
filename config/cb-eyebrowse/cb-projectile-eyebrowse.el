@@ -7,6 +7,8 @@
 (require 'eyebrowse)
 (require 'f)
 
+(autoload 'cb-projectile-functions-cleanup-projects "cb-projectile-functions")
+
 (defun cb-projectile-eyebrowse--slot-name-pairs (configs)
   (-map (-lambda ((slot _ name))
           (cons slot name))
@@ -17,7 +19,7 @@
                (cb-projectile-eyebrowse--slot-name-pairs (eyebrowse--get 'window-configs)))))
 
 (defun cb-projectile-eyebrowse--read-project ()
-  (-if-let (projects (projectile-relevant-known-projects))
+  (-if-let (projects (cb-projectile-functions-cleanup-projects (projectile-relevant-known-projects)))
       (completing-read "Switch to project: " projects)
     (user-error "There are no known projects")))
 

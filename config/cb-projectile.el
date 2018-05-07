@@ -15,6 +15,18 @@
 (require 'dash-functional)
 (require 'cb-emacs)
 (require 'spacemacs-keys)
+(require 'cb-projectile-functions)
+
+(use-package cb-projectile-functions
+  :defines (cb-projectile-functions-ignored-base-dirs)
+  :config
+  (setq cb-projectile-functions-ignored-base-dirs
+        '("/nix/store/"
+          "~/.nvm/"
+          "~/.ghc/"
+          "~/.stack/"
+          "~/.rustup/"
+          "~/tmp/")))
 
 (use-package projectile
   :commands (projectile-ag
@@ -35,15 +47,6 @@
     (autoload 'magit-status "magit")
     (autoload 'projectile-register-project-type "projectile")
 
-    (defun cb-projectile--delete-duplicate-files (projects)
-      (if (sequencep projects)
-          (thread-last projects
-            (seq-group-by #'file-truename)
-            (seq-remove (-compose #'cb-projectile--project-is-ignored-subdir-p #'car))
-            (seq-map #'cadr)
-            (seq-sort #'string<))
-        projects))
-
     (defun cb-projectile--find-files-with-string-using-rg (fn string directory)
       (if (and (projectile-unixy-system-p) (executable-find "rg"))
           (let* ((search-term (shell-quote-argument string))
@@ -51,14 +54,6 @@
 
             (projectile-files-from-cmd cmd directory))
         (funcall fn string directory)))
-
-    (defconst cb-projectile-ignored-base-dirs
-      '("/nix/store/"
-        "~/.nvm/"
-        "~/.ghc/"
-        "~/.stack/"
-        "~/.rustup/"
-        "~/tmp/"))
 
     (defun cb-projectile--file-is-child-of-test-dir (&optional has-test-prefix-or-suffix)
       (or has-test-prefix-or-suffix
@@ -100,11 +95,6 @@
              (t
               guess)))))
 
-    (defun cb-projectile--project-is-ignored-subdir-p (project)
-      (seq-find (lambda (base)
-                  (f-child-of-p project base))
-                cb-projectile-ignored-base-dirs))
-
     (defun cb-projectile-test-project (arg)
       (interactive "P")
       (let ((compilation-buffer-name-function (-const "*projectile-test*")))
@@ -131,7 +121,7 @@
     (setq projectile-known-projects-file (concat cb-emacs-cache-directory "/projectile-bookmarks.eld"))
 
     ;; Ensure projectile's known projects list doesn't contain duplicates.
-    (advice-add #'projectile-unserialize :filter-return #'cb-projectile--delete-duplicate-files)
+    (advice-add #'projectile-unserialize :filter-return #'cb-projectile-functions-cleanup-projects)
 
     (projectile-load-known-projects)
 
@@ -143,7 +133,8 @@
 
     (setq projectile-globally-ignored-files '("TAGS" ".DS_Store"))
     (setq projectile-globally-ignored-file-suffixes '("gz" "zip" "tar" "elc"))
-    (setq projectile-ignored-project-function #'cb-projectile--project-is-ignored-subdir-p)
+
+    (setq projectile-ignored-project-function #'cb-projectile-functions-ignored-subdir-p)
 
     (setq projectile-globally-ignored-directories
           '(".bzr"
@@ -183,6 +174,16 @@
              counsel-projectile-switch-project
              counsel-projectile-switch-to-buffer
              counsel-projectile-rg)
+  :preface
+  (progn
+    (autoload 'magit-list-repos "magit")
+
+    (defun cb-projectile--refresh-projects ()
+      (projectile-cleanup-known-projects)
+      (dolist (repo (magit-list-repos))
+        (projectile-add-known-project (file-name-as-directory repo)))
+      (setq projectile-known-projects (cb-projectile-functions-cleanup-projects projectile-known-projects))))
+
   :init
   (spacemacs-keys-set-leader-keys
     "pf" #'counsel-projectile-find-file
@@ -191,7 +192,9 @@
     "/"  #'counsel-projectile-rg)
 
   :config
-  (counsel-projectile-mode))
+  (progn
+    (advice-add #'counsel-projectile-switch-project :before #'cb-projectile--refresh-projects)
+    (counsel-projectile-mode)))
 
 (provide 'cb-projectile)
 

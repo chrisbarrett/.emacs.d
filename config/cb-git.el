@@ -79,6 +79,10 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
   :config
   (progn
     (evil-define-key 'normal magit-refs-mode-map (kbd ".") #'magit-branch-and-checkout)
+    (setq magit-repository-directories
+          '(("~/Documents" . 1)
+            ("~/Projects" . 1)
+            ("~/workspace" . 1)))
     (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
     (setq magit-log-section-commit-count 0)))
 
