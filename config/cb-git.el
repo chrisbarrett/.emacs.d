@@ -91,9 +91,7 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
     (setq magithub-clone-default-directory "~/Projects")))
 
 (use-package git-commit-jira-prefix
-  :after git-commit
-  :commands git-commit-jira-prefix-init
-  :config (git-commit-jira-prefix-init))
+  :hook (git-commit-setup . git-commit-jira-prefix-insert))
 
 (use-package evil-magit
   :after magit
