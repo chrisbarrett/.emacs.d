@@ -644,7 +644,8 @@ tracked file."
   (unless file
     (with-current-buffer (or (buffer-base-buffer)
                              (current-buffer))
-      (setq file (or magit-buffer-file-name buffer-file-name))))
+      (setq file (or magit-buffer-file-name buffer-file-name
+                     (and (derived-mode-p 'dired-mode) default-directory)))))
   (when (and file (or (not tracked)
                       (magit-file-tracked-p (file-relative-name file))))
     (--when-let (magit-toplevel
@@ -682,6 +683,10 @@ tracked file."
 
 (defun magit-unmerged-files ()
   (magit-git-items "diff-files" "-z" "--name-only" "--diff-filter=U"))
+
+(defun magit-ignored-files ()
+  (magit-git-items "ls-files" "-z" "--others" "--ignored"
+                   "--exclude-standard" "--directory"))
 
 (defun magit-revision-files (rev)
   (magit-with-toplevel
@@ -916,7 +921,7 @@ corresponds to a ref outside of the namespace."
 
 (defun magit-rev-branch (rev)
   (--when-let (magit-rev-name rev "refs/heads/*")
-    (unless (string-match-p "~" it) it)))
+    (unless (string-match-p "[~^]" it) it)))
 
 (defun magit-get-shortname (rev)
   (let* ((fn (apply-partially 'magit-rev-name rev))
@@ -1863,7 +1868,9 @@ the reference is used.  The first regexp submatch becomes the
                       (concat " "
                               (propertize branch 'face 'magit-branch-local))))
                " starting at")
-       (cons "HEAD" (magit-list-refnames))
+       (nconc (list "HEAD")
+              (magit-list-refnames)
+              (directory-files (magit-git-dir) nil "_HEAD\\'"))
        nil nil nil 'magit-revision-history
        (magit--default-starting-point))
       (user-error "Nothing selected")))
@@ -1945,7 +1952,7 @@ the reference is used.  The first regexp submatch becomes the
    (--> key
         (replace-regexp-in-string "\\`[^.]+" #'downcase it t t)
         (replace-regexp-in-string "[^.]+\\'" #'downcase it t t))
-   (magit--with-refresh-cache (list 'config (magit-toplevel))
+   (magit--with-refresh-cache (cons (magit-toplevel) 'config)
      (let ((configs (make-hash-table :test 'equal)))
        (dolist (conf (magit-git-items "config" "--list" "-z"))
          (let* ((nl-pos (cl-position ?\n conf))

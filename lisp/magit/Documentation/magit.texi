@@ -30,7 +30,7 @@ General Public License for more details.
 @finalout
 @titlepage
 @title Magit User Manual
-@subtitle for version 2.12.1
+@subtitle for version 2.12.1 (2.12.1-93-ga80da3d6+1)
 @author Jonas Bernoulli
 @page
 @vskip 0pt plus 1filll
@@ -52,7 +52,7 @@ directly from within Emacs.  While many fine Git clients exist, only
 Magit and Git itself deserve to be called porcelains.
 
 @noindent
-This manual is for Magit version 2.12.1.
+This manual is for Magit version 2.12.1 (2.12.1-93-ga80da3d6+1).
 
 @quotation
 Copyright (C) 2015-2018 Jonas Bernoulli <jonas@@bernoul.li>
@@ -324,6 +324,7 @@ FAQ - Issues and Errors
 * The mode-line information isn't always up-to-date::
 * Emacs 24.5 hangs when loading Magit: Emacs 245 hangs when loading Magit. 
 * A branch and tag sharing the same name breaks SOMETHING::
+* My Git hooks work on the command line but not in Magit::
 
 
 @end detailmenu
@@ -825,8 +826,8 @@ to pop up on the same side as they would if
 
 This function displays most buffers so that they fill the entire
 height of the frame.  However, the buffer is displayed in another
-window if 1) the buffer's mode derives from @code{magit-process-mode},
-or 2) the buffer's mode derives from @code{magit-diff-mode}, provided
+window if (1) the buffer's mode derives from @code{magit-process-mode},
+or (2) the buffer's mode derives from @code{magit-diff-mode}, provided
 that the mode of the current buffer derives from @code{magit-log-mode} or
 @code{magit-cherry-mode}.
 @end defun
@@ -4600,16 +4601,16 @@ the <a href="http://git-scm.com/docs/git-blame">git-blame(1)</a> manpage.
 the git-blame(1) manpage.
 @end iftex
 
-To start blaming use @code{M-x} in a file-visiting buffer to invoke one of
-the next tree commands.  In a blob-visiting buffer you can also use
-the key bindings described below, and when Magit-File mode is enabled,
-then you can at least use @code{C-c M-g} to enter the blaming popup instead
-of having to type out the command name.
+To start blaming you can use @code{M-x} in a file-visiting buffer to invoke
+one of the following commands.  You can also invoke these commands
+using the blame popup, which is available on @code{b} in file-visiting
+buffers that already contain blame information and, also on @code{b}, in all
+blob-visiting buffers.  You can also enter the blame popup from the
+file popup, which is available on @code{C-c M-g}, provided @code{magit-file-mode}
+is enabled, see @ref{Minor Mode for Buffers Visiting Files}.
 
-@table @asis
-@kindex M-x magit-blame
 @cindex magit-blame
-@item @kbd{M-x magit-blame} @tie{}@tie{}@tie{}@tie{}(@code{magit-blame})
+@deffn Command magit-blame
 
 This command augments each line or chunk of lines in the current
 file- or blob-visiting buffer with information about what commits
@@ -4621,39 +4622,42 @@ considered, including uncommitted changes.
 
 If Magit-Blame mode is already turned on in the current buffer then
 blaming is done recursively, by visiting REVISION:FILE (using
-@code{magit-find-file}), where REVISION is the revision before the revision
-that added the current line or chunk of lines.
+@code{magit-find-file}), where REVISION is a parent of the revision that
+added the current line or chunk of lines.
+@end deffn
 
-@kindex M-x magit-blame-reverse
+@cindex magit-blame-echo
+@deffn Command magit-blame-echo
+
+This command is like @code{magit-blame} except that it doesn't turn on
+@code{read-only-mode} and that it initially uses the visualization style
+specified by option @code{magit-blame-echo-style}.
+@end deffn
+
+@cindex magit-blame-removal
+@deffn Command magit-blame-removal
+
+This command augments each line or chunk of lines in the current
+blob-visiting buffer with information about the revision that
+removes it.  It cannot be used in file-visiting buffers.
+
+Like @code{magit-blame}, this command can be used recursively.
+@end deffn
+
 @cindex magit-blame-reverse
-@item @kbd{M-x magit-blame-reverse} @tie{}@tie{}@tie{}@tie{}(@code{magit-blame-reverse})
+@deffn Command magit-blame-reverse
 
 This command augments each line or chunk of lines in the current
 file- or blob-visiting buffer with information about the last
 revision in which a line still existed.
 
 Like @code{magit-blame}, this command can be used recursively.
+@end deffn
 
-@kindex M-x magit-blame-popup
-@cindex magit-blame-popup
-@item @kbd{M-x magit-blame-popup} @tie{}@tie{}@tie{}@tie{}(@code{magit-blame-popup})
-
-This prefix command shows the above suffix command along with the
-appropriate infix arguments in a popup buffer.
-@end table
-
-The above commands are also bound in the keymaps @code{magit-blame-mode-map}
-and @code{magit-blob-mode-map}, and in the popup @code{magit-file-popup}.  Once
-Magit-Blame mode is enabled in a file-visiting buffer, you can use @code{B}
-to show the blaming popup, @code{b} to blame recursively going backward in
-time, and @code{f} to blame recursively going forward in time (i.e. blame in
-reverse).  These bindings are always available in blob-visiting
-buffers.
-
-Additionally the following key bindings are available when Magit-Blame
-mode is enabled.  These commands are also available in other buffers;
-here only the behavior is described that is relevant in file-visiting
-buffers that are being blamed.
+The following key bindings are available when Magit-Blame mode is
+enabled and Read-Only mode is not enabled.  These commands are also
+available in other buffers; here only the behavior is described that
+is relevant in file-visiting buffers that are being blamed.
 
 @table @asis
 @kindex RET
@@ -4683,6 +4687,18 @@ This either shows the commit that last touched the line at point in
 the appropriate buffer, or if that buffer is already being displayed
 in the current frame and if that buffer contains information about
 that commit, then the buffer is scrolled down instead.
+@end table
+
+The following key bindings are available when Magit-Blame mode is
+enabled and Read-Only mode is not enabled.
+
+@table @asis
+@kindex b
+@cindex magit-blame-popup
+@item @kbd{b} @tie{}@tie{}@tie{}@tie{}(@code{magit-blame-popup})
+
+This prefix command shows the above suffix command along with the
+appropriate infix arguments in a popup buffer.
 
 @kindex n
 @cindex magit-blame-next-chunk
@@ -4725,35 +4741,52 @@ kill ring.
 When the region is active, the command saves the region's content
 instead of the hash, like @code{kill-ring-save} would.
 
-@kindex t
-@cindex magit-blame-toggle-headings
-@item @kbd{t} @tie{}@tie{}@tie{}@tie{}(@code{magit-blame-toggle-headings})
+@kindex c
+@cindex magit-blame-cycle-style
+@item @kbd{c} @tie{}@tie{}@tie{}@tie{}(@code{magit-blame-cycle-style})
 
-This command shows or hides blame chunk headings.
-
+This command changes how blame information is visualized in the
+current buffer by cycling through the styles specified using the
+option @code{magit-blame-styles}.
 @end table
 
-@defopt magit-blame-heading-format
+Blaming is also controlled using the following options.
 
-The format string used for blame headings.
+@defopt magit-blame-styles
+
+This option defines a list of styles used to visualize blame
+information.  For now see its doc-string to learn more.
+@end defopt
+
+@defopt magit-blame-echo-style
+
+This option specifies the blame visualization style used by the
+command @code{magit-blame-echo}.  This must be a symbol that is used as the
+identifier for one of the styles defined in @code{magit-blame-styles}.
 @end defopt
 
 @defopt magit-blame-time-format
 
-The format string used for time strings in blame headings.
+This option specifies the format string used to display times when
+showing blame information.
 @end defopt
 
-@defopt magit-blame-show-headings
+@defopt magit-blame-read-only
 
-This option controls whether blame block headings are initially
-shown.  The headings can also be toggled locally using the command
-@code{magit-blame-toggle-headings}.
+This option controls whether blaming a buffer also makes temporarily
+read-only.
+@end defopt
+
+@defopt magit-blame-disable-modes
+
+This option lists incompatible minor-modes that should be disabled
+temporarily when a buffer contains blame information.  They are
+enabled again when the buffer no longer shows blame information.
 @end defopt
 
 @defopt magit-blame-goto-chunk-hook
 
-This hook is run by @code{magit-blame-next-chunk} and
-@code{magit-blame-previous-chunk}.
+This hook is run when moving between chunks.
 @end defopt
 
 @node Manipulating
@@ -5667,9 +5700,9 @@ matter, all commits between FROM and @code{HEAD} are moved to the new
 branch.  If FROM is not reachable from @code{HEAD} or is reachable from the
 source branch's upstream, then an error is raised.
 
-@kindex b R
+@kindex b Y
 @cindex magit-branch-pull-request
-@item @kbd{b R} @tie{}@tie{}@tie{}@tie{}(@code{magit-branch-pull-request})
+@item @kbd{b Y} @tie{}@tie{}@tie{}@tie{}(@code{magit-branch-pull-request})
 
 This command creates and configures a new branch from a Github
 pull-request, creating and configuring a new remote if necessary.
@@ -5781,9 +5814,9 @@ Do not delete the tracking branch instead of the local branch.  The
 cleanup mentioned in the previous paragraph is not performed if you
 do that.
 
-@kindex b r
+@kindex b y
 @cindex magit-checkout-pull-request
-@item @kbd{b r} @tie{}@tie{}@tie{}@tie{}(@code{magit-checkout-pull-request})
+@item @kbd{b y} @tie{}@tie{}@tie{}@tie{}(@code{magit-checkout-pull-request})
 
 This command creates and configures a new branch from a pull
 request, the same way @code{magit-branch-pull-request} does.  Additionally
@@ -6790,7 +6823,7 @@ The blue commit is the @code{HEAD} commit.
 The green commit is the commit the rebase sequence stopped at.  If
 this is the same commit as @code{HEAD} (e.g. because you haven't done
 anything yet after rebase stopped at the commit, then this commit is
-shown in blue, not green.  There can only be a green @strong{and} a blue
+shown in blue, not green).  There can only be a green @strong{and} a blue
 commit at the same time, if you create one or more new commits after
 rebase stops at a commit.
 
@@ -8810,7 +8843,7 @@ just one huge repository use this:
 @code{/path/to/huge/repo/.dir-locals.el}
 
 @lisp
-((nil . ((magit-refresh-buffers . nil))
+((nil . ((magit-refresh-buffers . nil))))
 @end lisp
 @end itemize
 
@@ -10036,6 +10069,7 @@ conflicts.
 * The mode-line information isn't always up-to-date::
 * Emacs 24.5 hangs when loading Magit: Emacs 245 hangs when loading Magit. 
 * A branch and tag sharing the same name breaks SOMETHING::
+* My Git hooks work on the command line but not in Magit::
 @end menu
 
 @node Magit is slow
@@ -10185,6 +10219,14 @@ consider ambiguous refnames unsupported and recommend that you use a
 non-ambiguous naming scheme.  However, if you do work with a
 repository that has ambiguous refnames, please report any issues you
 encounter so that we can investigate whether there is a simple fix.
+
+@node My Git hooks work on the command line but not in Magit
+@appendixsubsec My Git hooks work on the command line but not in Magit
+
+When Magit calls @code{git} it adds a few global arguments including
+@code{--literal-pathspecs} and the @code{git} process started by Magit then passes
+that setting on to other @code{git} process it starts itself.  This setting
+can be reverted in hook scripts using @code{unset GIT_LITERAL_PATHSPECS}.
 
 @node Debugging Tools
 @chapter Debugging Tools

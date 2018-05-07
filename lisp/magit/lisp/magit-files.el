@@ -226,7 +226,30 @@ directory, while reading the FILENAME."
 ;;;###autoload (autoload 'magit-file-popup "magit" nil t)
 (magit-define-popup magit-file-popup
   "Popup console for Magit commands in file-visiting buffers."
-  :actions magit-file-popup-actions
+  :actions '((?s "Stage"     magit-stage-file)
+             (?D "Diff..."   magit-diff-buffer-file-popup)
+             (?L "Log..."    magit-log-buffer-file-popup)
+             (?B "Blame..."  magit-blame-popup) nil
+             (?u "Unstage"   magit-unstage-file)
+             (?d "Diff"      magit-diff-buffer-file)
+             (?l "Log"       magit-log-buffer-file)
+             (?b "Blame"     magit-blame)
+             (?p "Prev blob" magit-blob-previous)
+
+             (?c "Commit"    magit-commit-popup) nil
+             (?t "Trace"     magit-log-trace-definition)
+             (?r (lambda ()
+                   (with-current-buffer magit-pre-popup-buffer
+                     (and (not buffer-file-name)
+                          (propertize "...removal" 'face 'default))))
+                 magit-blame-removal)
+             (?n "Next blob" magit-blob-next)
+             nil nil nil
+             (?f (lambda ()
+                   (with-current-buffer magit-pre-popup-buffer
+                     (and (not buffer-file-name)
+                          (propertize "...reverse" 'face 'default))))
+                 magit-blame-reverse))
   :max-action-columns 5)
 
 (defvar magit-file-mode-lighter "")
@@ -248,10 +271,18 @@ Currently this only adds the following key bindings.
 ;;;###autoload
 (define-globalized-minor-mode global-magit-file-mode
   magit-file-mode magit-file-mode-turn-on
-  :package-version '(magit . "2.2.0")
+  :package-version '(magit . "2.13.0")
   :link '(info-link "(magit)Minor Mode for Buffers Visiting Files")
   :group 'magit-essentials
-  :group 'magit-modes)
+  :group 'magit-modes
+  :init-value t)
+;; Unfortunately `:init-value t' only sets the value of the mode
+;; variable but does not cause the mode function to be called, and we
+;; cannot use `:initialize' to call that explicitly because the option
+;; is defined before the functions, so we have to do it here.
+(cl-eval-when (load)
+  (when global-magit-file-mode
+    (global-magit-file-mode 1)))
 
 ;;; Blob Mode
 
@@ -261,11 +292,13 @@ Currently this only adds the following key bindings.
            (define-key map "i" 'magit-blob-previous)
            (define-key map "k" 'magit-blob-next)
            (define-key map "j" 'magit-blame)
-           (define-key map "l" 'magit-blame-reverse))
+           (define-key map "l" 'magit-blame-removal)
+           (define-key map "f" 'magit-blame-reverse))
           (t
            (define-key map "p" 'magit-blob-previous)
            (define-key map "n" 'magit-blob-next)
            (define-key map "b" 'magit-blame)
+           (define-key map "r" 'magit-blame-removal)
            (define-key map "f" 'magit-blame-reverse)))
     (define-key map "q" 'magit-kill-this-buffer)
     map)

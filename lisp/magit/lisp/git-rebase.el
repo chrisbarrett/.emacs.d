@@ -191,6 +191,7 @@
     ["Squash" git-rebase-squash t]
     ["Fixup" git-rebase-fixup t]
     ["Kill" git-rebase-kill-line t]
+    ["Noop" git-rebase-noop t]
     ["Execute" git-rebase-exec t]
     ["Move Down" git-rebase-move-line-down t]
     ["Move Up" git-rebase-move-line-up t]
@@ -518,6 +519,8 @@ running 'man git-rebase' at the command line) for details."
       ("^\\(exec\\) \\(.*\\)"
        (1 'font-lock-keyword-face)
        (2 'git-rebase-description))
+      ("^\\(noop\\)"
+       (1 'font-lock-keyword-face))
       (git-rebase-match-comment-line 0 'font-lock-comment-face)
       (,(concat git-rebase-comment-re " *" action-re)
        0 'git-rebase-killed-action t)
@@ -539,7 +542,7 @@ By default, this is the same except for the \"pick\" command."
       (goto-char (point-min))
       (when (and git-rebase-show-instructions
                  (re-search-forward
-                  (concat git-rebase-comment-re " p, pick")
+                  (concat git-rebase-comment-re "\\s-+p, pick")
                   nil t))
         (goto-char (line-beginning-position))
         (--each git-rebase-command-descriptions

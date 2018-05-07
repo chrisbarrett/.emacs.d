@@ -131,11 +131,13 @@ The value has the form ((COMMAND nil|PROMPT DEFAULT)...).
   entry has no effect."
   :package-version '(magit . "2.12.0")
   :group 'magit-commands
-  :type '(repeat (list command
-                       (regexp :tag "Prompt regexp")
-                       (choice (const "Offer other choices" nil)
-                               (const "Require confirmation" ask)
-                               (const "Use default without confirmation" t)))))
+  :type '(repeat
+          (list (symbol :tag "Command") ; It might not be fboundp yet.
+                (choice (const  :tag "for all prompts" nil)
+                        (regexp :tag "for prompts matching regexp"))
+                (choice (const  :tag "offer other choices" nil)
+                        (const  :tag "require confirmation" ask)
+                        (const  :tag "use default without confirmation" t)))))
 
 (defconst magit--confirm-actions
   '((const reverse)           (const discard)
@@ -726,6 +728,42 @@ that it will align with the text area."
                     (eq face current))
              return nil))
 
+(defun magit--format-spec (format specification)
+  "Like `format-spec' but preserve text properties in SPECIFICATION."
+  (with-temp-buffer
+    (insert format)
+    (goto-char (point-min))
+    (while (search-forward "%" nil t)
+      (cond
+       ;; Quoted percent sign.
+       ((eq (char-after) ?%)
+	(delete-char 1))
+       ;; Valid format spec.
+       ((looking-at "\\([-0-9.]*\\)\\([a-zA-Z]\\)")
+	(let* ((num (match-string 1))
+	       (spec (string-to-char (match-string 2)))
+	       (val (assq spec specification)))
+	  (unless val
+	    (error "Invalid format character: `%%%c'" spec))
+	  (setq val (cdr val))
+	  ;; Pad result to desired length.
+	  (let ((text (format (concat "%" num "s") val)))
+	    ;; Insert first, to preserve text properties.
+            (if (next-property-change 0 (concat " " text))
+                ;; If the inserted text has properties, then preserve those.
+	        (insert text)
+              ;; Otherwise preserve FORMAT's properties, like `format-spec'.
+	      (insert-and-inherit text))
+	    ;; Delete the specifier body.
+            (delete-region (+ (match-beginning 0) (length text))
+                           (+ (match-end 0) (length text)))
+            ;; Delete the percent sign.
+            (delete-region (1- (match-beginning 0)) (match-beginning 0)))))
+       ;; Signal an error on bogus format strings.
+       (t
+	(error "Invalid format string"))))
+    (buffer-string)))
+
 ;;; Missing from Emacs
 
 (defun magit-kill-this-buffer ()
@@ -792,9 +830,9 @@ are not compatible.  Therefore you cannot turn on that minor-mode
 in Magit buffers.  If you try to enable it anyway, then this
 advice prevents that.
 
-It the reason the attempt is made is that `global-whitespace-mode'
-is enabled, then that is done silently.  However if you you call
-the local minor-mode interactively, then that results in an error.
+If the reason the attempt is made is that `global-whitespace-mode'
+is enabled, then that is done silently.  However if you call the local
+minor-mode interactively, then that results in an error.
 
 See `magit-diff-paint-whitespace' for an alternative."
   (if (not (derived-mode-p 'magit-mode))
