@@ -406,8 +406,12 @@
 
 (use-package cb-scala-autoinsert
   :after autoinsert
-  :preface (autoload 'cb-scala-autoinsert-init "cb-scala-autoinsert")
-  :config (cb-scala-autoinsert-init))
+  :defines (auto-insert-alist)
+  :config
+  (add-to-list 'auto-insert-alist
+               '((scala-mode . "Scala Src File")
+                 nil
+                 (cb-scala-autoinsert--package-name))))
 
 ;; Snippet utilities
 

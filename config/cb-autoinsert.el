@@ -17,10 +17,10 @@
 (use-package autoinsert
   :init
   (defvar auto-insert-alist nil)
+  :init
+  (auto-insert-mode +1)
   :config
-  (progn
-    (setq auto-insert-query nil)
-    (auto-insert-mode +1)))
+  (setq auto-insert-query nil))
 
 (provide 'cb-autoinsert)
 

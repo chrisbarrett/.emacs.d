@@ -33,11 +33,6 @@
         (format "package %s\n\n" pkg-id))
     ""))
 
-(defun cb-scala-autoinsert-init ()
-  (with-eval-after-load 'autoinsert
-    (with-no-warnings
-      (add-to-list 'auto-insert-alist cb-scala-autoinsert-form))))
-
 (provide 'cb-scala-autoinsert)
 
 ;;; cb-scala-autoinsert.el ends here

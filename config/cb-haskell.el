@@ -125,7 +125,6 @@
 
 (use-package haskell-autoinsert
   :after autoinsert
-  :defer t
   :preface
   (defvar auto-insert-alist nil)
   :config

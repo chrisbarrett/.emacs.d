@@ -31,7 +31,6 @@
   (add-hook 'term-mode-hook #'cb-shell--hl-line-off))
 
 (use-package cb-shell-script-autoinsert
-  :defer t
   :after autoinsert
   :config
   (add-to-list 'auto-insert-alist cb-shell-script-autoinsert-form)

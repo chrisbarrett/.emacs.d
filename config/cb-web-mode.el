@@ -229,7 +229,6 @@
               ("C-c C-t" . cb-flow-type-at)))
 
 (use-package cb-js-autoinsert
-  :defer t
   :after autoinsert
   :config
   (add-to-list 'auto-insert-alist
@@ -237,7 +236,6 @@
   :defines (auto-insert-alist))
 
 (use-package cb-html-autoinsert
-  :defer t
   :after autoinsert
   :config
   (add-to-list 'auto-insert-alist

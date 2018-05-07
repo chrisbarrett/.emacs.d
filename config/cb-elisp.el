@@ -116,7 +116,6 @@
   (add-hook 'emacs-lisp-mode-hook #'cb-elisp--init-evil-surround-pairs))
 
 (use-package cb-elisp-autoinsert
-  :defer t
   :after autoinsert
   :config
   (add-to-list 'auto-insert-alist cb-elisp-autoinsert-form)
