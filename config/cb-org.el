@@ -875,7 +875,7 @@ table tr.tr-even td {
 (use-package cb-org-ctrl-c-ret
   :after org
   :commands (cb-org-ctrl-c-ret)
-  :config
+  :init
   (progn
     (evil-define-key 'normal org-mode-map (kbd "C-c RET") #'cb-org-ctrl-c-ret)
     (evil-define-key 'emacs org-mode-map (kbd "C-c RET") #'cb-org-ctrl-c-ret)))
@@ -883,7 +883,7 @@ table tr.tr-even td {
 (use-package cb-org-ctrl-c-ctrl-k
   :after org
   :commands (cb-org-ctrl-c-ctrl-k)
-  :config
+  :init
   (evil-define-key 'normal org-mode-map (kbd "C-c C-k") #'cb-org-ctrl-c-ctrl-k))
 
 (use-package cb-diary-utils
