@@ -721,9 +721,7 @@
 
 (use-package org-download
   :after org
-  :load-path cb-org-load-path
-  :config
-  (setq org-download-method 'attach))
+  :hook (dired-mode . org-download-enable))
 
 (use-package evil
   :defer t
