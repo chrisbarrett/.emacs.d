@@ -20,6 +20,10 @@
 (global-unset-key (kbd "s-t"))
 (global-unset-key (kbd "s-q"))
 
+(add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+(add-to-list 'default-frame-alist '(ns-appearance . 'nil))
+(setq frame-title-format nil)
+
 (use-package exec-path-from-shell
   :if window-system
   :functions (exec-path-from-shell-initialize)
