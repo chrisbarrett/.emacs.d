@@ -1,12 +1,12 @@
 ;;; apiwrap.el --- api-wrapping macros     -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2017  Sean Allred
+;; Copyright (C) 2017-2018  Sean Allred
 
 ;; Author: Sean Allred <code@seanallred.com>
 ;; Keywords: tools, maint, convenience
 ;; Homepage: https://github.com/vermiculus/apiwrap.el
 ;; Package-Requires: ((emacs "25"))
-;; Package-Version: 0.1
+;; Package-Version: 0.4
 
 ;; This file is not part of GNU Emacs.
 
@@ -33,16 +33,18 @@
 ;;; Code:
 
 (require 'cl-lib)
+(require 'apropos)
 
-(defun apiwrap-resolve-api-params (object url &optional noencode)
+(defvar apiwrap-backends nil
+  "An alist of (BACKEND-NAME . BACKEND-PREFIX) for `apropos-api-endpoint'.
+See also `apiwrap-new-backend'.")
+
+(defun apiwrap-genform-resolve-api-params (object url)
   "Resolve parameters in URL to values in OBJECT.
-
-Unless NOENCODE is non-nil, OBJECT values will be passed through
-`url-encode-url'.
 
 Example:
 
-    \(apiwrap-resolve-api-params
+    \(apiwrap-genform-resolve-api-params
         '\(\(name . \"Hello-World\"\)
           \(owner \(login . \"octocat\"\)\)\)
       \"/repos/:owner.login/:name/issues\"\)
@@ -53,30 +55,29 @@ Example:
   (declare (indent 1))
   ;; Yes I know it's hacky, but it works and it's compile-time
   ;; (which is to say: pull-requests welcome!)
-  (macroexp--expand-all
-   `(let-alist ,object
-      ,(let ((in-string t))
-         (with-temp-buffer
-           (insert url)
-           (goto-char 0)
-           (insert "(concat \"")
-           (while (search-forward ":" nil t)
-             (goto-char (1- (point)))
-             (insert "\" ")
-             (unless noencode (insert "(apiwrap--encode-url "))
-             (insert ".")
-             (setq in-string nil)
-             (delete-char 1)
-             (when (search-forward "/" nil t)
-               (goto-char (1- (point)))
-               (unless noencode (insert ")"))
-               (insert " \"")
-               (setq in-string t)))
-           (goto-char (point-max))
-           (if in-string (insert "\"")
-             (unless noencode (insert ")")))
-           (insert ")")
-           (delete "" (read (buffer-string))))))))
+  (save-match-data
+    (with-temp-buffer
+      (insert url)
+      (goto-char 0)
+      (let ((param-regexp (rx ":" (group (+? (any alpha "-" "."))) (or (group "/") eos)))
+            replacements)
+        (while (search-forward-regexp param-regexp nil 'noerror)
+          (push (match-string-no-properties 1) replacements)
+          (if (null (match-string-no-properties 2))
+              (replace-match "%s")
+            (replace-match "%s/")))
+        (setq replacements
+              (mapcar (lambda (s) (list #'apiwrap--encode-url (make-symbol (concat "." s))))
+                      (nreverse replacements)))
+        (let ((object (if (or (symbolp object)
+                              (and (listp object)
+                                   (not (consp (car object)))))
+                          object
+                        `',object))
+              (str `(format ,(buffer-string) ,@replacements)))
+          (if object
+              (macroexpand-all `(let-alist ,object ,str))
+            str))))))
 
 (defun apiwrap--encode-url (thing)
   (if (numberp thing)
@@ -198,7 +199,7 @@ structure
 See the documentation of `apiwrap-resolve-api-params' for more
 details on that behavior.
 
-FUNCTIONS is a list of override configuration parameters.  Values
+CONFIG is a list of override configuration parameters.  Values
 set here (notably those explicitly set to nil) will take
 precedence over the defaults provided to `apiwrap-new-backend'."
          (upcase (symbol-name method))
@@ -206,7 +207,7 @@ precedence over the defaults provided to `apiwrap-new-backend'."
          (upcase (symbol-name method))
          (make-list 2 service-name)))
 
-(defun apiwrap-genfunsym (prefix api-method &optional resource)
+(defun apiwrap-gensym (prefix api-method &optional resource)
   "Generate a symbol for a macro/function."
   (let ((api-method (symbol-name (apiwrap--kw->sym api-method))))
     (intern
@@ -223,8 +224,9 @@ precedence over the defaults provided to `apiwrap-new-backend'."
 
 (defconst apiwrap-primitives
   '(get put head post patch delete)
-  "List of primitive methods.  These are required to be
-configured.")
+  "List of primitive methods.
+The `:request' value given to `apiwrap-new-backend' must
+appropriately handle all of these symbols as a METHOD.")
 
 (defun apiwrap-genmacros (name prefix standard-parameters functions)
   "Validate arguments and generate all macro forms"
@@ -235,34 +237,42 @@ configured.")
   ;; Verify all extension functions are actually functions
   (dolist (f functions)
     (let ((key (car f)) (fn (cdr f)))
-      (unless (or (functionp fn) (and (consp fn)
-                                      (eq 'function (car fn))
-                                      (functionp (cadr fn))))
-        (if (memq key apiwrap-primitives)
-            (error "Primitive function literal required: %s" key)
-          (byte-compile-warn "Unknown function for `%S': %S" key fn)))))
+      (unless (or (functionp fn)
+                  (macrop fn)
+                  (and (consp fn)
+                       (eq 'function (car fn))
+                       (or (functionp (cadr fn))
+                           (macrop (cadr fn)))))
+        (byte-compile-warn "Unknown function for `%S': %S" key fn))))
 
   ;; Build the macros
   (let (super-form)
-    (dolist (primitive (reverse apiwrap-primitives))
-      (let ((macrosym (apiwrap-genfunsym prefix primitive)))
+    (dolist (method (reverse apiwrap-primitives))
+      (let ((macrosym (apiwrap-gensym prefix method)))
         (push `(defmacro ,macrosym (resource doc link
                                              &optional objects internal-resource
-                                             &rest functions)
-                 ,(apiwrap--docmacro name (apiwrap--kw->sym primitive))
+                                             &rest config)
+                 ,(apiwrap--docmacro name method)
                  (declare (indent defun) (doc-string 2))
-                 (apiwrap-gendefun ,name ,prefix ',standard-parameters ',primitive
+                 (apiwrap-gendefun ,name ,prefix ',standard-parameters ',method
                                    resource doc link objects internal-resource
-                                   ',functions functions))
+                                   ',functions config))
               super-form)))
     super-form))
+
+(defun apiwrap--maybe-apply (func value)
+  "Conditionally apply FUNC to VALUE.
+If FUNC is non-nil, return a form to apply FUNC to VALUE.
+Otherwise, just return VALUE quoted."
+  (if func `(funcall ,func ,value) value))
 
 (defun apiwrap-gendefun (name prefix standard-parameters method resource doc link objects internal-resource std-functions override-functions)
   "Generate a single defun form"
   (let ((args '(&optional data &rest params))
-        (funsym (apiwrap-genfunsym prefix method resource))
-        resolved-resource form functions
-        primitive-func link-func post-process-func pre-process-params-func)
+        (funsym (apiwrap-gensym prefix method resource))
+        resolved-resource-form form functions
+        data-massage-func params-massage-func
+        condition-case primitive-func link-func around)
 
     ;; Be smart about when configuration starts.  Neither `objects' nor
     ;; `internal-resource' can be keywords, so we know that if they
@@ -281,40 +291,51 @@ configured.")
     (when objects (setq args (append objects args)))
 
     (setq internal-resource (or internal-resource resource)
-          primitive-func (alist-get method functions)
-          post-process-func (alist-get 'post-process functions)
-          pre-process-params-func (alist-get 'pre-process-params functions)
+          around (alist-get 'around functions)
+          condition-case (macroexpand-all (alist-get 'condition-case functions))
+          primitive-func (alist-get 'request functions)
+          data-massage-func (alist-get 'pre-process-data functions)
+          params-massage-func (alist-get 'pre-process-params functions)
           link-func (alist-get 'link functions))
 
     ;; If our functions are already functions (and not quoted), we'll
     ;; have to quote them for the actual defun
     (when (functionp primitive-func)
       (setq primitive-func `(function ,primitive-func)))
-    (when (functionp post-process-func)
-      (setq post-process-func `(function ,post-process-func)))
-    (when (functionp pre-process-params-func)
-      (setq pre-process-params-func `(function ,pre-process-params-func)))
+    (when (functionp data-massage-func)
+      (setq data-massage-func `(function ,data-massage-func)))
+    (when (functionp params-massage-func)
+      (setq params-massage-func `(function ,params-massage-func)))
 
     ;; Alright, we're ready to build our function
-    (setq resolved-resource (apiwrap-resolve-api-params
-                                `(list ,@(mapcar (lambda (o) `(cons ',o ,o)) objects))
-                              internal-resource)
+    (setq resolved-resource-form
+          (if objects
+              (apiwrap-genform-resolve-api-params
+                  `(list ,@(mapcar (lambda (o) `(cons ',o ,o)) objects))
+                internal-resource)
+            internal-resource)
           form
-          (if pre-process-params-func
-              `(apply ,primitive-func ,resolved-resource
-                      (if (keywordp data)
-                          (list (funcall ,pre-process-params-func (apiwrap-plist->alist (cons data params))))
-                        (list (funcall ,pre-process-params-func (apiwrap-plist->alist params)) data)))
-            `(apply ,primitive-func ,resolved-resource
-                    (if (keywordp data)
-                        (list (apiwrap-plist->alist (cons data params)))
-                      (list (apiwrap-plist->alist params) data)))))
+          `(apply ,primitive-func ',method ,resolved-resource-form
+                  (if (keywordp data)
+                      (list ,(apiwrap--maybe-apply params-massage-func '(cons data params)) nil)
+                    (list ,(apiwrap--maybe-apply params-massage-func 'params)
+                          ,(apiwrap--maybe-apply data-massage-func 'data)))))
 
-    (when post-process-func
-      (setq form `(funcall ,post-process-func ,form)))
+    (when around
+      (unless (macrop around)
+        (error ":around must be a macro: %S" around))
+      (setq form (macroexpand `(,around ,form))))
+
+    (when condition-case
+      (unless (and (listp condition-case)
+                   (cl-every #'listp condition-case)
+                   (cl-every (lambda (h) (get (car h) 'error-conditions)) ;is error
+                             condition-case))
+        (error ":condition-case must be a list of error handlers; see the documentation: %S" condition-case))
+      (setq form `(condition-case it ,form ,@condition-case)))
 
     (let ((props `((prefix   . ,prefix)
-                   (method   . ',method)
+                   (method   . ,method)
                    (endpoint . ,resource)
                    (link     . ,link)))
           fn-form)
@@ -322,11 +343,12 @@ configured.")
       (push `(defun ,funsym ,args
                ,(apiwrap--docfn name doc (alist-get objects standard-parameters) method resource
                                 (funcall link-func props))
+               (declare (indent ,(1+ (length objects))))
                ,form)
             fn-form)
       (cons 'prog1 fn-form))))
 
-(defmacro apiwrap-new-backend (name prefix standard-parameters &rest functions)
+(defmacro apiwrap-new-backend (name prefix standard-parameters &rest config)
   "Define a new API backend.
 
 SERVICE-NAME is the name of the service this backend will wrap.
@@ -341,22 +363,54 @@ key of the alist is the parameter name (as a symbol) and its
 value is the documentation to insert in the docstring of
 resource-wrapping functions.
 
-FUNCTIONS is a list of arguments to configure the generated
-macros.
+CONFIG is a list of arguments to configure the generated macros.
 
   Required:
 
-    :get :put :head :post :patch :delete
+    :request
 
-        API primitives.  See package `ghub' as an example of the
-        kinds of primitives these macros are design for; you may
-        wish to consider writing wrappers.  Each function is
-        expected to take a resource-string as the first
-        parameter.  The second parameter should be an alist of
-        parameters to the resource.  The third parameter should
-        be an alist of data for the resource (e.g., for posting).
+        API request primitive.  This function is expected to take
+        the following required arguments:
+
+          (METHOD RESOURCE PARAMS DATA)
+
+        METHOD is provided as a symbol, one of `apiwrap-primitives',
+        that specifies which HTTP method to use for the request.
+
+        RESOURCE is the resource being accessed as a string.
+        This will be passed through from each method macro after
+        being resolved in the context of its parameters.  See the
+        generated macro documentation (or `apiwrap--docmacro')
+        for more details.
+
+        PARAMS is provided as a property list of parameters.
+        This will be passed in from each method function call.
+
+        DATA is provided as an alist of data (e.g., for posting
+        data to RESOURCE).  This will be passed in from each
+        method function call.
 
   Optional:
+
+    :around
+
+        Macro to wrap around the request form (which is passed as
+        the only argument).
+
+    :condition-case
+
+        List of error handlers of the form
+
+            ((CONDITION-NAME BODY...)
+             (CONDITION-NAME BODY...))
+
+        to appropriately deal with signals in the `:request'
+        primitive.  Caught signals are bound to the symbol `it'.
+        Note that the form will need to mention `it' in some way
+        to avoid compile warnings.  If this is a problem for you,
+        track resolution of this issue in vermiculus/apiwrap#12.
+
+        See also `condition-case'.
 
     :link
 
@@ -375,29 +429,42 @@ macros.
 
         The default is `apiwrap-stdgenlink'.
 
-    :post-process
+    :pre-process-data
 
-        Function to process the responses of the API before
-        returning.
-
-        The default is `identity'.
+        Function to process request data before the request is
+        passed to the `:request' function.
 
     :pre-process-params
 
-        Function to pre-process arguments passed as the
-        parameters to the generated wrappers.  The function is
-        passed an alist based on the plist of keyword arguments
-        given to the wrapper function and should return an alist
-
-        The default is `identity'."
+        Function to process request parameters before the request
+        is passed to the `:request' function."
+  (declare (indent 2))
   (let ((sname (cl-gensym)) (sprefix (cl-gensym))
-        (sstdp (cl-gensym)) (sfuncs (cl-gensym)))
+        (sstdp (cl-gensym)) (sconfig (cl-gensym)))
     `(let ((,sname ,name)
            (,sprefix ,prefix)
            (,sstdp ,standard-parameters)
-           (,sfuncs ',(mapcar (lambda (f) (cons (car f) (eval (cdr f))))
-                              (apiwrap-plist->alist functions))))
-       (mapc #'eval (apiwrap-genmacros ,sname ,sprefix ,sstdp ,sfuncs)))))
+           (,sconfig ',(mapcar (lambda (f) (cons (car f) (eval (cdr f))))
+                               (apiwrap-plist->alist config))))
+       (add-to-list 'apiwrap-backends (cons ,sname ,sprefix))
+       (mapc #'eval (apiwrap-genmacros ,sname ,sprefix ,sstdp ,sconfig)))))
+
+(defun apropos-api-endpoint (backend pattern)
+  "Apropos for API endpoints of BACKEND matching PATTERN."
+  (interactive (let* ((b (completing-read "Search backend: "
+                                          (mapcar #'car apiwrap-backends)))
+                      (b (assoc-string b apiwrap-backends))
+                      (name (car b))
+                      (prefix (cdr b)))
+                 (list prefix (apropos-read-pattern (concat name " API endpoints")))))
+  (apropos-parse-pattern pattern)
+  (apropos-symbols-internal
+   (apropos-internal apropos-regexp
+                     (lambda (sym)
+                       (let-alist (get sym 'apiwrap)
+                         (and .prefix
+                              (string= .prefix backend)))))
+   nil))
 
 (provide 'apiwrap)
 ;;; apiwrap.el ends here
