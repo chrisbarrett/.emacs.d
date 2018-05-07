@@ -11,7 +11,7 @@
 ;;	Marius Vollmer <marius.vollmer@gmail.com>
 ;; Maintainer: Jonas Bernoulli <jonas@bernoul.li>
 
-;; Package-Requires: ((emacs "24.4") (dash "2.13.0") (with-editor "2.7.2"))
+;; Package-Requires: ((emacs "24.4") (dash "20170810") (with-editor "20180318"))
 ;; Keywords: git tools vc
 ;; Homepage: https://github.com/magit/magit
 
@@ -409,6 +409,7 @@ This is only used if Magit is available."
 
 (add-hook 'after-change-major-mode-hook 'git-commit-setup-font-lock-in-buffer)
 
+;;;###autoload
 (defun git-commit-setup-check-buffer ()
   (and buffer-file-name
        (string-match-p git-commit-filename-regexp buffer-file-name)
@@ -511,7 +512,8 @@ finally check current non-comment text."
     (flyspell-region (point-min) end)))
 
 (defun git-commit-flyspell-verify ()
-  (not (= (char-after (line-beginning-position)) ?#)))
+  (not (= (char-after (line-beginning-position))
+          (aref comment-start 0))))
 
 (defun git-commit-finish-query-functions (force)
   (run-hook-with-args-until-failure

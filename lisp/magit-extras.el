@@ -36,8 +36,9 @@
 
 (defcustom magit-gitk-executable
   (or (and (eq system-type 'windows-nt)
-           (let ((exe (expand-file-name
-                       "gitk" (file-name-nondirectory magit-git-executable))))
+           (let ((exe (magit-git-string
+                       "-c" "alias.X=!x() { which \"$1\" | cygpath -mf -; }; x"
+                       "X" "gitk.exe")))
              (and (file-executable-p exe) exe)))
       (executable-find "gitk") "gitk")
   "The Gitk executable."
@@ -362,12 +363,12 @@ be used on highly rearranged and unpublished history."
                                (- (string-to-number
                                    (magit-git-string "rev-list" "--count"
                                                      range))))))
-        (push time-rev magit--reselve-history)
+        (push time-rev magit--reshelve-history)
         (let ((date (floor
                      (float-time
                       (date-to-time
                        (read-string "Date for first commit: "
-                                    time-now 'magit--reselve-history))))))
+                                    time-now 'magit--reshelve-history))))))
           (magit-with-toplevel
             (magit-run-git-async
              "filter-branch" "--force" "--env-filter"
