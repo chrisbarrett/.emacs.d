@@ -912,7 +912,7 @@ table tr.tr-even td {
   :after org)
 
 (use-package org-drill-table
-  :hook (org-ctrl-c-ctrl-c org-drill-table-update))
+  :hook (org-ctrl-c-ctrl-c . org-drill-table-update))
 
 (provide 'cb-org)
 
