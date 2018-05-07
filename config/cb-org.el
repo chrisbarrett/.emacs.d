@@ -563,7 +563,6 @@
     (add-to-list 'org-tags-exclude-from-inheritance "crypt")))
 
 (use-package org-drill
-  :after org
   :commands (org-drill
              org-drill-strip-all-data
              org-drill-cram
@@ -574,10 +573,13 @@
              org-drill-directory
              org-drill-again)
   :preface
-  (defconst cb-org-drill-files
-    (let ((dir (concat org-directory "/drill")))
-      (when (f-dir? dir)
-        (f-files dir))))
+  (progn
+    (defconst cb-org-drill-file (f-join org-directory "drill" "drill.org"))
+
+    (defconst cb-org-drill-files
+      (let ((dir (concat org-directory "/drill")))
+        (when (f-dir? dir)
+          (f-files dir)))))
 
   :defines
   (org-drill-scope
@@ -586,10 +588,8 @@
    org-drill-add-random-noise-to-intervals-p
    org-drill-save-buffers-after-drill-sessions-p)
 
-  :config
-  (progn
-    (defconst cb-org-drill-file (f-join org-directory "drill" "drill.org"))
-
+  :init
+  (with-eval-after-load 'org
     (setq org-drill-scope cb-org-drill-files)
 
     (add-to-list 'org-refile-targets '(cb-org-drill-files :maxlevel . 3))
@@ -600,7 +600,6 @@
     (setq org-drill-save-buffers-after-drill-sessions-p nil)))
 
 (use-package org-capture
-  :after org
   :load-path cb-org-load-path
   :preface
   (cl-defun cb-org--capture-template-entry (key label form template
