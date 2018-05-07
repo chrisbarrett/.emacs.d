@@ -11,7 +11,7 @@
 ;;	Marius Vollmer <marius.vollmer@gmail.com>
 ;; Maintainer: Jonas Bernoulli <jonas@bernoul.li>
 
-;; Package-Requires: ((emacs "24.4") (dash "20170810") (with-editor "20170817"))
+;; Package-Requires: ((emacs "24.4") (dash "2.13.0") (with-editor "2.7.2"))
 ;; Keywords: git tools vc
 ;; Homepage: https://github.com/magit/magit
 
@@ -794,10 +794,18 @@ Added to `font-lock-extend-region-functions'."
                   (progn
                     ;; Make sure the below functions are available.
                     (require 'magit)
-                    ;; Font-Lock wants every submatch to succeed.
-                    (format "\\(%s\\|\\)\\(%s\\|\\)"
-                            (regexp-opt (magit-list-local-branch-names))
-                            (regexp-opt (magit-list-remote-branch-names))))
+                    ;; Font-Lock wants every submatch to succeed,
+                    ;; so also match the empty string.  Do not use
+                    ;; `regexp-quote' because that is slow if there
+                    ;; are thousands of branches outweighing the
+                    ;; benefit of an efficient regep.
+                    (format "\\(\\(?:%s\\)\\|\\)\\(\\(?:%s\\)\\|\\)"
+                            (mapconcat #'identity
+                                       (magit-list-local-branch-names)
+                                       "\\|")
+                            (mapconcat #'identity
+                                       (magit-list-remote-branch-names)
+                                       "\\|")))
                 "\\([^']*\\)"))
   (setq-local font-lock-multiline t)
   (add-hook 'font-lock-extend-region-functions

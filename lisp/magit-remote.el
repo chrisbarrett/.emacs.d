@@ -133,11 +133,12 @@ to be used to view and change remote related variables."
                     magit-remote-config-variables))
   :switches '("Switches for add"
               (?f "Fetch after add" "-f"))
-  :actions  '((?a "Add"            magit-remote-add)
-              (?C "Configure..."   magit-remote-config-popup)
-              (?r "Rename"         magit-remote-rename)
-              (?p "Prune refspecs" magit-remote-prune-refspecs)
-              (?k "Remove"         magit-remote-remove))
+  :actions  '((?a "Add"                  magit-remote-add)
+              (?C "Configure..."         magit-remote-config-popup)
+              (?r "Rename"               magit-remote-rename)
+              (?p "Prune stale branches" magit-remote-prune)
+              (?k "Remove"               magit-remote-remove)
+              (?P "Prune stale refspecs" magit-remote-prune-refspecs))
   :max-action-columns 2)
 
 ;;;; Commands
@@ -195,10 +196,25 @@ to be used to view and change remote related variables."
 (defconst magit--refspec-re "\\`\\(\\+\\)?\\([^:]+\\):\\(.*\\)\\'")
 
 ;;;###autoload
+(defun magit-remote-prune (remote)
+  "Remove stale remote-tracking branches for REMOTE."
+  (interactive (list (magit-read-remote "Prune stale branches of remote")))
+  (magit-run-git-async "remote" "prune" remote))
+
+;;;###autoload
 (defun magit-remote-prune-refspecs (remote)
-  "Remove stale refspecs and tracking branches for REMOTE.
-If there are only stale refspecs, then offer to either delete the
-remote or replace the refspecs with the default refspec instead."
+  "Remove stale refspecs for REMOTE.
+
+A refspec is stale if there no longer exists at least one branch
+on the remote that would be fetched due to that refspec.  A stale
+refspec is problematic because its existence causes Git to refuse
+to fetch according to the remaining non-stale refspecs.
+
+If only stale refspecs remain, then offer to either delete the
+remote or to replace the stale refspecs with the default refspec.
+
+Also remove the remote-tracking branches that were created due to
+the now stale refspecs.  Other stale branches are not removed."
   (interactive (list (magit-read-remote "Prune refspecs of remote")))
   (let* ((tracking-refs (magit-list-remote-branches remote))
          (remote-refs (magit-remote-list-refs remote))
@@ -498,7 +514,9 @@ Delete the symbolic-ref \"refs/remotes/<remote>/HEAD\"."
 ;;;###autoload
 (defun magit-fetch-all (args)
   "Fetch from all remotes."
-  (interactive (list (magit-fetch-arguments)))
+  (interactive (list (cl-intersection (magit-fetch-arguments)
+                                      (list "--verbose" "--prune")
+                                      :test #'equal)))
   (run-hooks 'magit-credential-hook)
   (magit-run-git-async "remote" "update" args))
 

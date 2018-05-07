@@ -7,7 +7,6 @@
   <a href="https://github.com/magit/magit/wiki"><b>wiki</b></a> |
   <a href="https://groups.google.com/forum/?fromgroups#!forum/magit"><b>mailing list</b></a> |
   <a href="https://emacs.stackexchange.com/questions/tagged/magit"><b>forum</b></a> |
-  <a href="https://gitter.im/magit/magit"><b>chat</b></a> |
   <a href="https://twitter.com/magit_emacs"><b>news</b></a>
 </p>
 <hr>
@@ -33,7 +32,9 @@
 </div>
 <br>
 <div align="justify">
-  Thanks to 1987 backers the Kickstarter campaign was a huge success!
+  Thanks to
+  <a href="https://github.com/magit/magit/blob/master/Documentation/BACKERS.md">1987 backers</a>
+  the Kickstarter campaign was a huge success!
   This September was very exciting and I would like to thank you all
   for your generosity and enthusiastic support!
 </div>
@@ -44,7 +45,7 @@
 <br>
 <div align="center">
   <em>My thanks also go to these three sponsors!</em><br><br>
-  <a href="https://www.mojotech.com/about">
+  <a href="https://www.mojotech.com">
     <img title="Mojotech"
          alt="Mojotech"
          src="https://magit.vc/assets/mojotech.png"></a>
@@ -106,9 +107,9 @@ You should also consult the [manual][manual] and ask a general-purpose
 search engine.
 
 If that doesn't answer your question, then ask for help on the
-**[Emacs Stackexchange site][forum]**, the [mailing list][list], or
-the [Gitter chat][chat].  We only use the GitHub issue tracker for
-feature requests and bug reports, so please don't ask for help there.
+**[Emacs Stackexchange site][forum]** or the [mailing list][list].
+We only use the GitHub issue tracker for feature requests and bug
+reports, so please don't ask for help there.
 
 Contributing
 ============
@@ -143,7 +144,7 @@ Thanks to all of you, may (the history of) the source be with you!
 [![Paren Xkcb](https://img.shields.io/badge/%28-%20%20%20-red.svg)](https://xkcd.com/859)
 
 
-[contrib]: https://github.com/magit/magit/blob/master/CONTRIBUTING.md
+[contrib]: https://github.com/magit/magit/blob/master/Documentation/CONTRIBUTING.md
 [issues]:  https://github.com/magit/magit/issues
 [pulls]:   https://github.com/magit/magit/pulls
 
@@ -151,7 +152,6 @@ Thanks to all of you, may (the history of) the source be with you!
 [faq]:     https://magit.vc/manual/magit/FAQ.html
 [manual]:  https://magit.vc/manual
 
-[chat]:    https://gitter.im/magit/magit
 [forum]:   https://emacs.stackexchange.com/questions/tagged/magit
 [list]:    https://groups.google.com/forum/?fromgroups#!forum/magit
 

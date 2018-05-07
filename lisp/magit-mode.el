@@ -961,27 +961,29 @@ Refresh the current buffer if its major mode derives from
 Run hooks `magit-pre-refresh-hook' and `magit-post-refresh-hook'."
   (interactive)
   (unless inhibit-magit-refresh
-    (let ((start (current-time))
-          (magit--refresh-cache (or magit--refresh-cache
-                                    (list (cons 0 0)))))
-      (when magit-refresh-verbose
-        (message "Refreshing magit..."))
-      (magit-run-hook-with-benchmark 'magit-pre-refresh-hook)
-      (when (derived-mode-p 'magit-mode)
-        (magit-refresh-buffer))
-      (--when-let (and magit-refresh-status-buffer
-                       (not (derived-mode-p 'magit-status-mode))
-                       (magit-mode-get-buffer 'magit-status-mode))
-        (with-current-buffer it
-          (magit-refresh-buffer)))
-      (magit-auto-revert-buffers)
-      (magit-run-hook-with-benchmark 'magit-post-refresh-hook)
-      (when magit-refresh-verbose
-        (message "Refreshing magit...done (%.3fs, cached %s/%s)"
-                 (float-time (time-subtract (current-time) start))
-                 (caar magit--refresh-cache)
-                 (+ (caar magit--refresh-cache)
-                    (cdar magit--refresh-cache)))))))
+    (unwind-protect
+        (let ((start (current-time))
+              (magit--refresh-cache (or magit--refresh-cache
+                                        (list (cons 0 0)))))
+          (when magit-refresh-verbose
+            (message "Refreshing magit..."))
+          (magit-run-hook-with-benchmark 'magit-pre-refresh-hook)
+          (when (derived-mode-p 'magit-mode)
+            (magit-refresh-buffer))
+          (--when-let (and magit-refresh-status-buffer
+                           (not (derived-mode-p 'magit-status-mode))
+                           (magit-mode-get-buffer 'magit-status-mode))
+            (with-current-buffer it
+              (magit-refresh-buffer)))
+          (magit-auto-revert-buffers)
+          (magit-run-hook-with-benchmark 'magit-post-refresh-hook)
+          (when magit-refresh-verbose
+            (message "Refreshing magit...done (%.3fs, cached %s/%s)"
+                     (float-time (time-subtract (current-time) start))
+                     (caar magit--refresh-cache)
+                     (+ (caar magit--refresh-cache)
+                        (cdar magit--refresh-cache)))))
+      (run-hooks 'magit-unwind-refresh-hook))))
 
 (defun magit-refresh-all ()
   "Refresh all buffers belonging to the current repository.
@@ -1093,7 +1095,7 @@ contents from scratch, which can be slow in large repositories.
 If you are not satisfied with Magit's performance, then you
 should obviously not add this function to that hook."
   (when (and (not disable-magit-save-buffers)
-             (magit-inside-worktree-p))
+             (magit-inside-worktree-p t))
     (--when-let (ignore-errors (magit-mode-get-buffer 'magit-status-mode))
       (add-to-list 'magit-after-save-refresh-buffers it)
       (add-hook 'post-command-hook 'magit-after-save-refresh-buffers))))
@@ -1144,6 +1146,7 @@ argument (the prefix) non-nil means save all with no questions."
        arg (lambda ()
              (and (not magit-inhibit-refresh-save)
                   buffer-file-name
+                  (file-exists-p (file-name-directory buffer-file-name))
                   ;; Avoid needlessly connecting to unrelated remotes.
                   (equal (file-remote-p buffer-file-name)
                          remote)
