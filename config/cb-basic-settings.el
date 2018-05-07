@@ -750,7 +750,7 @@ Optional arg JUSTIFY will justify comments and strings."
 (use-package unfill
   :commands (unfill-region unfill-paragraph unfill-toggle))
 
-(use-package auth-sources
+(use-package auth-source
   :config
   (setq auth-sources '("~/.authinfo.gpg")))
 
