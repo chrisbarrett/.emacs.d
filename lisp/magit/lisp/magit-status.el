@@ -328,6 +328,12 @@ The sections are inserted by running the functions on the hook
       (magit-insert-headers magit-status-headers-hook)
     (insert "In the beginning there was darkness\n\n")))
 
+(defvar magit-error-section-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map [remap magit-visit-thing] 'magit-process-buffer)
+    map)
+  "Keymap for `error' sections.")
+
 (defun magit-insert-error-header ()
   "Insert the message about the Git error that just occured.
 
@@ -370,7 +376,9 @@ detached `HEAD'."
             (when magit-status-show-hashes-in-headers
               (insert (propertize commit 'face 'magit-hash) ?\s))
             (insert (propertize branch 'face 'magit-branch-local))
-            (insert ?\s summary ?\n))
+            (insert ?\s)
+            (insert (funcall magit-log-format-message-function branch summary))
+            (insert ?\n))
         (magit-insert-section (commit commit)
           (insert (format "%-10s" "Head: "))
           (insert (propertize commit 'face 'magit-hash))
@@ -397,8 +405,9 @@ detached `HEAD'."
           (pcase-let ((`(,url ,branch) (split-string pull " ")))
             (insert branch " from " url " "))
         (insert pull " ")
-        (if (magit-rev-verify pull)
-            (insert (or (magit-rev-format "%s" pull) ""))
+        (--if-let (and (magit-rev-verify pull)
+                       (magit-rev-format "%s" pull))
+            (insert (funcall magit-log-format-message-function pull it))
           (insert (propertize "is missing" 'face 'font-lock-warning-face))))
       (insert ?\n))))
 
@@ -413,8 +422,9 @@ detached `HEAD'."
                        (magit-rev-format "%h" push))
         (insert (propertize it 'face 'magit-hash) ?\s))
       (insert (propertize push 'face 'magit-branch-remote) ?\s)
-      (if (magit-rev-verify push)
-          (insert (or (magit-rev-format "%s" push) ""))
+      (--if-let (and (magit-rev-verify push)
+                     (magit-rev-format "%s" push))
+          (insert (funcall magit-log-format-message-function push it))
         (insert (propertize "is missing" 'face 'font-lock-warning-face)))
       (insert ?\n))))
 

@@ -82,10 +82,7 @@ be lifted eventually to support other Git forges."
 Return the Git forge's API response.  Currently this function
 only supports Github, but that will change eventually."
   (let* ((origin (magit-upstream-repository))
-         (url    (magit-get "remote" origin "url"))
-         (id     (and (string-match "github.com[:/]\\(.+?\\)\\(?:\\.git\\)?\\'"
-                                    url)
-                      (match-string 1 url)))
+         (id     (magit--forge-id origin))
          (fmtfun (lambda (pull-request)
                    (format "%s  %s"
                            (cdr (assq 'number pull-request))
@@ -113,17 +110,33 @@ exist, then raise an error."
     (unless (magit-remote-p remote)
       (error "No remote named `%s' exists (consider setting `magit.upstream')"
              remote))
-    (unless (string-match-p "github\\.com" (magit-get "remote" remote "url"))
+    (unless (magit--github-remote-p remote)
       (error "Currently only Github is supported"))
     remote))
 
+(defun magit--forge-id (remote)
+  (let ((url (magit-get "remote" remote "url")))
+    (and (string-match "\\([^:/]+/[^/]+?\\)\\(?:\\.git\\)?\\'" url)
+         (match-string 1 url))))
+
 (defconst magit--github-url-regexp "\
-\\`\\(?:git://\\|git@\\|ssh://git@\\|https://\\)github.com[/:]\
-\\(\\([^/]+\\)/\\(.+?\\)\\)\
+\\`\\(?:git://\\|git@\\|ssh://git@\\|https://\\)\
+\\(.*?\\)[/:]\
+\\(\\([^:/]+\\)/\\([^/]+?\\)\\)\
 \\(?:\\.git\\)?\\'")
 
 (defun magit--github-url-p (url)
-  (and url (string-match-p magit--github-url-regexp url)))
+  (save-match-data
+    (and url
+         (string-match magit--github-url-regexp url)
+         (let ((host (match-string 1 url)))
+           ;; Match values like "github.com-as-someone", which are
+           ;; translated to just "github.com" according to settings
+           ;; in "~/.ssh/config".  Theoretically this could result
+           ;; in false-positives, but that's rather unlikely.  #3392
+           (and (or (string-match-p (regexp-quote "github.com") host)
+                    (string-match-p (regexp-quote (ghub--host)) host))
+                host)))))
 
 (defun magit--github-remote-p (remote)
   (or (--when-let (magit-get "remote" remote "pushurl")
@@ -133,11 +146,12 @@ exist, then raise an error."
 
 (defun magit--github-url-equal (r1 r2)
   (or (equal r1 r2)
-      (let ((n1 (and (string-match magit--github-url-regexp r1)
-                     (match-string 1 r1)))
-            (n2 (and (string-match magit--github-url-regexp r2)
-                     (match-string 1 r2))))
-        (and n1 n2 (equal n1 n2)))))
+      (save-match-data
+        (let ((n1 (and (string-match magit--github-url-regexp r1)
+                       (match-string 2 r1)))
+              (n2 (and (string-match magit--github-url-regexp r2)
+                       (match-string 2 r2))))
+          (and n1 n2 (equal n1 n2))))))
 
 (provide 'magit-collab)
 ;;; magit-collab.el ends here

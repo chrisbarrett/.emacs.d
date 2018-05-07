@@ -292,17 +292,34 @@ ignore `magit-git-debug'."
         (goto-char (point-min))
         (buffer-substring-no-properties (point) (line-end-position))))))
 
+(defun magit-git-output (&rest args)
+  "Execute Git with ARGS, returning its output."
+  (setq args (-flatten args))
+  (magit--with-refresh-cache (cons default-directory args)
+    (with-temp-buffer
+      (apply #'magit-process-file magit-git-executable nil (list t nil) nil
+             (magit-process-git-arguments args))
+      (buffer-substring-no-properties (point-min) (point-max)))))
+
+(define-error 'magit-invalid-git-boolean "Not a Git boolean")
+
 (defun magit-git-true (&rest args)
   "Execute Git with ARGS, returning t if it prints \"true\".
-Return t if the first (and usually only) output line is the
-string \"true\", otherwise return nil."
-  (equal (magit-git-str args) "true"))
+If it prints \"false\", then return nil.  For any other output
+signal `magit-invalid-git-boolean'."
+  (pcase (magit-git-output args)
+    ((or "true"  "true\n")  t)
+    ((or "false" "false\n") nil)
+    (output (signal 'magit-invalid-git-boolean output))))
 
 (defun magit-git-false (&rest args)
   "Execute Git with ARGS, returning t if it prints \"false\".
-Return t if the first (and usually only) output line is the
-string \"false\", otherwise return nil."
-  (equal (magit-git-str args) "false"))
+If it prints \"true\", then return nil.  For any other output
+signal `magit-invalid-git-boolean'."
+  (pcase (magit-git-output args)
+    ((or "true"  "true\n")  nil)
+    ((or "false" "false\n") t)
+    (output (signal 'magit-invalid-git-boolean output))))
 
 (defun magit-git-insert (&rest args)
   "Execute Git with ARGS, inserting its output at point.
@@ -538,37 +555,75 @@ returning the truename."
              ,@body)
          (magit--not-inside-repository-error)))))
 
+(define-error 'magit-outside-git-repo "Not inside Git repository")
+(define-error 'magit-git-executable-not-found
+  "Git executable cannot be found (see https://magit.vc/goto/e6a78ed2)")
+
 (defun magit--not-inside-repository-error ()
   (if (executable-find magit-git-executable)
-      (user-error "Not inside a Git repository: %s" default-directory)
-    (user-error "The `git' executable cannot be found.  See %s"
-                "https://magit.vc/goto/e6a78ed2")))
+      (signal 'magit-outside-git-repo default-directory)
+    (signal 'magit-git-executable-not-found magit-git-executable)))
 
-(defun magit-inside-gitdir-p ()
-  "Return t if `default-directory' is below a repository directory."
-  ;; This does not work if the gitdir is not located inside the
-  ;; working tree: (magit-rev-parse-p "--is-inside-git-dir").
-  (-when-let (gitdir (magit-git-dir))
-    (file-in-directory-p default-directory gitdir)))
+(defun magit-inside-gitdir-p (&optioal noerror)
+  "Return t if `default-directory' is below the repository directory.
+If it is below the working directory, then return nil.
+If it isn't below either, then signal an error unless NOERROR
+is non-nil, in which case return nil."
+  (and (magit--assert-default-directory noerror)
+       ;; Below a repository directory that is not located below the
+       ;; working directory "git rev-parse --is-inside-git-dir" prints
+       ;; "false", which is wrong.
+       (let ((gitdir (magit-git-dir)))
+         (cond (gitdir (file-in-directory-p default-directory gitdir))
+               (noerror nil)
+               (t (signal 'magit-outside-git-repo default-directory))))))
 
-(defun magit-inside-worktree-p ()
-  "Return t if `default-directory' is below the work tree of a repository."
-  (magit-rev-parse-p "--is-inside-work-tree"))
+(defun magit-inside-worktree-p (&optional noerror)
+  "Return t if `default-directory' is below the working directory.
+If it is below the repository directory, then return nil.
+If it isn't below either, then signal an error unless NOERROR
+is non-nil, in which case return nil."
+  (and (magit--assert-default-directory noerror)
+       (condition-case nil
+           (magit-rev-parse-true "--is-inside-work-tree")
+         (magit-invalid-git-boolean
+          (and (not noerror)
+               (signal 'magit-outside-git-repo default-directory))))))
 
-(defun magit-bare-repo-p ()
-  "Return t if the current repository is bare."
-  (magit-rev-parse-p "--is-bare-repository"))
+(defun magit-bare-repo-p (&optional noerror)
+  "Return t if the current repository is bare.
+If it is non-bare, then return nil.  If `default-directory'
+isn't below a Git repository, then signal an error unless
+NOERROR is non-nil, in which case return nil."
+  (and (magit--assert-default-directory noerror)
+       (condition-case nil
+           (magit-rev-parse-true "--is-bare-repository")
+         (magit-invalid-git-boolean
+          (and (not noerror)
+               (signal 'magit-outside-git-repo default-directory))))))
+
+(defun magit--assert-default-directory (&optional noerror)
+  (or (file-directory-p default-directory)
+      (and (not noerror)
+           (let ((exists (file-exists-p default-directory)))
+	     (signal (if exists 'file-error 'file-missing)
+		     (list "Running git in directory"
+		           (if exists
+                               "Not a directory"
+                             "No such file or directory")
+		           default-directory))))))
 
 (defun magit-git-repo-p (directory &optional non-bare)
   "Return t if DIRECTORY is a Git repository.
 When optional NON-BARE is non-nil also return nil if DIRECTORY is
 a bare repository."
-  (or (file-regular-p (expand-file-name ".git" directory))
-      (file-directory-p (expand-file-name ".git" directory))
-      (and (not non-bare)
-           (file-regular-p (expand-file-name "HEAD" directory))
-           (file-directory-p (expand-file-name "refs" directory))
-           (file-directory-p (expand-file-name "objects" directory)))))
+  (and (file-directory-p directory) ; Avoid archives, see #3397.
+       (or (file-regular-p (expand-file-name ".git" directory))
+           (file-directory-p (expand-file-name ".git" directory))
+           (and (not non-bare)
+                (file-regular-p (expand-file-name "HEAD" directory))
+                (file-directory-p (expand-file-name "refs" directory))
+                (file-directory-p (expand-file-name "objects" directory))))))
 
 (defvar-local magit-buffer-revision  nil)
 (defvar-local magit-buffer-refname   nil)
@@ -788,11 +843,23 @@ If there is no output, return nil.  Like `magit-rev-parse' but
 ignore `magit-git-debug'."
   (apply #'magit-git-str "rev-parse" args))
 
+(defun magit-rev-parse-true (&rest args)
+  "Execute `git rev-parse ARGS', returning t if it prints \"true\".
+If it prints \"false\", then return nil.  For any other output
+signal an error."
+  (magit-git-true "rev-parse" args))
+
+(defun magit-rev-parse-false (&rest args)
+  "Execute `git rev-parse ARGS', returning t if it prints \"false\".
+If it prints \"true\", then return nil.  For any other output
+signal an error."
+  (magit-git-false "rev-parse" args))
+
 (defun magit-rev-parse-p (&rest args)
   "Execute `git rev-parse ARGS', returning t if it prints \"true\".
 Return t if the first (and usually only) output line is the
 string \"true\", otherwise return nil."
-  (magit-git-true "rev-parse" args))
+  (equal (magit-git-str "rev-parse" args) "true"))
 
 (defun magit-rev-verify (rev)
   (magit-rev-parse-safe "--verify" rev))
@@ -818,6 +885,14 @@ string \"true\", otherwise return nil."
            (not (string-match-p "\\.\\." rev))
            (equal (magit-rev-parse rev)
                   (magit-rev-parse "HEAD")))))
+
+(defun magit-rev-author-p (rev)
+  "Return t if the user is the author of REV.
+More precisely return t if `user.name' is equal to the author
+name of REV and/or `user.email' is equal to the author email
+of REV."
+  (or (equal (magit-get "user.name")  (magit-rev-format "%an" rev))
+      (equal (magit-get "user.email") (magit-rev-format "%ae" rev))))
 
 (defun magit-rev-name (rev &optional pattern)
   "Return a symbolic name for REV.
@@ -1569,24 +1644,25 @@ the reference is used.  The first regexp submatch becomes the
   (magit-git-success "update-index" "--add" "--remove" "--" files))
 
 (defun magit-update-ref (ref message rev &optional stashish)
-  (or (if (not (version< (magit-git-version) "2.6.0"))
-          (zerop (magit-call-git "update-ref" "--create-reflog"
-                                 "-m" message ref rev
-                                 (or (magit-rev-verify ref) "")))
-        ;; `--create-reflog' didn't exist before v2.6.0
-        (let ((oldrev  (magit-rev-verify ref))
-              (logfile (magit-git-dir (concat "logs/" ref))))
-          (unless (file-exists-p logfile)
-            (when oldrev
-              (magit-git-success "update-ref" "-d" ref oldrev))
-            (make-directory (file-name-directory logfile) t)
-            (with-temp-file logfile)
-            (when (and oldrev (not stashish))
-              (magit-git-success "update-ref" "-m" "enable reflog"
-                                 ref oldrev ""))))
-        (magit-git-success "update-ref" "-m" message ref rev
-                           (or (magit-rev-verify ref) "")))
-      (error "Cannot update %s with %s" ref rev)))
+  (let ((magit--refresh-cache nil))
+    (or (if (not (version< (magit-git-version) "2.6.0"))
+            (zerop (magit-call-git "update-ref" "--create-reflog"
+                                   "-m" message ref rev
+                                   (or (magit-rev-verify ref) "")))
+          ;; `--create-reflog' didn't exist before v2.6.0
+          (let ((oldrev  (magit-rev-verify ref))
+                (logfile (magit-git-dir (concat "logs/" ref))))
+            (unless (file-exists-p logfile)
+              (when oldrev
+                (magit-git-success "update-ref" "-d" ref oldrev))
+              (make-directory (file-name-directory logfile) t)
+              (with-temp-file logfile)
+              (when (and oldrev (not stashish))
+                (magit-git-success "update-ref" "-m" "enable reflog"
+                                   ref oldrev ""))))
+          (magit-git-success "update-ref" "-m" message ref rev
+                             (or (magit-rev-verify ref) "")))
+        (error "Cannot update %s with %s" ref rev))))
 
 (defconst magit-range-re
   (concat "\\`\\([^ \t]*[^.]\\)?"       ; revA
@@ -1898,7 +1974,7 @@ the reference is used.  The first regexp submatch becomes the
   (let ((key (mapconcat 'identity keys ".")))
     (if magit--refresh-cache
         (equal "true" (car (last (magit-config-get-from-cached-list key))))
-      (magit-git-true "config" "--bool" key))))
+      (equal (magit-git-str "config" "--bool" key) "true"))))
 
 (defun magit-set (value &rest keys)
   "Set the value of the Git variable specified by KEYS to VALUE."
