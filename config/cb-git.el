@@ -101,8 +101,9 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
   :config (git-commit-jira-prefix-init))
 
 (use-package evil-magit
-  :defer t
-  :after magit)
+  :after magit
+  :config
+  (evil-magit-init))
 
 (use-package git-auto-commit-mode
   :commands (git-auto-commit-mode)
