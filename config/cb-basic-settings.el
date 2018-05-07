@@ -71,7 +71,9 @@
 
 ;; Show file or buffer name in the title bar.
 
-(setq frame-title-format "Emacs")
+(setq frame-title-format
+      (unless (equal system-type 'darwin)
+        "Emacs"))
 
 ;; Don't pollute directories with lockfiles, since I only run one instance of
 ;; Emacs and never need to prevent concurrent file access.

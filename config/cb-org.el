@@ -911,6 +911,9 @@ table tr.tr-even td {
 (use-package org-html-span
   :after org)
 
+(use-package org-drill-table
+  :hook (org-ctrl-c-ctrl-c org-drill-table-update))
+
 (provide 'cb-org)
 
 ;;; cb-org.el ends here
