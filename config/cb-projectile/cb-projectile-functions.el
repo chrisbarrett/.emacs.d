@@ -15,10 +15,14 @@
   (if (sequencep projects)
       (thread-last projects
         (seq-group-by #'file-truename)
-        (seq-remove (-compose #'cb-projectile-functions-ignored-subdir-p #'car))
+        (seq-remove (-compose #'cb-projectile-functions--removable-project-p #'car))
         (seq-map #'cadr)
         (seq-sort #'string<))
     projects))
+
+(defun cb-projectile-functions--removable-project-p (project)
+  (or (cb-projectile-functions-ignored-subdir-p project)
+      (not (f-exists? project))))
 
 (defun cb-projectile-functions-ignored-subdir-p (project)
   (seq-find (lambda (base)
