@@ -84,6 +84,9 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
 
 (use-package magithub
   :after magit
+  :init
+  ;; HACK: Fix reference to removed function.
+  (defalias 's-blank-p #'s-blank?)
   :config
   (progn
     (require 'magithub-completion)
