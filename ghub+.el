@@ -1,6 +1,6 @@
 ;;; ghub+.el --- a thick GitHub API client built on ghub  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2017  Sean Allred
+;; Copyright (C) 2017-2018  Sean Allred
 
 ;; Author: Sean Allred <code@seanallred.com>
 ;; Keywords: extensions, multimedia, tools
@@ -116,6 +116,57 @@ DATA is an alist."
                  :username .username
                  :auth .auth
                  :host .host))))
+
+  ;; If ghub-404 is not defined as an error, define it.
+  ;; This will be necessary until Ghub releases v2.
+  ;; See also #8.
+  (unless (get 'ghub-404 'error-conditions)
+    (define-error 'ghub-404 "Not Found" 'ghub-http-error))
+
+  (defun ghubp--catch (error-symbol &rest handlers)
+    "Catch some Ghub signals as ERROR-SYMBOL with HANDLERS.
+Each element of HANDLERS should be a list of
+
+    (HTTP-CODE HANDLER)
+
+where HTTP-CODE is an error code like 404.
+
+For use inside `:condition-case' endpoint configurations.
+
+See also `ghubp-catch' and `ghubp-catch*'.
+
+For now, care is taken to support older versions of Ghub."
+    (let (code handler form)
+      (dolist (pair handlers)
+        (setq code (car pair)
+              handler (cdr pair))
+        (push (cons (intern (format "ghub-%d" code)) handler) form))
+      (setcdr (last form)
+              `((ghub-http-error
+                 (pcase (cadr ,error-symbol)
+                   ,@handlers
+                   (_ (signal (car ,error-symbol) (cdr ,error-symbol)))))))
+      form))
+
+  (defmacro ghubp-catch* (&rest handlers)
+    "Catch some Ghub signals with HANDLERS.
+For use inside `:condition-case' endpoint configurations.
+
+For advanced error handling, the error is bound to the symbol `it'.
+
+See `ghubp--catch'."
+    (apply #'ghubp--catch 'it handlers))
+
+  (defmacro ghubp-catch (error-symbol form &rest handlers)
+    "Catch some Ghub signals as ERROR_SYMBOL in FORM with HANDLERS.
+For general use.
+
+See `ghubp--catch'"
+    (declare (indent 2))
+    (when (eq error-symbol '_)
+      (setq error-symbol (cl-gensym)))
+    `(condition-case ,error-symbol ,form
+       ,@(apply #'ghubp--catch error-symbol handlers)))
 
   (apiwrap-new-backend "GitHub" "ghubp"
     '((repo . "REPO is a repository alist of the form returned by `ghubp-get-user-repos'.")
@@ -240,7 +291,8 @@ This method is intended for use with callbacks."
 
 (defun ghubp-base-html-url ()
   "Get the base HTML URL from `ghub-default-host'"
-  (if-let ((host (magit-get "github" "host")))
+  (if-let ((host (car (ignore-errors
+			(process-lines "git" "config" "github.host")))))
       (and (string-match (rx bos (group (* any)) "/api/v3" eos) host)
            (match-string 1 host))
     "https://github.com"))
@@ -748,7 +800,8 @@ organization."
   "repos/#get"
   (repo) "/repos/:repo.owner.login/:repo.name"
   :condition-case
-  ((ghub-404 nil)))
+  (ghubp-catch*
+   (404 nil)))
 
 
 ;;; Branches:
@@ -758,7 +811,8 @@ organization."
   "repos/branches/#get-branch"
   (repo branch) "/repos/:repo.owner.login/:repo.name/branches/:branch.name"
   :condition-case
-  ((ghub-404 nil)))
+  (ghubp-catch*
+   (404 nil)))
 
 
 ;;; Users:
@@ -957,7 +1011,10 @@ notifications (until you comment or get @mentioned once more)."
 (defapiget-ghubp "/repos/:owner/:repo/commits/:ref/status"
   "Get the combined status for a specific ref"
   "repos/statuses/#get-the-combined-status-for-a-specific-ref"
-  (repo ref) "/repos/:repo.owner.login/:repo.name/commits/:ref/status")
+  (repo ref) "/repos/:repo.owner.login/:repo.name/commits/:ref/status"
+  :condition-case
+  (ghubp-catch*
+   (404 nil)))
 
 (defapipost-ghubp "/repos/:owner/:repo/forks"
   "Create a fork for the authenticated user."
