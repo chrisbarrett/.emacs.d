@@ -7,7 +7,7 @@
 #+TEXINFO_DIR_CATEGORY: Emacs
 #+TEXINFO_DIR_TITLE: Ghub: (ghub).
 #+TEXINFO_DIR_DESC: Minuscule client library for the Github API.
-#+SUBTITLE: for version 1.3.0 (v1.3.0-46-g1fe02f3+1)
+#+SUBTITLE: for version 2.0.0 (v2.0.0-8-g7f23879+1)
 #+BIND: ox-texinfo+-before-export-hook ox-texinfo+-update-version-strings
 
 #+TEXINFO_DEFFN: t
@@ -17,11 +17,11 @@ Ghub is a library that provides basic support for using the Github API
 from Emacs packages.  It abstracts access to API resources using only
 a handful of functions that are not resource-specific.
 
-It also handles the creation, storage and use of access tokens using a
-setup wizard, to make it easier for users to get started and to reduce
+Ghub handles the creation, storage and use of access tokens using a
+setup wizard to make it easier for users to get started and to reduce
 the support burden imposed on package maintainers.  It also comes with
 a comprehensive manual to address the cases when things don't just
-work as expected.
+work as expected or in case you don't want to use the wizard.
 
 Ghub is intentionally limited to only provide these two essential
 features — basic request functions and guided setup — to avoid being
@@ -31,7 +31,7 @@ because then all packages that talk to the Github API could be
 configured the same way.
 
 #+TEXINFO: @noindent
-This manual is for Ghub version 1.3.0 (v1.3.0-46-g1fe02f3+1).
+This manual is for Ghub version 2.0.0 (v2.0.0-8-g7f23879+1).
 
 #+BEGIN_QUOTE
 Copyright (C) 2017-2018 Jonas Bernoulli <jonas@bernoul.li>
@@ -53,15 +53,18 @@ Ghub is a library that provides basic support for using the Github API
 from Emacs packages.  It abstracts access to API resources using only
 a handful of functions that are not resource-specific.
 
-It also handles the creation, storage and use of access tokens using a
-setup wizard, to make it easier for users to get started and to reduce
+Ghub handles the creation, storage and use of access tokens using a
+setup wizard to make it easier for users to get started and to reduce
 the support burden imposed on package maintainers.  It also comes with
 a comprehensive manual to address the cases when things don't just
-work as expected.
+work as expected or in case you don't want to use the wizard.
 
 Ghub is intentionally limited to only provide these two essential
 features — basic request functions and guided setup — to avoid being
-too opinionated, which would hinder wide adoption.
+too opinionated, which would hinder wide adoption.  It is assumed that
+wide adoption would make life easier for users and maintainers alike,
+because then all packages that talk to the Github API could be
+configured the same way.
 
 Fancier interfaces can implemented on top of Ghub, and one such
 wrapper — named simply Ghub+ — has already been implemented.  The
@@ -94,69 +97,58 @@ process of creating and storing a new token, and at the end of that
 process the request is carried out as if the token had been available
 to begin with.
 
-* Limitations
-
-As mentioned, Ghub restricts itself to provide core functionality and
-leaves it to other libraries to do opinionated things on top of that.
-But currently there also are some limitations that concern the core
-parts.  Obviously these limitations have to be lifted to maximize
-adoption and so they will.
-
-These secondary features already exist (just mentioning them, so you
-don't assume that they don't):
-
-- Support for Github Enterprise instances.
-
-- Support for token scope validation.
-
-- Basic support for GraphQL.
-
-- Support for Gitlab is implemented in the ~glab.el~ library, which is
-  maintained in the same repository as ~ghub.el~ but distributed as a
-  separate package.
-
-These features will likely never be implemented in Ghub itself:
-
-- Functions for particular resources.
-
-  See ~ghub+.el~ for a package that provides such functionality.
-  It is built on top of ~ghub.el~.
-
-- Returning and consuming data as anything but JSON-like alists,
-  or in the case of GraphQL queries and mutations, plain strings.
-
-  See ~graphql.el~ for a package that provides such functionality.
-  It can be used along-side ~ghub.el~.
-
-- Retrieving an existing token.  Github does not support it so we
-  cannot do it either.  If you lose your local copy of a token, then
-  you have to replace it with a new one.
-
-These features are not supported yet:
-
-- Asynchronous requests are not supported yet.
-
-- Controlled pagination for both the REST and GraphQL APIs have not
-  been implemented yet.
-
-- If a request fails due to a missing scope, then that isn't handled
-  by ~ghub-request~ yet.  For now package authors just have to hope that
-  users don't mess with scopes or handle such errors themselves.
-
-  Likewise, other errors too should be handled by Ghub.
-
-- Packages cannot request additional scopes.
-
-  Once a token has been created a package cannot request new scopes
-  that it previously did not need.  I am not quite sure yet whether
-  Ghub should support that.  An alternative would be to let packages
-  at least invalidate their own tokens.
-
 * Getting Started
 
-If you would like to use a package that uses this library, then just
-do so.  If the necessary information isn't available when it attempts
-to make a request, then you will be asked to provide it.
+Each package that uses Ghub uses its own token.  Despite that, changes
+are good that after successfully configuring one package you can just
+start using another package pretty much instantly.
+
+If the necessary token is not available when a package makes an API
+request, then a setup wizard pops up, and after answering a few
+questions you are good to go.  Even the request that caused the wizard
+to be summoned should succeed and for most users this should be true
+even when configuring the very first token.
+
+However, in some situations some manual configuration is necessary
+*before* using the wizard, or the wizard cannot be used at all:
+
+- If you don't want to use the wizard then you don't have to and can
+  create tokens manually as describe in [[*Manually Creating and Storing
+  a Token]].
+
+- If you want to access Gitlab.com or another Gitlab instance, then
+  you have to create the token manually as describe in [[*Manually
+  Creating and Storing a Token]].  Also see [[*Gitlab Support]].
+
+- If you want to access a Github Enterprise instance, then you have
+  to tell Ghub about that before the wizard makes its appearance by
+  setting the Git variable ~github.host~.  You also have to tell Ghub
+  your username for that instance using the variable ~github.HOST.user~
+  even if it is the same as on Github.com.
+
+- If the variable ~github.user~ (or ~github.HOST.user~ for an Enterprise
+  instance) is unset when the wizard is first summoned, then you are
+  asked to provide your username.  That value is then stored *globally*
+  to avoid having to ask you that question once per repository.  If
+  you have multiple accounts on Github.com (or an Enterprise
+  instance), then you have to explicitly tell Ghub about that.  This
+  can be done by setting the repository-local values of the
+  appropriate variable *before* the wizard is invoked.
+
+- You might forget to do the above, which is why it is important to
+  carefully read the output of the wizard.  If it turns out that you
+  forgot to set a variable, then you must abort, set the variable, and
+  repeat the request to trigger the wizard again.
+
+- The setup wizard should work even if you have enabled two-factor
+  authentication.  However it your Github Enterprise instance enforces
+  Single Sign-On as an additional security measure, then you are out
+  of luck and have to create the token manually as describe in
+  [[*Manually Creating and Storing a Token]].
+
+The variables mentioned above — and others — are documented in
+[[*Configuration Variables]] and the setup wizard is documented in
+[[*Interactively Creating and Storing a Token]].
 
 ** Setting the Username
 
@@ -212,10 +204,6 @@ yourself and can just make a request.  Note however that you don't
 have to use the setup wizard described below.  Alternatively you can
 perform the setup manually as described in the next section.
 
-Unfortunately the wizard does not work (yet?) if you have enabled
-two-factor authentication, in which case the token has to be created
-and stored manually.
-
 If you make a request and the required token is not available yet,
 then the setup wizard will first ask you something like this:
 
@@ -228,13 +216,10 @@ then the setup wizard will first ask you something like this:
 
     Scopes requested in `PACKAGE-github-token-scopes':
       repo
-    Store locally according to `auth-sources':
-      ("~/.authinfo" "~/.authinfo.gpg" "~/.netrc")
     Store on Github as:
       "Emacs package PACKAGE @ LOCAL-MACHINE"
-
-  WARNING: If you have enabled two-factor authentication
-           then you have to create the token manually.
+    Store locally according to option `auth-sources':
+      ("~/.authinfo" "~/.authinfo.gpg" "~/.netrc")
 
   If in doubt, then abort and first view the section of the Ghub
   documentation called "Manually Creating and Storing a Token".
@@ -245,26 +230,16 @@ then the setup wizard will first ask you something like this:
 If you don't have any doubts, then answer "yes".  Lets address some
 of the doubts that you might have:
 
-- Unfortunately Ghub cannot know whether you have enabled two-factor
-  authentication without making a request using basic (password)
-  authentication, which it cannot do if you have enabled two-factor
-  authentication.  It also cannot determine whether you have enabled
-  two-factor authentication depending on whether a request fails or
-  not because there are other reasons why a request might fail.
-
-  So this warning is always displayed and if you have enabled
-  two-factor authentication, then you are expected to abort and follow
-  the instructions in [[*Manually Creating and Storing a Token]].
-
 - ~Host~ usually is "api.github.com" and that is usually what you want.
   If you are trying to access a Github Enterprise instance, then it
-  should be something else and you have to set the value manually as
-  described in the next section.
+  should be something else and you have to set the value manually
+  before the setup wizard is summoned, as described in the parent
+  section.
 
 - ~User~ should be your Github.com (or Github Enterprise instance)
-  username.  If it is something else, then you made a mistake at the
-  first prompt or during the step described in the previous section
-  and have to refer to that in order to fix this issue.
+  username.  If it is something else and it doesn't look like a simple
+  typo, then you should read the parent section again.  In either case
+  you have to abort.
 
 - ~Package~ should be the name of the package you are using to access
   the Github API.
@@ -291,7 +266,9 @@ of the doubts that you might have:
   unexpected, Ghub additionally displays a warning when appropriate.
 
   #+BEGIN_EXAMPLE
-    WARNING: ... unencrypted ... TODO implement ...
+    WARNING: The token will be stored unencrypted in "~/.authinfo".
+             If you don't want that, you have to abort and customize
+             the `auth-sources' option.\n\n" (car auth-sources))
   #+END_EXAMPLE
 
   Whether that is something that needs fixing, is up to you.  If your
@@ -299,7 +276,7 @@ of the doubts that you might have:
   Auth-Source]] for instructions on how to save the token more securely.
 
 - When creating a token it is necessary to provide a token
-  description.  Ghub used descriptions that have the form "Emacs
+  description.  Ghub uses descriptions that have the form "Emacs
   package PACKAGE @ LOCAL-MACHINE".
 
   Github uses the token description to identify the token, not merely
@@ -320,7 +297,7 @@ of the doubts that you might have:
   practice because it gains you nothing but leads to issues such as
   this.  Or you are dual-booting on this machine and use the same
   hostname in all operating systems, which is a somewhat reasonable
-  thing to do.
+  thing to do, but never-the-less leads to issues like this.
 
   In either case you will have to use something other than the value
   returned by ~system-name~ to identify the current machine or operating
@@ -332,11 +309,13 @@ of the doubts that you might have:
   ~ghub-override-system-name~.  See [[*Configuration Variables]] for
   details.
 
-** Manually Creating and Storing a Token
+After the above prompt you are also asked for you username and
+password.  If you have enabled two-factor authentication, then you
+also have to provide the authentication code at least twice.  If you
+make sure the code is still good for a while when asked for it first,
+then you can just press ~RET~ at the later prompt(s).
 
-If you have enabled two-factor authentication, then you have to create
-and store access tokens yourself.  You might also prefers to always do
-it manually to have more control than when relying on the setup wizard.
+** Manually Creating and Storing a Token
 
 If you cannot or don't want to use the wizard then you have to (1)
 figure out what scopes a package wants, (2) create such a token using
@@ -350,8 +329,13 @@ variables should document what the various scopes are needed for.
 To create or edit a token go to https://github.com/settings/tokens.
 For Gitlab.com use https://gitlab.com/profile/personal_access_tokens.
 
-Finally store the token in a place where Ghub looks for it, as described
-in [[*How Ghub uses Auth-Source]].
+Finally store the token in a place where Ghub looks for it, as
+described in [[*How Ghub uses Auth-Source]].
+
+If you store the token in a file like ~~/.authinfo~, then note that
+~auth-source~'s parsing of that file is brittle.  Make sure the file
+ends with a newline character, that there are no empty or invalid
+lines, and that all comments are prefixed with ~#~.
 
 ** How Ghub uses Auth-Source
 
@@ -493,7 +477,7 @@ latter is documented at https://developer.github.com/v3.
 
 ** Making Requests
 
-- Function: ghub-request method resource &optional params &key query payload headers unpaginate noerror reader username auth host
+- Function: ghub-request method resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback url value error extra method*
 
   This function makes a request for RESOURCE using METHOD.  PARAMS,
   QUERY, PAYLOAD and/or HEADERS are alists holding additional request
@@ -528,17 +512,22 @@ latter is documented at https://developer.github.com/v3.
       When that is the case, then the Github API documentation usually
       mentions it explicitly.
 
-  - If UNPAGINATE is non-nil, then this function makes multiple
-    requests if necessary to get all items at RESOURCE.  For forward
-    compatibility avoid using a function as value.
+  - If SILENT is non-nil, then progress reports and the like are not
+    messaged.
+
+  - If UNPAGINATE is t, then this function make as many requests as
+    necessary to get all values.  If UNPAGINATE is a natural number,
+    then it gets at most that many pages.  For any other non-nil value
+    it raises an error.
 
   - If NOERROR is non-nil, then no error is raised if the request
-    fails and ~nil~ is returned instead.
+    fails and ~nil~ is returned instead.  If NOERROR is ~return~, then the
+    error payload is returned instead of ~nil~.
 
   - If READER is non-nil, then it is used to read and return from the
-    response buffer.  The default is ~ghub--read-json-response~.  For
-    the very few resources that do not return json, you might want to
-    use ~ghub--read-raw-response~.
+    response buffer.  The default is ~ghub--read-json-payload~.  For the
+    very few resources that do not return json, you might want to use
+    ~ghub--decode-payload~.
 
   - If USERNAME is non-nil, then the request is made on behalf of that
     user.  It is better to specify the user using the Git variable
@@ -575,6 +564,72 @@ latter is documented at https://developer.github.com/v3.
     internal use.  Instead of using this argument you should use
     function ~glab-request~ and other ~glab-*~ functions.
 
+  - If CALLBACK and/or ERRORBACK is non-nil, then this function makes
+    one or more asynchronous requests and calls CALLBACK or ERRORBACK
+    when finished.  If an error occurred, then it calls ERRORBACK, or
+    if that is ~nil~, then CALLBACK.  When no error occurred then it
+    calls CALLBACK.  When making asynchronous requests, then no errors
+    are signaled, regardless of the value of NOERROR.
+
+    Both callbacks are called with four arguments.
+
+    1. For CALLBACK, the combined value of the retrieved pages.
+       For ERRORBACk, the error that occured when retrieving the
+       last page.
+    2. The headers of the last page as an alist.
+    3. Status information provided by ~url-retrieve~. Its ~:error~
+       property holds the same information as ERRORBACK's first
+       argument.
+    4. A ~ghub--req~ struct, which can be passed to ~ghub-continue~
+       (which see) to retrieve the next page, if any.
+
+- Function: ghub-continue args
+
+  If there is a next page, then this function retrieves that.
+
+  This function is only intended to be called from callbacks.  If
+  there is a next page, then that is retrieve and the buffer that
+  the result will be loaded into is returned, or t if the process
+  has already completed.  Otherwise nil is returned.
+
+  Callbacks are called with four arguments (see ~ghub-request~).
+  The forth argument is a ~ghub--req~ struct, intended to be passed
+  to this function.  A callbacks may use the struct's ~extra~ slot
+  to pass additional information to the callback that will be called
+  after the next request.  Use the function ~ghub-req-extra~ to get
+  and set the value of that slot.
+
+  As an example, using ~ghub-continue~ in a callback like so:
+
+  #+BEGIN_SRC emacs-lisp
+    (ghub-get "/users/tarsius/repos" nil
+              :callback (lambda (value _headers _status req)
+                          (unless (ghub-continue req)
+                            (setq my-value value))))
+  #+END_SRC
+
+  is equivalent to:
+
+  #+BEGIN_SRC emacs-lisp
+    (ghub-get "/users/tarsius/repos" nil
+              :unpaginate t
+              :callback (lambda (value _headers _status _req)
+                          (setq my-value value)))
+  #+END_SRC
+
+  To demonstrate how to pass information from one callback to the
+  next, here we record when we start fetching each page:
+
+  #+BEGIN_SRC emacs-lisp
+    (ghub-get "/users/tarsius/repos" nil
+              :extra (list (current-time))
+              :callback (lambda (value _headers _status req)
+                          (push (current-time) (ghub-req-extra req))
+                          (unless (ghub-continue req)
+                            (setq my-times (ghub-req-extra req))
+                            (setq my-value value))))
+  #+END_SRC
+
 - Variable: ghub-response-headers
 
   A select few Github API resources respond by transmitting data in
@@ -584,6 +639,11 @@ latter is documented at https://developer.github.com/v3.
 
   To access the response headers use this variable after ~ghub-request~
   has returned.
+
+- Function: ghub-response-link-relations headers
+
+  This function returns an alist of the link relations in HEADERS, or
+  if optional HEADERS is nil, then those in ~ghub-response-headers~.
 
 - Variable: ghub-override-system-name
 
@@ -600,8 +660,8 @@ latter is documented at https://developer.github.com/v3.
   itself is treated like any other package.  Also see [[*Using Ghub in a
   Package]].
 
-- Function: ghub-head resource &optional params &key query payload headers unpaginate noerror reader username auth host
-- Function: ghub-get resource &optional params &key query payload headers unpaginate noerror reader username auth host
+- Function: ghub-head resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
+- Function: ghub-get resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
 
   These functions are simple wrappers around ~ghub-request~.  Their
   signature is identical to that of the latter, except that they do
@@ -613,10 +673,10 @@ latter is documented at https://developer.github.com/v3.
   as the query or the payload.  For the "HEAD" and "GET" methods it
   is used as the query.
 
-- Function: ghub-put resource &optional params &key query payload headers unpaginate noerror reader username auth host
-- Function: ghub-post resource &optional params &key query payload headers unpaginate noerror reader username auth host
-- Function: ghub-patch resource &optional params &key query payload headers unpaginate noerror reader username auth host
-- Function: ghub-delete resource &optional params &key query payload headers unpaginate noerror reader username auth host
+- Function: ghub-put resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
+- Function: ghub-post resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
+- Function: ghub-patch resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
+- Function: ghub-delete resource &optional params &key query payload headers unpaginate noerror reader username auth host callback errorback
 
   These functions are simple wrappers around ~ghub-request~.  Their
   signature is identical to that of the latter, except that they do
@@ -628,7 +688,7 @@ latter is documented at https://developer.github.com/v3.
   as the query or the payload.  For the "PUT", "POST", "PATCH" and
   "DELETE" methods it is used as the payload.
 
-- Function: ghub-wait resource &optional username auth host duration
+- Function: ghub-wait resource &optional duration &key username auth host
 
   Some API requests result in an immediate successful response even
   when the requested action has not actually been carried out yet.
@@ -658,7 +718,7 @@ latter is documented at https://developer.github.com/v3.
   See ~ghub-request~'s documentation above for information about the
   other arguments.
 
-- Function: ghub-graphql graphql &optional variables &key username auth host
+- Function: ghub-graphql graphql &optional variables &key username auth host callback
 
   This function makes a GraphQL request using GRAPHQL and VARIABLES as
   inputs.  GRAPHQL is a GraphQL string.  VARIABLES is a JSON-like
@@ -786,9 +846,9 @@ maintained in the same repository, but it is distributed as a separate
 package.
 
 When accessing Gitlab.com or another Gitlab instance, use ~glab-request~
-instead of ~ghub-request~, ~glab-get~ instead of ~ghub-request~, etc.
-Likewise use the Git variables in the ~gitlab~ group instead of those in
-the ~github~ group, i.e.  ~gitlab.user~, ~gitlab.HOST.user~ and ~gitlab.host~.
+instead of ~ghub-request~, ~glab-get~ instead of ~ghub-get~, etc.  Likewise
+use the Git variables in the ~gitlab~ group instead of those in the
+~github~ group, i.e.  ~gitlab.user~, ~gitlab.HOST.user~ and ~gitlab.host~.
 
 The Gitlab API cannot be used to create tokens, so Glab cannot provide
 a setup wizard like Ghub does.  As a consequence if the user makes a
@@ -801,7 +861,7 @@ or the equivalent URL for another Gitlab instance.  To store the token
 locally, follow the instructions in [[*Manually Creating and Storing a
 Token]] and [[*How Ghub uses Auth-Source]].
 
-Packages can that use Glab, can define ~PACKAGE-gitlab-token-scopes~ for
+Packages that use Glab, can define ~PACKAGE-gitlab-token-scopes~ for
 documentation purposes.  But unlike ~PACKAGE-github-token-scopes~, which
 is used by the setup wizard this is optional.
 
