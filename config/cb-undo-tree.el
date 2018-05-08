@@ -12,6 +12,7 @@
   (require 'use-package))
 
 (use-package undo-tree
+  :straight t
   :demand t
   :commands (global-undo-tree-mode)
   :config
