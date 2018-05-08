@@ -29,6 +29,7 @@
           "~/tmp/")))
 
 (use-package projectile
+  :straight t
   :commands (projectile-ag
              projectile-compile-project
              projectile-invalidate-cache
@@ -167,6 +168,7 @@
     (advice-add 'projectile-files-with-string :around #'cb-projectile--find-files-with-string-using-rg)))
 
 (use-package counsel-projectile
+  :straight t
   :defer t
   :commands (counsel-projectile-mode
              counsel-projectile-find-file
