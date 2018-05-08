@@ -1,7 +1,0 @@
-(source melpa)
-
-(package-file "js-lex.el")
-
-(development
- (depends-on "ert-runner")
- (depends-on "f"))

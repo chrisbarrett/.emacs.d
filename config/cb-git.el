@@ -109,6 +109,8 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
   :config
   (evil-magit-init))
 
+(use-package deferred :straight t)
+
 (use-package git-auto-commit-mode
   :straight t
   :commands (git-auto-commit-mode)
@@ -116,8 +118,6 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
   (add-to-list 'safe-local-variable-values '(gac-automatically-push-p . t))
   :preface
   (progn
-    (require 'deferred)
-
     (defun cb-git--maybe-commit-and-push ()
       (let ((file (convert-standard-filename (file-name-nondirectory (buffer-file-name)))))
         (deferred:try

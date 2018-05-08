@@ -47,6 +47,7 @@
 (defconst use-package-verbose t)
 
 (straight-use-package 'use-package)
+(straight-use-package 'bind-map)
 
 (eval-when-compile
   (require 'use-package))
@@ -91,6 +92,15 @@ If argument INTERACTIVE-P is set, log additional information."
 
 (cb-init/init-load-path)
 
+
+;; Install some basic packages
+
+(straight-use-package 'dash)
+(straight-use-package 'dash-functional)
+(straight-use-package 'f)
+(straight-use-package 's)
+(straight-use-package 'noflet)
+(straight-use-package 'memoize)
 
 ;; Load features.
 
