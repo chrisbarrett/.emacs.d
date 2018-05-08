@@ -76,6 +76,11 @@
 
   :defines (ivy-use-virtual-buffers ivy-count-format))
 
+(use-package swiper
+  :commands (swiper)
+  :init
+  (evil-global-set-key 'normal "/" #'swiper))
+
 (use-package counsel
   :demand t
 
@@ -85,7 +90,6 @@
          ("C-h f" . counsel-describe-function))
 
   :commands (counsel-descbinds
-             counsel-grep-or-swiper
              counsel-expression-history
              counsel-imenu
              counsel-recentf
@@ -116,8 +120,6 @@
   (progn
     (define-key counsel-find-file-map (kbd "C-M-j") #'ivy-immediate-done)
     (define-key counsel-find-file-map (kbd "C-h") #'counsel-up-directory)
-
-    (evil-global-set-key 'normal "/" #'counsel-grep-or-swiper)
 
     (defface cb-counsel-separator
       '((t :foreground "gray50"))
