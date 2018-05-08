@@ -25,6 +25,7 @@
   (put 'git-subtree-rev-alist 'safe-local-variable #'listp))
 
 (use-package magit
+  :straight t
   :defer t
   :commands (magit-status magit-blame magit-branch-and-checkout)
   :functions (magit-display-buffer-fullframe-status-v1)
@@ -88,6 +89,7 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
     (setq magit-log-section-commit-count 0)))
 
 (use-package magithub
+  :straight t
   :after magit
   :init
   ;; HACK: Fix reference to removed function.
@@ -102,11 +104,13 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
   :hook (git-commit-setup . git-commit-jira-prefix-insert))
 
 (use-package evil-magit
+  :straight t
   :after magit
   :config
   (evil-magit-init))
 
 (use-package git-auto-commit-mode
+  :straight t
   :commands (git-auto-commit-mode)
   :init
   (add-to-list 'safe-local-variable-values '(gac-automatically-push-p . t))
@@ -126,6 +130,7 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
   (defalias 'gac-after-save-func #'cb-git--maybe-commit-and-push))
 
 (use-package git-timemachine
+  :straight t
   :defer t
   :commands
   (git-timemachine
@@ -156,6 +161,7 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
     ("q" nil :exit t)))
 
 (use-package diff-hl
+  :straight t
   :after magit
   :commands (diff-hl-magit-post-refresh
              global-diff-hl-mode
@@ -199,7 +205,6 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
     (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
     (global-diff-hl-mode)))
 
-
 (use-package magit-gpg
   :after magit
   :functions (magit-gpg-insert-revision-gpg)
@@ -208,7 +213,6 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
                           #'magit-gpg-insert-revision-gpg
                           #'magit-insert-revision-headers
                           t))
-
 
 (provide 'cb-git)
 
