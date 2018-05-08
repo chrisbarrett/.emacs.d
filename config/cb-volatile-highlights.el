@@ -12,6 +12,7 @@
   (require 'use-package))
 
 (use-package volatile-highlights
+  :straight t
   :defer 1
 
   :commands (volatile-highlights-mode)
