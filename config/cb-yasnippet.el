@@ -16,6 +16,7 @@
 (require 's)
 
 (use-package yasnippet
+  :straight t
   :defer 1
 
   :preface
