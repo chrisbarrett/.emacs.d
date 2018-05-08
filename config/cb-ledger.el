@@ -107,7 +107,7 @@
   (spacemacs-keys-set-leader-keys-for-major-mode 'ledger-mode "r" #'cb-ledger-reports-weekly-review)
   :config
   (progn
-    (setq cb-ledger-reports-income-payee-name "Income:Movio")
+    (setq cb-ledger-reports-income-payee-name "Income:Pushpay")
 
     (add-to-list 'display-buffer-alist
                  `(,(rx bos "*ledger review*" eos)
