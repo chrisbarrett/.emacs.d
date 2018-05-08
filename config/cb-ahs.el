@@ -17,6 +17,7 @@
 (defvar auto-highlight-symbol-mode-map (make-sparse-keymap))
 
 (use-package auto-highlight-symbol
+  :straight t
   :defer t
   :commands (auto-highlight-symbol-mode)
   :init
@@ -46,8 +47,6 @@
     (spacemacs-keys-set-leader-keys
       "sh" #'cb-ahs-micro-state/highlight-symbol
       "sH" #'cb-ahs-micro-state/goto-last-searched-symbol)))
-
-
 
 (provide 'cb-ahs)
 
