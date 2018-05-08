@@ -8,6 +8,7 @@
 (require 'spacemacs-keys)
 
 (use-package eyebrowse
+  :straight t
   :commands (eyebrowse-mode)
   :functions (eyebrowse--delete-window-config
               eyebrowse-switch-to-window-config-0
@@ -47,7 +48,6 @@
               which-key-replacement-alist)))
 
     (spacemacs-keys-set-leader-keys "pp" #'cb-projectile-eyebrowse-switch-to-project)))
-
 
 (provide 'cb-eyebrowse)
 
