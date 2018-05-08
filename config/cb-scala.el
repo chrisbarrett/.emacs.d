@@ -10,7 +10,7 @@
 
 (eval-when-compile
   (require 'use-package)
-  (autoload 'evil-define-key "evil-core"))
+  (autoload 'evil-define-key "evil"))
 
 (require 'cb-emacs)
 (require 'dash)

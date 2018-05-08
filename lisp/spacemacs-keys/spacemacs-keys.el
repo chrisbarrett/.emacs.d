@@ -10,10 +10,10 @@
 
 ;;; Code:
 
-(autoload 'evil-normalize-keymaps "evil-core")
+(autoload 'evil-normalize-keymaps "evil")
 (autoload 'which-key-declare-prefixes "which-key")
 (autoload 'which-key-declare-prefixes-for-mode "which-key")
-(autoload 'evil-global-set-key "evil-core")
+(autoload 'evil-global-set-key "evil")
 
 (require 'bind-map)
 

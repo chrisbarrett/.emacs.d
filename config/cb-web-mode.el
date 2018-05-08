@@ -17,8 +17,8 @@
 (require 's)
 (require 'f)
 
-(autoload 'evil-define-key "evil-core")
-(autoload 'evil-set-initial-state "evil-core")
+(autoload 'evil-define-key "evil")
+(autoload 'evil-set-initial-state "evil")
 (autoload 'projectile-project-p "projectile")
 
 (defun cb-web-module-name-for-binding (yas-text)

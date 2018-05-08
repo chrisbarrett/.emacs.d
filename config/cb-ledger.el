@@ -16,7 +16,7 @@
 
 (autoload 'evil-insert-state "evil-states")
 (autoload 'org-read-date "org")
-(autoload 'evil-define-key "evil-core")
+(autoload 'evil-define-key "evil")
 (autoload 's-replace "s")
 
 (defconst ledger-master-file (concat org-directory "/accounts.ledger"))

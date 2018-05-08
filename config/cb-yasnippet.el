@@ -21,7 +21,7 @@
   :preface
   (progn
     (autoload 'sp-backward-delete-char "smartparens")
-    (autoload 'evil-define-key "evil-core")
+    (autoload 'evil-define-key "evil")
 
     (defun cb-yasnippet-preserve-indentation (f &rest args)
       (let ((col

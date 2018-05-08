@@ -14,7 +14,7 @@
 (require 'cb-emacs)
 (require 'spacemacs-keys)
 
-(autoload 'evil-define-key "evil-core")
+(autoload 'evil-define-key "evil")
 (autoload 'evil-first-non-blank "evil-commands")
 
 (use-package which-key

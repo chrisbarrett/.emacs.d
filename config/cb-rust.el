@@ -15,7 +15,7 @@
 (require 's)
 
 (autoload 'cb-yas/bol? "cb-yas-elisp")
-(autoload 'evil-define-key "evil-core")
+(autoload 'evil-define-key "evil")
 
 (use-package rust-mode
   :mode ("\\.rs\\'" . rust-mode)

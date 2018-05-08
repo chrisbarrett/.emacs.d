@@ -30,7 +30,7 @@
              cb-evil-ispell-correct-word)
   :preface
   (progn
-    (autoload 'evil-global-set-key "evil-core")
+    (autoload 'evil-global-set-key "evil")
     (autoload 'flyspell-auto-correct-word "flyspell"))
   :init
   (with-eval-after-load 'evil

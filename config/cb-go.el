@@ -15,7 +15,7 @@
 (require 's)
 (require 'spacemacs-keys)
 
-(autoload 'evil-define-key "evil-core")
+(autoload 'evil-define-key "evil")
 (autoload 'projectile-project-p "projectile")
 
 (use-package go-mode

@@ -12,7 +12,7 @@
   (require 'straight)
   (require 'use-package)
   (require 'cb-emacs)
-  (autoload 'evil-define-key "evil-core"))
+  (autoload 'evil-define-key "evil"))
 
 (require 'spacemacs-keys)
 (require 'evilified-state)

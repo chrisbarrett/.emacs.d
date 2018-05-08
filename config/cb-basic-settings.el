@@ -20,8 +20,8 @@
 
 (autoload 'thing-at-point-looking-at "thingatpt")
 (autoload 'ansi-color-apply-on-region "ansi-color")
-(autoload 'evil-define-key "evil-core")
-(autoload 'evil-set-initial-state "evil-core")
+(autoload 'evil-define-key "evil")
+(autoload 'evil-set-initial-state "evil")
 (autoload 'evil-backward-char "evil-commands")
 
 
@@ -523,7 +523,7 @@ Optional arg JUSTIFY will justify comments and strings."
 
 (use-package hippie-exp
   :preface
-  (autoload 'evil-global-set-key "evil-core")
+  (autoload 'evil-global-set-key "evil")
   :init
   (progn
     (global-set-key (kbd "M-/") #'hippie-expand)

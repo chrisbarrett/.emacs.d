@@ -8,7 +8,7 @@
 
 (require 'spacemacs-keys)
 (autoload 'f-ext? "f")
-(autoload 'evil-set-initial-state "evil-core")
+(autoload 'evil-set-initial-state "evil")
 
 (use-package nix-mode
   :mode (("\\.nix\\'" . nix-mode)

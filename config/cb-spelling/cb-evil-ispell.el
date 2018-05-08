@@ -13,7 +13,7 @@
 (require 's)
 (require 'dash)
 
-(autoload 'evil-global-set-key "evil-core")
+(autoload 'evil-global-set-key "evil")
 
 (defun cb-evil-ispell--add-to-dict (word)
   "Add WORD to the user's dictionary."

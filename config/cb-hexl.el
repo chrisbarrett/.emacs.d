@@ -13,7 +13,7 @@
 
 (require 'spacemacs-keys)
 
-(autoload 'evil-define-key "evil-core")
+(autoload 'evil-define-key "evil")
 
 (use-package hexl
   :defer t

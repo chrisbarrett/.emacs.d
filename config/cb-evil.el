@@ -17,7 +17,7 @@
   :straight t
   :preface
   (progn
-    (autoload 'evil-set-initial-state "evil-core")
+    (autoload 'evil-set-initial-state "evil")
     (autoload 'evil-visual-update-x-selection "evil-states")
 
     (defun cb-evil--bounds-of-surrounding-lines (lines-before lines-after)

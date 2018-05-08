@@ -306,8 +306,8 @@ such in rendering ASTs." name)))
 
 ;; Evil compatability
 
-(autoload 'evil-define-key "evil-core")
-(autoload 'evil-set-initial-state "evil-core")
+(autoload 'evil-define-key "evil")
+(autoload 'evil-set-initial-state "evil")
 
 (with-eval-after-load 'evil
   (evil-set-initial-state 'blergh-mode 'motion)

@@ -25,7 +25,7 @@
 (require 'flycheck)
 (require 'dash)
 
-(autoload 'evil-define-key "evil-core")
+(autoload 'evil-define-key "evil")
 
 (defun ensime-flycheck-integration--ensime-buffer-notes ()
   (when (ensime-connected-p)

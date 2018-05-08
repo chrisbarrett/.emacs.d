@@ -12,8 +12,8 @@
   (require 'cb-etags)
   (require 'use-package))
 
-(autoload 'evil-define-key "evil-core")
-(autoload 'evil-set-initial-state "evil-core")
+(autoload 'evil-define-key "evil")
+(autoload 'evil-set-initial-state "evil")
 
 (require 'spacemacs-keys)
 

@@ -15,7 +15,7 @@
 (require 'spacemacs-keys)
 (require 'evil-transient-state)
 
-(autoload 'evil-define-key "evil-core")
+(autoload 'evil-define-key "evil")
 
 (add-to-list 'auto-mode-alist '("\\.gitignore\\'" . conf-unix-mode))
 
