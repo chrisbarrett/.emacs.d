@@ -106,7 +106,7 @@
     (setq flycheck-python-pycompile-executable "python")))
 
 (use-package anaconda-mode
-  :ensure t
+  :straight t
   :commands (anaconda-mode)
   :preface
   (progn
@@ -147,7 +147,7 @@
     (advice-add 'anaconda-mode-find-definitions :before #'cb-python--push-mark)))
 
 (use-package company-anaconda
-  :ensure t
+  :straight t
   :defer t
   :preface
   (defun cb-python--enable-company-anaconda ()
