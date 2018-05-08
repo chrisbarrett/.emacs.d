@@ -14,6 +14,7 @@
   (require 'cb-emacs)
   (autoload 'evil-define-key "evil"))
 
+(require 'straight)
 (require 'spacemacs-keys)
 (require 'evilified-state)
 (require 'f)
@@ -171,6 +172,7 @@
     (advice-add 'org-toggle-heading :after #'cb-org--toggle-heading-goto-eol)))
 
 (use-package ob-ipython
+  :straight t
   :after org
   :preface
   (progn
@@ -229,7 +231,9 @@
   :straight t
   :defer t)
 
-(use-package ob-restclient :after org)
+(use-package ob-restclient
+  :straight t
+  :after org)
 
 (use-package ob-shell :after org)
 
@@ -476,8 +480,8 @@
   :preface
   (progn
     (autoload 'org-map-entries "org")
-    (autoload 'org-set-tags-to "org")
-    (autoload 'org-get-tags-at "org")
+    (autoload 'org-set-tags "org")
+    (autoload 'org-get-tags "org")
 
     (defun cb-org--archive-done-tasks ()
       (interactive)
@@ -491,7 +495,7 @@
 
     (defun cb-org--apply-inherited-tags (&rest _)
       "Apply inherited tags when archiving."
-      (org-set-tags-to (org-get-tags-at))))
+      (org-set-tags (org-get-tags))))
 
   :config
   (progn
@@ -711,6 +715,7 @@
           `(file cb-org-work-file) "* TODO %?\n%a"))))
 
 (use-package org-download
+  :straight
   :after org
   :hook (dired-mode . org-download-enable))
 
@@ -751,6 +756,7 @@
     (advice-add 'org-insert-todo-heading :after #'cb-org--add-blank-line-after-heading)))
 
 (use-package org-present
+  :straight t
   :commands (org-present)
   :config
   (setq org-present-text-scale 4))
@@ -881,6 +887,7 @@ table tr.tr-even td {
   :after org)
 
 (use-package evil-org
+  :straight t
   :after org
   :config
   (progn
@@ -904,6 +911,7 @@ table tr.tr-even td {
   :after org)
 
 (use-package org-drill-table
+  :straight t
   :hook (org-ctrl-c-ctrl-c . org-drill-table-update))
 
 (provide 'cb-org)
