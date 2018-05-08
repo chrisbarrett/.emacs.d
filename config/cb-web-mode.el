@@ -29,7 +29,7 @@
     ("assert"  "power-assert")
     ("_"       "lodash")
 
-    ((pred (apply-partially #'s-contains? "{"))
+    ((guard (s-contains? "{" yas-text))
      "MODULE")
     (s
      (s-downcase (s-dashed-words s)))))
