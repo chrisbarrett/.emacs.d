@@ -19,6 +19,7 @@
 (autoload 'projectile-project-p "projectile")
 
 (use-package go-mode
+  :straight t
   :mode ("\\.go\\'" . go-mode)
 
   :init
@@ -73,6 +74,7 @@
   :functions (gofmt-before-save godoc-at-point))
 
 (use-package company-go
+  :straight t
   :after go-mode
 
   :preface
@@ -91,6 +93,7 @@
     (add-hook 'go-mode-hook #'cb-go-company-setup)))
 
 (use-package go-eldoc
+  :straight t
   :after go-mode
   :config (add-hook 'go-mode-hook 'go-eldoc-setup))
 
