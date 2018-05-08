@@ -13,6 +13,7 @@
   (require 'use-package))
 
 (use-package company
+  :straight t
   :commands (global-company-mode)
 
   :bind
@@ -56,6 +57,7 @@
     (setq company-dabbrev-downcase nil)))
 
 (use-package company-quickhelp
+  :straight t
   :after company
   :commands (company-quickhelp-mode company-quickhelp-manual-begin)
   :config
