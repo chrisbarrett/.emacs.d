@@ -717,11 +717,13 @@ Optional arg JUSTIFY will justify comments and strings."
   (setq url-cookie-file (concat cb-emacs-cache-directory "/cookies")))
 
 (use-package hide-comnt
+  :straight t
   :commands (hide/show-comments-toggle)
   :init
   (spacemacs-keys-set-leader-keys "tc" #'hide/show-comments-toggle))
 
 (use-package async
+  :straight t
   :preface
   (progn
     (autoload 'async-bytecomp-package-mode "async-bytecomp")
@@ -743,6 +745,7 @@ Optional arg JUSTIFY will justify comments and strings."
   (define-key shr-map (kbd "w") nil))
 
 (use-package unfill
+  :straight t
   :commands (unfill-region unfill-paragraph unfill-toggle))
 
 (use-package auth-source
@@ -756,6 +759,7 @@ Optional arg JUSTIFY will justify comments and strings."
   (setq nsm-noninteractive t))
 
 (use-package page-break-lines
+  :straight t
   :commands (global-page-break-lines-mode)
   :demand t
   :config
