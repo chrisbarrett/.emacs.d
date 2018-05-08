@@ -11,6 +11,7 @@
 (autoload 'evil-set-initial-state "evil")
 
 (use-package nix-mode
+  :straight t
   :mode (("\\.nix\\'" . nix-mode)
          ("\\.nix.in\\'" . nix-mode)))
 
@@ -55,18 +56,6 @@
                    (side            . bottom)
                    (slot            . 1)
                    (window-height   . 0.4)))))
-
-(use-package company-nixos-options
-  :after nix-mode
-  :config
-  (progn
-    (add-to-list 'company-backends 'company-nixos-options)
-
-    ;; KLUDGE: Redefine function that throws error.
-    (defun company-nixos--in-nix-context-p ()
-      (or (derived-mode-p 'nix-mode)
-          (when (buffer-file-name)
-            (f-ext? (buffer-file-name) "nix"))))))
 
 (provide 'cb-nix)
 
