@@ -5,22 +5,26 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'straight)
 (require 'spacemacs-keys)
 
-
 (use-package latex-preview-pane
+  :straight t
   :commands (latex-preview-pane-mode))
-
 
 ;; Auctex
 
 (defvar cb-latex-command "LaTeX")
 
-(with-eval-after-load 'which-key
-  (push `((nil . ,(rx bos (? "cb-") (? "la") "tex-" (group (+ nonl)))) . (nil . "\\1"))
-        which-key-replacement-alist)
-  (push `((nil . ,(rx bos (? "La") "TeX-" (group (+ nonl)))) . (nil . "\\1"))
-        which-key-replacement-alist))
+(use-package which-key
+  :config
+  (progn
+    (push `((nil . ,(rx bos (? "cb-") (? "la") "tex-" (group (+ nonl)))) . (nil . "\\1"))
+          which-key-replacement-alist)
+    (push `((nil . ,(rx bos (? "La") "TeX-" (group (+ nonl)))) . (nil . "\\1"))
+          which-key-replacement-alist)))
+
+(straight-use-package 'auctex)
 
 (use-package tex
   :defer t
@@ -167,12 +171,12 @@
       "zz" 'TeX-fold-dwim)))
 
 (use-package company-auctex
+  :straight t
   :defer t
   :preface
   (autoload 'company-auctex-init "company-auctex")
   :init
   (add-hook 'tex-mode-hook 'company-auctex-init))
-
 
 (provide 'cb-latex)
 
