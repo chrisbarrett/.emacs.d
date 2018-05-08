@@ -8,12 +8,6 @@
 
 ;;; Code:
 
-(defconst cb-emacs-pinned-subtrees
-  '(("lisp/ensime-emacs" . "v2.0.1")
-    ("lisp/mu" . "v1.0")))
-
-;; Config Paths
-
 (defconst cb-emacs-cache-directory
   (concat user-emacs-directory ".cache"))
 
