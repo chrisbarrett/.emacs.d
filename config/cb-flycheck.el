@@ -18,7 +18,7 @@
 (require 'spacemacs-keys)
 
 (use-package flycheck
-  :ensure t ; load with package.el
+  :straight t
   :defer 1
   :commands (global-flycheck-mode
              flycheck-list-errors
