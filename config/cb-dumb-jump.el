@@ -13,6 +13,7 @@
 (autoload 'pop-tag-mark "etags")
 
 (use-package dumb-jump
+  :straight t
   :commands (dumb-jump-go dumb-jump-go-other-window)
   :init
   (progn
