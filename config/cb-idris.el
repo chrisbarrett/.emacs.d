@@ -15,6 +15,7 @@
 (require 'evil)
 
 (use-package idris-mode
+  :straight t
   :mode ("\\.l?idr\\'" . idris-mode)
   :commands (idris-repl)
   :init

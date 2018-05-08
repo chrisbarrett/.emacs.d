@@ -1,8 +1,0 @@
-package commandlinetest
-
--- Command line test
--- by David Raymond Christiansen
-
-opts = "-p effects"
-sourcedir = src
-modules = Command.Line.Test
