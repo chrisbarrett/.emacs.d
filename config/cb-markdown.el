@@ -12,14 +12,16 @@
   (require 'use-package))
 
 (require 'spacemacs-keys)
-(autoload 'evil-insert-state "evil-states")
+(autoload 'evil-define-key "evil")
+(autoload 'evil-insert-state "evil")
 
-(with-eval-after-load 'which-key
-  (with-no-warnings
-    (push `((nil . ,(rx bos "markdown-" (? "insert-") (group (+ nonl)))) . (nil . "\\1"))
-          which-key-replacement-alist)))
+(use-package which-key
+  :config
+  (push `((nil . ,(rx bos "markdown-" (? "insert-") (group (+ nonl)))) . (nil . "\\1"))
+        which-key-replacement-alist))
 
 (use-package markdown-mode
+  :straight t
   :commands (markdown-mode
              gfm-mode
              markdown-cycle
@@ -105,6 +107,7 @@
     (evil-define-key 'normal markdown-mode-map (kbd "RET") #'markdown-follow-thing-at-point)))
 
 (use-package fence-edit
+  :straight t
   :after markdown-mode
   :commands (fence-edit-code-at-point)
   :config
