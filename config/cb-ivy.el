@@ -15,6 +15,7 @@
 (require 'subr-x)
 
 (use-package ivy
+  :straight t
   :commands (ivy-dispatching-done
              ivy-help
              ivy-immediate-done
@@ -52,9 +53,6 @@
 
   :config
   (progn
-    (require 'flx)
-    (require 'ivy-hydra)
-
     (setq ivy-use-virtual-buffers t)
     (setq ivy-count-format "(%d/%d) ")
     (setq ivy-re-builders-alist '((t . ivy--regex-plus)))
@@ -76,12 +74,22 @@
 
   :defines (ivy-use-virtual-buffers ivy-count-format))
 
+(use-package flx
+  :straight t
+  :after ivy)
+
+(use-package ivy-hydra
+  :after ivy
+  :straight t)
+
 (use-package swiper
+  :straight t
   :commands (swiper)
   :init
   (evil-global-set-key 'normal "/" #'swiper))
 
 (use-package counsel
+  :straight t
   :demand t
 
   :bind (("M-x" . counsel-M-x)
