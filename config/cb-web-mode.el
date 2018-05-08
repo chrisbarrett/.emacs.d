@@ -247,6 +247,7 @@
 
 (use-package tern
   :straight t
+  :disabled t
   :commands (tern-mode)
   :preface
   (progn
@@ -284,7 +285,7 @@
 
 (use-package company-tern
   :straight t
-  :after cb-web-modes
+  :after (cb-web-modes tern)
   :config
   (progn
     (setq company-tern-meta-as-single-line t)
