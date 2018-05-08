@@ -12,6 +12,7 @@
   (require 'use-package))
 
 (use-package aggressive-indent
+  :straight t
   :commands (global-aggressive-indent-mode)
   :defer 1
   :init
