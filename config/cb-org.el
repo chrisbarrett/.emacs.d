@@ -781,7 +781,9 @@
     '(?c "Export as Confluence markup"
          ((?c "To temporary buffer" org-confluence-export-as-confluence)))))
 
-(use-package ox-gfm :after org)
+(use-package ox-gfm
+  :straight t
+  :after org)
 
 (use-package ox-latex
   :after org
