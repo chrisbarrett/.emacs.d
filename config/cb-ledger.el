@@ -102,21 +102,7 @@
 
 (use-package cb-ledger-reports
   :after ledger-mode
-  :commands (cb-ledger-reports-weekly-review)
-  :init
-  (spacemacs-keys-set-leader-keys-for-major-mode 'ledger-mode "r" #'cb-ledger-reports-weekly-review)
-  :config
-  (progn
-    (setq cb-ledger-reports-income-payee-name "Income:Pushpay")
-
-    (add-to-list 'display-buffer-alist
-                 `(,(rx bos "*ledger review*" eos)
-                   (display-buffer-reuse-window
-                    display-buffer-pop-up-window)
-                   (reusable-frames . visible)
-                   (side            . right)
-                   (slot            . 1)
-                   (window-width   . 0.5)))))
+  :functions (cb-ledger-reports-last-n-pay-dates cb-ledger-reports-previous-pay-period))
 
 (use-package flycheck-ledger
   :straight t
