@@ -25,23 +25,31 @@
 
 (setenv "INSIDE_EMACS" "true")
 
-;; Initialize package.el
-;;
-;; Most packages are installed using git subtrees, but some packages (such as
-;; flycheck) break unless installed via package.el.
 
-(require 'package)
+;; Bootstrap straight.el and use-package.
 
-(setq package-archives
-      '(("gnu" . "https://elpa.gnu.org/packages/")
-        ("melpa" . "https://melpa.org/packages/")))
+(eval-and-compile
+  (defvar bootstrap-version 3)
+  (defvar bootstrap-file (concat user-emacs-directory "straight/repos/straight.el/bootstrap.el")))
 
-(package-initialize)
+(unless (file-exists-p bootstrap-file)
+  (with-current-buffer
+      (url-retrieve-synchronously
+       "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+       'silent 'inhibit-cookies)
+    (goto-char (point-max))
+    (eval-print-last-sexp)))
 
-(unless package-archive-contents
-  (package-refresh-contents))
+(require 'straight bootstrap-file t)
 
-;; Bootstrap use-package.
+(defconst use-package-verbose t)
+(straight-use-package 'use-package)
+
+(eval-when-compile
+  (require 'use-package))
+
+
+;; Add subtrees to load path.
 
 (require 'subr-x)
 (require 'seq)
@@ -79,8 +87,6 @@ If argument INTERACTIVE-P is set, log additional information."
         (message "No change to load-path")))))
 
 (cb-init/init-load-path)
-(defconst use-package-verbose t)
-(require 'use-package)
 
 
 ;; Load features.
