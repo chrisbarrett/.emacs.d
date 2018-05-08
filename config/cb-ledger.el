@@ -19,7 +19,7 @@
 (autoload 'evil-define-key "evil")
 (autoload 's-replace "s")
 
-(defconst ledger-master-file (concat org-directory "/accounts.ledger"))
+(defconst ledger-master-file (file-truename "~/org/accounts.ledger"))
 
 ;; Utility functions
 
