@@ -31,10 +31,6 @@
     (autoload 'diredp-next-line "dired+")
     (autoload 'diredp-previous-line "dired+")
 
-    (defun cb-dired-load-dired-plus ()
-      (unless (bound-and-true-p diredp-loaded-p)
-        (load-file (concat cb-emacs-lisp-directory "/dired-plus/dired+.el"))))
-
     (defun cb-dired--sort-directories-first (&rest _)
       "Sort dired listings with directories first."
       (save-excursion
@@ -53,7 +49,6 @@
       "si" 'dired-insert-subdir
       "sd" 'dired-kill-subdir)
 
-    (add-hook 'dired-mode-hook #'cb-dired-load-dired-plus)
     (add-hook 'dired-mode-hook #'dired-hide-details-mode))
 
   :config
@@ -88,6 +83,10 @@
     (setq dired-clean-up-buffers-too t)
     (setq dired-omit-files (rx bol (or (+ ".")
                                        (and "__pycache__" eol))))))
+
+(use-package dired+
+  :straight t
+  :after dired)
 
 (use-package wdired
   :after dired
