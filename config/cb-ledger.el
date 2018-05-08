@@ -47,7 +47,8 @@
 ;; Package setup
 
 (use-package ledger-mode
-  :mode ("\.ledger$" . ledger-mode)
+  :straight t
+  :mode ("\\.ledger$" . ledger-mode)
 
   :bind
   (:map
@@ -92,7 +93,6 @@
     (add-hook 'ledger-report-mode-hook 'font-lock-fontify-buffer)
     (define-key ledger-report-mode-map (kbd "C-c C-c") #'cb-ledger-report-from-report-buffer)))
 
-
 (use-package cb-ledger-redefinitions
   :after ledger-report)
 
@@ -119,6 +119,7 @@
                    (window-width   . 0.5)))))
 
 (use-package flycheck-ledger
+  :straight t
   :after ledger-mode)
 
 (provide 'cb-ledger)
