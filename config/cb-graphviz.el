@@ -8,6 +8,7 @@
 (require 'spacemacs-keys)
 
 (use-package graphviz-dot-mode
+  :straight t
   :mode
   (("\\.dot\\'" . graphviz-dot-mode)
    (("\\.gv\\'" . graphviz-dot-mode)))
