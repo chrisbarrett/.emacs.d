@@ -17,6 +17,7 @@
           which-key-replacement-alist)))
 
 (use-package fstar-mode
+  :straight t
   :mode ("\\.fsti?\\'" . fstar-mode)
   :config
   (progn
@@ -51,7 +52,6 @@
       "SPC" 'fstar-subp-advance-or-retract-to-point
       "w" 'fstar-browse-wiki
       "/" 'fstar-search)))
-
 
 (provide 'cb-fstar)
 
