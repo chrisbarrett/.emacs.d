@@ -16,6 +16,7 @@
 (autoload 'evil-define-key "evil-core")
 
 (use-package haskell-mode
+  :straight t
   :mode
   (("\\.[gh]s\\'" . haskell-mode)
    ("\\.l[gh]s\\'" . literate-haskell-mode)
@@ -66,7 +67,6 @@
                    (slot            . 1)
                    (window-height   . 0.5)))))
 
-
 (use-package haskell-customize
   :after haskell-mode
   :config
@@ -74,7 +74,6 @@
     ;; (setq haskell-stylish-on-save t)
     (setq haskell-completing-read-function #'completing-read)
     (setq haskell-interactive-popup-errors nil)))
-
 
 (use-package haskell-compile
   :after haskell-mode
@@ -86,23 +85,19 @@
 
     (setq haskell-compile-cabal-build-command "stack build --ghc-options -ferror-spans")))
 
-
 (use-package haskell-cabal
   :after haskell-mode
   :config
   (define-key haskell-cabal-mode-map (kbd "C-c C-c") 'haskell-compile))
 
-
 (use-package haskell-doc
   :after haskell-mode)
-
 
 (use-package haskell-interactive-mode
   :after haskell-mode
   :commands (interactive-haskell-mode)
   :init
   (add-hook 'haskell-mode-hook #'interactive-haskell-mode))
-
 
 (use-package haskell-debug
   :after haskell-mode
@@ -116,12 +111,10 @@
       (kbd "p") #'haskell-debug/previous
       (kbd "q") #'quit-window)))
 
-
 (use-package haskell-presentation-mode
   :after haskell-mode
   :config
   (evil-define-key 'normal haskell-presentation-mode-map (kbd "q") #'quit-window))
-
 
 (use-package haskell-autoinsert
   :after autoinsert
@@ -130,7 +123,6 @@
   :config
   (dolist (form haskell-autoinsert-forms)
     (add-to-list 'auto-insert-alist form)))
-
 
 (use-package haskell-imports
   :after haskell-mode
@@ -141,15 +133,14 @@
     "ii" #'haskell-imports-insert-unqualified
     "iq" #'haskell-imports-insert-qualified))
 
-
 (use-package haskell-pragmas
   :after haskell-mode
   :commands (haskell-pragmas-insert)
   :config
   (spacemacs-keys-set-leader-keys-for-major-mode 'haskell-mode "il" #'haskell-pragmas-insert))
 
-
 (use-package intero
+  :straight t
   :after haskell-mode
 
   :commands (intero-mode intero-targets intero-goto-definition)
@@ -184,8 +175,8 @@
       (evil-define-key 'normal intero-mode-map (kbd "M-.") #'intero-goto-definition)
       (evil-define-key 'normal intero-mode-map (kbd "M-,") #'pop-tag-mark))))
 
-
 (use-package hindent
+  :straight t
   :after haskell-mode
   :commands (hindent-mode
              hindent-reformat-decl-or-fill
@@ -199,7 +190,6 @@
     (setq hindent-reformat-buffer-on-save t)
     (add-hook 'haskell-mode-hook #'hindent-mode)))
 
-
 (use-package stack-hoogle
   :after haskell-mode
   :commands (stack-hoogle stack-hoogle-info-at-pt)
@@ -207,7 +197,6 @@
   (:map haskell-mode-map ("C-c C-h" . stack-hoogle))
   :config
   (evil-define-key 'normal haskell-mode-map (kbd "K") #'stack-hoogle-info-at-pt))
-
 
 (provide 'cb-haskell)
 
