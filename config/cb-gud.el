@@ -16,6 +16,7 @@
 (require 'subr-x)
 
 (use-package realgud
+  :straight t
   :commands (realgud:cmd-newer-frame
              realgud:cmd-older-frame
              realgud:cmd-backtrace
@@ -47,9 +48,6 @@
   :preface
   (progn
     (autoload 'f-relative "f")
-
-
-
 
     (defun cb-gud--realgud-command-for-mode (mode)
       (pcase mode
