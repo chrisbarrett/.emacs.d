@@ -12,13 +12,13 @@
   (require 'use-package))
 
 (use-package csv-mode
+  :straight t
   :mode ("\\.csv\\'" . csv-mode)
   :preface
   (defun cb-csv--suppress-final-newline ()
     (setq-local require-final-newline nil))
   :config
-  (progn
-    (add-hook 'csv-mode-hook #'cb-csv--suppress-final-newline)))
+  (add-hook 'csv-mode-hook #'cb-csv--suppress-final-newline))
 
 (provide 'cb-csv)
 
