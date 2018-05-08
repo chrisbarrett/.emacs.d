@@ -17,7 +17,6 @@
 
 (use-package hexl
   :defer t
-
   :init
   (progn
     (spacemacs-keys-set-leader-keys "fh" 'hexl-find-file)
@@ -39,7 +38,6 @@
     "$" 'hexl-end-of-line
     "^" 'hexl-beginning-of-line
     "0" 'hexl-beginning-of-line))
-
 
 (provide 'cb-hexl)
 
