@@ -14,6 +14,7 @@
 (require 'spacemacs-keys)
 
 (use-package all-the-icons
+  :straight t
   :defer t
   :init
   (defvar all-the-icons-scale-factor 1.0)
