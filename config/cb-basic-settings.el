@@ -624,6 +624,7 @@ Optional arg JUSTIFY will justify comments and strings."
   (setq help-window-select t))
 
 (use-package world-time-mode
+  :straight t
   :commands (world-time-list)
   :init
   (spacemacs-keys-set-leader-keys "aw" 'world-time-list)
