@@ -14,6 +14,7 @@
 (require 'spacemacs-keys)
 
 (use-package restclient
+  :straight t
   :commands (restclient-mode
              restclient-http-send-current
              restclient-http-send-current-stay-in-window)
@@ -60,7 +61,6 @@
                    (reusable-frames . visible)
                    (side            . bottom)
                    (window-height   . 0.66)))))
-
 
 (provide 'cb-restclient)
 
