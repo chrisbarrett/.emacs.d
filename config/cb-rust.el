@@ -18,6 +18,7 @@
 (autoload 'evil-define-key "evil")
 
 (use-package rust-mode
+  :straight t
   :mode ("\\.rs\\'" . rust-mode)
   :preface
   (progn
@@ -40,8 +41,9 @@
 
     (evil-define-key 'normal rust-mode-map (kbd "J") #'cb-rust-join-line)))
 
+(autoload 'rust-mode-map "rust-mode" nil nil 'keymap)
+
 (use-package company
-  :defer t
   :commands (company-indent-or-complete-common)
   :config
   (with-eval-after-load 'rust-mode
@@ -50,6 +52,7 @@
     (evil-define-key 'normal rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)))
 
 (use-package flycheck-rust
+  :straight t
   :commands (flycheck-rust-setup)
   :init
   (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
@@ -61,7 +64,7 @@
           which-key-replacement-alist)))
 
 (use-package racer
-  :defer t
+  :straight t
   :commands (racer-find-definition racer-mode racer-describe)
   :init
   (progn
@@ -80,12 +83,13 @@
       (evil-define-key 'normal rust-mode-map (kbd "M-.") #'racer-find-definition))))
 
 (use-package toml-mode
+  :straight t
   :mode (("\\.toml\\'" . toml-mode)
          ("\\.Cargo\\.lock\\'" . toml-mode)
          ("\\.cargo/config\\'" . toml-mode)))
 
 (use-package cargo
-  :defer t
+  :straight t
   :commands
   (cargo-process-repeat
    cargo-process-clean
@@ -153,7 +157,6 @@
     (add-hook 'compilation-filter-hook #'cb-rust--rewrite-compilation-buffer)
     (add-to-list 'compilation-finish-functions #'cb-rust--rewrite-compilation-buffer)))
 
-
 ;; Snippet Utilities
 
 (defun cb-rust-bol-or-after-accessibility-modifier? ()
@@ -174,7 +177,6 @@
                                 nil t)
         (s-trim (match-string 1))
       "Name")))
-
 
 (provide 'cb-rust)
 
