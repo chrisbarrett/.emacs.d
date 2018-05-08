@@ -1,2 +1,0 @@
-# STDLIB
-import re

@@ -5,6 +5,7 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'dash)
 (require 'cb-emacs)
 (require 'spacemacs-keys)
 (require 'evil)
@@ -87,8 +88,9 @@
                    (slot            . 0)
                    (window-height   . 0.2)))))
 
-(with-eval-after-load 'which-key
-  (with-no-warnings
+(use-package which-key
+  :config
+  (progn
     (push `((nil . ,(rx bos "anaconda-mode-" (group (+ nonl)))) . (nil . "\\1"))
           which-key-replacement-alist)
 
@@ -101,9 +103,10 @@
     (push `((nil . ,(rx bos (? "cb-python-") "pyvenv-" (group (+ nonl)))) . (nil . "\\1"))
           which-key-replacement-alist)))
 
-(with-eval-after-load 'flycheck
-  (with-no-warnings
-    (setq flycheck-python-pycompile-executable "python")))
+(use-package flycheck
+  :defer t
+  :config
+  (setq flycheck-python-pycompile-executable "python"))
 
 (use-package anaconda-mode
   :straight t
@@ -157,6 +160,7 @@
   (add-hook 'anaconda-mode-hook #'cb-python--enable-company-anaconda))
 
 (use-package pytest
+  :straight t
   :after python
   :commands (pytest-one
              pytest-pdb-one
@@ -182,11 +186,13 @@
   (add-to-list 'pytest-project-root-files "setup.cfg"))
 
 (use-package pip-requirements
+  :straight t
   :mode (("\\.pip\\'" . pip-requirements-mode)
          ("requirements.+\\.txt\\'" . pip-requirements-mode)
          ("requirements\\.in\\'" . pip-requirements-mode)))
 
 (use-package pyvenv
+  :straight t
   :commands (pyvenv-activate pyvenv-deactivate pyvenv-workon)
   :preface
   (progn
@@ -251,6 +257,7 @@ Return the first non-nil result of evalutating PRED."
 ;; pip install isort
 
 (use-package py-isort
+  :straight t
   :defer t
   :after 'python
   :preface
@@ -273,6 +280,7 @@ Return the first non-nil result of evalutating PRED."
 ;; pip install yapf
 
 (use-package py-yapf
+  :straight t
   :defer t
   :after 'python
   :preface
