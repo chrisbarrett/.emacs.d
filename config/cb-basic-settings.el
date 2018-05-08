@@ -146,6 +146,8 @@ Optional arg JUSTIFY will justify comments and strings."
 (defalias 'cal 'calendar)
 
 
+(global-set-key (kbd "<f9>") #'save-buffer)
+
 ;;; Saving behaviour
 
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
