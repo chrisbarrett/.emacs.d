@@ -81,6 +81,11 @@
     (evil-define-key 'motion help-mode-map (kbd "gb") #'help-go-back)
     (evil-define-key 'motion help-mode-map (kbd "gh") #'help-follow-symbol)
 
+    ;; Make sure these stupid bindings don't sneak back in.
+
+    (evil-global-set-key 'normal [remap redo] #'undo-tree-redo)
+    (evil-global-set-key 'normal [remap undo] #'undo-tree-undo)
+
     ;; Initial states
 
     (with-eval-after-load 'replace
