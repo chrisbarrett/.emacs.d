@@ -14,6 +14,7 @@
 (require 'dash)
 
 (use-package hl-todo
+  :straight t
   :defer t
   :commands (hl-todo-mode)
 
