@@ -18,6 +18,7 @@
 (autoload 'evil-avy-goto-word-or-subword-1 "evil-integration")
 
 (use-package avy
+  :straight t
   :defer t
   :commands (avy-pop-mark)
 
@@ -43,8 +44,8 @@
     (setq avy-all-windows 'all-frames)
     (setq avy-background t)))
 
-
 (use-package link-hint
+  :straight t
   :defer t
   :commands (link-hint-open-link
              link-hint-open-multiple-links)
