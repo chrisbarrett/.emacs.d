@@ -22,13 +22,6 @@ thing. It's probably most useful for cribbing ideas. :)
   - I've expiremented with using heavier font weights for important tokens
     instead. It feels like I'm reading a latex paper ;)
   - There's a toggle between light and dark colour themes, under =SPC t t=.
-- For control and package stability, I use git subtrees to manage deps.
-  - I use the following helper commands to work with subtrees:
-    - =cb-emacs-add-subtree=
-    - =cb-emacs-update-subtree=
-    - =cb-emacs-push-subtree=
-  - The only tricky thing is I need to remember to download any necessary
-    transitive deps.
 
 * Project Layout
 
@@ -36,7 +29,7 @@ In contrast with Spacemacs, this config uses =use-package= pretty directly.
 
 - =init.el= :: Emacs' entrypoint for loading the config
 - =config/= :: lisp configuration files, loosely grouped by functionality
-- =lisp/= :: vendored 3rd-party lisp code and lisp packages
+- =lisp/= :: lisp packages that I might publish eventually
 
 I also put any sensitive config in a =personal-config.el= file, not in this repo.
 
@@ -50,19 +43,6 @@ The makefile needs to be run in order to generate files for org-mode.
 
 No you don't!
 
-There is a kernel of a good config in here though. The following parts make the
-bones of a good config:
-
-- =init.el=
-- =lisp/use-package=
-- =lisp/magit= (and its transitive deps)
-- =config/cb-emacs.el=
-- =config/cb-git/git-subtree.el=
-
-From there, you add more subtrees using =cb-emacs-add-subtree=, configure those
-packages in =init.el=, and build out your config from there. Extract your config
-into files in =config/= once it gets unwieldy.
-
-Have a skim over the other config files to get a sense of what's around. See
-=config/cb-basic-settings.el= for general quality of life customisations for core
-Emacs features.
+Have a skim over the init.el and the other config files to get a sense of what's
+around. See =config/cb-basic-settings.el= for general quality of life
+customisations for core Emacs features.
