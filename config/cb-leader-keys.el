@@ -64,6 +64,7 @@
   (add-hook 'cb-delete-current-buffer-and-file-functions #'cb-leader-keys--invalidate-cache))
 
 (use-package which-key
+  :straight t
   :preface
   (progn
     (autoload 'which-key-mode "which-key")
