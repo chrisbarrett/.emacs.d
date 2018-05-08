@@ -106,14 +106,11 @@
     (define-key markdown-mode-map (kbd "M-<down>") #'markdown-move-subtree-down)
     (evil-define-key 'normal markdown-mode-map (kbd "RET") #'markdown-follow-thing-at-point)))
 
-(use-package fence-edit
+(use-package edit-indirect
   :straight t
   :after markdown-mode
-  :commands (fence-edit-code-at-point)
-  :config
-  (progn
-    (add-to-list 'fence-edit-lang-modes '("lisp" . emacs-lisp-mode))
-    (define-key markdown-mode-map (kbd "C-c '") #'fence-edit-code-at-point)))
+  :commands (edit-indirect-region)
+  :after markdown-mode)
 
 (provide 'cb-markdown)
 
