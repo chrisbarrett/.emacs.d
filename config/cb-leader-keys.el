@@ -15,6 +15,7 @@
 (require 'subr-x)
 
 (use-package hydra
+  :straight t
   :preface
   (defun cb-leader-keys-set-up-hydra-buffer (&rest _)
     (when-let* ((buf (get-buffer " *LV*")))
