@@ -16,6 +16,7 @@
 (require 'spacemacs-keys)
 
 (use-package neotree
+  :straight t
   :defer t
   :commands (neotree-change-root
              neotree-create-node
