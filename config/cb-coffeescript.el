@@ -12,6 +12,7 @@
   (require 'use-package))
 
 (use-package coffee-mode
+  :straight t
   :mode
   (("\\.coffee\\'" . coffee-mode)
    ("\\.iced\\'" . coffee-mode)
