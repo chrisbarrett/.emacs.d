@@ -1,7 +1,0 @@
-*.elc
-
-# Cask packages
-/.cask/
-
-# Cask dist tarballs
-/dist/

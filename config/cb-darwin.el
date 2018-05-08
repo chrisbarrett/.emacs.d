@@ -24,6 +24,7 @@
 (add-to-list 'default-frame-alist '(ns-appearance . 'nil))
 
 (use-package exec-path-from-shell
+  :straight t
   :if window-system
   :functions (exec-path-from-shell-initialize)
   :init
@@ -44,24 +45,15 @@
   (exec-path-from-shell-initialize))
 
 (use-package osx-trash
+  :straight t
   :preface
   (autoload 'osx-trash-setup "osx-trash")
   :config
   (osx-trash-setup))
 
 (use-package dash-at-point
+  :straight t
   :bind ("<f8>" . dash-at-point))
-
-(use-package emojify
-  :commands (global-emojify-mode)
-  :disabled t
-  :demand t
-  :config
-  (progn
-    (add-hook 'after-init-hook #'global-emojify-mode)
-    (setq emojify-emojis-dir (concat cb-emacs-cache-directory "/emojis"))
-    ;; Test: :wink:
-    (setq emojify-display-style 'image)))
 
 (use-package time
   :commands (display-time-mode)
