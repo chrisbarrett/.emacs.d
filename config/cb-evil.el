@@ -123,7 +123,13 @@
              evil-surround-region)
 
   :preface
-  (autoload 'evil-substitute "evil-commands")
+  (progn
+    (autoload 'evil-substitute "evil-commands")
+
+    (defun cb-evil--init-evil-surround-pairs ()
+      (make-local-variable 'evil-surround-pairs-alist)
+      (push '(?\` . ("`" . "'")) evil-surround-pairs-alist))
+    )
   :init
   (with-eval-after-load 'evil
     (global-evil-surround-mode))
@@ -145,6 +151,8 @@
                     (?t . surround-read-tag)
                     (?< . surround-read-tag)
                     (?f . surround-function)))
+
+    (add-hook 'emacs-lisp-mode-hook #'cb-evil--init-evil-surround-pairs)
 
     (evil-define-key 'visual evil-surround-mode-map "s" #'evil-surround-region)
     (evil-define-key 'visual evil-surround-mode-map "S" #'evil-substitute)))

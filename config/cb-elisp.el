@@ -62,8 +62,6 @@
                    (window-height   . 0.2)))
     (define-key inferior-emacs-lisp-mode-map (kbd "C-c C-z") #'cb-elisp-pop-to-elisp-buffer)))
 
-
-
 (use-package which-key
   :preface
   (autoload 'which-key-add-key-based-replacements "cb-leader-keys")
@@ -76,6 +74,7 @@
           which-key-replacement-alist)))
 
 (use-package elisp-slime-nav
+  :straight t
   :commands (elisp-slime-nav-find-elisp-thing-at-point
              elisp-slime-nav-describe-elisp-thing-at-point)
   :bind
@@ -91,13 +90,14 @@
   :commands (turn-on-elisp-slime-nav-mode))
 
 (use-package eldoc
-  :defer t
+  :commands (eldoc-mode)
   :init
   (add-hook 'emacs-lisp-mode-hook #'eldoc-mode)
   :config
   (setq eldoc-idle-delay 0.2))
 
 (use-package nameless
+  :straight t
   :commands nameless-mode
   :init
   (add-hook 'emacs-lisp-mode-hook #'nameless-mode)
@@ -105,15 +105,6 @@
   (progn
     (setq nameless-prefix ":")
     (setq nameless-private-prefix t)))
-
-(use-package evil-surround
-  :defer t
-  :preface
-  (defun cb-elisp--init-evil-surround-pairs ()
-    (make-local-variable 'evil-surround-pairs-alist)
-    (push '(?\` . ("`" . "'")) evil-surround-pairs-alist))
-  :config
-  (add-hook 'emacs-lisp-mode-hook #'cb-elisp--init-evil-surround-pairs))
 
 (use-package cb-elisp-autoinsert
   :after autoinsert
@@ -148,9 +139,11 @@
   (evil-set-initial-state 'ert-simple-view-mode 'motion))
 
 (use-package package-lint
+  :straight t
   :commands (package-lint-current-buffer))
 
 (use-package flycheck-package
+  :straight t
   :after flycheck
   :preface
   (autoload 'flycheck-package-setup "flycheck-package")
@@ -190,7 +183,6 @@
   (define-key prog-mode-map (kbd "C-<return>") #'emr-show-refactor-menu)
   :config
   (emr-initialize))
-
 
 (provide 'cb-elisp)
 
