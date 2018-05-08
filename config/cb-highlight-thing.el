@@ -15,6 +15,7 @@
 (require 'subr-x)
 
 (use-package highlight-thing
+  :straight t
   :commands (highlight-thing-mode)
   :init
   (add-hook 'prog-mode-hook #'highlight-thing-mode)
@@ -48,7 +49,6 @@
 
     (advice-add 'highlight-thing-should-highlight-p :filter-return
                 #'cb-highlight-thing--should-highlight-p)))
-
 
 (provide 'cb-highlight-thing)
 
