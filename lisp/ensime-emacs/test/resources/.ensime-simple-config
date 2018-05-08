@@ -1,4 +1,0 @@
-(
- :server-cmd "bin/server.sh"
- :dependendency-dirs ("hello" "world")
-)

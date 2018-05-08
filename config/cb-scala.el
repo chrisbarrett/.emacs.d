@@ -20,6 +20,7 @@
 (require 'spacemacs-keys)
 (require 'subr-x)
 
+(autoload 'dumb-jump-go "dumb-jump")
 (autoload 'projectile-project-name "projectile")
 
 ;; Use conf mode for play routes files.
@@ -120,7 +121,7 @@
 ;; Load modes.
 
 (use-package scala-mode
-  :defer t
+  :straight t
   :mode (("\\.scala\\'" . scala-mode))
   :interpreter
   ("scala" . scala-mode)
@@ -139,6 +140,7 @@
                     `((,(rx symbol-start "var" symbol-end) 0 'scala-font-lock:var-keyword-face)))))
 
 (use-package sbt-mode
+  :straight t
   :commands (sbt-start sbt-command)
   :config
   ;; WORKAROUND: https://github.com/ensime/emacs-sbt-mode/issues/31
@@ -147,12 +149,8 @@
                              'self-insert-command
                              minibuffer-local-completion-map))
 
-(eval-when-compile
-  (defconst cb-scala-ensime-load-path (concat cb-emacs-lisp-directory "/ensime-emacs")))
-
 (use-package ensime
-  :load-path cb-scala-ensime-load-path
-  :defer t
+  :straight t
   :commands (ensime)
 
   :preface
