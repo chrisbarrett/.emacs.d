@@ -9,11 +9,10 @@
 ;;; Code:
 
 (eval-when-compile
+  (require 'straight)
   (require 'use-package)
   (require 'cb-emacs)
-  (autoload 'evil-define-key "evil-core")
-  (defconst cb-org-load-path (concat cb-emacs-lisp-directory "/org-mode/lisp"))
-  (defconst cb-org-contrib-load-path (concat cb-emacs-lisp-directory "/org-mode/contrib/lisp")))
+  (autoload 'evil-define-key "evil-core"))
 
 (require 'spacemacs-keys)
 (require 'evilified-state)
@@ -32,8 +31,9 @@
     (push `(("," . ,(rx bos (? "evil-") "org-" (group (+ nonl)))) . (nil . "\\1"))
           which-key-replacement-alist)))
 
+(straight-use-package 'org-plus-contrib)
+
 (use-package org
-  :load-path cb-org-load-path
   :defer t
 
   :bind
@@ -226,7 +226,7 @@
     (setq org-habit-following-days 5)))
 
 (use-package gnuplot
-  :ensure t
+  :straight t
   :defer t)
 
 (use-package ob-restclient :after org)
@@ -270,7 +270,6 @@
   (setq org-attach-directory (f-join org-directory "data")))
 
 (use-package org-agenda
-  :load-path cb-org-load-path
   :after org
   :bind (:map org-agenda-mode-map ("J" . org-agenda-goto-date))
 
@@ -473,7 +472,6 @@
 
 (use-package org-archive
   :after org
-  :load-path cb-org-load-path
   :functions (org-archive-subtree)
   :preface
   (progn
@@ -502,8 +500,6 @@
 
 (use-package org-src
   :after org
-  :load-path cb-org-load-path
-
   :preface
   (progn
     (defun cb-org--suppress-final-newline ()
@@ -523,8 +519,6 @@
 
 (use-package org-clock
   :after org
-  :load-path cb-org-load-path
-
   :preface
   (progn
     (autoload 'org-remove-empty-drawer-at "org")
@@ -550,7 +544,6 @@
 
 (use-package org-crypt
   :after org
-  :load-path cb-org-load-path
   :functions (org-encrypt-entries)
   :preface
   (defun cb-org--encrypt-on-save ()
@@ -600,7 +593,6 @@
     (setq org-drill-save-buffers-after-drill-sessions-p nil)))
 
 (use-package org-capture
-  :load-path cb-org-load-path
   :preface
   (cl-defun cb-org--capture-template-entry (key label form template
                                           &rest kws
