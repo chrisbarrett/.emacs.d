@@ -96,7 +96,6 @@
     (evil-define-key 'normal wdired-mode-map (kbd "^") #'evil-first-non-blank)
     (evil-define-key 'normal dired-mode-map (kbd "C-c C-e") #'wdired-change-to-wdired-mode)))
 
-
 (provide 'cb-dired)
 
 ;;; cb-dired.el ends here
