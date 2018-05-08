@@ -14,6 +14,7 @@
 (require 'spacemacs-keys)
 
 (use-package evil
+  :straight t
   :preface
   (progn
     (autoload 'evil-set-initial-state "evil-core")
@@ -111,11 +112,13 @@
   :defines (evil-want-Y-yank-to-eol))
 
 (use-package evil-terminal-cursor-changer
+  :straight t
   :if (not (display-graphic-p))
   :commands (evil-terminal-cursor-changer-activate)
   :config (evil-terminal-cursor-changer-activate))
 
 (use-package evil-surround
+  :straight t
   :commands (global-evil-surround-mode
              evil-surround-region)
 
@@ -146,8 +149,8 @@
     (evil-define-key 'visual evil-surround-mode-map "s" #'evil-surround-region)
     (evil-define-key 'visual evil-surround-mode-map "S" #'evil-substitute)))
 
-
 (use-package evil-iedit-state
+  :straight t
   :commands (evil-iedit-state evil-iedit-state/iedit-mode)
   :init
   (spacemacs-keys-set-leader-keys "se" #'evil-iedit-state/iedit-mode)
@@ -182,9 +185,11 @@
     (evil-ex-define-cmd "spell" #'cb-evil-flyspell-on)))
 
 (use-package evil-ediff
+  :straight t
   :after ediff)
 
 (use-package evil-args
+  :straight t
   :after evil
   :config
   (progn
@@ -192,11 +197,13 @@
     (define-key evil-outer-text-objects-map "a" 'evil-outer-arg)))
 
 (use-package evil-indent-plus
+  :straight t
   :after evil
   :commands (evil-indent-plus-default-bindings)
   :config (evil-indent-plus-default-bindings))
 
 (use-package evil-nerd-commenter
+  :straight t
   :commands (evilnc-comment-operator)
   :preface
   (require 'cb-evil-nerd-commenter)
@@ -219,9 +226,11 @@
       "cY" #'cb-evil-nerd-commenter/copy-and-comment-lines-inverse)))
 
 (use-package evil-matchit
+  :straight t
   :after evil)
 
 (use-package evil-numbers
+  :straight t
   :commands (evil-numbers/inc-at-pt
              evil-numbers/dec-at-pt)
 
@@ -231,6 +240,7 @@
     (evil-global-set-key 'normal (kbd "-") #'evil-numbers/dec-at-pt)))
 
 (use-package evil-search-highlight-persist
+  :straight t
   :after evil
   :commands (global-evil-search-highlight-persist
              evil-search-highlight-persist-remove-all)
@@ -243,13 +253,8 @@
     (global-evil-search-highlight-persist)
     (evil-ex-define-cmd "noh" #'evil-search-highlight-persist-remove-all)))
 
-(use-package evil-visual-mark-mode
-  :disabled t
-  :after evil
-  :commands (evil-visual-mark-mode)
-  :config (evil-visual-mark-mode))
-
 (use-package vi-tilde-fringe
+  :straight t
   :after evil
   :commands (vi-tilde-fringe-mode global-vi-tilde-fringe-mode)
 
@@ -267,7 +272,6 @@
     (add-hook 'which-key-init-buffer-hook #'cb-evil--vi-tilde-fringe-off)
     (add-hook 'after-change-major-mode-hook #'cb-evil--vi-tilde-fringe-off-if-readonly)
     (global-vi-tilde-fringe-mode)))
-
 
 (use-package cb-evil-shift
   :preface
