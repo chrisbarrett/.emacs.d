@@ -12,14 +12,17 @@
   (require 'use-package))
 
 (use-package ag
+  :straight t
   :commands ag)
 
 (use-package rg
+  :straight t
   :commands rg
   :config
   (setq rg-group-result t))
 
 (use-package wgrep
+  :straight t
   :commands (wgrep-setup)
   :init
   (add-hook 'grep-setup-hook #'wgrep-setup)
@@ -41,9 +44,9 @@
     (define-key wgrep-mode-map [remap wgrep-finish-edit] #'cb-search-wgrep-finish-edit-kill-buffer)))
 
 (use-package wgrep-ag
-  :after (ag rg)
-  :init
-  (add-hook 'rg-mode-hook 'wgrep-ag-setup))
+  :straight t
+  :after (:any ag rg)
+  :hook (rg-mode . wgrep-ag-setup))
 
 (provide 'cb-search)
 
