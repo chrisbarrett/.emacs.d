@@ -19,6 +19,7 @@
 (push (f-join cb-emacs-site-lisp-directory "mu4e") load-path)
 
 (use-package mu4e
+  :straight t
   :commands (mu4e mu4e-compose-new)
   :defer t
 
