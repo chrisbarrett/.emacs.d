@@ -12,6 +12,7 @@
   (require 'use-package))
 
 (use-package paren-face
+  :straight t
   :demand t
   :commands (global-paren-face-mode)
   :config
@@ -39,7 +40,6 @@
                       (,(rx symbol-end (group (+ "]"))) 1 'parenthesis)))
 
     (global-paren-face-mode +1)))
-
 
 (provide 'cb-parentheses)
 

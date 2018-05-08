@@ -8,12 +8,13 @@
 (require 'evilified-state)
 (require 'spacemacs-keys)
 
-(with-eval-after-load 'which-key
-  (with-no-warnings
-    (push `((nil . ,(rx bos "prodigy-" (group (+ nonl)))) . (nil . "\\1"))
-          which-key-replacement-alist)))
+(use-package which-key
+  :config
+  (push `((nil . ,(rx bos "prodigy-" (group (+ nonl)))) . (nil . "\\1"))
+        which-key-replacement-alist))
 
 (use-package prodigy
+  :straight t
   :commands (prodigy)
   :init
   (spacemacs-keys-set-leader-keys "as" #'prodigy)
@@ -35,7 +36,6 @@
       "R" 'revert-buffer
       "q" 'quit-buffer)
     (evil-define-key 'motion prodigy-view-mode-map (kbd "gf") 'find-file-at-point)))
-
 
 (provide 'cb-prodigy)
 
