@@ -6,6 +6,7 @@
   (require 'use-package))
 
 (use-package tiny
+  :straight t
   :bind ("C-:" . tiny-expand))
 
 (provide 'cb-tiny)
