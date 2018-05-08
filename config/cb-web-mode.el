@@ -327,7 +327,7 @@
           which-key-replacement-alist)))
 
 (use-package prettier-js
-  :commands (prettier-js-mode)
+  :commands (prettier-js-mode prettier-js)
   :after cb-web-modes
   :preface
   (progn
