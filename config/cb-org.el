@@ -159,7 +159,7 @@
                                      (restclient . t)
                                      (gnuplot . t)
                                      (python . t)
-                                     (ipython . t)
+                                     ;; (ipython . t)
                                      (scala . t)
                                      (shell . t)
                                      (sql . t)))
@@ -172,6 +172,7 @@
     (advice-add 'org-toggle-heading :after #'cb-org--toggle-heading-goto-eol)))
 
 (use-package ob-ipython
+  :disabled t
   :straight t
   :after org
   :preface
