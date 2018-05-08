@@ -16,7 +16,7 @@
 (require 'spacemacs-keys)
 
 (use-package smartparens
-  :defer t
+  :straight t
 
   :functions (sp-local-pair
               sp-pair
