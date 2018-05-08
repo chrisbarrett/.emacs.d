@@ -25,6 +25,7 @@
           "~/.nvm/"
           "~/.ghc/"
           "~/.stack/"
+          "~/.emacs.d/straight/"
           "~/.rustup/"
           "~/tmp/")))
 

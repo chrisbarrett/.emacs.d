@@ -25,11 +25,12 @@
       (not (f-exists? project))))
 
 (defun cb-projectile-functions-ignored-subdir-p (project)
-  (seq-find (lambda (base)
-              (or
-               (f-same? base project)
-               (f-ancestor-of? base project)))
-            cb-projectile-functions-ignored-base-dirs))
+  (thread-last cb-projectile-functions-ignored-base-dirs
+    (seq-map #'file-truename)
+    (seq-find (lambda (base)
+                (or
+                 (f-same? base project)
+                 (f-ancestor-of? base project))))))
 
 (provide 'cb-projectile-functions)
 
