@@ -12,6 +12,7 @@
   (require 'use-package))
 
 (use-package info+
+  :straight t
   :defer t
   :preface
   (defvar Info-fontify-angle-bracketed-flag)
