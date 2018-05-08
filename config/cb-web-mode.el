@@ -35,6 +35,7 @@
      (s-downcase (s-dashed-words s)))))
 
 (use-package web-mode
+  :straight t
   :defines (web-mode-markup-indent-offset
             web-mode-css-indent-offset)
   :mode (("\\.php\\'" . web-mode))
@@ -93,6 +94,7 @@
     (add-hook 'web-mode-hook #'cb-web--add-node-modules-bin-to-exec-path)))
 
 (use-package rainbow-mode
+  :straight t
   :commands (rainbow-mode)
   :init
   (add-hook 'web-mode-hook #'rainbow-mode))
@@ -155,7 +157,7 @@
     (flycheck-add-mode 'html-tidy 'cb-web-html-mode)))
 
 (use-package emmet-mode
-  :defer t
+  :straight t
   :defines (emmet-expand-jsx-className?)
   :commands (emmet-mode emmet-expand-yas)
   :preface
@@ -212,6 +214,7 @@
     (add-hook 'cb-web-js-mode-hook #'cb-web--set-jsx-classname-on)))
 
 (use-package flycheck-flow
+  :straight t
   :after flycheck
   :config
   (progn
@@ -243,6 +246,7 @@
   :defines (auto-insert-alist))
 
 (use-package tern
+  :straight t
   :commands (tern-mode)
   :preface
   (progn
@@ -279,6 +283,7 @@
     (advice-add 'tern-show-argument-hints :around #'cb-web--maybe-suppress-tern-hints)))
 
 (use-package company-tern
+  :straight t
   :after cb-web-modes
   :config
   (progn
@@ -289,6 +294,7 @@
       (add-to-list 'company-backends 'company-tern))))
 
 (use-package web-beautify
+  :straight t
   :commands (web-beautify-js web-beautify-html web-beautify-css)
   :init
   (progn
@@ -297,6 +303,7 @@
     (spacemacs-keys-set-leader-keys-for-major-mode 'cb-web-css-mode "=" #'web-beautify-css)))
 
 (use-package stylus-mode
+  :straight t
   :mode ("\\.styl\\'" . stylus-mode)
   :preface
   (defun cb-web--set-stylus-vars ()
@@ -327,6 +334,7 @@
           which-key-replacement-alist)))
 
 (use-package prettier-js
+  :straight t
   :commands (prettier-js-mode prettier-js)
   :after cb-web-modes
   :preface
@@ -389,6 +397,7 @@
 ;; Node
 
 (use-package indium
+  :straight t
   :commands (indium-interaction-mode
              indium-run-node)
   :preface
@@ -436,6 +445,7 @@
   (defalias 'typescript-mode #'cb-web-ts-mode))
 
 (use-package tide
+  :straight t
   :commands (tide-setup
              tide-restart-server
              tide-references
@@ -477,6 +487,7 @@
     (flycheck-add-mode 'tsx-tide 'cb-web-js-mode)))
 
 (use-package ts-comint
+  :straight t
   :commands (run-ts
              ts-send-last-sexp
              ts-send-last-sexp-and-go
@@ -501,6 +512,7 @@
         (define-key km (kbd "C-c C-l") #'ts-load-file-and-go)))))
 
 (use-package nvm
+  :straight t
   :after cb-web-modes
   :functions (nvm-use-for-buffer)
   :preface
@@ -509,7 +521,6 @@
       (nvm-use-for-buffer)))
   :config
   (add-hook 'web-mode-hook #'cb-web-maybe-use-nvm))
-
 
 ;; Avro file mode
 
@@ -520,7 +531,6 @@
   (setq-local web-mode-content-type "json"))
 
 (add-to-list 'auto-mode-alist '("\\.avsc" . avro-mode))
-
 
 (provide 'cb-web-mode)
 
