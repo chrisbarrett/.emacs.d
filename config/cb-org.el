@@ -716,7 +716,7 @@
           `(file cb-org-work-file) "* TODO %?\n%a"))))
 
 (use-package org-download
-  :straight
+  :straight t
   :after org
   :hook (dired-mode . org-download-enable))
 
