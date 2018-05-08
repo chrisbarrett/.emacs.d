@@ -13,4 +13,9 @@ elpa
 /custom.el
 /history
 /auto-save-list/
-/straight
+
+
+# For straight, only add lockfiles to source control.
+/straight/*
+!/straight/versions/
+!/straight/versions/*
