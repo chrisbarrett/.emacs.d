@@ -40,6 +40,7 @@
     (goto-char (point-max))
     (eval-print-last-sexp)))
 
+(defconst straight-cache-autoloads t)
 (defconst straight-check-for-modifications 'live)
 
 (require 'straight bootstrap-file t)
