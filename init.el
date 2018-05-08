@@ -40,9 +40,12 @@
     (goto-char (point-max))
     (eval-print-last-sexp)))
 
+(defconst straight-check-for-modifications 'live)
+
 (require 'straight bootstrap-file t)
 
 (defconst use-package-verbose t)
+
 (straight-use-package 'use-package)
 
 (eval-when-compile
