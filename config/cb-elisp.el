@@ -11,6 +11,7 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'straight)
 (require 'spacemacs-keys)
 (require 'evil)
 (require 'subr-x)
@@ -23,21 +24,27 @@
 
 (use-package elisp-mode
   :preface
-  (defun cb-elisp--message-on-eval-buffer (&rest _)
-    (when (called-interactively-p nil)
-      (message "Buffer evaluated.")))
+  (defun cb-elisp/eval-buffer ()
+    "Evaluate the current buffer as Elisp code, within a straight transaction."
+    (interactive)
+    (message "Evaluating %s..." (buffer-name))
+    (straight-transaction
+      (if (null buffer-file-name)
+          (eval-buffer)
+        (when (string= buffer-file-name user-init-file)
+          (straight-mark-transaction-as-init))
+        (load buffer-file-name nil 'nomessage)))
+    (message "Evaluating %s... done." (buffer-name)))
 
   :init
   (progn
     (spacemacs-keys-declare-prefix-for-mode 'emacs-lisp-mode "m e" "eval")
     (spacemacs-keys-set-leader-keys-for-major-mode 'emacs-lisp-mode
-      "eb" #'eval-buffer
+      "eb" #'cb-elisp/eval-buffer
       "ee" #'eval-expression))
 
   :config
-  (progn
-    (advice-add #'eval-buffer :after #'cb-elisp--message-on-eval-buffer)
-    (define-key emacs-lisp-mode-map (kbd "C-c C-z") #'ielm)))
+  (define-key emacs-lisp-mode-map (kbd "C-c C-z") #'ielm))
 
 (use-package ielm
   :commands ielm
