@@ -26,6 +26,11 @@
 (setenv "INSIDE_EMACS" "true")
 
 
+;; Make sure package.el doesn't get a chance to load anything.
+
+(setq package-enable-at-startup nil)
+
+
 ;; Bootstrap straight.el and use-package.
 
 (eval-and-compile
@@ -92,7 +97,6 @@ If argument INTERACTIVE-P is set, log additional information."
         (message "No change to load-path")))))
 
 (cb-init/init-load-path)
-
 
 ;; Install some basic packages
 
