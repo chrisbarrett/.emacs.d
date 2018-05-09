@@ -14,7 +14,7 @@
 (use-package aggressive-indent
   :straight t
   :commands (global-aggressive-indent-mode)
-  :defer 1
+  :defer 3
   :init
   (defconst aggressive-indent-excluded-modes
     '(cb-scala-sbt-file-mode

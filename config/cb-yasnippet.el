@@ -17,7 +17,7 @@
 
 (use-package yasnippet
   :straight t
-  :defer 1
+  :defer 3
 
   :preface
   (progn

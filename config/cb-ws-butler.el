@@ -14,7 +14,7 @@
 (use-package ws-butler
   :straight t
   :commands (ws-butler-global-mode)
-  :defer 1
+  :defer 3
   :config
   (ws-butler-global-mode))
 

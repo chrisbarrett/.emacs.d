@@ -19,7 +19,7 @@
 
 (use-package flycheck
   :straight t
-  :defer 1
+  :defer 3
   :commands (global-flycheck-mode
              flycheck-list-errors
              flycheck-error-list-next-error

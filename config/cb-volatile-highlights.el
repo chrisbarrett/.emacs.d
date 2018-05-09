@@ -13,7 +13,7 @@
 
 (use-package volatile-highlights
   :straight t
-  :defer 1
+  :defer 3
 
   :commands (volatile-highlights-mode)
   :functions (vhl/install-extension
