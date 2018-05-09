@@ -24,10 +24,8 @@
     (push `((nil . ,(rx bos (? "La") "TeX-" (group (+ nonl)))) . (nil . "\\1"))
           which-key-replacement-alist)))
 
-(straight-use-package 'auctex)
-
 (use-package tex
-  :defer t
+  :straight auctex
   :preface
   (defvar-local TeX-syntactic-comments t)
   :config
@@ -39,7 +37,8 @@
     (setq TeX-source-correlate-start-server nil)))
 
 (use-package latex
-  :after tex
+  :straight auctex
+  :defer t
   :preface
   (progn
     (autoload 'LaTeX-current-environment "latex")
@@ -154,7 +153,8 @@
     (spacemacs-keys-declare-prefix-for-mode 'latex-mode "mf" "fill")))
 
 (use-package tex-fold
-  :defer t
+  :straight auctex
+  :after tex
   :config
   (dolist (mode '(tex-mode latex-mode))
     (spacemacs-keys-set-leader-keys-for-major-mode mode
@@ -172,11 +172,7 @@
 
 (use-package company-auctex
   :straight t
-  :defer t
-  :preface
-  (autoload 'company-auctex-init "company-auctex")
-  :init
-  (add-hook 'tex-mode-hook 'company-auctex-init))
+  :hook (tex-mode . company-auctex-init))
 
 (provide 'cb-latex)
 
