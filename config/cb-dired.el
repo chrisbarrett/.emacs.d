@@ -62,6 +62,10 @@
     (setq dired-hide-details-hide-symlink-targets nil)
     (advice-add 'dired-readin :after #'cb-dired--sort-directories-first)
 
+    ;; Instantly revert Dired buffers on re-visiting them, with no
+    ;; message.
+    (setq dired-auto-revert-buffer t)
+
     (evil-define-key 'normal dired-mode-map (kbd "$") #'end-of-line)
     (evil-define-key 'normal dired-mode-map (kbd "j") #'diredp-next-line)
     (evil-define-key 'normal dired-mode-map (kbd "k") #'diredp-previous-line)))
