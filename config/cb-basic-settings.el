@@ -805,6 +805,9 @@ Interactively, reverse the characters in the current region."
 (use-package generate-password
   :commands (generate-password))
 
+(use-package pixel-scroll
+  :demand t
+  :config (pixel-scroll-mode +1))
 
 (provide 'cb-basic-settings)
 
