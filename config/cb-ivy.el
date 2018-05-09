@@ -77,6 +77,15 @@
     (define-key ivy-minibuffer-map (kbd "C-c C-e") #'cb-ivy-occur-then-wgrep)
     (define-key ivy-minibuffer-map (kbd "C-<return>") #'ivy-immediate-done)
 
+    ;; Increase the maximum number of candidates that will be sorted
+    ;; using `flx'. The default is 200, which means `flx' is almost
+    ;; never used. Setting it too high (e.g. 10000) causes lag. This
+    ;; seems to be a good compromise (for example, @PythonNut uses it,
+    ;; see [1]).
+    ;;
+    ;; [1]: https://github.com/PythonNut/emacs-config/blob/c8bff5cce293006ec5cdc39a86982431a758a9a0/modules/config-ivy.el#L68
+    (setq ivy-flx-limit 2000)
+
     (ivy-mode))
 
   :defines (ivy-use-virtual-buffers ivy-count-format))
