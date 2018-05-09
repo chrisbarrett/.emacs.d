@@ -159,6 +159,12 @@ Optional arg JUSTIFY will justify comments and strings."
 (put 'downcase-region 'disabled nil)
 (put 'erase-buffer 'disabled nil)
 
+;; Disable warnings from obsolete advice system, since these are generally not
+;; actionable.
+
+(setq ad-redefinition-action 'accept)
+
+
 ;;; Core advice
 
 
