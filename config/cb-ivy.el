@@ -13,6 +13,7 @@
 
 (require 'spacemacs-keys)
 (require 'subr-x)
+(require 'cb-emacs)
 
 (use-package ivy
   :straight t
@@ -143,6 +144,29 @@
     (advice-add 'counsel-ag :around #'cb-ivy--populate-with-symbol-at-point)
 
     (counsel-mode +1)))
+
+;; Remembers your choices in completion menus.
+(use-package historian
+  :straight t
+  :demand t
+  :config
+  (progn
+    (setq historian-save-file (f-join cb-emacs-cache-directory "historian"))
+    (historian-mode +1)))
+
+;; Uses Historian to sort Ivy candidates by frecency+flx.
+(use-package ivy-historian
+  :straight t
+  :after ivy
+  :config
+  (progn
+    ;; Tweak historian weighting settings. These values are chosen
+    ;; subjectively to produce good results.
+    (setq ivy-historian-freq-boost-factor 2000)
+    (setq ivy-historian-recent-boost 2000)
+    (setq ivy-historian-recent-decrement 1000)
+
+    (ivy-historian-mode 1)))
 
 (provide 'cb-ivy)
 
