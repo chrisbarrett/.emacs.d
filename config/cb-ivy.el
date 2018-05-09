@@ -26,6 +26,12 @@
              ivy-switch-buffer
              ivy-wgrep-change-to-wgrep-mode)
 
+  :bind
+  (
+   ;; Browse read-expression histroy with ivy
+   :map read-expression-map
+   ("C-r" . counsel-expression-history))
+
   :preface
   (progn
     (autoload 'cb-ivy-occur-then-wgrep "cb-ivy-occur-then-wgrep")
