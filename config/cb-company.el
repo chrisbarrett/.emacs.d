@@ -17,7 +17,9 @@
   :commands (global-company-mode)
 
   :bind
-  (("S-<return>" . company-complete))
+  (([remap completion-at-point] . company-manual-begin)
+   ([remap complete-symbol] . company-manual-begin)
+   ("S-<return>" . company-complete))
 
   :preface
   (defun cb-company--set-company-vars ()
