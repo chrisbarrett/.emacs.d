@@ -13,7 +13,14 @@
 
 (use-package yaml-mode
   :straight t
-  :mode ("\\.\\(e?ya?\\|ra\\)ml\\'" . yaml-mode))
+  :mode ("\\.\\(e?ya?\\|ra\\)ml\\'" . yaml-mode)
+
+  :preface
+  (defun cb-yaml--disable-autofill ()
+    (auto-fill-mode -1))
+
+  :config
+  (add-hook 'yaml-mode-hook #'cb-yaml--disable-autofill))
 
 (provide 'cb-yaml)
 
