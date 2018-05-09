@@ -151,6 +151,10 @@ Interactively, reverse the characters in the current region."
 (setq eval-expression-print-length nil)
 (setq eval-expression-print-level nil)
 
+;; Prevent duplicated entries in the kill ring.
+(setq kill-do-not-save-duplicates t)
+
+
 ;;; Convenience aliases
 
 (defalias 'bb  'bury-buffer)
