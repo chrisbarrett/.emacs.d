@@ -123,6 +123,21 @@ Optional arg JUSTIFY will justify comments and strings."
 
 (define-key prog-mode-map (kbd "M-q") #'cb-indent-dwim)
 
+
+;; Define a command for reversing the characters in the current region.
+
+(defun cb-reverse-characters (beg end)
+  "Reverse the characters in the region from BEG to END.
+Interactively, reverse the characters in the current region."
+  (interactive "*r")
+  (insert
+   (reverse
+    (delete-and-extract-region
+     beg end))))
+
+(defalias 'reverse-characters #'cb-reverse-characters)
+
+
 ;; Evil breaks cursor settings when combined with hydra.
 
 (setq-default cursor-in-non-selected-windows nil)
