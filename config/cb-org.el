@@ -891,9 +891,12 @@ table tr.tr-even td {
 
 (use-package evil-org
   :straight t
-  :after org
+  :hook (org-mode . evil-org-mode)
   :config
   (progn
+    (evil-define-key 'normal evil-org-mode-map
+      (kbd "t") #'org-todo)
+
     ;; Remove weird keybindings.
     (evil-define-key 'insert evil-org-mode-map
       (kbd "M-l") nil
