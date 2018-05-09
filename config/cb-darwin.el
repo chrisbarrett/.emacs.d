@@ -23,6 +23,10 @@
 (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
 (add-to-list 'default-frame-alist '(ns-appearance . 'nil))
 
+
+;; Graphical applications in macOS inherit their process environment from
+;; launchd, not from a shell process which loads a profile.
+
 (use-package exec-path-from-shell
   :straight t
   :if window-system
