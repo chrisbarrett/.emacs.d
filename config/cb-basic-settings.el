@@ -641,8 +641,12 @@ Interactively, reverse the characters in the current region."
 (use-package help
   :defer t
   :config
-  ;; Always focus on help windows
-  (setq help-window-select t))
+  (progn
+    ;; Don't show 'press q to close' message
+    (advice-add 'help-window-display-message :override #'ignore)
+
+    ;; Always focus on help windows
+    (setq help-window-select t)))
 
 (use-package world-time-mode
   :straight t
