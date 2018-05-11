@@ -1,4 +1,4 @@
-;;; cb-flow.el --- Utilities for working with Flow.  -*- lexical-binding: t; -*-
+;;; flow.el --- Utilities for working with Flow.  -*- lexical-binding: t; -*-
 ;;; Commentary:
 ;;; Code:
 
@@ -7,7 +7,7 @@
 (require 's)
 
 ;;;###autoload
-(defun cb-flow-type-at (file line col)
+(defun flow-type-at (file line col)
   "Return the inferred type for FILE at the given LINE and COL.
 
 When called interactively, print the type at point.
@@ -34,7 +34,7 @@ Otherwise return the parsed JSON response."
           parsed)))))
 
 ;;;###autoload
-(defun cb-flow-insert-flow-annotation ()
+(defun flow-insert-flow-annotation ()
   "Insert a flow annotation at the start of this file."
   (interactive)
   (save-excursion
@@ -46,6 +46,6 @@ Otherwise return the parsed JSON response."
       (insert "// @flow\n")
       (message "Inserted @flow annotation."))))
 
-(provide 'cb-flow)
+(provide 'flow)
 
-;;; cb-flow.el ends here
+;;; flow.el ends here

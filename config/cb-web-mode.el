@@ -99,18 +99,18 @@
   :init
   (add-hook 'web-mode-hook #'rainbow-mode))
 
-(use-package cb-web-modes
+(use-package web-mode-submodes
   :defer t
-  :mode (("\\.json\\'" . cb-web-json-mode)
-         ("\\.eslintrc\\'" . cb-web-json-mode)
-         ("\\.babelrc\\'" . cb-web-json-mode)
-         ("\\.es6\\'"  . cb-web-js-mode)
-         ("\\.tsx?\\'"  . cb-web-ts-mode)
-         ("\\.jsx?\\'" . cb-web-js-mode)
-         ("\\.css\\'"  . cb-web-css-mode)
-         ("\\.mustache\\'"  . cb-web-mustache-mode)
-         ("\\.scss\\'"  . cb-web-css-mode)
-         ("\\.html\\'" . cb-web-html-mode))
+  :mode (("\\.json\\'" . web-json-mode)
+         ("\\.eslintrc\\'" . web-json-mode)
+         ("\\.babelrc\\'" . web-json-mode)
+         ("\\.es6\\'"  . web-js-mode)
+         ("\\.tsx?\\'"  . web-ts-mode)
+         ("\\.jsx?\\'" . web-js-mode)
+         ("\\.css\\'"  . web-css-mode)
+         ("\\.mustache\\'"  . web-mustache-mode)
+         ("\\.scss\\'"  . web-css-mode)
+         ("\\.html\\'" . web-html-mode))
   :preface
   (defun cb-web--enable-readonly-mode-in-node-modules ()
     (when (and (buffer-file-name)
@@ -140,21 +140,21 @@
     (add-to-list 'flycheck-disabled-checkers 'javascript-jshint)
     (add-to-list 'flycheck-disabled-checkers 'json-jsonlint)
 
-    (add-hook 'cb-web-js-mode-hook #'cb-web--disable-flycheck-for-node-modules)
+    (add-hook 'web-js-mode-hook #'cb-web--disable-flycheck-for-node-modules)
 
     (let ((tidy-bin "/usr/local/Cellar/tidy-html5/5.2.0/bin/tidy"))
       (when (file-exists-p tidy-bin)
         (setq flycheck-html-tidy-executable tidy-bin)))
 
-    (flycheck-add-mode 'typescript-tslint 'cb-web-ts-mode)
+    (flycheck-add-mode 'typescript-tslint 'web-ts-mode)
 
-    (flycheck-add-mode 'javascript-eslint 'cb-web-js-mode)
-    (flycheck-add-mode 'javascript-jshint 'cb-web-js-mode)
-    (flycheck-add-mode 'javascript-standard 'cb-web-js-mode)
+    (flycheck-add-mode 'javascript-eslint 'web-js-mode)
+    (flycheck-add-mode 'javascript-jshint 'web-js-mode)
+    (flycheck-add-mode 'javascript-standard 'web-js-mode)
 
-    (flycheck-add-mode 'css-csslint 'cb-web-css-mode)
-    (flycheck-add-mode 'json-jsonlint 'cb-web-json-mode)
-    (flycheck-add-mode 'html-tidy 'cb-web-html-mode)))
+    (flycheck-add-mode 'css-csslint 'web-css-mode)
+    (flycheck-add-mode 'json-jsonlint 'web-json-mode)
+    (flycheck-add-mode 'html-tidy 'web-html-mode)))
 
 (use-package emmet-mode
   :straight t
@@ -172,7 +172,7 @@
 
     (defun cb-web--maybe-emmet-mode ()
       (cond
-       ((derived-mode-p 'cb-web-html-mode 'html-mode 'nxml-mode)
+       ((derived-mode-p 'web-html-mode 'html-mode 'nxml-mode)
         (emmet-mode +1))
 
        ((equal web-mode-content-type "html")
@@ -205,45 +205,42 @@
 
   :init
   (progn
-    (evil-leader/set-key-for-mode 'cb-web-js-mode (kbd "e") #'emmet-mode)
+    (evil-leader/set-key-for-mode 'web-js-mode (kbd "e") #'emmet-mode)
     (add-hook 'web-mode-hook #'cb-web--maybe-emmet-mode))
   :config
   (progn
     (setq emmet-move-cursor-between-quotes t)
     (define-key emmet-mode-keymap (kbd "TAB") #'cb-web-expand-snippet-then-emmet)
-    (add-hook 'cb-web-js-mode-hook #'cb-web--set-jsx-classname-on)))
+    (add-hook 'web-js-mode-hook #'cb-web--set-jsx-classname-on)))
 
 (use-package flycheck-flow
   :straight t
   :after flycheck
   :config
   (progn
-    (flycheck-add-mode 'javascript-flow 'cb-web-js-mode)
+    (flycheck-add-mode 'javascript-flow 'web-js-mode)
     (flycheck-add-next-checker 'javascript-flow 'javascript-eslint)))
 
-(use-package cb-flow
-  :after cb-web-modes
-  :commands (cb-flow-insert-flow-annotation
-             cb-flow-type-at)
+(use-package flow
+  :after web-mode-submodes
+  :commands (flow-insert-flow-annotation
+             flow-type-at)
   :init
-  (spacemacs-keys-set-leader-keys-for-major-mode 'cb-web-js-mode
-    "if" #'cb-flow-insert-flow-annotation)
-  :bind (:map cb-web-js-mode-map
-              ("C-c C-t" . cb-flow-type-at)))
+  (spacemacs-keys-set-leader-keys-for-major-mode 'web-js-mode
+    "if" #'flow-insert-flow-annotation)
+  :bind (:map web-js-mode-map
+              ("C-c C-t" . flow-type-at)))
 
-(use-package cb-js-autoinsert
+(use-package js-autoinsert
   :after autoinsert
   :config
   (add-to-list 'auto-insert-alist
-               '((cb-web-js-mode . "JavaScript") . cb-js-autoinsert-template-string))
-  :defines (auto-insert-alist))
+               '((web-js-mode . "JavaScript") . js-autoinsert-template-string)))
 
-(use-package cb-html-autoinsert
-  :after autoinsert
+(use-package html-autoinsert
   :config
   (add-to-list 'auto-insert-alist
-               '((cb-web-html-mode . "HTML") . cb-html-autoinsert-template-string))
-  :defines (auto-insert-alist))
+               '((web-html-mode . "HTML") . html-autoinsert-template-string)))
 
 (use-package tern
   :straight t
@@ -266,7 +263,7 @@
         (apply f args))))
 
   :init
-  (add-hook 'cb-web-js-mode-hook #'cb-web--maybe-enable-tern)
+  (add-hook 'web-js-mode-hook #'cb-web--maybe-enable-tern)
 
   :config
   (progn
@@ -285,7 +282,7 @@
 
 (use-package company-tern
   :straight t
-  :after (cb-web-modes tern)
+  :after (web-mode-submodes tern)
   :config
   (progn
     (setq company-tern-meta-as-single-line t)
@@ -299,9 +296,9 @@
   :commands (web-beautify-js web-beautify-html web-beautify-css)
   :init
   (progn
-    (spacemacs-keys-set-leader-keys-for-major-mode 'cb-web-json-mode "=" #'web-beautify-js)
-    (spacemacs-keys-set-leader-keys-for-major-mode 'cb-web-html-mode  "=" #'web-beautify-html)
-    (spacemacs-keys-set-leader-keys-for-major-mode 'cb-web-css-mode "=" #'web-beautify-css)))
+    (spacemacs-keys-set-leader-keys-for-major-mode 'web-json-mode "=" #'web-beautify-js)
+    (spacemacs-keys-set-leader-keys-for-major-mode 'web-html-mode  "=" #'web-beautify-html)
+    (spacemacs-keys-set-leader-keys-for-major-mode 'web-css-mode "=" #'web-beautify-css)))
 
 (use-package stylus-mode
   :straight t
@@ -316,7 +313,7 @@
   :defer t
   :preface
   (defun cb-web--in-flow-strict-object-type? ()
-    (when (derived-mode-p 'cb-web-js-mode)
+    (when (derived-mode-p 'web-js-mode)
       (-let [(depth start) (syntax-ppss)]
         (and (plusp depth)
              (eq (char-after start) ?{)
@@ -328,7 +325,7 @@
 
 (use-package which-key
   :config
-  (let* ((boring-prefixes '("indium" "cb-flow" "tide" "js-refactor-commands"))
+  (let* ((boring-prefixes '("indium" "flow" "tide" "js-refactor-commands"))
          (match-prefix (rx-to-string `(and bos (or ,@boring-prefixes) "-" (group (+ nonl)))
                                      t)))
     (push `((nil . ,match-prefix) . (nil . "\\1"))
@@ -337,7 +334,7 @@
 (use-package prettier-js
   :straight t
   :commands (prettier-js-mode prettier-js)
-  :after cb-web-modes
+  :after web-mode-submodes
   :preface
   (progn
     (defvar prettier-js-inhibited-for-project nil)
@@ -349,7 +346,7 @@
 
     (defun cb-web--maybe-enable-prettier ()
       (unless prettier-js-inhibited-for-project
-        (when (and (derived-mode-p 'cb-web-js-mode 'cb-web-ts-mode)
+        (when (and (derived-mode-p 'web-js-mode 'web-ts-mode)
                    (not (cb-web--child-file-of-node-modules-p)))
           (prettier-js-mode +1))))
 
@@ -387,7 +384,7 @@
              js-refactor-commands-align-object-literal-values
              js-refactor-commands-toggle-sealed-object-type)
   :init
-  (dolist (mode '(cb-web-js-mode cb-web-ts-mode))
+  (dolist (mode '(web-js-mode web-ts-mode))
     (spacemacs-keys-declare-prefix-for-mode mode "mr" "refactor")
     (spacemacs-keys-set-leader-keys-for-major-mode mode
       "ro" #'js-refactor-commands-organize-imports
@@ -412,10 +409,10 @@
   (progn
     (defalias 'run-node #'node-repl)
 
-    (add-hook 'cb-web-js-mode-hook #'indium-interaction-mode)
+    (add-hook 'web-js-mode-hook #'indium-interaction-mode)
     (add-hook 'js-mode-hook #'indium-interaction-mode)
 
-    (dolist (mode '(cb-web-js-mode js-mode))
+    (dolist (mode '(web-js-mode js-mode))
       (spacemacs-keys-declare-prefix-for-mode mode "md" "debugger")
       (spacemacs-keys-declare-prefix-for-mode mode "mi" "flow")
       (spacemacs-keys-declare-prefix-for-mode mode "mx" "run")
@@ -437,13 +434,13 @@
     (evil-set-initial-state 'indium-repl-mode 'insert)
     (evil-define-key 'motion indium-inspector-mode-map (kbd "^") 'indium-inspector-pop)
     (evil-define-key 'motion indium-inspector-mode-map (kbd "r") 'indium-inspector-refresh)
-    (with-eval-after-load 'cb-web-modes
-      (define-key cb-web-js-mode-map (kbd "C-c C-l") 'indium-eval-buffer))))
+    (with-eval-after-load 'web-mode-submodes
+      (define-key web-js-mode-map (kbd "C-c C-l") 'indium-eval-buffer))))
 
 ;; Typescript
 
 (with-eval-after-load 'typescript-mode
-  (defalias 'typescript-mode #'cb-web-ts-mode))
+  (defalias 'typescript-mode #'web-ts-mode))
 
 (use-package tide
   :straight t
@@ -464,10 +461,10 @@
       (setq-local evil-lookup-func #'tide-documentation-at-point)))
   :init
   (progn
-    (add-hook 'cb-web-ts-mode-hook #'cb-web--setup-ts-mode)
-    (spacemacs-keys-declare-prefix-for-mode 'cb-web-ts-mode "r" "refactor")
+    (add-hook 'web-ts-mode-hook #'cb-web--setup-ts-mode)
+    (spacemacs-keys-declare-prefix-for-mode 'web-ts-mode "r" "refactor")
 
-    (spacemacs-keys-set-leader-keys-for-major-mode 'cb-web-ts-mode
+    (spacemacs-keys-set-leader-keys-for-major-mode 'web-ts-mode
       "d" #'tide-jsdoc-template
       "x" #'tide-restart-server
       "f" #'tide-references
@@ -475,17 +472,17 @@
       "rr" #'tide-refactor
       "rf" #'tide-fix)
 
-    (with-eval-after-load 'cb-web-modes
-      (evil-define-key 'normal cb-web-ts-mode-map
+    (with-eval-after-load 'web-mode-submodes
+      (evil-define-key 'normal web-ts-mode-map
         (kbd "K") #'tide-documentation-at-point
         (kbd "M-.") #'tide-jump-to-definition
         (kbd "M-,") #'tide-jump-back)))
   :config
   (with-eval-after-load 'flycheck
-    (flycheck-add-mode 'typescript-tide 'cb-web-ts-mode)
-    (flycheck-add-mode 'javascript-tide 'cb-web-js-mode)
-    (flycheck-add-mode 'jsx-tide 'cb-web-js-mode)
-    (flycheck-add-mode 'tsx-tide 'cb-web-js-mode)))
+    (flycheck-add-mode 'typescript-tide 'web-ts-mode)
+    (flycheck-add-mode 'javascript-tide 'web-js-mode)
+    (flycheck-add-mode 'jsx-tide 'web-js-mode)
+    (flycheck-add-mode 'tsx-tide 'web-js-mode)))
 
 (use-package ts-comint
   :straight t
@@ -497,24 +494,24 @@
              ts-load-file-and-go)
   :init
   (progn
-    (spacemacs-keys-declare-prefix-for-mode 'cb-web-ts-mode "e" "eval")
+    (spacemacs-keys-declare-prefix-for-mode 'web-ts-mode "e" "eval")
 
-    (spacemacs-keys-set-leader-keys-for-major-mode 'cb-web-ts-mode
+    (spacemacs-keys-set-leader-keys-for-major-mode 'web-ts-mode
       "l" #'ts-load-file-and-go
       "eb" #'ts-send-buffer
       "eB" #'ts-send-buffer-and-go
       "es" #'ts-send-last-sexp
       "eS" #'ts-send-last-sexp-and-go)
 
-    (with-eval-after-load 'cb-web-modes
-      (let ((km cb-web-ts-mode-map))
+    (with-eval-after-load 'web-mode-submodes
+      (let ((km web-ts-mode-map))
         (define-key km (kbd "C-x C-e") #'ts-send-last-sexp)
         (define-key km (kbd "C-c C-b") #'ts-send-buffer)
         (define-key km (kbd "C-c C-l") #'ts-load-file-and-go)))))
 
 (use-package nvm
   :straight t
-  :after cb-web-modes
+  :after web-mode-submodes
   :functions (nvm-use-for-buffer)
   :preface
   (defun cb-web-maybe-use-nvm ()

@@ -1,4 +1,4 @@
-;;; cb-web-modes.el --- Major modes derived from web-mode.  -*- lexical-binding: t; -*-
+;;; web-mode-submodes.el --- Major modes derived from web-mode.  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2016  Chris Barrett
 
@@ -12,38 +12,38 @@
 (require 'web-mode)
 
 ;;;###autoload
-(define-derived-mode cb-web-js-base-mode web-mode "JS"
+(define-derived-mode web-js-base-mode web-mode "JS"
   "Derived mode for editing JavaScript files."
   (when (seq-contains '("" "html") web-mode-content-type)
     (setq-local web-mode-content-type "javascript")))
 
 ;;;###autoload
-(define-derived-mode cb-web-js-mode cb-web-js-base-mode "JS"
+(define-derived-mode web-js-mode web-js-base-mode "JS"
   "Derived mode for editing JavaScript files.")
 
 ;;;###autoload
-(define-derived-mode cb-web-ts-mode cb-web-js-base-mode "TS"
+(define-derived-mode web-ts-mode web-js-base-mode "TS"
   "Derived mode for editing JavaScript files.")
 
 ;;;###autoload
-(define-derived-mode cb-web-json-mode web-mode "JSON"
+(define-derived-mode web-json-mode web-mode "JSON"
   "Derived mode for editing JSON files."
   (setq-local web-mode-content-type "json"))
 
 ;;;###autoload
-(define-derived-mode cb-web-html-mode web-mode "HTML"
+(define-derived-mode web-html-mode web-mode "HTML"
   "Derived mode for editing HTML files."
   (setq-local web-mode-content-type "html"))
 
 ;;;###autoload
-(define-derived-mode cb-web-css-mode web-mode "CSS"
+(define-derived-mode web-css-mode web-mode "CSS"
   "Derived mode for editing CSS files."
   (setq-local web-mode-content-type "css"))
 
 ;;;###autoload
-(define-derived-mode cb-web-mustache-mode web-mode "Mustache"
+(define-derived-mode web-mustache-mode web-mode "Mustache"
   "Derived mode for editing mustache files.")
 
-(provide 'cb-web-modes)
+(provide 'web-mode-submodes)
 
-;;; cb-web-modes.el ends here
+;;; web-mode-submodes.el ends here
