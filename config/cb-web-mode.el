@@ -328,7 +328,7 @@
 
 (use-package which-key
   :config
-  (let* ((boring-prefixes '("indium" "cb-flow" "tide" "cb-js-refactor-commands"))
+  (let* ((boring-prefixes '("indium" "cb-flow" "tide" "js-refactor-commands"))
          (match-prefix (rx-to-string `(and bos (or ,@boring-prefixes) "-" (group (+ nonl)))
                                      t)))
     (push `((nil . ,match-prefix) . (nil . "\\1"))
@@ -380,20 +380,20 @@
           (list cb-web--flow-error-rx 1 2))
     (add-to-list 'compilation-error-regexp-alist 'flow)))
 
-(use-package cb-js-refactor-commands
-  :commands (cb-js-refactor-commands-organize-imports
-             cb-js-refactor-commands-group-and-sort-imports
-             cb-js-refactor-commands-expand-comma-bindings
-             cb-js-refactor-commands-align-object-literal-values
-             cb-js-refactor-commands-toggle-sealed-object-type)
+(use-package js-refactor-commands
+  :commands (js-refactor-commands-organize-imports
+             js-refactor-commands-group-and-sort-imports
+             js-refactor-commands-expand-comma-bindings
+             js-refactor-commands-align-object-literal-values
+             js-refactor-commands-toggle-sealed-object-type)
   :init
   (dolist (mode '(cb-web-js-mode cb-web-ts-mode))
     (spacemacs-keys-declare-prefix-for-mode mode "mr" "refactor")
     (spacemacs-keys-set-leader-keys-for-major-mode mode
-      "ro" #'cb-js-refactor-commands-organize-imports
-      "ra" #'cb-js-refactor-commands-align-object-literal-values
-      "re" #'cb-js-refactor-commands-expand-comma-bindings
-      "rs" #'cb-js-refactor-commands-toggle-sealed-object-type)))
+      "ro" #'js-refactor-commands-organize-imports
+      "ra" #'js-refactor-commands-align-object-literal-values
+      "re" #'js-refactor-commands-expand-comma-bindings
+      "rs" #'js-refactor-commands-toggle-sealed-object-type)))
 
 ;; Node
 
