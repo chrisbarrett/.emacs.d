@@ -20,6 +20,7 @@
 (autoload 'evil-define-key "evil")
 (autoload 'evil-set-initial-state "evil")
 (autoload 'projectile-project-p "projectile")
+(autoload 'flycheck-add-mode "flycheck")
 
 (defun cb-web-module-name-for-binding (yas-text)
   (pcase yas-text
@@ -315,7 +316,7 @@
   (defun cb-web--in-flow-strict-object-type? ()
     (when (derived-mode-p 'web-js-mode)
       (-let [(depth start) (syntax-ppss)]
-        (and (plusp depth)
+        (and (cl-plusp depth)
              (eq (char-after start) ?{)
              (eq (char-after (1+ start)) ?|)))))
   :config
