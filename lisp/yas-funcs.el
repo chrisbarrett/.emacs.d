@@ -59,6 +59,10 @@ Fall back to the file name sans extension."
                                        "define-globalized-minor-mode"
                                        "define-derived-mode")))))
 
+(defun yas-funcs-el-package-prefix ()
+  (if (bound-and-true-p nameless-current-name)
+      nameless-current-name
+    (f-base (or (buffer-file-name) (buffer-name)))))
 
 
 ;;; JS

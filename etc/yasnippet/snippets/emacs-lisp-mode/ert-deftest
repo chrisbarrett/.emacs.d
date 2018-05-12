@@ -3,5 +3,5 @@
 # key: ert
 # condition: (yas-funcs-bolp)
 # --
-(ert-deftest `(or nameless-current-name "test")`-${1:feature} ()
+(ert-deftest `(yas-funcs-el-package-prefix)`-${1:feature} ()
   (should (equal $0)))

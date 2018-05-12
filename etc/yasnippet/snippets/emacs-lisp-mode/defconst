@@ -4,4 +4,4 @@
 # binding: direct-keybinding
 # condition: (yas-funcs-bolp)
 # --
-(defconst `(yas/find-identifier-prefix)`$0)
+(defconst `(yas-funcs-el-package-prefix)`--$0)
