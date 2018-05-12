@@ -59,13 +59,6 @@
   :straight t
   :bind ("<f8>" . dash-at-point))
 
-(use-package time
-  :commands (display-time-mode)
-  :init
-  (add-hook 'after-init-hook #'display-time-mode)
-  :config
-  (setq display-time-default-load-average nil))
-
 (provide 'config-darwin)
 
 ;;; config-darwin.el ends here
