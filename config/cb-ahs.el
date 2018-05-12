@@ -32,21 +32,21 @@
     ;; Disable by default, use keybinding instead.
     (setq ahs-idle-timer 0)))
 
-(use-package cb-ahs-micro-state
-  :commands (cb-ahs-micro-state/highlight-symbol
-             cb-ahs-micro-state/enter-ahs-forward
-             cb-ahs-micro-state/enter-ahs-backward
-             cb-ahs-micro-state/goto-last-searched-symbol)
+(use-package evil-ahs
+  :commands (evil-ahs/highlight-symbol
+             evil-ahs/enter-ahs-forward
+             evil-ahs/enter-ahs-backward
+             evil-ahs/goto-last-searched-symbol)
   :defer t
   :init
   (progn
     (with-eval-after-load 'evil
-      (define-key evil-motion-state-map (kbd "*") #'cb-ahs-micro-state/enter-ahs-forward)
-      (define-key evil-motion-state-map (kbd "#") #'cb-ahs-micro-state/enter-ahs-backward))
+      (define-key evil-motion-state-map (kbd "*") #'evil-ahs/enter-ahs-forward)
+      (define-key evil-motion-state-map (kbd "#") #'evil-ahs/enter-ahs-backward))
 
     (spacemacs-keys-set-leader-keys
-      "sh" #'cb-ahs-micro-state/highlight-symbol
-      "sH" #'cb-ahs-micro-state/goto-last-searched-symbol)))
+      "sh" #'evil-ahs/highlight-symbol
+      "sH" #'evil-ahs/goto-last-searched-symbol)))
 
 (provide 'cb-ahs)
 
