@@ -190,6 +190,11 @@
     (push `((nil . ,(rx bos (group (+? nonl)) "-transient-state/body" eos)) . (nil . "\\1"))
           which-key-replacement-alist)
 
+    ;; Fallback for any other hydras.
+
+    (push `((nil . ,(rx bos (? "config-") (group (+? nonl)) "/body" eos)) . (nil . "\\1"))
+          which-key-replacement-alist)
+
     ;; Add basic prefixes
 
     (which-key-add-key-based-replacements
