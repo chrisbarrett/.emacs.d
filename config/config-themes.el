@@ -115,6 +115,21 @@
                    "NOTE")))
     (add-hook 'text-mode-hook #'cb-highlight-todo--enable-unless-org-buffer)))
 
+(use-package all-the-icons
+  :straight t
+  :defer t
+  :init
+  (defvar all-the-icons-scale-factor 1.0)
+  :config
+  (dolist (spec '((nix-mode all-the-icons-faicon "linux" :face all-the-icons-purple)
+                  (makefile-mode all-the-icons-fileicon "gnu" :face all-the-icons-dorange)
+                  (makefile-bsdmake-mode all-the-icons-fileicon "gnu" :face all-the-icons-dorange)
+                  (mu4e-main-mode all-the-icons-octicon "inbox" :face all-the-icons-dsilver)
+                  (mu4e-headers-mode all-the-icons-octicon "inbox" :face all-the-icons-dsilver)
+                  (mu4e-view-mode all-the-icons-octicon "comment-discussion" :face all-the-icons-dsilver)
+                  (mu4e-compose-mode all-the-icons-octicon "comment-discussion" :face all-the-icons-orange)))
+    (add-to-list 'all-the-icons-mode-icon-alist spec)))
+
 (provide 'config-themes)
 
 ;;; config-themes.el ends here
