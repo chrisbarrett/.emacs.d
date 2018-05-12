@@ -16,8 +16,6 @@
 (spacemacs-keys-declare-prefix "j" "jumping")
 (spacemacs-keys-declare-prefix "x" "urls")
 
-(spacemacs-keys-set-leader-keys "g SPC" #'pop-tag-mark)
-
 
 
 (use-package avy
@@ -45,11 +43,6 @@
 (use-package dumb-jump
   :straight t
   :commands (dumb-jump-go dumb-jump-go-other-window)
-  :bind (:map
-         spacemacs-keys-default-map
-         ("gg" . dumb-jump-go)
-         ("go"  . dumb-jump-go-other-window))
-
   :preface
   (autoload 'pop-tag-mark "etags")
   :init

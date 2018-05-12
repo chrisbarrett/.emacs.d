@@ -12,7 +12,6 @@
   (require 'use-package))
 
 (require 'paths)
-(require 'spacemacs-keys)
 (require 'evil-transient-state)
 
 (autoload 'evil-define-key "evil")
@@ -63,14 +62,6 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
       ("q" nil :exit (progn (when (bound-and-true-p magit-blame-mode)
                               (magit-blame-quit))
                             (not (bound-and-true-p magit-blame-mode))))))
-  :init
-  (spacemacs-keys-set-leader-keys
-    "gs" #'magit-status
-    "gl" #'magit-log-buffer-file
-    "gd" #'cb-git-diff-buffer-file
-    "gf" #'cb-git-find-file
-    "gt" #'git-time-machine-transient-state/body
-    "gb" #'git-blame-transient-state/body)
   :config
   (progn
     (evil-define-key 'normal magit-refs-mode-map (kbd ".") #'magit-branch-and-checkout)
@@ -172,22 +163,18 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
       (diff-hl-mode +1)))
 
   :init
-  (progn
-
-    (evil-transient-state-define git-hunks
-      :title "Git Hunk Transient State"
-      :doc "
+  (evil-transient-state-define git-hunks
+    :title "Git Hunk Transient State"
+    :doc "
 [_p_/_N_] previous [_n_] next [_g_] goto [_x_] revert [_q_] quit"
-      :foreign-keys run
-      :bindings
-      ("n" diff-hl-next-hunk)
-      ("N" diff-hl-previous-hunk)
-      ("p" diff-hl-previous-hunk)
-      ("g" diff-hl-goto-hunk)
-      ("x" diff-hl-revert-hunk)
-      ("q" nil :exit t))
-
-    (spacemacs-keys-set-leader-keys "gh" 'git-hunks-transient-state/body))
+    :foreign-keys run
+    :bindings
+    ("n" diff-hl-next-hunk)
+    ("N" diff-hl-previous-hunk)
+    ("p" diff-hl-previous-hunk)
+    ("g" diff-hl-goto-hunk)
+    ("x" diff-hl-revert-hunk)
+    ("q" nil :exit t))
 
   :config
   (progn

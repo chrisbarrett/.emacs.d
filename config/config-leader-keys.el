@@ -8,6 +8,7 @@
 (require 'all-the-icons)
 (require 'buffer-cmds)
 (require 'hydra)
+(require 'jump-cmds)
 (require 'spacemacs-keys)
 (require 'subr-x)
 
@@ -26,12 +27,15 @@
 
 ;; Define hydras as main interface for running commands.
 
-(defun hydra-title-with-icon (icon title)
+(defun hydra-title-with-faicon (icon title)
   (concat (all-the-icons-faicon icon :face 'all-the-icons-orange :v-adjust 0.05) " " title))
+
+(defun hydra-title-with-aicon (icon title)
+  (concat (all-the-icons-alltheicon icon :face 'all-the-icons-orange :v-adjust 0.05) " " title))
 
 (defhydra select-input-method (:color amaranth :hint nil)
   "
-%s(hydra-title-with-icon \"language\" \"Input Method\")
+%s(hydra-title-with-faicon \"language\" \"Input Method\")
 
 _a_ Arabic  _t_ TeX  _SPC_ clear
 
@@ -43,7 +47,7 @@ _a_ Arabic  _t_ TeX  _SPC_ clear
 
 (defhydra font-scale (:color amaranth :hint nil)
   "
-%s(hydra-title-with-icon \"search-plus\" \"Font Scale\")
+%s(hydra-title-with-faicon \"search-plus\" \"Font Scale\")
 
 _+_ zoom in  _-_ zoom out  _0_ reset
 
@@ -55,7 +59,7 @@ _+_ zoom in  _-_ zoom out  _0_ reset
 
 (defhydra buffers (:color amaranth :hint nil)
   "
-%s(hydra-title-with-icon \"cogs\" \"Buffer Commands\")
+%s(hydra-title-with-faicon \"cogs\" \"Buffer Commands\")
 
 ^Switch^^^                 ^^ ^Manage^^^
 ^------^^^-----------------^^ ^------^^^------------
@@ -76,7 +80,7 @@ _l_: list  _s_: switch     ^^ _w_: save  _v_: reload
 
 (defhydra windows (:color amaranth :hint nil)
   "
-%s(hydra-title-with-icon \"clone\" \"Window Management\")
+%s(hydra-title-with-faicon \"clone\" \"Window Management\")
 
 ^^^^^Switch^                   ^Split^          ^Close^
 ^^^^^------^------------------ ^-----^--------- ^-----^------
@@ -99,7 +103,7 @@ _n_: forward  _p_/_N_: back    _-_ horizontal   _o_ others
 
 (defhydra files (:color teal :hint nil)
   "
-%s(hydra-title-with-icon \"files-o\" \"File Commands\")
+%s(hydra-title-with-faicon \"files-o\" \"File Commands\")
 
 ^Find^               ^Save^              ^Copy^             ^Other^
 ^----^-------------- ^----^------------- ^----^------------ ^-----^------------
@@ -126,10 +130,42 @@ _r_: recent          _R_: rename
   ("y" #'copy-buffer-path)
   ("q" nil :exit t))
 
+(defhydra git-and-files (:color teal :hint nil)
+  "
+%s(hydra-title-with-aicon \"git\" \"Git and Goto\")
+
+^Goto^                ^Git^                  ^Jump to Def
+^----^--------------- ^---^----------------- ^-----------------------
+_i_ init file         _s_: magit             _g_   jump
+_m_ messages          _t_: time machine      _G_   jump other window
+_n_ nix packages      _b_: blame             _SPC_ jump back
+_p_ personal config   _l_ log buffer
+_u_ package usage     _d_: diff buffer
+                   ^^ _f_: find file
+                   ^^ _h_: navigate hunks
+"
+  ("i" #'jump-to-init-file)
+  ("n" #'jump-to-nix-packages)
+  ("p" #'jump-to-personal-config)
+  ("u" #'jump-to-package-usage)
+  ("g" #'dumb-jump-go)
+  ("G" #'dumb-jump-go-other-window)
+  ("SPC" #'pop-tag-mark)
+  ("m" #'jump-to-messages)
+  ("s" #'magit-status)
+  ("b" #'git-blame-transient-state/body)
+  ("d" #'cb-git-diff-buffer-file)
+  ("f" #'cb-git-find-file)
+  ("h" #'git-hunks-transient-state/body)
+  ("l" #'magit-log-buffer-file)
+  ("t" #'git-time-machine-transient-state/body)
+  ("q" nil :exit t))
+
 (spacemacs-keys-set-leader-keys
   "a i" #'select-input-method/body
   "b" #'buffers/body
   "f" #'files/body
+  "g" #'git-and-files/body
   "w" #'windows/body
   "z" #'font-scale/body)
 
@@ -355,16 +391,6 @@ _r_: recent          _R_: rename
       "SPC m"   '("major-mode-cmd" . "Major mode commands"))
 
     (which-key-mode +1)))
-
-(use-package jump-cmds
-  :bind
-  (:map
-   spacemacs-keys-default-map
-   ("g i" . jump-to-init-file)
-   ("g m" . jump-to-messages)
-   ("g u" . jump-to-package-usage)
-   ("g n" . jump-to-nix-packages)
-   ("g p" . jump-to-personal-config)))
 
 (provide 'config-leader-keys)
 
