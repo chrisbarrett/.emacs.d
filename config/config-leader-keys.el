@@ -196,7 +196,7 @@ _r_: recent          _R_: rename
     (setq which-key-echo-keystrokes 0.02)
     (setq which-key-max-description-length 32)
     (setq which-key-sort-order 'which-key-key-order-alpha)
-    (setq which-key-idle-delay 0.4)
+    (setq which-key-idle-delay 0.02)
     (setq which-key-allow-evil-operators t)
 
     (advice-add 'which-key--create-buffer-and-show
