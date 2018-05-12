@@ -97,7 +97,7 @@
   :after go-mode
   :config (add-hook 'go-mode-hook 'go-eldoc-setup))
 
-(use-package cb-go-run
+(use-package go-run-cmds
   :after go-mode
   :init
   (progn
@@ -105,11 +105,11 @@
     (spacemacs-keys-declare-prefix-for-mode 'go-mode "mx" "execute")
     (spacemacs-keys-set-leader-keys-for-major-mode
       'go-mode
-      "tt" 'cb-go-run-test-current-function
-      "ts" 'cb-go-run-test-current-suite
-      "tp" 'cb-go-run-package-tests
-      "tP" 'cb-go-run-package-tests-nested
-      "x" 'cb-go-run-main))
+      "tt" 'go-run-cmds/run-test-current-function
+      "ts" 'go-run-cmds/run-test-current-suite
+      "tp" 'go-run-cmds/run-package-tests
+      "tP" 'go-run-cmds/run-package-tests-nested
+      "x" 'go-run-cmds/run-main))
   :config
   (add-to-list 'display-buffer-alist
                `(,(rx bos "*go " (or "test" "run") "*" eos)

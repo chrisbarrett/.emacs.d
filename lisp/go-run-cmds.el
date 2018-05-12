@@ -1,4 +1,4 @@
-;;; cb-go-run.el --- Run commands for go  -*- lexical-binding: t; -*-
+;;; go-run-cmds.el --- Run commands for go  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2016  Chris Barrett
 
@@ -8,72 +8,72 @@
 
 ;;; Code:
 
-(defgroup cb-go-run nil
+(defgroup go-run-cmds nil
   "Commands for interacting with tests in go."
   :group 'languages
-  :prefix "cb-go-run-")
+  :prefix "go-run-cmds-")
 
-(defcustom cb-go-run-use-gocheck? t
+(defcustom go-run-cmds-use-gocheck? t
   "Whether to use gocheck. If nil, fall back to `-run`."
-  :group 'cb-go-run
+  :group 'go-run-cmds
   :type 'boolean)
 
-(defconst cb-go-run-main-buffer "*go run*")
-(defconst cb-go-run-test-buffer "*go test*")
+(defconst go-run-cmds--main-buffer "*go run*")
+(defconst go-run-cmds--test-buffer "*go test*")
 
-(defun cb-go-run--run-test (str)
-  (let ((compilation-buffer-name-function (lambda (_) cb-go-run-test-buffer)))
+(defun go-run-cmds--run-test (str)
+  (let ((compilation-buffer-name-function (lambda (_) go-run-cmds--test-buffer)))
     (compile (concat "go test " str))))
 
 ;;;###autoload
-(defun cb-go-run-tests (names)
+(defun go-run-cmds/run-tests (names)
   "Run all unit tests with NAMES."
   (interactive "sNames: ")
-  (cb-go-run--run-test (shell-quote-argument names)))
+  (go-run-cmds--run-test (shell-quote-argument names)))
 
 ;;;###autoload
-(defun cb-go-run-package-tests ()
+(defun go-run-cmds/run-package-tests ()
   "Run all tests in the package."
   (interactive)
-  (cb-go-run--run-test ""))
+  (go-run-cmds--run-test ""))
 
 ;;;###autoload
-(defun cb-go-run-package-tests-nested ()
+(defun go-run-cmds/run-package-tests-nested ()
   "Run all tests in this package and its enclosing packages."
   (interactive)
-  (cb-go-run--run-test "./..."))
+  (go-run-cmds--run-test "./..."))
 
 ;;;###autoload
-(defun cb-go-run-test-current-function ()
+(defun go-run-cmds/run-test-current-function ()
   "Run tests for the current function."
   (interactive)
   (unless (string-match "_test\\.go" buffer-file-name)
     (user-error "Must be in a _test.go file"))
   (save-excursion
-    (let ((test-method (if cb-go-run-use-gocheck? "-check.f" "-run")))
+    (let ((test-method (if go-run-cmds-use-gocheck? "-check.f" "-run")))
       (re-search-backward "^func[ ]+\\(([[:alnum:]]*?[ ]?[*]?[[:alnum:]]+)[ ]+\\)?\\(Test[[:alnum:]_]+\\)(.*)")
-      (cb-go-run--run-test (format "%s='%s'" test-method (match-string 2))))))
+      (go-run-cmds--run-test (format "%s='%s'" test-method (match-string 2))))))
 
 ;;;###autoload
-(defun cb-go-run-test-current-suite ()
+(defun go-run-cmds/run-test-current-suite ()
   "Run current test suite."
   (interactive)
   (unless (string-match "_test\.go" buffer-file-name)
     (user-error "Must be in a _test.go file to run go-test-current-suite"))
-  (unless cb-go-run-use-gocheck?
+  (unless go-run-cmds-use-gocheck?
     (user-error "Gocheck is needed to test the current suite"))
   (save-excursion
     (re-search-backward "^func[ ]+\\(([[:alnum:]]*?[ ]?[*]?\\([[:alnum:]]+\\))[ ]+\\)?Test[[:alnum:]_]+(.*)")
-    (cb-go-run--run-test (format "-check.f='%s'" (match-string 2)))))
+    (go-run-cmds--run-test (format "-check.f='%s'" (match-string 2)))))
 
 ;;;###autoload
-(defun cb-go-run-main ()
+(defun go-run-cmds/run-main ()
   "Run the main function in the current buffer."
   (interactive)
   (save-buffer)
-  (let ((compilation-buffer-name-function (lambda (_) cb-go-run-main-buffer)))
+  (let ((compilation-buffer-name-function (lambda (_) go-run-cmds--main-buffer)))
     (compile (concat "go run " (shell-quote-argument (buffer-file-name))) t)))
 
-(provide 'cb-go-run)
+(provide 'go-run-cmds)
 
-;;; cb-go-run.el ends here
+;;; go-run-cmds.el ends here
