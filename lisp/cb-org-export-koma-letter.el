@@ -66,7 +66,7 @@ generate use the name of the current file to generate the
 exported file's name. The PDF will be created at DEST."
   (interactive
    (list (if current-prefix-arg
-             (ido-read-file-name "Destination: " nil nil nil ".pdf")
+             (read-file-name "Destination: " nil nil nil ".pdf")
            (concat (f-no-ext (buffer-file-name)) ".pdf"))))
 
   (let ((tmpfile (make-temp-file "org-export-" nil ".org")))
