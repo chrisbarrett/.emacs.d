@@ -5,6 +5,6 @@
 # --
 class ${1:Name} {
   constructor($2) {
-    ${2:$(cb-yas-js--ctor-body yas-text)}
+    ${2:$(yas-funcs-js-ctor-body yas-text)}
   }$0
 }

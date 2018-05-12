@@ -4,5 +4,5 @@
 # --
 constructor($1) {
   super();
-  ${1:$(cb-yas-js--ctor-body yas-text)}
+  ${1:$(yas-funcs-js-ctor-body yas-text)}
 }

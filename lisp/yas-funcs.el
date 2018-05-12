@@ -8,6 +8,7 @@
 
 ;;; Code:
 
+(require 'dash)
 (require 's)
 (require 'subr-x)
 (require 'thingatpt)
@@ -62,6 +63,15 @@ Fall back to the file name sans extension."
      "MODULE")
     (s
      (s-downcase (s-dashed-words s)))))
+
+(defun yas-funcs-js-ctor-body (argstring)
+  (when argstring
+    (thread-last argstring
+      (s-split (rx (or "," ".")))
+      (-map #'s-trim)
+      (-remove #'s-blank?)
+      (--map (format "this.%s = %s;" it it))
+      (s-join "\n"))))
 
 
 (provide 'yas-funcs)
