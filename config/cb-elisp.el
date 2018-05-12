@@ -115,14 +115,9 @@
 
 ;; Checkdoc configuration
 
-(use-package cb-flycheck-checkdoc
-  :after flycheck
-  :config
-  (setq flycheck-emacs-lisp-checkdoc-form cb-flycheck-checkdoc-form))
-
 (use-package checkdoc
   :defer t
-  :config
+  :init
   (progn
     (setq checkdoc-force-docstrings-flag nil)
     (setq checkdoc-arguments-in-order-flag nil)))
