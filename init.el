@@ -50,47 +50,6 @@
 
 (require 'straight bootstrap-file t)
 
-(defconst use-package-verbose t)
-
-(straight-use-package 'use-package)
-(straight-use-package 'bind-map)
-
-(eval-when-compile
-  (require 'use-package))
-
-
-;; Add subtrees to load path.
-
-(require 'subr-x)
-(require 'seq)
-
-(defun cb-init/init-load-path (&optional interactive-p)
-  "Add select subdirs of `user-emacs-directory' to the `load-path'.
-
-If argument INTERACTIVE-P is set, log additional information."
-  (interactive "p")
-  (let* ((before load-path)
-         (lisp-dir (expand-file-name "lisp" user-emacs-directory))
-         (config-dir (expand-file-name "config" user-emacs-directory))
-         (git-subtrees
-          (seq-filter #'file-directory-p
-                      (directory-files lisp-dir t "^[^.]")))
-         (config-subtrees
-          (seq-filter #'file-directory-p
-                      (directory-files config-dir t "^[^.]"))))
-
-    (dolist (path (append (list lisp-dir config-dir) config-subtrees git-subtrees))
-      (add-to-list 'load-path path))
-
-    (setq load-path (seq-filter #'file-directory-p load-path))
-
-    (when interactive-p
-      (if-let* ((added (seq-difference load-path before)))
-          (message "Load path updated. Added: %S" added)
-        (message "No change to load-path")))))
-
-(cb-init/init-load-path)
-
 ;; Install some basic packages
 
 (straight-use-package 'dash)
@@ -100,11 +59,25 @@ If argument INTERACTIVE-P is set, log additional information."
 (straight-use-package 'noflet)
 (straight-use-package 'memoize)
 
+(defconst use-package-verbose t)
+
+(straight-use-package 'bind-map)
+(straight-use-package 'use-package)
+
+(eval-when-compile
+  (require 'use-package))
+
 ;; Load features.
 
+(eval-and-compile
+  (defvar cb-paths-directory
+    (expand-file-name "config" user-emacs-directory)))
+
 (use-package cb-paths
+  :demand t
+  :load-path cb-paths-directory
   :config
-  (add-to-list 'load-path cb-emacs-site-lisp-directory))
+  (cb-paths-initialise))
 
 (use-package cb-faces)
 (use-package cb-basic-settings)
