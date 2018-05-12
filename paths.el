@@ -13,7 +13,7 @@
 
 
 (defconst paths-cache-directory
-  (concat user-emacs-directory ".cache"))
+  (concat user-emacs-directory "var"))
 
 (defconst paths-etc-directory
   (concat user-emacs-directory "etc"))
