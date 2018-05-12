@@ -1,4 +1,4 @@
-;;; cb-ahs-micro-state.el --- Supporting commands for ahs.  -*- lexical-binding: t; -*-
+;;; evil-ahs.el --- Supporting commands for ahs.  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2016  Chris Barrett
 

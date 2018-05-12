@@ -15,6 +15,7 @@
 
 (use-package evil
   :straight t
+  :demand t
   :preface
   (progn
     (autoload 'evil-set-initial-state "evil")
@@ -210,29 +211,6 @@
   :commands (evil-indent-plus-default-bindings)
   :config (evil-indent-plus-default-bindings))
 
-(use-package evil-nerd-commenter
-  :straight t
-  :commands (evilnc-comment-operator)
-  :preface
-  (require 'cb-evil-nerd-commenter)
-  :init
-  (progn
-    (evil-global-set-key 'normal (kbd ";") 'evilnc-comment-operator)
-    ;; Double all the commenting functions so that the inverse operations
-    ;; can be called without setting a flag
-    (define-key evil-normal-state-map "gc" 'evilnc-comment-operator)
-    (define-key evil-normal-state-map "gy" 'cb-evil-nerd-commenter/copy-and-comment-lines)
-
-    (spacemacs-keys-set-leader-keys
-      "cl" #'cb-evil-nerd-commenter/comment-or-uncomment-lines
-      "cL" #'cb-evil-nerd-commenter/comment-or-uncomment-lines-inverse
-      "cp" #'cb-evil-nerd-commenter/comment-or-uncomment-paragraphs
-      "cP" #'cb-evil-nerd-commenter/comment-or-uncomment-paragraphs-inverse
-      "ct" #'cb-evil-nerd-commenter/quick-comment-or-uncomment-to-the-line
-      "cT" #'cb-evil-nerd-commenter/quick-comment-or-uncomment-to-the-line-inverse
-      "cy" #'cb-evil-nerd-commenter/copy-and-comment-lines
-      "cY" #'cb-evil-nerd-commenter/copy-and-comment-lines-inverse)))
-
 (use-package evil-matchit
   :straight t
   :after evil)
@@ -281,12 +259,33 @@
     (add-hook 'after-change-major-mode-hook #'cb-evil--vi-tilde-fringe-off-if-readonly)
     (global-vi-tilde-fringe-mode)))
 
-(use-package cb-evil-shift
-  :preface
-  (autoload 'evil-visual-state-map "evil-states")
+(use-package evil-nerd-commenter
+  :straight t
+  :commands (evilnc-comment-operator)
+  :init
+  (progn
+    (evil-global-set-key 'normal (kbd ";") #'evilnc-comment-operator)
+    ;; Double all the commenting functions so that the inverse operations
+    ;; can be called without setting a flag
+    (define-key evil-normal-state-map "gc" #'evilnc-comment-operator)))
+
+(use-package evil-funcs
   :bind (:map evil-visual-state-map
-              ("<" . cb-evil-shift-left)
-              (">" . cb-evil-shift-right)))
+              ("<" . evil-funcs/shift-left)
+              (">" . evil-funcs/shift-right))
+  :config
+  (progn
+    (define-key evil-normal-state-map "gy" 'evil-funcs/copy-and-comment-lines)
+
+    (spacemacs-keys-set-leader-keys
+      "cl" #'evil-funcs/comment-or-uncomment-lines
+      "cL" #'evil-funcs/comment-or-uncomment-lines-inverse
+      "cp" #'evil-funcs/comment-or-uncomment-paragraphs
+      "cP" #'evil-funcs/comment-or-uncomment-paragraphs-inverse
+      "ct" #'evil-funcs/quick-comment-or-uncomment-to-the-line
+      "cT" #'evil-funcs/quick-comment-or-uncomment-to-the-line-inverse
+      "cy" #'evil-funcs/copy-and-comment-lines
+      "cY" #'evil-funcs/copy-and-comment-lines-inverse)))
 
 (provide 'cb-evil)
 
