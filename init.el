@@ -114,7 +114,6 @@
 (use-package config-yaml)
 (use-package config-go)
 (use-package config-dired)
-(use-package config-spelling)
 (use-package config-diff)
 (use-package config-web-mode)
 (use-package config-markdown)

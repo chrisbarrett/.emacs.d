@@ -829,6 +829,19 @@ Interactively, reverse the characters in the current region."
          ("M-n" . Man-next-section)
          ("M-p" . Man-previous-section)))
 
+(use-package ispell
+  :defer t
+  :preface
+  (progn
+    (autoload 'ispell-check-version "ispell")
+    (autoload 'ispell-find-aspell-dictionaries "ispell"))
+  :config
+  (progn
+    (setq ispell-program-name "aspell")
+    (ispell-check-version)
+    (setq ispell-dictionary-alist (ispell-find-aspell-dictionaries))
+    (setq ispell-silently-savep t)))
+
 (provide 'config-basic-settings)
 
 ;;; config-basic-settings.el ends here
