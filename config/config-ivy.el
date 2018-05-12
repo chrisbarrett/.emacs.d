@@ -11,24 +11,30 @@
 (eval-when-compile
   (require 'use-package))
 
-(require 'paths)
 (require 'noflet)
+(require 'paths)
 (require 'spacemacs-keys)
 (require 'subr-x)
 
 (use-package ivy
   :straight t
-  :commands (ivy-dispatching-done
-             ivy-help
-             ivy-immediate-done
-             ivy-mode
-             ivy-partial-or-done
-             ivy-resume
-             ivy-switch-buffer
-             ivy-wgrep-change-to-wgrep-mode)
-
+  :commands (ivy-occur ivy-help)
   :bind
-  (
+  (("C-c C-r" . ivy-resume)
+   ("C-x b" . ivy-switch-buffer)
+
+   :map ivy-occur-mode-map
+   ("C-x C-w" . ivy-wgrep-change-to-wgrep-mode)
+
+   :map ivy-minibuffer-map
+   ("C-z" . ivy-dispatching-done)
+   ("C-l" . ivy-partial-or-done)
+   ("C-<return>" . ivy-immediate-done)
+
+   :map spacemacs-keys-default-map
+   ("r" . ivy-resume)
+   ("b s" . ivy-switch-buffer)
+
    ;; Browse read-expression histroy with ivy
    :map read-expression-map
    ("C-r" . counsel-expression-history))
@@ -38,42 +44,30 @@
     ;; KLUDGE: Declare dynamic var.
     (defvar org-startup-folded)
 
-    (defun cb-ivy-help ()
+    (defun config-ivy-help ()
       (interactive)
       (let ((org-startup-folded 'nofold))
         (ivy-help)
         (pop-to-buffer (get-buffer "*Ivy Help*"))))
 
-    (defun cb-ivy-with-empty-ivy-extra-directories (f &rest args)
+    (defun config-ivy-with-empty-ivy-extra-directories (f &rest args)
       (let ((ivy-extra-directories nil))
         (apply f args)))
 
     ;; Define a command for entering wgrep straight from ivy results.
 
-    (autoload 'ivy-occur "ivy")
-    (autoload 'ivy-wgrep-change-to-wgrep-mode "ivy")
-
     (defun ivy-occur-then-wgrep ()
       "Shortcut for calling `ivy-occur' then activating wgrep."
       (interactive)
       (noflet
-       ;; HACK: Run the original exit callback, then assume the occur buffer is
-       ;; being displayed and change to wgrep.
-       ((ivy-exit-with-action
-         (action)
-         (funcall this-fn (lambda (&rest args)
-                            (apply action args)
-                            (ivy-wgrep-change-to-wgrep-mode)))))
-       (ivy-occur))))
-
-  :init
-  (progn
-    (spacemacs-keys-set-leader-keys
-      "r" #'ivy-resume
-      "b s" #'ivy-switch-buffer)
-
-    (bind-key "C-c C-r" #'ivy-resume)
-    (bind-key "C-x b" #'ivy-switch-buffer))
+        ;; HACK: Run the original exit callback, then assume the occur buffer is
+        ;; being displayed and change to wgrep.
+        ((ivy-exit-with-action
+          (action)
+          (funcall this-fn (lambda (&rest args)
+                             (apply action args)
+                             (ivy-wgrep-change-to-wgrep-mode)))))
+        (ivy-occur))))
 
   :config
   (progn
@@ -84,15 +78,11 @@
 
     ;; Do not show extra directories when finding files.
     (setq ivy-extra-directories '("."))
-    (advice-add #'counsel-find-file :around #'cb-ivy-with-empty-ivy-extra-directories)
+    (advice-add #'counsel-find-file :around #'config-ivy-with-empty-ivy-extra-directories)
 
-    (define-key ivy-minibuffer-map (kbd "<f1>") #'cb-ivy-help)
-    (define-key ivy-occur-mode-map (kbd "C-x C-w") #'ivy-wgrep-change-to-wgrep-mode)
-    (define-key ivy-minibuffer-map (kbd "C-z") #'ivy-dispatching-done)
     (define-key ivy-minibuffer-map (kbd "<escape>") 'minibuffer-keyboard-quit)
-    (define-key ivy-minibuffer-map (kbd "C-l") #'ivy-partial-or-done)
+    (define-key ivy-minibuffer-map (kbd "<f1>") #'config-ivy-help)
     (define-key ivy-minibuffer-map (kbd "C-c C-e") #'ivy-occur-then-wgrep)
-    (define-key ivy-minibuffer-map (kbd "C-<return>") #'ivy-immediate-done)
 
     ;; Increase the maximum number of candidates that will be sorted
     ;; using `flx'. The default is 200, which means `flx' is almost
@@ -103,9 +93,7 @@
     ;; [1]: https://github.com/PythonNut/emacs-config/blob/c8bff5cce293006ec5cdc39a86982431a758a9a0/modules/config-ivy.el#L68
     (setq ivy-flx-limit 2000)
 
-    (ivy-mode))
-
-  :defines (ivy-use-virtual-buffers ivy-count-format))
+    (ivy-mode)))
 
 (use-package flx
   :straight t
@@ -117,9 +105,7 @@
 
 (use-package swiper
   :straight t
-  :commands (swiper)
-  :init
-  (evil-global-set-key 'normal "/" #'swiper))
+  :bind (:map evil-normal-state-map ("/" . swiper)))
 
 (use-package counsel
   :straight t
@@ -128,52 +114,43 @@
   :bind (("M-x" . counsel-M-x)
          ("C-x C-f" . counsel-find-file)
          ("C-h v" . counsel-describe-variable)
-         ("C-h f" . counsel-describe-function))
+         ("C-h f" . counsel-describe-function)
 
-  :commands (counsel-descbinds
-             counsel-expression-history
-             counsel-imenu
-             counsel-recentf
-             counsel-yank-pop)
+
+         :map counsel-find-file-map
+         ("C-M-j" . ivy-immediate-done)
+
+         :map
+         spacemacs-keys-default-map
+         ("SPC" . counsel-M-x)
+         ("?"   . counsel-descbinds)
+         ("f f" . counsel-find-file)
+         ("f r" . counsel-recentf)
+         ("k r" . counsel-yank-pop)
+         ("i"   . counsel-imenu)
+         ("h d f" . counsel-describe-function)
+         ("h d v" . counsel-describe-variable)
+         :map
+         counsel-find-file-map
+         ("C-h" . counsel-up-directory))
+
   :preface
   (progn
     (autoload 'ivy-immediate-done "ivy")
-    (autoload 'counsel-up-directory "counsel")
-    (autoload 'counsel-mode "counsel")
-
-    (defun cb-ivy--populate-with-symbol-at-point (f &rest args)
+    (defun config-ivy--populate-with-symbol-at-point (f &rest args)
       (if-let ((sym (symbol-at-point)))
           (apply f (symbol-name sym) (cdr args))
         (apply f args))))
 
-  :init
-  (spacemacs-keys-set-leader-keys
-    "SPC" #'counsel-M-x
-    "?"   #'counsel-descbinds
-    "f f" #'counsel-find-file
-    "f r" #'counsel-recentf
-    "k r" #'counsel-yank-pop
-    "i"   #'counsel-imenu
-    "h d f" #'counsel-describe-function
-    "h d v" #'counsel-describe-variable)
-
   :config
   (progn
-    (define-key counsel-find-file-map (kbd "C-M-j") #'ivy-immediate-done)
-    (define-key counsel-find-file-map (kbd "C-h") #'counsel-up-directory)
-
-    (defface cb-counsel-separator
-      '((t :foreground "gray50"))
-      "Face for "
-      :group 'cb-ivy)
-
-
-    (setq counsel-yank-pop-separator (propertize "\n-------------------------------------------\n"
-                                                 'face 'cb-counsel-separator))
+    (setq counsel-yank-pop-separator
+          (propertize "\n-------------------------------------------------\n"
+                      'face '(:foreground "gray50")))
 
     ;; Prefill counsel-ag with the symbol at point.
-    (advice-add 'counsel-rg :around #'cb-ivy--populate-with-symbol-at-point)
-    (advice-add 'counsel-ag :around #'cb-ivy--populate-with-symbol-at-point)
+    (advice-add 'counsel-rg :around #'config-ivy--populate-with-symbol-at-point)
+    (advice-add 'counsel-ag :around #'config-ivy--populate-with-symbol-at-point)
 
     (counsel-mode +1)))
 
