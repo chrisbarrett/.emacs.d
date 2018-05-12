@@ -30,7 +30,7 @@
 (autoload 'evil-window-vsplit "evil-commands")
 (autoload 'org-narrow-to-subtree "org")
 
-(defhydra cb/select-input-method (:color blue :help nil)
+(defhydra select-input-method (:color blue :help nil)
   "Select input method"
   ("a" (progn (set-input-method "arabic") (message "Arabic input method activated")) "arabic")
   ("t" (progn (set-input-method "TeX") (message "TeX input method activated")) "TeX")
@@ -234,7 +234,7 @@
 
       "!"   #'shell-command
 
-      "a i" #'cb/select-input-method/body
+      "a i" #'select-input-method/body
 
       "b d" #'kill-this-buffer
       "b b" #'bury-buffer
