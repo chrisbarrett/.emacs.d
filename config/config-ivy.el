@@ -112,9 +112,6 @@
 
   :bind (("M-x" . counsel-M-x)
          ("C-x C-f" . counsel-find-file)
-         ("C-h v" . counsel-describe-variable)
-         ("C-h f" . counsel-describe-function)
-
 
          :map counsel-find-file-map
          ("C-M-j" . ivy-immediate-done)
@@ -125,8 +122,6 @@
          ("?"   . counsel-descbinds)
          ("k r" . counsel-yank-pop)
          ("i"   . counsel-imenu)
-         ("h d f" . counsel-describe-function)
-         ("h d v" . counsel-describe-variable)
          :map
          counsel-find-file-map
          ("C-h" . counsel-up-directory))

@@ -191,6 +191,33 @@ _p_/_N_: previous   _c_: clear        _s_: select
   ("r" #'flycheck-buffer)
   ("q" nil))
 
+(defhydra help (:color teal :hint nil :help nil)
+  "
+%s(hydra-title-with-mat-icon \"help_outline\" \"Help\")
+
+^Docs^          ^Describe^        ^Find^
+^----^--------  ^--------^------- ^----^----------
+_i_: info       _dc_ face         _fc_ face
+_m_: manpage    _df_ function     _ff_ function
+^^              _dk_ key          _fl_ library
+^^              _dm_ mode         _fv_ variable
+^^              _dp_ text-props
+^^              _dv_ variable
+"
+  ("i" #'info)
+  ("m" #'man)
+  ("dc" #'describe-face)
+  ("df" #'counsel-describe-function)
+  ("dk" #'describe-key)
+  ("dm" #'describe-mode)
+  ("dp" #'describe-text-properties)
+  ("dv" #'counsel-describe-variable)
+  ("fc" #'find-face-definition)
+  ("ff" #'find-function)
+  ("fl" #'find-library)
+  ("fv" #'find-variable)
+  ("q" nil))
+
 (defhydra git-and-files (:color teal :hint nil)
   "
 %s(hydra-title-with-aicon \"git\" \"Git and Goto\")
@@ -225,9 +252,10 @@ _u_: package usage     _h_: navigate hunks
 (spacemacs-keys-set-leader-keys
   "a" #'applications/body
   "b" #'buffers/body
-  "f" #'files/body
   "e" #'errors/body
+  "f" #'files/body
   "g" #'git-and-files/body
+  "h" #'help/body
   "w" #'windows/body
   "z" #'font-scale/body)
 
@@ -248,16 +276,6 @@ _u_: package usage     _h_: navigate hunks
   "C" #'compile
 
   "c r" #'comment-or-uncomment-region
-
-  "h d c" #'describe-face
-  "h d k" #'describe-key
-  "h d m" #'describe-mode
-  "h d p" #'describe-text-properties
-  "h f c" #'find-face-definition
-  "h f f" #'find-function
-  "h f l" #'find-library
-  "h f v" #'find-variable
-  "h i"   #'info
 
   "k b" #'kill-this-buffer
   "k w" #'delete-window
