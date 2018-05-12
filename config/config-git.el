@@ -19,14 +19,8 @@
 
 (add-to-list 'auto-mode-alist '("\\.gitignore\\'" . conf-unix-mode))
 
-(use-package git-subtree
-  :commands (git-subtree-add git-subtree-update git-subtree-push)
-  :init
-  (put 'git-subtree-rev-alist 'safe-local-variable #'listp))
-
 (use-package magit
   :straight t
-  :defer t
   :commands (magit-status magit-blame magit-branch-and-checkout)
   :functions (magit-display-buffer-fullframe-status-v1)
   :preface
