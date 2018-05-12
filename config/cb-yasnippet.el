@@ -186,9 +186,6 @@ Otherwise delete backwards."
 (use-package yas-funcs
   :after yasnippet)
 
-(use-package cb-yas-haskell
-  :after yasnippet)
-
 (provide 'cb-yasnippet)
 
 ;;; cb-yasnippet.el ends here
