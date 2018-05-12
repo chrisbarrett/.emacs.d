@@ -99,7 +99,7 @@ _+_ zoom in  _-_ zoom out  _0_ reset
 
 (defhydra buffers (:color teal :hint nil)
   "
-%s(hydra-title-with-faicon \"cogs\" \"Buffer Commands\")
+%s(hydra-title-with-faicon \"files-o\" \"Buffer Commands\")
 
 ^Switch^^^                 ^^ ^Manage^^^
 ^------^^^-----------------^^ ^------^^^------------
@@ -143,7 +143,7 @@ _n_: forward  _p_/_N_: back    _-_ horizontal   _o_ others
 
 (defhydra files (:color teal :hint nil)
   "
-%s(hydra-title-with-faicon \"files-o\" \"File Commands\")
+%s(hydra-title-with-faicon \"hdd-o\" \"File Commands\")
 
 ^Find^               ^Save^              ^Copy^             ^Other^
 ^----^-------------- ^----^------------- ^----^------------ ^-----^------------
