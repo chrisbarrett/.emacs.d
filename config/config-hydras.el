@@ -70,7 +70,7 @@ _p_: start  _s_: stop  _r_: report
   ("s" #'profiler-stop)
   ("q" nil))
 
-(defhydra select-input-method (:color amaranth :hint nil)
+(defhydra select-input-method (:color teal :hint nil)
   "
 %s(hydra-title-with-faicon \"language\" \"Input Method\")
 
@@ -80,7 +80,7 @@ _a_ Arabic  _t_ TeX  _SPC_ clear
   ("a" (progn (set-input-method "arabic") (message "Arabic input method activated")))
   ("t" (progn (set-input-method "TeX") (message "TeX input method activated")))
   ("SPC" (progn (deactivate-input-method) (message "Input method cleared")))
-  ("q" nil :exit t))
+  ("q" nil))
 
 (defhydra font-scale (:color amaranth :hint nil)
   "
