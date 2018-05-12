@@ -8,6 +8,10 @@
 
 ;;; Code:
 
+(eval-when-compile
+  (require 'recentf)
+  (require 'use-package))
+
 (require 'subr-x)
 (require 'seq)
 
@@ -17,7 +21,10 @@
   (concat user-emacs-directory ".cache"))
 
 (defconst paths-autosave-directory
-  (concat user-emacs-directory "autosave"))
+  (concat user-emacs-directory ".save"))
+
+(defconst paths-etc-directory
+  (concat user-emacs-directory "etc"))
 
 (defconst paths-lisp-directory
   (concat user-emacs-directory "lisp"))
@@ -32,6 +39,21 @@
   (concat user-emacs-directory "themes"))
 
 (defconst paths-site-lisp-directory "~/.nix-profile/share/emacs/site-lisp")
+
+
+
+(use-package no-littering
+  :straight t
+  :demand t
+  :init
+  (progn
+    (setq no-littering-etc-directory paths-etc-directory)
+    (setq no-littering-var-directory paths-cache-directory))
+  :config
+  (progn
+    (with-eval-after-load 'recentf
+      (add-to-list 'recentf-exclude no-littering-etc-directory)
+      (add-to-list 'recentf-exclude no-littering-var-directory))))
 
 
 
