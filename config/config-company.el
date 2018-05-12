@@ -22,7 +22,7 @@
    ("S-<return>" . company-complete))
 
   :preface
-  (defun cb-company--set-company-vars ()
+  (defun config-company--set-company-vars ()
     (setq company-minimum-prefix-length 3)
     (setq company-tooltip-align-annotations t))
 
@@ -49,7 +49,7 @@
       (define-key map (kbd "C-h") #'company-show-doc-buffer)
       (define-key map (kbd "C-w") nil))
 
-    (add-hook 'company-mode-hook #'cb-company--set-company-vars)))
+    (add-hook 'company-mode-hook #'config-company--set-company-vars)))
 
 (use-package company-dabbrev
   :after company
@@ -61,11 +61,10 @@
 (use-package company-quickhelp
   :straight t
   :after company
-  :commands (company-quickhelp-mode company-quickhelp-manual-begin)
+  :bind (:map company-active-map ("C-h" . company-quickhelp-manual-begin))
+  :commands (company-quickhelp-mode)
   :config
-  (progn
-    (company-quickhelp-mode +1)
-    (define-key company-active-map (kbd "C-h") #'company-quickhelp-manual-begin)))
+  (company-quickhelp-mode +1))
 
 (provide 'config-company)
 
