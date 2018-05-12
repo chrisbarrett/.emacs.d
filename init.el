@@ -120,7 +120,6 @@
 (use-package config-web-mode)
 (use-package config-markdown)
 (use-package config-restclient)
-(use-package config-calc)
 (use-package config-haskell)
 (use-package config-csv)
 (use-package config-highlight-thing)

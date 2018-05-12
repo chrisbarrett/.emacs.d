@@ -839,6 +839,15 @@ Interactively, reverse the characters in the current region."
   (dolist (form autoinsert-funcs-forms)
     (push form auto-insert-alist)))
 
+(use-package calc
+  :commands (calc quick-calc)
+  :init
+  (spacemacs-keys-set-leader-keys
+    "a c" #'quick-calc
+    "a C" #'calc)
+  :config
+  (define-key calc-mode-map (kbd "SPC") spacemacs-keys-default-map))
+
 (provide 'config-basic-settings)
 
 ;;; config-basic-settings.el ends here
