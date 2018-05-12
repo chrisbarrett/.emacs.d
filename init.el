@@ -100,7 +100,6 @@
 (use-package config-markdown)
 (use-package config-restclient)
 (use-package config-haskell)
-(use-package config-highlight-thing)
 (use-package config-idris)
 (use-package config-latex)
 (use-package config-python)
