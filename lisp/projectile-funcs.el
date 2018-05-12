@@ -5,9 +5,18 @@
 ;;; Code:
 
 (require 'dash-functional)
+(require 'f)
 (require 'seq)
 (require 'subr-x)
-(require 'f)
+
+(autoload 'magit-list-repos "magit")
+(autoload 'projectile-add-known-project "projectile")
+(autoload 'projectile-cleanup-known-projects "projectile")
+
+;; silence byte-compiler
+(defvar projectile-known-projects nil)
+
+
 
 (defvar projectile-funcs-ignored-base-dirs nil)
 
@@ -31,6 +40,14 @@
                 (or
                  (f-same? base project)
                  (f-ancestor-of? base project))))))
+
+
+
+(defun projectile-funcs-refresh-projects ()
+  (projectile-cleanup-known-projects)
+  (dolist (repo (magit-list-repos))
+    (projectile-add-known-project (f-abbrev (file-name-as-directory repo))))
+  (setq projectile-known-projects (projectile-funcs-cleanup-projects projectile-known-projects)))
 
 (provide 'projectile-funcs)
 

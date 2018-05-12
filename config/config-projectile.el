@@ -123,6 +123,7 @@
     (advice-add #'projectile-unserialize :filter-return #'projectile-funcs-cleanup-projects)
 
     (projectile-load-known-projects)
+    (projectile-funcs-refresh-projects)
 
     (setq projectile-completion-system 'ivy)
     (setq projectile-switch-project-action (lambda ()
@@ -174,16 +175,6 @@
              counsel-projectile-switch-project
              counsel-projectile-switch-to-buffer
              counsel-projectile-rg)
-  :preface
-  (progn
-    (autoload 'magit-list-repos "magit")
-
-    (defun cb-projectile--refresh-projects ()
-      (projectile-cleanup-known-projects)
-      (dolist (repo (magit-list-repos))
-        (projectile-add-known-project (file-name-as-directory repo)))
-      (setq projectile-known-projects (projectile-funcs-cleanup-projects projectile-known-projects))))
-
   :init
   (spacemacs-keys-set-leader-keys
     "pf" #'counsel-projectile-find-file
@@ -192,9 +183,7 @@
     "/"  #'counsel-projectile-rg)
 
   :config
-  (progn
-    (advice-add #'counsel-projectile-switch-project :before #'cb-projectile--refresh-projects)
-    (counsel-projectile-mode)))
+  (counsel-projectile-mode))
 
 (provide 'config-projectile)
 
