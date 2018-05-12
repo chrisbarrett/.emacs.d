@@ -29,13 +29,7 @@
 
 (require 'hydra)
 
-(autoload 'cb-basic-settings--echo-input-method-cleared "cb-basic-settings")
 (autoload 'evil-window-rotate-downwards "evil-commands")
-(autoload 'cb/alternate-buffer "cb-alternate-buffer")
-(autoload 'cb/copy-buffer-name "cb-copy-buffer-path")
-(autoload 'cb/copy-buffer-path "cb-copy-buffer-path")
-(autoload 'cb/copy-buffer-directory "cb-copy-buffer-path")
-(autoload 'cb/rename-file-and-buffer "cb-rename-file-and-buffer")
 (autoload 'cb/sudo-edit "cb-sudo-edit")
 (autoload 'cb/toggle-window-split "cb-toggle-window-split")
 (autoload 'cb-goto-init-file "cb-goto")
@@ -49,20 +43,6 @@
   ("a" (progn (set-input-method "arabic") (message "Arabic input method activated")) "arabic")
   ("t" (progn (set-input-method "TeX") (message "TeX input method activated")) "TeX")
   ("SPC" (progn (deactivate-input-method) (message "Input method cleared")) "clear"))
-
-(use-package cb-delete-current-buffer-and-file
-  :commands (cb/delete-current-buffer-and-file)
-  :preface
-  (progn
-    (autoload 'projectile-invalidate-cache "projectile")
-    (autoload 'projectile-project-p "projectile")
-
-    (defun cb-leader-keys--invalidate-cache (_path)
-      (when (and (featurep 'projectile) (projectile-project-p))
-        (call-interactively #'projectile-invalidate-cache))))
-
-  :config
-  (add-hook 'cb-delete-current-buffer-and-file-functions #'cb-leader-keys--invalidate-cache))
 
 (use-package which-key
   :straight t
@@ -242,6 +222,7 @@
     (which-key-mode +1)))
 
 (use-package spacemacs-keys
+  :demand t
   :preface
   (progn
     (autoload 'evil-window-next "evil-commands")
@@ -261,7 +242,6 @@
     (spacemacs-keys-set-leader-keys
       "u"   #'universal-argument
       "SPC" #'execute-extended-command
-      "TAB" #'cb/alternate-buffer
       "|"   #'cb/toggle-window-split
       ":"   #'eval-expression
 
@@ -277,9 +257,6 @@
 
       "c r" #'comment-or-uncomment-region
 
-      "f d" #'cb/copy-buffer-directory
-      "f D" #'cb/delete-current-buffer-and-file
-      "f R" #'cb/rename-file-and-buffer
       "f e" #'cb/sudo-edit
       "f f" #'find-file
       "f o" #'find-file-other-window
@@ -288,8 +265,6 @@
       "f S" #'save-some-buffers
       "f W" #'write-file
       "f v" #'cb-leader-keys/reload-file
-      "f y" #'cb/copy-buffer-path
-      "f Y" #'cb/copy-buffer-name
 
       "g i" #'cb-goto-init-file
       "g m" #'cb-goto-messages
@@ -324,6 +299,17 @@
       "w r" #'evil-window-rotate-downwards
       "w -" #'evil-window-split
       "w /" #'evil-window-vsplit)))
+
+(use-package buffer-cmds
+  :after spacemacs-keys
+  :config
+  (spacemacs-keys-set-leader-keys
+    "TAB" #'alternate-buffer
+    "f d" #'copy-buffer-directory
+    "f D" #'delete-current-buffer-and-file
+    "f R" #'rename-file-and-buffer
+    "f y" #'copy-buffer-path
+    "f Y" #'copy-buffer-name))
 
 (use-package cb-scale-font-transient-state
   :commands (cb-scale-font-transient-state/body)
