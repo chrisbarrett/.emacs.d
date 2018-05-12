@@ -93,7 +93,6 @@
   :init
   (progn
     (spacemacs-keys-set-leader-keys
-      "ft" #'neotree-toggle
       "pT" #'cb-neotree-find-project-root)
 
     (evil-transient-state-define cb-neotree

@@ -5,6 +5,7 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'buffer-cmds)
 (require 'spacemacs-keys)
 (require 'subr-x)
 
@@ -24,11 +25,15 @@
 (require 'hydra)
 
 (autoload 'cb/toggle-window-split "cb-toggle-window-split")
-(autoload 'evil-window-next "evil-commands")
-(autoload 'evil-window-rotate-downwards "evil-commands")
-(autoload 'evil-window-split "evil-commands")
-(autoload 'evil-window-vsplit "evil-commands")
+(autoload 'counsel-find-file "config-ivy")
+(autoload 'counsel-recentf "config-ivy")
+(autoload 'evil-window-next "evil")
+(autoload 'evil-window-prev "evil")
+(autoload 'evil-window-rotate-downwards "evil")
+(autoload 'evil-window-split "evil")
+(autoload 'evil-window-vsplit "evil")
 (autoload 'ivy-switch-buffer "ivy")
+(autoload 'neotree-toggle "neotree")
 (autoload 'org-narrow-to-subtree "org")
 
 
@@ -50,8 +55,8 @@
 
 (spacemacs-keys-set-leader-keys "z" #'font-scale/body)
 
-(defhydra buffers (:color red :help nil)
-  "Buffer selection"
+(defhydra buffers (:color red :columns 2 :help nil)
+  "Buffer commands"
   ("b" #'bury-buffer "bury")
   ("d" #'kill-this-buffer "kill")
   ("p" #'previous-buffer "previous")
@@ -64,17 +69,52 @@
 
 (spacemacs-keys-set-leader-keys "b" #'buffers/body)
 
-(defhydra windows (:color blue :help nil)
+(defhydra windows (:color blue :columns 2 :help nil)
   "Window management"
-  ("=" #'balance-windows)
-  ("w" #'evil-window-next)
-  ("o" #'delete-other-windows)
-  ("q" #'delete-window)
-  ("r" #'evil-window-rotate-downwards)
-  ("-" #'evil-window-split)
-  ("/" #'evil-window-vsplit))
+  ("=" #'balance-windows "balance" :color red)
+  ("p" #'evil-window-prev "prev" :color red)
+  ("N" #'evil-window-prev "prev" :color red)
+  ("n" #'evil-window-prev "next" :color red)
+  ("w" #'evil-window-next "next" :color red)
+  ("r" #'evil-window-rotate-downwards "rotate" :color red)
+  ("o" #'delete-other-windows "delete others")
+  ("q" #'delete-window "close")
+  ("-" #'evil-window-split "hsplit")
+  ("/" #'evil-window-vsplit "vsplit"))
 
 (spacemacs-keys-set-leader-keys "w" #'windows/body)
+
+(defhydra files (:color blue :help nil :hint nil)
+  "
+File commands
+
+^Find^               ^Save^               ^Copy^
+^----^-------------- ^----^------------   ^----^------------
+_f_: file            _s_: buffer          _d_: dir
+_o_: other window    _S_: many buffers    _y_: path
+_p_: at pt           _W_: write copy      _Y_: filename
+_v_: reload          _R_: rename
+_e_: edit with sudo
+
+_r_: recent  _t_: file tree  _D_: delete
+"
+  ("D" #'delete-current-buffer-and-file)
+  ("R" #'rename-file-and-buffer)
+  ("S" #'save-some-buffers)
+  ("W" #'write-file)
+  ("Y" #'copy-buffer-name)
+  ("d" #'copy-buffer-directory)
+  ("e" #'sudo-edit)
+  ("f" #'counsel-find-file)
+  ("o" #'find-file-other-window)
+  ("p" #'find-file-at-point)
+  ("r" #'counsel-recentf)
+  ("s" #'save-buffer)
+  ("t" #'neotree-toggle)
+  ("v" #'reload-file)
+  ("y" #'copy-buffer-path))
+
+(spacemacs-keys-set-leader-keys "f" #'files/body)
 
 
 
@@ -85,19 +125,13 @@
   "SPC" #'execute-extended-command
   "|"   #'cb/toggle-window-split
   ":"   #'eval-expression
+  "TAB" #'alternate-buffer
 
   "!"   #'shell-command
 
   "C" #'compile
 
   "c r" #'comment-or-uncomment-region
-
-  "f f" #'find-file
-  "f o" #'find-file-other-window
-  "f p" #'find-file-at-point
-  "f s" #'save-buffer
-  "f S" #'save-some-buffers
-  "f W" #'write-file
 
   "h d c" #'describe-face
   "h d k" #'describe-key
@@ -304,19 +338,6 @@
 
     (which-key-mode +1)))
 
-(use-package buffer-cmds
-  :after spacemacs-keys
-  :bind
-  (:map
-   spacemacs-keys-default-map
-   ("TAB" . alternate-buffer)
-   ("f D" . delete-current-buffer-and-file)
-   ("f R" . rename-file-and-buffer)
-   ("f Y" . copy-buffer-name)
-   ("f d" . copy-buffer-directory)
-   ("f e" . sudo-edit)
-   ("f v" . reload-file)
-   ("f y" . copy-buffer-path)))
 
 (use-package jump-cmds
   :bind
