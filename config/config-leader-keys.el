@@ -29,58 +29,80 @@
 (defun hydra-title-with-icon (icon title)
   (concat (all-the-icons-faicon icon :face 'all-the-icons-orange :v-adjust 0.05) " " title))
 
-(defhydra select-input-method (:color blue :help nil)
-  "Select input method"
-  ("a" (progn (set-input-method "arabic") (message "Arabic input method activated")) "arabic")
-  ("t" (progn (set-input-method "TeX") (message "TeX input method activated")) "TeX")
-  ("SPC" (progn (deactivate-input-method) (message "Input method cleared")) "clear"))
+(defhydra select-input-method (:color amaranth :hint nil)
+  "
+%s(hydra-title-with-icon \"language\" \"Input Method\")
 
-(defhydra font-scale (:color red :help nil)
-  "Zoom commands"
-  ("+" (text-scale-increase 1) "zoom in")
-  ("-" (text-scale-decrease 1) "zoom out")
-  ("0" (text-scale-set 0) "reset")
-  ("q" nil "quit" :exit t))
+_a_ Arabic  _t_ TeX  _SPC_ clear
 
-(defhydra buffers (:color red :columns 2 :help nil)
-  "Buffer commands"
-  ("b" #'bury-buffer "bury")
-  ("d" #'kill-this-buffer "kill")
-  ("p" #'previous-buffer "previous")
-  ("N" #'previous-buffer "previous")
-  ("n" #'next-buffer "next")
-  ("s" #'ivy-switch-buffer "switch")
-  ("l" #'ibuffer "list" :exit t)
-  ("v" #'reload-file "reload" :exit t)
-  ("q" nil "quit" :exit t))
+"
+  ("a" (progn (set-input-method "arabic") (message "Arabic input method activated")))
+  ("t" (progn (set-input-method "TeX") (message "TeX input method activated")))
+  ("SPC" (progn (deactivate-input-method) (message "Input method cleared")))
+  ("q" nil :exit t))
 
-(defhydra windows (:color blue :hint nil :help nil)
+(defhydra font-scale (:color amaranth :hint nil)
+  "
+%s(hydra-title-with-icon \"search-plus\" \"Font Scale\")
+
+_+_ zoom in  _-_ zoom out  _0_ reset
+
+"
+  ("+" (text-scale-increase 1))
+  ("-" (text-scale-decrease 1))
+  ("0" (text-scale-set 0))
+  ("q" nil :exit t))
+
+(defhydra buffers (:color amaranth :hint nil)
+  "
+%s(hydra-title-with-icon \"cogs\" \"Buffer Commands\")
+
+^Switch^^^                 ^^ ^Manage^^^
+^------^^^-----------------^^ ^------^^^------------
+_n_: forward  _p_/_N_: back   _b_: bury  _d_: kill
+_l_: list  _s_: switch     ^^ _w_: save  _v_: reload
+
+"
+  ("b" #'bury-buffer)
+  ("d" #'kill-this-buffer)
+  ("p" #'previous-buffer)
+  ("N" #'previous-buffer)
+  ("n" #'next-buffer)
+  ("s" #'ivy-switch-buffer)
+  ("w" #'save-buffer)
+  ("l" #'ibuffer :exit t)
+  ("v" #'reload-file :exit t)
+  ("q" nil :exit t))
+
+(defhydra windows (:color amaranth :hint nil)
   "
 %s(hydra-title-with-icon \"clone\" \"Window Management\")
 
 ^^^^^Switch^                   ^Split^          ^Close^
 ^^^^^------^------------------ ^-----^--------- ^-----^------
-^^^^_w_: next                  _/_ vertical     _q_ window
+^^^^_w_: next                  _/_ vertical     _d_ window
 _n_: forward  _p_/_N_: back    _-_ horizontal   _o_ others
 ^^^^_r_: rotate                _=_ rebalance
-"
-  ("=" #'balance-windows :color red)
-  ("p" #'evil-window-prev :color red)
-  ("N" #'evil-window-prev :color red)
-  ("n" #'evil-window-prev :color red)
-  ("w" #'evil-window-next)
-  ("r" #'evil-window-rotate-downwards :color red)
-  ("o" #'delete-other-windows)
-  ("q" #'delete-window)
-  ("-" #'evil-window-split)
-  ("/" #'evil-window-vsplit))
 
-(defhydra files (:color blue :help nil :hint nil)
+"
+  ("=" #'balance-windows :exit t)
+  ("p" #'evil-window-prev)
+  ("N" #'evil-window-prev)
+  ("n" #'evil-window-prev)
+  ("w" #'evil-window-next :exit t)
+  ("r" #'evil-window-rotate-downwards)
+  ("o" #'delete-other-windows :exit t)
+  ("d" #'delete-window :exit t)
+  ("-" #'evil-window-split)
+  ("/" #'evil-window-vsplit)
+  ("q" nil :exit t))
+
+(defhydra files (:color teal :hint nil)
   "
 %s(hydra-title-with-icon \"files-o\" \"File Commands\")
 
 ^Find^               ^Save^              ^Copy^             ^Other^
-^----^-------------- ^----^------------- ^----^------------ ^-----^--------
+^----^-------------- ^----^------------- ^----^------------ ^-----^------------
 _f_: file            _s_: buffer         _d_: dir           _e_: edit with sudo
 _o_: other window    _S_: many buffers   _y_: path          _v_: reload
 _p_: at pt           _W_: write copy     _Y_: filename      _t_: file tree
@@ -101,7 +123,8 @@ _r_: recent          _R_: rename
   ("s" #'save-buffer)
   ("t" #'neotree-toggle)
   ("v" #'reload-file)
-  ("y" #'copy-buffer-path))
+  ("y" #'copy-buffer-path)
+  ("q" nil :exit t))
 
 (spacemacs-keys-set-leader-keys
   "a i" #'select-input-method/body
