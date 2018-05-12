@@ -1,4 +1,4 @@
-;;; sbt-file-mode.el --- Major mode for scala script files  -*- lexical-binding: t; -*-
+;;; sbt-file-mode.el --- -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2017  Chris Barrett
 
@@ -21,6 +21,19 @@
 
 \\{sbt-file-mode-map}")
 
-(provide 'sbt-file-mode)
 
-;;; sbt-file-mode.el ends here
+;;;###autoload
+(defvar scala-script-mode-map
+  (make-sparse-keymap)
+  "Keymap for `scala-script-mode'.")
+
+;;;###autoload
+(define-derived-mode scala-script-mode scala-mode "SBT File"
+  "Major mode for editing SBT files.
+
+\\{scala-script-mode-map}")
+
+
+(provide 'scala-submodes)
+
+;;; scala-submodes.el ends here

@@ -369,11 +369,9 @@
   :config
   (setq ensime-goto-test-config-defaults cb-ensime-test-config-defaults))
 
-(use-package sbt-file-mode
-  :mode ("\\.sbt\\'". sbt-file-mode))
-
-(use-package cb-scala-script-mode
-  :mode ("\\.sc\\'" . cb-scala-script-mode))
+(use-package scala-submodes
+  :mode (("\\.sc\\'" . scala-script-mode)
+         ("\\.sbt\\'". sbt-file-mode)))
 
 (use-package flycheck
   :defer t
