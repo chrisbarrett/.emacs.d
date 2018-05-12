@@ -115,7 +115,6 @@
 (use-package config-idris)
 (use-package config-latex)
 (use-package config-python)
-(use-package config-gud)
 (use-package config-eyebrowse)
 (use-package config-nix)
 (use-package config-fstar)
