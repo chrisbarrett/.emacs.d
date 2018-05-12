@@ -1,4 +1,4 @@
-;;; config-avy.el --- Configuration for avy.  -*- lexical-binding: t; -*-
+;;; config-navigation.el --- Configuration for avy.  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2016  Chris Barrett
 
@@ -12,33 +12,23 @@
   (require 'use-package))
 
 (require 'spacemacs-keys)
-(autoload 'evil-avy-goto-char "evil-integration")
-(autoload 'evil-avy-goto-char-2 "evil-integration")
-(autoload 'evil-avy-goto-line "evil-integration")
-(autoload 'evil-avy-goto-word-or-subword-1 "evil-integration")
+
+(spacemacs-keys-declare-prefix "j" "jumping")
+(spacemacs-keys-declare-prefix "x" "urls")
+
+(spacemacs-keys-set-leader-keys "g SPC" #'pop-tag-mark)
+
+
 
 (use-package avy
   :straight t
-  :defer t
-  :commands (avy-pop-mark)
-
-  :preface
-  (progn
-    (autoload 'evil-avy-goto-char "evil-integration")
-    (autoload 'evil-avy-goto-char-2 "evil-integration")
-    (autoload 'evil-avy-goto-line "evil-integration")
-    (autoload 'evil-avy-goto-word-or-subword-1 "evil-integration"))
-
-  :init
-  (progn
-    (spacemacs-keys-declare-prefix "j" "jumping")
-    (spacemacs-keys-set-leader-keys
-      "jb" #'avy-pop-mark
-      "jj" #'evil-avy-goto-char
-      "jJ" #'evil-avy-goto-char-2
-      "jl" #'evil-avy-goto-line
-      "jw" #'evil-avy-goto-word-or-subword-1))
-
+  :bind (:map
+         spacemacs-keys-default-map
+         ("jb" . avy-pop-mark)
+         ("jj" . evil-avy-goto-char)
+         ("jJ" . evil-avy-goto-char-2)
+         ("jl" . evil-avy-goto-line)
+         ("jw" . evil-avy-goto-word-or-subword-1))
   :config
   (progn
     (setq avy-all-windows 'all-frames)
@@ -46,16 +36,27 @@
 
 (use-package link-hint
   :straight t
-  :defer t
-  :commands (link-hint-open-link
-             link-hint-open-multiple-links)
+  :bind
+  (:map
+   spacemacs-keys-default-map
+   ("xo" . link-hint-open-link)
+   ("xO" . link-hint-open-multiple-links)))
+
+(use-package dumb-jump
+  :straight t
+  :commands (dumb-jump-go dumb-jump-go-other-window)
+  :bind (:map
+         spacemacs-keys-default-map
+         ("gg" . dumb-jump-go)
+         ("go"  . dumb-jump-go-other-window))
+
+  :preface
+  (autoload 'pop-tag-mark "etags")
   :init
-  (progn
-    (spacemacs-keys-declare-prefix "x" "urls")
-    (spacemacs-keys-set-leader-keys
-      "xo" #'link-hint-open-link
-      "xO" #'link-hint-open-multiple-links)))
+  (evil-define-key 'normal prog-mode-map (kbd "M-.") #'dumb-jump-go)
+  :config
+  (setq dumb-jump-selector 'ivy))
 
-(provide 'config-avy)
+(provide 'config-navigation)
 
-;;; config-avy.el ends here
+;;; config-navigation.el ends here
