@@ -5,6 +5,7 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'all-the-icons)
 (require 'buffer-cmds)
 (require 'spacemacs-keys)
 (require 'subr-x)
@@ -37,6 +38,10 @@
 (autoload 'org-narrow-to-subtree "org")
 
 
+;; Define hydras as main interface for running commands.
+
+(defun hydra-title-with-icon (icon title)
+  (concat (all-the-icons-faicon icon :face 'all-the-icons-orange :v-adjust 0.05) " " title))
 
 (defhydra select-input-method (:color blue :help nil)
   "Select input method"
@@ -44,16 +49,12 @@
   ("t" (progn (set-input-method "TeX") (message "TeX input method activated")) "TeX")
   ("SPC" (progn (deactivate-input-method) (message "Input method cleared")) "clear"))
 
-(spacemacs-keys-set-leader-keys "a i" #'select-input-method/body)
-
 (defhydra font-scale (:color red :help nil)
   "Zoom commands"
   ("+" (text-scale-increase 1) "zoom in")
   ("-" (text-scale-decrease 1) "zoom out")
   ("0" (text-scale-set 0) "reset")
   ("q" nil "quit" :exit t))
-
-(spacemacs-keys-set-leader-keys "z" #'font-scale/body)
 
 (defhydra buffers (:color red :columns 2 :help nil)
   "Buffer commands"
@@ -66,11 +67,6 @@
   ("l" #'ibuffer "list" :exit t)
   ("v" #'reload-file "reload" :exit t)
   ("q" nil "quit" :exit t))
-
-(spacemacs-keys-set-leader-keys "b" #'buffers/body)
-
-(defun hydra-title-with-icon (icon title)
-  (concat (all-the-icons-faicon icon :face 'all-the-icons-orange :v-adjust 0.05) " " title))
 
 (defhydra windows (:color blue :hint nil :help nil)
   "
@@ -92,8 +88,6 @@ _n_: forward  _p_/_N_: back    _-_ horizontal   _o_ others
   ("q" #'delete-window)
   ("-" #'evil-window-split)
   ("/" #'evil-window-vsplit))
-
-(spacemacs-keys-set-leader-keys "w" #'windows/body)
 
 (defhydra files (:color blue :help nil :hint nil)
   "
@@ -123,7 +117,12 @@ _r_: recent          _R_: rename
   ("v" #'reload-file)
   ("y" #'copy-buffer-path))
 
-(spacemacs-keys-set-leader-keys "f" #'files/body)
+(spacemacs-keys-set-leader-keys
+  "a i" #'select-input-method/body
+  "b" #'buffers/body
+  "f" #'files/body
+  "w" #'windows/body
+  "z" #'font-scale/body)
 
 
 
@@ -164,6 +163,8 @@ _r_: recent          _R_: rename
   "q" #'delete-window
 
   "z"   #'font-scale/body)
+
+;; Use which-key as a fallback for stuff I haven't ported to hydras yet.
 
 (use-package which-key
   :straight t
