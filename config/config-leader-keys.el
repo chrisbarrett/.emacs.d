@@ -7,23 +7,9 @@
 
 (require 'all-the-icons)
 (require 'buffer-cmds)
+(require 'hydra)
 (require 'spacemacs-keys)
 (require 'subr-x)
-
-(use-package hydra
-  :straight t
-  :preface
-  (defun cb-leader-keys-set-up-hydra-buffer (&rest _)
-    (when-let* ((buf (get-buffer " *LV*")))
-      (when (buffer-live-p buf)
-        (with-current-buffer buf
-          (setq-local mode-line-format nil)
-          (setq-local header-line-format nil)
-          (force-mode-line-update)))))
-  :config
-  (advice-add 'lv-window :after #'cb-leader-keys-set-up-hydra-buffer))
-
-(require 'hydra)
 
 (autoload 'cb/toggle-window-split "cb-toggle-window-split")
 (autoload 'counsel-find-file "config-ivy")
@@ -125,6 +111,7 @@ _r_: recent          _R_: rename
   "z" #'font-scale/body)
 
 
+;; Use which-key as a fallback for stuff I haven't ported to hydras yet.
 
 (define-key universal-argument-map (kbd (concat "SPC u")) #'universal-argument-more)
 
@@ -163,8 +150,6 @@ _r_: recent          _R_: rename
   "q" #'delete-window
 
   "z"   #'font-scale/body)
-
-;; Use which-key as a fallback for stuff I haven't ported to hydras yet.
 
 (use-package which-key
   :straight t
@@ -347,7 +332,6 @@ _r_: recent          _R_: rename
       "SPC m"   '("major-mode-cmd" . "Major mode commands"))
 
     (which-key-mode +1)))
-
 
 (use-package jump-cmds
   :bind

@@ -130,6 +130,19 @@
                   (mu4e-compose-mode all-the-icons-octicon "comment-discussion" :face all-the-icons-orange)))
     (add-to-list 'all-the-icons-mode-icon-alist spec)))
 
+(use-package hydra
+  :straight t
+  :preface
+  (defun cb-leader-keys-set-up-hydra-buffer (&rest _)
+    (when-let* ((buf (get-buffer " *LV*")))
+      (when (buffer-live-p buf)
+        (with-current-buffer buf
+          (setq-local mode-line-format nil)
+          (setq-local header-line-format nil)
+          (force-mode-line-update)))))
+  :config
+  (advice-add 'lv-window :after #'cb-leader-keys-set-up-hydra-buffer))
+
 (provide 'config-themes)
 
 ;;; config-themes.el ends here
