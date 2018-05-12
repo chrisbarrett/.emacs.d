@@ -842,6 +842,17 @@ Interactively, reverse the characters in the current region."
     (setq ispell-dictionary-alist (ispell-find-aspell-dictionaries))
     (setq ispell-silently-savep t)))
 
+(use-package info+
+  :straight t
+  :defer t
+  :preface
+  (defvar Info-fontify-angle-bracketed-flag)
+  :init
+  (progn
+    (with-eval-after-load 'info
+      (require 'info+))
+    (setq Info-fontify-angle-bracketed-flag nil)))
+
 (provide 'config-basic-settings)
 
 ;;; config-basic-settings.el ends here
