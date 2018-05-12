@@ -60,7 +60,7 @@ Fall back to the file name sans extension."
     ("_"       "lodash")
 
     ((guard (s-contains? "{" yas-text))
-     "MODULE")
+     "")
     (s
      (s-downcase (s-dashed-words s)))))
 
