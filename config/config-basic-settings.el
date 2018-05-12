@@ -12,18 +12,14 @@
   (require 'use-package))
 
 (require 'f)
-(require 's)
-(require 'subr-x)
-
 (require 'paths)
 (require 'spacemacs-keys)
+(require 'subr-x)
 
-(autoload 'thing-at-point-looking-at "thingatpt")
 (autoload 'ansi-color-apply-on-region "ansi-color")
 (autoload 'evil-define-key "evil")
 (autoload 'evil-set-initial-state "evil")
-(autoload 'evil-backward-char "evil-commands")
-
+(autoload 'thing-at-point-looking-at "thingatpt")
 
 (defalias #'yes-or-no-p #'y-or-n-p)
 (defalias #'view-hello-file #'ignore)
@@ -189,47 +185,47 @@ Interactively, reverse the characters in the current region."
 
 ;; Do not prompt for confirmation for active processes.
 
-(defun cb-basic-settings--suppress-no-process-prompt (fn &rest args)
+(defun config-basic-settings--suppress-no-process-prompt (fn &rest args)
   (cl-labels ((process-list () nil))
     (apply fn args)))
 
-(advice-add #'save-buffers-kill-emacs :around #'cb-basic-settings--suppress-no-process-prompt)
+(advice-add #'save-buffers-kill-emacs :around #'config-basic-settings--suppress-no-process-prompt)
 
 
 ;; Insert a leading space after comment start for new comment lines.
 
-(defun cb-basic-settings--comment-insert-space (&rest _)
+(defun config-basic-settings--comment-insert-space (&rest _)
   (when (and comment-start
              (thing-at-point-looking-at (regexp-quote comment-start)))
     (unless (or (thing-at-point-looking-at (rx (+ space))))
       (just-one-space))))
 
-(advice-add #'comment-indent-new-line :after #'cb-basic-settings--comment-insert-space)
+(advice-add #'comment-indent-new-line :after #'config-basic-settings--comment-insert-space)
 
 
 ;; Clean up whitespace when inserting yanked text.
 
-(defun cb-basic-settings--yank-ws-cleanup (&rest _)
+(defun config-basic-settings--yank-ws-cleanup (&rest _)
   (whitespace-cleanup)
   (delete-trailing-whitespace))
 
-(advice-add #'insert-for-yank :after #'cb-basic-settings--yank-ws-cleanup)
+(advice-add #'insert-for-yank :after #'config-basic-settings--yank-ws-cleanup)
 
 
 ;; Process ANSI color codes in shell output.
 
-(defun cb-basic-settings--display-ansi-codes (buf &rest _)
+(defun config-basic-settings--display-ansi-codes (buf &rest _)
   (and (bufferp buf)
        (string= (buffer-name buf) "*Shell Command Output*")
        (with-current-buffer buf
          (ansi-color-apply-on-region (point-min) (point-max)))))
 
-(advice-add #'display-message-or-buffer :before #'cb-basic-settings--display-ansi-codes)
+(advice-add #'display-message-or-buffer :before #'config-basic-settings--display-ansi-codes)
 
 
 ;; Hide files with boring extensions from find-file
 
-(defun cb-basic-settings--hide-boring-files-in-completion (result)
+(defun config-basic-settings--hide-boring-files-in-completion (result)
   "Filter RESULT using `completion-ignored-extensions'."
   (if (and (listp result) (stringp (car result)) (cdr result))
       (let ((matches-boring (rx-to-string `(and (or "."
@@ -243,7 +239,7 @@ Interactively, reverse the characters in the current region."
         (--remove (string-match-p matches-boring it) result))
     result))
 
-(advice-add #'completion--file-name-table :filter-return #'cb-basic-settings--hide-boring-files-in-completion)
+(advice-add #'completion--file-name-table :filter-return #'config-basic-settings--hide-boring-files-in-completion)
 
 
 ;; Line transposition
@@ -280,21 +276,21 @@ Interactively, reverse the characters in the current region."
 
 ;;; Hide DOS EOL
 
-(defun cb-basic-settings--hide-dos-eol ()
+(defun config-basic-settings--hide-dos-eol ()
   "Do not show ^M in files containing mixed UNIX and DOS line endings."
   (interactive)
   (setq buffer-display-table (make-display-table))
   (aset buffer-display-table ?\^M []))
 
-(add-hook 'after-change-major-mode-hook #'cb-basic-settings--hide-dos-eol)
+(add-hook 'after-change-major-mode-hook #'config-basic-settings--hide-dos-eol)
 
 
 ;; Offer to open large files in fundamental mode.
 
-(defvar cb-basic-settings--large-file-size (* 1024 1024)
+(defvar config-basic-settings--large-file-size (* 1024 1024)
   "Size in bytes above which a file is considered 'large'.")
 
-(defconst cb-basic-settings--large-file-modes-list
+(defconst config-basic-settings--large-file-modes-list
   '(archive-mode
     doc-view-mode
     doc-view-mode-maybe
@@ -305,15 +301,15 @@ Interactively, reverse the characters in the current region."
     tar-mode)
   "A list of modes that should not prompt for literal file editing.")
 
-(defun cb-basic-settings--large-file? (size)
-  (unless (memq major-mode cb-basic-settings--large-file-modes-list)
-    (and size (> size cb-basic-settings--large-file-size))))
+(defun config-basic-settings--large-file? (size)
+  (unless (memq major-mode config-basic-settings--large-file-modes-list)
+    (and size (> size config-basic-settings--large-file-size))))
 
-(defun cb-basic-settings--prompt-to-open-large-files-in-fundamental-mode ()
+(defun config-basic-settings--prompt-to-open-large-files-in-fundamental-mode ()
   (let* ((filename (buffer-file-name))
          (size (nth 7 (file-attributes filename)))
          (tags-file? (when filename (equal "TAGS" (file-name-nondirectory filename)))))
-    (when (and (cb-basic-settings--large-file? size)
+    (when (and (config-basic-settings--large-file? size)
                (not tags-file?)
                (not (seq-contains '("gz" "zip" "tar" "jar" "pdf") (file-name-extension filename)))
                (y-or-n-p (format "`%s' is a large file.  Open in fundamental mode? " (file-name-nondirectory filename))))
@@ -321,7 +317,7 @@ Interactively, reverse the characters in the current region."
       (buffer-disable-undo)
       (fundamental-mode))))
 
-(add-hook 'find-file-hook #'cb-basic-settings--prompt-to-open-large-files-in-fundamental-mode)
+(add-hook 'find-file-hook #'config-basic-settings--prompt-to-open-large-files-in-fundamental-mode)
 
 
 ;;; General variables
@@ -373,9 +369,9 @@ Interactively, reverse the characters in the current region."
          display-buffer-pop-up-window
          display-buffer-in-previous-window
          display-buffer-use-some-window
-         cb-basic-settings-display-buffer-fallback)))
+         config-basic-settings--display-buffer-fallback)))
 
-(defun cb-basic-settings-display-buffer-fallback (buffer &optional _alist)
+(defun config-basic-settings--display-buffer-fallback (buffer &optional _alist)
   (-when-let (win (split-window-sensibly))
     (with-selected-window win
       (switch-to-buffer buffer)
@@ -426,15 +422,15 @@ Interactively, reverse the characters in the current region."
   :preface
   (progn
 
-    (defun cb-basic-settings-boring-filename-p (f)
+    (defun config-basic-settings--boring-filename-p (f)
       (memq (f-filename f)
             '("TAGS" ".DS_Store")))
 
-    (defun cb-basic-settings-boring-extension-p (f)
+    (defun config-basic-settings--boring-extension-p (f)
       (seq-intersection (f-ext f)
                         '("gz" "zip" "tar")))
 
-    (defun cb-basic-settings-child-of-boring-relative-dir-p (f)
+    (defun config-basic-settings--child-of-boring-relative-dir-p (f)
       (seq-intersection (f-split f)
                         '(".git"
                           ".ensime_cache"
@@ -447,23 +443,23 @@ Interactively, reverse the characters in the current region."
                           "Maildir"
                           "dist")))
 
-    (defun cb-basic-settings-child-of-boring-abs-dir-p (f)
+    (defun config-basic-settings--child-of-boring-abs-dir-p (f)
       (let ((ignore-case (eq system-type 'darwin)))
         (seq-find (lambda (d)
-                    (s-starts-with? d f ignore-case))
+                    (string-prefix-p d f ignore-case))
                   (list "/var/folders/"
                         "/usr/local/Cellar/"
                         "/tmp/"
-                        (f-expand (concat user-emacs-directory "snippets/")))))))
+                        (f-expand (concat user-emacs-directory "etc/")))))))
 
   :config
   (progn
     (setq recentf-max-saved-items 1000)
     (setq recentf-exclude
-          '(cb-basic-settings-boring-filename-p
-            cb-basic-settings-boring-extension-p
-            cb-basic-settings-child-of-boring-relative-dir-p
-            cb-basic-settings-child-of-boring-abs-dir-p))))
+          '(config-basic-settings--boring-filename-p
+            config-basic-settings--boring-extension-p
+            config-basic-settings--child-of-boring-relative-dir-p
+            config-basic-settings--child-of-boring-abs-dir-p))))
 
 (use-package files
   :config
@@ -483,27 +479,29 @@ Interactively, reverse the characters in the current region."
   :preface
   (progn
     (autoload 'ansi-color-apply-on-region "ansi-color")
+    (autoload 'evil-backward-char "evil-commands")
 
     (defvar compilation-filter-start)
 
-    (defun cb-basic-settings-colorize-compilation-buffer ()
+    (defun config-basic-settings--colorize-compilation-buffer ()
       (unless (derived-mode-p 'rg-mode)
         (let ((inhibit-read-only t))
           (ansi-color-apply-on-region compilation-filter-start (point)))))
 
     (defface cb-compilation-base-face nil
       "Base face for compilation highlights"
-      :group 'cb-basic-settings))
+      :group 'config-basic-settings-))
 
   :config
   (progn
-    (add-hook 'compilation-filter-hook #'cb-basic-settings-colorize-compilation-buffer)
+    (add-hook 'compilation-filter-hook #'config-basic-settings--colorize-compilation-buffer)
 
     ;; Clear default underline text properties applied to compilation highlights.
     (setq compilation-message-face 'cb-compilation-base-face)
 
-    ;; h (help) binding interferes with evil navigation.
-    (evil-define-key 'motion compilation-mode-map (kbd "h") #'evil-backward-char)
+    (with-eval-after-load 'evil
+      ;; h (help) binding interferes with evil navigation.
+      (evil-define-key 'motion compilation-mode-map (kbd "h") #'evil-backward-char))
 
     (setq compilation-environment '("TERM=screen-256color"))
     (setq compilation-always-kill t)
@@ -515,7 +513,7 @@ Interactively, reverse the characters in the current region."
   (progn
     (defvar quail-current-package)
 
-    (defun cb-basic-settings--set-tex-method-vars ()
+    (defun config-basic-settings--set-tex-method-vars ()
       (when-let* ((quail-current-package (assoc "TeX" quail-package-alist)))
         (quail-defrule ";" (quail-lookup-key "\\"))
         (quail-define-rules ((append . t))
@@ -528,7 +526,7 @@ Interactively, reverse the characters in the current region."
                             ("\\all" ?∀)
                             ("\\rtack" ?⊢)))))
   :config
-  (add-hook 'input-method-activate-hook #'cb-basic-settings--set-tex-method-vars))
+  (add-hook 'input-method-activate-hook #'config-basic-settings--set-tex-method-vars))
 
 (use-package comint
   :defer t
@@ -536,13 +534,10 @@ Interactively, reverse the characters in the current region."
   (setq comint-prompt-read-only t))
 
 (use-package hippie-exp
-  :preface
-  (autoload 'evil-global-set-key "evil")
-  :init
-  (progn
-    (global-set-key (kbd "M-/") #'hippie-expand)
-    (with-eval-after-load 'evil
-      (evil-global-set-key 'insert [remap evil-complete-previous] #'hippie-expand)))
+  :bind (("M-/" . hippie-expand)
+         :map
+         evil-insert-state-map
+         ([remap evil-complete-previous] . hippie-expand))
 
   :config
   (setq hippie-expand-try-functions-list
@@ -571,7 +566,7 @@ Interactively, reverse the characters in the current region."
 
 (use-package winner
   :preface
-  (defvar cb-basic-settings-winner-boring-buffers
+  (defvar config-basic-settings--winner-boring-buffers
     '("*Completions*"
       "*Compile-Log*"
       "*inferior-lisp*"
@@ -585,7 +580,7 @@ Interactively, reverse the characters in the current region."
   :config
   (progn
     (winner-mode t)
-    (setq winner-boring-buffers (append winner-boring-buffers cb-basic-settings-winner-boring-buffers))))
+    (setq winner-boring-buffers (append winner-boring-buffers config-basic-settings--winner-boring-buffers))))
 
 (use-package saveplace
   :config
@@ -610,9 +605,7 @@ Interactively, reverse the characters in the current region."
     (global-auto-revert-mode 1)))
 
 (use-package goto-addr
-  :defer t
-  :init
-  (add-hook 'prog-mode-hook #'goto-address-prog-mode))
+  :hook (prog-mode . goto-address-prog-mode))
 
 (use-package ffap
   :defer t
@@ -632,9 +625,9 @@ Interactively, reverse the characters in the current region."
 
 (use-package world-time-mode
   :straight t
-  :commands (world-time-list)
-  :init
-  (spacemacs-keys-set-leader-keys "aw" 'world-time-list)
+  :bind (:map
+         spacemacs-keys-default-map
+         ("aw" . world-time-list))
   :config
   (progn
     (setq display-time-world-list '(("Pacific/Auckland" "NZT")
@@ -654,7 +647,7 @@ Interactively, reverse the characters in the current region."
 (use-package hideshow
   :defer t
   :preface
-  (defun cb-evil-ignore-errors (f &rest args)
+  (defun config-basic-settings--ignore-errors (f &rest args)
     (ignore-errors
       (apply f args)))
   :config
@@ -664,7 +657,7 @@ Interactively, reverse the characters in the current region."
                  hs-toggle-hiding
                  hs-show-block
                  hs-hide-block))
-    (advice-add cmd :around #'cb-evil-ignore-errors)))
+    (advice-add cmd :around #'config-basic-settings--ignore-errors)))
 
 (use-package apropos
   :defer t
@@ -679,12 +672,12 @@ Interactively, reverse the characters in the current region."
     ;; to set that instead.
     (defvar archive-mode-hook nil)
 
-    (defun cb-basic-settings--run-archive-mode-hook ()
+    (defun config-basic-settings--run-archive-mode-hook ()
       (run-hooks 'archive-mode-hook)))
 
   :config
   (progn
-    (advice-add 'archive-mode :after #'cb-basic-settings--run-archive-mode-hook)
+    (advice-add 'archive-mode :after #'config-basic-settings--run-archive-mode-hook)
     (add-hook 'archive-mode-hook 'evil-motion-state)
 
     (with-no-warnings
@@ -725,9 +718,9 @@ Interactively, reverse the characters in the current region."
 
 (use-package hide-comnt
   :straight t
-  :commands (hide/show-comments-toggle)
-  :init
-  (spacemacs-keys-set-leader-keys "tc" #'hide/show-comments-toggle))
+  :bind (:map
+         spacemacs-keys-default-map
+         ("tc" . hide/show-comments-toggle)))
 
 (use-package async
   :straight t
@@ -771,17 +764,17 @@ Interactively, reverse the characters in the current region."
   :commands (ansi-term)
   :preface
   (progn
-    (defun cb-shell/ansi-term ()
+    (defun run-ansi-term ()
       (interactive)
       (ansi-term (getenv "SHELL")))
 
-    (defun cb-shell--hl-line-off ()
+    (defun config-basic-settings--shell-hl-line-off ()
       (when (bound-and-true-p hl-line-mode)
         (hl-line-mode -1))))
   :init
-  (spacemacs-keys-set-leader-keys "at" #'cb-shell/ansi-term)
+  (spacemacs-keys-set-leader-keys "at" #'run-ansi-term)
   :config
-  (add-hook 'term-mode-hook #'cb-shell--hl-line-off))
+  (add-hook 'term-mode-hook #'config-basic-settings--shell-hl-line-off))
 
 (use-package autoinsert
   :preface
@@ -798,11 +791,10 @@ Interactively, reverse the characters in the current region."
     (push form auto-insert-alist)))
 
 (use-package calc
-  :commands (calc quick-calc)
-  :init
-  (spacemacs-keys-set-leader-keys
-    "a c" #'quick-calc
-    "a C" #'calc)
+  :bind (:map
+         spacemacs-keys-default-map
+         ("a c" . quick-calc)
+         ("a C" . calc))
   :config
   (define-key calc-mode-map (kbd "SPC") spacemacs-keys-default-map))
 
