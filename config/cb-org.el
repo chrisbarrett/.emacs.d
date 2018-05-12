@@ -11,7 +11,7 @@
 (eval-when-compile
   (require 'straight)
   (require 'use-package)
-  (require 'cb-emacs)
+  (require 'cb-paths)
   (autoload 'evil-define-key "evil"))
 
 (require 'straight)

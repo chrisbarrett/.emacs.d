@@ -15,7 +15,7 @@
 (require 's)
 (require 'subr-x)
 
-(require 'cb-emacs)
+(require 'cb-paths)
 (require 'spacemacs-keys)
 
 (autoload 'thing-at-point-looking-at "thingatpt")

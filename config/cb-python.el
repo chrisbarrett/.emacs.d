@@ -6,7 +6,7 @@
   (require 'use-package))
 
 (require 'dash)
-(require 'cb-emacs)
+(require 'cb-paths)
 (require 'spacemacs-keys)
 (require 'evil)
 (autoload 'xref-push-marker-stack "xref")

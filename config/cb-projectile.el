@@ -13,7 +13,7 @@
   (require 'subr-x))
 
 (require 'dash-functional)
-(require 'cb-emacs)
+(require 'cb-paths)
 (require 'spacemacs-keys)
 (require 'cb-projectile-functions)
 

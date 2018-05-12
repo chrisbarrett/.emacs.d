@@ -8,7 +8,7 @@
 
 ;;; Code:
 
-(require 'cb-emacs)
+(require 'cb-paths)
 (autoload 'f-join "f")
 
 (defconst cb-auto-save-dir (concat cb-emacs-cache-directory "/auto-save"))

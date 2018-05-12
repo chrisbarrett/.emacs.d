@@ -12,7 +12,7 @@
   (require 'use-package)
   (autoload 'evil-define-key "evil"))
 
-(require 'cb-emacs)
+(require 'cb-paths)
 (require 'dash)
 (require 'dash-functional)
 (require 'f)

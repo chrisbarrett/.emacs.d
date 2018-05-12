@@ -11,7 +11,7 @@
 (eval-when-compile
   (require 'use-package))
 
-(require 'cb-emacs)
+(require 'cb-paths)
 (require 'spacemacs-keys)
 (require 'evilified-state)
 (require 'f)

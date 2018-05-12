@@ -13,7 +13,7 @@
 
 (require 'spacemacs-keys)
 (require 'subr-x)
-(require 'cb-emacs)
+(require 'cb-paths)
 
 (use-package ivy
   :straight t

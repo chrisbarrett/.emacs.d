@@ -11,7 +11,7 @@
 (eval-when-compile
   (require 'use-package))
 
-(require 'cb-emacs)
+(require 'cb-paths)
 
 (global-set-key (kbd "s-v") 'yank)
 (global-set-key (kbd "s-c") 'copy-region-as-kill)

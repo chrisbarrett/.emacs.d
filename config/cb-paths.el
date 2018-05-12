@@ -1,4 +1,4 @@
-;;; cb-emacs.el --- Variables relating to core Emacs functionality. -*- lexical-binding: t; -*-
+;;; cb-paths.el --- Variables relating to core Emacs functionality. -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2016  Chris Barrett
 
@@ -27,6 +27,6 @@
 
 (add-to-list 'load-path cb-emacs-site-lisp-directory)
 
-(provide 'cb-emacs)
+(provide 'cb-paths)
 
-;;; cb-emacs.el ends here
+;;; cb-paths.el ends here
