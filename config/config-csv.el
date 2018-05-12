@@ -15,10 +15,10 @@
   :straight t
   :mode ("\\.csv\\'" . csv-mode)
   :preface
-  (defun cb-csv--suppress-final-newline ()
+  (defun config-csv--suppress-final-newline ()
     (setq-local require-final-newline nil))
   :config
-  (add-hook 'csv-mode-hook #'cb-csv--suppress-final-newline))
+  (add-hook 'csv-mode-hook #'config-csv--suppress-final-newline))
 
 (provide 'config-csv)
 
