@@ -126,7 +126,6 @@
 (use-package config-gud)
 (use-package config-eyebrowse)
 (use-package config-nix)
-(use-package config-tiny)
 (use-package config-fstar)
 (use-package config-etags)
 

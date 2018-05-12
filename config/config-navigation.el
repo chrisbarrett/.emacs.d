@@ -57,6 +57,10 @@
   :config
   (setq dumb-jump-selector 'ivy))
 
+(use-package tiny
+  :straight t
+  :bind ("C-:" . tiny-expand))
+
 (provide 'config-navigation)
 
 ;;; config-navigation.el ends here
