@@ -84,7 +84,7 @@
 (use-package config-darwin :if (equal system-type 'darwin))
 (use-package config-modeline)
 (use-package config-editing)
-(use-package config-leader-keys)
+(use-package config-hydras)
 (use-package config-evil)
 (use-package config-ivy)
 (use-package config-navigation)

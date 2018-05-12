@@ -1,4 +1,4 @@
-;;; config-leader-keys.el --- Grab-bag for configuring general prefixed keys.  -*- lexical-binding: t; -*-
+;;; config-hydras.el --- Grab-bag for configuring general prefixed keys.  -*- lexical-binding: t; -*-
 ;;; Commentary:
 ;;; Code:
 
@@ -392,6 +392,6 @@ _u_ package usage     _d_: diff buffer
 
     (which-key-mode +1)))
 
-(provide 'config-leader-keys)
+(provide 'config-hydras)
 
-;;; config-leader-keys.el ends here
+;;; config-hydras.el ends here
