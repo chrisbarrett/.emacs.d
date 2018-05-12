@@ -22,19 +22,6 @@
 (autoload 'projectile-project-p "projectile")
 (autoload 'flycheck-add-mode "flycheck")
 
-(defun cb-web-module-name-for-binding (yas-text)
-  (pcase yas-text
-    ('nil      "")
-    (""        "")
-    ("Promise" "bluebird")
-    ("assert"  "power-assert")
-    ("_"       "lodash")
-
-    ((guard (s-contains? "{" yas-text))
-     "MODULE")
-    (s
-     (s-downcase (s-dashed-words s)))))
-
 (use-package web-mode
   :straight t
   :defines (web-mode-markup-indent-offset

@@ -178,6 +178,9 @@ Otherwise delete backwards."
    yas--field-contains-point-p
    yas--field-text-for-display))
 
+(use-package yas-funcs
+  :after yasnippet)
+
 (use-package warnings
   :defer t
   :config
