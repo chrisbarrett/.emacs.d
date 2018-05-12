@@ -157,27 +157,6 @@
     (add-hook 'compilation-filter-hook #'cb-rust--rewrite-compilation-buffer)
     (add-to-list 'compilation-finish-functions #'cb-rust--rewrite-compilation-buffer)))
 
-;; Snippet Utilities
-
-(defun cb-rust-bol-or-after-accessibility-modifier? ()
-  "Predicate for snippets"
-  (save-excursion
-    (save-restriction
-      ;; Move past access modifier.
-      (goto-char (line-beginning-position))
-      (search-forward-regexp (rx bow "pub" eow (* space)) (line-end-position) t)
-      (narrow-to-region (point) (line-end-position))
-      (yas-funcs-bolp))))
-
-(defun cb-rust-previous-struct-def ()
-  "Search backward for the name of the last struct defined in this file."
-  (save-match-data
-    (if (search-backward-regexp (rx (or "enum" "struct") (+ space)
-                                    (group (+ (not (any ";" "(" "{")))))
-                                nil t)
-        (s-trim (match-string 1))
-      "Name")))
-
 (provide 'cb-rust)
 
 ;;; cb-rust.el ends here

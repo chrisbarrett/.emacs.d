@@ -3,6 +3,6 @@
 # key: im
 # binding: direct-keybinding
 # --
-impl ${1:`(cb-rust-previous-struct-def)`} {
+impl ${1:`(yas-funcs-rs-relevant-struct-name)`} {
     $0
 }

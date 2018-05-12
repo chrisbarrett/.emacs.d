@@ -2,6 +2,6 @@
 # name: signature in trait
 # key: sig
 # binding: direct-keybinding
-# condition: (cb-rust-bol-or-after-accessibility-modifier?)
+# condition: (yas-funcs-rs-bol-or-after-access-kw-p)
 # --
 fn ${1:name}(${2:&self})${3: -> ${4:T}};

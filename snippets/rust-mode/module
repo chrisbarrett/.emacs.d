@@ -1,6 +1,6 @@
 # key: mod
 # name: module
-# condition: (cb-rust-bol-or-after-accessibility-modifier?)
+# condition: (yas-funcs-rs-bol-or-after-access-kw-p)
 # --
 mod ${1:name} {
     $0

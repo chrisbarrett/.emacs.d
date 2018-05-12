@@ -84,6 +84,28 @@ Fall back to the file name sans extension."
       (--map (format "this.%s = %s;" it it))
       (s-join "\n"))))
 
+
+;;; Rust
+
+(defun yas-funcs-rs-bol-or-after-access-kw-p ()
+  (save-excursion
+    (save-restriction
+      ;; Move past access modifier.
+      (goto-char (line-beginning-position))
+      (search-forward-regexp (rx bow "pub" eow (* space)) (line-end-position) t)
+      (narrow-to-region (point) (line-end-position))
+      (yas-funcs-bolp))))
+
+(defun yas-funcs-rs-relevant-struct-name ()
+  "Search backward for the name of the last struct defined in this file."
+  (save-match-data
+    (if (search-backward-regexp (rx (or "enum" "struct") (+ space)
+                                    (group (+ (not (any ";" "(" "{")))))
+                                nil t)
+        (s-trim (match-string 1))
+      "Name")))
+
+
 
 (provide 'yas-funcs)
 
