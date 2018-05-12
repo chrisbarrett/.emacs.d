@@ -760,21 +760,6 @@ Interactively, reverse the characters in the current region."
   ;; Do not query the user to accept insecure connections. Just disconnect them.
   (setq nsm-noninteractive t))
 
-(use-package page-break-lines
-  :straight t
-  :commands (global-page-break-lines-mode)
-  :demand t
-  :config
-  (progn
-    (setq page-break-lines-modes
-          '(prog-mode
-            text-mode
-            compilation-mode
-            help-mode
-            org-agenda-mode))
-
-    (global-page-break-lines-mode)))
-
 (use-package generate-password
   :commands (generate-password))
 

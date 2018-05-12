@@ -1,4 +1,4 @@
-;;; cb-ligatures.el --- Use Hasklig to provide ligatures.  -*- lexical-binding: t; -*-
+;;; ligatures.el --- Use Hasklig to provide ligatures.  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2016  Chris Barrett
 
@@ -27,7 +27,7 @@
 (require 'dash)
 (require 'memoize)
 
-(defconst cb-ligatures-list
+(defconst ligatures-list
   '("&&" "***" "*>" "\\\\" "||" "|>" "::"
     "==" "===" "==>" "=>" "=<<" "!!" ">>"
     ">>=" ">>>" ">>-" ">-" "->" "-<" "-<<"
@@ -38,10 +38,10 @@
 
 See https://github.com/i-tu/Hasklig/blob/master/GlyphOrderAndAliasDB#L1588")
 
-(defmemoize cb-ligatures-alist ()
-  (cb-ligatures--fix-symbol-bounds (cb-ligatures--ligature-list cb-ligatures-list #Xe100)))
+(defmemoize ligatures-alist ()
+  (ligatures--fix-symbol-bounds (ligatures--ligature-list ligatures-list #Xe100)))
 
-(defun cb-ligatures--fix-symbol-bounds (alist)
+(defun ligatures--fix-symbol-bounds (alist)
   (-map (-lambda ((symbol . codepoint))
           (cons symbol
                 (cond ((equal 2 (length symbol))
@@ -52,18 +52,18 @@ See https://github.com/i-tu/Hasklig/blob/master/GlyphOrderAndAliasDB#L1588")
                        (string ?\t codepoint)))))
         alist))
 
-(defun cb-ligatures--ligature-list (ligatures codepoint-start)
+(defun ligatures--ligature-list (ligatures codepoint-start)
   (let ((codepoints (-iterate '1+ codepoint-start (length ligatures))))
     (-zip-pair ligatures codepoints)))
 
 ;;;###autoload
-(defun cb-ligatures-init ()
+(defun ligatures-init ()
   (when (equal 'Hasklig (ignore-errors (font-get (face-attribute 'default :font) :family)))
-    (setq prettify-symbols-alist (-union prettify-symbols-alist (cb-ligatures-alist)))
+    (setq prettify-symbols-alist (-union prettify-symbols-alist (ligatures-alist)))
     ;; Refresh symbol rendering.
     (prettify-symbols-mode -1)
     (prettify-symbols-mode +1)))
 
-(provide 'cb-ligatures)
+(provide 'ligatures)
 
-;;; cb-ligatures.el ends here
+;;; ligatures.el ends here

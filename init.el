@@ -75,7 +75,11 @@
 (paths-initialise)
 (add-to-list 'custom-theme-load-path paths-themes-directory)
 
-(use-package config-themes)
+;; Load theme aggressively, or Emacs will look ugly during the startup sequence.
+(use-package config-themes
+  :config
+  (config-themes/dark-theme))
+
 (use-package config-basic-settings)
 (use-package config-modeline)
 (use-package config-leader-keys)

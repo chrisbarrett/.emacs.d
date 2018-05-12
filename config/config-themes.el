@@ -13,45 +13,56 @@
 
 (require 'spacemacs-keys)
 
-;; Load themes.
+
 
-(defvar cb-themes-dark-mode-p t)
+(defvar config-themes--dark-mode-p t)
 
-(defun cb-themes/toggle-dark-mode ()
+(defun config-themes/toggle-dark-mode ()
   "Toggle between light and dark mode."
   (interactive)
-  (if cb-themes-dark-mode-p
-      (cb-light-theme)
-    (cb-dark-theme))
-  (setq cb-themes-dark-mode-p (not cb-themes-dark-mode-p)))
+  (if config-themes--dark-mode-p
+      (config-themes/light-theme)
+    (config-themes/dark-theme))
+  (setq config-themes--dark-mode-p (not config-themes--dark-mode-p)))
 
-(defun cb-light-theme ()
+(defun config-themes/light-theme ()
   (interactive)
   (load-theme 'cb-light t))
 
-(defun cb-dark-theme ()
+(defun config-themes/dark-theme ()
   (interactive)
   (load-theme 'cb-dark t))
 
-(cb-dark-theme)
-
 (spacemacs-keys-set-leader-keys
-  "t t" #'cb-themes/toggle-dark-mode
-  "t d" #'cb-dark-theme
-  "t l" #'cb-light-theme)
+  "t t" #'config-themes/toggle-dark-mode
+  "t d" #'config-themes/dark-theme
+  "t l" #'config-themes/light-theme)
 
+
 
-;; Configure packages
-
-(use-package cb-ligatures
-  :if (display-graphic-p)
-  :functions (cb-ligatures-init)
+(use-package page-break-lines
+  :straight t
+  :commands (global-page-break-lines-mode)
+  :demand t
   :config
   (progn
-    (add-hook 'prog-mode-hook #'cb-ligatures-init)
-    (add-hook 'text-mode-hook #'cb-ligatures-init)
-    (add-hook 'org-agenda-mode-hook #'cb-ligatures-init)
-    (global-prettify-symbols-mode +1)))
+    (setq page-break-lines-modes
+          '(prog-mode
+            text-mode
+            compilation-mode
+            help-mode
+            org-agenda-mode))
+
+    (global-page-break-lines-mode)))
+
+(use-package ligatures
+  :if (display-graphic-p)
+  :hook
+  ((prog-mode . ligatures-init)
+   (text-mode . ligatures-init)
+   (org-agenda-mode . ligatures-init))
+  :config
+  (global-prettify-symbols-mode +1))
 
 (provide 'config-themes)
 
