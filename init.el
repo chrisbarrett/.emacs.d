@@ -81,12 +81,12 @@
   (config-themes/dark-theme))
 
 (use-package config-basic-settings)
+(use-package config-darwin :if (equal system-type 'darwin))
 (use-package config-modeline)
 (use-package config-editing)
 (use-package config-leader-keys)
 (use-package config-evil)
 (use-package config-ivy)
-(use-package config-darwin :if (equal system-type 'darwin))
 (use-package config-navigation)
 (use-package config-search)
 (use-package config-projectile)

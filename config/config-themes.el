@@ -11,6 +11,7 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'dash)
 (require 'spacemacs-keys)
 
 
