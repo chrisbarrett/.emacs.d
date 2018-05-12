@@ -142,10 +142,7 @@
     (add-to-list 'flycheck-disabled-checkers 'json-jsonlint)
 
     (add-hook 'web-js-mode-hook #'cb-web--disable-flycheck-for-node-modules)
-
-    (let ((tidy-bin "/usr/local/Cellar/tidy-html5/5.2.0/bin/tidy"))
-      (when (file-exists-p tidy-bin)
-        (setq flycheck-html-tidy-executable tidy-bin)))
+    (setq flycheck-html-tidy-executable (executable-find "tidy"))
 
     (flycheck-add-mode 'typescript-tslint 'web-ts-mode)
 
