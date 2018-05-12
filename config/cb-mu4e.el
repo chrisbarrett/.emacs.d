@@ -16,7 +16,7 @@
 (require 'evilified-state)
 (require 'f)
 
-(push (f-join cb-emacs-site-lisp-directory "mu4e") load-path)
+(push (f-join cb-paths-site-lisp-directory "mu4e") load-path)
 
 (use-package mu4e
   :straight t

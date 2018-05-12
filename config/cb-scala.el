@@ -305,7 +305,7 @@
     (setq ensime-sem-high-faces
           `((deprecated . (:underline ,cb-theme-common-orange))))
     (setq ensime-sbt-perform-on-save "compile")
-    (setq ensime-startup-dirname (f-join cb-emacs-cache-directory "ensime"))
+    (setq ensime-startup-dirname (f-join cb-paths-cache-directory "ensime"))
 
     (advice-add 'ensime :before #'cb-scala--delete-existing-ensime-process-buffer)
     (advice-add 'ensime :after #'cb-scala--display-ensime-process-buffer-on-error)

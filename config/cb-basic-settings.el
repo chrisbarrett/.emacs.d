@@ -392,7 +392,7 @@ Interactively, reverse the characters in the current region."
 (use-package abbrev
   :defer t
   :config
-  (setq abbrev-file-name (concat cb-emacs-cache-directory "/abbrev_defs")))
+  (setq abbrev-file-name (concat cb-paths-cache-directory "/abbrev_defs")))
 
 (use-package window-numbering
   :when (display-graphic-p)
@@ -461,7 +461,7 @@ Interactively, reverse the characters in the current region."
   :config
   (progn
     (setq recentf-max-saved-items 1000)
-    (setq recentf-save-file (concat cb-emacs-cache-directory "/recentf"))
+    (setq recentf-save-file (concat cb-paths-cache-directory "/recentf"))
     (setq recentf-exclude
           '(cb-basic-settings-boring-filename-p
             cb-basic-settings-boring-extension-p
@@ -473,7 +473,7 @@ Interactively, reverse the characters in the current region."
   :config
   (progn
     (setq bookmark-save-flag nil)
-    (setq bookmark-default-file (concat cb-emacs-cache-directory "/bookmarks"))))
+    (setq bookmark-default-file (concat cb-paths-cache-directory "/bookmarks"))))
 
 (use-package files
   :config
@@ -482,7 +482,7 @@ Interactively, reverse the characters in the current region."
     (setq require-final-newline t)
     (setq delete-old-versions t)
     (setq confirm-nonexistent-file-or-buffer nil)
-    (setq backup-directory-alist `((".*" . ,cb-emacs-autosave-directory)))
+    (setq backup-directory-alist `((".*" . ,cb-paths-autosave-directory)))
     (setq version-control t)))
 
 (use-package select
@@ -601,12 +601,12 @@ Interactively, reverse the characters in the current region."
 (use-package saveplace
   :config
   (progn
-    (setq save-place-file (concat cb-emacs-cache-directory "/saveplace"))
+    (setq save-place-file (concat cb-paths-cache-directory "/saveplace"))
     (save-place-mode +1)))
 
 (use-package savehist
   :init
-  (defconst savehist-file (concat cb-emacs-cache-directory "/savehist"))
+  (defconst savehist-file (concat cb-paths-cache-directory "/savehist"))
   :config
   (progn
     (setq savehist-additional-variables '(kill-ring search-ring regexp-search-ring))
@@ -622,7 +622,7 @@ Interactively, reverse the characters in the current region."
 (use-package tramp-cache
   :defer t
   :config
-  (setq tramp-persistency-file-name (concat cb-emacs-cache-directory "/tramp")))
+  (setq tramp-persistency-file-name (concat cb-paths-cache-directory "/tramp")))
 
 (use-package autorevert
   :config
@@ -743,7 +743,7 @@ Interactively, reverse the characters in the current region."
 (use-package url-cookie
   :defer t
   :config
-  (setq url-cookie-file (concat cb-emacs-cache-directory "/cookies")))
+  (setq url-cookie-file (concat cb-paths-cache-directory "/cookies")))
 
 (use-package hide-comnt
   :straight t
@@ -765,7 +765,7 @@ Interactively, reverse the characters in the current region."
 (use-package url-cache
   :defer t
   :config
-  (setq url-cache-directory (concat cb-emacs-cache-directory "/url")))
+  (setq url-cache-directory (concat cb-paths-cache-directory "/url")))
 
 (use-package shr
   :defer t

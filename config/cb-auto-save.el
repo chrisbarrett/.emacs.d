@@ -11,7 +11,7 @@
 (require 'cb-paths)
 (autoload 'f-join "f")
 
-(defconst cb-auto-save-dir (concat cb-emacs-cache-directory "/auto-save"))
+(defconst cb-auto-save-dir (concat cb-paths-cache-directory "/auto-save"))
 (defconst cb-auto-save-local-dir (concat cb-auto-save-dir "/local"))
 (defconst cb-auto-save-remotes-dir (concat cb-auto-save-dir "/remotes"))
 

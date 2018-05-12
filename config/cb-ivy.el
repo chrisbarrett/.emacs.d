@@ -183,7 +183,7 @@
   :demand t
   :config
   (progn
-    (setq historian-save-file (f-join cb-emacs-cache-directory "historian"))
+    (setq historian-save-file (f-join cb-paths-cache-directory "historian"))
     (historian-mode +1)))
 
 ;; Uses Historian to sort Ivy candidates by frecency+flx.

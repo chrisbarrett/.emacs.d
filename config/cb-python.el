@@ -124,7 +124,7 @@
     (add-hook 'python-mode-hook 'anaconda-eldoc-mode))
   :config
   (progn
-    (let ((dir (f-join cb-emacs-cache-directory "anaconda-mode")))
+    (let ((dir (f-join cb-paths-cache-directory "anaconda-mode")))
       (f-mkdir dir)
       (setq anaconda-mode-installation-directory dir))
 

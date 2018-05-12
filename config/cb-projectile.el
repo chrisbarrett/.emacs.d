@@ -119,8 +119,8 @@
 
   :config
   (progn
-    (setq projectile-cache-file (concat cb-emacs-cache-directory "/projectile.cache"))
-    (setq projectile-known-projects-file (concat cb-emacs-cache-directory "/projectile-bookmarks.eld"))
+    (setq projectile-cache-file (concat cb-paths-cache-directory "/projectile.cache"))
+    (setq projectile-known-projects-file (concat cb-paths-cache-directory "/projectile-bookmarks.eld"))
 
     ;; Ensure projectile's known projects list doesn't contain duplicates.
     (advice-add #'projectile-unserialize :filter-return #'projectile-funcs-cleanup-projects)

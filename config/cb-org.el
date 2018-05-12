@@ -243,7 +243,7 @@
 (use-package org-id
   :after org
   :config
-  (setq org-id-locations-file (f-join cb-emacs-cache-directory "org-id-locations")))
+  (setq org-id-locations-file (f-join cb-paths-cache-directory "org-id-locations")))
 
 (use-package org-table
   :after org

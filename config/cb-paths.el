@@ -13,22 +13,22 @@
 
 
 
-(defconst cb-emacs-cache-directory
+(defconst cb-paths-cache-directory
   (concat user-emacs-directory ".cache"))
 
-(defconst cb-emacs-autosave-directory
+(defconst cb-paths-autosave-directory
   (concat user-emacs-directory "autosave"))
 
-(defconst cb-emacs-lisp-directory
+(defconst cb-paths-lisp-directory
   (concat user-emacs-directory "lisp"))
 
-(defconst cb-emacs-elpa-directory
+(defconst cb-paths-elpa-directory
   (concat user-emacs-directory "elpa"))
 
-(defconst cb-emacs-config-directory
+(defconst cb-paths-config-directory
   (concat user-emacs-directory "config"))
 
-(defconst cb-emacs-site-lisp-directory "~/.nix-profile/share/emacs/site-lisp")
+(defconst cb-paths-site-lisp-directory "~/.nix-profile/share/emacs/site-lisp")
 
 
 
@@ -40,16 +40,16 @@ If argument INTERACTIVE-P is set, log additional information."
   (let* ((before load-path)
          (git-subtrees
           (seq-filter #'file-directory-p
-                      (directory-files cb-emacs-lisp-directory t "^[^.]")))
+                      (directory-files cb-paths-lisp-directory t "^[^.]")))
          (config-subtrees
           (seq-filter #'file-directory-p
-                      (directory-files cb-emacs-config-directory t "^[^.]")))
+                      (directory-files cb-paths-config-directory t "^[^.]")))
 
          (updated-load-path
           (append (list
-                   cb-emacs-lisp-directory
-                   cb-emacs-config-directory
-                   cb-emacs-site-lisp-directory)
+                   cb-paths-lisp-directory
+                   cb-paths-config-directory
+                   cb-paths-site-lisp-directory)
                   config-subtrees
                   git-subtrees
 		  load-path)))
