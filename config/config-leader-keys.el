@@ -1,11 +1,5 @@
 ;;; config-leader-keys.el --- Grab-bag for configuring general prefixed keys.  -*- lexical-binding: t; -*-
-
-;; Copyright (C) 2016  Chris Barrett
-
-;; Author: Chris Barrett <chris+emacs@walrus.cool>
-
 ;;; Commentary:
-
 ;;; Code:
 
 (eval-when-compile
@@ -29,9 +23,11 @@
 
 (require 'hydra)
 
-(autoload 'evil-window-rotate-downwards "evil-commands")
-(autoload 'cb/sudo-edit "cb-sudo-edit")
 (autoload 'cb/toggle-window-split "cb-toggle-window-split")
+(autoload 'evil-window-next "evil-commands")
+(autoload 'evil-window-rotate-downwards "evil-commands")
+(autoload 'evil-window-split "evil-commands")
+(autoload 'evil-window-vsplit "evil-commands")
 (autoload 'org-narrow-to-subtree "org")
 
 (defhydra cb/select-input-method (:color blue :help nil)
@@ -39,6 +35,8 @@
   ("a" (progn (set-input-method "arabic") (message "Arabic input method activated")) "arabic")
   ("t" (progn (set-input-method "TeX") (message "TeX input method activated")) "TeX")
   ("SPC" (progn (deactivate-input-method) (message "Input method cleared")) "clear"))
+
+
 
 (use-package which-key
   :straight t
@@ -219,18 +217,6 @@
 
 (use-package spacemacs-keys
   :demand t
-  :preface
-  (progn
-    (autoload 'evil-window-next "evil-commands")
-    (autoload 'evil-window-split "evil-commands")
-    (autoload 'evil-window-vsplit "evil-commands")
-
-    (defun cb-leader-keys/reload-file ()
-      "Revisit the current file."
-      (interactive)
-      (when-let* ((path (buffer-file-name)))
-        (find-alternate-file path))))
-
   :config
   (progn
     (define-key universal-argument-map (kbd (concat "SPC u")) #'universal-argument-more)
@@ -247,20 +233,17 @@
 
       "b d" #'kill-this-buffer
       "b b" #'bury-buffer
-      "b v" #'cb-leader-keys/reload-file
 
       "C" #'compile
 
       "c r" #'comment-or-uncomment-region
 
-      "f e" #'cb/sudo-edit
       "f f" #'find-file
       "f o" #'find-file-other-window
       "f p" #'find-file-at-point
       "f s" #'save-buffer
       "f S" #'save-some-buffers
       "f W" #'write-file
-      "f v" #'cb-leader-keys/reload-file
 
       "h d c" #'describe-face
       "h d k" #'describe-key
@@ -293,23 +276,28 @@
 
 (use-package buffer-cmds
   :after spacemacs-keys
-  :config
-  (spacemacs-keys-set-leader-keys
-    "TAB" #'alternate-buffer
-    "f d" #'copy-buffer-directory
-    "f D" #'delete-current-buffer-and-file
-    "f R" #'rename-file-and-buffer
-    "f y" #'copy-buffer-path
-    "f Y" #'copy-buffer-name))
+  :bind
+  (:map
+   spacemacs-keys-default-map
+   ("TAB" . alternate-buffer)
+   ("b v" . reload-file)
+   ("f D" . delete-current-buffer-and-file)
+   ("f R" . rename-file-and-buffer)
+   ("f Y" . copy-buffer-name)
+   ("f d" . copy-buffer-directory)
+   ("f e" . sudo-edit)
+   ("f v" . reload-file)
+   ("f y" . copy-buffer-path)))
 
 (use-package jump-cmds
-  :config
-  (spacemacs-keys-set-leader-keys
-    "g i" #'jump-to-init-file
-    "g m" #'jump-to-messages
-    "g u" #'jump-to-package-usage
-    "g n" #'jump-to-nix-packages
-    "g p" #'jump-to-personal-config))
+  :bind
+  (:map
+   spacemacs-keys-default-map
+   ("g i" . jump-to-init-file)
+   ("g m" . jump-to-messages)
+   ("g u" . jump-to-package-usage)
+   ("g n" . jump-to-nix-packages)
+   ("g p" . jump-to-personal-config)))
 
 (use-package cb-scale-font-transient-state
   :commands (cb-scale-font-transient-state/body)
