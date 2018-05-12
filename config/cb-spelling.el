@@ -22,12 +22,12 @@
     (setq ispell-dictionary-alist (ispell-find-aspell-dictionaries))
     (setq ispell-silently-savep t)))
 
-(use-package cb-evil-ispell
-  :commands (cb-evil-ispell-previous-spelling-error
-             cb-evil-ispell-next-spelling-error
-             cb-evil-ispell-mark-word-as-good
-             cb-evil-ispell-mark-word-as-locally-good
-             cb-evil-ispell-correct-word)
+(use-package evil-ispell
+  :commands (evil-ispell-previous-spelling-error
+             evil-ispell-next-spelling-error
+             evil-ispell-mark-word-as-good
+             evil-ispell-mark-word-as-locally-good
+             evil-ispell-correct-word)
   :preface
   (progn
     (autoload 'evil-global-set-key "evil")
@@ -35,11 +35,11 @@
   :init
   (with-eval-after-load 'evil
     (evil-global-set-key 'normal (kbd "z u") #'flyspell-auto-correct-word)
-    (evil-global-set-key 'normal (kbd "[s")  #'cb-evil-ispell-previous-spelling-error)
-    (evil-global-set-key 'normal (kbd "]s")  #'cb-evil-ispell-next-spelling-error)
-    (evil-global-set-key 'normal (kbd "z g") #'cb-evil-ispell-mark-word-as-good)
-    (evil-global-set-key 'normal (kbd "z G") #'cb-evil-ispell-mark-word-as-locally-good)
-    (evil-global-set-key 'normal (kbd "z =") #'cb-evil-ispell-correct-word)))
+    (evil-global-set-key 'normal (kbd "[s")  #'evil-ispell-previous-spelling-error)
+    (evil-global-set-key 'normal (kbd "]s")  #'evil-ispell-next-spelling-error)
+    (evil-global-set-key 'normal (kbd "z g") #'evil-ispell-mark-word-as-good)
+    (evil-global-set-key 'normal (kbd "z G") #'evil-ispell-mark-word-as-locally-good)
+    (evil-global-set-key 'normal (kbd "z =") #'evil-ispell-correct-word)))
 
 (provide 'cb-spelling)
 
