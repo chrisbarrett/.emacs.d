@@ -127,17 +127,6 @@
   :config
   (evil-set-initial-state 'ert-simple-view-mode 'motion))
 
-(use-package package-lint
-  :straight t
-  :commands (package-lint-current-buffer))
-
-(use-package flycheck-package
-  :straight t
-  :after flycheck
-  :preface
-  (autoload 'flycheck-package-setup "flycheck-package")
-  :config (flycheck-package-setup))
-
 (provide 'config-elisp)
 
 ;;; config-elisp.el ends here

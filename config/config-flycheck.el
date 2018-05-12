@@ -113,6 +113,25 @@
                    (slot            . 1)
                    (window-height   . 0.2)))))
 
+
+;; flycheck-package is a linter for Elisp package conventions.
+
+(use-package flycheck-package
+  :straight t
+  :after flycheck
+  :preface
+  (autoload 'flycheck-package-setup "flycheck-package")
+  :config (flycheck-package-setup))
+
+;; Checkdoc is used by flycheck for linting docstrings in elisp.
+
+(use-package checkdoc
+  :defer t
+  :init
+  (progn
+    (setq checkdoc-force-docstrings-flag nil)
+    (setq checkdoc-arguments-in-order-flag nil)))
+
 (provide 'config-flycheck)
 
 ;;; config-flycheck.el ends here
