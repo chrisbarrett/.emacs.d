@@ -19,16 +19,12 @@
   :defines (ibuffer-show-empty-filter-groups
             ibuffer-never-show-predicates)
   :bind ("C-x C-b" . ibuffer-other-window)
-  :init
-  (spacemacs-keys-set-leader-keys "b l" #'ibuffer)
-
   :preface
   ;; HACK: Hide the cursor and use hl-line.
   (defun cb-ibuffer--hacky-show-line-only ()
     (run-with-timer 0.01 nil (lambda ()
                                (setq cursor-type nil)
                                (hl-line-mode +1))))
-
   :config
   (progn
     (setq ibuffer-expert t)

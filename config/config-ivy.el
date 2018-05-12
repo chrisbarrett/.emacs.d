@@ -33,7 +33,6 @@
 
    :map spacemacs-keys-default-map
    ("r" . ivy-resume)
-   ("b s" . ivy-switch-buffer)
 
    ;; Browse read-expression histroy with ivy
    :map read-expression-map

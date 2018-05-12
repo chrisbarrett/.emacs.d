@@ -64,7 +64,63 @@
 
 (spacemacs-keys-set-leader-keys "b" #'buffers/body)
 
+(defhydra windows (:color blue :help nil)
+  "Window management"
+  ("=" #'balance-windows)
+  ("w" #'evil-window-next)
+  ("o" #'delete-other-windows)
+  ("q" #'delete-window)
+  ("r" #'evil-window-rotate-downwards)
+  ("-" #'evil-window-split)
+  ("/" #'evil-window-vsplit))
+
+(spacemacs-keys-set-leader-keys "w" #'windows/body)
+
 
+
+(define-key universal-argument-map (kbd (concat "SPC u")) #'universal-argument-more)
+
+(spacemacs-keys-set-leader-keys
+  "u"   #'universal-argument
+  "SPC" #'execute-extended-command
+  "|"   #'cb/toggle-window-split
+  ":"   #'eval-expression
+
+  "!"   #'shell-command
+
+  "C" #'compile
+
+  "c r" #'comment-or-uncomment-region
+
+  "f f" #'find-file
+  "f o" #'find-file-other-window
+  "f p" #'find-file-at-point
+  "f s" #'save-buffer
+  "f S" #'save-some-buffers
+  "f W" #'write-file
+
+  "h d c" #'describe-face
+  "h d k" #'describe-key
+  "h d m" #'describe-mode
+  "h d p" #'describe-text-properties
+  "h f c" #'find-face-definition
+  "h f f" #'find-function
+  "h f l" #'find-library
+  "h f v" #'find-variable
+  "h i"   #'info
+
+  "k b" #'kill-this-buffer
+  "k w" #'delete-window
+
+  "n d" #'narrow-to-defun
+  "n f" #'narrow-to-defun
+  "n r" #'narrow-to-region
+  "n s" #'org-narrow-to-subtree
+  "n w" #'widen
+
+  "q" #'delete-window
+
+  "z"   #'font-scale/body)
 
 (use-package which-key
   :straight t
@@ -247,62 +303,6 @@
       "SPC m"   '("major-mode-cmd" . "Major mode commands"))
 
     (which-key-mode +1)))
-
-(use-package spacemacs-keys
-  :demand t
-  :config
-  (progn
-    (define-key universal-argument-map (kbd (concat "SPC u")) #'universal-argument-more)
-
-    (spacemacs-keys-set-leader-keys
-      "u"   #'universal-argument
-      "SPC" #'execute-extended-command
-      "|"   #'cb/toggle-window-split
-      ":"   #'eval-expression
-
-      "!"   #'shell-command
-
-      "C" #'compile
-
-      "c r" #'comment-or-uncomment-region
-
-      "f f" #'find-file
-      "f o" #'find-file-other-window
-      "f p" #'find-file-at-point
-      "f s" #'save-buffer
-      "f S" #'save-some-buffers
-      "f W" #'write-file
-
-      "h d c" #'describe-face
-      "h d k" #'describe-key
-      "h d m" #'describe-mode
-      "h d p" #'describe-text-properties
-      "h f c" #'find-face-definition
-      "h f f" #'find-function
-      "h f l" #'find-library
-      "h f v" #'find-variable
-      "h i"   #'info
-
-      "k b" #'kill-this-buffer
-      "k w" #'delete-window
-
-      "n d" #'narrow-to-defun
-      "n f" #'narrow-to-defun
-      "n r" #'narrow-to-region
-      "n s" #'org-narrow-to-subtree
-      "n w" #'widen
-
-      "q" #'delete-window
-
-      "w =" #'balance-windows
-      "w w" #'evil-window-next
-      "w o" #'delete-other-windows
-      "w q" #'delete-window
-      "w r" #'evil-window-rotate-downwards
-      "w -" #'evil-window-split
-      "w /" #'evil-window-vsplit
-
-      "z"   #'font-scale/body)))
 
 (use-package buffer-cmds
   :after spacemacs-keys
