@@ -78,7 +78,6 @@
 (use-package config-themes)
 (use-package config-basic-settings)
 (use-package config-modeline)
-(use-package config-auto-save)
 (use-package config-leader-keys)
 (use-package config-evil)
 (use-package config-ivy)
