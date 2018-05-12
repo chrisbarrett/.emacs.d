@@ -16,8 +16,6 @@
 (use-package prodigy
   :straight t
   :commands (prodigy)
-  :init
-  (spacemacs-keys-set-leader-keys "as" #'prodigy)
   :config
   (progn
     (evil-set-initial-state 'prodigy-mode 'motion)
