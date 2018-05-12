@@ -11,9 +11,10 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'cb-paths)
+(require 'noflet)
 (require 'spacemacs-keys)
 (require 'subr-x)
-(require 'cb-paths)
 
 (use-package ivy
   :straight t
@@ -34,8 +35,6 @@
 
   :preface
   (progn
-    (autoload 'cb-ivy-occur-then-wgrep "cb-ivy-occur-then-wgrep")
-
     ;; KLUDGE: Declare dynamic var.
     (defvar org-startup-folded)
 
@@ -47,7 +46,25 @@
 
     (defun cb-ivy-with-empty-ivy-extra-directories (f &rest args)
       (let ((ivy-extra-directories nil))
-        (apply f args))))
+        (apply f args)))
+
+    ;; Define a command for entering wgrep straight from ivy results.
+
+    (autoload 'ivy-occur "ivy")
+    (autoload 'ivy-wgrep-change-to-wgrep-mode "ivy")
+
+    (defun ivy-occur-then-wgrep ()
+      "Shortcut for calling `ivy-occur' then activating wgrep."
+      (interactive)
+      (noflet
+       ;; HACK: Run the original exit callback, then assume the occur buffer is
+       ;; being displayed and change to wgrep.
+       ((ivy-exit-with-action
+         (action)
+         (funcall this-fn (lambda (&rest args)
+                            (apply action args)
+                            (ivy-wgrep-change-to-wgrep-mode)))))
+       (ivy-occur))))
 
   :init
   (progn
@@ -74,7 +91,7 @@
     (define-key ivy-minibuffer-map (kbd "C-z") #'ivy-dispatching-done)
     (define-key ivy-minibuffer-map (kbd "<escape>") 'minibuffer-keyboard-quit)
     (define-key ivy-minibuffer-map (kbd "C-l") #'ivy-partial-or-done)
-    (define-key ivy-minibuffer-map (kbd "C-c C-e") #'cb-ivy-occur-then-wgrep)
+    (define-key ivy-minibuffer-map (kbd "C-c C-e") #'ivy-occur-then-wgrep)
     (define-key ivy-minibuffer-map (kbd "C-<return>") #'ivy-immediate-done)
 
     ;; Increase the maximum number of candidates that will be sorted
