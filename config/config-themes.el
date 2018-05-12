@@ -64,6 +64,35 @@
   :config
   (global-prettify-symbols-mode +1))
 
+(use-package paren-face
+  :straight t
+  :demand t
+  :config
+  (progn
+    (add-to-list 'paren-face-modes 'scala-mode)
+    (add-to-list 'paren-face-modes 'web-mode)
+    (add-to-list 'paren-face-modes 'rust-mode)
+    (add-to-list 'paren-face-modes 'yaml-mode)
+    (setq paren-face-regexp (rx (any "{}();,")))
+
+    (font-lock-add-keywords 'rust-mode
+                    `(;; Type assertions
+                      (,(rx (any ":")) 0 'parenthesis)
+                      ;; Generic type parameters
+                      (,(rx (group "<") symbol-start) 1 'parenthesis)
+                      (,(rx symbol-end (group (+ ">"))) 1 'parenthesis)
+                      ;; Lambda parameter delimiters
+                      (,(rx (group "|") (not (any "|"))) 1 'parenthesis)))
+
+    (font-lock-add-keywords 'scala-mode
+                    `(;; Type assertions
+                      (,(rx (any ":")) 0 'parenthesis)
+                      ;; Generic type parameters
+                      (,(rx (group "[") symbol-start) 1 'parenthesis)
+                      (,(rx symbol-end (group (+ "]"))) 1 'parenthesis)))
+
+    (global-paren-face-mode +1)))
+
 (provide 'config-themes)
 
 ;;; config-themes.el ends here

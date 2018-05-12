@@ -97,7 +97,6 @@
 (use-package config-undo-tree)
 (use-package config-ws-butler)
 (use-package config-yasnippet)
-(use-package config-parentheses)
 (use-package config-flycheck)
 (use-package config-aggressive-indent)
 (use-package config-server)
