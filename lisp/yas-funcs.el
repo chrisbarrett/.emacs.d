@@ -13,7 +13,7 @@
 
 ;;; JS
 
-(defun cb-web-module-name-for-binding (yas-text)
+(defun yas-funcs-js-module-name-for-binding (yas-text)
   (pcase yas-text
     ('nil      "")
     (""        "")
