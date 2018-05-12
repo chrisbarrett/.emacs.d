@@ -9,12 +9,43 @@
 ;;; Code:
 
 (require 's)
+(require 'subr-x)
+(require 'thingatpt)
 
 (defun yas-funcs-bolp ()
   "Non-nil if point is on an empty line or at the first word.
 The rest of the line must be blank."
   (s-matches? (rx bol (* space) (* word) (* space) eol)
               (buffer-substring (line-beginning-position) (line-end-position))))
+
+
+;;; Elisp
+
+(defun yas-funcs-el-custom-group ()
+  "Find the first group defined in the current file.
+Fall back to the file name sans extension."
+  (or
+   (cadr (s-match (rx "(defgroup" (+ space) (group (+ (not
+                                                       space))))
+                  (buffer-string)))
+   (cadr (s-match (rx ":group" (+ space) "'" (group (+ (any "-" alnum))))
+                  (buffer-string)))
+   (file-name-sans-extension (file-name-nondirectory buffer-file-name))))
+
+(defun yas-funcs-el-autoload-file (sym)
+  (if-let* ((file (symbol-file (if (stringp sym) (intern sym) sym))))
+      (file-name-sans-extension (file-name-nondirectory file))
+    ""))
+
+(defun yas-funcs-el-at-line-above-decl-p ()
+  (save-excursion
+    (forward-line)
+    (back-to-indentation)
+    (thing-at-point-looking-at (rx (* space) "("
+                                   (or "cl-defun" "defun" "defvar" "defconst"
+                                       "define-minor-mode"
+                                       "define-globalized-minor-mode"
+                                       "define-derived-mode")))))
 
 
 ;;; JS

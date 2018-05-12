@@ -186,9 +186,6 @@ Otherwise delete backwards."
   :config
   (add-to-list 'warning-suppress-types '(yasnippet backquote-change)))
 
-(use-package cb-yas-elisp
-  :after yasnippet)
-
 (use-package cb-yas-js
   :after yasnippet)
 

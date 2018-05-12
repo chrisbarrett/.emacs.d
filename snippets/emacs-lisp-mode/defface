@@ -6,4 +6,4 @@
   '((t
      ($0)))
   "Face for $3"
-  :group '${4:`(yas/find-group-for-snippet)`})
+  :group '${4:`(yas-funcs-el-custom-group)`})

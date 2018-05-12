@@ -5,5 +5,5 @@
 # --
 (defcustom ${1:name} ${2:value}
   "$3"
-  :group '`(yas/find-group-for-snippet)`
+  :group '`(yas-funcs-el-custom-group)`
   :type '$4)
