@@ -14,6 +14,11 @@
 (require 'spacemacs-keys)
 (require 'subr-x)
 (require 's)
+(require 'warnings)
+
+;; Sometimes yasnippet causes this warning to be omitted. Since I don't control
+;; the code, it's not useful.
+(add-to-list 'warning-suppress-types '(yasnippet backquote-change))
 
 (use-package yasnippet
   :straight t
@@ -180,11 +185,6 @@ Otherwise delete backwards."
 
 (use-package yas-funcs
   :after yasnippet)
-
-(use-package warnings
-  :defer t
-  :config
-  (add-to-list 'warning-suppress-types '(yasnippet backquote-change)))
 
 (use-package cb-yas-haskell
   :after yasnippet)
