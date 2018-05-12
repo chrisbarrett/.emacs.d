@@ -21,7 +21,17 @@
     (autoload 'evil-set-initial-state "evil")
     (autoload 'evil-visual-update-x-selection "evil-states")
 
-    (defun cb-evil--bounds-of-surrounding-lines (lines-before lines-after)
+    (defun config-evil-flyspell-on ()
+      "Enable flyspell."
+      (interactive)
+      (turn-on-flyspell))
+
+    (defun config-evil-flyspell-off ()
+      "Disable flyspell."
+      (interactive)
+      (turn-off-flyspell))
+
+    (defun config-evil--bounds-of-surrounding-lines (lines-before lines-after)
       (let ((start
              (save-excursion
                (ignore-errors
@@ -34,13 +44,13 @@
                (line-end-position))))
         (list start end)))
 
-    (defun cb-evil--sp-delete-and-join-compat (fn &rest args)
+    (defun config-evil--sp-delete-and-join-compat (fn &rest args)
       (cond
        ;; Narrow before deleting to improve performance in large org buffers.
        ((and (bound-and-true-p smartparens-strict-mode)
              (derived-mode-p 'org-mode))
         (save-restriction
-          (apply #'narrow-to-region (cb-evil--bounds-of-surrounding-lines 10 10))
+          (apply #'narrow-to-region (config-evil--bounds-of-surrounding-lines 10 10))
           (call-interactively 'sp-backward-delete-char)))
 
        ((bound-and-true-p smartparens-strict-mode)
@@ -88,26 +98,65 @@
     (evil-global-set-key 'normal [remap redo] #'undo-tree-redo)
     (evil-global-set-key 'normal [remap undo] #'undo-tree-undo)
 
-    ;; Initial states
+    ;; Initial states and keymaps for builtin Emacs packages.
 
+    (evil-set-initial-state 'occur-mode 'motion)
     (with-eval-after-load 'replace
-      (evil-set-initial-state 'occur-mode 'motion)
       (evil-add-hjkl-bindings occur-mode-map))
 
+    (evil-set-initial-state 'tar-mode 'emacs)
     (with-eval-after-load 'tar-mode
-      (evil-set-initial-state 'tar-mode 'emacs)
       (evil-add-hjkl-bindings tar-mode-map))
+
+    (evil-set-initial-state 'archive-mode 'emacs)
     (with-eval-after-load 'arc-mode
-      (evil-set-initial-state 'archive-mode 'emacs)
       (evil-add-hjkl-bindings archive-mode-map))
 
+    (with-eval-after-load 'compile
+      ;; h (help) binding interferes with evil navigation.
+      (evil-define-key 'motion compilation-mode-map (kbd "h") #'evil-backward-char))
+
+    (evil-set-initial-state 'doc-view-mode 'motion)
+    (with-eval-after-load 'docview
+      (evil-define-key 'motion doc-view-mode-map
+        (kbd "gg") 'doc-view-first-page
+        (kbd "G") 'doc-view-last-page
+        (kbd "j") 'doc-view-next-line-or-next-page
+        (kbd "k") 'doc-view-previous-line-or-previous-page
+        (kbd "h") 'image-backward-hscroll
+        (kbd "l") 'image-forward-hscroll
+        (kbd "n") 'doc-view-next-page
+        (kbd "p") 'doc-view-previous-page
+        (kbd "<down>") 'doc-view-next-line-or-next-page
+        (kbd "<up>") 'doc-view-previous-line-or-previous-page
+        (kbd "<left>") 'image-backward-hscroll
+        (kbd "<right>") 'image-forward-hscroll))
+
+    (with-eval-after-load 'archive-mode
+      ;; KLUDGE: `evil-set-initial-state' doesn't work with archive-mode. Set in a hook instead.
+      (add-hook 'archive-mode-hook 'evil-motion-state)
+      (evil-define-key 'motion archive-mode-map
+        (kbd "q") 'kill-this-buffer
+        (kbd "RET") 'archive-extract
+        (kbd "o") 'archive-extract-other-window
+        (kbd "m") 'archive-mark
+        (kbd "x") 'archive-expunge
+        (kbd "U") 'archive-unmark-all-files
+        (kbd "j") 'archive-next-line
+        (kbd "k") 'archive-previous-line))
+
     (evil-set-initial-state 'wdired-mode 'normal)
+
+    ;; Add ex commands for controlling spellcheck.
+
+    (evil-ex-define-cmd "nospell" #'config-evil-flyspell-off)
+    (evil-ex-define-cmd "spell" #'config-evil-flyspell-on)
 
     ;; Better compat with smartparens-strict mode.
     ;; TODO: Move to SP config.
 
     (advice-add #'evil-delete-backward-char-and-join
-                :around #'cb-evil--sp-delete-and-join-compat))
+                :around #'config-evil--sp-delete-and-join-compat))
 
   :functions (evil-mode evil-delay evil-delete-backward-char-and-join)
   :defines (evil-want-Y-yank-to-eol))
@@ -120,20 +169,14 @@
 
 (use-package evil-surround
   :straight t
-  :commands (global-evil-surround-mode
-             evil-surround-region)
-
+  :after evil
   :preface
   (progn
     (autoload 'evil-substitute "evil-commands")
-
-    (defun cb-evil--init-evil-surround-pairs ()
+    (defun config-evil--init-evil-surround-pairs ()
       (make-local-variable 'evil-surround-pairs-alist)
-      (push '(?\` . ("`" . "'")) evil-surround-pairs-alist))
-    )
-  :init
-  (with-eval-after-load 'evil
-    (global-evil-surround-mode))
+      (push '(?\` . ("`" . "'")) evil-surround-pairs-alist)))
+
   :config
   (progn
     (setq-default evil-surround-pairs-alist
@@ -153,17 +196,16 @@
                     (?< . surround-read-tag)
                     (?f . surround-function)))
 
-    (add-hook 'emacs-lisp-mode-hook #'cb-evil--init-evil-surround-pairs)
+    (add-hook 'emacs-lisp-mode-hook #'config-evil--init-evil-surround-pairs)
 
     (evil-define-key 'visual evil-surround-mode-map "s" #'evil-surround-region)
-    (evil-define-key 'visual evil-surround-mode-map "S" #'evil-substitute)))
+    (evil-define-key 'visual evil-surround-mode-map "S" #'evil-substitute)
+
+    (global-evil-surround-mode +1)))
 
 (use-package evil-iedit-state
   :straight t
-  :commands (evil-iedit-state evil-iedit-state/iedit-mode)
-  :init
-  (spacemacs-keys-set-leader-keys "se" #'evil-iedit-state/iedit-mode)
-
+  :bind (:map spacemacs-keys-default-map ("se" . evil-iedit-state/iedit-mode))
   :config
   (progn
     (setq iedit-current-symbol-default t)
@@ -173,37 +215,16 @@
     ;; Enable leader key in iedit and iedit-insert states
     (define-key evil-iedit-state-map (kbd "SPC") spacemacs-keys-default-map)))
 
-(use-package evil-ex
-  :defer t
-  :functions (evil-ex-define-cmd)
-  :preface
-  (progn
-    (defun cb-evil-flyspell-on ()
-      "Enable flyspell."
-      (interactive)
-      (turn-on-flyspell))
-
-    (defun cb-evil-flyspell-off ()
-      "Disable flyspell."
-      (interactive)
-      (turn-off-flyspell)))
-
-  :config
-  (progn
-    (evil-ex-define-cmd "nospell" #'cb-evil-flyspell-off)
-    (evil-ex-define-cmd "spell" #'cb-evil-flyspell-on)))
-
 (use-package evil-ediff
   :straight t
   :after ediff)
 
 (use-package evil-args
   :straight t
-  :after evil
-  :config
-  (progn
-    (define-key evil-inner-text-objects-map "a" 'evil-inner-arg)
-    (define-key evil-outer-text-objects-map "a" 'evil-outer-arg)))
+  :bind (:map
+         evil-inner-text-objects-map ("a" . evil-inner-arg)
+         :map
+         evil-outer-text-objects-map ("a" . evil-outer-arg)))
 
 (use-package evil-indent-plus
   :straight t
@@ -217,23 +238,18 @@
 
 (use-package evil-numbers
   :straight t
-  :commands (evil-numbers/inc-at-pt
-             evil-numbers/dec-at-pt)
-
-  :init
-  (progn
-    (evil-global-set-key 'normal (kbd "+") #'evil-numbers/inc-at-pt)
-    (evil-global-set-key 'normal (kbd "-") #'evil-numbers/dec-at-pt)))
+  :bind (:map
+         evil-normal-state-map
+         ("+" . evil-numbers/inc-at-pt)
+         ("-" . evil-numbers/dec-at-pt)))
 
 (use-package evil-search-highlight-persist
   :straight t
   :after evil
   :commands (global-evil-search-highlight-persist
              evil-search-highlight-persist-remove-all)
-
   :preface
   (autoload 'evil-ex-define-cmd "evil-ex")
-
   :config
   (progn
     (global-evil-search-highlight-persist)
@@ -246,46 +262,46 @@
 
   :preface
   (progn
-    (defun cb-evil--vi-tilde-fringe-off ()
+    (defun config-evil--vi-tilde-fringe-off ()
       (vi-tilde-fringe-mode -1))
 
-    (defun cb-evil--vi-tilde-fringe-off-if-readonly ()
+    (defun config-evil--vi-tilde-fringe-off-if-readonly ()
       (when buffer-read-only
         (vi-tilde-fringe-mode -1))))
 
   :config
   (progn
-    (add-hook 'which-key-init-buffer-hook #'cb-evil--vi-tilde-fringe-off)
-    (add-hook 'after-change-major-mode-hook #'cb-evil--vi-tilde-fringe-off-if-readonly)
+    (add-hook 'which-key-init-buffer-hook #'config-evil--vi-tilde-fringe-off)
+    (add-hook 'after-change-major-mode-hook #'config-evil--vi-tilde-fringe-off-if-readonly)
     (global-vi-tilde-fringe-mode)))
 
 (use-package evil-nerd-commenter
   :straight t
-  :commands (evilnc-comment-operator)
-  :init
-  (progn
-    (evil-global-set-key 'normal (kbd ";") #'evilnc-comment-operator)
-    ;; Double all the commenting functions so that the inverse operations
-    ;; can be called without setting a flag
-    (define-key evil-normal-state-map "gc" #'evilnc-comment-operator)))
+  :bind (:map
+         evil-normal-state-map
+         (";" . evilnc-comment-operator)
+         ;; Double all the commenting functions so that the inverse
+         ;; operations can be called without setting a flag
+         ("gc" . evilnc-comment-operator)))
 
 (use-package evil-funcs
-  :bind (:map evil-visual-state-map
-              ("<" . evil-funcs/shift-left)
-              (">" . evil-funcs/shift-right))
-  :config
-  (progn
-    (define-key evil-normal-state-map "gy" 'evil-funcs/copy-and-comment-lines)
-
-    (spacemacs-keys-set-leader-keys
-      "cl" #'evil-funcs/comment-or-uncomment-lines
-      "cL" #'evil-funcs/comment-or-uncomment-lines-inverse
-      "cp" #'evil-funcs/comment-or-uncomment-paragraphs
-      "cP" #'evil-funcs/comment-or-uncomment-paragraphs-inverse
-      "ct" #'evil-funcs/quick-comment-or-uncomment-to-the-line
-      "cT" #'evil-funcs/quick-comment-or-uncomment-to-the-line-inverse
-      "cy" #'evil-funcs/copy-and-comment-lines
-      "cY" #'evil-funcs/copy-and-comment-lines-inverse)))
+  :bind (:map
+         evil-visual-state-map
+         ("<" . evil-funcs/shift-left)
+         (">" . evil-funcs/shift-right)
+         :map
+         evil-normal-state-map
+         ("gy" . evil-funcs/copy-and-comment-lines)
+         :map
+         spacemacs-keys-default-map
+         ("cl" . evil-funcs/comment-or-uncomment-lines)
+         ("cL" . evil-funcs/comment-or-uncomment-lines-inverse)
+         ("cp" . evil-funcs/comment-or-uncomment-paragraphs)
+         ("cP" . evil-funcs/comment-or-uncomment-paragraphs-inverse)
+         ("ct" . evil-funcs/quick-comment-or-uncomment-to-the-line)
+         ("cT" . evil-funcs/quick-comment-or-uncomment-to-the-line-inverse)
+         ("cy" . evil-funcs/copy-and-comment-lines)
+         ("cY" . evil-funcs/copy-and-comment-lines-inverse)))
 
 (provide 'config-evil)
 

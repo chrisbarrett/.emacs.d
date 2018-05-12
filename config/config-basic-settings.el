@@ -18,7 +18,6 @@
 
 (autoload 'ansi-color-apply-on-region "ansi-color")
 (autoload 'evil-define-key "evil")
-(autoload 'evil-set-initial-state "evil")
 (autoload 'thing-at-point-looking-at "thingatpt")
 
 (defalias #'yes-or-no-p #'y-or-n-p)
@@ -499,10 +498,6 @@ Interactively, reverse the characters in the current region."
     ;; Clear default underline text properties applied to compilation highlights.
     (setq compilation-message-face 'cb-compilation-base-face)
 
-    (with-eval-after-load 'evil
-      ;; h (help) binding interferes with evil navigation.
-      (evil-define-key 'motion compilation-mode-map (kbd "h") #'evil-backward-char))
-
     (setq compilation-environment '("TERM=screen-256color"))
     (setq compilation-always-kill t)
     (setq compilation-ask-about-save nil)
@@ -668,48 +663,16 @@ Interactively, reverse the characters in the current region."
   :defer t
   :preface
   (progn
-    ;; HACK: `evil-set-initial-state' doesn't work with archive-mode. Run a hook
-    ;; to set that instead.
+    ;; KLUDGE: archive-mode doesn't run a hook.
     (defvar archive-mode-hook nil)
-
     (defun config-basic-settings--run-archive-mode-hook ()
       (run-hooks 'archive-mode-hook)))
-
   :config
-  (progn
-    (advice-add 'archive-mode :after #'config-basic-settings--run-archive-mode-hook)
-    (add-hook 'archive-mode-hook 'evil-motion-state)
-
-    (with-no-warnings
-      (evil-define-key 'motion archive-mode-map
-        (kbd "q") 'kill-this-buffer
-        (kbd "RET") 'archive-extract
-        (kbd "o") 'archive-extract-other-window
-        (kbd "m") 'archive-mark
-        (kbd "x") 'archive-expunge
-        (kbd "U") 'archive-unmark-all-files
-        (kbd "j") 'archive-next-line
-        (kbd "k") 'archive-previous-line))))
+  (advice-add 'archive-mode :after #'config-basic-settings--run-archive-mode-hook))
 
 (use-package doc-view
   :defer t
-  :config
-  (progn
-    (setq doc-view-continuous t)
-    (evil-set-initial-state 'doc-view-mode 'motion)
-    (evil-define-key 'motion doc-view-mode-map
-      (kbd "gg") 'doc-view-first-page
-      (kbd "G") 'doc-view-last-page
-      (kbd "j") 'doc-view-next-line-or-next-page
-      (kbd "k") 'doc-view-previous-line-or-previous-page
-      (kbd "h") 'image-backward-hscroll
-      (kbd "l") 'image-forward-hscroll
-      (kbd "n") 'doc-view-next-page
-      (kbd "p") 'doc-view-previous-page
-      (kbd "<down>") 'doc-view-next-line-or-next-page
-      (kbd "<up>") 'doc-view-previous-line-or-previous-page
-      (kbd "<left>") 'image-backward-hscroll
-      (kbd "<right>") 'image-forward-hscroll)))
+  :config (setq doc-view-continuous t))
 
 (use-package url-cookie
   :defer t
