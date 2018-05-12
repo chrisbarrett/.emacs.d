@@ -1,17 +1,12 @@
-;;; paths.el --- Variables relating to core Emacs functionality. -*- lexical-binding: t; -*-
-
-;; Copyright (C) 2016  Chris Barrett
-
-;; Author: Chris Barrett <chris+emacs@walrus.cool>
-
+;;; paths.el --- Path variables and path management. -*- lexical-binding: t; -*-
 ;;; Commentary:
-
 ;;; Code:
 
 (eval-when-compile
   (require 'recentf)
   (require 'use-package))
 
+(require 'f)
 (require 'subr-x)
 (require 'seq)
 
@@ -39,6 +34,12 @@
 
 
 
+;; no-littering overrides many common paths to keep the .emacs.d directory
+;; clean.
+;;
+;; Load it here since we want to refer to path vars, and need to make sure it's
+;; loaded very early in the startup process.
+
 (use-package no-littering
   :straight t
   :demand t
@@ -47,10 +48,9 @@
     (setq no-littering-etc-directory paths-etc-directory)
     (setq no-littering-var-directory paths-cache-directory))
   :config
-  (progn
-    (with-eval-after-load 'recentf
-      (add-to-list 'recentf-exclude no-littering-etc-directory)
-      (add-to-list 'recentf-exclude no-littering-var-directory))))
+  (with-eval-after-load 'recentf
+    (add-to-list 'recentf-exclude no-littering-etc-directory)
+    (add-to-list 'recentf-exclude no-littering-var-directory)))
 
 
 
@@ -60,24 +60,17 @@
 If argument INTERACTIVE-P is set, log additional information."
   (interactive "p")
   (let* ((before load-path)
-         (git-subtrees
-          (seq-filter #'file-directory-p
-                      (directory-files paths-lisp-directory t "^[^.]")))
-         (config-subtrees
-          (seq-filter #'file-directory-p
-                      (directory-files paths-config-directory t "^[^.]")))
-
+         (main-dirs
+          (list paths-lisp-directory
+                paths-config-directory
+                paths-themes-directory
+                paths-site-lisp-directory))
+         (subdirs
+          (f-directories paths-lisp-directory))
          (updated-load-path
-          (append (list
-                   paths-lisp-directory
-                   paths-config-directory
-                   paths-themes-directory
-                   paths-site-lisp-directory)
-                  config-subtrees
-                  git-subtrees
-                  load-path)))
+          (seq-filter #'file-directory-p (seq-uniq (append main-dirs subdirs load-path)))))
 
-    (setq load-path (seq-filter #'file-directory-p updated-load-path))
+    (setq load-path updated-load-path)
 
     (when interactive-p
       (if-let* ((added (seq-difference load-path before)))

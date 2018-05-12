@@ -1,16 +1,5 @@
 ;;; init.el --- Startup file for Emacs.  -*- lexical-binding: t; -*-
-
-;; Copyright (C) 2016  Chris Barrett
-
-;; Author: Chris Barrett <chris+emacs@walrus.cool>
-
 ;;; Commentary:
-
-;; Declares some variables and bootstraps the rest of the configuration.
-;;
-;; One main difference from other configurations out there is that I use git subtrees for
-;; many core packages, instead of relying on the Emacs package manager.
-
 ;;; Code:
 
 (when (version< emacs-version "26")
