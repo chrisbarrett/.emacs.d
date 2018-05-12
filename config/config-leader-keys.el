@@ -30,11 +30,20 @@
 (autoload 'evil-window-vsplit "evil-commands")
 (autoload 'org-narrow-to-subtree "org")
 
+
+
 (defhydra select-input-method (:color blue :help nil)
   "Select input method"
   ("a" (progn (set-input-method "arabic") (message "Arabic input method activated")) "arabic")
   ("t" (progn (set-input-method "TeX") (message "TeX input method activated")) "TeX")
   ("SPC" (progn (deactivate-input-method) (message "Input method cleared")) "clear"))
+
+(defhydra font-scale (:color red :help nil)
+  "Zoom commands"
+  ("+" (text-scale-increase 1) "zoom in")
+  ("-" (text-scale-decrease 1) "zoom out")
+  ("0" (text-scale-set 0) "reset")
+  ("q" nil "quit" :exit t))
 
 
 
@@ -277,7 +286,9 @@
       "w q" #'delete-window
       "w r" #'evil-window-rotate-downwards
       "w -" #'evil-window-split
-      "w /" #'evil-window-vsplit)))
+      "w /" #'evil-window-vsplit
+
+      "z"   #'font-scale/body)))
 
 (use-package buffer-cmds
   :after spacemacs-keys
@@ -303,16 +314,6 @@
    ("g u" . jump-to-package-usage)
    ("g n" . jump-to-nix-packages)
    ("g p" . jump-to-personal-config)))
-
-(use-package cb-scale-font-transient-state
-  :commands (cb-scale-font-transient-state/body)
-  :init
-  (progn
-    (push '((nil . "cb-scale-font-transient-state/body") . (nil . "text-scale"))
-          which-key-replacement-alist)
-
-    (spacemacs-keys-set-leader-keys
-      "z" #'cb-scale-font-transient-state/body)))
 
 (use-package cb-buffer-transient-state
   :commands (cb-buffer-transient-state/body
