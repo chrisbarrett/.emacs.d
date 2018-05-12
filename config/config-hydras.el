@@ -168,6 +168,29 @@ _r_: recent          _D_: delete
   ("y" #'copy-buffer-path)
   ("q" nil :exit t))
 
+(defhydra errors (:color teal :hint nil)
+  "
+%s(hydra-title-with-mat-icon \"error_outline\" \"Errors\")
+
+^^^Navigation^      ^Actions^         ^Checkers^
+^^^----------^----- ^-------^-------- ^--------^--
+^^_n_: next         _r_: run checks   _h_: describe
+_p_/_N_: previous   _c_: clear        _s_: select
+^^_l_: list errors  _e_: explain      _v_: verify
+
+"
+  ("n" #'flycheck-next-error :color red)
+  ("p" #'flycheck-previous-error :color red)
+  ("N" #'flycheck-previous-error :color red)
+  ("c" #'flycheck-clear)
+  ("v" #'flycheck-verify-setup)
+  ("h" #'flycheck-describe-checker)
+  ("l" #'config-flycheck-toggle-error-list)
+  ("s" #'flycheck-select-checker)
+  ("e" #'flycheck-explain-error-at-point)
+  ("r" #'flycheck-buffer)
+  ("q" nil))
+
 (defhydra git-and-files (:color teal :hint nil)
   "
 %s(hydra-title-with-aicon \"git\" \"Git and Goto\")
@@ -203,6 +226,7 @@ _u_: package usage     _h_: navigate hunks
   "a" #'applications/body
   "b" #'buffers/body
   "f" #'files/body
+  "e" #'errors/body
   "g" #'git-and-files/body
   "w" #'windows/body
   "z" #'font-scale/body)

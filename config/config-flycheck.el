@@ -34,18 +34,7 @@
    ("M-n" . flycheck-next-error)
    ("M-p" . flycheck-previous-error)
    ("M-j" . flycheck-next-error)
-   ("M-k" . flycheck-previous-error)
-   :map
-   spacemacs-keys-default-map
-   ("ec" . flycheck-clear)
-   ("eh" . flycheck-describe-checker)
-   ("ee" . flycheck-explain-error-at-point)
-   ("en" . flycheck-next-error)
-   ("eN" . flycheck-previous-error)
-   ("ep" . flycheck-previous-error)
-   ("es" . flycheck-select-checker)
-   ("eS" . flycheck-set-checker-executable)
-   ("ev" . flycheck-verify-setup))
+   ("M-k" . flycheck-previous-error))
 
   :preface
   (progn
@@ -85,9 +74,6 @@
             (display-message-or-buffer (string-join messages "\n\n")
                                        flycheck-error-message-buffer
                                        'display-buffer-popup-window))))))
-
-  :init
-  (spacemacs-keys-set-leader-keys "el" #'config-flycheck-toggle-error-list)
 
   :config
   (progn
