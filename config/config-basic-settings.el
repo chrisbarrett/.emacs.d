@@ -822,6 +822,13 @@ Interactively, reverse the characters in the current region."
     "^" 'hexl-beginning-of-line
     "0" 'hexl-beginning-of-line))
 
+(use-package man
+  :defer t
+  :bind (:map
+         Man-mode-map
+         ("M-n" . Man-next-section)
+         ("M-p" . Man-previous-section)))
+
 (provide 'config-basic-settings)
 
 ;;; config-basic-settings.el ends here

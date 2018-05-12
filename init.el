@@ -132,7 +132,6 @@
 (use-package config-tiny)
 (use-package config-fstar)
 (use-package config-terraform)
-(use-package config-manpages)
 (use-package config-etags)
 
 (use-package personal-config
