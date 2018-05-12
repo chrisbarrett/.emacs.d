@@ -16,31 +16,45 @@
 (require 'evil)
 (require 'subr-x)
 
+
+;; Define some modes for specific files.
+
 (define-derived-mode dir-locals-mode emacs-lisp-mode "dir-locals")
 (add-to-list 'auto-mode-alist '("\\.dir-locals.el\\'" . dir-locals-mode))
 
-(use-package lisp-mode
-  :mode ("/Cask\\'" . lisp-mode))
+(define-derived-mode caskfile-mode emacs-lisp-mode "caskfile")
+(add-to-list 'auto-mode-alist '("/Cask\\'" . caskfile-mode))
 
-(use-package elisp-mode
-  :preface
-  (defun config-elisp--elisp/eval-buffer ()
-    "Evaluate the current buffer as Elisp code, within a straight transaction."
-    (interactive)
-    (message "Evaluating %s..." (buffer-name))
-    (straight-transaction
-      (if (null buffer-file-name)
-          (eval-buffer)
-        (when (string= buffer-file-name user-init-file)
-          (straight-mark-transaction-as-init))
-        (load buffer-file-name nil 'nomessage)))
-    (message "Evaluating %s... done." (buffer-name)))
-  :init
-  (progn
-    (spacemacs-keys-declare-prefix-for-mode 'emacs-lisp-mode "m e" "eval")
-    (spacemacs-keys-set-leader-keys-for-major-mode 'emacs-lisp-mode
-      "eb" #'config-elisp--elisp/eval-buffer
-      "ee" #'eval-expression)))
+
+;; Define an eval-buffer command for elisp that executes within a straight
+;; transaction.
+
+(defun config-elisp--elisp/eval-buffer ()
+  "Evaluate the current buffer as Elisp code, within a straight transaction."
+  (interactive)
+  (message "Evaluating %s..." (buffer-name))
+  (straight-transaction
+    (if (null buffer-file-name)
+        (eval-buffer)
+      (when (string= buffer-file-name user-init-file)
+        (straight-mark-transaction-as-init))
+      (load buffer-file-name nil 'nomessage)))
+  (message "Evaluating %s... done." (buffer-name)))
+
+(spacemacs-keys-declare-prefix-for-mode 'emacs-lisp-mode "m e" "eval")
+(spacemacs-keys-set-leader-keys-for-major-mode 'emacs-lisp-mode
+  "eb" #'config-elisp--elisp/eval-buffer
+  "ee" #'eval-expression)
+
+
+;; Tell which-key how to render eval commands.
+
+(use-package which-key
+  :config
+  (push `((", e" . ,(rx bos "eval-" (group (+ nonl)))) . (nil . "\\1"))
+        which-key-replacement-alist))
+
+;; IELM is the Elisp repl built in to Emacs.
 
 (use-package ielm
   :bind (:map emacs-lisp-mode-map ("C-c C-z" . ielm))
@@ -65,37 +79,28 @@
                    (window-height   . 0.2)))
     (define-key inferior-emacs-lisp-mode-map (kbd "C-c C-z") #'config-elisp-pop-to-elisp-buffer)))
 
-(use-package which-key
-  :preface
-  (autoload 'which-key-add-key-based-replacements "config-elisp--leader-keys")
-  :config
-  (progn
-    (which-key-add-key-based-replacements "SPC a p" "profiler")
-    (push `(("SPC a p" . ,(rx bos "profiler-" (group (+ nonl)))) . (nil . "\\1"))
-          which-key-replacement-alist)
-    (push `((", e" . ,(rx bos "eval-" (group (+ nonl)))) . (nil . "\\1"))
-          which-key-replacement-alist)))
+;; elisp-slime-nav provides a command for navigating to the definitions of
+;; things in elisp in a uniform way.
 
 (use-package elisp-slime-nav
   :straight t
-  :commands (elisp-slime-nav-find-elisp-thing-at-point
-             elisp-slime-nav-describe-elisp-thing-at-point)
+  :hook (emacs-lisp-mode . turn-on-elisp-slime-nav-mode)
   :bind
   (:map emacs-lisp-mode-map ("M-." . elisp-slime-nav-find-elisp-thing-at-point))
   :init
-  (progn
-    (evil-define-key 'normal elisp-slime-nav-mode-map
-      (kbd "M-.") #'elisp-slime-nav-find-elisp-thing-at-point
-      (kbd "K") #'elisp-slime-nav-describe-elisp-thing-at-point)
+  (evil-define-key 'normal elisp-slime-nav-mode-map
+    (kbd "M-.") #'elisp-slime-nav-find-elisp-thing-at-point
+    (kbd "K") #'elisp-slime-nav-describe-elisp-thing-at-point))
 
-    (add-hook 'emacs-lisp-mode-hook #'turn-on-elisp-slime-nav-mode))
-
-  :commands (turn-on-elisp-slime-nav-mode))
+;; eldoc shows function parameters in the minibuffer.
 
 (use-package eldoc
   :hook (emacs-lisp-mode . eldoc-mode)
   :config
   (setq eldoc-idle-delay 0.2))
+
+;; nameless hides the package prefix in elisp buffers, which can make things
+;; easier to read.
 
 (use-package nameless
   :straight t
@@ -106,24 +111,17 @@
     (setq nameless-prefix ":")
     (setq nameless-private-prefix t)))
 
-;; Checkdoc configuration
-
-(use-package checkdoc
-  :defer t
-  :init
-  (progn
-    (setq checkdoc-force-docstrings-flag nil)
-    (setq checkdoc-arguments-in-order-flag nil)))
+;; ert is the built-in elisp test runner.
 
 (use-package ert
   :commands (ert)
   :preface
-  (defun config-elisp-/ert-run-all-tests ()
+  (defun ert-run-all-tests ()
     (interactive)
     (ert t))
   :init
   (spacemacs-keys-set-leader-keys-for-major-mode 'emacs-lisp-mode
-    "t" #'config-elisp-/ert-run-all-tests)
+    "t" #'ert-run-all-tests)
   :config
   (evil-set-initial-state 'ert-simple-view-mode 'motion))
 
