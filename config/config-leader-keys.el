@@ -32,10 +32,6 @@
 (autoload 'evil-window-rotate-downwards "evil-commands")
 (autoload 'cb/sudo-edit "cb-sudo-edit")
 (autoload 'cb/toggle-window-split "cb-toggle-window-split")
-(autoload 'cb-goto-init-file "cb-goto")
-(autoload 'cb-goto-messages "cb-goto")
-(autoload 'cb-goto-nix-packages "cb-goto")
-(autoload 'cb-goto-personal-config "cb-goto")
 (autoload 'org-narrow-to-subtree "org")
 
 (defhydra cb/select-input-method (:color blue :help nil)
@@ -266,11 +262,6 @@
       "f W" #'write-file
       "f v" #'cb-leader-keys/reload-file
 
-      "g i" #'cb-goto-init-file
-      "g m" #'cb-goto-messages
-      "g n" #'cb-goto-nix-packages
-      "g p" #'cb-goto-personal-config
-
       "h d c" #'describe-face
       "h d k" #'describe-key
       "h d m" #'describe-mode
@@ -310,6 +301,14 @@
     "f R" #'rename-file-and-buffer
     "f y" #'copy-buffer-path
     "f Y" #'copy-buffer-name))
+
+(use-package jump-cmds
+  :config
+  (spacemacs-keys-set-leader-keys
+    "g i" #'jump-to-init-file
+    "g m" #'jump-to-messages
+    "g n" #'jump-to-nix-packages
+    "g p" #'jump-to-personal-config))
 
 (use-package cb-scale-font-transient-state
   :commands (cb-scale-font-transient-state/body)

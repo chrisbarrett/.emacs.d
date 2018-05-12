@@ -1,4 +1,4 @@
-;;; cb-goto.el --- Shortcut commands to go to particular locations.  -*- lexical-binding: t; -*-
+;;; jump-cmds.el --- Shortcut commands to go to particular locations.  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2016  Chris Barrett
 
@@ -8,26 +8,26 @@
 
 ;;; Code:
 
-(defun cb-goto-init-file ()
+(defun jump-to-init-file ()
   "Open the Emacs init.el file."
   (interactive)
   (find-file (concat user-emacs-directory "init.el")))
 
-(defun cb-goto-nix-packages ()
+(defun jump-to-nix-packages ()
   "Open the nix packages file."
   (interactive)
   (find-file "~/Sync/nix/packages.nix"))
 
-(defun cb-goto-personal-config ()
+(defun jump-to-personal-config ()
   "Open the personal configuration file."
   (interactive)
   (find-file "~/Sync/emacs/personal-config.el"))
 
-(defun cb-goto-messages ()
+(defun jump-to-messages ()
   "Open the messages buffer."
   (interactive)
   (display-buffer "*Messages*"))
 
-(provide 'cb-goto)
+(provide 'jump-cmds)
 
-;;; cb-goto.el ends here
+;;; jump-cmds.el ends here
