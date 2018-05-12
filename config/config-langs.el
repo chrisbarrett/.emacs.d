@@ -47,6 +47,15 @@
   :straight t
   :mode ("\\.tf\\(vars\\)?\\'" . terraform-mode))
 
+(use-package yaml-mode
+  :straight t
+  :mode ("\\.\\(e?ya?\\|ra\\)ml\\'" . yaml-mode)
+  :preface
+  (defun cb-yaml--disable-autofill ()
+    (auto-fill-mode -1))
+  :config
+  (add-hook 'yaml-mode-hook #'cb-yaml--disable-autofill))
+
 (provide 'config-langs)
 
 ;;; config-langs.el ends here

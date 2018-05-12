@@ -105,7 +105,6 @@
 (use-package config-scala)
 (use-package config-rust)
 (use-package config-ibuffer)
-(use-package config-yaml)
 (use-package config-dired)
 (use-package config-diff)
 (use-package config-web-mode)
