@@ -19,3 +19,4 @@ elpa
 /straight/*
 !/straight/versions/
 !/straight/versions/*
+/var/
