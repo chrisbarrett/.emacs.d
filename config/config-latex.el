@@ -14,12 +14,12 @@
 
 ;; Auctex
 
-(defvar cb-latex-command "LaTeX")
+(defvar config-latex--command "LaTeX")
 
 (use-package which-key
   :config
   (progn
-    (push `((nil . ,(rx bos (? "cb-") (? "la") "tex-" (group (+ nonl)))) . (nil . "\\1"))
+    (push `((nil . ,(rx bos (? "config-") (? "la") "tex-" (group (+ nonl)))) . (nil . "\\1"))
           which-key-replacement-alist)
     (push `((nil . ,(rx bos (? "La") "TeX-" (group (+ nonl)))) . (nil . "\\1"))
           which-key-replacement-alist)))
@@ -30,7 +30,7 @@
   (defvar-local TeX-syntactic-comments t)
   :config
   (progn
-    (setq TeX-command-default cb-latex-command)
+    (setq TeX-command-default config-latex--command)
     (setq TeX-auto-save t)
     (setq TeX-parse-self t)
     ;; Synctex support
@@ -49,18 +49,18 @@
 
     (defvar TeX-save-query)
 
-    (defun cb-latex-build ()
+    (defun config-latex-build ()
       (interactive)
       (progn
         (let ((TeX-save-query nil))
           (TeX-save-document (TeX-master-file)))
-        (TeX-command cb-latex-command 'TeX-master-file -1)))
+        (TeX-command config-latex--command 'TeX-master-file -1)))
 
-    (defvar cb-latex-no-indent-envs '("equation" "equation*" "align" "align*" "tabular" "tikzpicture"))
+    (defvar config-latex-no-indent-envs '("equation" "equation*" "align" "align*" "tabular" "tikzpicture"))
 
-    (defun cb-latex--autofill ()
+    (defun config-latex--autofill ()
       ;; Check whether the pointer is currently inside one of the
-      ;; environments described in `cb-latex-no-indent-envs' and if so, inhibits
+      ;; environments described in `config-latex-no-indent-envs' and if so, inhibits
       ;; the automatic filling of the current paragraph.
       (let ((env)
             (should-fill t)
@@ -68,34 +68,34 @@
         (while (and should-fill (not (equal env "document")))
           (setq level (1+ level))
           (setq env (LaTeX-current-environment level))
-          (setq should-fill (not (member env cb-latex-no-indent-envs))))
+          (setq should-fill (not (member env config-latex-no-indent-envs))))
 
         (when should-fill
           (do-auto-fill))))
 
-    (defun cb-latex--auto-fill-mode ()
+    (defun config-latex--auto-fill-mode ()
       (auto-fill-mode +1)
-      (setq-local auto-fill-function #'cb-latex--autofill))
+      (setq-local auto-fill-function #'config-latex--autofill))
 
     ;; Rebindings for TeX-font.
-    (defun cb-latex-font-bold () (interactive) (TeX-font nil ?\C-b))
-    (defun cb-latex-font-code () (interactive) (TeX-font nil ?\C-t))
-    (defun cb-latex-font-emphasis () (interactive) (TeX-font nil ?\C-e))
-    (defun cb-latex-font-italic () (interactive) (TeX-font nil ?\C-i))
-    (defun cb-latex-font-medium () (interactive) (TeX-font nil ?\C-m))
-    (defun cb-latex-font-clear () (interactive) (TeX-font nil ?\C-d))
-    (defun cb-latex-font-calligraphic () (interactive) (TeX-font nil ?\C-a))
-    (defun cb-latex-font-small-caps () (interactive) (TeX-font nil ?\C-c))
-    (defun cb-latex-font-sans-serif () (interactive) (TeX-font nil ?\C-f))
-    (defun cb-latex-font-normal () (interactive) (TeX-font nil ?\C-n))
-    (defun cb-latex-font-serif () (interactive) (TeX-font nil ?\C-r))
-    (defun cb-latex-font-oblique () (interactive) (TeX-font nil ?\C-s))
-    (defun cb-latex-font-upright () (interactive) (TeX-font nil ?\C-u)))
+    (defun config-latex-font-bold () (interactive) (TeX-font nil ?\C-b))
+    (defun config-latex-font-code () (interactive) (TeX-font nil ?\C-t))
+    (defun config-latex-font-emphasis () (interactive) (TeX-font nil ?\C-e))
+    (defun config-latex-font-italic () (interactive) (TeX-font nil ?\C-i))
+    (defun config-latex-font-medium () (interactive) (TeX-font nil ?\C-m))
+    (defun config-latex-font-clear () (interactive) (TeX-font nil ?\C-d))
+    (defun config-latex-font-calligraphic () (interactive) (TeX-font nil ?\C-a))
+    (defun config-latex-font-small-caps () (interactive) (TeX-font nil ?\C-c))
+    (defun config-latex-font-sans-serif () (interactive) (TeX-font nil ?\C-f))
+    (defun config-latex-font-normal () (interactive) (TeX-font nil ?\C-n))
+    (defun config-latex-font-serif () (interactive) (TeX-font nil ?\C-r))
+    (defun config-latex-font-oblique () (interactive) (TeX-font nil ?\C-s))
+    (defun config-latex-font-upright () (interactive) (TeX-font nil ?\C-u)))
 
   :init
   (progn
     (add-hook 'LaTeX-mode-hook 'flyspell-mode)
-    (add-hook 'LaTeX-mode-hook 'cb-latex--auto-fill-mode)
+    (add-hook 'LaTeX-mode-hook 'config-latex--auto-fill-mode)
     (add-hook 'LaTeX-mode-hook 'TeX-fold-mode)
     (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
     (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode)
@@ -114,22 +114,22 @@
         ";"   'TeX-comment-or-uncomment-region             ;; C-c ; or C-c :
         ;; TeX-command-run-all runs compile and open the viewer
         "a"   'TeX-command-run-all                         ;; C-c C-a
-        "b"   'cb-latex-build
+        "b"   'config-latex-build
         "k"   'TeX-kill-job                                ;; C-c C-k
         "l"   'TeX-recenter-output-buffer                  ;; C-c C-l
         "m"   'TeX-insert-macro                            ;; C-c C-m
         "v"   'TeX-view                                    ;; C-c C-v
         ;; TeX-doc is a very slow function
         "hd"  'TeX-doc
-        "xb"  'cb-latex-font-bold
-        "xc"  'cb-latex-font-code
-        "xe"  'cb-latex-font-emphasis
-        "xi"  'cb-latex-font-italic
-        "xr"  'cb-latex-font-clear
-        "xo"  'cb-latex-font-oblique
-        "xfc" 'cb-latex-font-small-caps
-        "xff" 'cb-latex-font-sans-serif
-        "xfr" 'cb-latex-font-serif))
+        "xb"  'config-latex-font-bold
+        "xc"  'config-latex-font-code
+        "xe"  'config-latex-font-emphasis
+        "xi"  'config-latex-font-italic
+        "xr"  'config-latex-font-clear
+        "xo"  'config-latex-font-oblique
+        "xfc" 'config-latex-font-small-caps
+        "xff" 'config-latex-font-sans-serif
+        "xfr" 'config-latex-font-serif))
 
     (spacemacs-keys-set-leader-keys-for-major-mode 'latex-mode
       "*"   'LaTeX-mark-section      ;; C-c *
@@ -143,11 +143,11 @@
       "fr"  'LaTeX-fill-region       ;; C-c C-q C-r
       "fs"  'LaTeX-fill-section      ;; C-c C-q C-s
       "p"   'latex-preview-pane-mode
-      "xB"  'cb-latex-font-medium
-      "xr"  'cb-latex-font-clear
-      "xfa" 'cb-latex-font-calligraphic
-      "xfn" 'cb-latex-font-normal
-      "xfu" 'cb-latex-font-upright)
+      "xB"  'config-latex-font-medium
+      "xr"  'config-latex-font-clear
+      "xfa" 'config-latex-font-calligraphic
+      "xfn" 'config-latex-font-normal
+      "xfu" 'config-latex-font-upright)
 
     (spacemacs-keys-declare-prefix-for-mode 'latex-mode "mi" "insert")
     (spacemacs-keys-declare-prefix-for-mode 'latex-mode "mf" "fill")))
