@@ -15,7 +15,10 @@
 (require 'spacemacs-keys)
 
 (autoload 'evil-define-key "evil")
-(autoload 'evil-first-non-blank "evil-commands")
+
+(spacemacs-keys-declare-prefix-for-mode 'dired-mode "ms" "subdir")
+
+
 
 (use-package which-key
   :config
@@ -26,12 +29,13 @@
 (use-package dired
   :defer t
   :commands (dired dired-hide-details-mode)
+  :bind (:map spacemacs-keys-default-map ("d" . dired))
   :preface
   (progn
     (autoload 'diredp-next-line "dired+")
     (autoload 'diredp-previous-line "dired+")
 
-    (defun cb-dired--sort-directories-first (&rest _)
+    (defun config-dired--sort-directories-first (&rest _)
       "Sort dired listings with directories first."
       (save-excursion
         (let (buffer-read-only)
@@ -40,16 +44,10 @@
         (set-buffer-modified-p nil))))
 
   :init
-  (progn
-    (spacemacs-keys-declare-prefix-for-mode 'dired-mode "ms" "subdir")
-    (spacemacs-keys-set-leader-keys "d" #'dired)
-    (spacemacs-keys-set-leader-keys-for-major-mode
-      'dired-mode
-      "d"  'dired-hide-details-mode
-      "si" 'dired-insert-subdir
-      "sd" 'dired-kill-subdir)
-
-    (add-hook 'dired-mode-hook #'dired-hide-details-mode))
+  (spacemacs-keys-set-leader-keys-for-major-mode 'dired-mode
+    "d"  'dired-hide-details-mode
+    "si" 'dired-insert-subdir
+    "sd" 'dired-kill-subdir)
 
   :config
   (progn
@@ -60,7 +58,7 @@
     (setq-default dired-listing-switches "-alhv")
     (setq dired-dwim-target t)
     (setq dired-hide-details-hide-symlink-targets nil)
-    (advice-add 'dired-readin :after #'cb-dired--sort-directories-first)
+    (advice-add 'dired-readin :after #'config-dired--sort-directories-first)
 
     ;; Instantly revert Dired buffers on re-visiting them, with no
     ;; message.
@@ -71,15 +69,12 @@
     (evil-define-key 'normal dired-mode-map (kbd "k") #'diredp-previous-line)))
 
 (use-package dired-x
-  :commands (dired-omit-mode)
+  :hook (dired-mode . dired-omit-mode)
   :init
   (progn
     (add-hook 'dired-load-hook (lambda () (load "dired-x")))
-    (spacemacs-keys-set-leader-keys-for-major-mode
-      'dired-mode
-      "h" #'dired-omit-mode)
-
-    (add-hook 'dired-mode-hook #'dired-omit-mode))
+    (spacemacs-keys-set-leader-keys-for-major-mode 'dired-mode
+      "h" #'dired-omit-mode))
   :config
   (progn
     (evil-define-key 'normal dired-mode-map (kbd "h") #'dired-omit-mode)
@@ -90,10 +85,13 @@
 
 (use-package dired+
   :straight t
-  :after dired)
+  :after dired
+  :hook (dired-mode . dired-hide-details-mode))
 
 (use-package wdired
   :after dired
+  :preface
+  (autoload 'evil-first-non-blank "evil-commands")
   :config
   (progn
     (evil-define-key 'normal wdired-mode-map (kbd "^") #'evil-first-non-blank)
