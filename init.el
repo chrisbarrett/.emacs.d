@@ -101,7 +101,6 @@
 (use-package config-flycheck)
 (use-package config-aggressive-indent)
 (use-package config-server)
-(use-package config-hexl)
 (use-package config-volatile-highlights)
 (use-package config-info)
 (use-package config-highlight-todo)
