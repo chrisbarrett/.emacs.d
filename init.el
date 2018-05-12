@@ -79,9 +79,11 @@
   :demand t
   :load-path cb-paths-directory
   :config
-  (cb-paths-initialise))
+  (progn
+    (cb-paths-initialise)
+    (add-to-list 'custom-theme-load-path cb-paths-themes-directory)))
 
-(use-package cb-faces)
+(use-package cb-themes)
 (use-package cb-basic-settings)
 (use-package cb-modeline)
 (use-package cb-auto-save)

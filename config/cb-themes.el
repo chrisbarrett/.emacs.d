@@ -1,4 +1,4 @@
-;;; cb-faces.el --- Typeface and syntax highlighting config.  -*- lexical-binding: t; -*-
+;;; cb-themes.el --- Typeface and syntax highlighting config.  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2016  Chris Barrett
 
@@ -15,18 +15,15 @@
 
 ;; Load themes.
 
-(let ((this-dir (file-name-directory (or load-file-name (buffer-file-name)))))
-  (add-to-list 'custom-theme-load-path (concat this-dir "cb-faces/")))
+(defvar cb-themes-dark-mode-p t)
 
-(defvar cb-faces-dark-mode-p t)
-
-(defun cb-faces/toggle-dark-mode ()
+(defun cb-themes/toggle-dark-mode ()
   "Toggle between light and dark mode."
   (interactive)
-  (if cb-faces-dark-mode-p
+  (if cb-themes-dark-mode-p
       (cb-light-theme)
     (cb-dark-theme))
-  (setq cb-faces-dark-mode-p (not cb-faces-dark-mode-p)))
+  (setq cb-themes-dark-mode-p (not cb-themes-dark-mode-p)))
 
 (defun cb-light-theme ()
   (interactive)
@@ -39,7 +36,7 @@
 (cb-dark-theme)
 
 (spacemacs-keys-set-leader-keys
-  "t t" #'cb-faces/toggle-dark-mode
+  "t t" #'cb-themes/toggle-dark-mode
   "t d" #'cb-dark-theme
   "t l" #'cb-light-theme)
 
@@ -56,6 +53,6 @@
     (add-hook 'org-agenda-mode-hook #'cb-ligatures-init)
     (global-prettify-symbols-mode +1)))
 
-(provide 'cb-faces)
+(provide 'cb-themes)
 
-;;; cb-faces.el ends here
+;;; cb-themes.el ends here

@@ -28,6 +28,9 @@
 (defconst cb-paths-config-directory
   (concat user-emacs-directory "config"))
 
+(defconst cb-paths-themes-directory
+  (concat user-emacs-directory "themes"))
+
 (defconst cb-paths-site-lisp-directory "~/.nix-profile/share/emacs/site-lisp")
 
 
@@ -49,10 +52,11 @@ If argument INTERACTIVE-P is set, log additional information."
           (append (list
                    cb-paths-lisp-directory
                    cb-paths-config-directory
+                   cb-paths-themes-directory
                    cb-paths-site-lisp-directory)
                   config-subtrees
                   git-subtrees
-		  load-path)))
+                  load-path)))
 
     (setq load-path (seq-filter #'file-directory-p updated-load-path))
 
