@@ -69,34 +69,43 @@
 
 (spacemacs-keys-set-leader-keys "b" #'buffers/body)
 
-(defhydra windows (:color blue :columns 2 :help nil)
-  "Window management"
-  ("=" #'balance-windows "balance" :color red)
-  ("p" #'evil-window-prev "prev" :color red)
-  ("N" #'evil-window-prev "prev" :color red)
-  ("n" #'evil-window-prev "next" :color red)
-  ("w" #'evil-window-next "next" :color red)
-  ("r" #'evil-window-rotate-downwards "rotate" :color red)
-  ("o" #'delete-other-windows "delete others")
-  ("q" #'delete-window "close")
-  ("-" #'evil-window-split "hsplit")
-  ("/" #'evil-window-vsplit "vsplit"))
+(defun hydra-title-with-icon (icon title)
+  (concat (all-the-icons-faicon icon :face 'all-the-icons-orange :v-adjust 0.05) " " title))
+
+(defhydra windows (:color blue :hint nil :help nil)
+  "
+%s(hydra-title-with-icon \"clone\" \"Window Management\")
+
+^^^^^Switch^                   ^Split^          ^Close^
+^^^^^------^------------------ ^-----^--------- ^-----^------
+^^^^_w_: next                  _/_ vertical     _q_ window
+_n_: forward  _p_/_N_: back    _-_ horizontal   _o_ others
+^^^^_r_: rotate                _=_ rebalance
+"
+  ("=" #'balance-windows :color red)
+  ("p" #'evil-window-prev :color red)
+  ("N" #'evil-window-prev :color red)
+  ("n" #'evil-window-prev :color red)
+  ("w" #'evil-window-next)
+  ("r" #'evil-window-rotate-downwards :color red)
+  ("o" #'delete-other-windows)
+  ("q" #'delete-window)
+  ("-" #'evil-window-split)
+  ("/" #'evil-window-vsplit))
 
 (spacemacs-keys-set-leader-keys "w" #'windows/body)
 
 (defhydra files (:color blue :help nil :hint nil)
   "
-File commands
+%s(hydra-title-with-icon \"files-o\" \"File Commands\")
 
-^Find^               ^Save^               ^Copy^
-^----^-------------- ^----^------------   ^----^------------
-_f_: file            _s_: buffer          _d_: dir
-_o_: other window    _S_: many buffers    _y_: path
-_p_: at pt           _W_: write copy      _Y_: filename
-_v_: reload          _R_: rename
-_e_: edit with sudo
-
-_r_: recent  _t_: file tree  _D_: delete
+^Find^               ^Save^              ^Copy^             ^Other^
+^----^-------------- ^----^------------- ^----^------------ ^-----^--------
+_f_: file            _s_: buffer         _d_: dir           _e_: edit with sudo
+_o_: other window    _S_: many buffers   _y_: path          _v_: reload
+_p_: at pt           _W_: write copy     _Y_: filename      _t_: file tree
+_r_: recent          _R_: rename
+^^                   _D_: delete
 "
   ("D" #'delete-current-buffer-and-file)
   ("R" #'rename-file-and-buffer)
