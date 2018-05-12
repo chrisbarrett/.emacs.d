@@ -15,12 +15,12 @@
 (require 'dash-functional)
 (require 'cb-paths)
 (require 'spacemacs-keys)
-(require 'cb-projectile-functions)
+(require 'projectile-funcs)
 
-(use-package cb-projectile-functions
-  :defines (cb-projectile-functions-ignored-base-dirs)
+(use-package projectile-funcs
+  :defines (projectile-funcs-ignored-base-dirs)
   :config
-  (setq cb-projectile-functions-ignored-base-dirs
+  (setq projectile-funcs-ignored-base-dirs
         '("/nix/store/"
           "~/.nvm/"
           "~/.ghc/"
@@ -123,7 +123,7 @@
     (setq projectile-known-projects-file (concat cb-emacs-cache-directory "/projectile-bookmarks.eld"))
 
     ;; Ensure projectile's known projects list doesn't contain duplicates.
-    (advice-add #'projectile-unserialize :filter-return #'cb-projectile-functions-cleanup-projects)
+    (advice-add #'projectile-unserialize :filter-return #'projectile-funcs-cleanup-projects)
 
     (projectile-load-known-projects)
 
@@ -136,7 +136,7 @@
     (setq projectile-globally-ignored-files '("TAGS" ".DS_Store"))
     (setq projectile-globally-ignored-file-suffixes '("gz" "zip" "tar" "elc"))
 
-    (setq projectile-ignored-project-function #'cb-projectile-functions-ignored-subdir-p)
+    (setq projectile-ignored-project-function #'projectile-funcs-ignored-subdir-p)
 
     (setq projectile-globally-ignored-directories
           '(".bzr"
@@ -185,7 +185,7 @@
       (projectile-cleanup-known-projects)
       (dolist (repo (magit-list-repos))
         (projectile-add-known-project (file-name-as-directory repo)))
-      (setq projectile-known-projects (cb-projectile-functions-cleanup-projects projectile-known-projects))))
+      (setq projectile-known-projects (projectile-funcs-cleanup-projects projectile-known-projects))))
 
   :init
   (spacemacs-keys-set-leader-keys
