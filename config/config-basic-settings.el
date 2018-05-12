@@ -318,7 +318,7 @@ Interactively, reverse the characters in the current region."
 
 (add-hook 'find-file-hook #'config-basic-settings--prompt-to-open-large-files-in-fundamental-mode)
 
-
+
 ;;; General variables
 
 (setq-default fill-column 80)
@@ -376,6 +376,8 @@ Interactively, reverse the characters in the current region."
       (switch-to-buffer buffer)
       (help-window-setup (selected-window))))
   t)
+
+
 
 ;; Use conf mode for puppet templated conf files
 (use-package conf-mode
