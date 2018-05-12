@@ -138,26 +138,6 @@
   (autoload 'flycheck-package-setup "flycheck-package")
   :config (flycheck-package-setup))
 
-(use-package profiler
-  :defer t
-  :config
-  (progn
-    (evil-set-initial-state 'profiler-report-mode 'motion)
-    (evil-define-key 'motion profiler-report-mode-map
-      "j" 'profiler-report-next-entry
-      "k" 'profiler-report-previous-entry
-      "n" 'profiler-report-next-entry
-      "p" 'profiler-report-previous-entry
-
-      (kbd "TAB") 'profiler-report-toggle-entry
-      (kbd "K") 'profiler-report-describe-entry
-      (kbd "RET") 'profiler-report-find-entry
-      (kbd "=") 'profiler-report-compare-profile
-
-      "g r" 'revert-buffer
-      "B" 'profiler-report-render-reversed-calltree
-      "f" 'profiler-report-find-entry)))
-
 (provide 'config-elisp)
 
 ;;; config-elisp.el ends here

@@ -112,6 +112,23 @@
     (with-eval-after-load 'arc-mode
       (evil-add-hjkl-bindings archive-mode-map))
 
+    (evil-set-initial-state 'profiler-report-mode 'motion)
+    (with-eval-after-load 'profiler
+      (evil-define-key 'motion profiler-report-mode-map
+        "j" 'profiler-report-next-entry
+        "k" 'profiler-report-previous-entry
+        "n" 'profiler-report-next-entry
+        "p" 'profiler-report-previous-entry
+
+        (kbd "TAB") 'profiler-report-toggle-entry
+        (kbd "K") 'profiler-report-describe-entry
+        (kbd "RET") 'profiler-report-find-entry
+        (kbd "=") 'profiler-report-compare-profile
+
+        "g r" 'revert-buffer
+        "B" 'profiler-report-render-reversed-calltree
+        "f" 'profiler-report-find-entry))
+
     (with-eval-after-load 'compile
       ;; h (help) binding interferes with evil navigation.
       (evil-define-key 'motion compilation-mode-map (kbd "h") #'evil-backward-char))
