@@ -369,8 +369,8 @@
   :config
   (setq ensime-goto-test-config-defaults cb-ensime-test-config-defaults))
 
-(use-package cb-scala-sbt-file-mode
-  :mode ("\\.sbt\\'". cb-scala-sbt-file-mode))
+(use-package sbt-file-mode
+  :mode ("\\.sbt\\'". sbt-file-mode))
 
 (use-package cb-scala-script-mode
   :mode ("\\.sc\\'" . cb-scala-script-mode))
