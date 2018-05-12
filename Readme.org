@@ -1,6 +1,6 @@
 #+TITLE: Chris Barrett's Emacs Config
 
-My personal Emacs configuration. Requires Emacs 25 or later.
+My personal Emacs configuration. Requires Emacs 26 or later.
 
 I don't really suggest anyone else uses my config as-is, since it's a personal
 thing. It's probably most useful for cribbing ideas. :)
@@ -16,11 +16,13 @@ thing. It's probably most useful for cribbing ideas. :)
 * General principles
 
 - I use Evil
+- I use [[https://github.com/raxod502/straight.el][straight.el]] for package installation, rather than package.el. It's legit.
+- I use [[https://github.com/domtronn/all-the-icons.el][all-the-icons]] in various places to make things a bit prettier.
 - I've extracted the leader key functionality from Spacemacs, so that's pretty
-  similar
+  similar, though I'm porting that stuff over to hydras
 - I've themed Emacs to remove most source code color highlighting.
-  - I've expiremented with using heavier font weights for important tokens
-    instead. It feels like I'm reading a latex paper ;)
+  - I use font weight to represent syntax features, instead of colour
+  - This makes flycheck error squiggles and other editor cues stand out more.
   - There's a toggle between light and dark colour themes, under =SPC t t=.
 
 * Project Layout
@@ -29,20 +31,14 @@ In contrast with Spacemacs, this config uses =use-package= pretty directly.
 
 - =init.el= :: Emacs' entrypoint for loading the config
 - =config/= :: lisp configuration files, loosely grouped by functionality
-- =lisp/= :: lisp packages that I might publish eventually
+- =lisp/= :: lisp packages the config depends on
 
 I also put any sensitive config in a =personal-config.el= file, not in this repo.
-
-* Trying It Out
-
-Clone into =~/.emacs.d= and start Emacs.
-
-The makefile needs to be run in order to generate files for org-mode.
 
 * I want to use your config
 
 No you don't!
 
 Have a skim over the init.el and the other config files to get a sense of what's
-around. See =config/cb-basic-settings.el= for general quality of life
+around. See =config/config-basic-settings.el= for general quality of life
 customisations for core Emacs features.
