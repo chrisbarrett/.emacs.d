@@ -679,12 +679,6 @@ Interactively, reverse the characters in the current region."
   :config
   (setq url-cookie-file (concat paths-cache-directory "/cookies")))
 
-(use-package hide-comnt
-  :straight t
-  :bind (:map
-         spacemacs-keys-default-map
-         ("tc" . hide/show-comments-toggle)))
-
 (use-package async
   :straight t
   :preface

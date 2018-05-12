@@ -145,6 +145,14 @@
   :straight t
   :commands (unfill-region unfill-paragraph unfill-toggle))
 
+;; hide-comnt provides a command for hiding comments.
+
+(use-package hide-comnt
+  :straight t
+  :bind (:map
+         spacemacs-keys-default-map
+         ("tc" . hide/show-comments-toggle)))
+
 
 
 ;; Prevent the default keymap from getting created
