@@ -57,7 +57,7 @@ _+_ zoom in  _-_ zoom out  _0_ reset
   ("0" (text-scale-set 0))
   ("q" nil :exit t))
 
-(defhydra buffers (:color amaranth :hint nil)
+(defhydra buffers (:color teal :hint nil)
   "
 %s(hydra-title-with-faicon \"cogs\" \"Buffer Commands\")
 
@@ -67,16 +67,16 @@ _n_: forward  _p_/_N_: back   _b_: bury  _d_: kill
 _l_: list  _s_: switch     ^^ _w_: save  _v_: reload
 
 "
-  ("b" #'bury-buffer)
+  ("b" #'bury-buffer :exit nil)
   ("d" #'kill-this-buffer)
-  ("p" #'previous-buffer)
-  ("N" #'previous-buffer)
-  ("n" #'next-buffer)
+  ("p" #'previous-buffer :exit nil)
+  ("N" #'previous-buffer :exit nil)
+  ("n" #'next-buffer :exit nil)
   ("s" #'ivy-switch-buffer)
   ("w" #'save-buffer)
-  ("l" #'ibuffer :exit t)
-  ("v" #'reload-file :exit t)
-  ("q" nil :exit t))
+  ("l" #'ibuffer)
+  ("v" #'reload-file)
+  ("q" nil))
 
 (defhydra windows (:color amaranth :hint nil)
   "
