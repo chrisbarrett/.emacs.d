@@ -134,15 +134,15 @@ _r_: recent          _R_: rename
   "
 %s(hydra-title-with-aicon \"git\" \"Git and Goto\")
 
-^Goto^                ^Git^                  ^Jump to Def
-^----^--------------- ^---^----------------- ^-----------------------
-_i_ init file         _s_: magit             _g_   jump
-_m_ messages          _t_: time machine      _G_   jump other window
-_n_ nix packages      _b_: blame             _SPC_ jump back
-_p_ personal config   _l_ log buffer
-_u_ package usage     _d_: diff buffer
-                   ^^ _f_: find file
-                   ^^ _h_: navigate hunks
+^Goto^                 ^Git^                ^Jump to Def
+^----^---------------- ^---^--------------- ^-----------------------
+_i_: init file         _s_: magit           _g_:   jump
+_m_: messages          _b_: blame           _G_:   jump other window
+_n_: nix packages      _d_: diff buffer     _SPC_: jump back
+_p_: personal config   _f_: find file
+_u_: package usage     _h_: navigate hunks
+                    ^^ _l_: log buffer
+                    ^^ _t_: time machine
 "
   ("i" #'jump-to-init-file)
   ("n" #'jump-to-nix-packages)
