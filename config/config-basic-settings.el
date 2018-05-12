@@ -405,17 +405,20 @@ Interactively, reverse the characters in the current region."
   :bind (("C-c e e" . toggle-debug-on-error))
   :if (bound-and-true-p menu-bar-mode)
   :config
-  (menu-bar-mode -1))
+  (when (fboundp 'menu-bar-mode)
+    (menu-bar-mode -1)))
 
 (use-package tool-bar
   :if (bound-and-true-p tool-bar-mode)
   :config
-  (tool-bar-mode -1))
+  (when (fboundp 'tool-bar-mode)
+    (tool-bar-mode -1)))
 
 (use-package scroll-bar
   :if (display-graphic-p)
   :config
-  (scroll-bar-mode -1))
+  (when (fboundp 'scroll-bar-mode)
+    (scroll-bar-mode -1)))
 
 (use-package align
   :bind (("C-x a a" . align-regexp)))
