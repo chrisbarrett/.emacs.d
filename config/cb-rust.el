@@ -135,7 +135,7 @@
 
     (advice-add 'cargo-process-run :around #'cb-rust--run-in-project-root)))
 
-(use-package cb-rust-faces
+(use-package rust-faces
   :after rust-mode)
 
 ;; Rust backtraces sometimes contain absolute paths from travis builds. Rewrite
