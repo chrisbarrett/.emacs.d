@@ -109,7 +109,9 @@ If argument INTERACTIVE-P is set, log additional information."
 
 ;; Load features.
 
-(use-package cb-paths)
+(use-package cb-paths
+  :config
+  (add-to-list 'load-path cb-emacs-site-lisp-directory))
 
 (use-package cb-faces)
 (use-package cb-basic-settings)

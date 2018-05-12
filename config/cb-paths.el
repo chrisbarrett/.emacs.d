@@ -25,8 +25,6 @@
 
 (defconst cb-emacs-site-lisp-directory "~/.nix-profile/share/emacs/site-lisp")
 
-(add-to-list 'load-path cb-emacs-site-lisp-directory)
-
 (provide 'cb-paths)
 
 ;;; cb-paths.el ends here
