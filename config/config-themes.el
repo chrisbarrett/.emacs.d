@@ -93,6 +93,27 @@
 
     (global-paren-face-mode +1)))
 
+(use-package hl-todo
+  :straight t
+  :hook (prog-mode . hl-todo-mode)
+
+  :preface
+  (defun cb-highlight-todo--enable-unless-org-buffer ()
+    (unless (derived-mode-p 'org-mode)
+      (hl-todo-mode)))
+
+  :init
+  (progn
+    (setq hl-todo-keyword-faces
+          (--map (cons it 'hl-todo)
+                 '("TODO"
+                   "NEXT"
+                   "HACK"
+                   "FIXME"
+                   "KLUDGE"
+                   "NOTE")))
+    (add-hook 'text-mode-hook #'cb-highlight-todo--enable-unless-org-buffer)))
+
 (provide 'config-themes)
 
 ;;; config-themes.el ends here
