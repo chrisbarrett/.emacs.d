@@ -400,41 +400,6 @@
     (evil-define-key 'normal ensime-mode-map (kbd "M-N") #'ensime-flycheck-integration-next-error)
     (evil-define-key 'normal ensime-mode-map (kbd "M-P") #'ensime-flycheck-integration-prev-error)))
 
-
-;; Snippet utilities
-
-
-;; Slick table mapping template
-
-(defun cb-scala-yasnippet-slick-star-fields (attrs)
-  (let ((names (--map (plist-get it :name) (cb-scala-yasnippet--parse-attrs attrs))))
-    (s-join ", " names)))
-
-(defun cb-scala-yasnippet-slick-column-defs (attrs)
-  (let ((defs (-map 'scala-yasnippet--slick-attr-to-def (cb-scala-yasnippet--parse-attrs attrs)))
-        (indent (current-indentation)))
-    (s-join (concat "\n" (s-repeat indent " ")) defs)))
-
-(defun cb-scala-yasnippet--slick-attr-to-def (attr)
-  (-let [(&plist :name name :type type) attr]
-    (format "def %s = column[%s](\"%s\")" name type name)))
-
-(defun cb-scala-yasnippet--parse-attrs (attrs)
-  (let ((ctor-args (s-split (rx (* space) "," (* space)) attrs)))
-    (--map (-let [(_ name type) (s-match (rx (group (*? nonl))
-                                             (* space) ":" (* space)
-                                             (group (* nonl)))
-                                         (s-trim it))]
-             (list :name (or name "x") :type (or type "T")))
-           ctor-args)))
-
-;; Test fixtures
-
-(defun cb-scala-yasnippet-test-fixture-name ()
-  (or (ignore-errors (f-filename (f-no-ext (buffer-file-name))))
-      "TestFixture"))
-
-
 (provide 'config-scala)
 
 ;;; config-scala.el ends here

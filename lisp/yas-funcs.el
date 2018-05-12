@@ -9,6 +9,7 @@
 ;;; Code:
 
 (require 'dash)
+(require 'f)
 (require 's)
 (require 'subr-x)
 (require 'thingatpt)
@@ -105,6 +106,12 @@ Fall back to the file name sans extension."
         (s-trim (match-string 1))
       "Name")))
 
+
+;;; Scala
+
+(defun yas-funcs-scala-test-fixture-name ()
+  (or (ignore-errors (f-filename (f-no-ext (buffer-file-name))))
+      "TestFixture"))
 
 
 (provide 'yas-funcs)
