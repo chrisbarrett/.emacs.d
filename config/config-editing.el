@@ -8,6 +8,7 @@
 (require 'spacemacs-keys)
 
 
+;; aggressive-indent automatically reindents code during editing.
 
 (use-package aggressive-indent
   :straight t
@@ -49,7 +50,7 @@
     (add-hook 'diff-auto-refine-mode-hook #'turn-off-aggressive-indent-mode)
     (global-aggressive-indent-mode +1)))
 
-
+;; volatile-highlights shows highlights in the buffer when regions change.
 
 (use-package volatile-highlights
   :straight t
@@ -78,6 +79,8 @@
     ;; Undo-tree support.
 
     (vhl/define-extension 'undo-tree
+                          'undo-tree-redo
+                          'undo-tree-undo
                           'undo-tree-move
                           'undo-tree-yank)
 
@@ -87,9 +90,13 @@
 
     (volatile-highlights-mode)))
 
+;; tiny provides a template syntax for creating sequences of text.
+
 (use-package tiny
   :straight t
   :bind ("C-:" . tiny-expand))
+
+;; undo-tree visualises the undo history.
 
 (use-package undo-tree
   :straight t
@@ -101,12 +108,31 @@
     (setq undo-tree-visualizer-diff t)
     (global-undo-tree-mode)))
 
+;; ws-butler cleans up trailing whitespace as you edit.
+
 (use-package ws-butler
   :straight t
   :commands (ws-butler-global-mode)
   :defer 3
   :config
   (ws-butler-global-mode))
+
+;; unfill provides a command that is the opposite of fill-paragraph.
+
+(use-package unfill
+  :straight t
+  :commands (unfill-region unfill-paragraph unfill-toggle))
+
+;; hide-comnt provides a command for hiding comments.
+
+(use-package hide-comnt
+  :straight t
+  :bind (:map
+         spacemacs-keys-default-map
+         ("tc" . hide/show-comments-toggle)))
+
+
+;; highlight-thing highlights the symbol at point.
 
 (use-package highlight-thing
   :straight t
@@ -141,26 +167,14 @@
     (advice-add 'highlight-thing-should-highlight-p :filter-return
                 #'config-editing--should-highlight-p)))
 
-(use-package unfill
-  :straight t
-  :commands (unfill-region unfill-paragraph unfill-toggle))
-
-;; hide-comnt provides a command for hiding comments.
-
-(use-package hide-comnt
-  :straight t
-  :bind (:map
-         spacemacs-keys-default-map
-         ("tc" . hide/show-comments-toggle)))
-
-
-
-;; Prevent the default keymap from getting created
-(defvar auto-highlight-symbol-mode-map (make-sparse-keymap))
+;; auto-highlight-symbol highlights the symbol at point after a short time.
 
 (use-package auto-highlight-symbol
   :straight t
   :hook (prog-mode . auto-highlight-symbol-mode)
+  :preface
+  ;; HACK: Prevent the default keymap from getting created
+  (defvar auto-highlight-symbol-mode-map (make-sparse-keymap))
   :config
   (progn
     (setq ahs-case-fold-search nil)
@@ -170,6 +184,8 @@
 
     ;; Disable by default, use keybinding instead.
     (setq ahs-idle-timer 0)))
+
+;; evil-ahs provides evil integration with highlight-symbol.
 
 (use-package evil-ahs
   :commands (evil-ahs/highlight-symbol evil-ahs/goto-last-searched-symbol)
