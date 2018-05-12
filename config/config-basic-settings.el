@@ -700,10 +700,6 @@ Interactively, reverse the characters in the current region."
   ;; Undefine key that prevents forward-word in evil
   (define-key shr-map (kbd "w") nil))
 
-(use-package unfill
-  :straight t
-  :commands (unfill-region unfill-paragraph unfill-toggle))
-
 (use-package auth-source
   :config
   (setq auth-sources '("~/.authinfo.gpg")))

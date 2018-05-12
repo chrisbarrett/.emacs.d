@@ -131,6 +131,10 @@
     (advice-add 'highlight-thing-should-highlight-p :filter-return
                 #'config-editing--should-highlight-p)))
 
+(use-package unfill
+  :straight t
+  :commands (unfill-region unfill-paragraph unfill-toggle))
+
 
 
 ;; Prevent the default keymap from getting created
