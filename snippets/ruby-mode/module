@@ -1,8 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: module
-# key: mod
-# condition: (yas-funcs-bolp)
-# --
-module ${1:`(f-filename (f-no-ext (buffer-file-name)))`}
-  $0
-end

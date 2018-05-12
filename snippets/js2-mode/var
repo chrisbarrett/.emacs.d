@@ -1,7 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: var
-# key: v
-# binding: direct-keybinding
-# condition: (yas-funcs-bolp)
-# --
-var ${1:name} = $0;
