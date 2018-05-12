@@ -307,6 +307,7 @@
   (spacemacs-keys-set-leader-keys
     "g i" #'jump-to-init-file
     "g m" #'jump-to-messages
+    "g u" #'jump-to-package-usage
     "g n" #'jump-to-nix-packages
     "g p" #'jump-to-personal-config))
 
