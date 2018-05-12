@@ -24,7 +24,7 @@
 
 (use-package elisp-mode
   :preface
-  (defun cb-elisp/eval-buffer ()
+  (defun config-elisp--elisp/eval-buffer ()
     "Evaluate the current buffer as Elisp code, within a straight transaction."
     (interactive)
     (message "Evaluating %s..." (buffer-name))
@@ -35,21 +35,17 @@
           (straight-mark-transaction-as-init))
         (load buffer-file-name nil 'nomessage)))
     (message "Evaluating %s... done." (buffer-name)))
-
   :init
   (progn
     (spacemacs-keys-declare-prefix-for-mode 'emacs-lisp-mode "m e" "eval")
     (spacemacs-keys-set-leader-keys-for-major-mode 'emacs-lisp-mode
-      "eb" #'cb-elisp/eval-buffer
-      "ee" #'eval-expression))
-
-  :config
-  (define-key emacs-lisp-mode-map (kbd "C-c C-z") #'ielm))
+      "eb" #'config-elisp--elisp/eval-buffer
+      "ee" #'eval-expression)))
 
 (use-package ielm
-  :commands ielm
+  :bind (:map emacs-lisp-mode-map ("C-c C-z" . ielm))
   :preface
-  (defun cb-elisp-pop-to-elisp-buffer ()
+  (defun config-elisp-pop-to-elisp-buffer ()
     (interactive)
     (if-let* ((buf (seq-find (lambda (buf)
                                (with-current-buffer buf
@@ -67,11 +63,11 @@
                    (side            . bottom)
                    (slot            . 0)
                    (window-height   . 0.2)))
-    (define-key inferior-emacs-lisp-mode-map (kbd "C-c C-z") #'cb-elisp-pop-to-elisp-buffer)))
+    (define-key inferior-emacs-lisp-mode-map (kbd "C-c C-z") #'config-elisp-pop-to-elisp-buffer)))
 
 (use-package which-key
   :preface
-  (autoload 'which-key-add-key-based-replacements "cb-leader-keys")
+  (autoload 'which-key-add-key-based-replacements "config-elisp--leader-keys")
   :config
   (progn
     (which-key-add-key-based-replacements "SPC a p" "profiler")
@@ -97,17 +93,14 @@
   :commands (turn-on-elisp-slime-nav-mode))
 
 (use-package eldoc
-  :commands (eldoc-mode)
-  :init
-  (add-hook 'emacs-lisp-mode-hook #'eldoc-mode)
+  :hook (emacs-lisp-mode . eldoc-mode)
   :config
   (setq eldoc-idle-delay 0.2))
 
 (use-package nameless
   :straight t
   :commands nameless-mode
-  :init
-  (add-hook 'emacs-lisp-mode-hook #'nameless-mode)
+  :hook (emacs-lisp-mode . nameless-mode)
   :config
   (progn
     (setq nameless-prefix ":")
@@ -125,12 +118,12 @@
 (use-package ert
   :commands (ert)
   :preface
-  (defun cb/ert-run-all-tests ()
+  (defun config-elisp-/ert-run-all-tests ()
     (interactive)
     (ert t))
   :init
   (spacemacs-keys-set-leader-keys-for-major-mode 'emacs-lisp-mode
-    "t" #'cb/ert-run-all-tests)
+    "t" #'config-elisp-/ert-run-all-tests)
   :config
   (evil-set-initial-state 'ert-simple-view-mode 'motion))
 
@@ -146,13 +139,12 @@
   :config (flycheck-package-setup))
 
 (use-package profiler
-  :commands (profiler-start profiler-report profiler-stop)
-  :init
-  (spacemacs-keys-set-leader-keys
-    "app" 'profiler-start
-    "apr" 'profiler-report
-    "aps" 'profiler-stop)
-
+  :bind
+  (:map
+   spacemacs-keys-default-map
+   ("app" . profiler-start)
+   ("apr" . profiler-report)
+   ("aps" . profiler-stop))
   :config
   (progn
     (evil-set-initial-state 'profiler-report-mode 'motion)
@@ -170,15 +162,6 @@
       "g r" 'revert-buffer
       "B" 'profiler-report-render-reversed-calltree
       "f" 'profiler-report-find-entry)))
-
-(use-package emr
-  :disabled t
-  :commands (emr-show-refactor-menu)
-  :ensure t
-  :init
-  (define-key prog-mode-map (kbd "C-<return>") #'emr-show-refactor-menu)
-  :config
-  (emr-initialize))
 
 (provide 'config-elisp)
 
