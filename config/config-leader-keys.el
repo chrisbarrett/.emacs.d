@@ -28,6 +28,7 @@
 (autoload 'evil-window-rotate-downwards "evil-commands")
 (autoload 'evil-window-split "evil-commands")
 (autoload 'evil-window-vsplit "evil-commands")
+(autoload 'ivy-switch-buffer "ivy")
 (autoload 'org-narrow-to-subtree "org")
 
 
@@ -38,12 +39,30 @@
   ("t" (progn (set-input-method "TeX") (message "TeX input method activated")) "TeX")
   ("SPC" (progn (deactivate-input-method) (message "Input method cleared")) "clear"))
 
+(spacemacs-keys-set-leader-keys "a i" #'select-input-method/body)
+
 (defhydra font-scale (:color red :help nil)
   "Zoom commands"
   ("+" (text-scale-increase 1) "zoom in")
   ("-" (text-scale-decrease 1) "zoom out")
   ("0" (text-scale-set 0) "reset")
   ("q" nil "quit" :exit t))
+
+(spacemacs-keys-set-leader-keys "z" #'font-scale/body)
+
+(defhydra buffers (:color red :help nil)
+  "Buffer selection"
+  ("b" #'bury-buffer "bury")
+  ("d" #'kill-this-buffer "kill")
+  ("p" #'previous-buffer "previous")
+  ("N" #'previous-buffer "previous")
+  ("n" #'next-buffer "next")
+  ("s" #'ivy-switch-buffer "switch")
+  ("l" #'ibuffer "list" :exit t)
+  ("v" #'reload-file "reload" :exit t)
+  ("q" nil "quit" :exit t))
+
+(spacemacs-keys-set-leader-keys "b" #'buffers/body)
 
 
 
@@ -243,11 +262,6 @@
 
       "!"   #'shell-command
 
-      "a i" #'select-input-method/body
-
-      "b d" #'kill-this-buffer
-      "b b" #'bury-buffer
-
       "C" #'compile
 
       "c r" #'comment-or-uncomment-region
@@ -296,7 +310,6 @@
   (:map
    spacemacs-keys-default-map
    ("TAB" . alternate-buffer)
-   ("b v" . reload-file)
    ("f D" . delete-current-buffer-and-file)
    ("f R" . rename-file-and-buffer)
    ("f Y" . copy-buffer-name)
@@ -314,16 +327,6 @@
    ("g u" . jump-to-package-usage)
    ("g n" . jump-to-nix-packages)
    ("g p" . jump-to-personal-config)))
-
-(use-package cb-buffer-transient-state
-  :commands (cb-buffer-transient-state/body
-             cb-buffer-transient-state/next-buffer
-             cb-buffer-transient-state/previous-buffer)
-  :init
-  (spacemacs-keys-set-leader-keys
-    "bn" #'cb-buffer-transient-state/next-buffer
-    "bN" #'cb-buffer-transient-state/previous-buffer
-    "bp" #'cb-buffer-transient-state/previous-buffer))
 
 (provide 'config-leader-keys)
 
