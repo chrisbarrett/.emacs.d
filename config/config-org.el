@@ -256,16 +256,16 @@
                  (side            . bottom)
                  (window-height   . 0.2))))
 
-(use-package cb-org-hydras
+(use-package org-hydras
   :after org
   :init
   (progn
     (with-eval-after-load 'which-key
       (with-no-warnings
-        (push `((nil . ,(rx bos "cb-org-babel/body")) . (nil . "babel"))
+        (push `((nil . ,(rx bos "org-babel/body")) . (nil . "babel"))
               which-key-replacement-alist)))
     (spacemacs-keys-set-leader-keys-for-major-mode 'org-mode
-      "e" 'cb-org-babel/body)))
+      "e" 'org-babel/body)))
 
 (use-package org-duration :after org)
 

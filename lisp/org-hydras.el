@@ -1,4 +1,4 @@
-;;; cb-org-hydras.el --- Hydras for orgmode  -*- lexical-binding: t; -*-
+;;; org-hydras.el --- Hydras for orgmode  -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 
@@ -7,7 +7,7 @@
 (require 'hydra)
 (require 'org)
 
-(defhydra cb-org-babel ()
+(defhydra org-babel ()
   "
 [_i_] block info         [_?_] check header
 [_x_] split/insert new   [_I_] insert header arg  [_q_] quit
@@ -49,6 +49,6 @@ Sessions
   ("Z" org-babel-switch-to-session-with-code :exit t)
   ("q" hydra-keyboard-quit :exit t))
 
-(provide 'cb-org-hydras)
+(provide 'org-hydras)
 
-;;; cb-org-hydras.el ends here
+;;; org-hydras.el ends here
