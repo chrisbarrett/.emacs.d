@@ -18,10 +18,7 @@
 
 (use-package auto-highlight-symbol
   :straight t
-  :defer t
-  :commands (auto-highlight-symbol-mode)
-  :init
-  (add-hook 'prog-mode-hook #'auto-highlight-symbol-mode)
+  :hook (prog-mode . auto-highlight-symbol-mode)
   :config
   (progn
     (setq ahs-case-fold-search nil)
@@ -33,20 +30,15 @@
     (setq ahs-idle-timer 0)))
 
 (use-package evil-ahs
-  :commands (evil-ahs/highlight-symbol
-             evil-ahs/enter-ahs-forward
-             evil-ahs/enter-ahs-backward
-             evil-ahs/goto-last-searched-symbol)
-  :defer t
-  :init
-  (progn
-    (with-eval-after-load 'evil
-      (define-key evil-motion-state-map (kbd "*") #'evil-ahs/enter-ahs-forward)
-      (define-key evil-motion-state-map (kbd "#") #'evil-ahs/enter-ahs-backward))
-
-    (spacemacs-keys-set-leader-keys
-      "sh" #'evil-ahs/highlight-symbol
-      "sH" #'evil-ahs/goto-last-searched-symbol)))
+  :commands (evil-ahs/highlight-symbol evil-ahs/goto-last-searched-symbol)
+  :bind (:map
+         evil-motion-state-map
+         ("*" . evil-ahs/enter-ahs-forward)
+         ("#" . evil-ahs/enter-ahs-backward)
+         :map
+         spacemacs-keys-default-map
+         ("sh" . evil-ahs/highlight-symbol)
+         ("sH" . evil-ahs/goto-last-searched-symbol)))
 
 (provide 'config-ahs)
 
