@@ -120,17 +120,6 @@
                  (slot            . 0)
                  (window-height   . 0.2))))
 
-(use-package autoinsert
-  :preface
-  (defconst cb-go-autoinsert-form
-    '((go-mode . "Go")
-      nil
-      "package " (s-lower-camel-case (f-no-ext (f-filename (buffer-file-name)))) \n \n
-      _ \n))
-
-  :config
-  (add-to-list 'auto-insert-alist cb-go-autoinsert-form))
-
 (provide 'cb-go)
 
 ;;; cb-go.el ends here

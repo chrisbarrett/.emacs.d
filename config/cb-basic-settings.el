@@ -809,6 +809,36 @@ Interactively, reverse the characters in the current region."
   :demand t
   :config (pixel-scroll-mode +1))
 
+(use-package term
+  :commands (ansi-term)
+  :preface
+  (progn
+    (defun cb-shell/ansi-term ()
+      (interactive)
+      (ansi-term (getenv "SHELL")))
+
+    (defun cb-shell--hl-line-off ()
+      (when (bound-and-true-p hl-line-mode)
+        (hl-line-mode -1))))
+  :init
+  (spacemacs-keys-set-leader-keys "at" #'cb-shell/ansi-term)
+  :config
+  (add-hook 'term-mode-hook #'cb-shell--hl-line-off))
+
+(use-package autoinsert
+  :preface
+  (defvar auto-insert-alist nil)
+  :init
+  (auto-insert-mode +1)
+  :config
+  (setq auto-insert-query nil))
+
+(use-package autoinsert-funcs
+  :after autoinsert
+  :config
+  (dolist (form autoinsert-funcs-forms)
+    (push form auto-insert-alist)))
+
 (provide 'cb-basic-settings)
 
 ;;; cb-basic-settings.el ends here

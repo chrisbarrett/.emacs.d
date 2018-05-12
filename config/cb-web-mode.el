@@ -222,11 +222,6 @@
   (add-to-list 'auto-insert-alist
                '((web-js-mode . "JavaScript") . js-autoinsert-template-string)))
 
-(use-package html-autoinsert
-  :config
-  (add-to-list 'auto-insert-alist
-               '((web-html-mode . "HTML") . html-autoinsert-template-string)))
-
 (use-package tern
   :straight t
   :disabled t

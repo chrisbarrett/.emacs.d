@@ -116,14 +116,6 @@
   :config
   (evil-define-key 'normal haskell-presentation-mode-map (kbd "q") #'quit-window))
 
-(use-package haskell-autoinsert
-  :after autoinsert
-  :preface
-  (defvar auto-insert-alist nil)
-  :config
-  (dolist (form haskell-autoinsert-forms)
-    (add-to-list 'auto-insert-alist form)))
-
 (use-package haskell-imports
   :after haskell-mode
   :commands (haskell-imports-insert-unqualified

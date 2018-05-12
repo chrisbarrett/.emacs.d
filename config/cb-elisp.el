@@ -113,12 +113,6 @@
     (setq nameless-prefix ":")
     (setq nameless-private-prefix t)))
 
-(use-package cb-elisp-autoinsert
-  :after autoinsert
-  :config
-  (add-to-list 'auto-insert-alist cb-elisp-autoinsert-form)
-  :defines (auto-insert-alist))
-
 ;; Checkdoc configuration
 
 (use-package cb-flycheck-checkdoc

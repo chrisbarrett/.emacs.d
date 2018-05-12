@@ -402,14 +402,6 @@
     (evil-define-key 'normal ensime-mode-map (kbd "M-N") #'ensime-flycheck-integration-next-error)
     (evil-define-key 'normal ensime-mode-map (kbd "M-P") #'ensime-flycheck-integration-prev-error)))
 
-(use-package cb-scala-autoinsert
-  :after autoinsert
-  :defines (auto-insert-alist)
-  :config
-  (add-to-list 'auto-insert-alist
-               '((scala-mode . "Scala Src File")
-                 nil
-                 (cb-scala-autoinsert--package-name))))
 
 ;; Snippet utilities
 
