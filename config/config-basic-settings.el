@@ -389,11 +389,6 @@ Interactively, reverse the characters in the current region."
    ("\\.conf\\.erb\\'" . conf-mode)
    ("\\.kll\\'" . conf-mode)))
 
-(use-package abbrev
-  :defer t
-  :config
-  (setq abbrev-file-name (concat paths-cache-directory "/abbrev_defs")))
-
 (use-package window-numbering
   :when (display-graphic-p)
   :defer t
@@ -464,19 +459,11 @@ Interactively, reverse the characters in the current region."
   :config
   (progn
     (setq recentf-max-saved-items 1000)
-    (setq recentf-save-file (concat paths-cache-directory "/recentf"))
     (setq recentf-exclude
           '(cb-basic-settings-boring-filename-p
             cb-basic-settings-boring-extension-p
             cb-basic-settings-child-of-boring-relative-dir-p
             cb-basic-settings-child-of-boring-abs-dir-p))))
-
-(use-package bookmark
-  :defer t
-  :config
-  (progn
-    (setq bookmark-save-flag nil)
-    (setq bookmark-default-file (concat paths-cache-directory "/bookmarks"))))
 
 (use-package files
   :config
@@ -485,7 +472,6 @@ Interactively, reverse the characters in the current region."
     (setq require-final-newline t)
     (setq delete-old-versions t)
     (setq confirm-nonexistent-file-or-buffer nil)
-    (setq backup-directory-alist `((".*" . ,paths-autosave-directory)))
     (setq version-control t)))
 
 (use-package select
@@ -603,13 +589,9 @@ Interactively, reverse the characters in the current region."
 
 (use-package saveplace
   :config
-  (progn
-    (setq save-place-file (concat paths-cache-directory "/saveplace"))
-    (save-place-mode +1)))
+  (save-place-mode +1))
 
 (use-package savehist
-  :init
-  (defconst savehist-file (concat paths-cache-directory "/savehist"))
   :config
   (progn
     (setq savehist-additional-variables '(kill-ring search-ring regexp-search-ring))
@@ -618,14 +600,7 @@ Interactively, reverse the characters in the current region."
 (use-package tramp
   :defer t
   :preface
-  (progn
-    (setq tramp-default-method "ssh")
-    (setq tramp-auto-save-directory "/tmp")))
-
-(use-package tramp-cache
-  :defer t
-  :config
-  (setq tramp-persistency-file-name (concat paths-cache-directory "/tramp")))
+  (setq tramp-default-method "ssh"))
 
 (use-package autorevert
   :config
@@ -764,11 +739,6 @@ Interactively, reverse the characters in the current region."
   (progn
     (async-bytecomp-package-mode +1)
     (dired-async-mode +1)))
-
-(use-package url-cache
-  :defer t
-  :config
-  (setq url-cache-directory (concat paths-cache-directory "/url")))
 
 (use-package shr
   :defer t

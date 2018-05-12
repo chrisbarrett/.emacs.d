@@ -119,9 +119,6 @@
 
   :config
   (progn
-    (setq projectile-cache-file (concat paths-cache-directory "/projectile.cache"))
-    (setq projectile-known-projects-file (concat paths-cache-directory "/projectile-bookmarks.eld"))
-
     ;; Ensure projectile's known projects list doesn't contain duplicates.
     (advice-add #'projectile-unserialize :filter-return #'projectile-funcs-cleanup-projects)
 

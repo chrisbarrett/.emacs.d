@@ -240,11 +240,6 @@
 
 (use-package ob-sql :after org)
 
-(use-package org-id
-  :after org
-  :config
-  (setq org-id-locations-file (f-join paths-cache-directory "org-id-locations")))
-
 (use-package org-table
   :after org
   :config
@@ -542,7 +537,6 @@
     (setq org-clock-in-resume t)
     (setq org-clock-report-include-clocking-task t)
     (setq org-clock-out-remove-zero-time-clocks t)
-    (setq org-clock-persist-file (f-join org-directory ".org-clock-save"))
 
     (org-clock-persistence-insinuate)
     (add-hook 'org-clock-out-hook #'cb-org--remove-empty-clock-drawers t)))

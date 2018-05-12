@@ -138,7 +138,6 @@ Otherwise delete backwards."
     (setq yas-prompt-functions '(yas-completing-prompt))
     (setq yas-verbosity 0)
     (setq yas-minor-mode-map (make-sparse-keymap))
-    (setq yas-snippet-dirs (list (concat user-emacs-directory "snippets")))
 
     (yas-global-mode +1)
 

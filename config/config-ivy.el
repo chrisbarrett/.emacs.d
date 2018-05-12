@@ -182,9 +182,7 @@
   :straight t
   :demand t
   :config
-  (progn
-    (setq historian-save-file (f-join paths-cache-directory "historian"))
-    (historian-mode +1)))
+  (historian-mode +1))
 
 ;; Uses Historian to sort Ivy candidates by frecency+flx.
 (use-package ivy-historian

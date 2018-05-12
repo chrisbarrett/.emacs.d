@@ -20,9 +20,6 @@
 (defconst paths-cache-directory
   (concat user-emacs-directory ".cache"))
 
-(defconst paths-autosave-directory
-  (concat user-emacs-directory ".save"))
-
 (defconst paths-etc-directory
   (concat user-emacs-directory "etc"))
 
