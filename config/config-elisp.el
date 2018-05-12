@@ -139,12 +139,7 @@
   :config (flycheck-package-setup))
 
 (use-package profiler
-  :bind
-  (:map
-   spacemacs-keys-default-map
-   ("app" . profiler-start)
-   ("apr" . profiler-report)
-   ("aps" . profiler-stop))
+  :defer t
   :config
   (progn
     (evil-set-initial-state 'profiler-report-mode 'motion)

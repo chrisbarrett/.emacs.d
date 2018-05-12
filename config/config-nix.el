@@ -43,8 +43,6 @@
 
 (use-package nix-repl
   :commands nix-repl-show
-  :init
-  (spacemacs-keys-set-leader-keys "an" #'nix-repl-show)
   :config
   (progn
     (evil-set-initial-state 'nix-repl-mode 'insert)

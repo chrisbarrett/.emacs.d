@@ -620,9 +620,7 @@ Interactively, reverse the characters in the current region."
 
 (use-package world-time-mode
   :straight t
-  :bind (:map
-         spacemacs-keys-default-map
-         ("aw" . world-time-list))
+  :commands (world-time-list)
   :config
   (progn
     (setq display-time-world-list '(("Pacific/Auckland" "NZT")
@@ -726,16 +724,9 @@ Interactively, reverse the characters in the current region."
 (use-package term
   :commands (ansi-term)
   :preface
-  (progn
-    (defun run-ansi-term ()
-      (interactive)
-      (ansi-term (getenv "SHELL")))
-
-    (defun config-basic-settings--shell-hl-line-off ()
-      (when (bound-and-true-p hl-line-mode)
-        (hl-line-mode -1))))
-  :init
-  (spacemacs-keys-set-leader-keys "at" #'run-ansi-term)
+  (defun config-basic-settings--shell-hl-line-off ()
+    (when (bound-and-true-p hl-line-mode)
+      (hl-line-mode -1)))
   :config
   (add-hook 'term-mode-hook #'config-basic-settings--shell-hl-line-off))
 
@@ -754,10 +745,7 @@ Interactively, reverse the characters in the current region."
     (push form auto-insert-alist)))
 
 (use-package calc
-  :bind (:map
-         spacemacs-keys-default-map
-         ("a c" . quick-calc)
-         ("a C" . calc))
+  :commands (quick-calc calc)
   :config
   (define-key calc-mode-map (kbd "SPC") spacemacs-keys-default-map))
 

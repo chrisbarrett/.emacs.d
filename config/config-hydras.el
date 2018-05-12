@@ -33,6 +33,43 @@
 (defun hydra-title-with-aicon (icon title)
   (concat (all-the-icons-alltheicon icon :face 'all-the-icons-orange :v-adjust 0.05) " " title))
 
+(defun hydra-title-with-mat-icon (icon title)
+  (concat (all-the-icons-material icon :face 'all-the-icons-orange) " " title))
+
+(defhydra applications (:color teal :hint nil)
+  "
+%s(hydra-title-with-mat-icon \"apps\" \"Applications\")
+
+^Productivity^      ^Editing^           ^Shells^
+^------------^----- ^-------^---------- ^------^------
+_c_: quick calc     _i_: input method   _t_: terminal
+_C_: calc           _p_: profiler       _n_: nix-repl
+_m_: mu4e
+_w_: world clock
+
+"
+  ("c" #'quick-calc)
+  ("C" #'calc)
+  ("m" #'mu4e)
+  ("w" #'world-time-list)
+  ("i" #'select-input-method/body)
+  ("p" #'profiler/body)
+  ("t" (ansi-term (getenv "SHELL")))
+  ("n" #'nix-repl-show)
+  ("q" nil))
+
+(defhydra profiler (:color teal :hint nil)
+  "
+%s(hydra-title-with-faicon \"bar-chart\" \"Profiler\")
+
+_p_: start  _s_: stop  _r_: report
+
+"
+  ("p" #'profiler-start)
+  ("r" #'profiler-report)
+  ("s" #'profiler-stop)
+  ("q" nil))
+
 (defhydra select-input-method (:color amaranth :hint nil)
   "
 %s(hydra-title-with-faicon \"language\" \"Input Method\")
@@ -163,7 +200,7 @@ _u_: package usage     _h_: navigate hunks
   ("q" nil :exit t))
 
 (spacemacs-keys-set-leader-keys
-  "a i" #'select-input-method/body
+  "a" #'applications/body
   "b" #'buffers/body
   "f" #'files/body
   "g" #'git-and-files/body

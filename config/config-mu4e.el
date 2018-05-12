@@ -76,9 +76,6 @@
           (call-interactively action)
         (call-interactively #'evil-ret))))
 
-  :init
-  (spacemacs-keys-set-leader-keys "am" #'mu4e)
-
   :config
   (progn
     (evilified-state-evilify-map mu4e-main-mode-map
