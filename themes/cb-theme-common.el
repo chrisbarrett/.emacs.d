@@ -701,6 +701,21 @@
 
     ;; Misc faces
 
+    (hydra-face-amaranth
+     ((t :foreground ,cb-theme-common-red)))
+
+    (hydra-face-pink
+     ((t :foreground ,cb-theme-common-pink)))
+
+    (hydra-face-blue
+     ((t :foreground ,cb-theme-common-blue)))
+
+    (hydra-face-red
+     ((t :foreground ,cb-theme-common-red)))
+
+    (hydra-face-teal
+     ((t :foreground ,cb-theme-common-blue)))
+
     (page-break-lines
      ((t :weight light :foreground ,dimmed-fg)))
 
