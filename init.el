@@ -34,8 +34,8 @@
     (goto-char (point-max))
     (eval-print-last-sexp)))
 
-(defconst straight-cache-autoloads t)
-(defconst straight-check-for-modifications 'live)
+(setq straight-cache-autoloads t)
+(setq straight-check-for-modifications 'live)
 
 (require 'straight bootstrap-file t)
 
@@ -49,7 +49,7 @@
 (straight-use-package 'noflet)
 (straight-use-package 'memoize)
 
-(defconst use-package-verbose t)
+(setq use-package-verbose t)
 
 (straight-use-package 'bind-map)
 (straight-use-package 'use-package)
