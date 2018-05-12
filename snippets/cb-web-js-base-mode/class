@@ -4,7 +4,5 @@
 # condition: (yas-funcs-bolp)
 # --
 class ${1:Name} {
-  constructor($2) {
-    ${2:$(yas-funcs-js-ctor-body yas-text)}
-  }$0
+  $0
 }
