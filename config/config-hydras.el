@@ -110,8 +110,8 @@ _n_: forward  _p_/_N_: back    _-_ horizontal   _o_ others
 _f_: file            _s_: buffer         _d_: dir           _e_: edit with sudo
 _o_: other window    _S_: many buffers   _y_: path          _v_: reload
 _p_: at pt           _W_: write copy     _Y_: filename      _t_: file tree
-_r_: recent          _R_: rename
-^^                   _D_: delete
+_h_: as hex          _R_: rename
+_r_: recent          _D_: delete
 "
   ("D" #'delete-current-buffer-and-file)
   ("R" #'rename-file-and-buffer)
@@ -119,6 +119,7 @@ _r_: recent          _R_: rename
   ("W" #'write-file)
   ("Y" #'copy-buffer-name)
   ("d" #'copy-buffer-directory)
+  ("h" #'hexl-find-file)
   ("e" #'sudo-edit)
   ("f" #'counsel-find-file)
   ("o" #'find-file-other-window)

@@ -764,14 +764,12 @@ Interactively, reverse the characters in the current region."
 (use-package hexl
   :defer t
   :init
-  (progn
-    (spacemacs-keys-set-leader-keys "fh" 'hexl-find-file)
-    (spacemacs-keys-set-leader-keys-for-major-mode 'hexl-mode
-      "d" 'hexl-insert-decimal-char
-      "c" 'hexl-insert-octal-char
-      "x" 'hexl-insert-hex-char
-      "X" 'hexl-insert-hex-string
-      "g" 'hexl-goto-address))
+  (spacemacs-keys-set-leader-keys-for-major-mode 'hexl-mode
+    "d" 'hexl-insert-decimal-char
+    "c" 'hexl-insert-octal-char
+    "x" 'hexl-insert-hex-char
+    "X" 'hexl-insert-hex-string
+    "g" 'hexl-goto-address)
 
   :config
   (evil-define-key 'motion hexl-mode-map
