@@ -714,9 +714,6 @@ Interactively, reverse the characters in the current region."
   ;; Do not query the user to accept insecure connections. Just disconnect them.
   (setq nsm-noninteractive t))
 
-(use-package generate-password
-  :commands (generate-password))
-
 (use-package pixel-scroll
   :demand t
   :config (pixel-scroll-mode +1))
