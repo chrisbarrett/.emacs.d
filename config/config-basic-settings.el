@@ -795,6 +795,29 @@ Interactively, reverse the characters in the current region."
       (require 'info+))
     (setq Info-fontify-angle-bracketed-flag nil)))
 
+(use-package ediff
+  :defer t
+  :preface
+  (progn
+    (autoload 'ediff-setup-windows-plain "ediff-wind")
+    (autoload 'ediff-copy-diff "ediff-util")
+    (autoload 'ediff-get-region-contents "ediff-util")
+
+    (defun ediff-copy-both-to-C ()
+      (interactive)
+      (let ((str
+             (concat
+              (ediff-get-region-contents ediff-current-difference 'A ediff-control-buffer)
+              (ediff-get-region-contents ediff-current-difference 'B ediff-control-buffer))))
+        (ediff-copy-diff ediff-current-difference nil 'C nil str)))
+
+    (defun config-basic-settings--setup-ediff-keybinds ()
+      (define-key ediff-mode-map (kbd "B") #'ediff-copy-both-to-C)))
+  :config
+  (progn
+    (add-hook 'ediff-keymap-setup-hook #'config-basic-settings--setup-ediff-keybinds)
+    (setq ediff-window-setup-function #'ediff-setup-windows-plain)))
+
 (provide 'config-basic-settings)
 
 ;;; config-basic-settings.el ends here

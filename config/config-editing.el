@@ -38,8 +38,18 @@
       text-mode
       toml-mode
       yaml-mode))
+
+  :preface
+  (defun turn-off-aggressive-indent-mode ()
+    (when (fboundp 'aggressive-indent-mode)
+      (aggressive-indent-mode -1)))
+
   :config
-  (global-aggressive-indent-mode +1))
+  (progn
+    (add-hook 'diff-auto-refine-mode-hook #'turn-off-aggressive-indent-mode)
+    (global-aggressive-indent-mode +1)))
+
+
 
 (use-package volatile-highlights
   :straight t

@@ -95,7 +95,6 @@
 (use-package config-rust)
 (use-package config-ibuffer)
 (use-package config-dired)
-(use-package config-diff)
 (use-package config-web-mode)
 (use-package config-markdown)
 (use-package config-restclient)
