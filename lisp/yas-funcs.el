@@ -58,18 +58,19 @@ Fall back to the file name sans extension."
                                        "define-globalized-minor-mode"
                                        "define-derived-mode")))))
 
+
 
 ;;; JS
 
-(defun yas-funcs-js-module-name-for-binding (yas-text)
-  (pcase yas-text
+(cl-defun yas-funcs-js-module-name-for-binding (&optional (text yas-text))
+  (pcase text
     ('nil      "")
     (""        "")
     ("Promise" "bluebird")
     ("assert"  "power-assert")
     ("_"       "lodash")
 
-    ((guard (s-contains? "{" yas-text))
+    ((guard (s-contains? "{" text))
      "")
     (s
      (s-downcase (s-dashed-words s)))))
