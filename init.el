@@ -118,7 +118,6 @@
 (use-package config-dired)
 (use-package config-spelling)
 (use-package config-diff)
-(use-package config-coffeescript)
 (use-package config-web-mode)
 (use-package config-markdown)
 (use-package config-restclient)
