@@ -39,6 +39,10 @@
       "p" 'graphviz-dot-preview
       "," 'graphviz-dot-preview)))
 
+(use-package protobuf-mode
+  :straight t
+  :mode ("\\.proto\\'" . protobuf-mode))
+
 (provide 'config-langs)
 
 ;;; config-langs.el ends here

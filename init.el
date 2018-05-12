@@ -122,7 +122,6 @@
 (use-package config-haskell)
 (use-package config-highlight-thing)
 (use-package config-idris)
-(use-package config-protobuf)
 (use-package config-latex)
 (use-package config-python)
 (use-package config-gud)
