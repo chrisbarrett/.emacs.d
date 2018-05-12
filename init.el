@@ -30,8 +30,8 @@
 
 (setq package-enable-at-startup nil)
 
-
-;; Bootstrap straight.el and use-package.
+
+;; Bootstrap straight.el package manager.
 
 (eval-and-compile
   (defvar bootstrap-version 3)
@@ -50,6 +50,7 @@
 
 (require 'straight bootstrap-file t)
 
+
 ;; Install some basic packages
 
 (straight-use-package 'dash)
@@ -67,6 +68,7 @@
 (eval-when-compile
   (require 'use-package))
 
+
 ;; Load features.
 
 (eval-and-compile
@@ -149,6 +151,7 @@
 (unless user-full-name (warn "`user-full-name' not set"))
 (unless user-mail-address (warn "`user-mail-address' not set"))
 
+
 ;;; Post init setup.
 
 (unless (file-directory-p org-directory)
