@@ -2,7 +2,7 @@
 # name: implicit def
 # key: id
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 implicit def ${1:fname}(${2:params...})${3:: ${4:Type}} = ${5:{
   $0

@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: else
 # key: e
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 else
 {

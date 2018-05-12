@@ -2,7 +2,7 @@
 # name: while
 # key: wh
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 while (${1:test}) {
   $0

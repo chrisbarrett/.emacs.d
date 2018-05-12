@@ -1,6 +1,6 @@
 # key: py
 # name: src ipython
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 #+begin_src ipython
 $0

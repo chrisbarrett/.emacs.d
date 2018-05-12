@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: defn
 # key: d
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 (defn ${1:name} ${2:
   "$3"

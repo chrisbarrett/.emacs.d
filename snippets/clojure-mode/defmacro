@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: defmacro
 # key: m
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 (defmacro ${1:name} ${2:
   "$3"

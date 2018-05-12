@@ -1,5 +1,5 @@
 # key: dr
 # name: defrecord
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 (defrecord ${1:Name} [${2:fields...}])

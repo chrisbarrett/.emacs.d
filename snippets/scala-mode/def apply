@@ -2,7 +2,7 @@
 # name: def apply
 # key: da
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 def apply() = {
   $0

@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # key: ca
 # name: case
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 case $1:
   $0

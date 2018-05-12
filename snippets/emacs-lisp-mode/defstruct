@@ -1,6 +1,6 @@
 # key: ds
 # name: defstruct
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 (cl-defstruct (${1:Name}
                  (:constructor ${2:$1} (${3:arglist})))

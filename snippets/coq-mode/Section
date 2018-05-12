@@ -2,7 +2,7 @@
 # name: Section
 # key: sec
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # expand-env: ((yas-indent-line (quote fixed)))
 # --
 Section ${1:name}.

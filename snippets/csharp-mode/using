@@ -2,7 +2,7 @@
 # name: using
 # key: using
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 using (var ${1:x} = ${2:y}) {
   $0

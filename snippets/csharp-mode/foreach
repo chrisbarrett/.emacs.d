@@ -2,7 +2,7 @@
 # name: foreach
 # key: fe
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 foreach (var ${1:x} in ${2:xs}) {
   $0

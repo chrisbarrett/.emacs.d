@@ -1,6 +1,6 @@
 # -*- mode: snippet; require-final-newline: nil -*-
 # name: module type
 # key: mt
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 module type $0

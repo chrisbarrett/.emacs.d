@@ -2,7 +2,7 @@
 # name: arbitrary def
 # key: darb
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 implicit def arbitrary${1:T}[${2:U}]: Arbitrary[$1[$2]] = Arbitrary {
   $0

@@ -2,7 +2,7 @@
 # name: def postStop
 # key: ps
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 override def postStop() = {
   $0

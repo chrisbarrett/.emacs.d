@@ -2,7 +2,7 @@
 # name: MAINTAINER
 # key: m
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 MAINTAINER `(user-full-name)` "`user-mail-address`"
 $0

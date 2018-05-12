@@ -1,6 +1,6 @@
 # key: d
 # name: datatype
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 datatype ${1:name}
   = $0

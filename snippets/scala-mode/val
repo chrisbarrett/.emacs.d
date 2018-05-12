@@ -1,6 +1,6 @@
 # -*- mode: snippet; require-final-newline: nil -*-
 # name: val
 # key: v
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 val ${1:ident} = ${2:value}

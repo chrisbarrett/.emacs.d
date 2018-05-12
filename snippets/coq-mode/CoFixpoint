@@ -3,7 +3,7 @@
 # key: cof
 # binding: direct-keybinding
 # expand-env: ((yas-indent-line (quote fixed)))
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 CoFixpoint ${1:name and params} : ${3:T} :=
   $0.

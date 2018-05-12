@@ -2,7 +2,7 @@
 # name: implicit object
 # key: io
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 implicit object ${1:Name} {
   $0

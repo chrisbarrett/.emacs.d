@@ -2,7 +2,7 @@
 # name: func
 # key: f
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 func ${1:name} (${2:args}) -> ${3:ret} {
   $0

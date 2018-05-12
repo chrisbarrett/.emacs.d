@@ -1,6 +1,6 @@
 # key: tc
 # name: try...catch
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 try {
   $1$0

@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # key: s
 # name: switch
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 switch ${1:value} {
   case ${2:_}:

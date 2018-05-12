@@ -2,7 +2,7 @@
 # name: executable
 # key: exe
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 executable ${1:name}
   -- .hs or .lhs file containing the Main module.

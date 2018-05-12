@@ -2,7 +2,7 @@
 # name: catch
 # key: catch
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 catch (${1:T}Exception ex) {
   $0

@@ -2,7 +2,7 @@
 # name: arbitrary val
 # key: varb
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 implicit val arbitrary${1:Type}: Arbitrary[$1] = Arbitrary {
   $0

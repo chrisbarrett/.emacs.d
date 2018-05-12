@@ -2,7 +2,7 @@
 # name: bind-func
 # key: bf
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 (bind-func ${1:header}
   $0)

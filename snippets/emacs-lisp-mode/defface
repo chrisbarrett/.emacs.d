@@ -1,6 +1,6 @@
 # key: df
 # name: defface
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 (defface $1
   '((t

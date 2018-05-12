@@ -1,6 +1,6 @@
 # key: d
 # name: data
 # expand-env: ((yas-indent-line (quote fixed)) (yas-wrap-around-region (quote t)))
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 data ${1:Name} = $0

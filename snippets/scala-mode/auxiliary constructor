@@ -2,6 +2,6 @@
 # name: auxiliary constructor
 # key: ctor
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 def this(${1:params...}) = this(${2:paramas...})

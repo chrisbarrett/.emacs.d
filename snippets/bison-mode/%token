@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: %token
 # key: t
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 %token $0

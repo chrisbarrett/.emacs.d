@@ -1,6 +1,6 @@
 # key: f
 # name: for
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 for ${1:x} in ${2:xs}:
     $0

@@ -2,6 +2,6 @@
 # name: implicit val
 # key: iv
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 implicit val ${1:name} = ${2:value}

@@ -2,7 +2,7 @@
 # name: def preStart
 # key: ps
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 override def preStart() = {
   $0

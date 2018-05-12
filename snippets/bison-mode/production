@@ -2,7 +2,7 @@
 # name: production
 # key: p
 # expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 'nil))
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 ${1:name}:
   $0

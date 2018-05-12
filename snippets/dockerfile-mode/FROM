@@ -1,7 +1,7 @@
 # -*- mode: snippet; require-final-newline: nil -*-
 # name: FROM
 # key: f
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 FROM ${1:base-image}
 $0

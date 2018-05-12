@@ -1,6 +1,6 @@
 # key: in
 # name: instance
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # expand-env: ((yas-indent-line (quote fixed)) (yas-wrap-around-region (quote t)))
 # --
 instance ${1:Class} where

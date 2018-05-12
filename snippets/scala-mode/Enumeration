@@ -1,6 +1,6 @@
 # key: e
 # name: Enumeration
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 object ${1:Name} extends Enumeration {
   type T = Value

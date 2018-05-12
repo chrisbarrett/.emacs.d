@@ -2,6 +2,6 @@
 # name: override val
 # key: ov
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 override val ${1:ident} = ${2:value}

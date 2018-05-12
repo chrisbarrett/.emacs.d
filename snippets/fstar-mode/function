@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: function
 # key: f
-# condition: (not (cb-yas/bol?))
+# condition: (not (yas-funcs-bolp))
 # expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 't))
 # --
 function

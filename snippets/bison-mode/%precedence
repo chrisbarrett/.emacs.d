@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: %precedence
 # key: pr
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 %precedence $0

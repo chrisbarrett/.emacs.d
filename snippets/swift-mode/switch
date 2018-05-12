@@ -2,7 +2,7 @@
 # name: switch
 # key: sw
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 switch ${1:x} {
 case ${2:c}:

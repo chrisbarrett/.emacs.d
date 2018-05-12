@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: exception
 # key: ex
-# conditon: (cb-yas/bol?)
+# conditon: (yas-funcs-bolp)
 # --
 exception $0

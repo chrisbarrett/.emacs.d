@@ -1,6 +1,6 @@
 # key: wi
 # name: with
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 with ${1:expr}${2: as ${3:alias}}:
     $0

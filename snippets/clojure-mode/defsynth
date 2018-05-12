@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: defsynth
 # key: ds
-# condition: (and (cb-yas/bol?) (true? overtone-mode))
+# condition: (and (yas-funcs-bolp) (true? overtone-mode))
 # --
 (defsynth ${1:name} ${2:
   "$3"

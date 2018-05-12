@@ -1,6 +1,6 @@
 # key: f
 # name: function
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 ${1:void} ${2:fname}(${3:/* args */}) {
   $0

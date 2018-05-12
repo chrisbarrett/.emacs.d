@@ -1,5 +1,5 @@
 # key: i
 # name: if
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 if ($1) { $0 }

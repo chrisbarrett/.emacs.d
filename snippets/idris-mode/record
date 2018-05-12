@@ -1,5 +1,5 @@
 # key: r
 # name: record
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 record $0

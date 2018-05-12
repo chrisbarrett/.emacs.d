@@ -1,5 +1,5 @@
 # key: ch
 # name: Check
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 Check $0.

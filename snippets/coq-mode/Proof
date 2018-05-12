@@ -1,5 +1,5 @@
 # key: p
 # name: Proof
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 Proof. reflexivity. Qed.

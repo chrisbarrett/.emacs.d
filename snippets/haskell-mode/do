@@ -1,6 +1,6 @@
 # key: do
 # name: do
-# condition: (not (cb-yas/bol?))
+# condition: (not (yas-funcs-bolp))
 # --
 do
   $0

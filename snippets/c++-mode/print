@@ -1,5 +1,5 @@
 # key: p
 # name: print
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 `(cb-cpp/resolve "std::cout")` << "$0" << `(cb-cpp/resolve "std::endl")`;

@@ -1,5 +1,5 @@
 # key: un
 # name: using namespace
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 using namespace $0;

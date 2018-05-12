@@ -2,7 +2,7 @@
 # name: destructor impl
 # key: ds
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 ${1:class}::~$1() {
   $0;

@@ -2,7 +2,7 @@
 # name: unwind-protect
 # key: up
 # binding: direct-keybinding
-# condition: (or (cb-yas/bol?) (region-active-p))
+# condition: (or (yas-funcs-bolp) (region-active-p))
 # --
 (unwind-protect
   $0)

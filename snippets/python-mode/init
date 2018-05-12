@@ -1,6 +1,6 @@
 # key: ctor
 # name: init method
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 def __init__(self${1:, $2}):
     ${3:pass}

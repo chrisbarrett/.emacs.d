@@ -1,7 +1,7 @@
 # key: dr
 # name: data record
 # expand-env: ((yas-indent-line (quote fixed)) (yas-wrap-around-region (quote t)))
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 data ${1:Name} = $1
   { _${2:attr} :: ${3:T}

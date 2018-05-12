@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: src ruby
 # key: rb
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 #+begin_src ruby
 $0

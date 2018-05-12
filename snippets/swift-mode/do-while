@@ -2,7 +2,7 @@
 # name: do-while
 # key: dw
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 do {
   $0

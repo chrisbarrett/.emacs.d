@@ -1,6 +1,6 @@
 # key: it
 # name: scalatest fixture (FunSpec)
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 it("${1:desc}") {
   pending

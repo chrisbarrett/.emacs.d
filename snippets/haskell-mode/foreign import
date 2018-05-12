@@ -1,6 +1,6 @@
 # key: fi
 # name: foreign import
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 foreign import ccall ${1:unsafe }"${2:header} ${3:function}"
   ${4:c_$3} `(haskell/fmt-::)` ${5:T}

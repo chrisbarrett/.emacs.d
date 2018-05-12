@@ -1,7 +1,7 @@
 # -*- mode: snippet; require-final-newline: nil -*-
 # name: for
 # key: for
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 for ${1:x} in ${2:expr} {
     $0

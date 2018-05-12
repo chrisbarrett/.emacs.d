@@ -2,6 +2,6 @@
 # name: print
 # key: p
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 print ${1:"${2:msg}"}

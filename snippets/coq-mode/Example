@@ -1,6 +1,6 @@
 # key: ex
 # name: Example
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 't))
 # --
 Example ${1:name} :

@@ -1,6 +1,6 @@
 # key: nt
 # name: newtype
 # expand-env: ((yas-indent-line (quote fixed)) (yas-wrap-around-region (quote t)))
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 newtype ${1:Name} = ${1:$(cb-yas-haskell-ctor-name)} ${2:Type}

@@ -1,5 +1,5 @@
 # key: l
 # name: let...in
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 let ${1:binding} := ${2:expr} in $0

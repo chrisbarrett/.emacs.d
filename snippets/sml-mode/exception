@@ -2,6 +2,6 @@
 # name: exception
 # key: ex
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 exception $0

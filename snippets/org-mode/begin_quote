@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: begin_quote
 # key: q
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 #+begin_quote
 $0

@@ -1,6 +1,6 @@
 # -*- mode: snippet; require-final-newline: nil -*-
 # name: type family
 # key: tf
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 type family ${1:decl} :: ${2:type}

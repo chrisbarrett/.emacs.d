@@ -1,6 +1,6 @@
 # key: main
 # name: main
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 def main(args: Array[String]): Unit = {
   $0

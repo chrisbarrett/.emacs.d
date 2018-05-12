@@ -2,7 +2,7 @@
 # name: COPY
 # key: cp
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 COPY ${1:src} ${2:dest}
 $0

@@ -1,7 +1,7 @@
 # key: fr
 # name: recursive function definition
 # expand-env: ((yas-indent-line (quote fixed)) (yas-wrap-around-region (quote t)))
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 val ${1:fname} : ${2:ty}
 let rec $1 ${3:params} =

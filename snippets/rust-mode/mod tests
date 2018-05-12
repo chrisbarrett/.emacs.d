@@ -1,6 +1,6 @@
 # key: test
 # name: mod tests
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 #[cfg(test)]
 mod tests {

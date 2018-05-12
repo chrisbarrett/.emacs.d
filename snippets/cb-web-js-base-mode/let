@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: let
 # key: l
-# condition: (and (cb-yas/bol?) (-contains? '("jsx" "javascript") web-mode-content-type))
+# condition: (and (yas-funcs-bolp) (-contains? '("jsx" "javascript") web-mode-content-type))
 # --
 let $1 = $0;

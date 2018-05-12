@@ -2,7 +2,7 @@
 # name: enum
 # key: en
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 enum ${1:Name} {
   $0

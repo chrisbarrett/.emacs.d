@@ -2,7 +2,7 @@
 # name: data...where
 # key: d
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 't))
 # --
 data ${1:ident} ${2:: ${3:Type}} where

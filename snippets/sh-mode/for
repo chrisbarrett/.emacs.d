@@ -2,7 +2,7 @@
 # name: for
 # key: for
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 for ${1:VAR} in ${2:str}; do
     $0

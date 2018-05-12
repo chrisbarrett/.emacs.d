@@ -2,7 +2,7 @@
 # name: main
 # key: main
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 int main() {
   $0

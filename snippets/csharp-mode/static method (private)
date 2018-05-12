@@ -2,7 +2,7 @@
 # name: static method (private)
 # key: sm
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 private static ${3:T} ${1:Mthd}(${2:args...}) {
   $0

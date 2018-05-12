@@ -2,7 +2,7 @@
 # name: scalacheck property
 # key: prop
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 property("$1") = Prop.forAll { ($2) =>
   $0

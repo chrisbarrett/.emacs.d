@@ -2,7 +2,7 @@
 # name: newtype class
 # key: nt
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 /// <summary>
 /// Simple wrapper around a $2 representing a ${1:$(s-titleized-words yas-text)}.

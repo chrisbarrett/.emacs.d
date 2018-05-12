@@ -2,7 +2,7 @@
 # name: scalatest fixture with helper (FunSpec)
 # key: it
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 it("${1:desc}") {
   new Fixture {

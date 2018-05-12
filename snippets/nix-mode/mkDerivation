@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: mkDerivation
 # key: d
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 { stdenv }:
 

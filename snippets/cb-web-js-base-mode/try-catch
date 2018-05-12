@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: try-catch
 # key: try
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 try {
   $0

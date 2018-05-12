@@ -14,7 +14,7 @@
 (require 'spacemacs-keys)
 (require 's)
 
-(autoload 'cb-yas/bol? "cb-yas-elisp")
+(autoload 'yas-funcs-bolp "cb-yas-elisp")
 (autoload 'evil-define-key "evil")
 
 (use-package rust-mode
@@ -167,7 +167,7 @@
       (goto-char (line-beginning-position))
       (search-forward-regexp (rx bow "pub" eow (* space)) (line-end-position) t)
       (narrow-to-region (point) (line-end-position))
-      (cb-yas/bol?))))
+      (yas-funcs-bolp))))
 
 (defun cb-rust-previous-struct-def ()
   "Search backward for the name of the last struct defined in this file."

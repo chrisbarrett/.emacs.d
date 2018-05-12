@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: main
 # key: main
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 (* Program entry-point *)
 let () =

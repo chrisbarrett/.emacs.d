@@ -1,7 +1,7 @@
 # key: as
 # name: assert
 # expand-env: ((yas-indent-line (quote fixed)))
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 assert (${1:H} : $2).
 - $0

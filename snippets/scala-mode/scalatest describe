@@ -1,6 +1,6 @@
 # key: ds
 # name: scalatest describe
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 describe("${1:feature}") {
   $0

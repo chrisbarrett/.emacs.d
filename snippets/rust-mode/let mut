@@ -1,6 +1,6 @@
 # -*- mode: snippet; require-final-newline: nil -*-
 # name: let mut
 # key: lm
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 let mut ${1:x} = $0;

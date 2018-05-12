@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: open
 # key: o
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 open $0

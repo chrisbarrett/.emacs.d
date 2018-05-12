@@ -1,6 +1,6 @@
 # key: c
 # name: case
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 case ${1:expr}
 of ${2:binder} => $0

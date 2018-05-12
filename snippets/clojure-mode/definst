@@ -1,6 +1,6 @@
 # key: di
 # name: definst
-# condition: (and (cb-yas/bol?) (true? overtone-mode))
+# condition: (and (yas-funcs-bolp) (true? overtone-mode))
 # --
 (definst ${1:name} ${2:
   "$3"

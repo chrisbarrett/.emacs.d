@@ -2,7 +2,7 @@
 # name: method (private)
 # key: m
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 private ${3:T} ${1:Mthd}(${2:args...}) {
   $0

@@ -2,6 +2,6 @@
 # name: lazy val
 # key: lv
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 lazy val ${1:name} = ${2:value}

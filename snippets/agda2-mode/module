@@ -2,7 +2,7 @@
 # name: module
 # key: m
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 module ${1:Name} where
   $0

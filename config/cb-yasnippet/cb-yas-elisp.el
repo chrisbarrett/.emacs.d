@@ -15,13 +15,6 @@
 
 (autoload 'thing-at-point-looking-at "thingatpt")
 
-
-(defun cb-yas/bol? ()
-  "Non-nil if point is on an empty line or at the first word.
-The rest of the line must be blank."
-  (s-matches? (rx bol (* space) (* word) (* space) eol)
-              (buffer-substring (line-beginning-position) (line-end-position))))
-
 (defun yas/find-group-for-snippet ()
   "Find the first group defined in the current file.
 Fall back to the file name sans extension."

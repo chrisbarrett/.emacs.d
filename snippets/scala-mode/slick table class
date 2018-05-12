@@ -1,6 +1,6 @@
 # key: cl
 # name: slick table class
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 case class ${1:Name}(${2:attrs})
 

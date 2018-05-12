@@ -2,6 +2,6 @@
 # name: extern crate
 # key: ec
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 extern crate ${1:name};

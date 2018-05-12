@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: Qed
 # key: q
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 Qed.

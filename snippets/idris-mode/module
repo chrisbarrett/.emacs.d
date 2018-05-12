@@ -1,6 +1,6 @@
 # key: m
 # name: module
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 module `(s-capitalize (f-no-ext (f-filename (buffer-file-name))))`
 

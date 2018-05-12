@@ -2,6 +2,6 @@
 # name: enum class
 # key: ec
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 enum class ${1:Name} { $0 };

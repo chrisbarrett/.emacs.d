@@ -2,6 +2,6 @@
 # name: sealed trait
 # key: st
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 sealed trait ${1:Name}

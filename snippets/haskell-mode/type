@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: type
 # key: t
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 type ${1:name} = $0

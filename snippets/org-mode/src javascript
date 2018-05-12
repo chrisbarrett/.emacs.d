@@ -1,7 +1,7 @@
 # -*- mode: snippet; require-final-newline: nil -*-
 # key: js
 # name: src javascript
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 #+begin_src javascript
 $0

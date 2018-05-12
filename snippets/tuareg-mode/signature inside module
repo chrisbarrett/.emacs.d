@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: signature
 # key: s
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 't))
 # --
 module type ${1:Modname} = sig

@@ -2,6 +2,6 @@
 # name: Hypothesis
 # key: hy
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 Hypothesis ${1:ident} : ${2:T}.

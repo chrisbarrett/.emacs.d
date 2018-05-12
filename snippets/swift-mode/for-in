@@ -2,7 +2,7 @@
 # name: for-in
 # key: fi
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 for $1 in $2 {
     $0

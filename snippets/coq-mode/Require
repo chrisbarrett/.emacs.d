@@ -2,6 +2,6 @@
 # name: Require
 # key: r
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 Require $0.

@@ -1,7 +1,7 @@
 # key: mod
 # name: Module
 # expand-env: ((yas-indent-line (quote fixed)))
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 Module ${1:Name}.
 

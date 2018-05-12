@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: let with function
 # key: df
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 let ${1:binding} = function
   | ${2:case} -> $0

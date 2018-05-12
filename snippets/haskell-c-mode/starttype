@@ -2,7 +2,7 @@
 # name: #starttype...#stoptype
 # key: st
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # expand-env: ((yas-indent-line (quote fixed)) (yas-wrap-around-region (quote nil)))
 # --
 #starttype ${1:structname}

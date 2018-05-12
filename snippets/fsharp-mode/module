@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: module
 # key: mo
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 module $0

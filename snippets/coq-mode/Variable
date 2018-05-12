@@ -2,6 +2,6 @@
 # name: Variable
 # key: v
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 Variable ${1:ident} : ${2:T}.

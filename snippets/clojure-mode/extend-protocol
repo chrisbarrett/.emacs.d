@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: extend-protocol
 # key: ep
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 (extend-protocol ${1:Protocol}
   ${2:Type}

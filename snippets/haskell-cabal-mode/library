@@ -2,7 +2,7 @@
 # name: library
 # key: lib
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 library
   hs-source-dirs:      src

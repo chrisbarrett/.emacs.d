@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: record
 # key: rec
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 type ${1:name} =
   {

@@ -1,6 +1,6 @@
 # key: ic
 # name: implicit class
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 implicit class ${1:Name} {
   $0

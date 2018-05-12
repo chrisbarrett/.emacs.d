@@ -2,7 +2,7 @@
 # name: for
 # key: for
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 for var ${1:x} = 0; $1 != ${2:limit}; ++$1 {
     $0

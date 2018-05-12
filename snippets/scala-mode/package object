@@ -2,7 +2,7 @@
 # name: package object
 # key: po
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 package object ${1:name} {
   $0

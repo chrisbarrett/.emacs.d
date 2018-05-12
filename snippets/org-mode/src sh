@@ -1,6 +1,6 @@
 # key: sh
 # name: src sh
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 #+begin_src sh
 $0

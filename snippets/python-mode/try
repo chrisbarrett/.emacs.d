@@ -1,6 +1,6 @@
 # key: t
 # name: try
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 try:
     ${1:expr}

@@ -2,6 +2,6 @@
 # name: property (auto)
 # key: p
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 public ${1:T} ${2:Name} { get; set; }

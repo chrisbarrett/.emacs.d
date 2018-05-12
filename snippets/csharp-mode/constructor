@@ -2,7 +2,7 @@
 # name: constructor
 # key: ctor
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 public `(yas/csharp-class-name)` (${1:args...}) {
    $0

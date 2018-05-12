@@ -1,5 +1,5 @@
 # key: im
 # name: import
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 import $0

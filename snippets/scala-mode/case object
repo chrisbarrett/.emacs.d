@@ -2,6 +2,6 @@
 # name: case object
 # key: co
 # binding: direct-keybinding
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 case object ${1:Name}

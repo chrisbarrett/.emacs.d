@@ -1,5 +1,5 @@
 # key: r
 # name: return
-# condition: (cb-yas/bol?)
+# condition: (yas-funcs-bolp)
 # --
 return $0;
