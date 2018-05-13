@@ -8,14 +8,11 @@
 
 ;;; Code:
 
+(require 'all-the-icons)
 (require 'dash)
 (require 'memoize)
 (require 's)
 
-(autoload 'all-the-icons-icon-for-file "all-the-icons")
-(autoload 'all-the-icons-icon-for-mode "all-the-icons")
-(autoload 'all-the-icons-octicon "all-the-icons")
-(autoload 'all-the-icons-fileicon "all-the-icons")
 (autoload 'magit-get-current-branch "magit-git")
 (autoload 'projectile-project-p "projectile")
 
@@ -180,7 +177,7 @@
         str
       (propertize str 'face 'cb-header-line-format-nonemphasised-element))))
 
-(defconst cb-header-line-format--flycheck-icon (all-the-icons-octicon "terminal" :v-adjust 0.05))
+(defconst cb-header-line-format--flycheck-icon (all-the-icons-material "error_outline"))
 (defconst cb-header-line-format--neotree-icon (all-the-icons-octicon "file-directory" :v-adjust 0.05))
 (defconst cb-header-line-format--org-icon (all-the-icons-icon-for-mode 'org-mode :v-adjust 0.05))
 
