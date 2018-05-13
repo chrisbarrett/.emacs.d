@@ -12,15 +12,17 @@
   (require 'use-package))
 
 (require 'dash)
+(require 's)
 (require 'spacemacs-keys)
 
-(autoload 'evil-insert-state "evil-states")
-(autoload 'org-read-date "org")
 (autoload 'evil-define-key "evil")
-(autoload 's-replace "s")
+(autoload 'evil-insert-state "evil-states")
+(autoload 'ledger-report "ledger")
+(autoload 'org-read-date "org")
 
 (defconst ledger-master-file (file-truename "~/org/accounts.ledger"))
 
+
 ;; Utility functions
 
 (defun cb-ledger-goto-ledger-file ()
@@ -44,6 +46,7 @@
     (pop-to-buffer buf)
     (call-interactively #'ledger-report)))
 
+
 ;; Package setup
 
 (use-package ledger-mode
@@ -65,6 +68,7 @@
 
     (evil-define-key 'normal ledger-report-mode-map (kbd "q") 'kill-buffer-and-window)
 
+    (setq ledger-report-use-header-line nil)
     (setq ledger-post-account-alignment-column 2)
     (setq ledger-post-use-completion-engine :ido)
     (setq ledger-fontify-xact-state-overrides nil)
@@ -92,9 +96,6 @@
     ;; Fix font lock issue in ledger reports
     (add-hook 'ledger-report-mode-hook 'font-lock-fontify-buffer)
     (define-key ledger-report-mode-map (kbd "C-c C-c") #'cb-ledger-report-from-report-buffer)))
-
-(use-package cb-ledger-redefinitions
-  :after ledger-report)
 
 (use-package cb-ledger-format
   :after ledger-mode
