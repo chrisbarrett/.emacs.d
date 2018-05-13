@@ -14,7 +14,7 @@
 
 (use-package company
   :straight t
-  :commands (global-company-mode)
+  :hook (after-init . global-company-mode)
 
   :bind
   (([remap completion-at-point] . company-manual-begin)
@@ -31,12 +31,9 @@
              company-show-doc-buffer)
 
   :init
-  (progn
-    (with-eval-after-load 'comint
-      (define-key comint-mode-map [remap indent-for-tab-command]
-        #'company-manual-begin))
-
-    (add-hook 'after-init-hook #'global-company-mode))
+  (with-eval-after-load 'comint
+    (define-key comint-mode-map [remap indent-for-tab-command]
+      #'company-manual-begin))
 
   :config
   (progn
