@@ -49,21 +49,11 @@ Preview:
 ^^_!_: special chars   % 3`generate-password--special-chars-p     _y_: copy to kill-ring
 ^^                           ^^^^^^^^^^^^^^^^^^^^_q_: quit
 "
-  ("l" (generate-password--read-length) :color red)
-
-  ("!" (setq generate-password--special-chars-p (not generate-password--special-chars-p)) :color red)
-
-  ("y"
-   (progn
-     (kill-new (generate-password--run (generate-password--state-to-command)))
-     (message "Password copied to kill-ring."))
-   :color blue)
-
-  ("i"
-   (insert (generate-password--run (generate-password--state-to-command)))
-   :color blue)
-
-  ("q" nil))
+  ("l" (generate-password--read-length))
+  ("!" (setq generate-password--special-chars-p (not generate-password--special-chars-p)))
+  ("y" (progn (kill-new (generate-password--run (generate-password--state-to-command))) (message "Password copied to kill-ring.")) :exit it)
+  ("i" (insert (generate-password--run (generate-password--state-to-command))) :exit t)
+  ("q" nil :exit t))
 
 (provide 'generate-password)
 
