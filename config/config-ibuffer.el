@@ -19,12 +19,6 @@
   :defines (ibuffer-show-empty-filter-groups
             ibuffer-never-show-predicates)
   :bind ("C-x C-b" . ibuffer-other-window)
-  :preface
-  ;; HACK: Hide the cursor and use hl-line.
-  (defun cb-ibuffer--hacky-show-line-only ()
-    (run-with-timer 0.01 nil (lambda ()
-                               (setq cursor-type nil)
-                               (hl-line-mode +1))))
   :config
   (progn
     (setq ibuffer-expert t)
@@ -39,15 +33,13 @@
                         "*Org"
                         "*Flycheck error messages*"
                         "*Help*"))))
-    (add-hook 'ibuffer-hook #'cb-ibuffer--hacky-show-line-only t)
+
     (define-key ibuffer-mode-map (kbd "SPC") spacemacs-keys-default-map)
     (define-key ibuffer-mode-map (kbd "j") #'ibuffer-forward-line)
     (define-key ibuffer-mode-map (kbd "k") #'ibuffer-backward-line)))
 
 (use-package ibuf-ext
-  :commands (ibuffer-auto-mode)
-  :init
-  (add-hook 'ibuffer-mode-hook #'ibuffer-auto-mode)
+  :hook (ibuffer-mode . ibuffer-auto-mode)
   :config
   (setq ibuffer-show-empty-filter-groups nil))
 
