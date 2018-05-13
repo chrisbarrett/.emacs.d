@@ -44,9 +44,9 @@
 ^Productivity^      ^Editing^           ^Shells^
 ^------------^----- ^-------^---------- ^------^------
 _c_: quick calc     _i_: input method   _t_: terminal
-_C_: calc           _p_: profiler       _n_: nix-repl
+_C_: calc           _?_: profiler       _n_: nix-repl
 _m_: mu4e
-_g_: gen password
+_p_: gen password
 _w_: world clock
 
 "
@@ -55,8 +55,8 @@ _w_: world clock
   ("m" #'mu4e)
   ("w" #'world-time-list)
   ("i" #'select-input-method/body)
-  ("g" #'generate-password/body)
-  ("p" #'profiler/body)
+  ("p" #'generate-password/body)
+  ("?" #'profiler/body)
   ("t" (ansi-term (getenv "SHELL")))
   ("n" #'nix-repl-show)
   ("q" nil))
