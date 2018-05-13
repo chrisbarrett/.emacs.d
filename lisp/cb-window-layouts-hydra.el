@@ -29,16 +29,16 @@
           ((&alist current-slot (_ name)) (eyebrowse--get 'window-configs)))
     (cb-window-layouts-hydra--render-name name current-slot)))
 
-(defhydra cb-window-layouts (:foreign-keys warn)
+(defhydra cb-window-layouts (:foreign-keys warn :hint nil)
   "
 Current layout: %s(propertize (cb-window-layouts-hydra--current-layout) 'face 'bold)
 
-Actions   ^^^^                 Layouts   ^^
-──────────^^^^──────────────── ──────────^^─────────────
-[_n_] next    [_p_] previous   1: [_e_] ?e?
-[_r_] rename  [_x_] clear      2: [_u_] ?u?
-[_s_] switch  [_SPC_] toggle   3: [_o_] ?o?
-[_RET_] done ^^                4: [_a_] ?a?
+^Actions^               ^^   Layouts   ^^
+^-------^---------------^^-- ----------^^-----------------------
+_n_: next    _p_: previous   1. _e_: ?e?
+_r_: rename  _x_: clear      2. _u_: ?u?
+_s_: switch  _SPC_: toggle   3. _o_: ?o?
+_RET_: done ^^               4. _a_: ?a?
 "
   ("e" eyebrowse-switch-to-window-config-0 (cb-window-layouts-hydra--slot-indicator 0))
   ("u" eyebrowse-switch-to-window-config-1 (cb-window-layouts-hydra--slot-indicator 1))
