@@ -27,6 +27,9 @@
 (defconst paths-config-directory
   (concat user-emacs-directory "config"))
 
+(defconst paths-hacks-directory
+  (concat user-emacs-directory "hacks"))
+
 (defconst paths-themes-directory
   (concat user-emacs-directory "themes"))
 

@@ -32,9 +32,8 @@
     (push `(("," . ,(rx bos (? "evil-") "org-" (group (+ nonl)))) . (nil . "\\1"))
           which-key-replacement-alist)))
 
-(straight-use-package 'org-plus-contrib)
-
 (use-package org
+  :straight org-plus-contrib
   :defer t
 
   :bind
@@ -109,6 +108,8 @@
 
   :config
   (progn
+    ;; Ensure org-version hack is activated.
+    (load-file (expand-file-name "org-version.el" paths-hacks-directory))
 
     (setq org-default-notes-file (f-join org-directory "notes.org"))
 
