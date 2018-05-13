@@ -150,7 +150,7 @@
                              minibuffer-local-completion-map))
 
 (use-package ensime
-  :straight t
+  :straight (:host github :repo "ensime/ensime-emacs" :branch "2.0")
   :commands (ensime)
 
   :preface
