@@ -3,6 +3,7 @@
 ;;; Code:
 
 (require 'hydra)
+(require 's)
 (require 'subr-x)
 
 
@@ -31,6 +32,10 @@
       (user-error "Number must be greater than 0"))
     (setq generate-password--length updated)))
 
+(defun generate-password--format-preview ()
+  (let ((password (s-replace "%" "%%" (generate-password--run (generate-password--state-to-command)))))
+    (propertize password 'face 'font-lock-comment-face)))
+
 ;;;###autoload
 (defhydra generate-password (:color amaranth :hint nil)
   "
@@ -38,9 +43,9 @@ Generate a password using /dev/urandom.
 
      %s(propertize \"ᕕ( ᐛ )ᕗ\" 'face '(:foreground \"gray50\"))
 
-Preview:
+Example with current settings:
 
-     %s(propertize (generate-password--run (generate-password--state-to-command)) 'face 'font-lock-comment-face)
+     %s(generate-password--format-preview)
 
 
 ^Flags^           ^^^^ Value     ^^^^^^^^^^^^^^^^Actions
