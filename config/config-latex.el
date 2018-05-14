@@ -6,7 +6,43 @@
   (require 'use-package))
 
 (require 'straight)
-(require 'spacemacs-keys)
+(require 'major-mode-hydra)
+
+
+
+(major-mode-hydra-bind latex-mode "Build"
+  ("r" TeX-command-run-all "run")
+  ("b" config-latex-build "build")
+  ("o" TeX-view "open output"))
+
+(major-mode-hydra-bind latex-mode "Insert"
+  ("ie" LaTeX-environment "environment")
+  ("ic" LaTeX-close-environment "close environemnt")
+  ("ii" LaTeX-insert-item "item")
+  ("is" LaTeX-section "section")
+  ("im" TeX-insert-macro "macro"))
+
+(major-mode-hydra-bind latex-mode "Select"
+  ("vs" LaTeX-mark-section "section")
+  ("ve" LaTeX-mark-environment "environment"))
+
+(major-mode-hydra-bind latex-mode "Fill"
+  ("fe" LaTeX-fill-environment "environment")
+  ("fp" LaTeX-fill-paragraph "paragram")
+  ("fr" LaTeX-fill-region "region")
+  ("fs" LaTeX-fill-section "section"))
+
+(major-mode-hydra-bind latex-mode "Markup"
+  ("mb" (TeX-font nil ?\C-b) "bold")
+  ("mc" (TeX-font nil ?\C-t) "code")
+  ("me" (TeX-font nil ?\C-e) "emphasis")
+  ("mi" (TeX-font nil ?\C-i) "italic"))
+
+(major-mode-hydra-bind latex-mode "Misc"
+  ("p" latex-preview-pane-mode "toggle preview pane")
+  ("h" TeX-doc "documentation"))
+
+
 
 (use-package latex-preview-pane
   :straight t
@@ -15,14 +51,6 @@
 ;; Auctex
 
 (defvar config-latex--command "LaTeX")
-
-(use-package which-key
-  :config
-  (progn
-    (push `((nil . ,(rx bos (? "config-") (? "la") "tex-" (group (+ nonl)))) . (nil . "\\1"))
-          which-key-replacement-alist)
-    (push `((nil . ,(rx bos (? "La") "TeX-" (group (+ nonl)))) . (nil . "\\1"))
-          which-key-replacement-alist)))
 
 (use-package tex
   :straight auctex
@@ -75,22 +103,7 @@
 
     (defun config-latex--auto-fill-mode ()
       (auto-fill-mode +1)
-      (setq-local auto-fill-function #'config-latex--autofill))
-
-    ;; Rebindings for TeX-font.
-    (defun config-latex-font-bold () (interactive) (TeX-font nil ?\C-b))
-    (defun config-latex-font-code () (interactive) (TeX-font nil ?\C-t))
-    (defun config-latex-font-emphasis () (interactive) (TeX-font nil ?\C-e))
-    (defun config-latex-font-italic () (interactive) (TeX-font nil ?\C-i))
-    (defun config-latex-font-medium () (interactive) (TeX-font nil ?\C-m))
-    (defun config-latex-font-clear () (interactive) (TeX-font nil ?\C-d))
-    (defun config-latex-font-calligraphic () (interactive) (TeX-font nil ?\C-a))
-    (defun config-latex-font-small-caps () (interactive) (TeX-font nil ?\C-c))
-    (defun config-latex-font-sans-serif () (interactive) (TeX-font nil ?\C-f))
-    (defun config-latex-font-normal () (interactive) (TeX-font nil ?\C-n))
-    (defun config-latex-font-serif () (interactive) (TeX-font nil ?\C-r))
-    (defun config-latex-font-oblique () (interactive) (TeX-font nil ?\C-s))
-    (defun config-latex-font-upright () (interactive) (TeX-font nil ?\C-u)))
+      (setq-local auto-fill-function #'config-latex--autofill)))
 
   :init
   (progn
@@ -102,73 +115,12 @@
     (add-hook 'LaTeX-mode-hook 'TeX-PDF-mode))
 
   :config
-  (progn
-    ;; Don't insert line-break at inline math.
-    (setq LaTeX-fill-break-at-separators nil)
-
-    (dolist (mode '(tex-mode latex-mode))
-      (spacemacs-keys-set-leader-keys-for-major-mode mode
-        "\\"  'TeX-insert-macro                            ;; C-c C-m
-        "-"   'TeX-recenter-output-buffer                  ;; C-c C-l
-        "%"   'TeX-comment-or-uncomment-paragraph          ;; C-c %
-        ";"   'TeX-comment-or-uncomment-region             ;; C-c ; or C-c :
-        ;; TeX-command-run-all runs compile and open the viewer
-        "a"   'TeX-command-run-all                         ;; C-c C-a
-        "b"   'config-latex-build
-        "k"   'TeX-kill-job                                ;; C-c C-k
-        "l"   'TeX-recenter-output-buffer                  ;; C-c C-l
-        "m"   'TeX-insert-macro                            ;; C-c C-m
-        "v"   'TeX-view                                    ;; C-c C-v
-        ;; TeX-doc is a very slow function
-        "hd"  'TeX-doc
-        "xb"  'config-latex-font-bold
-        "xc"  'config-latex-font-code
-        "xe"  'config-latex-font-emphasis
-        "xi"  'config-latex-font-italic
-        "xr"  'config-latex-font-clear
-        "xo"  'config-latex-font-oblique
-        "xfc" 'config-latex-font-small-caps
-        "xff" 'config-latex-font-sans-serif
-        "xfr" 'config-latex-font-serif))
-
-    (spacemacs-keys-set-leader-keys-for-major-mode 'latex-mode
-      "*"   'LaTeX-mark-section      ;; C-c *
-      "."   'LaTeX-mark-environment  ;; C-c .
-      "c"   'LaTeX-close-environment ;; C-c ]
-      "e"   'LaTeX-environment       ;; C-c C-e
-      "ii"  'LaTeX-insert-item       ;; C-c C-j
-      "s"   'LaTeX-section           ;; C-c C-s
-      "fe"  'LaTeX-fill-environment  ;; C-c C-q C-e
-      "fp"  'LaTeX-fill-paragraph    ;; C-c C-q C-p
-      "fr"  'LaTeX-fill-region       ;; C-c C-q C-r
-      "fs"  'LaTeX-fill-section      ;; C-c C-q C-s
-      "p"   'latex-preview-pane-mode
-      "xB"  'config-latex-font-medium
-      "xr"  'config-latex-font-clear
-      "xfa" 'config-latex-font-calligraphic
-      "xfn" 'config-latex-font-normal
-      "xfu" 'config-latex-font-upright)
-
-    (spacemacs-keys-declare-prefix-for-mode 'latex-mode "mi" "insert")
-    (spacemacs-keys-declare-prefix-for-mode 'latex-mode "mf" "fill")))
+  ;; Don't insert line-break at inline math.
+  (setq LaTeX-fill-break-at-separators nil))
 
 (use-package tex-fold
   :straight auctex
-  :after tex
-  :config
-  (dolist (mode '(tex-mode latex-mode))
-    (spacemacs-keys-set-leader-keys-for-major-mode mode
-      "z=" 'TeX-fold-math
-      "zb" 'TeX-fold-buffer
-      "zB" 'TeX-fold-clearout-buffer
-      "ze" 'TeX-fold-env
-      "zI" 'TeX-fold-clearout-item
-      "zm" 'TeX-fold-macro
-      "zp" 'TeX-fold-paragraph
-      "zP" 'TeX-fold-clearout-paragraph
-      "zr" 'TeX-fold-region
-      "zR" 'TeX-fold-clearout-region
-      "zz" 'TeX-fold-dwim)))
+  :after tex)
 
 (use-package company-auctex
   :straight t
