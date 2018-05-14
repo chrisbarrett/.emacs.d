@@ -738,28 +738,6 @@ Interactively, reverse the characters in the current region."
   :config
   (define-key calc-mode-map (kbd "SPC") spacemacs-keys-default-map))
 
-(use-package hexl
-  :defer t
-  :init
-  (spacemacs-keys-set-leader-keys-for-major-mode 'hexl-mode
-    "d" 'hexl-insert-decimal-char
-    "c" 'hexl-insert-octal-char
-    "x" 'hexl-insert-hex-char
-    "X" 'hexl-insert-hex-string
-    "g" 'hexl-goto-address)
-
-  :config
-  (evil-define-key 'motion hexl-mode-map
-    "]]" 'hexl-end-of-1k-page
-    "[[" 'hexl-beginning-of-1k-page
-    "h" 'hexl-backward-char
-    "l" 'hexl-forward-char
-    "j" 'hexl-next-line
-    "k" 'hexl-previous-line
-    "$" 'hexl-end-of-line
-    "^" 'hexl-beginning-of-line
-    "0" 'hexl-beginning-of-line))
-
 (use-package man
   :defer t
   :bind (:map

@@ -5,9 +5,38 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'major-mode-hydra)
 (require 'spacemacs-keys)
 
+(autoload 'evil-define-key "evil-core")
+
 
+
+(major-mode-hydra-bind hexl-mode "Insert"
+  ("d" hexl-insert-decimal-char "decimal")
+  ("c" hexl-insert-octal-char "octal")
+  ("x" hexl-insert-hex-char "hex")
+  ("s" hexl-insert-hex-string "hex string"))
+
+(major-mode-hydra-bind hexl-mode "Address"
+  ("g" hexl-goto-address "goto"))
+
+
+
+(use-package hexl
+  :defer t
+  :config
+  (evil-define-key 'motion hexl-mode-map
+    "]]" 'hexl-end-of-1k-page
+    "[[" 'hexl-beginning-of-1k-page
+    "h" 'hexl-backward-char
+    "l" 'hexl-forward-char
+    "j" 'hexl-next-line
+    "k" 'hexl-previous-line
+    "$" 'hexl-end-of-line
+    "^" 'hexl-beginning-of-line
+    "0" 'hexl-beginning-of-line))
+
 ;; aggressive-indent automatically reindents code during editing.
 
 (use-package aggressive-indent
