@@ -143,6 +143,13 @@
   :config
   (advice-add 'lv-window :after #'cb-leader-keys-set-up-hydra-buffer))
 
+(use-package major-mode-hydra
+  :commands (major-mode-hydra)
+  :straight (:host github :repo "chrisbarrett/major-mode-hydra.el")
+  :init
+  (with-eval-after-load 'evil
+    (evil-global-set-key 'normal (kbd ",") #'major-mode-hydra)))
+
 (provide 'config-themes)
 
 ;;; config-themes.el ends here
