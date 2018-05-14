@@ -11,7 +11,15 @@
 (eval-when-compile
   (require 'use-package))
 
-(require 'spacemacs-keys)
+(require 'major-mode-hydra)
+
+
+
+(major-mode-hydra-bind restclient-mode "Execute"
+  ("c" restclient-http-send-current "other window")
+  ("o" restclient-http-send-current-stay-in-window "this window"))
+
+
 
 (use-package restclient
   :straight t
@@ -20,10 +28,10 @@
              restclient-http-send-current-stay-in-window)
   :preface
   (progn
-    (defconst cb-restclient--js-modes
-      '(js-mode js2-mode cb-web-js-base-mode cb-web-json-mode yaml-mode))
+    (defconst config-restclient--js-modes
+      '(js-mode js2-mode web-js-base-mode web-json-mode yaml-mode))
 
-    (defun cb-restclient--delete-trailing-comments ()
+    (defun config-restclient--delete-trailing-comments ()
       (cl-labels
           ((current-line
             ()
@@ -32,7 +40,7 @@
             ()
             (string-match-p (rx bol "//") (current-line))))
 
-        (when (apply #'derived-mode-p cb-restclient--js-modes)
+        (when (apply #'derived-mode-p config-restclient--js-modes)
           (save-excursion
             (goto-char (point-max))
             (while (or (at-commented-line-p) (string-empty-p (current-line)))
@@ -41,18 +49,9 @@
 
   :config
   (progn
-    (spacemacs-keys-set-leader-keys-for-major-mode 'restclient-mode
-      "c" #'restclient-http-send-current
-      "o" #'restclient-http-send-current-stay-in-window)
-
     (setq restclient-same-buffer-response-name "*restclient*")
 
-    (add-hook 'restclient-response-loaded-hook #'cb-restclient--delete-trailing-comments)
-
-    (with-eval-after-load 'which-key
-      (with-no-warnings
-        (push `((nil . ,(rx bos "restclient-http-" (group (+ nonl)))) . (nil . "\\1"))
-              which-key-replacement-alist)))
+    (add-hook 'restclient-response-loaded-hook #'config-restclient--delete-trailing-comments)
 
     (add-to-list 'display-buffer-alist
                  `(,(rx bos "*restclient*" eos)
