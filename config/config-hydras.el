@@ -118,7 +118,7 @@ _l_: list  _s_: switch     ^^ _w_: save  _v_: reload
   ("v" #'reload-file)
   ("q" nil))
 
-(defhydra windows (:color amaranth :hint nil)
+(defhydra windows (:color teal :hint nil)
   "
 %s(hydra-title-with-faicon \"clone\" \"Window Management\")
 
@@ -129,17 +129,17 @@ _n_: forward  _p_/_N_: back    _-_ horizontal   _o_ others
 ^^^^_r_: rotate                _=_ rebalance
 
 "
-  ("=" #'balance-windows :exit t)
-  ("p" #'evil-window-prev)
-  ("N" #'evil-window-prev)
-  ("n" #'evil-window-prev)
-  ("w" #'evil-window-next :exit t)
+  ("=" #'balance-windows)
+  ("p" #'evil-window-prev :exit nil)
+  ("N" #'evil-window-prev :exit nil)
+  ("n" #'evil-window-prev :exit nil)
+  ("w" #'evil-window-next)
   ("r" #'evil-window-rotate-downwards)
-  ("o" #'delete-other-windows :exit t)
-  ("d" #'delete-window :exit t)
+  ("o" #'delete-other-windows)
+  ("d" #'delete-window)
   ("-" #'evil-window-split)
   ("/" #'evil-window-vsplit)
-  ("q" nil :exit t))
+  ("q" nil))
 
 (defhydra files (:color teal :hint nil)
   "
