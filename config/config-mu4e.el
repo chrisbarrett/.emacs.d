@@ -11,10 +11,21 @@
 (eval-when-compile
   (require 'use-package))
 
-(require 'paths)
-(require 'spacemacs-keys)
 (require 'evilified-state)
 (require 'f)
+(require 'major-mode-hydra)
+(require 'paths)
+
+
+
+(major-mode-hydra-bind mu4e-view-mode "View"
+  ("a" mu4e-view-open-attachment "open attachment")
+  ("o" cb-mu4e-utils-view-in-external-browser-action "open in browser"))
+
+(major-mode-hydra-bind mu4e-compose-mode "Attachments"
+  ("a" mail-add-attachment "add"))
+
+
 
 (push (f-join paths-site-lisp-directory "mu4e") load-path)
 
@@ -39,11 +50,11 @@
     (defvar mu4e-compose-signature-auto-include)
     (defvar shr-use-fonts)
 
-    (defun cb-mu4e-shr-buffer ()
+    (defun config-mu4e-shr-buffer ()
       (let ((shr-use-fonts nil))
         (shr-render-region (point-min) (point-max))))
 
-    (defun cb-mu4e--insert-signature-before-quoted-message ()
+    (defun config-mu4e--insert-signature-before-quoted-message ()
       (unless (member mu4e-compose-type '(edit resend))
         (save-excursion
           (save-restriction
@@ -69,7 +80,7 @@
               (goto-char (point-max))
               (insert "\n"))))))
 
-    (defun cb-mu4e-view-ret ()
+    (defun config-mu4e-view-ret ()
       "Call the command that would be run by a mouse click at point."
       (interactive)
       (-if-let ((&alist 'keymap (&alist 'mouse-1 action)) (text-properties-at (point)))
@@ -101,7 +112,7 @@
       (kbd "C-k") #'mu4e-view-headers-prev
       ;; (kbd "w") #'evil-forward-word-begin
       ;; (kbd "b") #'evil-backward-word-begin
-      (kbd "RET") #'cb-mu4e-view-ret)
+      (kbd "RET") #'config-mu4e-view-ret)
 
     ;; Evil delete command is super slow for some reason. :(
     (evil-define-key 'insert mu4e-compose-mode-map
@@ -174,7 +185,7 @@
     (add-hook 'mu4e-view-mode-hook #'visual-line-mode)
 
     ;; Put signature before quoted messages.
-    (add-hook 'mu4e-compose-mode-hook #'cb-mu4e--insert-signature-before-quoted-message)
+    (add-hook 'mu4e-compose-mode-hook #'config-mu4e--insert-signature-before-quoted-message)
 
     ;; use imagemagick, if available
     (when (fboundp 'imagemagick-register-types)
@@ -184,7 +195,7 @@
     (setq sendmail-coding-system 'utf-8)
 
     ;; Custom rendering of HTML messages
-    (setq mu4e-html2text-command #'cb-mu4e-shr-buffer)
+    (setq mu4e-html2text-command #'config-mu4e-shr-buffer)
 
     ;; View html message in eww. `av` in view to activate
     (add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
@@ -210,17 +221,7 @@
     (define-key mu4e-headers-mode-map (kbd "SPC") spacemacs-keys-default-map)
     (define-key mu4e-view-mode-map (kbd "SPC") spacemacs-keys-default-map)
     (define-key mu4e-main-mode-map (kbd "SPC") spacemacs-keys-default-map)
-    (define-key mu4e-headers-mode-map (kbd "SPC") spacemacs-keys-default-map)
-
-    ;; Define some leader keybindings.
-
-    (spacemacs-keys-set-leader-keys-for-major-mode 'mu4e-view-mode
-      "a" #'mu4e-view-open-attachment
-      "o" #'cb-mu4e-utils-view-in-external-browser-action)
-
-    (spacemacs-keys-set-leader-keys-for-major-mode 'mu4e-compose-mode
-      "a" 'mail-add-attachment
-      "i" 'mail-insert-file)))
+    (define-key mu4e-headers-mode-map (kbd "SPC") spacemacs-keys-default-map)))
 
 (use-package cb-mu4e-utils
   :after mu4e
