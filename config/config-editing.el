@@ -101,12 +101,14 @@
 (use-package undo-tree
   :straight t
   :demand t
+  :hook ((prog-mode . turn-on-undo-tree-mode)
+         (text-mode . turn-on-undo-tree-mode))
   :commands (global-undo-tree-mode)
   :config
   (progn
     (setq undo-tree-visualizer-timestamps t)
     (setq undo-tree-visualizer-diff t)
-    (global-undo-tree-mode)))
+    (global-undo-tree-mode +1)))
 
 ;; ws-butler cleans up trailing whitespace as you edit.
 
