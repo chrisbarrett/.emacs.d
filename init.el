@@ -109,7 +109,6 @@
 (use-package config-mu4e)
 (use-package config-org)
 (use-package config-ledger)
-(use-package config-scala)
 (use-package config-rust)
 (use-package config-ibuffer)
 (use-package config-dired)

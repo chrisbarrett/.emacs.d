@@ -242,7 +242,6 @@
     (setq sp-message-width nil)
 
     (require 'smartparens-config)
-    (require 'smartparens-scala)
     (require 'smartparens-rust)
 
     (bind-key [remap c-electric-backspace] 'sp-backward-delete-char smartparens-strict-mode-map)

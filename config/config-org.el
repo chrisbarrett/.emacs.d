@@ -170,7 +170,6 @@
                                      (gnuplot . t)
                                      (python . t)
                                      ;; (ipython . t)
-                                     (scala . t)
                                      (shell . t)
                                      (sql . t)))
 

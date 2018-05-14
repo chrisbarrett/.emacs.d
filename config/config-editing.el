@@ -16,8 +16,7 @@
   :defer 3
   :init
   (defconst aggressive-indent-excluded-modes
-    '(cb-scala-sbt-file-mode
-      cb-web-js-mode
+    '(cb-web-js-mode
       diff-auto-refine-mode
       dockerfile-mode
       fstar-mode
@@ -32,7 +31,6 @@
       python-mode
       restclient-mode
       rust-mode
-      scala-mode
       sql-mode
       stylus-mode
       terraform-mode

@@ -128,45 +128,13 @@ $0
   '((web-html-mode . "HTML") . autoinsert-funcs-html-template-string))
 
 
-;;; Scala
-
-(defun autoinsert-funcs-scala-package-name ()
-  (-if-let* ((root (and (buffer-file-name) (projectile-project-p)))
-             (pkg-id (thread-last (buffer-file-name)
-                       (f-dirname)
-                       (s-chop-prefix root)
-                       f-split
-                       nreverse
-                       (--take-while (not (-contains? '("src" "app" "scala" "test" "tests") it)))
-                       nreverse
-                       (s-join "."))))
-      (if (s-blank? pkg-id)
-          ""
-        (format "package %s\n\n" pkg-id))
-    ""))
-
-(defconst autoinsert-funcs-scala-form
-  '((scala-mode . "Scala Src File") nil (autoinsert-funcs-scala-package-name)))
-
-
-;;; Go
-
-(defconst autoinsert-funcs-go-form
-  '((go-mode . "Go")
-    nil
-    "package " (s-lower-camel-case (f-no-ext (f-filename (buffer-file-name)))) \n \n
-    _ \n))
-
-
 
 (defconst autoinsert-funcs-forms
   (list autoinsert-funcs-sh-form
         autoinsert-funcs-el-form
         autoinsert-funcs-hs-src-form
         autoinsert-funcs-hs-test-form
-        autoinsert-funcs-html-form
-        autoinsert-funcs-go-form
-        autoinsert-funcs-scala-form))
+        autoinsert-funcs-html-form))
 
 (provide 'autoinsert-funcs)
 
