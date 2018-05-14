@@ -12,15 +12,54 @@
   (require 'config-etags)
   (require 'use-package))
 
-(require 'spacemacs-keys)
-(require 'subr-x)
-(require 's)
 (require 'f)
+(require 'major-mode-hydra)
+(require 's)
+(require 'subr-x)
 
 (autoload 'evil-define-key "evil")
 (autoload 'evil-set-initial-state "evil")
-(autoload 'projectile-project-p "projectile")
 (autoload 'flycheck-add-mode "flycheck")
+(autoload 'projectile-project-p "projectile")
+
+
+
+(major-mode-hydra-bind web-js-mode "Refactor"
+  ("ro" js-refactor-commands-organize-imports "organise imports")
+  ("ra" js-refactor-commands-align-object-literal-values "align object values")
+  ("re" js-refactor-commands-expand-comma-bindings "expand comma bindings")
+  ("rs" js-refactor-commands-toggle-sealed-object-type "toggle sealed type"))
+
+(major-mode-hydra-bind web-js-mode "Add Breakpoints"
+  ("bb" indium-add-breakpoint "add")
+  ("bc" indium-add-conditional-breakpoint "add conditional")
+  ("bl" indium-list-breakpoints "list")
+  ("ba" indium-activate-breakpoints "activate"))
+
+(major-mode-hydra-bind web-js-mode "Modify Breakpoints"
+  ("be" indium-edit-breakpoint-condition "edit condition")
+  ("bx" indium-remove-breakpoint "remove")
+  ("bX" indium-remove-all-breakpoints-from-buffer "remove all")
+  ("bd" indium-deactivate-breakpoints "deactivate"))
+
+(major-mode-hydra-bind web-js-mode "Run"
+  ("xn" indium-run-node "node")
+  ("xc" indium-run-chrome "chrome"))
+
+
+
+;; Avro file mode
+
+(autoload 'web-mode "web-mode")
+(defvar web-mode-content-type nil)
+
+(define-derived-mode avro-mode web-mode "Avro"
+  "Derived mode for editing Avro schema files."
+  (setq-local web-mode-content-type "json"))
+
+(add-to-list 'auto-mode-alist '("\\.avsc" . avro-mode))
+
+
 
 (use-package web-mode
   :straight t
@@ -35,14 +74,14 @@
     (autoload 'sp-local-pair "smartparens")
     (autoload 'projectile-project-p "projectile")
 
-    (defun cb-web--node-modules-bin-dir ()
+    (defun config-web--node-modules-bin-dir ()
       (when-let* ((root (projectile-project-p))
                   (dir (f-join root "node_modules" ".bin")))
         (when (f-dir? dir)
           dir)))
 
-    (defun cb-web--add-node-modules-bin-to-exec-path ()
-      (when-let* ((bin (cb-web--node-modules-bin-dir)))
+    (defun config-web--add-node-modules-bin-to-exec-path ()
+      (when-let* ((bin (config-web--node-modules-bin-dir)))
         (setq-local exec-path (cons bin exec-path)))))
 
   :init
@@ -79,13 +118,11 @@
 
     ;; Run programs out of node_bin
 
-    (add-hook 'web-mode-hook #'cb-web--add-node-modules-bin-to-exec-path)))
+    (add-hook 'web-mode-hook #'config-web--add-node-modules-bin-to-exec-path)))
 
 (use-package rainbow-mode
   :straight t
-  :commands (rainbow-mode)
-  :init
-  (add-hook 'web-mode-hook #'rainbow-mode))
+  :hook (web-mode . rainbow-mode))
 
 (use-package web-mode-submodes
   :defer t
@@ -100,19 +137,19 @@
          ("\\.scss\\'"  . web-css-mode)
          ("\\.html\\'" . web-html-mode))
   :preface
-  (defun cb-web--enable-readonly-mode-in-node-modules ()
+  (defun config-web--enable-readonly-mode-in-node-modules ()
     (when (and (buffer-file-name)
                (string-match-p (rx "/node_modules/") (buffer-file-name)))
       (read-only-mode +1)))
   :init
-  (add-hook 'find-file-hook #'cb-web--enable-readonly-mode-in-node-modules))
+  (add-hook 'find-file-hook #'config-web--enable-readonly-mode-in-node-modules))
 
 (use-package flycheck
   :defer t
   :commands (flycheck-select-checker)
   :functions (flycheck-add-next-checker flycheck-add-mode)
   :preface
-  (defun cb-web--disable-flycheck-for-node-modules ()
+  (defun config-web--disable-flycheck-for-node-modules ()
     (when (and (buffer-file-name)
                (s-contains-p "node_modules" (buffer-file-name))
                (boundp 'flycheck-checkers)
@@ -128,7 +165,7 @@
     (add-to-list 'flycheck-disabled-checkers 'javascript-jshint)
     (add-to-list 'flycheck-disabled-checkers 'json-jsonlint)
 
-    (add-hook 'web-js-mode-hook #'cb-web--disable-flycheck-for-node-modules)
+    (add-hook 'web-js-mode-hook #'config-web--disable-flycheck-for-node-modules)
     (setq flycheck-html-tidy-executable (executable-find "tidy"))
 
     (flycheck-add-mode 'typescript-tslint 'web-ts-mode)
@@ -152,18 +189,17 @@
     (autoload 'yas--templates-for-key-at-point "yasnippet")
     (autoload 'yas-expand "yasnippet")
 
-    (defun cb-web--set-jsx-classname-on ()
+    (defun config-web--set-jsx-classname-on ()
       (setq-local emmet-expand-jsx-className? t))
 
-    (defun cb-web--maybe-emmet-mode ()
+    (defun config-web--maybe-emmet-mode ()
       (cond
        ((derived-mode-p 'web-html-mode 'html-mode 'nxml-mode)
         (emmet-mode +1))
-
        ((equal web-mode-content-type "html")
         (emmet-mode +1))))
 
-    (defun cb-web--emmet-move-out-of-squares ()
+    (defun config-web--emmet-move-out-of-squares ()
       "Move point outside squares before expansion."
       (cl-flet ((sp-has-op? (op)
                             (-when-let ((&plist :op o) (sp-get-enclosing-sexp))
@@ -181,24 +217,21 @@
           (move-out-of-sexp)
           (move-out-of-sexp)))))
 
-    (defun cb-web-expand-snippet-then-emmet ()
+    (defun config-web-expand-snippet-then-emmet ()
       (interactive)
       (if (yas--templates-for-key-at-point)
           (call-interactively #'yas-expand)
-        (cb-web--emmet-move-out-of-squares)
+        (config-web--emmet-move-out-of-squares)
         (emmet-expand-yas))))
 
   :init
-  (progn
-    (evil-leader/set-key-for-mode 'web-js-mode (kbd "e") #'emmet-mode)
-    (add-hook 'web-mode-hook #'cb-web--maybe-emmet-mode))
+  (with-eval-after-load 'web-mode
+    (define-key web-mode-map (kbd "<C-return>") #'emmet-expand-line))
+
   :config
   (progn
     (setq emmet-move-cursor-between-quotes t)
-    (with-eval-after-load 'web-mode
-      (define-key web-mode-map (kbd "<C-return>") #'emmet-expand-line))
-    (define-key emmet-mode-keymap (kbd "TAB") #'cb-web-expand-snippet-then-emmet)
-    (add-hook 'web-js-mode-hook #'cb-web--set-jsx-classname-on)))
+    (add-hook 'web-js-mode-hook #'config-web--set-jsx-classname-on)))
 
 (use-package flycheck-flow
   :straight t
@@ -210,13 +243,8 @@
 
 (use-package flow
   :after web-mode-submodes
-  :commands (flow-insert-flow-annotation
-             flow-type-at)
-  :init
-  (spacemacs-keys-set-leader-keys-for-major-mode 'web-js-mode
-    "if" #'flow-insert-flow-annotation)
-  :bind (:map web-js-mode-map
-              ("C-c C-t" . flow-type-at)))
+  :commands (flow-insert-flow-annotation)
+  :bind (:map web-js-mode-map ("C-c C-t" . flow-type-at)))
 
 (use-package js-autoinsert
   :after autoinsert
@@ -228,24 +256,22 @@
   :straight t
   :disabled t
   :commands (tern-mode)
+  :hook (web-js-mode . config-web--maybe-enable-tern)
   :preface
   (progn
     (autoload 'flycheck-overlay-errors-at "flycheck")
 
-    (defun cb-web--maybe-enable-tern ()
+    (defun config-web--maybe-enable-tern ()
       (unless config-etags-in-query-replace-session-p
         (tern-mode +1)))
 
-    (defun cb-web--flycheck-errors-at-point-p ()
+    (defun config-web--flycheck-errors-at-point-p ()
       (when (bound-and-true-p flycheck-mode)
         (flycheck-overlay-errors-at (point))))
 
-    (defun cb-web--maybe-suppress-tern-hints (f &rest args)
-      (unless (cb-web--flycheck-errors-at-point-p)
+    (defun config-web--maybe-suppress-tern-hints (f &rest args)
+      (unless (config-web--flycheck-errors-at-point-p)
         (apply f args))))
-
-  :init
-  (add-hook 'web-js-mode-hook #'cb-web--maybe-enable-tern)
 
   :config
   (progn
@@ -260,7 +286,7 @@
       (kbd "M-.") 'tern-find-definition
       (kbd "M-,") 'tern-pop-find-definition)
 
-    (advice-add 'tern-show-argument-hints :around #'cb-web--maybe-suppress-tern-hints)))
+    (advice-add 'tern-show-argument-hints :around #'config-web--maybe-suppress-tern-hints)))
 
 (use-package company-tern
   :straight t
@@ -275,26 +301,21 @@
 
 (use-package web-beautify
   :straight t
-  :commands (web-beautify-js web-beautify-html web-beautify-css)
-  :init
-  (progn
-    (spacemacs-keys-set-leader-keys-for-major-mode 'web-json-mode "=" #'web-beautify-js)
-    (spacemacs-keys-set-leader-keys-for-major-mode 'web-html-mode  "=" #'web-beautify-html)
-    (spacemacs-keys-set-leader-keys-for-major-mode 'web-css-mode "=" #'web-beautify-css)))
+  :defer t)
 
 (use-package stylus-mode
   :straight t
   :mode ("\\.styl\\'" . stylus-mode)
   :preface
-  (defun cb-web--set-stylus-vars ()
+  (defun config-web--set-stylus-vars ()
     (setq-local tab-width 2))
   :config
-  (add-hook 'stylus-mode-hook #'cb-web--set-stylus-vars))
+  (add-hook 'stylus-mode-hook #'config-web--set-stylus-vars))
 
 (use-package aggressive-indent
   :defer t
   :preface
-  (defun cb-web--in-flow-strict-object-type? ()
+  (defun config-web--in-flow-strict-object-type? ()
     (when (derived-mode-p 'web-js-mode)
       (-let [(depth start) (syntax-ppss)]
         (and (cl-plusp depth)
@@ -302,16 +323,8 @@
              (eq (char-after (1+ start)) ?|)))))
   :config
   (progn
-    (add-to-list 'aggressive-indent-dont-indent-if '(cb-web--in-flow-strict-object-type?))
-    (add-hook 'aggressive-indent-stop-here-hook #'cb-web--in-flow-strict-object-type?)))
-
-(use-package which-key
-  :config
-  (let* ((boring-prefixes '("indium" "flow" "tide" "js-refactor-commands"))
-         (match-prefix (rx-to-string `(and bos (or ,@boring-prefixes) "-" (group (+ nonl)))
-                                     t)))
-    (push `((nil . ,match-prefix) . (nil . "\\1"))
-          which-key-replacement-alist)))
+    (add-to-list 'aggressive-indent-dont-indent-if '(config-web--in-flow-strict-object-type?))
+    (add-hook 'aggressive-indent-stop-here-hook #'config-web--in-flow-strict-object-type?)))
 
 (use-package prettier-js
   :straight t
@@ -323,17 +336,17 @@
 
     (put 'prettier-js-inhibited-for-project 'safe-local-variable 'symbolp)
 
-    (defun cb-web--child-file-of-node-modules-p ()
+    (defun config-web--child-file-of-node-modules-p ()
       (and (buffer-file-name) (string-match-p "/node_modules/" (buffer-file-name))))
 
-    (defun cb-web--maybe-enable-prettier ()
+    (defun config-web--maybe-enable-prettier ()
       (unless prettier-js-inhibited-for-project
         (when (and (derived-mode-p 'web-js-mode 'web-ts-mode)
-                   (not (cb-web--child-file-of-node-modules-p)))
+                   (not (config-web--child-file-of-node-modules-p)))
           (prettier-js-mode +1))))
 
     (define-globalized-minor-mode prettier-js-global-mode
-      prettier-js-mode cb-web--maybe-enable-prettier))
+      prettier-js-mode config-web--maybe-enable-prettier))
 
   :config
   (prettier-js-global-mode +1))
@@ -342,7 +355,7 @@
   :defer t
   :config
   (progn
-    (defconst cb-web--flow-error-rx
+    (defconst config-web--flow-error-rx
       (rx bol "Error:" (+ space)
           ;; Filename
           (group (+? nonl)) ":"
@@ -350,13 +363,13 @@
           (group (+ digit))))
 
     (-let* ((str "Error: src/components/ColorList.js:22")
-            ((whole file line) (s-match cb-web--flow-error-rx str)))
+            ((whole file line) (s-match config-web--flow-error-rx str)))
       (cl-assert (equal whole str))
       (cl-assert (equal file "src/components/ColorList.js"))
       (cl-assert (equal line "22")))
 
     (setf (alist-get 'flow compilation-error-regexp-alist-alist)
-          (list cb-web--flow-error-rx 1 2))
+          (list config-web--flow-error-rx 1 2))
     (add-to-list 'compilation-error-regexp-alist 'flow)))
 
 (use-package js-refactor-commands
@@ -364,22 +377,17 @@
              js-refactor-commands-group-and-sort-imports
              js-refactor-commands-expand-comma-bindings
              js-refactor-commands-align-object-literal-values
-             js-refactor-commands-toggle-sealed-object-type)
-  :init
-  (dolist (mode '(web-js-mode web-ts-mode))
-    (spacemacs-keys-declare-prefix-for-mode mode "mr" "refactor")
-    (spacemacs-keys-set-leader-keys-for-major-mode mode
-      "ro" #'js-refactor-commands-organize-imports
-      "ra" #'js-refactor-commands-align-object-literal-values
-      "re" #'js-refactor-commands-expand-comma-bindings
-      "rs" #'js-refactor-commands-toggle-sealed-object-type)))
+             js-refactor-commands-toggle-sealed-object-type))
 
 ;; Node
 
 (use-package indium
   :straight t
-  :commands (indium-interaction-mode
-             indium-run-node)
+  :commands (indium-run-node indium-eval-buffer)
+  :hook
+  ((web-js-mode-hook . indium-interaction-mode)
+   (js-mode-hook . indium-interaction-mode))
+
   :preface
   (defun node-repl (arg)
     "Run node. With prefix ARG, prompt for the command to run."
@@ -388,28 +396,7 @@
         (call-interactively #'indium-run-node)
       (indium-run-node "node")))
   :init
-  (progn
-    (defalias 'run-node #'node-repl)
-
-    (add-hook 'web-js-mode-hook #'indium-interaction-mode)
-    (add-hook 'js-mode-hook #'indium-interaction-mode)
-
-    (dolist (mode '(web-js-mode js-mode))
-      (spacemacs-keys-declare-prefix-for-mode mode "md" "debugger")
-      (spacemacs-keys-declare-prefix-for-mode mode "mi" "flow")
-      (spacemacs-keys-declare-prefix-for-mode mode "mx" "run")
-      (spacemacs-keys-set-leader-keys-for-major-mode mode
-        "d b" 'indium-add-breakpoint
-        "d B" 'indium-add-conditional-breakpoint
-        "d x" 'indium-remove-breakpoint
-        "d X" 'indium-remove-all-breakpoints-from-buffer
-        "d e" 'indium-edit-breakpoint-condition
-        "d l" 'indium-list-breakpoints
-        "d d" 'indium-deactivate-breakpoints
-        "d a" 'indium-activate-breakpoints
-        "x n" 'indium-run-node
-        "x c" 'indium-run-chrome)))
-
+  (defalias 'run-node #'node-repl)
   :config
   (progn
     (evil-set-initial-state 'indium-inspector-mode 'motion)
@@ -419,98 +406,14 @@
     (with-eval-after-load 'web-mode-submodes
       (define-key web-js-mode-map (kbd "C-c C-l") 'indium-eval-buffer))))
 
-;; Typescript
-
-(with-eval-after-load 'typescript-mode
-  (defalias 'typescript-mode #'web-ts-mode))
-
-(use-package tide
-  :straight t
-  :commands (tide-setup
-             tide-restart-server
-             tide-references
-             tide-documentation-at-point
-             tide-rename-symbol
-             tide-fix
-             tide-refactor
-             tide-jump-to-definition
-             tide-jump-back
-             tide-jsdoc-template)
-  :preface
-  (defun cb-web--setup-ts-mode ()
-    (tide-setup)
-    (with-no-warnings
-      (setq-local evil-lookup-func #'tide-documentation-at-point)))
-  :init
-  (progn
-    (add-hook 'web-ts-mode-hook #'cb-web--setup-ts-mode)
-    (spacemacs-keys-declare-prefix-for-mode 'web-ts-mode "r" "refactor")
-
-    (spacemacs-keys-set-leader-keys-for-major-mode 'web-ts-mode
-      "d" #'tide-jsdoc-template
-      "x" #'tide-restart-server
-      "f" #'tide-references
-      "rn" #'tide-rename-symbol
-      "rr" #'tide-refactor
-      "rf" #'tide-fix)
-
-    (with-eval-after-load 'web-mode-submodes
-      (evil-define-key 'normal web-ts-mode-map
-        (kbd "K") #'tide-documentation-at-point
-        (kbd "M-.") #'tide-jump-to-definition
-        (kbd "M-,") #'tide-jump-back)))
-  :config
-  (with-eval-after-load 'flycheck
-    (flycheck-add-mode 'typescript-tide 'web-ts-mode)
-    (flycheck-add-mode 'javascript-tide 'web-js-mode)
-    (flycheck-add-mode 'jsx-tide 'web-js-mode)
-    (flycheck-add-mode 'tsx-tide 'web-js-mode)))
-
-(use-package ts-comint
-  :straight t
-  :commands (run-ts
-             ts-send-last-sexp
-             ts-send-last-sexp-and-go
-             ts-send-buffer
-             ts-send-buffer-and-go
-             ts-load-file-and-go)
-  :init
-  (progn
-    (spacemacs-keys-declare-prefix-for-mode 'web-ts-mode "e" "eval")
-
-    (spacemacs-keys-set-leader-keys-for-major-mode 'web-ts-mode
-      "l" #'ts-load-file-and-go
-      "eb" #'ts-send-buffer
-      "eB" #'ts-send-buffer-and-go
-      "es" #'ts-send-last-sexp
-      "eS" #'ts-send-last-sexp-and-go)
-
-    (with-eval-after-load 'web-mode-submodes
-      (let ((km web-ts-mode-map))
-        (define-key km (kbd "C-x C-e") #'ts-send-last-sexp)
-        (define-key km (kbd "C-c C-b") #'ts-send-buffer)
-        (define-key km (kbd "C-c C-l") #'ts-load-file-and-go)))))
-
 (use-package nvm
   :straight t
-  :after web-mode-submodes
+  :hook (web-mode-hook . config-web-maybe-use-nvm)
   :functions (nvm-use-for-buffer)
   :preface
-  (defun cb-web-maybe-use-nvm ()
+  (defun config-web-maybe-use-nvm ()
     (when (locate-dominating-file default-directory ".nvmrc")
-      (nvm-use-for-buffer)))
-  :config
-  (add-hook 'web-mode-hook #'cb-web-maybe-use-nvm))
-
-;; Avro file mode
-
-(autoload 'web-mode "web-mode")
-
-(define-derived-mode avro-mode web-mode "Avro"
-  "Derived mode for editing Avro schema files."
-  (setq-local web-mode-content-type "json"))
-
-(add-to-list 'auto-mode-alist '("\\.avsc" . avro-mode))
+      (nvm-use-for-buffer))))
 
 (provide 'config-web-mode)
 
