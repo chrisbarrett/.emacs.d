@@ -6,20 +6,44 @@
   (require 'use-package))
 
 (require 'dash)
-(require 'paths)
-(require 'spacemacs-keys)
 (require 'evil)
-(autoload 'xref-push-marker-stack "xref")
+(require 'major-mode-hydra)
+(require 'paths)
+
+
+
+(major-mode-hydra-bind python-mode "Eval"
+  ("eb" python-shell-send-buffer "buffer")
+  ("ef" python-shell-send-file "file"))
+
+(major-mode-hydra-bind python-mode "Find"
+  ("a" anaconda-mode-find-assignments "assignments")
+  ("r" anaconda-mode-find-references "references"))
+
+(major-mode-hydra-bind python-mode "Test"
+  ("ta" pytest-all "all")
+  ("tt" pytest-one "one")
+  ("tm" pytest-module "module")
+  ("ts" pytest-suite "suite"))
+
+(major-mode-hydra-bind python-mode "Venv"
+  ("vi" config-python-pyvenv-init "init")
+  ("va" pyvenv-activate "activate")
+  ("vd" pyvenv-deactivate "deactivate")
+  ("vw" pyvenv-workon "workon"))
+
+
 
 (use-package python
   :defer t
+  :hook (python-mode-hook . config-python--init-python-mode)
   :preface
   (progn
     (autoload 'python-indent-dedent-line "python")
     (autoload 'python-shell-get-process "python")
     (autoload 'sp-backward-delete-char "smartparens")
 
-    (defun cb-python--init-python-mode ()
+    (defun config-python--init-python-mode ()
       (setq-local comment-inline-offset 2)
       (setq-local tab-width 4)
       (setq-local evil-shift-width 4)
@@ -28,26 +52,26 @@
         (setq-local python-shell-interpreter "ipython")
         (setq-local python-shell-interpreter-args "--simple-prompt -i")))
 
-    (defun cb-python-backspace ()
+    (defun config-python-backspace ()
       (interactive)
       (if (equal (char-before) ?\s)
           (unless (python-indent-dedent-line)
             (backward-delete-char-untabify 1))
         (sp-backward-delete-char)))
 
-    (defvar cb-python-prev-source-buffer)
+    (defvar config-python-prev-source-buffer)
 
-    (defun cb-python-repl-switch-to-source ()
+    (defun config-python-repl-switch-to-source ()
       (interactive)
-      (-when-let (buf cb-python-prev-source-buffer)
+      (-when-let (buf config-python-prev-source-buffer)
         (when (buffer-live-p buf)
           (pop-to-buffer buf))))
 
-    (defun cb-python-repl ()
+    (defun config-python-repl ()
       "Start and/or switch to the REPL."
       (interactive)
       (when (derived-mode-p 'python-mode)
-        (setq cb-python-prev-source-buffer (current-buffer)))
+        (setq config-python-prev-source-buffer (current-buffer)))
       (let ((shell-process
              (or (python-shell-get-process)
                  (with-demoted-errors "Error: %S"
@@ -57,10 +81,6 @@
           (error "Failed to start python shell properly"))
         (pop-to-buffer (process-buffer shell-process))
         (evil-insert-state))))
-
-  :init
-  (add-hook 'python-mode-hook #'cb-python--init-python-mode)
-
   :config
   (progn
     (setq python-indent-guess-indent-offset nil)
@@ -69,15 +89,9 @@
 
     (push "jupyter" python-shell-completion-native-disabled-interpreters)
 
-    (define-key python-mode-map [remap python-indent-dedent-line-backspace]  #'cb-python-backspace)
-    (define-key python-mode-map [remap python-shell-switch-to-shell] #'cb-python-repl)
-    (define-key inferior-python-mode-map (kbd "C-c C-z") #'cb-python-repl-switch-to-source)
-
-    (spacemacs-keys-declare-prefix-for-mode 'python-mode "ms" "shell")
-    (spacemacs-keys-set-leader-keys-for-major-mode 'python-mode
-      "eb" 'python-shell-send-buffer
-      "sb" 'python-shell-send-buffer
-      "sf" 'python-shell-send-file)
+    (define-key python-mode-map [remap python-indent-dedent-line-backspace]  #'config-python-backspace)
+    (define-key python-mode-map [remap python-shell-switch-to-shell] #'config-python-repl)
+    (define-key inferior-python-mode-map (kbd "C-c C-z") #'config-python-repl-switch-to-source)
 
     (add-to-list 'display-buffer-alist
                  `(,(rx bos "*Python*" eos)
@@ -88,52 +102,25 @@
                    (slot            . 0)
                    (window-height   . 0.2)))))
 
-(use-package which-key
-  :config
-  (progn
-    (push `((nil . ,(rx bos "anaconda-mode-" (group (+ nonl)))) . (nil . "\\1"))
-          which-key-replacement-alist)
-
-    (push `((nil . ,(rx bos "pytest-" (group (+ nonl)))) . (nil . "\\1"))
-          which-key-replacement-alist)
-
-    (push `((nil . ,(rx bos "python-shell-" (group (+ nonl)))) . (nil . "\\1"))
-          which-key-replacement-alist)
-
-    (push `((nil . ,(rx bos (? "cb-python-") "pyvenv-" (group (+ nonl)))) . (nil . "\\1"))
-          which-key-replacement-alist)))
-
-(use-package flycheck
-  :defer t
-  :config
-  (setq flycheck-python-pycompile-executable "python"))
-
 (use-package anaconda-mode
   :straight t
-  :commands (anaconda-mode)
+  :hook ((python-mode . anaconda-mode)
+         (python-mode . anaconda-eldoc-mode))
+  :functions (anaconda-mode-find-definitions)
   :preface
   (progn
-    (autoload 'anaconda-mode-find-definitions "anaconda-mode")
+    (autoload 'xref-push-marker-stack "xref")
 
-    (defun cb-python--push-mark (&rest _)
+    (defun config-python--push-mark (&rest _)
       (xref-push-marker-stack)))
 
-  :init
-  (progn
-    (add-hook 'python-mode-hook 'anaconda-mode)
-    (add-hook 'python-mode-hook 'anaconda-eldoc-mode))
   :config
   (progn
     (let ((dir (f-join paths-cache-directory "anaconda-mode")))
       (f-mkdir dir)
       (setq anaconda-mode-installation-directory dir))
 
-
     ;; Main keybindings
-
-    (spacemacs-keys-set-leader-keys-for-major-mode 'python-mode
-      "a" 'anaconda-mode-find-assignments
-      "r" 'anaconda-mode-find-references)
 
     (evil-define-key 'normal anaconda-mode-map (kbd "K") #'anaconda-mode-show-doc)
     (evil-define-key 'normal anaconda-mode-map (kbd "M-.") #'anaconda-mode-find-definitions)
@@ -146,42 +133,21 @@
 
     ;; Advice
 
-    (advice-add 'anaconda-mode-find-assignments :before #'cb-python--push-mark)
-    (advice-add 'anaconda-mode-find-definitions :before #'cb-python--push-mark)))
+    (advice-add 'anaconda-mode-find-assignments :before #'config-python--push-mark)
+    (advice-add 'anaconda-mode-find-definitions :before #'config-python--push-mark)))
 
 (use-package company-anaconda
   :straight t
   :defer t
+  :hook (anaconda-mode-hook . config-python--enable-company-anaconda)
   :preface
-  (defun cb-python--enable-company-anaconda ()
+  (defun config-python--enable-company-anaconda ()
     (with-no-warnings
-      (add-to-list 'company-backends 'company-anaconda)))
-  :config
-  (add-hook 'anaconda-mode-hook #'cb-python--enable-company-anaconda))
+      (add-to-list 'company-backends 'company-anaconda))))
 
 (use-package pytest
   :straight t
   :after python
-  :commands (pytest-one
-             pytest-pdb-one
-             pytest-all
-             pytest-pdb-all
-             pytest-module
-             pytest-pdb-module
-             pytest-suite
-             pytest-pdb-suite)
-  :init
-  (progn
-    (spacemacs-keys-declare-prefix-for-mode 'python-mode "mt" "test")
-    (spacemacs-keys-set-leader-keys-for-major-mode 'python-mode
-      "tA" #'pytest-pdb-all
-      "ta" #'pytest-all
-      "tT" #'pytest-pdb-one
-      "tt" #'pytest-one
-      "tM" #'pytest-pdb-module
-      "tm" #'pytest-module
-      "tS" #'pytest-pdb-suite
-      "ts" #'pytest-suite))
   :config
   (add-to-list 'pytest-project-root-files "setup.cfg"))
 
@@ -194,14 +160,15 @@
 (use-package pyvenv
   :straight t
   :commands (pyvenv-activate pyvenv-deactivate pyvenv-workon)
+  :hook (python-mode . config-python-pyvenv-activate-if-found)
   :preface
   (progn
     (autoload 'projectile-project-p "projectile")
     (autoload 'f-join "f")
 
-    (defvar cb-python--venv-names '(".env" "env" ".venv" "venv" ".virtualenv"))
+    (defvar config-python--venv-names '(".env" "env" ".venv" "venv" ".virtualenv"))
 
-    (defun cb-python--directory-first-ancestor (dir pred)
+    (defun config-python--directory-first-ancestor (dir pred)
       "Search up the filesystem for the first DIR satisfying PRED.
 Return the first non-nil result of evalutating PRED."
       (let (result)
@@ -214,25 +181,25 @@ Return the first non-nil result of evalutating PRED."
              (setq dir nil))))
         result))
 
-    (defun cb-python--find-venv-in-directory (dir)
+    (defun config-python--find-venv-in-directory (dir)
       (-when-let ((dir) (--keep (let ((dir (f-join dir it)))
                                   (when (f-directory? dir)
                                     dir))
-                                cb-python--venv-names))
+                                config-python--venv-names))
         (file-truename dir)))
 
-    (defun cb-python-pyvenv-dir ()
-      (cb-python--directory-first-ancestor default-directory
-                                  #'cb-python--find-venv-in-directory))
+    (defun config-python-pyvenv-dir ()
+      (config-python--directory-first-ancestor default-directory
+                                  #'config-python--find-venv-in-directory))
 
-    (defun cb-python-pyvenv-activate-if-found ()
-      (-when-let (env (cb-python-pyvenv-dir))
+    (defun config-python-pyvenv-activate-if-found ()
+      (-when-let (env (config-python-pyvenv-dir))
         (pyvenv-activate env)
         (message "Using pyvenv at %s" (f-abbrev env))))
 
-    (defun cb-python-pyvenv-init (env)
+    (defun config-python-pyvenv-init (env)
       (interactive
-       (list (or (cb-python-pyvenv-dir)
+       (list (or (config-python-pyvenv-dir)
                  (f-join (read-directory-name "Project root: " nil nil t) ".env"))))
       (when (f-dir? env)
         (user-error "Environment already exists"))
@@ -243,23 +210,13 @@ Return the first non-nil result of evalutating PRED."
            (pyvenv-activate env)
            (progress-reporter-done reporter))
           (_
-           (message "%sFAILED" (aref (cdr reporter) 3)))))))
-  :init
-  (progn
-    (add-hook 'python-mode-hook #'cb-python-pyvenv-activate-if-found)
-    (spacemacs-keys-declare-prefix-for-mode 'python-mode "me" "pyvenv")
-    (spacemacs-keys-set-leader-keys-for-major-mode 'python-mode
-      "ei" #'cb-python-pyvenv-init
-      "ea" #'pyvenv-activate
-      "ed" #'pyvenv-deactivate
-      "ew" #'pyvenv-workon)))
+           (message "%sFAILED" (aref (cdr reporter) 3))))))))
 
 ;; pip install isort
 
 (use-package py-isort
   :straight t
-  :defer t
-  :after 'python
+  :hook (python-mode . python-sort-imports-mode)
   :preface
   (progn
     (defvar python-sort-imports t)
@@ -273,16 +230,15 @@ Return the first non-nil result of evalutating PRED."
       nil nil nil nil
       (if python-sort-imports-mode
           (add-hook 'before-save-hook 'python-sort-imports-maybe nil t)
-        (remove-hook 'before-save-hook 'python-sort-imports-maybe t))))
-  :init
-  (add-hook 'python-mode-hook #'python-sort-imports-mode))
+        (remove-hook 'before-save-hook 'python-sort-imports-maybe t)))))
 
 ;; pip install yapf
 
 (use-package py-yapf
   :straight t
   :defer t
-  :after 'python
+  :after python
+  :hook (python-mode . python-auto-format-mode)
   :preface
   (progn
     (defvar python-auto-format-buffer t)
@@ -296,9 +252,7 @@ Return the first non-nil result of evalutating PRED."
       nil nil nil nil
       (if python-auto-format-mode
           (add-hook 'before-save-hook 'python-auto-format-maybe nil t)
-        (remove-hook 'before-save-hook 'python-auto-format-maybe t))))
-  :init
-  (add-hook 'python-mode-hook #'python-auto-format-mode))
+        (remove-hook 'before-save-hook 'python-auto-format-maybe t)))))
 
 (provide 'config-python)
 

@@ -86,6 +86,7 @@
     (setq flycheck-display-errors-function 'config-flycheck-display-error-messages)
     (setq flycheck-display-errors-delay 0.5)
     (setq flycheck-emacs-lisp-load-path 'inherit)
+    (setq flycheck-python-pycompile-executable "python")
 
     (setq flycheck-global-modes
           '(not idris-repl-mode
