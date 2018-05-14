@@ -9,6 +9,7 @@
 (require 'buffer-cmds)
 (require 'hydra)
 (require 'jump-cmds)
+(require 'major-mode-hydra)
 (require 'spacemacs-keys)
 (require 'subr-x)
 
@@ -259,6 +260,7 @@ _u_: package usage     _h_: navigate hunks
   "f" #'files/body
   "g" #'git-and-files/body
   "h" #'help/body
+  "m" #'major-mode-hydra
   "w" #'windows/body
   "z" #'font-scale/body)
 
