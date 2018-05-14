@@ -9,21 +9,31 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'straight)
-  (require 'use-package)
-  (require 'paths)
-  (autoload 'evil-define-key "evil"))
+  (require 'use-package))
 
-(require 'straight)
-(require 'spacemacs-keys)
+(require 'dash)
 (require 'evilified-state)
 (require 'f)
+(require 'paths)
 (require 's)
-(require 'dash)
+(require 'spacemacs-keys)
+(require 'straight)
 (require 'subr-x)
 
-(defvar org-directory "~/org")
+(autoload 'evil-define-key "evil")
+(autoload 'org-todo "org")
 
+
+
+(spacemacs-keys-set-leader-keys-for-major-mode 'org-mode
+  "c" #'org-archive-subtree
+  "e" #'org-babel/body
+  "r" #'org-refile
+  "t" #'org-todo)
+
+
+
+(defvar org-directory "~/org")
 (defconst cb-org-work-file (concat org-directory "/work_pushpay.org"))
 (defconst cb-org-journal-file (concat org-directory "/journal.org"))
 
@@ -112,10 +122,6 @@
     (load-file (expand-file-name "org-version.el" paths-hacks-directory))
 
     (setq org-default-notes-file (f-join org-directory "notes.org"))
-
-    (spacemacs-keys-set-leader-keys-for-major-mode
-      'org-mode
-      "r" #'org-refile)
 
     (add-to-list 'org-refile-targets '(nil :maxlevel . 3))
     (add-to-list 'org-refile-targets '(org-default-notes-file :maxlevel . 3))
@@ -254,16 +260,12 @@
 
 (use-package org-hydras
   :after org
+  :commands (org-babel/body)
   :init
-  (progn
-    (with-eval-after-load 'which-key
-      (with-no-warnings
-        (push `((nil . ,(rx bos "org-babel/body")) . (nil . "babel"))
-              which-key-replacement-alist)))
-    (spacemacs-keys-set-leader-keys-for-major-mode 'org-mode
-      "e" 'org-babel/body)))
-
-(use-package org-duration :after org)
+  (with-eval-after-load 'which-key
+    (with-no-warnings
+      (push `((nil . ,(rx bos "org-babel/body")) . (nil . "babel"))
+            which-key-replacement-alist))))
 
 (use-package org-attach
   :after org
@@ -371,7 +373,7 @@
            :fileskip0 t
            :step 'week))
 
-    (add-hook 'org-finalize-agenda-hook #'org-agenda-to-appt)
+    (add-hook 'org-finalize-agenda-hook 'org-agenda-to-appt)
 
     ;; Ensure the separator line is rendered whenever the org agenda view
     ;; changes. This is needed for page-break-lines to render the separator
@@ -544,10 +546,9 @@
 
 (use-package org-crypt
   :after org
-  :functions (org-encrypt-entries)
   :preface
   (defun cb-org--encrypt-on-save ()
-    (add-hook 'before-save-hook #'org-encrypt-entries nil t))
+    (add-hook 'before-save-hook 'org-encrypt-entries nil t))
   :init
   (add-hook 'org-mode-hook #'cb-org--encrypt-on-save)
   :config
@@ -595,13 +596,13 @@
 (use-package org-capture
   :preface
   (cl-defun cb-org--capture-template-entry (key label form template
-                                          &rest kws
-                                          &key
-                                          (type 'entry)
-                                          (prepend t)
-                                          (clock-keep t)
-                                          (empty-lines 1)
-                                          &allow-other-keys)
+                                                &rest kws
+                                                &key
+                                                (type 'entry)
+                                                (prepend t)
+                                                (clock-keep t)
+                                                (empty-lines 1)
+                                                &allow-other-keys)
     (append
      (list key label type form template
            :clock-keep clock-keep
@@ -710,11 +711,6 @@
           "E" "Email task (work)"
           `(file cb-org-work-file) "* TODO %?\n%a"))))
 
-(use-package org-download
-  :straight t
-  :after org
-  :hook (dired-mode . org-download-enable))
-
 (use-package evil
   :defer t
   :preface
@@ -820,11 +816,6 @@ table tr.tr-even td {
 </style>
 ")))
 
-(use-package cb-org-clock-cascade
-  :after org
-  :functions (cb-org-clock-cascade-init)
-  :init (add-hook 'org-mode-hook #'cb-org-clock-cascade-init))
-
 (use-package cb-org-export-koma-letter
   :after org
   :commands (cb-org-export-koma-letter-handler)
@@ -834,18 +825,9 @@ table tr.tr-even td {
     (setq org-latex-hyperref-template "")
     (add-hook 'org-ctrl-c-ctrl-c-hook #'cb-org-export-koma-letter-handler t)))
 
-(use-package cb-org-pgp-decrpyt
-  :after org
-  :functions (cb-org-pgp-decrpyt-init)
-  :init (add-hook 'org-mode-hook #'cb-org-pgp-decrpyt-init))
-
-(use-package cb-org-capture-url
-  :after org)
-
-(use-package cb-org-gdrive
-  :after org
-  :functions (cb-org-gdrive-init)
-  :init (add-hook 'org-mode-hook #'cb-org-gdrive-init))
+(use-package cb-org-pgp-decrpyt :hook (org-mode . cb-org-pgp-decrpyt-init))
+(use-package cb-org-capture-url :after org)
+(use-package cb-org-gdrive :hook (org-mode . cb-org-gdrive-init))
 
 (use-package cb-org-goto
   :commands (cb-org-goto-agenda
@@ -881,9 +863,6 @@ table tr.tr-even td {
   :init
   (evil-define-key 'normal org-mode-map (kbd "C-c C-k") #'cb-org-ctrl-c-ctrl-k))
 
-(use-package cb-diary-utils
-  :after org)
-
 (use-package evil-org
   :straight t
   :hook (org-mode . evil-org-mode)
@@ -902,18 +881,25 @@ table tr.tr-even td {
       (kbd "M-l") nil
       (kbd "M-h") nil)))
 
-(use-package org-indent
-  :after org
-  :commands (org-indent-mode)
-  :init
-  (add-hook 'org-mode-hook #'org-indent-mode))
+
 
-(use-package org-html-span
-  :after org)
+(use-package org-indent :hook (org-mode . org-indent-mode))
+
+(use-package org-duration :after org)
+
+(use-package org-download
+  :straight t
+  :hook (dired-mode . org-download-enable))
 
 (use-package org-drill-table
   :straight t
   :hook (org-ctrl-c-ctrl-c . org-drill-table-update))
+
+(use-package org-html-span :after org)
+
+(use-package cb-org-clock-cascade :hook (org-mode . cb-org-clock-cascade-init))
+
+(use-package cb-diary-utils :after org)
 
 (provide 'config-org)
 
