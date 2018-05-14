@@ -13,9 +13,9 @@
   :straight t
   :mode ("\\.csv\\'" . csv-mode)
   :preface
-  (defun config-csv--suppress-final-newline ()
+  (defun config-langs--suppress-final-newline ()
     (setq-local require-final-newline nil))
-  :config (add-hook 'csv-mode-hook #'config-csv--suppress-final-newline))
+  :config (add-hook 'csv-mode-hook #'config-langs--suppress-final-newline))
 
 (use-package groovy-mode
   :straight t
@@ -32,12 +32,7 @@
     (let ((keymap (with-no-warnings graphviz-dot-mode-map)))
       (define-key keymap (kbd "M-q") 'graphviz-dot-indent-graph)
       (define-key keymap (kbd "{") nil)
-      (define-key keymap (kbd "}") nil))
-
-    (spacemacs-keys-set-leader-keys-for-major-mode 'graphviz-dot-mode
-      "c" 'compile
-      "p" 'graphviz-dot-preview
-      "," 'graphviz-dot-preview)))
+      (define-key keymap (kbd "}") nil))))
 
 (use-package protobuf-mode
   :straight t
@@ -51,10 +46,10 @@
   :straight t
   :mode ("\\.\\(e?ya?\\|ra\\)ml\\'" . yaml-mode)
   :preface
-  (defun cb-yaml--disable-autofill ()
+  (defun config-langs--disable-autofill ()
     (auto-fill-mode -1))
   :config
-  (add-hook 'yaml-mode-hook #'cb-yaml--disable-autofill))
+  (add-hook 'yaml-mode-hook #'config-langs--disable-autofill))
 
 (provide 'config-langs)
 
