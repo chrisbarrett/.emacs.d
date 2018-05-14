@@ -14,6 +14,7 @@
 (require 'dash)
 (require 'evilified-state)
 (require 'f)
+(require 'major-mode-hydra)
 (require 'paths)
 (require 's)
 (require 'spacemacs-keys)
@@ -25,11 +26,13 @@
 
 
 
-(spacemacs-keys-set-leader-keys-for-major-mode 'org-mode
-  "c" #'org-archive-subtree
-  "e" #'org-babel/body
-  "r" #'org-refile
-  "t" #'org-todo)
+(major-mode-hydra-bind org-mode "Tree"
+  ("c" org-archive-subtree "archive")
+  ("r" org-refile "refile")
+  ("t" org-todo "set todo state"))
+
+(major-mode-hydra-bind org-mode "Misc"
+  ("e" org-babel/body "babel commands"))
 
 
 
