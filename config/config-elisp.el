@@ -11,10 +11,28 @@
 (eval-when-compile
   (require 'use-package))
 
-(require 'straight)
-(require 'spacemacs-keys)
 (require 'evil)
+(require 'major-mode-hydra)
+(require 'straight)
 (require 'subr-x)
+
+
+
+(major-mode-hydra-bind emacs-lisp-mode "Eval"
+  ("eb" config-elisp-eval-buffer "buffer")
+  ("ee" eval-expression "expression"))
+
+(major-mode-hydra-bind emacs-lisp-mode "Debug"
+  ("d" debug-on-entry "on function called")
+  ("cd" cancel-debug-on-entry "cancel debug function")
+  ("v" debug-on-variable-change "on variable changed")
+  ("cv" cancel-debug-on-variable-change "cancel debug variable"))
+
+(major-mode-hydra-bind emacs-lisp-mode "Test"
+  ("tt" (ert t) "run all")
+  ("tf" (ert-select-tests :failed t) "run failing")
+  ("tn" (ert-select-tests :passed t) "run new")
+  ("ts" ert "run with selector"))
 
 
 ;; Define some modes for specific files.
@@ -29,7 +47,7 @@
 ;; Define an eval-buffer command for elisp that executes within a straight
 ;; transaction.
 
-(defun config-elisp--elisp/eval-buffer ()
+(defun config-elisp-eval-buffer ()
   "Evaluate the current buffer as Elisp code, within a straight transaction."
   (interactive)
   (message "Evaluating %s..." (buffer-name))
@@ -41,19 +59,7 @@
       (load buffer-file-name nil 'nomessage)))
   (message "Evaluating %s... done." (buffer-name)))
 
-(spacemacs-keys-declare-prefix-for-mode 'emacs-lisp-mode "m e" "eval")
-(spacemacs-keys-set-leader-keys-for-major-mode 'emacs-lisp-mode
-  "eb" #'config-elisp--elisp/eval-buffer
-  "ee" #'eval-expression)
-
 
-;; Tell which-key how to render eval commands.
-
-(use-package which-key
-  :config
-  (push `((", e" . ,(rx bos "eval-" (group (+ nonl)))) . (nil . "\\1"))
-        which-key-replacement-alist))
-
 ;; IELM is the Elisp repl built in to Emacs.
 
 (use-package ielm
@@ -115,15 +121,7 @@
 
 (use-package ert
   :commands (ert)
-  :preface
-  (defun ert-run-all-tests ()
-    (interactive)
-    (ert t))
-  :init
-  (spacemacs-keys-set-leader-keys-for-major-mode 'emacs-lisp-mode
-    "t" #'ert-run-all-tests)
-  :config
-  (evil-set-initial-state 'ert-simple-view-mode 'motion))
+  :config (evil-set-initial-state 'ert-simple-view-mode 'motion))
 
 (provide 'config-elisp)
 
