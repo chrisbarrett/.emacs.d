@@ -195,6 +195,8 @@
   :config
   (progn
     (setq emmet-move-cursor-between-quotes t)
+    (with-eval-after-load 'web-mode
+      (define-key web-mode-map (kbd "<C-return>") #'emmet-expand-line))
     (define-key emmet-mode-keymap (kbd "TAB") #'cb-web-expand-snippet-then-emmet)
     (add-hook 'web-js-mode-hook #'cb-web--set-jsx-classname-on)))
 
