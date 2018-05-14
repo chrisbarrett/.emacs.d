@@ -121,7 +121,6 @@
 (use-package config-python)
 (use-package config-eyebrowse)
 (use-package config-nix)
-(use-package config-fstar)
 (use-package config-etags)
 
 (use-package personal-config
