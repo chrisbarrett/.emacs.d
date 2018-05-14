@@ -6,6 +6,7 @@
   (require 'recentf)
   (require 'use-package))
 
+(require 'straight)
 (require 'f)
 (require 'subr-x)
 (require 'seq)
@@ -34,26 +35,6 @@
   (concat user-emacs-directory "themes"))
 
 (defconst paths-site-lisp-directory "~/.nix-profile/share/emacs/site-lisp")
-
-
-
-;; no-littering overrides many common paths to keep the .emacs.d directory
-;; clean.
-;;
-;; Load it here since we want to refer to path vars, and need to make sure it's
-;; loaded very early in the startup process.
-
-(use-package no-littering
-  :straight t
-  :demand t
-  :init
-  (progn
-    (setq no-littering-etc-directory paths-etc-directory)
-    (setq no-littering-var-directory paths-cache-directory))
-  :config
-  (with-eval-after-load 'recentf
-    (add-to-list 'recentf-exclude no-littering-etc-directory)
-    (add-to-list 'recentf-exclude no-littering-var-directory)))
 
 
 
