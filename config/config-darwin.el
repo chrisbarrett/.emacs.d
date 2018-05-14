@@ -35,7 +35,6 @@
   (defconst exec-path-from-shell-variables
     '("PATH"
       "MANPATH"
-      "GITHUB_TOKEN"
       "NIX_REMOTE"
       "NIX_USER_PROFILE_DIR"
       "NIX_PROFILES"
