@@ -84,11 +84,6 @@ Supported properties:
     One or several key sequence strings to be set
     with `spacemacs-keys-set-leader-keys .
 
-`:evil-leader-for-mode CONS CELL'
-    One or several cons cells (MODE . KEY) where MODE is a major mode
-    symbol and KEY is a key sequence string to be set with
-    `spacemacs-keys-set-leader-keys-for-major-mode'.
-
 `:global-key STRING'
     One or several key sequence strings to be set with `global-set-key'.
 
@@ -96,17 +91,12 @@ Supported properties:
     One or several cons cells (MAP . KEY) where MAP is a mode map and KEY is a
     key sequence string to be set with `define-key'."
   (let ((evil-leader (evil-transient-state--mplist-get props :evil-leader))
-        (evil-leader-for-mode (evil-transient-state--mplist-get props :evil-leader-for-mode))
         (global-key (evil-transient-state--mplist-get props :global-key))
         (def-key (evil-transient-state--mplist-get props :define-key)))
     (append
      (when evil-leader
        `((dolist (key ',evil-leader)
            (spacemacs-keys-set-leader-keys key ',func))))
-     (when evil-leader-for-mode
-       `((dolist (val ',evil-leader-for-mode)
-           (spacemacs-keys-set-leader-keys-for-major-mode
-             (car val) (cdr val) ',func))))
      (when global-key
        `((dolist (key ',global-key)
            (global-set-key (kbd key) ',func))))
