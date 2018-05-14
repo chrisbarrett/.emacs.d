@@ -11,20 +11,19 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'major-mode-hydra)
 (require 'paths)
 (require 'spacemacs-keys)
 
 (autoload 'evil-define-key "evil")
 
-(spacemacs-keys-declare-prefix-for-mode 'dired-mode "ms" "subdir")
-
 
 
-(use-package which-key
-  :config
-  (push `(dired-mode
-          ((nil . ,(rx bos "dired-" (group (+ nonl)))) . (nil . "\\1")))
-        which-key-replacement-alist))
+(major-mode-hydra-bind dired-mode "Toggle"
+  ("d" dired-hide-details-mode "file flags")
+  ("h" dired-omit-mode "hidden files"))
+
+
 
 (use-package dired
   :defer t
@@ -42,12 +41,6 @@
           (forward-line 2) ;; beyond dir. header
           (sort-regexp-fields t "^.*$" "[ ]*." (point) (point-max)))
         (set-buffer-modified-p nil))))
-
-  :init
-  (spacemacs-keys-set-leader-keys-for-major-mode 'dired-mode
-    "d"  'dired-hide-details-mode
-    "si" 'dired-insert-subdir
-    "sd" 'dired-kill-subdir)
 
   :config
   (progn
@@ -71,10 +64,7 @@
 (use-package dired-x
   :hook (dired-mode . dired-omit-mode)
   :init
-  (progn
-    (add-hook 'dired-load-hook (lambda () (load "dired-x")))
-    (spacemacs-keys-set-leader-keys-for-major-mode 'dired-mode
-      "h" #'dired-omit-mode))
+  (add-hook 'dired-load-hook (lambda () (load "dired-x")))
   :config
   (progn
     (evil-define-key 'normal dired-mode-map (kbd "h") #'dired-omit-mode)
