@@ -119,7 +119,10 @@
   :straight t
   :defer t
   :init
-  (defvar all-the-icons-scale-factor 1.0)
+  (progn
+    ;; HACK: Forward-declare variable which is unsafely referenced inside lib.
+    (defvar web-mode-content-type nil)
+    (defvar all-the-icons-scale-factor 1.0))
   :config
   (dolist (spec '((nix-mode all-the-icons-faicon "linux" :face all-the-icons-purple)
                   (makefile-mode all-the-icons-fileicon "gnu" :face all-the-icons-dorange)

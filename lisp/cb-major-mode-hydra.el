@@ -8,8 +8,8 @@
 
 ;;; Code:
 
-(require 'all-the-icons)
 (require 'pretty-hydra)
+(autoload 'all-the-icons-icon-for-mode "all-the-icons")
 
 (defun cb-major-mode-hydra--prepend-major-mode-header (mode)
   (lambda (str)
