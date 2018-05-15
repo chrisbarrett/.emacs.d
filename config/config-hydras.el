@@ -269,6 +269,7 @@
   "f" #'files/body
   "g" #'git-and-files/body
   "h" #'help/body
+  "l" #'imenu-list-smart-toggle
   "m" #'major-mode-hydra
   "w" #'windows/body
   "z" #'font-scale/body)

@@ -113,12 +113,42 @@
 
 (use-package nameless
   :straight t
+  :defines (nameless-current-name)
   :commands nameless-mode
   :hook (emacs-lisp-mode . nameless-mode)
   :config
   (progn
+    (add-to-list 'display-buffer-alist
+                 `(,(rx "*Ilist*")
+                   (display-buffer-reuse-window
+                    display-buffer-in-side-window)
+                   (reusable-frames . visible)
+                   (side            . right)
+                   (slot            . 1)
+                   (window-width   . 0.25)))
+
     (setq nameless-prefix ":")
-    (setq nameless-private-prefix t)))
+    (setq nameless-private-prefix t))
+
+  ;; Teach nameless mode how to insinuate itself into imenu-list.
+  :init
+  (add-hook 'imenu-list-update-hook #'config-elisp--configure-imenu-list)
+  :preface
+  (progn
+    (defvar nameless-current-name nil)
+
+    (defun config-elisp--configure-imenu-list ()
+      (when (bound-and-true-p imenu-list-buffer-name)
+        (with-current-buffer imenu-list-buffer-name
+          (if-let* ((nameless-current-name (config-elisp--nameless-name-for-ilist-buffer)))
+              (nameless-mode +1)
+            (nameless-mode -1)))))
+
+    (defun config-elisp--nameless-name-for-ilist-buffer ()
+      (when (bound-and-true-p imenu-list--displayed-buffer)
+        (with-current-buffer imenu-list--displayed-buffer
+          (when (derived-mode-p 'emacs-lisp-mode)
+            nameless-current-name))))))
 
 ;; ert is the built-in elisp test runner.
 

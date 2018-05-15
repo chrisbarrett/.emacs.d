@@ -646,6 +646,27 @@
     (markdown-line-break-face
      ((t :underline ,emphasis)))
 
+    ;; Imenu-List
+
+    (imenu-list-entry-face-0
+     ((t :foreground nil)))
+
+    (imenu-list-entry-face-1
+     ((t :foreground nil)))
+
+
+    (imenu-list-entry-subalist-face-0
+     ((t :inherit imenu-list-entry-face-0 :weight light)))
+
+    (imenu-list-entry-subalist-face-1
+     ((t :inherit imenu-list-entry-face-1 :weight light)))
+
+    (imenu-list-entry-subalist-face-2
+     ((t :inherit imenu-list-entry-face-2 :weight light)))
+
+    (imenu-list-entry-subalist-face-3
+     ((t :inherit imenu-list-entry-face-3 :weight light)))
+
     ;; Kubernetes
 
     (kubernetes-dimmed

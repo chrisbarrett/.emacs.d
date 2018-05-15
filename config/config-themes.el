@@ -166,6 +166,11 @@
   :config
   (setq pretty-hydra-head-formatting-function #'config-themes--head-formatting-function))
 
+(use-package imenu-list
+  :straight t
+  :commands (imenu-list))
+
+
 (provide 'config-themes)
 
 ;;; config-themes.el ends here

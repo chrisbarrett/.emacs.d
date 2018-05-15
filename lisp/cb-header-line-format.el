@@ -179,6 +179,7 @@
 
 (defconst cb-header-line-format--flycheck-icon (all-the-icons-material "error_outline"))
 (defconst cb-header-line-format--neotree-icon (all-the-icons-octicon "file-directory" :v-adjust 0.05))
+(defconst cb-header-line-format--ilist-icon (all-the-icons-fileicon "api-blueprint" :v-adjust 0.05))
 (defconst cb-header-line-format--org-icon (all-the-icons-icon-for-mode 'org-mode :v-adjust 0.05))
 
 (defconst cb-header-line-format
@@ -194,6 +195,8 @@
               (concat " " (cb-header-line-format--major-mode-icon) " Compile"))
              (" *NeoTree*"
               (concat " " cb-header-line-format--neotree-icon " Filesystem"))
+             ("*Ilist*"
+              (concat " " cb-header-line-format--ilist-icon " Definitions"))
              ((guard (string-match-p (rx "-popup*" eos) (buffer-name)))
               (concat " " (cb-header-line-format--major-mode-icon) (buffer-name)))
 

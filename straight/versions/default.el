@@ -81,6 +81,7 @@
  ("hydra" . "1e72f96a1434ab43769c0fe374072d3a7b704683")
  ("ibuffer-projectile" . "1e89bfa7cae0629d29f24af3d81774b88b3cede0")
  ("iedit" . "412490db4387ad9d040bfb5854f25de4c40c2146")
+ ("imenu-list" . "0d3d445ce60a77a6c7bcbdbf1ae62cc20d2b5575")
  ("info-plus" . "e46a756ae61674d483fa31ad565455f7ac517179")
  ("intero" . "c7f9fe4d3990e229f3b7e57e303e2b9dd5a010b4")
  ("jade-mode" . "4dbde92542fc7ad61df38776980905a4721d642e")
