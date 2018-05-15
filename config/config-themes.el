@@ -50,6 +50,7 @@
     (setq page-break-lines-modes
           '(prog-mode
             text-mode
+            imenu-list-major-mode
             compilation-mode
             help-mode
             org-agenda-mode))
@@ -168,8 +169,8 @@
 
 (use-package imenu-list
   :straight t
-  :commands (imenu-list))
-
+  :commands (imenu-list)
+  :init (require 'imenu-list-hacks))
 
 (provide 'config-themes)
 

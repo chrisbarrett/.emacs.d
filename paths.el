@@ -48,6 +48,7 @@ If argument INTERACTIVE-P is set, log additional information."
           (list paths-lisp-directory
                 paths-config-directory
                 paths-themes-directory
+                paths-hacks-directory
                 paths-site-lisp-directory))
          (subdirs
           (f-directories paths-lisp-directory))
