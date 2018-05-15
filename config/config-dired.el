@@ -20,8 +20,30 @@
 
 
 (major-mode-hydra-bind dired-mode "Toggle"
-  ("d" dired-hide-details-mode "file flags")
-  ("h" dired-omit-mode "hidden files"))
+  ("?" dired-hide-details-mode "file flags")
+  ("." dired-omit-mode "hidden files")
+  ("s" dired-sort-toggle-or-edit "sort by date"))
+
+(major-mode-hydra-bind dired-mode "Navigate"
+  ("g" dired "change directory")
+  ("o" dired-other-window "dired-other-window"))
+
+(major-mode-hydra-bind dired-mode "Mark"
+  ("ma" dired-mark-unmarked-files "unmarked files")
+  ("mc" dired-change-marks "change")
+  ("mr" dired-mark-files-regexp "by regex")
+  ("ml" dired-mark-symlinks "symlinks")
+  ("md" dired-mark-directories "dirs")
+  ("U" dired-unmark-all-marks "unmark all"))
+
+(major-mode-hydra-bind dired-mode "Mark Actions"
+  ("!" dired-do-shell-command "shell command")
+  ("dc" dired-do-copy "copy")
+  ("dD" dired-do-delete "delete")
+  ("dh" dired-do-hardlink "hardlink")
+  ("ds" dired-do-search "symlink (relative)")
+  ("dS" dired-do-search "symlink (absolute)")
+  ("dq" dired-do-search "search inside"))
 
 
 
