@@ -91,7 +91,7 @@
  ("magit" . "4269d4d0fa089648216d8538d5abecbeeeb184d5")
  ("magit-popup" . "8d8ea3775f502be721a6ab89911e055d4ceed50e")
  ("magithub" . "aec5f8cb52e3322330c89c5c64fcf47078a9ff29")
- ("major-mode-hydra.el" . "cf97bd156af689108fe0907f06e48029d915a8bd")
+ ("major-mode-hydra.el" . "0f50f8afd2c6401f7472119a2733a6b286343df0")
  ("markdown-mode" . "668de4a965980d618637a3b5754e721b54c51e83")
  ("melpa" . "094f63e451622571aac832b14221a0d5a96de9c5")
  ("mu4e" . "bf80b5b6a507d2516d963afa23b271f33471c934")
