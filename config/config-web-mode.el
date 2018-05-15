@@ -12,8 +12,8 @@
   (require 'config-etags)
   (require 'use-package))
 
+(require 'cb-major-mode-hydra)
 (require 'f)
-(require 'major-mode-hydra)
 (require 's)
 (require 'subr-x)
 
@@ -24,27 +24,28 @@
 
 
 
-(major-mode-hydra-bind web-js-mode "Refactor"
-  ("ro" js-refactor-commands-organize-imports "organise imports")
-  ("ra" js-refactor-commands-align-object-literal-values "align object values")
-  ("re" js-refactor-commands-expand-comma-bindings "expand comma bindings")
-  ("rs" js-refactor-commands-toggle-sealed-object-type "toggle sealed type"))
+(cb-major-mode-hydra-define web-js-mode
+  "Refactor"
+  (("ro" js-refactor-commands-organize-imports "organise imports")
+   ("ra" js-refactor-commands-align-object-literal-values "align object values")
+   ("re" js-refactor-commands-expand-comma-bindings "expand comma bindings")
+   ("rs" js-refactor-commands-toggle-sealed-object-type "toggle sealed type"))
 
-(major-mode-hydra-bind web-js-mode "Add Breakpoints"
-  ("bb" indium-add-breakpoint "add")
-  ("bc" indium-add-conditional-breakpoint "add conditional")
-  ("bl" indium-list-breakpoints "list")
-  ("ba" indium-activate-breakpoints "activate"))
+  "Add Breakpoints"
+  (("bb" indium-add-breakpoint "add")
+   ("bc" indium-add-conditional-breakpoint "add conditional")
+   ("bl" indium-list-breakpoints "list")
+   ("ba" indium-activate-breakpoints "activate"))
 
-(major-mode-hydra-bind web-js-mode "Modify Breakpoints"
-  ("be" indium-edit-breakpoint-condition "edit condition")
-  ("bx" indium-remove-breakpoint "remove")
-  ("bX" indium-remove-all-breakpoints-from-buffer "remove all")
-  ("bd" indium-deactivate-breakpoints "deactivate"))
+  "Modify Breakpoints"
+  (("be" indium-edit-breakpoint-condition "edit condition")
+   ("bx" indium-remove-breakpoint "remove")
+   ("bX" indium-remove-all-breakpoints-from-buffer "remove all")
+   ("bd" indium-deactivate-breakpoints "deactivate"))
 
-(major-mode-hydra-bind web-js-mode "Run"
-  ("xn" indium-run-node "node")
-  ("xc" indium-run-chrome "chrome"))
+  "Run"
+  (("xn" indium-run-node "node")
+   ("xc" indium-run-chrome "chrome")))
 
 
 
@@ -249,44 +250,45 @@
 (use-package js-autoinsert
   :after autoinsert
   :config
-  (add-to-list 'auto-insert-alist
-               '((web-js-mode . "JavaScript") . js-autoinsert-template-string)))
+  (with-no-warnings
+    (add-to-list 'auto-insert-alist
+                 '((web-js-mode . "JavaScript") . js-autoinsert-template-string)))
 
-(use-package tern
-  :straight t
-  :disabled t
-  :commands (tern-mode)
-  :hook (web-js-mode . config-web--maybe-enable-tern)
-  :preface
-  (progn
-    (autoload 'flycheck-overlay-errors-at "flycheck")
+  (use-package tern
+    :straight t
+    :disabled t
+    :commands (tern-mode)
+    :hook (web-js-mode . config-web--maybe-enable-tern)
+    :preface
+    (progn
+      (autoload 'flycheck-overlay-errors-at "flycheck")
 
-    (defun config-web--maybe-enable-tern ()
-      (unless config-etags-in-query-replace-session-p
-        (tern-mode +1)))
+      (defun config-web--maybe-enable-tern ()
+        (unless config-etags-in-query-replace-session-p
+          (tern-mode +1)))
 
-    (defun config-web--flycheck-errors-at-point-p ()
-      (when (bound-and-true-p flycheck-mode)
-        (flycheck-overlay-errors-at (point))))
+      (defun config-web--flycheck-errors-at-point-p ()
+        (when (bound-and-true-p flycheck-mode)
+          (flycheck-overlay-errors-at (point))))
 
-    (defun config-web--maybe-suppress-tern-hints (f &rest args)
-      (unless (config-web--flycheck-errors-at-point-p)
-        (apply f args))))
+      (defun config-web--maybe-suppress-tern-hints (f &rest args)
+        (unless (config-web--flycheck-errors-at-point-p)
+          (apply f args))))
 
-  :config
-  (progn
-    (setq tern-command (add-to-list 'tern-command "--no-port-file" t))
+    :config
+    (progn
+      (setq tern-command (add-to-list 'tern-command "--no-port-file" t))
 
-    (unless (getenv "NODE_PATH")
-      (setenv "NODE_PATH" "/usr/local/lib/node_modules"))
+      (unless (getenv "NODE_PATH")
+        (setenv "NODE_PATH" "/usr/local/lib/node_modules"))
 
-    (evil-define-key 'normal tern-mode-keymap
-      (kbd "K") 'tern-get-docs
-      (kbd "gd")  'tern-find-definition
-      (kbd "M-.") 'tern-find-definition
-      (kbd "M-,") 'tern-pop-find-definition)
+      (evil-define-key 'normal tern-mode-keymap
+        (kbd "K") 'tern-get-docs
+        (kbd "gd")  'tern-find-definition
+        (kbd "M-.") 'tern-find-definition
+        (kbd "M-,") 'tern-pop-find-definition)
 
-    (advice-add 'tern-show-argument-hints :around #'config-web--maybe-suppress-tern-hints)))
+      (advice-add 'tern-show-argument-hints :around #'config-web--maybe-suppress-tern-hints))))
 
 (use-package company-tern
   :straight t

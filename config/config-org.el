@@ -11,10 +11,10 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'cb-major-mode-hydra)
 (require 'dash)
 (require 'evilified-state)
 (require 'f)
-(require 'major-mode-hydra)
 (require 'paths)
 (require 's)
 (require 'spacemacs-keys)
@@ -26,13 +26,14 @@
 
 
 
-(major-mode-hydra-bind org-mode "Tree"
-  ("c" org-archive-subtree "archive")
-  ("r" org-refile "refile")
-  ("t" org-todo "set todo state"))
+(cb-major-mode-hydra-define org-mode
+  "Tree"
+  (("c" org-archive-subtree "archive")
+   ("r" org-refile "refile")
+   ("t" org-todo "set todo state"))
 
-(major-mode-hydra-bind org-mode "Misc"
-  ("e" org-babel/body "babel commands"))
+  "Misc"
+  (("e" org-babel/body "babel commands")))
 
 
 

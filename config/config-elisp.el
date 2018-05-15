@@ -12,27 +12,30 @@
   (require 'use-package))
 
 (require 'evil)
-(require 'major-mode-hydra)
+(require 'cb-major-mode-hydra)
 (require 'straight)
 (require 'subr-x)
 
+(autoload 'ert-select-tests "ert")
+
 
 
-(major-mode-hydra-bind emacs-lisp-mode "Eval"
-  ("eb" config-elisp-eval-buffer "buffer")
-  ("ee" eval-expression "expression"))
+(cb-major-mode-hydra-define emacs-lisp-mode
+  "Eval"
+  (("eb" config-elisp-eval-buffer "buffer")
+   ("ee" eval-expression "expression"))
 
-(major-mode-hydra-bind emacs-lisp-mode "Debug"
-  ("d" debug-on-entry "on function called")
-  ("cd" cancel-debug-on-entry "cancel debug function")
-  ("v" debug-on-variable-change "on variable changed")
-  ("cv" cancel-debug-on-variable-change "cancel debug variable"))
+  "Debug"
+  (("d" debug-on-entry "on function called")
+   ("cd" cancel-debug-on-entry "cancel debug function")
+   ("v" debug-on-variable-change "on variable changed")
+   ("cv" cancel-debug-on-variable-change "cancel debug variable"))
 
-(major-mode-hydra-bind emacs-lisp-mode "Test"
-  ("tt" (ert t) "run all")
-  ("tf" (ert-select-tests :failed t) "run failing")
-  ("tn" (ert-select-tests :passed t) "run new")
-  ("ts" ert "run with selector"))
+  "Test"
+  (("tt" (ert t) "run all")
+   ("tf" (ert-select-tests :failed t) "run failing")
+   ("tn" (ert-select-tests :passed t) "run new")
+   ("ts" ert "run with selector")))
 
 
 ;; Define some modes for specific files.

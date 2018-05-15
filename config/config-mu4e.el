@@ -11,19 +11,21 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'cb-major-mode-hydra)
 (require 'evilified-state)
 (require 'f)
-(require 'major-mode-hydra)
 (require 'paths)
 
 
 
-(major-mode-hydra-bind mu4e-view-mode "View"
-  ("a" mu4e-view-open-attachment "open attachment")
-  ("o" cb-mu4e-utils-view-in-external-browser-action "open in browser"))
+(cb-major-mode-hydra-define mu4e-view-mode
+  "View"
+  (("a" mu4e-view-open-attachment "open attachment")
+   ("o" cb-mu4e-utils-view-in-external-browser-action "open in browser")))
 
-(major-mode-hydra-bind mu4e-compose-mode "Attachments"
-  ("a" mail-add-attachment "add"))
+(cb-major-mode-hydra-define mu4e-compose-mode
+  "Attachments"
+  (("a" mail-add-attachment "add")))
 
 
 

@@ -5,42 +5,43 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'cb-major-mode-hydra)
 (require 'straight)
-(require 'major-mode-hydra)
 
 
 
-(major-mode-hydra-bind latex-mode "Build"
-  ("r" TeX-command-run-all "run")
-  ("b" config-latex-build "build")
-  ("o" TeX-view "open output"))
+(cb-major-mode-hydra-define latex-mode
+  "Build"
+  (("r" TeX-command-run-all "run")
+   ("b" config-latex-build "build")
+   ("o" TeX-view "open output"))
 
-(major-mode-hydra-bind latex-mode "Insert"
-  ("ie" LaTeX-environment "environment")
-  ("ic" LaTeX-close-environment "close environemnt")
-  ("ii" LaTeX-insert-item "item")
-  ("is" LaTeX-section "section")
-  ("im" TeX-insert-macro "macro"))
+  "Insert"
+  (("ie" LaTeX-environment "environment")
+   ("ic" LaTeX-close-environment "close environemnt")
+   ("ii" LaTeX-insert-item "item")
+   ("is" LaTeX-section "section")
+   ("im" TeX-insert-macro "macro"))
 
-(major-mode-hydra-bind latex-mode "Select"
-  ("vs" LaTeX-mark-section "section")
-  ("ve" LaTeX-mark-environment "environment"))
+  "Select"
+  (("vs" LaTeX-mark-section "section")
+   ("ve" LaTeX-mark-environment "environment"))
 
-(major-mode-hydra-bind latex-mode "Fill"
-  ("fe" LaTeX-fill-environment "environment")
-  ("fp" LaTeX-fill-paragraph "paragram")
-  ("fr" LaTeX-fill-region "region")
-  ("fs" LaTeX-fill-section "section"))
+  "Fill"
+  (("fe" LaTeX-fill-environment "environment")
+   ("fp" LaTeX-fill-paragraph "paragram")
+   ("fr" LaTeX-fill-region "region")
+   ("fs" LaTeX-fill-section "section"))
 
-(major-mode-hydra-bind latex-mode "Markup"
-  ("mb" (TeX-font nil ?\C-b) "bold")
-  ("mc" (TeX-font nil ?\C-t) "code")
-  ("me" (TeX-font nil ?\C-e) "emphasis")
-  ("mi" (TeX-font nil ?\C-i) "italic"))
+  "Markup"
+  (("mb" (TeX-font nil ?\C-b) "bold")
+   ("mc" (TeX-font nil ?\C-t) "code")
+   ("me" (TeX-font nil ?\C-e) "emphasis")
+   ("mi" (TeX-font nil ?\C-i) "italic"))
 
-(major-mode-hydra-bind latex-mode "Misc"
-  ("p" latex-preview-pane-mode "toggle preview pane")
-  ("h" TeX-doc "documentation"))
+  "Misc"
+  (("p" latex-preview-pane-mode "toggle preview pane")
+   ("h" TeX-doc "documentation")))
 
 
 

@@ -11,15 +11,14 @@
 (eval-when-compile
   (require 'use-package))
 
-(require 'major-mode-hydra)
+(require 'cb-major-mode-hydra)
 
 
 
-(major-mode-hydra-bind restclient-mode "Execute"
-  ("c" restclient-http-send-current "other window")
-  ("o" restclient-http-send-current-stay-in-window "this window"))
-
-
+(cb-major-mode-hydra-define restclient-mode
+  "Execute"
+  (("c" restclient-http-send-current "other window")
+   ("o" restclient-http-send-current-stay-in-window "this window")))
 
 (use-package restclient
   :straight t

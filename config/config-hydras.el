@@ -26,6 +26,12 @@
 (autoload 'neotree-toggle "neotree")
 (autoload 'org-narrow-to-subtree "org")
 
+(use-package cb-major-mode-hydra
+  :commands (cb-major-mode-hydra)
+  :config
+  (with-eval-after-load 'evil
+    (evil-global-set-key 'normal (kbd ",") #'cb-major-mode-hydra)))
+
 
 ;; Define hydras as main interface for running commands.
 

@@ -5,32 +5,32 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'cb-major-mode-hydra)
 (require 'dash)
 (require 'evil)
-(require 'major-mode-hydra)
 (require 'paths)
 
 
+(cb-major-mode-hydra-define python-mode
+  "Eval"
+  (("eb" python-shell-send-buffer "buffer")
+   ("ef" python-shell-send-file "file"))
 
-(major-mode-hydra-bind python-mode "Eval"
-  ("eb" python-shell-send-buffer "buffer")
-  ("ef" python-shell-send-file "file"))
+  "Find"
+  (("a" anaconda-mode-find-assignments "assignments")
+   ("r" anaconda-mode-find-references "references"))
 
-(major-mode-hydra-bind python-mode "Find"
-  ("a" anaconda-mode-find-assignments "assignments")
-  ("r" anaconda-mode-find-references "references"))
+  "Test"
+  (("ta" pytest-all "all")
+   ("tt" pytest-one "one")
+   ("tm" pytest-module "module")
+   ("ts" pytest-suite "suite"))
 
-(major-mode-hydra-bind python-mode "Test"
-  ("ta" pytest-all "all")
-  ("tt" pytest-one "one")
-  ("tm" pytest-module "module")
-  ("ts" pytest-suite "suite"))
-
-(major-mode-hydra-bind python-mode "Venv"
-  ("vi" config-python-pyvenv-init "init")
-  ("va" pyvenv-activate "activate")
-  ("vd" pyvenv-deactivate "deactivate")
-  ("vw" pyvenv-workon "workon"))
+  "Venv"
+  (("vi" config-python-pyvenv-init "init")
+   ("va" pyvenv-activate "activate")
+   ("vd" pyvenv-deactivate "deactivate")
+   ("vw" pyvenv-workon "workon")))
 
 
 

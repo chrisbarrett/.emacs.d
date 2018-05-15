@@ -11,23 +11,24 @@
 (eval-when-compile
   (require 'use-package))
 
-(require 'major-mode-hydra)
+(require 'cb-major-mode-hydra)
 
 (autoload 'evil-define-key "evil")
 
 
 
-(major-mode-hydra-bind haskell-mode "Insert"
-  ("i" haskell-imports-insert-qualified "import")
-  ("u" haskell-imports-insert-unqualified "import (unqualified)")
-  ("p" haskell-pragmas-insert "language pragma"))
+(cb-major-mode-hydra-define haskell-mode
+  "Insert"
+  (("i" haskell-imports-insert-qualified "import")
+   ("u" haskell-imports-insert-unqualified "import (unqualified)")
+   ("p" haskell-pragmas-insert "language pragma"))
 
-(major-mode-hydra-bind haskell-mode "Intero"
-  ("t" intero-targets "set targets"))
+  "Intero"
+  (("t" intero-targets "set targets"))
 
-(major-mode-hydra-bind haskell-mode "Format"
-  ("f" hindent-reformat-buffer "buffer")
-  ("." hindent-reformat-decl-or-fill "decl at pt"))
+  "Format"
+  (("f" hindent-reformat-buffer "buffer")
+   ("." hindent-reformat-decl-or-fill "decl at pt")))
 
 
 

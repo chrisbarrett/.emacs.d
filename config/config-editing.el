@@ -5,21 +5,22 @@
 (eval-when-compile
   (require 'use-package))
 
-(require 'major-mode-hydra)
+(require 'cb-major-mode-hydra)
 (require 'spacemacs-keys)
 
 (autoload 'evil-define-key "evil-core")
 
 
 
-(major-mode-hydra-bind hexl-mode "Insert"
-  ("d" hexl-insert-decimal-char "decimal")
-  ("c" hexl-insert-octal-char "octal")
-  ("x" hexl-insert-hex-char "hex")
-  ("s" hexl-insert-hex-string "hex string"))
+(cb-major-mode-hydra-define hexl-mode
+  "Insert"
+  (("d" hexl-insert-decimal-char "decimal")
+   ("c" hexl-insert-octal-char "octal")
+   ("x" hexl-insert-hex-char "hex")
+   ("s" hexl-insert-hex-string "hex string"))
 
-(major-mode-hydra-bind hexl-mode "Address"
-  ("g" hexl-goto-address "goto"))
+  "Address"
+  (("g" hexl-goto-address "goto")))
 
 
 
@@ -42,7 +43,7 @@
 (use-package aggressive-indent
   :straight t
   :commands (global-aggressive-indent-mode)
-  :defer 3
+  :defer 1
   :init
   (defconst aggressive-indent-excluded-modes
     '(cb-web-js-mode
@@ -81,7 +82,7 @@
 
 (use-package volatile-highlights
   :straight t
-  :defer 3
+  :defer 1
 
   :commands (volatile-highlights-mode)
   :functions (vhl/install-extension
@@ -142,7 +143,7 @@
 (use-package ws-butler
   :straight t
   :commands (ws-butler-global-mode)
-  :defer 3
+  :defer 1
   :config
   (ws-butler-global-mode))
 
