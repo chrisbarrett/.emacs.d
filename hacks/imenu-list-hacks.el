@@ -7,6 +7,7 @@
 (require 'dash)
 (require 'el-patch)
 (autoload 'imenu--subalist-p "imenu")
+(autoload 'imenu-list-get-buffer-create "imenu-list")
 
 (el-patch-feature imenu-list)
 
@@ -51,6 +52,62 @@ Each entry is appended to `imenu-list--line-entries' as well."
               (lambda (index entry)
                 (imenu-list-hacks--insert-rule-if-remaining-items-at-level-0 depth index last-nested-index)
                 $body))))))))
+
+
+
+;; Render placeholder text instead of raising user-visible errors.
+
+(defun imenu-list-hacks--insert-placeholder-for-failed-update ()
+  (with-current-buffer (imenu-list-get-buffer-create)
+    (let ((inhibit-read-only t))
+      (erase-buffer)
+      (insert (propertize "No entries could be displayed" 'face 'error)))))
+
+(with-eval-after-load 'imenu-list
+  (with-no-warnings
+    (el-patch-defun imenu-list-update (&optional raise-imenu-errors force-update)
+      "Update the imenu-list buffer.
+If the imenu-list buffer doesn't exist, create it.
+If RAISE-IMENU-ERRORS is non-nil, any errors encountered while trying to
+create the index will be raised.  Otherwise, such errors will be printed
+instead.
+When RAISE-IMENU-ERRORS is nil, then the return value indicates if an
+error has occured.  If the return value is nil, then there was no error.
+Oherwise `imenu-list-update' will return the error that has occured, as
+ (ERROR-SYMBOL . SIGNAL-DATA).
+If FORCE-UPDATE is non-nil, the imenu-list buffer is updated even if the
+imenu entries did not change since the last update."
+      (catch 'index-failure
+        (let ((old-entries imenu-list--imenu-entries)
+              (location (point-marker)))
+          ;; don't update if `point' didn't move - fixes issue #11
+          (unless (and (null force-update)
+                       imenu-list--last-location
+                       (marker-buffer imenu-list--last-location)
+                       (= location imenu-list--last-location))
+            (setq imenu-list--last-location location)
+            (if raise-imenu-errors
+                (imenu-list-collect-entries)
+              (condition-case err
+                  (imenu-list-collect-entries)
+                (error
+                 (el-patch-remove (message "imenu-list: couldn't create index because of error: %S" err))
+                 (el-patch-add
+                   (imenu-list-hacks--insert-placeholder-for-failed-update)
+                   (run-hooks 'imenu-list-update-hook))
+                 (throw 'index-failure err))))
+            (when (or force-update
+                      ;; check if Ilist buffer is alive, in case it was killed
+                      ;; since last update
+                      (null (get-buffer imenu-list-buffer-name))
+                      (not (equal old-entries imenu-list--imenu-entries)))
+              (with-current-buffer (imenu-list-get-buffer-create)
+                (imenu-list-insert-entries)))
+            (imenu-list--show-current-entry)
+            (when imenu-list-auto-resize
+              (imenu-list-resize-window))
+            (run-hooks 'imenu-list-update-hook)
+            nil))))))
 
 (provide 'imenu-list-hacks)
 
