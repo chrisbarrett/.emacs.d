@@ -152,10 +152,6 @@
   :config
   (advice-add 'lv-window :after #'cb-leader-keys-set-up-hydra-buffer))
 
-(use-package major-mode-hydra
-  :defer t
-  :straight (:host github :repo "chrisbarrett/major-mode-hydra.el"))
-
 (use-package pretty-hydra
   :straight (:host github :repo "chrisbarrett/major-mode-hydra.el")
   :preface
