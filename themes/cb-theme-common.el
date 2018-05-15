@@ -720,22 +720,24 @@
     (font-latex-sedate-face
      ((t :weight light :foreground ,dimmed-fg)))
 
-    ;; Misc faces
+    ;; Hydra
 
     (hydra-face-amaranth
-     ((t :foreground ,cb-theme-common-red)))
+     ((t :weight demibold :foreground ,cb-theme-common-red)))
 
     (hydra-face-pink
-     ((t :foreground ,cb-theme-common-pink)))
+     ((t :weight demibold :foreground ,cb-theme-common-pink)))
 
     (hydra-face-blue
-     ((t :foreground ,cb-theme-common-blue)))
+     ((t :weight demibold :foreground ,cb-theme-common-blue)))
 
     (hydra-face-red
-     ((t :foreground ,cb-theme-common-red)))
+     ((t :weight demibold :foreground ,cb-theme-common-red)))
 
     (hydra-face-teal
-     ((t :foreground ,cb-theme-common-blue)))
+     ((t :weight demibold :foreground ,cb-theme-common-blue)))
+
+    ;; Misc faces
 
     (page-break-lines
      ((t :weight light :foreground ,dimmed-fg)))
