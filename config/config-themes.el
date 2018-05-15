@@ -156,6 +156,20 @@
   (with-eval-after-load 'evil
     (evil-global-set-key 'normal (kbd ",") #'major-mode-hydra)))
 
+(use-package pretty-hydra
+  :straight (:host github :repo "chrisbarrett/major-mode-hydra.el")
+  :preface
+  (defun config-themes--head-formatting-function (key &optional hint)
+    (cond
+     ((char-or-string-p hint) ;; string hint
+      (list (format " _%s_: %s" key hint)))
+     ((or (null hint) (symbolp hint)) ;; no hint, doesn't show it in docstring at all
+      nil)
+     (t
+      (list (format " _%s_: ?%s?" key key)))))
+  :config
+  (setq pretty-hydra-head-formatting-function #'config-themes--head-formatting-function))
+
 (provide 'config-themes)
 
 ;;; config-themes.el ends here

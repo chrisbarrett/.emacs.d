@@ -7,9 +7,9 @@
 
 (require 'all-the-icons)
 (require 'buffer-cmds)
-(require 'hydra)
 (require 'jump-cmds)
 (require 'major-mode-hydra)
+(require 'pretty-hydra)
 (require 'spacemacs-keys)
 (require 'subr-x)
 
@@ -29,229 +29,232 @@
 
 ;; Define hydras as main interface for running commands.
 
-(defun hydra-title-with-faicon (icon title)
-  (concat (all-the-icons-faicon icon :face 'all-the-icons-orange :v-adjust 0.05) " " title))
+(eval-and-compile
+  (defun hydra-title-with-octicon (icon title)
+    (concat (all-the-icons-octicon icon :face 'all-the-icons-orange :v-adjust 0.05)
+            " " title
+            "\n"))
 
-(defun hydra-title-with-aicon (icon title)
-  (concat (all-the-icons-alltheicon icon :face 'all-the-icons-orange :v-adjust 0.05) " " title))
 
-(defun hydra-title-with-mat-icon (icon title)
-  (concat (all-the-icons-material icon :face 'all-the-icons-orange) " " title))
+  (defun hydra-title-with-faicon (icon title)
+    (concat (all-the-icons-faicon icon :face 'all-the-icons-orange :v-adjust 0.05)
+            " " title
+            "\n"))
 
-(defhydra applications (:color teal :hint nil)
-  "
-%s(hydra-title-with-mat-icon \"apps\" \"Applications\")
+  (defun hydra-title-with-aicon (icon title)
+    (concat (all-the-icons-alltheicon icon :face 'all-the-icons-orange :v-adjust 0.05)
+            " " title
+            "\n"))
 
-^Productivity^      ^Editing^           ^Shells^
-^------------^----- ^-------^---------- ^------^------
-_c_: quick calc     _i_: input method   _t_: terminal
-_C_: calc           _?_: profiler       _n_: nix-repl
-_m_: mu4e
-_p_: gen password
-_w_: world clock
+  (defun hydra-title-with-mat-icon (icon title)
+    (concat (all-the-icons-material icon :face 'all-the-icons-orange)
+            " " title
+            "\n")))
 
-"
-  ("c" quick-calc)
-  ("C" calc)
-  ("m" mu4e)
-  ("w" world-time-list)
-  ("i" select-input-method/body)
-  ("p" generate-password/body)
-  ("?" profiler/body)
-  ("t" (ansi-term (getenv "SHELL")))
-  ("n" nix-repl-show)
-  ("q" nil))
+(pretty-hydra-define font-scale (:color amaranth :hint nil)
+  (""
+   (("+" (text-scale-increase 1) "zoom in")
+    ("-" (text-scale-decrease 1) "zoom out")
+    ("0" (text-scale-set 0) "reset")))
 
-(defhydra profiler (:color teal :hint nil)
-  "
-%s(hydra-title-with-faicon \"bar-chart\" \"Profiler\")
+  :docstring-prefix
+  (hydra-title-with-faicon "search-plus" "Font Scale"))
 
-_p_: start  _s_: stop  _r_: report
+(pretty-hydra-define buffers (:color teal :hint nil)
+  ("Switch"
+   (("n" next-buffer "next" :exit nil)
+    ("p" previous-buffer "back" :exit nil )
+    ("l" ibuffer "list")
+    ("s" ivy-switch-buffer "switch"))
 
-"
-  ("p" profiler-start)
-  ("r" profiler-report)
-  ("s" profiler-stop)
-  ("q" nil))
+   "Manage"
+   (("b" bury-buffer "bury" :exit nil)
+    ("d" kill-this-buffer "kill")
+    ("w" save-buffer "save")
+    ("v" reload-file "reload")))
 
-(defhydra select-input-method (:color teal :hint nil)
-  "
-%s(hydra-title-with-faicon \"language\" \"Input Method\")
+  :docstring-prefix
+  (hydra-title-with-faicon "files-o" "Buffer Commands"))
 
-_a_ Arabic  _t_ TeX  _SPC_ clear
+(pretty-hydra-define windows (:color teal :hint nil)
+  ("Switch"
+   (("w" evil-window-next "next")
+    ("n" evil-window-prev "forward" :exit nil)
+    ("p" evil-window-prev "back" :exit nil)
+    ("r" evil-window-rotate-downwards "rotate"))
 
-"
-  ("a" (progn (set-input-method "arabic") (message "Arabic input method activated")))
-  ("t" (progn (set-input-method "TeX") (message "TeX input method activated")))
-  ("SPC" (progn (deactivate-input-method) (message "Input method cleared")))
-  ("q" nil))
+   "Split"
+   (("/" evil-window-vsplit "vertical")
+    ("-" evil-window-split "horizontal")
+    ("=" balance-windows "rebalance"))
 
-(defhydra font-scale (:color amaranth :hint nil)
-  "
-%s(hydra-title-with-faicon \"search-plus\" \"Font Scale\")
+   "Close"
+   (("d" delete-window "window")
+    ("o" delete-other-windows "others")))
 
-_+_ zoom in  _-_ zoom out  _0_ reset
+  :docstring-prefix
+  (hydra-title-with-faicon "clone" "Window Management"))
 
-"
-  ("+" (text-scale-increase 1))
-  ("-" (text-scale-decrease 1))
-  ("0" (text-scale-set 0))
-  ("q" nil :exit t))
+(pretty-hydra-define files (:color teal :hint nil)
+  ("Find"
+   (("f" counsel-find-file "file")
+    ("o" find-file-other-window "other window")
+    ("p" find-file-at-point "at pt")
+    ("h" hexl-find-file "as hex")
+    ("r" counsel-recentf "recent"))
 
-(defhydra buffers (:color teal :hint nil)
-  "
-%s(hydra-title-with-faicon \"files-o\" \"Buffer Commands\")
+   "Save"
+   (("s" save-buffer "buffer")
+    ("S" save-some-buffers "many buffers")
+    ("W" write-file "write copy")
+    ("R" rename-file-and-buffer "rename")
+    ("D" delete-current-buffer-and-file "delete"))
 
-^Switch^^^                 ^^ ^Manage^^^
-^------^^^-----------------^^ ^------^^^------------
-_n_: forward  _p_/_N_: back   _b_: bury  _d_: kill
-_l_: list  _s_: switch     ^^ _w_: save  _v_: reload
+   "Copy"
+   (("d" copy-buffer-directory "dir")
+    ("y" copy-buffer-path "path")
+    ("Y" copy-buffer-name "filename"))
 
-"
-  ("b" bury-buffer :exit nil)
-  ("d" kill-this-buffer)
-  ("p" previous-buffer :exit nil)
-  ("N" previous-buffer :exit nil)
-  ("n" next-buffer :exit nil)
-  ("s" ivy-switch-buffer)
-  ("w" save-buffer)
-  ("l" ibuffer)
-  ("v" reload-file)
-  ("q" nil))
+   "Other"
+   (("e" sudo-edit "edit with sudo")
+    ("t" neotree-toggle "file tree")
+    ("v" reload-file "reload")))
 
-(defhydra windows (:color teal :hint nil)
-  "
-%s(hydra-title-with-faicon \"clone\" \"Window Management\")
+  :docstring-prefix
+  (hydra-title-with-faicon "hdd-o" "File Commands"))
 
-^^^^^Switch^                   ^Split^          ^Close^
-^^^^^------^------------------ ^-----^--------- ^-----^------
-^^^^_w_: next                  _/_ vertical     _d_ window
-_n_: forward  _p_/_N_: back    _-_ horizontal   _o_ others
-^^^^_r_: rotate                _=_ rebalance
+(pretty-hydra-define errors (:color teal :hint nil)
+  ("Navigation"
+   (("n" flycheck-next-error "next" :color red)
+    ("p" flycheck-previous-error "previous" :color red)
+    ("l" config-flycheck-toggle-error-list "list errors"))
 
-"
-  ("=" balance-windows)
-  ("p" evil-window-prev :exit nil)
-  ("N" evil-window-prev :exit nil)
-  ("n" evil-window-prev :exit nil)
-  ("w" evil-window-next)
-  ("r" evil-window-rotate-downwards)
-  ("o" delete-other-windows)
-  ("d" delete-window)
-  ("-" evil-window-split)
-  ("/" evil-window-vsplit)
-  ("q" nil))
+   "Actions"
+   (("r" flycheck-buffer "run checks")
+    ("c" flycheck-clear "clear")
+    ("e" flycheck-explain-error-at-point "explain"))
 
-(defhydra files (:color teal :hint nil)
-  "
-%s(hydra-title-with-faicon \"hdd-o\" \"File Commands\")
+   "Checkers"
+   (("h" flycheck-describe-checker "describe")
+    ("s" flycheck-select-checker "select")
+    ("v" flycheck-verify-setup "verify")))
 
-^Find^               ^Save^              ^Copy^             ^Other^
-^----^-------------- ^----^------------- ^----^------------ ^-----^------------
-_f_: file            _s_: buffer         _d_: dir           _e_: edit with sudo
-_o_: other window    _S_: many buffers   _y_: path          _v_: reload
-_p_: at pt           _W_: write copy     _Y_: filename      _t_: file tree
-_h_: as hex          _R_: rename
-_r_: recent          _D_: delete
-"
-  ("D" delete-current-buffer-and-file)
-  ("R" rename-file-and-buffer)
-  ("S" save-some-buffers)
-  ("W" write-file)
-  ("Y" copy-buffer-name)
-  ("d" copy-buffer-directory)
-  ("h" hexl-find-file)
-  ("e" sudo-edit)
-  ("f" counsel-find-file)
-  ("o" find-file-other-window)
-  ("p" find-file-at-point)
-  ("r" counsel-recentf)
-  ("s" save-buffer)
-  ("t" neotree-toggle)
-  ("v" reload-file)
-  ("y" copy-buffer-path)
-  ("q" nil :exit t))
+  :docstring-prefix
+  (hydra-title-with-mat-icon "error_outline" "Errors"))
 
-(defhydra errors (:color teal :hint nil)
-  "
-%s(hydra-title-with-mat-icon \"error_outline\" \"Errors\")
+(pretty-hydra-define help (:color teal :hint nil :help nil)
+  ("Docs"
+   (("i" info "info")
+    ("m" man "manpage"))
 
-^^^Navigation^      ^Actions^         ^Checkers^
-^^^----------^----- ^-------^-------- ^--------^--
-^^_n_: next         _r_: run checks   _h_: describe
-_p_/_N_: previous   _c_: clear        _s_: select
-^^_l_: list errors  _e_: explain      _v_: verify
+   "Describe"
+   (("dc" describe-face "face")
+    ("df" counsel-describe-function "function")
+    ("dk" describe-key "key")
+    ("dm" describe-mode "mode")
+    ("dp" describe-text-properties "text-props")
+    ("dv" counsel-describe-variable "variable"))
 
-"
-  ("n" flycheck-next-error :color red)
-  ("p" flycheck-previous-error :color red)
-  ("N" flycheck-previous-error :color red)
-  ("c" flycheck-clear)
-  ("v" flycheck-verify-setup)
-  ("h" flycheck-describe-checker)
-  ("l" config-flycheck-toggle-error-list)
-  ("s" flycheck-select-checker)
-  ("e" flycheck-explain-error-at-point)
-  ("r" flycheck-buffer)
-  ("q" nil))
+   "Find"
+   (("fc" find-face-definition "face")
+    ("ff" find-function "function")
+    ("fl" find-library "library")
+    ("fv" find-variable "variable")))
 
-(defhydra help (:color teal :hint nil :help nil)
-  "
-%s(hydra-title-with-mat-icon \"help_outline\" \"Help\")
+  :docstring-prefix
+  (hydra-title-with-mat-icon "help_outline" "Help"))
 
-^Docs^          ^Describe^        ^Find^
-^----^--------  ^--------^------- ^----^----------
-_i_: info       _dc_ face         _fc_ face
-_m_: manpage    _df_ function     _ff_ function
-^^              _dk_ key          _fl_ library
-^^              _dm_ mode         _fv_ variable
-^^              _dp_ text-props
-^^              _dv_ variable
-"
-  ("i" info)
-  ("m" man)
-  ("dc" describe-face)
-  ("df" counsel-describe-function)
-  ("dk" describe-key)
-  ("dm" describe-mode)
-  ("dp" describe-text-properties)
-  ("dv" counsel-describe-variable)
-  ("fc" find-face-definition)
-  ("ff" find-function)
-  ("fl" find-library)
-  ("fv" find-variable)
-  ("q" nil))
+(pretty-hydra-define git-and-files (:color teal :hint nil)
+  ("Goto"
+   (("i" jump-to-init-file "init file")
+    ("m" jump-to-messages "messages")
+    ("n" jump-to-nix-packages "nix packages")
+    ("p" jump-to-personal-config "personal config")
+    ("u" jump-to-package-usage "package usage"))
 
-(defhydra git-and-files (:color teal :hint nil)
-  "
-%s(hydra-title-with-aicon \"git\" \"Git and Goto\")
+   "Git"
+   (("s" magit-status "magit")
+    ("d" cb-git-diff-buffer-file "blame")
+    ("b" git-blame-transient-state/body "diff buffer")
+    ("f" cb-git-find-file "find file")
+    ("h" git-hunks-transient-state/body "navigate hunks")
+    ("l" magit-log-buffer-file "log buffer")
+    ("t" git-time-machine-transient-state/body "time machine"))
 
-^Goto^                 ^Git^                ^Jump to Def
-^----^---------------- ^---^--------------- ^-----------------------
-_i_: init file         _s_: magit           _g_:   jump
-_m_: messages          _b_: blame           _G_:   jump other window
-_n_: nix packages      _d_: diff buffer     _SPC_: jump back
-_p_: personal config   _f_: find file
-_u_: package usage     _h_: navigate hunks
-                    ^^ _l_: log buffer
-                    ^^ _t_: time machine
-"
-  ("i" jump-to-init-file)
-  ("n" jump-to-nix-packages)
-  ("p" jump-to-personal-config)
-  ("u" jump-to-package-usage)
-  ("g" dumb-jump-go)
-  ("G" dumb-jump-go-other-window)
-  ("SPC" pop-tag-mark)
-  ("m" jump-to-messages)
-  ("s" magit-status)
-  ("b" git-blame-transient-state/body)
-  ("d" cb-git-diff-buffer-file)
-  ("f" cb-git-find-file)
-  ("h" git-hunks-transient-state/body)
-  ("l" magit-log-buffer-file)
-  ("t" git-time-machine-transient-state/body)
-  ("q" nil :exit t))
+   "Jump to Def"
+   (("g" dumb-jump-go "jump")
+    ("G" dumb-jump-go-other-window "jump other window")
+    ("SPC" pop-tag-mark "jump back")))
+
+  :docstring-prefix
+  (hydra-title-with-aicon "git" "Git and Goto"))
+
+;; Application hydras
+
+(pretty-hydra-define applications (:color teal :hint nil)
+  ("Productivity"
+   (("c" quick-calc "quick calc")
+    ("C" calc "calc")
+    ("m" mu4e "mu4e")
+    ("p" generate-password/body "gen password")
+    ("w" world-time-list "world clock"))
+
+   "Editing"
+   (("i" select-input-method/body "input method"))
+
+   "Emacs"
+   (("?" profiler/body "profiler")
+    ("s" straight/body "straight package manager"))
+
+   "Shells"
+   (("t" (ansi-term (getenv "SHELL")) "terminal")
+    ("n" nix-repl-show "nix-repl")))
+
+  :docstring-prefix
+  (hydra-title-with-mat-icon "apps" "Applications"))
+
+(pretty-hydra-define profiler (:color teal :hint nil)
+  (""
+   (("p" profiler-start "start")
+    ("s" profiler-stop "stop")
+    ("r" profiler-report "report")))
+
+  :docstring-prefix
+  (hydra-title-with-faicon "bar-chart" "Profiler"))
+
+(pretty-hydra-define select-input-method (:color teal :hint nil)
+  (""
+   (("a" (progn (set-input-method "arabic") (message "Arabic input method activated")) "arabic")
+    ("t" (progn (set-input-method "TeX") (message "TeX input method activated")) "TeX")
+    ("SPC" (progn (deactivate-input-method) (message "Input method cleared")) "clear")))
+
+  :docstring-prefix
+  (hydra-title-with-faicon "language" "Input Method"))
+
+(pretty-hydra-define straight (:color teal :hint nil)
+  ("Global"
+   (("c" straight-prune-build "clean")
+    ("n" straight-normalize-all "normalise")
+    ("r" straight-rebuild-all "rebuild")
+    ("P" straight-push-all "push")
+    ("U" straight-pull-all "pull"))
+
+   "Lockfile"
+   (("f" straight-freeze-versions "freeze")
+    ("T" straight-thaw-versions "thaw"))
+
+   "Package"
+   (("pc" straight-check-package "check")
+    ("pn" straight-normalize-package "normalise")
+    ("pp" straight-push-package "push")
+    ("pr" straight-rebuild-package "rebuild")
+    ("pu" straight-pull-package "pull")))
+
+  :docstring-prefix
+  (hydra-title-with-octicon "package" "Straight Package Manager"))
+
+
+;; Use which-key as a fallback for stuff I haven't ported to hydras yet.
 
 (spacemacs-keys-set-leader-keys
   "a" #'applications/body
@@ -263,9 +266,6 @@ _u_: package usage     _h_: navigate hunks
   "m" #'major-mode-hydra
   "w" #'windows/body
   "z" #'font-scale/body)
-
-
-;; Use which-key as a fallback for stuff I haven't ported to hydras yet.
 
 (define-key universal-argument-map (kbd (concat "SPC u")) #'universal-argument-more)
 
