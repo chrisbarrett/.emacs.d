@@ -172,7 +172,10 @@
 (use-package imenu-list
   :straight t
   :commands (imenu-list)
-  :init (require 'imenu-list-hacks))
+  :init (require 'imenu-list-hacks)
+  :config
+  (with-eval-after-load 'evil
+    (evil-define-key 'normal imenu-list-major-mode-map (kbd "q") #'quit-window)))
 
 (provide 'config-themes)
 
