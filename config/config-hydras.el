@@ -30,6 +30,7 @@
   :commands (cb-major-mode-hydra)
   :config
   (with-eval-after-load 'evil
+    (evil-global-set-key 'motion (kbd ",") #'cb-major-mode-hydra)
     (evil-global-set-key 'normal (kbd ",") #'cb-major-mode-hydra)))
 
 
