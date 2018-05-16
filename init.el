@@ -67,6 +67,9 @@
 (paths-initialise)
 (add-to-list 'custom-theme-load-path paths-themes-directory)
 
+;; Ensure org-version hack is activated.
+(require 'org-version (expand-file-name "org-version.el" paths-hacks-directory))
+
 ;; no-littering overrides many common paths to keep the .emacs.d directory
 ;; clean.
 ;;

@@ -122,9 +122,6 @@
 
   :config
   (progn
-    ;; Ensure org-version hack is activated.
-    (load-file (expand-file-name "org-version.el" paths-hacks-directory))
-
     (setq org-default-notes-file (f-join org-directory "notes.org"))
 
     (add-to-list 'org-refile-targets '(nil :maxlevel . 3))
