@@ -34,8 +34,9 @@
     (goto-char (point-max))
     (eval-print-last-sexp)))
 
-(setq straight-cache-autoloads t)
-(setq straight-check-for-modifications 'live)
+(with-no-warnings
+  (setq straight-cache-autoloads t)
+  (setq straight-check-for-modifications 'live))
 
 (require 'straight bootstrap-file t)
 
@@ -50,7 +51,8 @@
 (straight-use-package 'memoize)
 (straight-use-package 'el-patch)
 
-(setq use-package-verbose t)
+(with-no-warnings
+  (setq use-package-verbose t))
 
 (straight-use-package 'bind-map)
 (straight-use-package 'use-package)
