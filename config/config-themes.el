@@ -27,10 +27,12 @@
   (setq config-themes--dark-mode-p (not config-themes--dark-mode-p)))
 
 (defun config-themes/light-theme ()
+  "Load the light theme."
   (interactive)
   (load-theme 'cb-light t))
 
 (defun config-themes/dark-theme ()
+  "Load the dark theme."
   (interactive)
   (load-theme 'cb-dark t))
 
