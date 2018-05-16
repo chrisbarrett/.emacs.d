@@ -100,7 +100,9 @@
 
     ;; Initial states and keymaps for builtin Emacs packages.
 
-    (evil-set-initial-state 'occur-mode 'motion)
+    (evil-set-initial-state 'grep-mode 'normal)
+
+    (evil-set-initial-state 'occur-mode 'normal)
     (with-eval-after-load 'replace
       (evil-add-hjkl-bindings occur-mode-map))
 
