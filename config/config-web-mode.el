@@ -117,6 +117,16 @@
     (add-to-list 'web-mode-content-types '("javascript" . "\\.es6\\'"))
     (add-to-list 'web-mode-content-types '("jsx" . "\\.jsx?\\'"))
 
+    ;; Dim Promise .then method.
+
+    (add-to-list 'web-mode-javascript-font-lock-keywords
+                 `(,(rx (? "." (* space)) symbol-start "then" symbol-end) 0 'web-mode-keyword-face))
+
+    ;; Dim parentheses.
+
+    (add-to-list 'web-mode-javascript-font-lock-keywords
+                 `(,(rx (any "(){}?:;,")) 0 'parenthesis))
+
     ;; Run programs out of node_bin
 
     (add-hook 'web-mode-hook #'config-web--add-node-modules-bin-to-exec-path)))
