@@ -397,8 +397,8 @@
   :straight t
   :commands (indium-run-node indium-eval-buffer)
   :hook
-  ((web-js-mode-hook . indium-interaction-mode)
-   (js-mode-hook . indium-interaction-mode))
+  ((web-js-mode . indium-interaction-mode)
+   (js-mode . indium-interaction-mode))
 
   :preface
   (defun node-repl (arg)
@@ -420,12 +420,13 @@
 
 (use-package nvm
   :straight t
-  :hook (web-mode-hook . config-web-maybe-use-nvm)
+  :hook (web-mode . config-web-maybe-use-nvm)
   :functions (nvm-use-for-buffer)
   :preface
   (defun config-web-maybe-use-nvm ()
     (when (locate-dominating-file default-directory ".nvmrc")
-      (nvm-use-for-buffer))))
+      (nvm-use-for-buffer)
+      t)))
 
 (provide 'config-web-mode)
 

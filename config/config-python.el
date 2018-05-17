@@ -36,7 +36,7 @@
 
 (use-package python
   :defer t
-  :hook (python-mode-hook . config-python--init-python-mode)
+  :hook (python-mode . config-python--init-python-mode)
   :preface
   (progn
     (autoload 'python-indent-dedent-line "python")
@@ -139,7 +139,7 @@
 (use-package company-anaconda
   :straight t
   :defer t
-  :hook (anaconda-mode-hook . config-python--enable-company-anaconda)
+  :hook (anaconda-mode . config-python--enable-company-anaconda)
   :preface
   (defun config-python--enable-company-anaconda ()
     (with-no-warnings
