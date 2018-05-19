@@ -109,6 +109,7 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
           (deferred:$
             (deferred:process "git" "add" (shell-quote-argument file))
             (deferred:processc it "git" "commit" "-m" (shell-quote-argument (gac--commit-msg (buffer-file-name)))))
+          :catch #'ignore
           :finally #'gac-push))))
 
   :config
