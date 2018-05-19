@@ -116,7 +116,6 @@
 (use-package counsel
   :straight t
   :demand t
-
   :bind (("M-x" . counsel-M-x)
          ("C-x C-f" . counsel-find-file)
 
@@ -127,23 +126,13 @@
          counsel-find-file-map
          ("C-h" . counsel-up-directory))
 
-  :preface
-  (progn
-    (autoload 'ivy-immediate-done "ivy")
-    (defun config-ivy--populate-with-symbol-at-point (f &rest args)
-      (if-let ((sym (symbol-at-point)))
-          (apply f (symbol-name sym) (cdr args))
-        (apply f args))))
-
   :config
   (progn
+    (require 'counsel-hacks)
+
     (setq counsel-yank-pop-separator
           (propertize "\n-------------------------------------------------\n"
                       'face '(:foreground "gray50")))
-
-    ;; Prefill counsel-ag with the symbol at point.
-    (advice-add 'counsel-rg :around #'config-ivy--populate-with-symbol-at-point)
-    (advice-add 'counsel-ag :around #'config-ivy--populate-with-symbol-at-point)
 
     (counsel-mode +1)))
 
