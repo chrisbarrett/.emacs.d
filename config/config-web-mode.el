@@ -262,43 +262,43 @@
   :config
   (with-no-warnings
     (add-to-list 'auto-insert-alist
-                 '((web-js-mode . "JavaScript") . js-autoinsert-template-string)))
+                 '((web-js-mode . "JavaScript") . js-autoinsert-template-string))))
 
-  (use-package tern
-    :straight t
-    :disabled t
-    :commands (tern-mode)
-    :hook (web-js-mode . config-web--maybe-enable-tern)
-    :preface
-    (progn
-      (autoload 'flycheck-overlay-errors-at "flycheck")
+(use-package tern
+  :straight t
+  :disabled t
+  :commands (tern-mode)
+  :hook (web-js-mode . config-web--maybe-enable-tern)
+  :preface
+  (progn
+    (autoload 'flycheck-overlay-errors-at "flycheck")
 
-      (defun config-web--maybe-enable-tern ()
-        (unless config-etags-in-query-replace-session-p
-          (tern-mode +1)))
+    (defun config-web--maybe-enable-tern ()
+      (unless config-etags-in-query-replace-session-p
+        (tern-mode +1)))
 
-      (defun config-web--flycheck-errors-at-point-p ()
-        (when (bound-and-true-p flycheck-mode)
-          (flycheck-overlay-errors-at (point))))
+    (defun config-web--flycheck-errors-at-point-p ()
+      (when (bound-and-true-p flycheck-mode)
+        (flycheck-overlay-errors-at (point))))
 
-      (defun config-web--maybe-suppress-tern-hints (f &rest args)
-        (unless (config-web--flycheck-errors-at-point-p)
-          (apply f args))))
+    (defun config-web--maybe-suppress-tern-hints (f &rest args)
+      (unless (config-web--flycheck-errors-at-point-p)
+        (apply f args))))
 
-    :config
-    (progn
-      (setq tern-command (add-to-list 'tern-command "--no-port-file" t))
+  :config
+  (progn
+    (setq tern-command (add-to-list 'tern-command "--no-port-file" t))
 
-      (unless (getenv "NODE_PATH")
-        (setenv "NODE_PATH" "/usr/local/lib/node_modules"))
+    (unless (getenv "NODE_PATH")
+      (setenv "NODE_PATH" "/usr/local/lib/node_modules"))
 
-      (evil-define-key 'normal tern-mode-keymap
-        (kbd "K") 'tern-get-docs
-        (kbd "gd")  'tern-find-definition
-        (kbd "M-.") 'tern-find-definition
-        (kbd "M-,") 'tern-pop-find-definition)
+    (evil-define-key 'normal tern-mode-keymap
+      (kbd "K") 'tern-get-docs
+      (kbd "gd")  'tern-find-definition
+      (kbd "M-.") 'tern-find-definition
+      (kbd "M-,") 'tern-pop-find-definition)
 
-      (advice-add 'tern-show-argument-hints :around #'config-web--maybe-suppress-tern-hints))))
+    (advice-add 'tern-show-argument-hints :around #'config-web--maybe-suppress-tern-hints)))
 
 (use-package company-tern
   :straight t
