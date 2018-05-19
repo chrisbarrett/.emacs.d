@@ -56,7 +56,6 @@
  ("evil-surround" . "2af81ab3ac64e4b0515a157a672d8cb89f0172b9")
  ("evil-terminal-cursor-changer" . "b49ca4393d2f3cc6014174950059b36a5cb22949")
  ("exec-path-from-shell" . "54ea2f9c3c81d18b96e4d33c4c547e02eee420dc")
- ("eyebrowse" . "ad94b5bed74a74769775e937e167d301f4ea70e3")
  ("f.el" . "de6d4d40ddc844eee643e92d47b9d6a63fbebb48")
  ("flx" . "46040d0b096a0340d91235561f27a959a61d0fef")
  ("flycheck" . "0c4bbd1f8a48200a23bae365d2a6749a2e847717")

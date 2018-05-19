@@ -125,7 +125,6 @@
 (use-package config-prodigy)
 (use-package config-latex)
 (use-package config-python)
-(use-package config-eyebrowse)
 (use-package config-nix)
 (use-package config-etags)
 
