@@ -12,12 +12,12 @@
   (require 'use-package))
 
 (require 'cb-major-mode-hydra)
+(require 'config-hydras)
 (require 'dash)
 (require 'evilified-state)
 (require 'f)
 (require 'paths)
 (require 's)
-(require 'spacemacs-keys)
 (require 'straight)
 (require 'subr-x)
 
@@ -324,7 +324,7 @@
                                ("TODO") nil))
 
     ;; Enable leader key in agenda.
-    (define-key org-agenda-mode-map (kbd "SPC") spacemacs-keys-default-map)
+    (config-hydras-insinuate org-agenda-mode-map)
 
     (setq org-agenda-block-separator "")
     (setq org-agenda-include-diary nil)

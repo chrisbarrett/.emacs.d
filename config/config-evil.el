@@ -11,9 +11,8 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'config-hydras)
 (straight-use-package 'link-hint)
-
-(require 'spacemacs-keys)
 
 
 
@@ -233,7 +232,7 @@
     (setq iedit-toggle-key-default nil)
 
     ;; Enable leader key in iedit and iedit-insert states
-    (define-key evil-iedit-state-map (kbd "SPC") spacemacs-keys-default-map)))
+    (config-hydras-insinuate evil-iedit-state-map)))
 
 (use-package evil-ediff
   :straight t

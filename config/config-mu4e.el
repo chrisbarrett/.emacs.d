@@ -12,9 +12,12 @@
   (require 'use-package))
 
 (require 'cb-major-mode-hydra)
+(require 'config-hydras)
 (require 'evilified-state)
 (require 'f)
 (require 'paths)
+
+(autoload 'mail-add-attachment "sendmail")
 
 
 
@@ -220,10 +223,9 @@
     (define-key mu4e-view-mode-map (kbd "r") #'mu4e-view-mark-for-read-and-archive)
 
     ;; Enable leader key in mu4e maps
-    (define-key mu4e-headers-mode-map (kbd "SPC") spacemacs-keys-default-map)
-    (define-key mu4e-view-mode-map (kbd "SPC") spacemacs-keys-default-map)
-    (define-key mu4e-main-mode-map (kbd "SPC") spacemacs-keys-default-map)
-    (define-key mu4e-headers-mode-map (kbd "SPC") spacemacs-keys-default-map)))
+    (config-hydras-insinuate mu4e-headers-mode-map)
+    (config-hydras-insinuate mu4e-view-mode-map)
+    (config-hydras-insinuate mu4e-main-mode-map)))
 
 (use-package cb-mu4e-utils
   :after mu4e

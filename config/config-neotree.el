@@ -11,8 +11,8 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'config-hydras)
 (require 'evilified-state)
-(require 'spacemacs-keys)
 
 (use-package neotree
   :straight t
@@ -61,7 +61,7 @@
     (add-to-list 'neo-hidden-regexp-list "scala-2\\.[0-9]+$")
 
     ;; Enable leader key in neotree
-    (define-key neotree-mode-map (kbd "SPC") spacemacs-keys-default-map)
+    (config-hydras-insinuate neotree-mode-map)
 
     (evilified-state-evilify-map neotree-mode-map
       :mode neotree-mode

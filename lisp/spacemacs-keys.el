@@ -66,12 +66,6 @@ BINDINGS are any additional keys and defs to bind."
     (setq key (pop bindings) def (pop bindings))))
 (put 'spacemacs-keys-set-leader-keys 'lisp-indent-function 'defun)
 
-(bind-map spacemacs-keys-default-map
-  :prefix-cmd spacemacs-keys-cmds
-  :evil-keys (spacemacs-keys-leader-key)
-  :override-minor-modes t
-  :override-mode-name spacemacs-keys-leader-override-mode)
-
 (provide 'spacemacs-keys)
 
 ;;; spacemacs-keys.el ends here

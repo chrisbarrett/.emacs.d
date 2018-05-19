@@ -13,12 +13,14 @@
 
 (require 'f)
 (require 'paths)
-(require 'spacemacs-keys)
 (require 'subr-x)
 
 (autoload 'ansi-color-apply-on-region "ansi-color")
+(autoload 'config-hydras-insinuate "config-hydras")
 (autoload 'evil-define-key "evil")
 (autoload 'thing-at-point-looking-at "thingatpt")
+
+
 
 (defalias #'yes-or-no-p #'y-or-n-p)
 (defalias #'view-hello-file #'ignore)
@@ -736,7 +738,7 @@ Interactively, reverse the characters in the current region."
 (use-package calc
   :commands (quick-calc calc)
   :config
-  (define-key calc-mode-map (kbd "SPC") spacemacs-keys-default-map))
+  (config-hydras-insinuate calc-mode-map))
 
 (use-package man
   :defer t

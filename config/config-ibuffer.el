@@ -11,7 +11,7 @@
 (eval-when-compile
   (require 'use-package))
 
-(require 'spacemacs-keys)
+(require 'config-hydras)
 (require 'evilified-state)
 
 (use-package ibuffer
@@ -34,7 +34,7 @@
                         "*Flycheck error messages*"
                         "*Help*"))))
 
-    (define-key ibuffer-mode-map (kbd "SPC") spacemacs-keys-default-map)
+    (config-hydras-insinuate ibuffer-mode-map)
     (define-key ibuffer-mode-map (kbd "j") #'ibuffer-forward-line)
     (define-key ibuffer-mode-map (kbd "k") #'ibuffer-backward-line)))
 

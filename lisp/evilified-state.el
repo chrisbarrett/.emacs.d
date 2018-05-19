@@ -43,8 +43,6 @@
 ;;; Code:
 
 (require 'evil)
-(require 'bind-map)
-(require 'spacemacs-keys)
 
 (autoload 'evil-surround-mode "evil-surround")
 
@@ -67,12 +65,6 @@
   :enable (emacs)
   :message "-- EVILIFIED BUFFER --"
   :cursor box)
-
-(bind-map spacemacs-default-map
-  :evil-keys ("SPC")
-  :evil-states (evilified)
-  :override-minor-modes t
-  :override-mode-name spacemacs-leader-override-mode)
 
 (evil-define-command evil-force-evilified-state ()
   "Switch to evilified state without recording current command."

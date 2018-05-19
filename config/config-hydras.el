@@ -10,7 +10,6 @@
 (require 'jump-cmds)
 (require 'major-mode-hydra)
 (require 'pretty-hydra)
-(require 'spacemacs-keys)
 (require 'subr-x)
 
 (autoload 'cb/toggle-window-split "cb-toggle-window-split")
@@ -44,6 +43,11 @@
 (eval-and-compile
   (defun hydra-title-with-octicon (icon title)
     (concat (all-the-icons-octicon icon :face 'all-the-icons-orange :v-adjust 0.05)
+            " " title
+            "\n"))
+
+  (defun hydra-title-with-fileicon (icon title)
+    (concat (all-the-icons-fileicon icon)
             " " title
             "\n"))
 
@@ -387,231 +391,57 @@
    ("pu" straight-pull-package "pull")))
 
 
-;; Use which-key as a fallback for stuff I haven't ported to hydras yet.
 
-(spacemacs-keys-set-leader-keys
-  "," #'parens/body
-  "a" #'applications/body
-  "b" #'buffers/body
-  "c" #'comments/body
-  "e" #'errors/body
-  "f" #'files/body
-  "g" #'git-and-files/body
-  "h" #'help/body
-  "k" #'kill/body
-  "l" #'imenu-list-smart-toggle
-  "m" #'major-mode-hydra
-  "n" #'narrowing/body
-  "o" #'org/body
-  "p" #'project/body
-  "s" #'symbols/body
-  "t" #'toggles/body
-  "w" #'windows/body
-  "y" #'yasnippet/body
-  "z" #'font-scale/body)
+(define-key universal-argument-map (kbd "SPC u") #'universal-argument-more)
 
-(define-key universal-argument-map (kbd (concat "SPC u")) #'universal-argument-more)
+(cb-hydra-define main-dispatcher (:color teal :hint nil)
+  (hydra-title-with-fileicon "emacs" "Overview")
 
-(spacemacs-keys-set-leader-keys
-  "!"   #'shell-command
-  ":"   #'eval-expression
-  "?"   #'counsel-descbinds
-  "/"   #'counsel-projectile-rg
-  "SPC" #'counsel-M-x
-  "TAB" #'alternate-buffer
-  "i"   #'counsel-imenu
+  "Menus"
+  (("," parens/body "parens...")
+   ("a" applications/body "applications...")
+   ("b" buffers/body "buffers...")
+   ("c" comments/body "comments...")
+   ("e" errors/body "errors...")
+   ("f" files/body "files...")
+   ("g" git-and-files/body "git and goto...")
+   ("h" help/body "help...")
+   ("k" kill/body "kill..."))
+  ""
+  (("n" narrowing/body "narrowing...")
+   ("o" org/body "org...")
+   ("p" project/body "project...")
+   ("s" symbols/body "symbols...")
+   ("t" toggles/body "toggles...")
+   ("w" windows/body "windows...")
+   ("y" yasnippet/body "snippets...")
+   ("z" font-scale/body "font scale..."))
 
-  "d" #'dired
+  "Actions"
+  (("SPC" counsel-M-x "run command (M-x)")
+   ("!" shell-command "run shell command")
+   ("/" counsel-projectile-rg "search project")
+   (":" eval-expression "evaluate lisp")
+   ("C" compile "compile")
+   ("d" dired "dired")
+   ("r" ivy-resume "ivy-resume")
+   ("u" universal-argument "universal argument"))
 
-  "r"   #'ivy-resume
-  "u"   #'universal-argument
-  "|"   #'cb/toggle-window-split
+  "Buffer/Window"
+  (("TAB" alternate-buffer "alternate buffer")
+   ("?" counsel-descbinds "describe key bindings")
+   ("|" cb/toggle-window-split "toggle window split")
+   ("i" counsel-imenu "imenu")
+   ("l" imenu-list-smart-toggle "imenu list")
+   ("q" delete-window "delete window")))
 
-  "C" #'compile
+(defun config-hydras-insinuate (keymap)
+  (bind-key "SPC" #'main-dispatcher/body keymap))
 
-  "q" #'delete-window)
-
-(use-package which-key
-  :straight t
-  :preface
-  (progn
-    (autoload 'which-key-mode "which-key")
-    (autoload 'which-key-add-key-based-replacements "which-key")
-
-    (defun cb-leader-keys-set-up-which-key-buffer (&rest _)
-      (when-let* ((buf (get-buffer which-key-buffer-name)))
-        (when (buffer-live-p buf)
-          (with-current-buffer buf
-            (setq-local mode-line-format nil)
-            (setq-local header-line-format nil)
-            (force-mode-line-update))))))
-
-  :config
-  (progn
-    (setq which-key-special-keys nil)
-    (setq which-key-use-C-h-commands t)
-    (setq which-key-echo-keystrokes 0.02)
-    (setq which-key-max-description-length 32)
-    (setq which-key-sort-order 'which-key-key-order-alpha)
-    (setq which-key-idle-delay 0.02)
-    (setq which-key-allow-evil-operators t)
-
-    (advice-add 'which-key--create-buffer-and-show
-                :after #'cb-leader-keys-set-up-which-key-buffer)
-
-    ;; Strip cb prefixes from commands shown in which-key.
-
-    (push `((nil . ,(rx bos "cb" (*? nonl) "/" (group (+? nonl))
-                        (? "/body") eos))
-            .
-            (nil . "\\1"))
-          which-key-replacement-alist)
-
-    ;; Strip hydra body suffixes
-
-    ;; Clean up comments entries
-
-    (push `(("SPC c" . ,(rx (? "cb-evil-nerd-commenter/") (? "quick-") "comment-or-uncomment-" (group (+? nonl)))) . (nil . "\\1\\2"))
-          which-key-replacement-alist)
-
-    ;; Clean up errors entries
-
-    (push `(("SPC e" . ,(rx (? "cb-") "flycheck-" (group (+? nonl)))) . (nil . "\\1"))
-          which-key-replacement-alist)
-
-    ;; Clean up goto and git
-
-    (push `(("SPC g" . ,(rx (? "cb-") "magit-" (group (+? nonl)))) . (nil . "\\1"))
-          which-key-replacement-alist)
-
-    (push `(("SPC g" . ,(rx "cb-" (group "goto-" (+? nonl)))) . (nil . "\\1"))
-          which-key-replacement-alist)
-
-    (push `(("SPC g" . "time-machine-transient-state/body") . (nil . "git-time-machine"))
-          which-key-replacement-alist)
-
-    ;; Clean up help
-
-    (push `(("SPC h d" . ,(rx bos (? "counsel-") "describe-" (group (+ nonl)))) . (nil . "\\1"))
-          which-key-replacement-alist)
-
-    (push `(("SPC h f" . ,(rx bos "find-" (group (+ nonl)))) . (nil . "\\1"))
-          which-key-replacement-alist)
-
-    ;; Clean up navigation
-
-    (push `(("SPC j" . ,(rx bos (? "evil-") "avy-" (group (+ nonl)))) . (nil . "\\1"))
-          which-key-replacement-alist)
-
-    ;; Clean up kill
-
-    (push `(("SPC k" . "kill-this-buffer") . (nil . "buffer"))
-          which-key-replacement-alist)
-
-    (push `(("SPC k" . "delete-window") . (nil . "window"))
-          which-key-replacement-alist)
-
-    (push `(("SPC k" . "counsel-yank-pop") . (nil . "kill-ring"))
-          which-key-replacement-alist)
-
-    ;; Clean up narrowing
-
-    (push `(("SPC n" . ,(rx bos (? "org-") "narrow-to-" (group (+ nonl)))) . (nil . "\\1"))
-          which-key-replacement-alist)
-
-    ;; Clean up org
-
-    (push `(("SPC o" . ,(rx bos (? "cb-") (or "org-" "ledger-") (group (+ nonl)))) . (nil . "\\1"))
-          which-key-replacement-alist)
-
-    ;; Clean up projectile
-
-    (push `((nil . ,(rx bos (? "cb-") (? "counsel-") "projectile-" (group (+? nonl)) (? "-project") eos)) . (nil . "\\1"))
-          which-key-replacement-alist)
-
-    (push `((nil . "projectile-dired") . (nil . "root (dired)"))
-          which-key-replacement-alist)
-
-    (push `((nil . "cb-neotree-find-project-root") . (nil . "root (neotree)"))
-          which-key-replacement-alist)
-
-    (push `(("SPC p" . ,(rx bos (*? nonl) "shell-command" (* nonl))) . (nil . "shell-command"))
-          which-key-replacement-alist)
-
-    (push `(("SPC p" . ,(rx bos (*? nonl) "async-shell-command" (* nonl))) . (nil . "shell-command (async)"))
-          which-key-replacement-alist)
-
-    ;; Clean up symbols
-
-    (push `(("SPC s" . "evil-iedit-state/iedit-mode") . (nil . "iedit"))
-          which-key-replacement-alist)
-
-    ;; Clean up toggles
-
-    (push `(("SPC t" . ,(rx bos "cb-" (? "faces/") (group (+ nonl)))) . (nil . "\\1"))
-          which-key-replacement-alist)
-
-    ;; Clean up windows
-
-    (push `(("SPC w" . ,(rx bos (? "cb-") (? "evil-") "window-" (group (+ nonl)))) . (nil . "\\1"))
-          which-key-replacement-alist)
-
-    (push `(("SPC w" . "balance-windows") . (nil . "balance"))
-          which-key-replacement-alist)
-
-    (push `(("SPC w" . "delete-window") . (nil . "delete"))
-          which-key-replacement-alist)
-
-    (push `(("SPC w" . "delete-other-windows") . (nil . "delete-others"))
-          which-key-replacement-alist)
-
-    ;; Clean up links
-
-    (push `(("SPC x" . ,(rx bos "link-hint-" (group (+ nonl)))) . (nil . "\\1"))
-          which-key-replacement-alist)
-
-    ;; Clean up yasnippet
-
-    (push `(("SPC y" . ,(rx bos (? "cb-") "yas" (any "-/") (group (+? nonl)) "-snippet" eos)) . (nil . "\\1"))
-          which-key-replacement-alist)
-
-    (push `(("SPC y" . "yas-visit-snippet-file") . (nil . "visit-file"))
-          which-key-replacement-alist)
-
-    ;; Clean up transient states
-
-    (push `((nil . ,(rx bos (group (+? nonl)) "-transient-state/body" eos)) . (nil . "\\1"))
-          which-key-replacement-alist)
-
-    ;; Fallback for any other hydras.
-
-    (push `((nil . ,(rx bos (? "config-") (group (+? nonl)) "/body" eos)) . (nil . "\\1"))
-          which-key-replacement-alist)
-
-    ;; Add basic prefixes
-
-    (which-key-add-key-based-replacements
-      "SPC ,"   "smartparens"
-      "SPC a"   "applications"
-      "SPC b"   "buffers"
-      "SPC c"   "comments"
-      "SPC e"   "errors"
-      "SPC f"   "files"
-      "SPC g"   "git/goto"
-      "SPC h"   "help"
-      "SPC h d" "describe"
-      "SPC h f" "find"
-      "SPC k"   "kill"
-      "SPC n"   "narrow"
-      "SPC o"   "org"
-      "SPC p"   "project"
-      "SPC w"   "window"
-      "SPC s"   "symbols"
-      "SPC t"   "toggles"
-      "SPC SPC" "M-x"
-      "SPC m"   '("major-mode-cmd" . "Major mode commands"))
-
-    (which-key-mode +1)))
+(with-eval-after-load 'evil
+  (with-no-warnings
+    (config-hydras-insinuate evil-normal-state-map)
+    (config-hydras-insinuate evil-motion-state-map)))
 
 (provide 'config-hydras)
 
