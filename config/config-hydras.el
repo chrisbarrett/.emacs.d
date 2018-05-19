@@ -95,7 +95,7 @@
   (("n" next-buffer "next" :exit nil)
    ("p" previous-buffer "back" :exit nil )
    ("l" ibuffer "list")
-   ("s" ivy-switch-buffer "switch"))
+   ("s" ivy-switch-buffer "switch..."))
 
   "Manage"
   (("b" bury-buffer "bury" :exit nil)
@@ -124,17 +124,17 @@
 (cb-hydra-define files (:color teal :hint nil)
   (hydra-title-with-faicon "hdd-o" "File Commands")
   "Find"
-  (("f" counsel-find-file "file")
-   ("o" find-file-other-window "other window")
-   ("p" find-file-at-point "at pt")
-   ("h" hexl-find-file "as hex")
-   ("r" counsel-recentf "recent"))
+  (("f" counsel-find-file "find file...")
+   ("o" find-file-other-window "find file... (other window)")
+   ("p" find-file-at-point "at pt...")
+   ("h" hexl-find-file "as hex...")
+   ("r" counsel-recentf "recent..."))
 
   "Save"
   (("s" save-buffer "buffer")
    ("S" save-some-buffers "many buffers")
-   ("W" write-file "write copy")
-   ("R" rename-file-and-buffer "rename")
+   ("W" write-file "write copy...")
+   ("R" rename-file-and-buffer "rename...")
    ("D" delete-current-buffer-and-file "delete"))
 
   "Copy"
@@ -143,7 +143,7 @@
    ("Y" copy-buffer-name "filename"))
 
   "Other"
-  (("e" sudo-edit "edit with sudo")
+  (("e" sudo-edit "edit with sudo...")
    ("t" neotree-toggle "file tree")
    ("v" reload-file "reload")))
 
@@ -161,8 +161,8 @@
    ("e" flycheck-explain-error-at-point "explain"))
 
   "Checkers"
-  (("h" flycheck-describe-checker "describe")
-   ("s" flycheck-select-checker "select")
+  (("h" flycheck-describe-checker "describe...")
+   ("s" flycheck-select-checker "select...")
    ("v" flycheck-verify-setup "verify")))
 
 (cb-hydra-define help (:color teal :hint nil :help nil)
@@ -170,21 +170,21 @@
 
   "Docs"
   (("i" info "info")
-   ("m" man "manpage"))
+   ("m" man "man..."))
 
   "Describe"
-  (("dc" describe-face "face")
-   ("df" counsel-describe-function "function")
-   ("dk" describe-key "key")
-   ("dm" describe-mode "mode")
-   ("dp" describe-text-properties "text-props")
-   ("dv" counsel-describe-variable "variable"))
+  (("dc" describe-face "face...")
+   ("df" counsel-describe-function "function...")
+   ("dk" describe-key "key...")
+   ("dm" describe-mode "mode...")
+   ("dp" describe-text-properties "text-props...")
+   ("dv" counsel-describe-variable "variable..."))
 
   "Find"
-  (("fc" find-face-definition "face")
-   ("ff" find-function "function")
-   ("fl" find-library "library")
-   ("fv" find-variable "variable")))
+  (("fc" find-face-definition "face...")
+   ("ff" find-function "function...")
+   ("fl" find-library "library...")
+   ("fv" find-variable "variable...")))
 
 (cb-hydra-define git-and-files (:color teal :hint nil)
   (hydra-title-with-aicon "git" "Git and Goto")
@@ -200,7 +200,7 @@
   (("s" magit-status "magit")
    ("d" cb-git-diff-buffer-file "blame")
    ("b" git-blame-transient-state/body "diff buffer")
-   ("f" cb-git-find-file "find file"))
+   ("f" cb-git-find-file "find file..."))
   ""
   (("h" git-hunks-transient-state/body "navigate hunks")
    ("l" magit-log-buffer-file "log buffer")
@@ -217,7 +217,7 @@
   (("b" #'kill-this-buffer "buffer")
    ("w" #'delete-window "window"))
   "Kill-Ring"
-  (("r" counsel-yank-pop "browse")))
+  (("r" counsel-yank-pop "browse...")))
 
 (cb-hydra-define narrowing (:color teal :hint nil)
   (hydra-title-with-mat-icon "photo_size_select_small" "Narrowing")
@@ -251,10 +251,10 @@
   (hydra-title-with-octicon "repo" "Project")
 
   "Actions"
-  (("!" projectile-run-shell-command-in-root "shell command")
-   ("c" projectile-compile-project "compile")
-   ("u" projectile-run-project "run")
-   ("t" cb-projectile-test-project "test"))
+  (("!" projectile-run-shell-command-in-root "shell command...")
+   ("c" projectile-compile-project "compile...")
+   ("u" projectile-run-project "run...")
+   ("t" cb-projectile-test-project "test..."))
 
   "Open"
   (("p" counsel-projectile-switch-project "project...")
@@ -268,8 +268,8 @@
    ("D" projectile-dired "project root (dired)"))
 
   "Search/Replace"
-  (("/" counsel-projectile-rg "search")
-   ("r" projectile-replace "replace")))
+  (("/" counsel-projectile-rg "search...")
+   ("r" projectile-replace "replace...")))
 
 (cb-hydra-define symbols (:color teal :hint nil)
   (hydra-title-with-mat-icon "highlight" "Symbols")
@@ -338,18 +338,18 @@
   (hydra-title-with-mat-icon "apps" "Applications")
 
   "Productivity"
-  (("c" quick-calc "quick calc")
+  (("c" quick-calc "quick calc...")
    ("C" calc "calc")
    ("m" mu4e "mu4e")
-   ("p" generate-password/body "gen password")
+   ("p" generate-password/body "gen password...")
    ("w" world-time-list "world clock"))
 
   "Editing"
-  (("i" select-input-method/body "input method"))
+  (("i" select-input-method/body "input method..."))
 
   "Emacs"
-  (("?" profiler/body "profiler")
-   ("s" straight/body "straight package manager"))
+  (("?" profiler/body "profiler...")
+   ("s" straight/body "straight package manager..."))
 
   "Shells"
   (("t" (ansi-term (getenv "SHELL")) "terminal")
@@ -358,7 +358,7 @@
 (cb-hydra-define profiler (:color teal :hint nil)
   (hydra-title-with-faicon "bar-chart" "Profiler")
   ""
-  (("p" profiler-start "start")
+  (("p" profiler-start "start...")
    ("s" profiler-stop "stop")
    ("r" profiler-report "report")))
 
@@ -384,11 +384,11 @@
    ("T" straight-thaw-versions "thaw"))
 
   "Package"
-  (("pc" straight-check-package "check")
-   ("pn" straight-normalize-package "normalise")
-   ("pp" straight-push-package "push")
-   ("pr" straight-rebuild-package "rebuild")
-   ("pu" straight-pull-package "pull")))
+  (("pc" straight-check-package "check...")
+   ("pn" straight-normalize-package "normalise...")
+   ("pp" straight-push-package "push...")
+   ("pr" straight-rebuild-package "rebuild...")
+   ("pu" straight-pull-package "pull...")))
 
 
 
