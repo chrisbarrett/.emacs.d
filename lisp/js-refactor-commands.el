@@ -12,9 +12,12 @@
 (require 'dash-functional)
 (require 's)
 (require 'seq)
-(require 'smartparens)
 (require 'subr-x)
-(require 'web-mode)
+
+(autoload 'sp-get-enclosing-sexp "smartparens")
+(autoload 'sp-backward-up-sexp "smartparens")
+
+
 
 (defun js-refactor-commands--binding-keyword-at-pt ()
   (seq-contains '(const var let) (symbol-at-point)))
