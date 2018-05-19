@@ -140,20 +140,23 @@
   :init
   (defvar all-the-icons-scale-factor 1.0)
   :config
-  (dolist (spec '((nix-mode all-the-icons-faicon "linux" :face all-the-icons-purple)
-                  (makefile-mode all-the-icons-fileicon "gnu" :face all-the-icons-dorange)
-                  (makefile-bsdmake-mode all-the-icons-fileicon "gnu" :face all-the-icons-dorange)
-                  (gfm-mode all-the-icons-faicon "github-alt" :v-adjust 0.0 :face all-the-icons-lblue)
-                  (web-js-mode all-the-icons-icon-for-mode web-mode :v-adjust 0.0 :face all-the-icons-lblue)
-                  (web-ts-mode all-the-icons-icon-for-mode web-mode :v-adjust 0.0 :face all-the-icons-lblue)
-                  (web-css-mode all-the-icons-icon-for-mode web-mode :v-adjust 0.0 :face all-the-icons-lblue)
-                  (web-html-mode all-the-icons-icon-for-mode web-mode :v-adjust 0.0 :face all-the-icons-lblue)
-                  (web-json-mode all-the-icons-icon-for-mode web-mode :v-adjust 0.0 :face all-the-icons-lblue)
-                  (mu4e-main-mode all-the-icons-octicon "inbox" :face all-the-icons-dsilver)
-                  (mu4e-headers-mode all-the-icons-octicon "inbox" :face all-the-icons-dsilver)
-                  (mu4e-view-mode all-the-icons-octicon "comment-discussion" :face all-the-icons-dsilver)
-                  (mu4e-compose-mode all-the-icons-octicon "comment-discussion" :face all-the-icons-orange)))
-    (add-to-list 'all-the-icons-mode-icon-alist spec)))
+  (progn
+    ;; HACK: Declare variable which is unsafely referenced inside lib.
+    (defvar web-mode-content-type nil)
+    (dolist (spec '((nix-mode all-the-icons-faicon "linux" :face all-the-icons-purple)
+                    (makefile-mode all-the-icons-fileicon "gnu" :face all-the-icons-dorange)
+                    (makefile-bsdmake-mode all-the-icons-fileicon "gnu" :face all-the-icons-dorange)
+                    (gfm-mode all-the-icons-faicon "github-alt" :v-adjust 0.0 :face all-the-icons-lblue)
+                    (web-js-mode all-the-icons-icon-for-mode web-mode :v-adjust 0.0 :face all-the-icons-lblue)
+                    (web-ts-mode all-the-icons-icon-for-mode web-mode :v-adjust 0.0 :face all-the-icons-lblue)
+                    (web-css-mode all-the-icons-icon-for-mode web-mode :v-adjust 0.0 :face all-the-icons-lblue)
+                    (web-html-mode all-the-icons-icon-for-mode web-mode :v-adjust 0.0 :face all-the-icons-lblue)
+                    (web-json-mode all-the-icons-icon-for-mode web-mode :v-adjust 0.0 :face all-the-icons-lblue)
+                    (mu4e-main-mode all-the-icons-octicon "inbox" :face all-the-icons-dsilver)
+                    (mu4e-headers-mode all-the-icons-octicon "inbox" :face all-the-icons-dsilver)
+                    (mu4e-view-mode all-the-icons-octicon "comment-discussion" :face all-the-icons-dsilver)
+                    (mu4e-compose-mode all-the-icons-octicon "comment-discussion" :face all-the-icons-orange)))
+      (add-to-list 'all-the-icons-mode-icon-alist spec))))
 
 (use-package hydra
   :straight t
