@@ -13,7 +13,6 @@
 
 (require 'cb-major-mode-hydra)
 (require 'paths)
-(require 'spacemacs-keys)
 
 (autoload 'evil-define-key "evil")
 
@@ -51,7 +50,6 @@
 (use-package dired
   :defer t
   :commands (dired dired-hide-details-mode)
-  :bind (:map spacemacs-keys-default-map ("d" . dired))
   :preface
   (progn
     (autoload 'diredp-next-line "dired+")

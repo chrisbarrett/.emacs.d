@@ -219,7 +219,7 @@
 
 (use-package evil-iedit-state
   :straight t
-  :bind (:map spacemacs-keys-default-map ("se" . evil-iedit-state/iedit-mode))
+  :commands (evil-iedit-state/iedit-mode)
   :config
   (progn
     (setq iedit-current-symbol-default t)
@@ -302,20 +302,7 @@
   :bind (:map
          evil-visual-state-map
          ("<" . evil-funcs/shift-left)
-         (">" . evil-funcs/shift-right)
-         :map
-         evil-normal-state-map
-         ("gy" . evil-funcs/copy-and-comment-lines)
-         :map
-         spacemacs-keys-default-map
-         ("cl" . evil-funcs/comment-or-uncomment-lines)
-         ("cL" . evil-funcs/comment-or-uncomment-lines-inverse)
-         ("cp" . evil-funcs/comment-or-uncomment-paragraphs)
-         ("cP" . evil-funcs/comment-or-uncomment-paragraphs-inverse)
-         ("ct" . evil-funcs/quick-comment-or-uncomment-to-the-line)
-         ("cT" . evil-funcs/quick-comment-or-uncomment-to-the-line-inverse)
-         ("cy" . evil-funcs/copy-and-comment-lines)
-         ("cY" . evil-funcs/copy-and-comment-lines-inverse)))
+         (">" . evil-funcs/shift-right)))
 
 (provide 'config-evil)
 

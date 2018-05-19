@@ -6,7 +6,6 @@
   (require 'use-package))
 
 (require 'cb-major-mode-hydra)
-(require 'spacemacs-keys)
 
 (autoload 'evil-define-key "evil-core")
 
@@ -154,9 +153,7 @@
 
 (use-package hide-comnt
   :straight t
-  :bind (:map
-         spacemacs-keys-default-map
-         ("tc" . hide/show-comments-toggle)))
+  :commands (hide/show-comments-toggle))
 
 
 ;; highlight-thing highlights the symbol at point.
@@ -219,11 +216,7 @@
   :bind (:map
          evil-motion-state-map
          ("*" . evil-ahs/enter-ahs-forward)
-         ("#" . evil-ahs/enter-ahs-backward)
-         :map
-         spacemacs-keys-default-map
-         ("sh" . evil-ahs/highlight-symbol)
-         ("sH" . evil-ahs/goto-last-searched-symbol)))
+         ("#" . evil-ahs/enter-ahs-backward)))
 
 (provide 'config-editing)
 

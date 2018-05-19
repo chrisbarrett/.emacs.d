@@ -12,7 +12,6 @@
   (require 'use-package))
 
 (require 'dash)
-(require 'spacemacs-keys)
 
 
 
@@ -35,11 +34,6 @@
   "Load the dark theme."
   (interactive)
   (load-theme 'cb-dark t))
-
-(spacemacs-keys-set-leader-keys
-  "t t" #'config-themes/toggle-dark-mode
-  "t d" #'config-themes/dark-theme
-  "t l" #'config-themes/light-theme)
 
 
 

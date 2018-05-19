@@ -12,12 +12,14 @@
   (require 'use-package))
 
 (require 'dash)
-(require 'evil)
-(require 'spacemacs-keys)
+(require 's)
+(require 'thingatpt)
 
 (use-package smartparens
   :straight t
-
+  :hook ((prog-mode . smartparens-strict-mode)
+         (text-mode . smartparens-strict-mode)
+         (text-mode . smartparens-strict-mode))
   :functions (sp-local-pair
               sp-pair
               sp-get-pair
@@ -27,15 +29,11 @@
   :commands (smartparens-mode
              sp-up-sexp
              sp-kill-hybrid-sexp
-             smartparens-strict-mode
              smartparens-global-strict-mode
              show-smartparens-global-mode)
 
   :preface
   (progn
-    (autoload 'thing-at-point-looking-at "thingatpt")
-    (autoload 's-matches? "s")
-
     (defun cb-smartparens--this-command-is-eval-expression (&rest _)
       (equal this-command 'eval-expression))
 
@@ -191,44 +189,7 @@
             (just-one-space)))))))
 
   :init
-  (progn
-    (add-hook 'prog-mode-hook #'smartparens-strict-mode)
-    (add-hook 'text-mode-hook #'smartparens-strict-mode)
-    (add-hook 'text-mode-hook #'smartparens-strict-mode)
-    (add-hook 'minibuffer-setup-hook #'cb-smartparens--sp-for-eval-expression)
-
-    (pcase-dolist (`(,k . ,f) '((",A" . sp-add-to-previous-sexp)
-                                (",a" . sp-add-to-next-sexp)
-                                (",B" . sp-backward-barf-sexp)
-                                (",b" . sp-forward-barf-sexp)
-                                (",M" . sp-backward-slurp-sexp)
-                                (",m" . sp-forward-slurp-sexp)
-                                (",c" . sp-convolute-sexp)
-                                (",D" . sp-backward-kill-sexp)
-                                (",d" . sp-kill-sexp)
-                                (",e" . sp-emit-sexp)
-                                (",l" . sp-end-of-sexp)
-                                (",h" . sp-beginning-of-sexp)
-                                (",j" . sp-join-sexp)
-                                (",K" . sp-splice-sexp-killing-backward)
-                                (",k" . sp-splice-sexp-killing-forward)
-                                (",n" . sp-next-sexp)
-                                (",p" . sp-previous-sexp)
-                                (",r" . sp-raise-sexp)
-                                (",s" . sp-splice-sexp-killing-around)
-                                (",t" . sp-transpose-sexp)
-                                (",U" . sp-backward-unwrap-sexp)
-                                (",u" . sp-unwrap-sexp)
-                                (",w" . sp-rewrap-sexp)
-                                (",x" . sp-split-sexp)
-                                (",Y" . sp-backward-copy-sexp)
-                                (",y" . sp-copy-sexp)
-                                (",," . sp-previous-sexp)
-                                (",." . sp-next-sexp)
-                                (",<" . sp-backward-down-sexp)
-                                (",>" . sp-down-sexp)))
-      (autoload f "smartparens" nil t)
-      (spacemacs-keys-set-leader-keys k f)))
+  (add-hook 'minibuffer-setup-hook #'cb-smartparens--sp-for-eval-expression)
 
   :config
   (progn
@@ -247,8 +208,8 @@
     (bind-key [remap c-electric-backspace] 'sp-backward-delete-char smartparens-strict-mode-map)
 
     (with-eval-after-load 'evil
-      (define-key evil-insert-state-map (kbd ")") #'sp-up-sexp)
-      (define-key evil-normal-state-map (kbd "D") #'sp-kill-hybrid-sexp))
+      (evil-global-set-key 'insert (kbd ")") #'sp-up-sexp)
+      (evil-global-set-key 'normal (kbd "D") #'sp-kill-hybrid-sexp))
 
     ;; Configure global pairs.
 
@@ -357,20 +318,6 @@
 
     (smartparens-global-strict-mode +1)
     (show-smartparens-global-mode +1)))
-
-(use-package which-key
-  :config
-  (progn
-    (push `((nil . "sp-splice-sexp-killing-around") . (nil . "splice-killing-around"))
-          which-key-replacement-alist)
-    (push `((nil . "sp-splice-sexp-killing-forward") . (nil . "splice-killing-forward"))
-          which-key-replacement-alist)
-    (push `((nil . "sp-splice-sexp-killing-backward") . (nil . "splice-killing-backward"))
-          which-key-replacement-alist)
-
-    (push `((nil . ,(rx bos "sp-" (group (+? nonl))
-                        "-sexp" eos)) . (nil . "\\1"))
-          which-key-replacement-alist)))
 
 (provide 'config-smartparens)
 

@@ -17,7 +17,6 @@
 
 (require 'dash)
 (require 'subr-x)
-(require 'spacemacs-keys)
 
 (use-package flycheck
   :straight t

@@ -11,7 +11,6 @@
 (eval-when-compile
   (require 'use-package))
 
-(require 'spacemacs-keys)
 (require 'subr-x)
 (require 's)
 (require 'warnings)
@@ -118,19 +117,10 @@ Otherwise delete backwards."
                (call-interactively #'backward-delete-char))))))
 
   :init
-  (progn
-    (spacemacs-keys-declare-prefix "y" "yasnippet")
-    (spacemacs-keys-set-leader-keys
-      "yf" #'yas-visit-snippet-file
-      "ye" #'yas-expand
-      "yn" #'yas-new-snippet
-      "yy" #'yas-insert-snippet)
-
-    ;; Fix malformed face decl
-
-    (defface yas-field-highlight-face
-      '((t (:inherit region)))
-      "The face used to highlight the currently active field of a snippet"))
+  ;; Fix malformed face decl
+  (defface yas-field-highlight-face
+    '((t (:inherit region)))
+    "The face used to highlight the currently active field of a snippet")
 
   :config
   (progn

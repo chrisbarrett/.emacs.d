@@ -6,7 +6,6 @@
   (require 'company nil t)
   (require 'use-package))
 
-(require 'spacemacs-keys)
 (autoload 'f-ext? "f")
 (autoload 'evil-set-initial-state "evil")
 

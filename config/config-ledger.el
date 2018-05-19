@@ -13,7 +13,6 @@
 
 (require 'dash)
 (require 's)
-(require 'spacemacs-keys)
 
 (autoload 'evil-define-key "evil")
 (autoload 'evil-insert-state "evil-states")
@@ -59,9 +58,6 @@
    ("C-c C-c" . ledger-report)
    ("M-RET" . ledger-toggle-current-transaction)
    ("C-c C-." . cb-ledger-insert-timestamp))
-
-  :init
-  (spacemacs-keys-set-leader-keys "o$" #'cb-ledger-goto-ledger-file)
 
   :config
   (progn

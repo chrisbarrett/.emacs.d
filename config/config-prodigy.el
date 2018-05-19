@@ -6,7 +6,6 @@
   (require 'use-package))
 
 (require 'evilified-state)
-(require 'spacemacs-keys)
 
 (use-package which-key
   :config

@@ -67,6 +67,16 @@
             " " title
             "\n")))
 
+(cb-hydra-define comments (:color teal :hint nil)
+  (hydra-title-with-octicon "comment" "Comments")
+  "Toggle Comments"
+  (("l" evilnc-comment-or-uncomment-lines "lines")
+   ("r" comment-or-uncomment-region "region")
+   ("p" evilnc-comment-or-uncomment-paragraphs "paragraphs")
+   ("s" (progn (sp-mark-sexp) (call-interactively #'comment-region)) "sexp"))
+  "With Copy"
+  (("y" evil-funcs/copy-and-comment-lines "copy")))
+
 (cb-hydra-define font-scale (:color amaranth :hint nil)
   (hydra-title-with-faicon "search-plus" "Font Scale")
   ""
@@ -186,8 +196,9 @@
   (("s" magit-status "magit")
    ("d" cb-git-diff-buffer-file "blame")
    ("b" git-blame-transient-state/body "diff buffer")
-   ("f" cb-git-find-file "find file")
-   ("h" git-hunks-transient-state/body "navigate hunks")
+   ("f" cb-git-find-file "find file"))
+  ""
+  (("h" git-hunks-transient-state/body "navigate hunks")
    ("l" magit-log-buffer-file "log buffer")
    ("t" git-time-machine-transient-state/body "time machine"))
 
@@ -195,6 +206,23 @@
   (("g" dumb-jump-go "jump")
    ("G" dumb-jump-go-other-window "jump other window")
    ("SPC" pop-tag-mark "jump back")))
+
+(cb-hydra-define kill (:color teal :hint nil)
+  (hydra-title-with-mat-icon "close" "Kill")
+  "Kill"
+  (("b" #'kill-this-buffer "buffer")
+   ("w" #'delete-window "window"))
+  "Kill-Ring"
+  (("r" counsel-yank-pop "browse")))
+
+(cb-hydra-define narrowing (:color teal :hint nil)
+  (hydra-title-with-mat-icon "photo_size_select_small" "Narrowing")
+  "Narrow to..."
+  (("f" #'narrow-to-defun "function")
+   ("r" #'narrow-to-region "region")
+   ("s" #'org-narrow-to-subtree "org subtree"))
+  "Actions"
+  (("w" #'widen "widen")))
 
 (cb-hydra-define org (:color teal :hint nil)
   (hydra-title-with-mode-icon 'org-mode "Org")
@@ -204,11 +232,13 @@
    ("s" org-search-view "search..."))
 
   "Goto"
-  (("a" cb-org-goto-agenda "agenda")
+  (("$" cb-ledger-goto-ledger-file "ledger")
+   ("a" cb-org-goto-agenda "agenda")
    ("d" cb-org-goto-diary "diary")
    ("j" cb-org-goto-journal "journal")
-   ("n" cb-org-goto-notes "notes")
-   ("t" cb-org-goto-todo-list "todo list")
+   ("n" cb-org-goto-notes "notes"))
+  ""
+  (("t" cb-org-goto-todo-list "todo list")
    ("w" cb-org-goto-work "work")
    ("v" cb-org-goto-tags-list "tags")
    ("o" cb-org-goto-headline "headline...")))
@@ -235,6 +265,67 @@
   "Search/Replace"
   (("/" counsel-projectile-rg "search")
    ("r" projectile-replace "replace")))
+
+(cb-hydra-define symbols (:color teal :hint nil)
+  (hydra-title-with-mat-icon "highlight" "Symbols")
+  "Edit"
+  (("e" evil-iedit-state/iedit-mode "iedit"))
+  "Navigate"
+  (("h" evil-ahs/highlight-symbol "highlight")
+   ("H" evil-ahs/goto-last-searched-symbol "goto last searched")))
+
+(cb-hydra-define smartparens (:color teal :hint nil)
+  (hydra-title-with-mat-icon "code" "Smartparens")
+
+  "Navigation"
+  (("h" sp-beginning-of-sexp "beginning")
+   ("l" sp-end-of-sexp "end")
+   ("n" sp-next-sexp "next")
+   ("p" sp-previous-sexp "previous")
+   ("<" sp-backward-down-sexp "down (start)")
+   (">" sp-down-sexp "down (end)"))
+  "Killing"
+  (("c" sp-convolute-sexp "convolute")
+   ("D" sp-backward-kill-sexp "kill back")
+   ("d" sp-kill-sexp "kill forward")
+   ("K" sp-splice-sexp-killing-backward "splice back")
+   ("k" sp-splice-sexp-killing-forward "splice forward")
+   ("s" sp-splice-sexp-killing-around "splice around")
+   ("r" sp-raise-sexp "raise"))
+  "Wrapping"
+  (("A" sp-add-to-previous-sexp "add to previous")
+   ("a" sp-add-to-next-sexp "add to next")
+   ("B" sp-backward-barf-sexp "barf back")
+   ("b" sp-forward-barf-sexp "barf forward")
+   ("M" sp-backward-slurp-sexp "slurp back")
+   ("m" sp-forward-slurp-sexp "slurp forward")
+   ("e" sp-emit-sexp "emit")
+   ("j" sp-join-sexp "join"))
+  ""
+  (("t" sp-transpose-sexp "transpose")
+   ("U" sp-backward-unwrap-sexp "unwrap back")
+   ("u" sp-unwrap-sexp "unwrap forward")
+   ("w" sp-rewrap-sexp "rewrap")
+   ("x" sp-split-sexp "split")
+   ("Y" sp-backward-copy-sexp "copy back")
+   ("y" sp-copy-sexp "copy")))
+
+(cb-hydra-define toggles (:color teal :hint nil)
+  (hydra-title-with-faicon "toggle-on" "Toggles")
+  "Display"
+  (("m" cb-header-line-global-mode "header line")
+   ("t" config-themes/toggle-dark-mode "theme (light/dark)"))
+  "Editing"
+  (("c" hide/show-comments-toggle "comments")))
+
+(cb-hydra-define yasnippet (:color teal :hint nil)
+  (hydra-title-with-mat-icon "content_copy" "Snippets")
+  ""
+  (("n" #'yas-new-snippet "new")
+   ("e" #'yas-expand "expand"))
+  ""
+  (("f" #'yas-visit-snippet-file "visit file...")
+   ("y" #'yas-insert-snippet "insert...")))
 
 ;; Application hydras
 
@@ -298,46 +389,46 @@
 ;; Use which-key as a fallback for stuff I haven't ported to hydras yet.
 
 (spacemacs-keys-set-leader-keys
+  "," #'smartparens/body
   "a" #'applications/body
   "b" #'buffers/body
+  "c" #'comments/body
   "e" #'errors/body
   "f" #'files/body
   "g" #'git-and-files/body
   "h" #'help/body
+  "k" #'kill/body
   "l" #'imenu-list-smart-toggle
   "m" #'major-mode-hydra
+  "n" #'narrowing/body
   "o" #'org/body
   "p" #'project/body
+  "s" #'symbols/body
+  "t" #'toggles/body
   "w" #'windows/body
+  "y" #'yasnippet/body
   "z" #'font-scale/body)
 
 (define-key universal-argument-map (kbd (concat "SPC u")) #'universal-argument-more)
 
 (spacemacs-keys-set-leader-keys
-  "u"   #'universal-argument
-  "SPC" #'execute-extended-command
-  "|"   #'cb/toggle-window-split
-  ":"   #'eval-expression
-  "TAB" #'alternate-buffer
-
   "!"   #'shell-command
+  ":"   #'eval-expression
+  "?"   #'counsel-descbinds
+  "/"   #'counsel-projectile-rg
+  "SPC" #'counsel-M-x
+  "TAB" #'alternate-buffer
+  "i"   #'counsel-imenu
+
+  "d" #'dired
+
+  "r"   #'ivy-resume
+  "u"   #'universal-argument
+  "|"   #'cb/toggle-window-split
 
   "C" #'compile
 
-  "c r" #'comment-or-uncomment-region
-
-  "k b" #'kill-this-buffer
-  "k w" #'delete-window
-
-  "n d" #'narrow-to-defun
-  "n f" #'narrow-to-defun
-  "n r" #'narrow-to-region
-  "n s" #'org-narrow-to-subtree
-  "n w" #'widen
-
-  "q" #'delete-window
-
-  "z"   #'font-scale/body)
+  "q" #'delete-window)
 
 (use-package which-key
   :straight t

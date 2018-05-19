@@ -13,7 +13,6 @@
 
 (require 'noflet)
 (require 'paths)
-(require 'spacemacs-keys)
 (require 'subr-x)
 
 (use-package ivy
@@ -30,9 +29,6 @@
    ("C-z" . ivy-dispatching-done)
    ("C-l" . ivy-partial-or-done)
    ("C-<return>" . ivy-immediate-done)
-
-   :map spacemacs-keys-default-map
-   ("r" . ivy-resume)
 
    ;; Browse read-expression histroy with ivy
    :map read-expression-map
@@ -116,12 +112,6 @@
          :map counsel-find-file-map
          ("C-M-j" . ivy-immediate-done)
 
-         :map
-         spacemacs-keys-default-map
-         ("SPC" . counsel-M-x)
-         ("?"   . counsel-descbinds)
-         ("k r" . counsel-yank-pop)
-         ("i"   . counsel-imenu)
          :map
          counsel-find-file-map
          ("C-h" . counsel-up-directory))

@@ -11,8 +11,6 @@
 (eval-when-compile
   (require 'use-package))
 
-(require 'spacemacs-keys)
-
 (use-package cb-header-line-format
   :defines cb-header-line-format
   :config
@@ -26,11 +24,7 @@
 (use-package cb-header-line-mode
   :commands (cb-header-line-global-mode cb-header-line-mode cb-header-line-mode-on)
   :init
-  (progn
-    (spacemacs-keys-set-leader-keys
-      "tM" #'cb-header-line-mode
-      "tm" #'cb-header-line-global-mode)
-    (add-hook 'after-init-hook #'cb-header-line-global-mode))
+  (add-hook 'after-init-hook #'cb-header-line-global-mode)
   :config
   (setq cb-header-line-function (lambda () cb-header-line-format)))
 
