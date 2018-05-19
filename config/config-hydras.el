@@ -12,6 +12,10 @@
 (require 'pretty-hydra)
 (require 'subr-x)
 
+(eval-and-compile
+  (require 'paths)
+  (defvar config-hydras--pusheen (create-image (f-join paths-assets-directory "pusheen.png"))))
+
 (autoload 'cb/toggle-window-split "cb-toggle-window-split")
 (autoload 'counsel-find-file "config-ivy")
 (autoload 'counsel-recentf "config-ivy")
@@ -47,7 +51,7 @@
             "\n"))
 
   (defun hydra-title-with-fileicon (icon title)
-    (concat (all-the-icons-fileicon icon)
+    (concat (all-the-icons-fileicon icon :face 'all-the-icons-orange :v-adjust -0.15)
             " " title
             "\n"))
 
@@ -392,10 +396,10 @@
 
 
 
-(define-key universal-argument-map (kbd "SPC u") #'universal-argument-more)
-
 (cb-hydra-define main-dispatcher (:color teal :hint nil)
-  (hydra-title-with-fileicon "emacs" "Overview")
+  (concat
+   (hydra-title-with-fileicon "emacs" "Overview")
+   (format "%35s\n" (propertize " " 'display config-hydras--pusheen)))
 
   "Menus"
   (("," parens/body "parens...")

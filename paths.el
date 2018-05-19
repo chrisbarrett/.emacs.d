@@ -13,6 +13,9 @@
 
 
 
+(defconst paths-assets-directory
+  (concat user-emacs-directory "assets"))
+
 (defconst paths-cache-directory
   (concat user-emacs-directory "var"))
 
