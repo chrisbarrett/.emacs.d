@@ -8,11 +8,11 @@
 (require 'el-patch)
 (require 'straight)
 
-(el-patch-feature evil)
 (straight-use-package 'link-hint)
-
 (autoload 'link-hint-open-link-at-point "link-hint")
 (autoload 'link-hint--get-link-at-point "link-hint")
+
+(el-patch-feature evil)
 
 
 
