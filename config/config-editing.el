@@ -218,6 +218,19 @@
          ("*" . evil-ahs/enter-ahs-forward)
          ("#" . evil-ahs/enter-ahs-backward)))
 
+;; dump-jump provides a good fallback for navigating to definitions in the
+;; absence of tags tables or semantic analysis.
+
+(use-package dumb-jump
+  :straight t
+  :commands (dumb-jump-go dumb-jump-go-other-window)
+  :preface
+  (autoload 'pop-tag-mark "etags")
+  :init
+  (evil-define-key 'normal prog-mode-map (kbd "M-.") #'dumb-jump-go)
+  :config
+  (setq dumb-jump-selector 'ivy))
+
 (provide 'config-editing)
 
 ;;; config-editing.el ends here

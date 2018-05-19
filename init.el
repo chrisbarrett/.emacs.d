@@ -100,7 +100,6 @@
 (use-package config-hydras)
 (use-package config-evil)
 (use-package config-ivy)
-(use-package config-navigation)
 (use-package config-search)
 (use-package config-projectile)
 (use-package config-langs)
