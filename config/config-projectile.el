@@ -103,11 +103,8 @@
 
   :config
   (progn
-    ;; Ensure projectile's known projects list doesn't contain duplicates.
-    (advice-add #'projectile-unserialize :filter-return #'projectile-funcs-cleanup-projects)
-
-    (projectile-load-known-projects)
-    (projectile-funcs-refresh-projects)
+    (advice-add 'projectile-load-known-projects :override #'projectile-funcs-refresh-projects)
+    (advice-add 'projectile-save-known-projects :override #'ignore)
 
     (setq projectile-completion-system 'ivy)
     (setq projectile-switch-project-action #'projectile-dired)
