@@ -15,6 +15,9 @@
 (require 'paths)
 (require 'subr-x)
 
+;; ivy is a package that provides incremental completion, similar to helm or
+;; ido, but actively maintained.
+
 (use-package ivy
   :straight t
   :commands (ivy-occur ivy-help)
@@ -90,17 +93,25 @@
 
     (ivy-mode)))
 
+;; flx is used as the fuzzy-matching indexer backend for ivy.
+
 (use-package flx
   :straight t
   :after ivy)
+
+;; ivy-hydra extends ivy with an options hydra, under M-o.
 
 (use-package ivy-hydra
   :after ivy
   :straight t)
 
+;; swiper is a buffer search interface using ivy.
+
 (use-package swiper
   :straight t
   :bind (:map evil-normal-state-map ("/" . swiper)))
+
+;; counsel provides replacements for core Emacs commands using ivy.
 
 (use-package counsel
   :straight t
@@ -136,14 +147,16 @@
 
     (counsel-mode +1)))
 
-;; Remembers your choices in completion menus.
+;; historian remembers your choices in completion menus.
+
 (use-package historian
   :straight t
   :demand t
   :config
   (historian-mode +1))
 
-;; Uses Historian to sort Ivy candidates by frecency+flx.
+;; ivy-historian uses Historian to sort Ivy candidates by frecency+flx.
+
 (use-package ivy-historian
   :straight t
   :after ivy
