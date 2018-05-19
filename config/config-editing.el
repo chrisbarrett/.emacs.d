@@ -7,8 +7,6 @@
 
 (require 'cb-major-mode-hydra)
 
-(autoload 'evil-define-key "evil-core")
-
 
 
 (cb-major-mode-hydra-define hexl-mode
@@ -227,7 +225,8 @@
   :preface
   (autoload 'pop-tag-mark "etags")
   :init
-  (evil-define-key 'normal prog-mode-map (kbd "M-.") #'dumb-jump-go)
+  (with-eval-after-load 'evil
+    (evil-define-key 'normal prog-mode-map (kbd "M-.") #'dumb-jump-go))
   :config
   (setq dumb-jump-selector 'ivy))
 
