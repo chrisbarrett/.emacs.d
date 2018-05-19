@@ -47,6 +47,10 @@
             " " title
             "\n"))
 
+  (defun hydra-title-with-mode-icon (mode title)
+    (concat (all-the-icons-icon-for-mode mode)
+            " " title
+            "\n"))
 
   (defun hydra-title-with-faicon (icon title)
     (concat (all-the-icons-faicon icon :face 'all-the-icons-orange :v-adjust 0.05)
@@ -192,6 +196,23 @@
    ("G" dumb-jump-go-other-window "jump other window")
    ("SPC" pop-tag-mark "jump back")))
 
+(cb-hydra-define org (:color teal :hint nil)
+  (hydra-title-with-mode-icon 'org-mode "Org")
+  "Actions"
+  (("k" org-capture "capture...")
+   ("l" org-store-link "store link...")
+   ("s" org-search-view "search..."))
+
+  "Goto"
+  (("a" cb-org-goto-agenda "agenda")
+   ("d" cb-org-goto-diary "diary")
+   ("j" cb-org-goto-journal "journal")
+   ("n" cb-org-goto-notes "notes")
+   ("t" cb-org-goto-todo-list "todo list")
+   ("w" cb-org-goto-work "work")
+   ("v" cb-org-goto-tags-list "tags")
+   ("o" cb-org-goto-headline "headline...")))
+
 ;; Application hydras
 
 (cb-hydra-define applications (:color teal :hint nil)
@@ -262,6 +283,7 @@
   "h" #'help/body
   "l" #'imenu-list-smart-toggle
   "m" #'major-mode-hydra
+  "o" #'org/body
   "w" #'windows/body
   "z" #'font-scale/body)
 

@@ -113,12 +113,7 @@
     (add-hook 'org-after-todo-statistics-hook #'cb-org--children-done-parent-done)
 
     (dolist (dir (ignore-errors (f-directories "~/org/lisp/")))
-      (add-to-list 'load-path (f-slash dir)))
-
-    (spacemacs-keys-set-leader-keys
-      "ok" #'org-capture
-      "ol" #'org-store-link
-      "os" #'org-search-view))
+      (add-to-list 'load-path (f-slash dir))))
 
   :config
   (progn
@@ -837,17 +832,7 @@ table tr.tr-even td {
              cb-org-goto-todo-list
              cb-org-goto-work
              cb-org-goto-tags-list
-             cb-org-goto-headline)
-  :init
-  (spacemacs-keys-set-leader-keys
-    "oa" #'cb-org-goto-agenda
-    "od" #'cb-org-goto-diary
-    "oj" #'cb-org-goto-journal
-    "on" #'cb-org-goto-notes
-    "oo" #'cb-org-goto-headline
-    "ot" #'cb-org-goto-todo-list
-    "ow" #'cb-org-goto-work
-    "ov" #'cb-org-goto-tags-list))
+             cb-org-goto-headline))
 
 (use-package cb-org-ctrl-c-ret
   :after org
