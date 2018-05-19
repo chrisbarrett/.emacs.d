@@ -22,11 +22,27 @@
   (setq-default mode-line-format " "))
 
 (use-package cb-header-line-mode
-  :commands (cb-header-line-global-mode cb-header-line-mode cb-header-line-mode-on)
-  :init
-  (add-hook 'after-init-hook #'cb-header-line-global-mode)
+  :commands (cb-header-line-global-mode
+             cb-header-line-mode
+             cb-header-line-mode-on)
+  :demand t
+
+  :preface
+  ;; HACK: Suppress the header line in the scratch buffer.
+  (defun config-modeline--hacky-hide-scratch-buffer-header-line ()
+    (run-with-timer 0.001
+                    nil
+                    (lambda ()
+                      (with-current-buffer (get-buffer-create "*scratch*")
+                        (cb-header-line-mode -1)))))
+
   :config
-  (setq cb-header-line-function (lambda () cb-header-line-format)))
+  (progn
+    (cb-header-line-global-mode +1)
+    (setq cb-header-line-function (lambda () cb-header-line-format))
+    (add-hook 'after-init-hook #'config-modeline--hacky-hide-scratch-buffer-header-line)))
+
+
 
 (provide 'config-modeline)
 
