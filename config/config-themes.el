@@ -65,6 +65,7 @@
 (use-package paren-face
   :straight t
   :demand t
+  :commands (global-paren-face-mode)
   :config
   (progn
     (add-to-list 'paren-face-modes 'scala-mode)
@@ -169,7 +170,8 @@
   :init (require 'imenu-list-hacks)
   :config
   (with-eval-after-load 'evil
-    (evil-define-key 'normal imenu-list-major-mode-map (kbd "q") #'quit-window)))
+    (with-no-warnings
+      (evil-define-key 'normal imenu-list-major-mode-map (kbd "q") #'quit-window))))
 
 (provide 'config-themes)
 
