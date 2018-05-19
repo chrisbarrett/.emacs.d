@@ -253,7 +253,8 @@
    ("t" cb-projectile-test-project "test"))
 
   "Open"
-  (("f" counsel-projectile-find-file "file...")
+  (("p" counsel-projectile-switch-project "project...")
+   ("f" counsel-projectile-find-file "file...")
    ("d" counsel-projectile-find-dir "directory...")
    ("b" counsel-projectile-switch-to-buffer "buffer..."))
 
