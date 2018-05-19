@@ -45,16 +45,26 @@
 
 
 
-(use-package latex-preview-pane
-  :straight t
-  :commands (latex-preview-pane-mode))
+;; Auctex is disgusting and clobbers the builtin tex modes with its wacky
+;; loading process. It doesn't even have the good grace to provide itself as a
+;; feature.
 
-;; Auctex
+(defun config-latex-lazy-load-auctex ()
+  (when (string-match-p (rx "." (or "latex" "tex") string-end)
+                        (buffer-name))
+    (unless (featurep 'auctex-load-hack)
+      (require 'auctex-load-hack)
+      (revert-buffer nil t))))
+
+(add-hook 'find-file-hook #'config-latex-lazy-load-auctex)
+
+
 
 (defvar config-latex--command "LaTeX")
 
 (use-package tex
   :straight auctex
+  :defer t
   :preface
   (defvar-local TeX-syntactic-comments t)
   :config
@@ -126,6 +136,10 @@
 (use-package company-auctex
   :straight t
   :hook (tex-mode . company-auctex-init))
+
+(use-package latex-preview-pane
+  :straight t
+  :commands (latex-preview-pane-mode))
 
 (provide 'config-latex)
 
