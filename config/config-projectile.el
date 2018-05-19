@@ -110,8 +110,7 @@
     (projectile-funcs-refresh-projects)
 
     (setq projectile-completion-system 'ivy)
-    (setq projectile-switch-project-action (lambda ()
-                                             (dired (projectile-project-p))))
+    (setq projectile-switch-project-action #'projectile-dired)
     (setq projectile-enable-caching t)
     (setq projectile-create-missing-test-files t)
 
