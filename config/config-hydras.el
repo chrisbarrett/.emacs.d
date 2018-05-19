@@ -275,7 +275,7 @@
   (("h" evil-ahs/highlight-symbol "highlight")
    ("H" evil-ahs/goto-last-searched-symbol "goto last searched")))
 
-(cb-hydra-define smartparens (:color teal :hint nil)
+(cb-hydra-define parens (:color teal :hint nil)
   (hydra-title-with-mat-icon "code" "Smartparens")
 
   "Navigation"
@@ -390,7 +390,7 @@
 ;; Use which-key as a fallback for stuff I haven't ported to hydras yet.
 
 (spacemacs-keys-set-leader-keys
-  "," #'smartparens/body
+  "," #'parens/body
   "a" #'applications/body
   "b" #'buffers/body
   "c" #'comments/body
