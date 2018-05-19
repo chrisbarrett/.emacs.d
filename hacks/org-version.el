@@ -12,6 +12,8 @@
 (straight-use-package 'git)
 (require 'git)
 
+
+
 (defun org-git-version ()
   (let ((git-repo (expand-file-name
                    "straight/repos/org/" user-emacs-directory)))
