@@ -14,7 +14,6 @@
 
 (require 'dash-functional)
 (require 'paths)
-(require 'spacemacs-keys)
 (require 'projectile-funcs)
 
 (use-package projectile-funcs
@@ -102,21 +101,6 @@
       (let ((compilation-buffer-name-function (-const "*projectile-test*")))
         (projectile-test-project arg))))
 
-  :init
-  (progn
-    (spacemacs-keys-set-leader-keys
-      "p TAB" #'projectile-toggle-between-implementation-and-test
-      "p <backtab>" #'projectile-find-implementation-or-test-other-window
-      "p!" #'projectile-run-shell-command-in-root
-      "p&" #'projectile-run-async-shell-command-in-root
-      "pI" #'projectile-invalidate-cache
-      "pa" #'projectile-ag
-      "pD" #'projectile-dired
-      "pc" #'projectile-compile-project
-      "pr" #'projectile-replace
-      "pt" #'cb-projectile-test-project
-      "pu" #'projectile-run-project))
-
   :config
   (progn
     ;; Ensure projectile's known projects list doesn't contain duplicates.
@@ -169,19 +153,6 @@
 (use-package counsel-projectile
   :straight t
   :defer t
-  :commands (counsel-projectile-mode
-             counsel-projectile-find-file
-             counsel-projectile-find-dir
-             counsel-projectile-switch-project
-             counsel-projectile-switch-to-buffer
-             counsel-projectile-rg)
-  :init
-  (spacemacs-keys-set-leader-keys
-    "pf" #'counsel-projectile-find-file
-    "pd" #'counsel-projectile-find-dir
-    "pb" #'counsel-projectile-switch-to-buffer
-    "/"  #'counsel-projectile-rg)
-
   :config
   (counsel-projectile-mode))
 

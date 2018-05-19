@@ -213,6 +213,29 @@
    ("v" cb-org-goto-tags-list "tags")
    ("o" cb-org-goto-headline "headline...")))
 
+(cb-hydra-define project (:color teal :hint nil)
+  (hydra-title-with-octicon "repo" "Project")
+
+  "Actions"
+  (("!" projectile-run-shell-command-in-root "shell command")
+   ("c" projectile-compile-project "compile")
+   ("u" projectile-run-project "run")
+   ("t" cb-projectile-test-project "test"))
+
+  "Open"
+  (("f" counsel-projectile-find-file "file...")
+   ("d" counsel-projectile-find-dir "directory...")
+   ("b" counsel-projectile-switch-to-buffer "buffer..."))
+
+  "Navigate"
+  (("TAB" projectile-toggle-between-implementation-and-test "test/impl")
+   ("<backtab>" projectile-find-implementation-or-test-other-window "test/impl (other window)")
+   ("D" projectile-dired "project root (dired)"))
+
+  "Search/Replace"
+  (("/" counsel-projectile-rg "search")
+   ("r" projectile-replace "replace")))
+
 ;; Application hydras
 
 (cb-hydra-define applications (:color teal :hint nil)
@@ -284,6 +307,7 @@
   "l" #'imenu-list-smart-toggle
   "m" #'major-mode-hydra
   "o" #'org/body
+  "p" #'project/body
   "w" #'windows/body
   "z" #'font-scale/body)
 
