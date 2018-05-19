@@ -49,19 +49,6 @@
 
 
 
-;; Avro file mode
-
-(autoload 'web-mode "web-mode")
-(defvar web-mode-content-type nil)
-
-(define-derived-mode avro-mode web-mode "Avro"
-  "Derived mode for editing Avro schema files."
-  (setq-local web-mode-content-type "json"))
-
-(add-to-list 'auto-mode-alist '("\\.avsc" . avro-mode))
-
-
-
 (use-package web-mode
   :straight t
   :defines (web-mode-markup-indent-offset
@@ -146,7 +133,9 @@
          ("\\.css\\'"  . web-css-mode)
          ("\\.mustache\\'"  . web-mustache-mode)
          ("\\.scss\\'"  . web-css-mode)
-         ("\\.html\\'" . web-html-mode))
+         ("\\.html\\'" . web-html-mode)
+         ("\\.avsc\\'" . avro-mode)
+         ("\\.avro\\'" . avro-mode))
   :preface
   (defun config-web--enable-readonly-mode-in-node-modules ()
     (when (and (buffer-file-name)

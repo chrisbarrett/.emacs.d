@@ -9,7 +9,14 @@
 ;;; Code:
 
 (require 'seq)
-(require 'web-mode)
+
+;; Placate byte-compiler
+
+(eval-when-compile
+  (require 'web-mode))
+(autoload 'web-mode "web-mode")
+
+
 
 ;;;###autoload
 (define-derived-mode web-js-base-mode web-mode "JS"
@@ -43,6 +50,11 @@
 ;;;###autoload
 (define-derived-mode web-mustache-mode web-mode "Mustache"
   "Derived mode for editing mustache files.")
+
+;;;###autoload
+(define-derived-mode avro-mode web-mode "Avro"
+  "Derived mode for editing Avro schema files."
+  (setq-local web-mode-content-type "json"))
 
 (provide 'web-mode-submodes)
 
