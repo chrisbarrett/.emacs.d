@@ -7,11 +7,6 @@
 
 (require 'evilified-state)
 
-(use-package which-key
-  :config
-  (push `((nil . ,(rx bos "prodigy-" (group (+ nonl)))) . (nil . "\\1"))
-        which-key-replacement-alist))
-
 (use-package prodigy
   :straight t
   :commands (prodigy)

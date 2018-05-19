@@ -41,11 +41,6 @@
 (defconst cb-org-work-file (concat org-directory "/work_pushpay.org"))
 (defconst cb-org-journal-file (concat org-directory "/journal.org"))
 
-(with-eval-after-load 'which-key
-  (with-no-warnings
-    (push `(("," . ,(rx bos (? "evil-") "org-" (group (+ nonl)))) . (nil . "\\1"))
-          which-key-replacement-alist)))
-
 (use-package org
   :straight org-plus-contrib
   :defer t
@@ -255,12 +250,7 @@
 
 (use-package org-hydras
   :after org
-  :commands (org-babel/body)
-  :init
-  (with-eval-after-load 'which-key
-    (with-no-warnings
-      (push `((nil . ,(rx bos "org-babel/body")) . (nil . "babel"))
-            which-key-replacement-alist))))
+  :commands (org-babel/body))
 
 (use-package org-attach
   :after org

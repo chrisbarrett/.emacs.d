@@ -273,19 +273,12 @@
   :straight t
   :after evil
   :commands (vi-tilde-fringe-mode global-vi-tilde-fringe-mode)
-
   :preface
-  (progn
-    (defun config-evil--vi-tilde-fringe-off ()
-      (vi-tilde-fringe-mode -1))
-
-    (defun config-evil--vi-tilde-fringe-off-if-readonly ()
-      (when buffer-read-only
-        (vi-tilde-fringe-mode -1))))
-
+  (defun config-evil--vi-tilde-fringe-off-if-readonly ()
+    (when buffer-read-only
+      (vi-tilde-fringe-mode -1)))
   :config
   (progn
-    (add-hook 'which-key-init-buffer-hook #'config-evil--vi-tilde-fringe-off)
     (add-hook 'after-change-major-mode-hook #'config-evil--vi-tilde-fringe-off-if-readonly)
     (global-vi-tilde-fringe-mode)))
 
