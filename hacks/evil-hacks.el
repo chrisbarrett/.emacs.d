@@ -8,7 +8,6 @@
 (require 'el-patch)
 (require 'straight)
 
-(straight-use-package 'link-hint)
 (autoload 'link-hint-open-link-at-point "link-hint")
 (autoload 'link-hint--get-link-at-point "link-hint")
 

@@ -11,7 +11,11 @@
 (eval-when-compile
   (require 'use-package))
 
+(straight-use-package 'link-hint)
+
 (require 'spacemacs-keys)
+
+
 
 (use-package evil
   :straight t
@@ -61,6 +65,8 @@
 
   :config
   (progn
+    (require 'evil-hacks)
+
     (evil-mode +1)
     (setq evil-mode-line-format nil)
     (setq-default evil-shift-width 2)
