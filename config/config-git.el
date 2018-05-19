@@ -11,10 +11,13 @@
 (eval-when-compile
   (require 'use-package))
 
-(require 'paths)
+(require 'config-hydras)
 (require 'evil-transient-state)
+(require 'paths)
 
 (autoload 'evil-define-key "evil")
+
+
 
 (add-to-list 'auto-mode-alist '("\\.gitignore\\'" . conf-unix-mode))
 
@@ -64,6 +67,8 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
                             (not (bound-and-true-p magit-blame-mode))))))
   :config
   (progn
+    (config-hydras-insinuate magit-mode-map)
+
     (evil-define-key 'normal magit-refs-mode-map (kbd ".") #'magit-branch-and-checkout)
     (setq magit-repository-directories
           '(("~/Documents" . 1)
@@ -76,6 +81,7 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
 (use-package magithub
   :straight t
   :after magit
+  :defer t
   :init
   ;; HACK: Fix reference to removed function.
   (defalias 's-blank-p #'s-blank?)
@@ -90,7 +96,7 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
 
 (use-package evil-magit
   :straight t
-  :after magit
+  :after (:and magit evil)
   :config
   (evil-magit-init))
 

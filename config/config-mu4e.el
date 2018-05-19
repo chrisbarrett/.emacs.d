@@ -236,7 +236,7 @@
               mu4e-view-mark-for-read-and-archive))
 
 (use-package org-mu4e
-  :after org)
+  :after (:and org mu4e))
 
 (provide 'config-mu4e)
 

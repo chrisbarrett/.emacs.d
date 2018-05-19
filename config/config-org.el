@@ -460,7 +460,7 @@
 
 (use-package org-archive
   :after org
-  :functions (org-archive-subtree)
+  :commands (org-archive-subtree)
   :preface
   (progn
     (autoload 'org-map-entries "org")
@@ -579,6 +579,7 @@
     (setq org-drill-save-buffers-after-drill-sessions-p nil)))
 
 (use-package org-capture
+  :commands (org-capture)
   :preface
   (cl-defun cb-org--capture-template-entry (key label form template
                                                 &rest kws
@@ -840,6 +841,7 @@ table tr.tr-even td {
 
 (use-package evil-org
   :straight t
+  :after (:and org evil)
   :hook (org-mode . evil-org-mode)
   :config
   (progn

@@ -115,7 +115,6 @@
 
 (use-package counsel
   :straight t
-  :demand t
   :bind (("M-x" . counsel-M-x)
          ("C-x C-f" . counsel-find-file)
 
@@ -140,7 +139,7 @@
 
 (use-package historian
   :straight t
-  :demand t
+  :after ivy
   :config
   (historian-mode +1))
 
@@ -148,7 +147,7 @@
 
 (use-package ivy-historian
   :straight t
-  :after ivy
+  :after (:and ivy historian)
   :config
   (progn
     ;; Tweak historian weighting settings. These values are chosen
