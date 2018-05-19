@@ -119,12 +119,12 @@
 (use-package flycheck-package
   :straight t
   :after flycheck
-  :preface
-  (autoload 'flycheck-package-setup "flycheck-package")
+  :defer t
   :config
   (progn
     (flycheck-package-setup)
-    (setf (flycheck-checker-get 'emacs-lisp-package 'predicate) #'buffer-file-name)))
+    (with-eval-after-load 'flycheck
+      (setf (flycheck-checker-get 'emacs-lisp-package 'predicate) #'buffer-file-name))))
 
 ;; Checkdoc is used by flycheck for linting docstrings in elisp.
 
