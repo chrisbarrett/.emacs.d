@@ -80,23 +80,15 @@ Currently this function infloops when the list is circular."
 
 Supported properties:
 
-`:evil-leader STRING'
-    One or several key sequence strings to be set
-    with `spacemacs-keys-set-leader-keys .
-
 `:global-key STRING'
     One or several key sequence strings to be set with `global-set-key'.
 
 `:define-key CONS CELL'
     One or several cons cells (MAP . KEY) where MAP is a mode map and KEY is a
     key sequence string to be set with `define-key'."
-  (let ((evil-leader (evil-transient-state--mplist-get props :evil-leader))
-        (global-key (evil-transient-state--mplist-get props :global-key))
+  (let ((global-key (evil-transient-state--mplist-get props :global-key))
         (def-key (evil-transient-state--mplist-get props :define-key)))
     (append
-     (when evil-leader
-       `((dolist (key ',evil-leader)
-           (spacemacs-keys-set-leader-keys key ',func))))
      (when global-key
        `((dolist (key ',global-key)
            (global-set-key (kbd key) ',func))))
