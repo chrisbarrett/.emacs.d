@@ -39,6 +39,25 @@
 
 
 
+(use-package menu-bar
+  :bind (("C-c e e" . toggle-debug-on-error))
+  :if (bound-and-true-p menu-bar-mode)
+  :config
+  (when (fboundp 'menu-bar-mode)
+    (menu-bar-mode -1)))
+
+(use-package tool-bar
+  :if (bound-and-true-p tool-bar-mode)
+  :config
+  (when (fboundp 'tool-bar-mode)
+    (tool-bar-mode -1)))
+
+(use-package scroll-bar
+  :if (display-graphic-p)
+  :config
+  (when (fboundp 'scroll-bar-mode)
+    (scroll-bar-mode -1)))
+
 (use-package page-break-lines
   :straight t
   :commands (global-page-break-lines-mode)
@@ -119,10 +138,7 @@
   :straight t
   :defer t
   :init
-  (progn
-    ;; HACK: Forward-declare variable which is unsafely referenced inside lib.
-    (defvar web-mode-content-type nil)
-    (defvar all-the-icons-scale-factor 1.0))
+  (defvar all-the-icons-scale-factor 1.0)
   :config
   (dolist (spec '((nix-mode all-the-icons-faicon "linux" :face all-the-icons-purple)
                   (makefile-mode all-the-icons-fileicon "gnu" :face all-the-icons-dorange)
