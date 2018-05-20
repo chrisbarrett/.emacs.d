@@ -1,4 +1,4 @@
-;;; config-hydras.el --- Grab-bag for configuring general prefixed keys.  -*- lexical-binding: t; -*-
+;;; config-hydras.el --- Main hydra definitions  -*- lexical-binding: t; -*-
 ;;; Commentary:
 ;;; Code:
 
