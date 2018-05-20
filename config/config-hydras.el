@@ -267,7 +267,7 @@
    ("b" counsel-projectile-switch-to-buffer "buffer..."))
 
   "Navigate"
-  (("TAB" projectile-toggle-between-implementation-and-test "test/impl")
+  (("<tab>" projectile-toggle-between-implementation-and-test "test/impl")
    ("<backtab>" projectile-find-implementation-or-test-other-window "test/impl (other window)")
    ("D" projectile-dired "project root (dired)"))
 
@@ -432,7 +432,7 @@
    ("u" universal-argument "universal argument"))
 
   "Buffer/Window"
-  (("TAB" alternate-buffer "alternate buffer")
+  (("<tab>" alternate-buffer "alternate buffer")
    ("?" counsel-descbinds "describe key bindings")
    ("|" cb/toggle-window-split "toggle window split")
    ("i" counsel-imenu "imenu")
