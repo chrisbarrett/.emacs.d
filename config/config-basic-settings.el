@@ -695,20 +695,6 @@ Interactively, reverse the characters in the current region."
   :config
   (add-hook 'term-mode-hook #'config-basic-settings--shell-hl-line-off))
 
-(use-package autoinsert
-  :preface
-  (defvar auto-insert-alist nil)
-  :init
-  (auto-insert-mode +1)
-  :config
-  (setq auto-insert-query nil))
-
-(use-package autoinsert-funcs
-  :after autoinsert
-  :config
-  (dolist (form autoinsert-funcs-forms)
-    (push form auto-insert-alist)))
-
 (use-package calc
   :commands (quick-calc calc)
   :config

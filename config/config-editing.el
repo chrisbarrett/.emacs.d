@@ -230,6 +230,31 @@
   :config
   (setq dumb-jump-selector 'ivy))
 
+
+
+;; autoinsert provides file templates.
+
+(use-package autoinsert
+  :preface
+  (defvar auto-insert-alist nil)
+  :hook (find-file . auto-insert)
+  :config
+  (setq auto-insert-query nil))
+
+(use-package autoinsert-funcs
+  :after autoinsert
+  :config
+  (dolist (form autoinsert-funcs-forms)
+    (push form auto-insert-alist)))
+
+(use-package js-autoinsert
+  :after autoinsert
+  :defer t
+  :config
+  (with-no-warnings
+    (add-to-list 'auto-insert-alist
+                 '((web-js-mode . "JavaScript") . js-autoinsert-template-string))))
+
 (provide 'config-editing)
 
 ;;; config-editing.el ends here

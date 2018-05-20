@@ -246,13 +246,6 @@
   :commands (flow-insert-flow-annotation)
   :bind (:map web-js-mode-map ("C-c C-t" . flow-type-at)))
 
-(use-package js-autoinsert
-  :after autoinsert
-  :config
-  (with-no-warnings
-    (add-to-list 'auto-insert-alist
-                 '((web-js-mode . "JavaScript") . js-autoinsert-template-string))))
-
 (use-package tern
   :straight t
   :disabled t
