@@ -38,8 +38,9 @@
 
 
 (defvar org-directory "~/org")
-(defconst cb-org-work-file (concat org-directory "/work_pushpay.org"))
-(defconst cb-org-journal-file (concat org-directory "/journal.org"))
+(defvar cb-org-work-file (f-join org-directory "work_pushpay.org"))
+(defvar cb-org-journal-file (f-join org-directory "journal.org"))
+(defvar org-agenda-diary-file (f-join org-directory "diary.org"))
 
 (use-package org
   :straight org-plus-contrib
@@ -331,7 +332,6 @@
     (setq org-agenda-start-on-weekday nil)
     (setq org-agenda-auto-exclude-function #'cb-org--exclude-tasks-on-hold)
     (setq org-agenda-files (f-files org-directory (lambda (f) (f-ext? f "org"))))
-    (setq org-agenda-diary-file (f-join org-directory "diary.org"))
     (setq org-agenda-hide-tags-regexp (rx (or "noexport" "someday" "project")))
     (setq org-agenda-insert-diary-extract-time t)
     (setq org-agenda-span 'week)
