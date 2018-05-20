@@ -37,7 +37,6 @@
  ("emacs-racer" . "cb74060bbaff8e505ba36e20e4a3a763ee7dd4c8")
  ("emacs-terraform-mode" . "6973d1acaba2835dfdf174f5a5e27de6366002e1")
  ("emacs-websocket" . "0d96ba2ff5a25c6cd6c66f417cc9b5f38a4308ba")
- ("emacs-which-key" . "8a878de16db5ff83ce78f2a43d22ed2170b3abd3")
  ("emacs-world-time-mode" . "ce7a3b45c87eb24cfe61eee453175d64f741d7cc")
  ("emmet-mode" . "45c633ac79bba1dd185c541830c126db37a63dab")
  ("epkgs" . "5bc01aa3b8fb1597482dbba2fcdcb539c1b92d3d")
