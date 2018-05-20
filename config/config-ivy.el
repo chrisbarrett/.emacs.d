@@ -37,6 +37,9 @@
    :map read-expression-map
    ("C-r" . counsel-expression-history))
 
+  :init
+  (setq completing-read-function #'ivy-completing-read)
+
   :preface
   (progn
     ;; KLUDGE: Declare dynamic var.
