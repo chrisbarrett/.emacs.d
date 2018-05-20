@@ -34,18 +34,21 @@
   :if window-system
   :functions (exec-path-from-shell-initialize)
   :init
-  (defconst exec-path-from-shell-variables
-    '("PATH"
-      "MANPATH"
-      "NIX_REMOTE"
-      "NIX_USER_PROFILE_DIR"
-      "NIX_PROFILES"
-      "NIX_SSL_CERT_FILE"
-      "NIX_PATH"
-      "SSH_AGENT_PID"
-      "GPG_TTY"
-      "TEXINPUTS"
-      "RUST_SRC_PATH"))
+  (progn
+    (defvar exec-path-from-shell-arguments '("-l"))
+
+    (defconst exec-path-from-shell-variables
+      '("PATH"
+        "MANPATH"
+        "NIX_REMOTE"
+        "NIX_USER_PROFILE_DIR"
+        "NIX_PROFILES"
+        "NIX_SSL_CERT_FILE"
+        "NIX_PATH"
+        "SSH_AGENT_PID"
+        "GPG_TTY"
+        "TEXINPUTS"
+        "RUST_SRC_PATH")))
   :config
   (exec-path-from-shell-initialize))
 
