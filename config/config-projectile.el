@@ -16,6 +16,8 @@
 (require 'paths)
 (require 'projectile-funcs)
 
+(autoload 'magit-status-internal "magit")
+
 (use-package projectile-funcs
   :defines (projectile-funcs-ignored-base-dirs)
   :config
@@ -45,7 +47,7 @@
 
   :preface
   (progn
-    (autoload 'magit-status "magit")
+    (autoload 'magit-status-internal "magit")
     (autoload 'projectile-register-project-type "projectile")
 
     (defun cb-projectile--find-files-with-string-using-rg (fn string directory)
@@ -107,7 +109,7 @@
     (advice-add 'projectile-save-known-projects :override #'ignore)
 
     (setq projectile-completion-system 'ivy)
-    (setq projectile-switch-project-action #'projectile-dired)
+    (setq projectile-switch-project-action #'magit-status-internal)
     (setq projectile-enable-caching t)
     (setq projectile-create-missing-test-files t)
 
@@ -150,7 +152,9 @@
   :straight t
   :defer t
   :config
-  (counsel-projectile-mode))
+  (progn
+    (setq counsel-projectile-switch-project-action #'magit-status-internal)
+    (counsel-projectile-mode)))
 
 (provide 'config-projectile)
 
