@@ -18,6 +18,10 @@
 
 (autoload 'magit-status-internal "magit")
 
+
+
+;; projectile-funcs contains functions used by the configuration for projectile.
+
 (use-package projectile-funcs
   :defines (projectile-funcs-ignored-base-dirs)
   :config
@@ -30,27 +34,23 @@
           "~/.rustup/"
           "~/tmp/")))
 
+;; Projectile provides commands for working with projects.
+
 (use-package projectile
   :straight t
-  :commands (projectile-ag
-             projectile-compile-project
-             projectile-invalidate-cache
-             projectile-mode
-             projectile-replace
-             projectile-run-async-shell-command-in-root
-             projectile-run-project
-             projectile-run-shell-command-in-root
-             projectile-switch-project
-             projectile-test-project)
-
-  :functions (projectile-project-p)
-
+  :commands (projectile-mode)
   :preface
   (progn
-    (autoload 'magit-status-internal "magit")
+    (autoload 'projectile-files-from-cmd "projectile")
+    (autoload 'projectile-find-matching-file "projectile")
+    (autoload 'projectile-find-matching-test "projectile")
+    (autoload 'projectile-project-root "projectile")
     (autoload 'projectile-register-project-type "projectile")
+    (autoload 'projectile-test-file-p "projectile")
+    (autoload 'projectile-test-project "projectile")
+    (autoload 'projectile-unixy-system-p "projectile")
 
-    (defun cb-projectile--find-files-with-string-using-rg (fn string directory)
+    (defun config-projectile--find-files-with-string-using-rg (fn string directory)
       (if (and (projectile-unixy-system-p) (executable-find "rg"))
           (let* ((search-term (shell-quote-argument string))
                  (cmd (concat "rg --fixed-strings --color=never --no-heading --files-with-matches -- " search-term)))
@@ -58,12 +58,12 @@
             (projectile-files-from-cmd cmd directory))
         (funcall fn string directory)))
 
-    (defun cb-projectile--file-is-child-of-test-dir (&optional has-test-prefix-or-suffix)
+    (defun config-projectile--file-is-child-of-test-dir (&optional has-test-prefix-or-suffix)
       (or has-test-prefix-or-suffix
           (when-let* ((file (buffer-file-name)))
             (seq-contains (f-split file) "test"))))
 
-    (defun cb-projectile--substitute-test-with-impl (&optional existing)
+    (defun config-projectile--substitute-test-with-impl (&optional existing)
       (or existing
           (when-let* ((file (buffer-file-name))
                       (impl-dir (if (f-dir? (f-join (projectile-project-root) "lib"))
@@ -76,7 +76,7 @@
                 (f-join (f-no-ext guess) "index.js")
               guess))))
 
-    (defun cb-projectile--substitute-impl-with-test (&optional existing)
+    (defun config-projectile--substitute-impl-with-test (&optional existing)
       (or existing
           (when-let* ((file (buffer-file-name))
                       (guess (replace-regexp-in-string (rx "/" (or "lib" "src") "/") "/test/" file t t)))
@@ -98,7 +98,7 @@
              (t
               guess)))))
 
-    (defun cb-projectile-test-project (arg)
+    (defun config-projectile-test-project (arg)
       (interactive "P")
       (let ((compilation-buffer-name-function (-const "*projectile-test*")))
         (projectile-test-project arg))))
@@ -141,16 +141,19 @@
                                       :test "yarn test")
 
     ;; Teach projectile how to resolve npm srcs and tests.
-    (advice-add #'projectile-test-file-p :filter-return #'cb-projectile--file-is-child-of-test-dir)
-    (advice-add #'projectile-find-matching-file :filter-return #'cb-projectile--substitute-test-with-impl)
-    (advice-add #'projectile-find-matching-test :filter-return #'cb-projectile--substitute-impl-with-test)
+    (advice-add #'projectile-test-file-p :filter-return #'config-projectile--file-is-child-of-test-dir)
+    (advice-add #'projectile-find-matching-file :filter-return #'config-projectile--substitute-test-with-impl)
+    (advice-add #'projectile-find-matching-test :filter-return #'config-projectile--substitute-impl-with-test)
 
     ;; Teach projectile to prefer rg for finding files containing strings
-    (advice-add 'projectile-files-with-string :around #'cb-projectile--find-files-with-string-using-rg)))
+    (advice-add 'projectile-files-with-string :around #'config-projectile--find-files-with-string-using-rg)))
+
+;; counsel-projectile provides ivy wrappers for projectile commands.
 
 (use-package counsel-projectile
   :straight t
   :defer t
+  :commands (counsel-projectile-mode)
   :config
   (progn
     (setq counsel-projectile-switch-project-action #'magit-status-internal)
