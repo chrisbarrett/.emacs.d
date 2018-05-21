@@ -1,17 +1,12 @@
 ;;; cb-ledger-format.el --- Buffer formatting commands for ledger files.  -*- lexical-binding: t; -*-
-
-;; Copyright (C) 2016  Chris Barrett
-
-;; Author: Chris Barrett <chris+emacs@walrus.cool>
-
-;; Package-Requires: ((s "1.10.0") (ledger-mode "20160228.1734"))
-
 ;;; Commentary:
-
 ;;; Code:
 
-(require 'ledger-mode)
 (require 's)
+
+(autoload 'ledger-mode-clean-buffer "ledger-mode")
+
+(defvar ledger-post-amount-alignment-column 52)
 
 (defun cb-ledger-format--align-price-assertion ()
   (let ((line (buffer-substring (line-beginning-position) (line-end-position))))
