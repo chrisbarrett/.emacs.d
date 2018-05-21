@@ -16,8 +16,6 @@
 (require 'paths)
 (require 'projectile-funcs)
 
-(autoload 'magit-status-internal "magit")
-
 
 
 ;; projectile-funcs contains functions used by the configuration for projectile.
@@ -109,7 +107,7 @@
     (advice-add 'projectile-save-known-projects :override #'ignore)
 
     (setq projectile-completion-system 'ivy)
-    (setq projectile-switch-project-action #'magit-status-internal)
+    (setq projectile-switch-project-action #'dired)
     (setq projectile-enable-caching t)
     (setq projectile-create-missing-test-files t)
 
@@ -156,7 +154,7 @@
   :commands (counsel-projectile-mode)
   :config
   (progn
-    (setq counsel-projectile-switch-project-action #'magit-status-internal)
+    (setq counsel-projectile-switch-project-action #'dired)
     (counsel-projectile-mode)))
 
 (provide 'config-projectile)
