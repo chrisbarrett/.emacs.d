@@ -473,6 +473,8 @@ Interactively, reverse the characters in the current region."
   (progn
     (add-hook 'compilation-filter-hook #'config-basic-settings--colorize-compilation-buffer)
 
+    (config-hydras-insinuate compilation-mode-map)
+
     ;; Clear default underline text properties applied to compilation highlights.
     (setq compilation-message-face 'cb-compilation-base-face)
 
