@@ -258,7 +258,7 @@
   (("!" projectile-run-shell-command-in-root "shell command...")
    ("c" projectile-compile-project "compile...")
    ("u" projectile-run-project "run...")
-   ("t" cb-projectile-test-project "test..."))
+   ("t" config-projectile-test-project "test..."))
 
   "Open"
   (("p" counsel-projectile-switch-project "project...")
