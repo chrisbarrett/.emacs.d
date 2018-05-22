@@ -73,6 +73,9 @@ Fall back to the file name sans extension."
     (""        "")
     ("Promise" "bluebird")
     ("assert"  "power-assert")
+    ("stampit"   "@stamp/it")
+    ("Configure" "@stamp/configure")
+    ("Required"  "@stamp/required")
     ("_"       "lodash")
 
     ((guard (s-contains? "{" text))
