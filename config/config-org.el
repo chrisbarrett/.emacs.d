@@ -869,6 +869,7 @@ table tr.tr-even td {
   :hook (dired-mode . org-download-enable))
 
 (use-package org-drill-table
+  :disabled t
   :straight t
   :hook (org-ctrl-c-ctrl-c . org-drill-table-update))
 
