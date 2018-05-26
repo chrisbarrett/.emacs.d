@@ -21,6 +21,7 @@
 
 (require 'f)
 (require 'general)
+(require 'no-littering)
 (require 'paths)
 (require 'subr-x)
 
@@ -119,6 +120,7 @@
 
  ;; Disable backup files
  make-backup-files nil
+ backup-directory-alist (list (cons ".*" (no-littering-expand-var-file-name "backup/")))
 
  ;; Don't pollute directories with lockfiles, since I only run one instance of
  ;; Emacs and never need to prevent concurrent file access.
