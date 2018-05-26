@@ -382,17 +382,22 @@
                         '("gz" "zip" "tar")))
 
     (defun config-basic-settings--child-of-boring-relative-dir-p (f)
-      (seq-intersection (f-split f)
-                        '(".git"
-                          ".ensime_cache"
-                          ".cargo"
-                          ".stack-work"
-                          ".g8"
-                          "target"
-                          "build"
-                          "vendor"
-                          "Maildir"
-                          "dist")))
+      (string-match-p (rx "/"
+                          (or
+                           ".cargo"
+                           ".ensime_cache"
+                           ".g8"
+                           ".git"
+                           ".stack-work"
+                           "Maildir"
+                           "build"
+                           "dist"
+                           "straight/repos"
+                           "target"
+                           "vendor"
+                           )
+                          "/")
+                      f))
 
     (defun config-basic-settings--child-of-boring-abs-dir-p (f)
       (let ((ignore-case (eq system-type 'darwin)))
