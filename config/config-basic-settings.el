@@ -401,6 +401,7 @@
                   (list "/var/folders/"
                         "/usr/local/Cellar/"
                         "/tmp/"
+                        "/nix/store/"
                         (f-expand (concat user-emacs-directory "etc/")))))))
 
   :config
