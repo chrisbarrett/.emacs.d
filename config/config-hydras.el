@@ -326,9 +326,9 @@
 
   "Git"
   (("s" magit-status "magit")
-   ("d" cb-git-diff-buffer-file "blame")
+   ("d" config-git-diff-buffer-file "blame")
    ("b" git-blame/body "diff buffer...")
-   ("f" cb-git-find-file "find file..."))
+   ("f" config-git-find-file "find file..."))
   ""
   (("h" git-hunks/body "navigate hunks")
    ("l" magit-log-buffer-file "log buffer")
