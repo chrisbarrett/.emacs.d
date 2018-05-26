@@ -20,7 +20,7 @@
 
 (use-package ivy
   :straight t
-  :commands (ivy-occur ivy-help)
+  :commands (ivy-occur ivy-help ivy-mode)
   :bind
   (("C-c C-r" . ivy-resume)
    ("C-x b" . ivy-switch-buffer)
@@ -38,7 +38,9 @@
    ("C-r" . counsel-expression-history))
 
   :init
-  (setq completing-read-function #'ivy-completing-read)
+  (progn
+    (declare-function ivy-completing-read "ivy")
+    (setq completing-read-function #'ivy-completing-read))
 
   :preface
   (progn
@@ -112,20 +114,20 @@
 
 (use-package swiper
   :straight t
-  :bind (:map evil-normal-state-map ("/" . swiper)))
+  :general (:states 'normal "/" 'swiper))
 
 ;; counsel provides replacements for core Emacs commands using ivy.
 
 (use-package counsel
   :straight t
+  :commands (counsel-mode)
   :bind (("M-x" . counsel-M-x)
          ("C-x C-f" . counsel-find-file)
 
          :map counsel-find-file-map
          ("C-M-j" . ivy-immediate-done)
 
-         :map
-         counsel-find-file-map
+         :map counsel-find-file-map
          ("C-h" . counsel-up-directory))
 
   :config
@@ -142,14 +144,15 @@
 
 (use-package historian
   :straight t
+  :commands (historian-mode)
   :after ivy
-  :config
-  (historian-mode +1))
+  :config (historian-mode +1))
 
 ;; ivy-historian uses Historian to sort Ivy candidates by frecency+flx.
 
 (use-package ivy-historian
   :straight t
+  :commands (ivy-historian-mode)
   :after (:and ivy historian)
   :config
   (progn
