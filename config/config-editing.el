@@ -21,6 +21,40 @@
 
 
 
+;; Define line transposition commands.
+
+(autoload 'org-move-item-down "org-list")
+(autoload 'org-move-item-up "org-list")
+
+(defun config-editing-transpose-line-up ()
+  "Move the current line up."
+  (interactive)
+  (if (derived-mode-p 'org-mode)
+      (org-move-item-up)
+
+    (transpose-lines 1)
+    (forward-line -2)
+    (indent-according-to-mode)))
+
+(defun config-editing-transpose-line-down ()
+  "Move the current line up."
+  (interactive)
+  (if (derived-mode-p 'org-mode)
+      (org-move-item-down)
+
+    (forward-line 1)
+    (transpose-lines 1)
+    (forward-line -1)
+    (indent-according-to-mode)))
+
+(global-set-key (kbd "C-<up>") #'config-editing-transpose-line-up)
+(global-set-key (kbd "C-<down>") #'config-editing-transpose-line-down)
+
+(global-set-key (kbd "s-<up>") #'config-editing-transpose-line-up)
+(global-set-key (kbd "s-<down>") #'config-editing-transpose-line-down)
+
+
+
 (use-package hexl
   :defer t
   :config

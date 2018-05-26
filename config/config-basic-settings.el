@@ -243,38 +243,6 @@ Interactively, reverse the characters in the current region."
 (advice-add #'completion--file-name-table :filter-return #'config-basic-settings--hide-boring-files-in-completion)
 
 
-;; Line transposition
-
-(autoload 'org-move-item-down "org-list")
-(autoload 'org-move-item-up "org-list")
-
-(defun cb-transpose-line-up ()
-  "Move the current line up."
-  (interactive)
-  (if (derived-mode-p 'org-mode)
-      (org-move-item-up)
-
-    (transpose-lines 1)
-    (forward-line -2)
-    (indent-according-to-mode)))
-
-(defun cb-transpose-line-down ()
-  "Move the current line up."
-  (interactive)
-  (if (derived-mode-p 'org-mode)
-      (org-move-item-down)
-
-    (forward-line 1)
-    (transpose-lines 1)
-    (forward-line -1)
-    (indent-according-to-mode)))
-
-(global-set-key (kbd "C-<up>") #'cb-transpose-line-up)
-(global-set-key (kbd "C-<down>") #'cb-transpose-line-down)
-
-(global-set-key (kbd "s-<up>") #'cb-transpose-line-up)
-(global-set-key (kbd "s-<down>") #'cb-transpose-line-down)
-
 ;;; Hide DOS EOL
 
 (defun config-basic-settings--hide-dos-eol ()
