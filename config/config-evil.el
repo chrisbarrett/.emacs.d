@@ -191,6 +191,8 @@
     (evil-set-initial-state 'indium-inspector-mode 'motion)
     (evil-set-initial-state 'indium-repl-mode 'insert)
 
+    (evil-set-initial-state 'org-agenda-mode 'motion)
+
     ;; Add ex commands for controlling spellcheck.
 
     (evil-ex-define-cmd "nospell" #'config-evil-flyspell-off)

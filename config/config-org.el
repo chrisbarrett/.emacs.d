@@ -14,14 +14,13 @@
 (require 'cb-major-mode-hydra)
 (require 'config-hydras)
 (require 'dash)
-(require 'evilified-state)
 (require 'f)
+(require 'general)
 (require 'paths)
 (require 's)
 (require 'straight)
 (require 'subr-x)
 
-(autoload 'evil-define-key "evil")
 (autoload 'org-todo "org")
 
 
@@ -36,23 +35,365 @@
   (("e" org-babel/body "babel commands")))
 
 
+;; forward-definitions to silence byte-compiler.
 
+(defvar org-done-keywords)
 (defvar org-directory "~/org")
+
+
+
+(general-setq org-directory "~/org")
+
 (defvar cb-org-work-file (f-join org-directory "work_pushpay.org"))
 (defvar cb-org-journal-file (f-join org-directory "journal.org"))
-(defvar org-agenda-diary-file (f-join org-directory "diary.org"))
-(defvar org-agenda-files (f-files org-directory (lambda (f) (f-ext? f "org"))))
+(defvar cb-org-drill-file (f-join org-directory "drill" "drill.org"))
+
+(general-setq
+ org-default-notes-file (f-join org-directory "notes.org")
+ org-agenda-diary-file (f-join org-directory "diary.org")
+ org-agenda-files (f-files org-directory (lambda (f) (f-ext? f "org"))))
+
+
+;; general settings
+
+(general-setq
+ org-M-RET-may-split-line nil
+ org-blank-before-new-entry '((heading . always) (plain-list-item . nil))
+ org-catch-invisible-edits 'smart
+ org-checkbox-hierarchical-statistics t
+ org-confirm-elisp-link-function nil
+ org-cycle-separator-lines 1
+ org-enforce-todo-dependencies t
+ org-footnote-auto-adjust t
+ org-hide-emphasis-markers t
+ org-hierarchical-todo-statistics nil
+ org-indirect-buffer-display 'current-window
+ org-insert-heading-respect-content t
+ org-link-abbrev-alist '(("att" . org-attach-expand-link))
+ org-log-done 'time
+ org-log-into-drawer t
+ org-log-repeat nil
+ org-outline-path-complete-in-steps nil
+ org-pretty-entities t
+ org-refile-allow-creating-parent-nodes 'confirm
+ org-refile-target-verify-function (lambda () (not (member (nth 2 (org-heading-components)) org-done-keywords)))
+ org-refile-use-outline-path t
+ org-return-follows-link t
+ org-reverse-note-order nil
+ org-startup-indented t
+ org-startup-with-inline-images t
+
+ org-todo-keywords '((type "TODO(t)" "MAYBE(m)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")
+                     (type "SOMEDAY(s)" "|"))
+
+ org-src-fontify-natively t
+ org-src-window-setup 'current-window
+
+ ;; org-babel
+
+ org-confirm-babel-evaluate nil
+ org-babel-load-languages '((emacs-lisp . t)
+                            (restclient . t)
+                            (gnuplot . t)
+                            (python . t)
+                            (shell . t)
+                            (sql . t))
+
+ ;; org-export
+
+ org-export-backends '(ascii html latex odt gfm koma-letter custom-confluence)
+ org-export-exclude-tags '("noexport" "crypt")
+ org-export-coding-system 'utf-8
+
+ ;; org-habit
+
+ org-habit-graph-column 68
+ org-habit-preceding-days 7
+ org-habit-following-days 5
+
+ org-tags-exclude-from-inheritance '("crypt" "project")
+ org-crypt-disable-auto-save 'encypt
+
+ ;; org-drill
+
+ org-drill-scope (let ((dir (concat org-directory "/drill")))
+                   (when (f-dir? dir)
+                     (f-files dir)))
+ org-drill-learn-fraction 0.25
+ org-drill-adjust-intervals-for-early-and-late-repetitions-p t
+ org-drill-add-random-noise-to-intervals-p t
+ org-drill-save-buffers-after-drill-sessions-p nil
+
+ org-refile-targets
+ '((org-drill-scope :maxlevel . 3)
+   (org-directory :maxlevel . 3)
+   (org-default-notes-file :maxlevel . 3)
+   (nil :maxlevel . 3))
+
+ org-attach-directory (f-join org-directory "data")
+ org-archive-default-command #'cb-org--archive-done-tasks
+
+ ;; appt
+
+ appt-message-warning-time 60
+ appt-display-interval 5
+
+ ;; clocking
+
+ org-clock-history-length 20
+ org-clock-in-resume t
+ org-clock-out-remove-zero-time-clocks t
+ org-clock-persist t
+ org-clock-persist-query-resume nil
+ org-clock-report-include-clocking-task t
+ )
+
+
+;; org-agenda settings
+
+(general-setq
+ ;; Match projects that do not have any todos.
+ org-stuck-projects '("+project-ignore-maybe-done" ("TODO") nil)
+ org-agenda-auto-exclude-function #'cb-org--exclude-tasks-on-hold
+ org-agenda-hide-tags-regexp (rx (or "noexport" "someday" "project"))
+ org-agenda-include-diary nil
+ org-agenda-insert-diary-extract-time t
+ org-agenda-search-view-always-boolean t
+ org-agenda-show-all-dates nil
+ org-agenda-show-inherited-tags nil
+ org-agenda-skip-deadline-if-done t
+ org-agenda-skip-deadline-prewarning-if-scheduled t
+ org-agenda-skip-scheduled-if-done t
+ org-agenda-span 'week
+ org-agenda-start-on-weekday nil
+ org-agenda-sorting-strategy '((agenda time-up priority-down category-keep)
+                               (todo priority-down category-keep scheduled-up)
+                               (tags priority-down category-keep)
+                               (search category-keep))
+ org-agenda-clockreport-parameter-plist (list :compact t :maxlevel 5 :fileskip0 t :step 'week)
+ org-agenda-inhibit-startup t
+ org-agenda-tags-column -100
+ org-agenda-text-search-extra-files '(agenda-archives)
+ org-agenda-use-time-grid nil)
+
+(general-setq org-agenda-custom-commands
+              '(("A" "Agenda and next actions"
+                 ((tags-todo "-study-someday-media-gtd/TODO"
+                             ((org-agenda-overriding-header "Next Actions")
+                              ;; Take the first item from each todo list. Also
+                              ;; exclude items with scheduled/deadline times, since
+                              ;; they show up in the calendar views.
+                              (org-agenda-skip-function (lambda ()
+                                                          (or (cb-org--agenda-skip-if-has-timestamp)
+                                                              (cb-org--agenda-skip-all-siblings-but-first))))))
+                  (agenda "")
+                  (todo "WAITING"
+                        ((org-agenda-overriding-header "Waiting")))
+                  (stuck "")
+                  (tags-todo "media|study/TODO"
+                             ((org-agenda-overriding-header "Media & Study"))))
+                 ((org-agenda-tag-filter-preset '("-ignore"))
+                  (org-agenda-files (list org-default-notes-file org-agenda-diary-file))
+                  (org-agenda-dim-blocked-tasks nil)
+                  (org-agenda-archives-mode nil)
+                  (org-agenda-ignore-drawer-properties '(effort appt))))
+
+                ("r" "Weekly Review"
+                 ((agenda ""
+                          ((org-agenda-overriding-header "Review Previous Week")
+                           (org-agenda-ndays 7)
+                           (org-agenda-start-day "-7d")))
+                  (agenda ""
+                          ((org-agenda-overriding-header "Review Upcoming Events")
+                           (org-agenda-ndays 14)))
+                  (stuck ""
+                         ((org-agenda-overriding-header "Review Stuck Projects")))
+                  (todo "WAITING"
+                        ((org-agenda-overriding-header "Review Tasks on Hold")))
+
+                  (tags-todo "-someday-media/TODO"
+                             ((org-agenda-overriding-header "Next Actions")
+                              (org-agenda-skip-function (lambda ()
+                                                          (or (cb-org--agenda-skip-if-has-timestamp)
+                                                              (cb-org--agenda-skip-all-siblings-but-first))))))
+                  (tags-todo "+goals+3_months+project/TODO"
+                             ((org-agenda-overriding-header "Review 3 Month Goals")
+                              (org-agenda-skip-function (lambda ()
+                                                          (or (cb-org--agenda-skip-if-has-timestamp)
+                                                              (cb-org--agenda-skip-all-siblings-but-first))))))
+                  (tags-todo "+goals+1_year+project/TODO"
+                             ((org-agenda-overriding-header "Review 1 Year Goals")
+                              (org-agenda-skip-function (lambda ()
+                                                          (or (cb-org--agenda-skip-if-has-timestamp)
+                                                              (cb-org--agenda-skip-all-siblings-but-first))))))
+                  (tags-todo "+goals+3_years+project/MAYBE|SOMEDAY|TODO"
+                             ((org-agenda-overriding-header "Review 3 Year Goals")
+                              (org-agenda-skip-function (lambda ()
+                                                          (or (cb-org--agenda-skip-if-has-timestamp)
+                                                              (cb-org--agenda-skip-all-siblings-but-first))))))
+                  (tags-todo "someday-skill/MAYBE|TODO"
+                             ((org-agenda-overriding-header "Decide whether to promote any SOMEDAY items to TODOs")))
+                  (tags-todo "someday&skill"
+                             ((org-agenda-overriding-header "Decide whether to promote any learning tasks to TODOs"))))
+                 ((org-agenda-tag-filter-preset
+                   '("-drill" "-gtd" "-ignore"))
+                  (org-agenda-include-inactive-timestamps t)
+                  (org-agenda-files (list org-default-notes-file cb-org-work-file org-agenda-diary-file))
+                  (org-agenda-archives-mode nil)
+                  (org-agenda-dim-blocked-tasks nil)))
+
+                ("w" "Work actions"
+                 ((tags-todo "-study-someday-media-gtd/TODO"
+                             ((org-agenda-overriding-header "Next Actions")
+                              (org-agenda-skip-function (lambda ()
+                                                          (or (cb-org--agenda-skip-if-has-timestamp)
+                                                              (cb-org--agenda-skip-all-siblings-but-first))))))
+                  (todo "WAITING"
+                        ((org-agenda-overriding-header "Waiting")))
+                  (stuck "")
+                  (agenda "")
+                  (tags "+standup"
+                        ((org-agenda-overriding-header "Standup"))))
+                 ((org-agenda-tag-filter-preset '("-ignore"))
+                  (org-agenda-use-tag-inheritance nil)
+                  (org-agenda-files (list cb-org-work-file org-agenda-diary-file))
+                  (org-agenda-dim-blocked-tasks nil)
+                  (org-agenda-archives-mode nil)
+                  (org-agenda-ignore-drawer-properties '(effort appt))))))
+
+
+;; org-capture templates
+
+(general-setq org-capture-templates
+              (cl-labels ((entry
+                           (key label form template
+                                &rest kws
+                                &key
+                                (type 'entry)
+                                (prepend t)
+                                (clock-keep t)
+                                (empty-lines 1)
+                                &allow-other-keys)
+                           (append
+                            (list key label type form template
+                                  :clock-keep clock-keep
+                                  :empty-lines empty-lines
+                                  :prepend prepend)
+                            kws)))
+                (list
+                 (entry
+                  "t" "Todo"
+                  '(file org-default-notes-file) "* TODO %?")
+
+                 (entry
+                  "T" "Todo (work)"
+                  `(file ,cb-org-work-file) "* TODO %?")
+
+                 (entry
+                  "d" "Diary"
+                  '(file+datetree org-agenda-diary-file) "* %?\n%^t")
+
+                 (entry
+                  "D" "Diary (work)"
+                  `(file+datetree cb-org-work-file) "* %?\n%^t")
+
+                 (entry
+                  "j" "Journal"
+                  '(file cb-org-journal-file) "* %u\n\n%?"
+                  :type 'entry
+                  :jump-to-captured t
+                  :prepend nil)
+
+                 (entry
+                  "l" "Link"
+                  '(file+olp org-default-notes-file "Links")
+                  '(function cb-org-capture-url-read-url)
+                  :immediate-finish t)
+
+                 (entry
+                  "L" "Link (work)"
+                  `(file+olp cb-org-work-file "Links")
+                  '(function cb-org-capture-url-read-url)
+                  :immediate-finish t)
+
+                 (entry
+                  "s" "Someday"
+                  '(file+olp org-default-notes-file "Someday")
+                  "* SOMEDAY %?")
+
+                 (entry
+                  "m" "Listening"
+                  '(file+olp org-default-notes-file "Media" "Listening")
+                  "* MAYBE Listen to %i%?")
+
+                 (entry
+                  "v" "Viewing"
+                  '(file+olp org-default-notes-file "Media" "Viewing")
+                  "* MAYBE Watch %i%?")
+
+                 (entry
+                  "r" "Reading"
+                  '(file+olp org-default-notes-file "Media" "Reading")
+                  "* MAYBE Read %i%?")
+
+                 (entry
+                  "0" "Drill (item)"
+                  '(file+olp cb-org-drill-file "Uncategorised")
+                  "* Item                :drill:
+
+%?
+"
+                  :jump-to-captured t)
+
+                 (entry
+                  "1" "Drill (question)"
+                  '(file+olp cb-org-drill-file "Uncategorised")
+                  "* Question                :drill:
+
+%?
+
+** Answer
+"
+                  :jump-to-captured t)
+
+                 (entry
+                  "2" "Drill (two-sided)"
+                  '(file+olp cb-org-drill-file "Uncategorised")
+                  "* Question                :drill:
+:PROPERTIES:
+:DRILL_CARD_TYPE: twosided
+:END:
+
+%?
+
+** Side 1
+
+** Side 2
+"
+                  :jump-to-captured t)
+
+                 (entry
+                  "e" "Email task"
+                  '(file org-default-notes-file) "* TODO %?\n%a")
+
+                 (entry
+                  "E" "Email task (work)"
+                  `(file cb-org-work-file) "* TODO %?\n%a"))))
+
+
 
 (use-package org
   :straight org-plus-contrib
   :defer t
+  :general
+  (:states 'normal :keymaps 'org-mode-map "RET" #'org-return)
 
-  :bind
-  (:map org-mode-map
-        ("C-c C-." . org-time-stamp-inactive)
-        ("M-p" . org-metaup)
-        ("M-n" . org-metadown)
-        ("C-c c" . org-columns))
+  :general
+  (:keymaps 'org-mode-map
+            "C-c C-." #'org-time-stamp-inactive
+            "M-p" #'org-metaup
+            "M-n" #'org-metadown
+            "C-c c" #'org-columns)
 
   :preface
   (progn
@@ -114,155 +455,42 @@
 
   :config
   (progn
-    (setq org-default-notes-file (f-join org-directory "notes.org"))
-
-    (add-to-list 'org-refile-targets '(nil :maxlevel . 3))
-    (add-to-list 'org-refile-targets '(org-default-notes-file :maxlevel . 3))
-    (add-to-list 'org-refile-targets `(,org-directory :maxlevel . 3))
-    (add-to-list 'org-tags-exclude-from-inheritance "project")
-
     (setf (cdr (assoc 'file org-link-frame-setup)) #'find-file-other-window)
 
-    (setq org-M-RET-may-split-line nil)
-    (setq org-catch-invisible-edits 'smart)
-    (setq org-cycle-separator-lines 1)
-    (setq org-enforce-todo-dependencies t)
-    (setq org-footnote-auto-adjust t)
-    (setq org-indirect-buffer-display 'current-window)
-    (setq org-insert-heading-respect-content t)
-    (setq org-link-abbrev-alist '(("att" . org-attach-expand-link)))
-    (setq org-log-done 'time)
-    (setq org-log-into-drawer t)
-    (setq org-hide-emphasis-markers t)
-    (setq org-outline-path-complete-in-steps nil)
-    (setq org-pretty-entities t)
-    (setq org-refile-allow-creating-parent-nodes 'confirm)
-    (setq org-refile-target-verify-function (lambda () (not (member (nth 2 (org-heading-components)) org-done-keywords))))
-
-    (setq org-refile-use-outline-path t)
-    (setq org-return-follows-link t)
-    (setq org-reverse-note-order nil)
-    (setq org-confirm-elisp-link-function nil)
-    (setq org-startup-indented t)
-    (setq org-startup-with-inline-images t)
-    (setq org-hierarchical-todo-statistics nil)
-    (setq org-checkbox-hierarchical-statistics t)
-    (setq org-log-repeat nil)
-    (setq org-blank-before-new-entry '((heading . always) (plain-list-item . nil)))
-
-    (setq org-todo-keywords '((type "TODO(t)" "MAYBE(m)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")
-                              (type "SOMEDAY(s)" "|")))
-
-
-    (setq org-confirm-babel-evaluate nil)
-    (setq org-babel-load-languages '((emacs-lisp . t)
-                                     (restclient . t)
-                                     (gnuplot . t)
-                                     (python . t)
-                                     ;; (ipython . t)
-                                     (shell . t)
-                                     (sql . t)))
-
     (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
-
-    (evil-define-key 'normal org-mode-map (kbd "RET") #'org-return)
-
     (advice-add 'org-add-log-note :before #'cb-org--exit-minibuffer)
     (advice-add 'org-toggle-heading :after #'cb-org--toggle-heading-goto-eol)))
 
-(use-package ob-ipython
-  :disabled t
-  :straight t
-  :after org
-  :preface
-  (progn
-    (define-derived-mode org-babel-traceback-mode special-mode "traceback")
-    (evil-set-initial-state 'org-babel-traceback-mode 'motion)
-
-    (defun cb-org--setup-traceback-buffer (buf)
-      (with-current-buffer buf
-        (org-babel-traceback-mode))
-      buf)
-
-    (defun cb-org--setup-ipython (f &rest args)
-      (if (executable-find "ipython")
-          (let ((python-shell-interpreter "ipython")
-                (python-shell-interpreter-args "--simple-prompt -i")
-                (python-shell-prompt-detect-failure-warning nil))
-            (apply f args))
-        (apply f args))))
-  :config
-  (progn
-    ;; HACK: ipython-mode must be defined for source blocks to work.
-    (defalias 'ipython-mode 'python-mode)
-
-    (advice-add 'org-babel-execute:ipython :around #'cb-org--setup-ipython)
-    (advice-add 'ob-ipython--create-traceback-buffer :filter-return #'cb-org--setup-traceback-buffer)
-
-    (add-to-list 'display-buffer-alist
-                 `(,(rx bos "*ob-ipython-traceback*" eos)
-                   (display-buffer-reuse-window
-                    display-buffer-pop-up-window)
-                   (reusable-frames . visible)
-                   (side            . bottom)
-                   (window-height   . 0.5)))))
-
-(use-package ob-python
-  :after org
-  :preface
-  (defun cb-org-setup-python ()
-    (when (executable-find "ipython")
-      (setq-local org-babel-python-command "ipython")))
-  :config
-  (add-hook 'org-mode-hook #'cb-org-setup-python))
-
-(use-package ob-gnuplot
-  :after org)
-
-(use-package org-habit
-  :after org-agenda
-  :config
-  (progn
-    (setq org-habit-graph-column 68)
-    (setq org-habit-preceding-days 7)
-    (setq org-habit-following-days 5)))
-
-(use-package gnuplot
-  :straight t
-  :defer t)
-
-(use-package ob-restclient
-  :straight t
-  :after org)
-
+(use-package cb-org-capture-url :after org)
+(use-package cb-org-gdrive :hook (org-mode . cb-org-gdrive-init))
+(use-package cb-org-pgp-decrpyt :hook (org-mode . cb-org-pgp-decrpyt-init))
+(use-package gnuplot :straight t :defer t)
+(use-package ob-gnuplot :after org)
+(use-package ob-restclient :straight t :defer t)
 (use-package ob-shell :after org)
-
 (use-package ob-sql :after org)
-
-(use-package org-table
-  :after org
-  :config
-  (add-to-list 'display-buffer-alist
-               `(,(rx bos "*Edit Formulas*" eos)
-                 (display-buffer-reuse-window
-                  display-buffer-pop-up-window)
-                 (reusable-frames . visible)
-                 (side            . bottom)
-                 (window-height   . 0.2))))
-
-(use-package org-hydras
-  :after org
-  :commands (org-babel/body))
-
-(use-package org-attach
-  :after org
-  :config
-  (setq org-attach-directory (f-join org-directory "data")))
+(use-package org-drill :commands (org-drill))
+(use-package org-habit :after org-agenda)
+(use-package org-hydras :commands (org-babel/body))
+(use-package ox-gfm :straight t :after org)
 
 (use-package org-agenda
   :after org
-  :bind (:map org-agenda-mode-map ("J" . org-agenda-goto-date))
-
+  :general ("C-c a" #'org-agenda)
+  :general (:states 'motion
+                    :keymaps 'org-agenda-mode-map
+                    "J" #'org-agenda-goto-date
+                    "j" #'org-agenda-next-line
+                    "k" #'org-agenda-previous-line
+                    "M-j" #'org-agenda-next-item
+                    "M-k" #'org-agenda-previous-item
+                    "M-h" #'org-agenda-earlier
+                    "M-l" #'org-agenda-later
+                    "gd" #'org-agenda-toggle-time-grid
+                    "gr" #'org-agenda-redo
+                    "M-RET" #'org-agenda-show-and-scroll-up
+                    "C-f" #'evil-scroll-page-down
+                    "C-b" #'evil-scroll-page-up)
   :preface
   (progn
     (autoload 'org-get-deadline-time "org")
@@ -299,164 +527,30 @@
           (or (outline-next-heading)
               (goto-char (point-max)))))))
 
-  :bind
-  ("C-c a" . org-agenda)
-
   :config
   (progn
-    (evilified-state-evilify-map org-agenda-mode-map
-      :mode org-agenda-mode
-      :bindings
-      "j" 'org-agenda-next-line
-      "k" 'org-agenda-previous-line
-      (kbd "M-j") 'org-agenda-next-item
-      (kbd "M-k") 'org-agenda-previous-item
-      (kbd "M-h") 'org-agenda-earlier
-      (kbd "M-l") 'org-agenda-later
-      (kbd "gd") 'org-agenda-toggle-time-grid
-      (kbd "gr") 'org-agenda-redo
-      (kbd "M-RET") 'org-agenda-show-and-scroll-up)
-
-
-    (define-key org-agenda-mode-map (kbd "C-f" ) #'evil-scroll-page-down)
-    (define-key org-agenda-mode-map (kbd "C-b") #'evil-scroll-page-up)
-
-    ;; Match projects that do not have any todos.
-    (setq org-stuck-projects '("+project-ignore-maybe-done"
-                               ("TODO") nil))
-
     ;; Enable leader key in agenda.
     (config-hydras-insinuate org-agenda-mode-map)
-
-    (setq org-agenda-block-separator "")
-    (setq org-agenda-include-diary nil)
-    (setq org-agenda-start-on-weekday nil)
-    (setq org-agenda-auto-exclude-function #'cb-org--exclude-tasks-on-hold)
-    (setq org-agenda-hide-tags-regexp (rx (or "noexport" "someday" "project")))
-    (setq org-agenda-insert-diary-extract-time t)
-    (setq org-agenda-span 'week)
-    (setq org-agenda-search-view-always-boolean t)
-    (setq org-agenda-show-all-dates nil)
-    (setq org-agenda-show-inherited-tags nil)
-    (setq org-agenda-skip-deadline-if-done t)
-    (setq org-agenda-skip-deadline-prewarning-if-scheduled t)
-    (setq org-agenda-skip-scheduled-if-done t)
-    (setq org-agenda-sorting-strategy
-          '((agenda time-up priority-down category-keep)
-            (todo priority-down category-keep scheduled-up)
-            (tags priority-down category-keep)
-            (search category-keep)))
-    (setq org-agenda-text-search-extra-files '(agenda-archives))
-    (setq org-agenda-use-time-grid nil)
-    (setq org-agenda-inhibit-startup t)
-    (setq org-agenda-tags-column -100)
-
-    (setq org-agenda-clockreport-parameter-plist
-          (list
-           :compact t
-           :maxlevel 5
-           :fileskip0 t
-           :step 'week))
 
     (add-hook 'org-finalize-agenda-hook 'org-agenda-to-appt)
 
     ;; Ensure the separator line is rendered whenever the org agenda view
     ;; changes. This is needed for page-break-lines to render the separator
     ;; correctly.
+    (setq org-agenda-block-separator "")
     (advice-add 'org-agenda :after #'cb-org--draw-separator)
-    (advice-add 'org-agenda-redo :after #'cb-org--draw-separator)
+    (advice-add 'org-agenda-redo :after #'cb-org--draw-separator)))
 
-    (setq org-agenda-custom-commands
-          '(("A" "Agenda and next actions"
-             ((tags-todo "-study-someday-media-gtd/TODO"
-                         ((org-agenda-overriding-header "Next Actions")
-                          ;; Take the first item from each todo list. Also
-                          ;; exclude items with scheduled/deadline times, since
-                          ;; they show up in the calendar views.
-                          (org-agenda-skip-function (lambda ()
-                                                      (or (cb-org--agenda-skip-if-has-timestamp)
-                                                          (cb-org--agenda-skip-all-siblings-but-first))))))
-              (agenda "")
-              (todo "WAITING"
-                    ((org-agenda-overriding-header "Waiting")))
-              (stuck "")
-              (tags-todo "media|study/TODO"
-                         ((org-agenda-overriding-header "Media & Study"))))
-             ((org-agenda-tag-filter-preset '("-ignore"))
-              (org-agenda-files (list org-default-notes-file org-agenda-diary-file))
-              (org-agenda-dim-blocked-tasks nil)
-              (org-agenda-archives-mode nil)
-              (org-agenda-ignore-drawer-properties '(effort appt))))
-
-            ("r" "Weekly Review"
-             ((agenda ""
-                      ((org-agenda-overriding-header "Review Previous Week")
-                       (org-agenda-ndays 7)
-                       (org-agenda-start-day "-7d")))
-              (agenda ""
-                      ((org-agenda-overriding-header "Review Upcoming Events")
-                       (org-agenda-ndays 14)))
-              (stuck ""
-                     ((org-agenda-overriding-header "Review Stuck Projects")))
-              (todo "WAITING"
-                    ((org-agenda-overriding-header "Review Tasks on Hold")))
-
-              (tags-todo "-someday-media/TODO"
-                         ((org-agenda-overriding-header "Next Actions")
-                          (org-agenda-skip-function (lambda ()
-                                                      (or (cb-org--agenda-skip-if-has-timestamp)
-                                                          (cb-org--agenda-skip-all-siblings-but-first))))))
-              (tags-todo "+goals+3_months+project/TODO"
-                         ((org-agenda-overriding-header "Review 3 Month Goals")
-                          (org-agenda-skip-function (lambda ()
-                                                      (or (cb-org--agenda-skip-if-has-timestamp)
-                                                          (cb-org--agenda-skip-all-siblings-but-first))))))
-              (tags-todo "+goals+1_year+project/TODO"
-                         ((org-agenda-overriding-header "Review 1 Year Goals")
-                          (org-agenda-skip-function (lambda ()
-                                                      (or (cb-org--agenda-skip-if-has-timestamp)
-                                                          (cb-org--agenda-skip-all-siblings-but-first))))))
-              (tags-todo "+goals+3_years+project/MAYBE|SOMEDAY|TODO"
-                         ((org-agenda-overriding-header "Review 3 Year Goals")
-                          (org-agenda-skip-function (lambda ()
-                                                      (or (cb-org--agenda-skip-if-has-timestamp)
-                                                          (cb-org--agenda-skip-all-siblings-but-first))))))
-              (tags-todo "someday-skill/MAYBE|TODO"
-                         ((org-agenda-overriding-header "Decide whether to promote any SOMEDAY items to TODOs")))
-              (tags-todo "someday&skill"
-                         ((org-agenda-overriding-header "Decide whether to promote any learning tasks to TODOs"))))
-             ((org-agenda-tag-filter-preset
-               '("-drill" "-gtd" "-ignore"))
-              (org-agenda-include-inactive-timestamps t)
-              (org-agenda-files (list org-default-notes-file cb-org-work-file org-agenda-diary-file))
-              (org-agenda-archives-mode nil)
-              (org-agenda-dim-blocked-tasks nil)))
-
-            ("w" "Work actions"
-             ((tags-todo "-study-someday-media-gtd/TODO"
-                         ((org-agenda-overriding-header "Next Actions")
-                          (org-agenda-skip-function (lambda ()
-                                                      (or (cb-org--agenda-skip-if-has-timestamp)
-                                                          (cb-org--agenda-skip-all-siblings-but-first))))))
-              (todo "WAITING"
-                    ((org-agenda-overriding-header "Waiting")))
-              (stuck "")
-              (agenda "")
-              (tags "+standup"
-                    ((org-agenda-overriding-header "Standup"))))
-             ((org-agenda-tag-filter-preset '("-ignore"))
-              (org-agenda-use-tag-inheritance nil)
-              (org-agenda-files (list cb-org-work-file org-agenda-diary-file))
-              (org-agenda-dim-blocked-tasks nil)
-              (org-agenda-archives-mode nil)
-              (org-agenda-ignore-drawer-properties '(effort appt))))))))
-
-(use-package appt
-  :defer t
+(use-package org-table
+  :after org
   :config
-  (progn
-    (setq appt-message-warning-time 60)
-    (setq appt-display-interval 5)))
+  (add-to-list 'display-buffer-alist
+               `(,(rx bos "*Edit Formulas*" eos)
+                 (display-buffer-reuse-window
+                  display-buffer-pop-up-window)
+                 (reusable-frames . visible)
+                 (side            . bottom)
+                 (window-height   . 0.2))))
 
 (use-package org-archive
   :after org
@@ -482,9 +576,7 @@
       (org-set-tags (org-get-tags))))
 
   :config
-  (progn
-    (setq org-archive-default-command #'cb-org--archive-done-tasks)
-    (advice-add 'org-archive-subtree :before #'cb-org--apply-inherited-tags)))
+  (advice-add 'org-archive-subtree :before #'cb-org--apply-inherited-tags))
 
 (use-package org-src
   :after org
@@ -500,8 +592,6 @@
 
   :config
   (progn
-    (setq org-src-fontify-natively t)
-    (setq org-src-window-setup 'current-window)
     (add-hook 'org-src-mode-hook #'cb-org--suppress-final-newline)
     (advice-add 'org-edit-src-exit :before #'cb-org--org-src-delete-trailing-space)))
 
@@ -519,13 +609,6 @@
 
   :config
   (progn
-    (setq org-clock-persist t)
-    (setq org-clock-persist-query-resume nil)
-    (setq org-clock-history-length 20)
-    (setq org-clock-in-resume t)
-    (setq org-clock-report-include-clocking-task t)
-    (setq org-clock-out-remove-zero-time-clocks t)
-
     (org-clock-persistence-insinuate)
     (add-hook 'org-clock-out-hook #'cb-org--remove-empty-clock-drawers t)))
 
@@ -535,167 +618,7 @@
   (defun cb-org--encrypt-on-save ()
     (add-hook 'before-save-hook 'org-encrypt-entries nil t))
   :init
-  (add-hook 'org-mode-hook #'cb-org--encrypt-on-save)
-  :config
-  (progn
-    (setq org-crypt-disable-auto-save 'encypt)
-    (add-to-list 'org-tags-exclude-from-inheritance "crypt")))
-
-(use-package org-drill
-  :commands (org-drill
-             org-drill-strip-all-data
-             org-drill-cram
-             org-drill-tree
-             org-drill-resume
-             org-drill-merge-buffers
-             org-drill-entry
-             org-drill-directory
-             org-drill-again)
-  :preface
-  (progn
-    (defconst cb-org-drill-file (f-join org-directory "drill" "drill.org"))
-
-    (defconst cb-org-drill-files
-      (let ((dir (concat org-directory "/drill")))
-        (when (f-dir? dir)
-          (f-files dir)))))
-
-  :defines
-  (org-drill-scope
-   org-drill-learn-fraction
-   org-drill-adjust-intervals-for-early-and-late-repetitions-p
-   org-drill-add-random-noise-to-intervals-p
-   org-drill-save-buffers-after-drill-sessions-p)
-
-  :init
-  (with-eval-after-load 'org
-    (setq org-drill-scope cb-org-drill-files)
-
-    (add-to-list 'org-refile-targets '(cb-org-drill-files :maxlevel . 3))
-
-    (setq org-drill-learn-fraction 0.25)
-    (setq org-drill-adjust-intervals-for-early-and-late-repetitions-p t)
-    (setq org-drill-add-random-noise-to-intervals-p t)
-    (setq org-drill-save-buffers-after-drill-sessions-p nil)))
-
-(use-package org-capture
-  :commands (org-capture)
-  :preface
-  (cl-defun cb-org--capture-template-entry (key label form template
-                                                &rest kws
-                                                &key
-                                                (type 'entry)
-                                                (prepend t)
-                                                (clock-keep t)
-                                                (empty-lines 1)
-                                                &allow-other-keys)
-    (append
-     (list key label type form template
-           :clock-keep clock-keep
-           :empty-lines empty-lines
-           :prepend prepend)
-     kws))
-  :config
-  (setq org-capture-templates
-        (list
-         (cb-org--capture-template-entry
-          "t" "Todo"
-          '(file org-default-notes-file) "* TODO %?")
-
-         (cb-org--capture-template-entry
-          "T" "Todo (work)"
-          `(file ,cb-org-work-file) "* TODO %?")
-
-         (cb-org--capture-template-entry
-          "d" "Diary"
-          '(file+datetree org-agenda-diary-file) "* %?\n%^t")
-
-         (cb-org--capture-template-entry
-          "D" "Diary (work)"
-          `(file+datetree cb-org-work-file) "* %?\n%^t")
-
-         (cb-org--capture-template-entry
-          "j" "Journal"
-          '(file cb-org-journal-file) "* %u\n\n%?"
-          :type 'entry
-          :jump-to-captured t
-          :prepend nil)
-
-         (cb-org--capture-template-entry
-          "l" "Link"
-          '(file+olp org-default-notes-file "Links")
-          '(function cb-org-capture-url-read-url)
-          :immediate-finish t)
-
-         (cb-org--capture-template-entry
-          "L" "Link (work)"
-          `(file+olp cb-org-work-file "Links")
-          '(function cb-org-capture-url-read-url)
-          :immediate-finish t)
-
-         (cb-org--capture-template-entry
-          "s" "Someday"
-          '(file+olp org-default-notes-file "Someday")
-          "* SOMEDAY %?")
-
-         (cb-org--capture-template-entry
-          "m" "Listening"
-          '(file+olp org-default-notes-file "Media" "Listening")
-          "* MAYBE Listen to %i%?")
-
-         (cb-org--capture-template-entry
-          "v" "Viewing"
-          '(file+olp org-default-notes-file "Media" "Viewing")
-          "* MAYBE Watch %i%?")
-
-         (cb-org--capture-template-entry
-          "r" "Reading"
-          '(file+olp org-default-notes-file "Media" "Reading")
-          "* MAYBE Read %i%?")
-
-         (cb-org--capture-template-entry
-          "0" "Drill (item)"
-          '(file+olp cb-org-drill-file "Uncategorised")
-          "* Item                :drill:
-
-%?
-"
-          :jump-to-captured t)
-
-         (cb-org--capture-template-entry
-          "1" "Drill (question)"
-          '(file+olp cb-org-drill-file "Uncategorised")
-          "* Question                :drill:
-
-%?
-
-** Answer
-"
-          :jump-to-captured t)
-
-         (cb-org--capture-template-entry
-          "2" "Drill (two-sided)"
-          '(file+olp cb-org-drill-file "Uncategorised")
-          "* Question                :drill:
-:PROPERTIES:
-:DRILL_CARD_TYPE: twosided
-:END:
-
-%?
-
-** Side 1
-
-** Side 2
-"
-          :jump-to-captured t)
-
-         (cb-org--capture-template-entry
-          "e" "Email task"
-          '(file org-default-notes-file) "* TODO %?\n%a")
-
-         (cb-org--capture-template-entry
-          "E" "Email task (work)"
-          `(file cb-org-work-file) "* TODO %?\n%a"))))
+  (add-hook 'org-mode-hook #'cb-org--encrypt-on-save))
 
 (use-package evil
   :defer t
@@ -739,15 +662,6 @@
   :config
   (setq org-present-text-scale 4))
 
-(use-package ox
-  :after org
-  :init
-  (defvar org-export-backends '(ascii html latex odt gfm koma-letter custom-confluence))
-  :config
-  (progn
-    (setq org-export-exclude-tags '("noexport" "crypt"))
-    (setq org-export-coding-system 'utf-8)))
-
 (use-package ox-confluence
   :after org
   :preface
@@ -757,10 +671,6 @@
     :menu-entry
     '(?c "Export as Confluence markup"
          ((?c "To temporary buffer" org-confluence-export-as-confluence)))))
-
-(use-package ox-gfm
-  :straight t
-  :after org)
 
 (use-package ox-latex
   :after org
@@ -783,15 +693,15 @@
                  "<tr class=\"tr-odd\">"
                "<tr class=\"tr-even\">"))))
   :config
-  (progn
-    (setq org-html-html5-fancy t)
-    (setq org-html-postamble nil)
+  (general-setq
+   org-html-html5-fancy t
+   org-html-postamble nil
 
-    ;; Highlight alternating rows in HTML tables.
+   ;; Highlight alternating rows in HTML tables.
 
-    (setq org-html-table-row-open-tag #'cb-org-html-open-tags-setup)
-    (setq org-html-head-extra
-          "
+   org-html-table-row-open-tag #'cb-org-html-open-tags-setup
+   org-html-head-extra
+   "
 <style type=\"text/css\">
 table tr.tr-odd td {
       background-color: #FCF6CF;
@@ -800,20 +710,16 @@ table tr.tr-even td {
       background-color: #FEFEF2;
 }
 </style>
-")))
+"))
 
 (use-package cb-org-export-koma-letter
   :after org
   :commands (cb-org-export-koma-letter-handler)
   :config
   (progn
+    (general-setq org-latex-hyperref-template "")
     (add-to-list 'org-latex-classes `("koma-letter" ,cb-org-export-koma-letter-latex-class))
-    (setq org-latex-hyperref-template "")
     (add-hook 'org-ctrl-c-ctrl-c-hook #'cb-org-export-koma-letter-handler t)))
-
-(use-package cb-org-pgp-decrpyt :hook (org-mode . cb-org-pgp-decrpyt-init))
-(use-package cb-org-capture-url :after org)
-(use-package cb-org-gdrive :hook (org-mode . cb-org-gdrive-init))
 
 (use-package cb-org-goto
   :commands (cb-org-goto-agenda
@@ -827,36 +733,23 @@ table tr.tr-even td {
 
 (use-package cb-org-ctrl-c-ret
   :after org
-  :commands (cb-org-ctrl-c-ret)
-  :init
-  (progn
-    (evil-define-key 'normal org-mode-map (kbd "C-c RET") #'cb-org-ctrl-c-ret)
-    (evil-define-key 'emacs org-mode-map (kbd "C-c RET") #'cb-org-ctrl-c-ret)))
+  :general (:states '(normal emacs) :keymaps 'org-mode-map "C-c RET" #'cb-org-ctrl-c-ret))
 
 (use-package cb-org-ctrl-c-ctrl-k
   :after org
-  :commands (cb-org-ctrl-c-ctrl-k)
-  :init
-  (evil-define-key 'normal org-mode-map (kbd "C-c C-k") #'cb-org-ctrl-c-ctrl-k))
+  :general
+  (:states 'normal :keymaps 'org-mode-map "C-c C-k" #'cb-org-ctrl-c-ctrl-k))
 
 (use-package evil-org
   :straight t
   :after (:and org evil)
   :hook (org-mode . evil-org-mode)
+  :general
+  (:states 'normal :keymaps 'evil-org-mode-map "t" #'org-todo)
   :config
-  (progn
-    (evil-define-key 'normal evil-org-mode-map
-      (kbd "t") #'org-todo)
-
-    ;; Remove weird keybindings.
-    (evil-define-key 'insert evil-org-mode-map
-      (kbd "M-l") nil
-      (kbd "M-h") nil)
-    (evil-define-key 'normal evil-org-mode-map
-      (kbd "J") nil
-      (kbd "O") nil
-      (kbd "M-l") nil
-      (kbd "M-h") nil)))
+  ;; Remove weird keybindings.
+  (general-unbind :states '(normal insert) :keymaps 'evil-org-mode-map
+    "M-l" "M-h" "J" "O" "M-l" "M-h"))
 
 
 
