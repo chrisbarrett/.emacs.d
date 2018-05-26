@@ -27,7 +27,6 @@
 
 (autoload 'ansi-color-apply-on-region "ansi-color")
 (autoload 'config-hydras-insinuate "config-hydras")
-(autoload 'evil-define-key "evil")
 (autoload 'thing-at-point-looking-at "thingatpt")
 
 
@@ -424,7 +423,6 @@
   :preface
   (progn
     (autoload 'ansi-color-apply-on-region "ansi-color")
-    (autoload 'evil-backward-char "evil-commands")
 
     (defvar compilation-filter-start)
 
@@ -466,10 +464,9 @@
   (add-hook 'input-method-activate-hook #'config-basic-settings--set-tex-method-vars))
 
 (use-package hippie-exp
-  :bind (("M-/" . hippie-expand)
-         :map
-         evil-insert-state-map
-         ([remap evil-complete-previous] . hippie-expand)))
+  :general ("M-/" 'hippie-expand
+            :states 'insert
+            [remap evil-complete-previous] 'hippie-expand))
 
 (use-package winner
   :config (winner-mode t))
@@ -489,6 +486,8 @@
 (use-package world-time-mode
   :straight t
   :commands (world-time-list)
+  :general
+  (:states 'normal :keymaps 'world-time-table-mode-map "q" 'quit-window)
   :config
   (progn
     (setq display-time-world-list '(("Pacific/Auckland" "NZT")
@@ -498,12 +497,8 @@
                                     ("America/New_York" "New York")
                                     ("America/Denver" "Mountain Time")
                                     ("Australia/Sydney" "Sydney")))
-    (with-eval-after-load 'evil
-      (evil-define-key 'normal world-time-table-mode-map (kbd "q") #'quit-window))
 
-    (add-hook 'world-time-table-mode-hook 'hl-line-mode))
-
-  :defines (display-time-world-list world-time-table-mode-map))
+    (add-hook 'world-time-table-mode-hook 'hl-line-mode)))
 
 (use-package hideshow
   :defer t
