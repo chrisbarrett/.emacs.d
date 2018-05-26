@@ -7,6 +7,7 @@
 
 (require 'all-the-icons)
 (require 'buffer-cmds)
+(require 'dash)
 (require 'jump-cmds)
 (require 'major-mode-hydra)
 (require 'pretty-hydra)
@@ -203,17 +204,48 @@
   "Git"
   (("s" magit-status "magit")
    ("d" cb-git-diff-buffer-file "blame")
-   ("b" git-blame-transient-state/body "diff buffer")
+   ("b" git-blame/body "diff buffer...")
    ("f" cb-git-find-file "find file..."))
   ""
   (("h" git-hunks/body "navigate hunks")
    ("l" magit-log-buffer-file "log buffer")
-   ("t" git-time-machine-transient-state/body "time machine"))
+   ("t" git-time-machine/body "time machine"))
 
   "Jump to Def"
   (("g" dumb-jump-go "jump")
    ("G" dumb-jump-go-other-window "jump other window")
    ("SPC" pop-tag-mark "jump back")))
+
+(cb-hydra-define git-time-machine
+  (:foreign-keys run
+                 :hint nil
+                 :pre (unless (bound-and-true-p git-timemachine-mode)
+                        (call-interactively 'git-timemachine))
+                 :post (when (bound-and-true-p git-timemachine-mode)
+                         (git-timemachine-quit)))
+  (hydra-title-with-aicon "git" "Git Time Machine")
+  "Step"
+  (("p" git-timemachine-show-previous-revision "previous")
+   ("n" git-timemachine-show-next-revision "next"))
+  "Goto Rev"
+  (("h" git-timemachine-show-current-revision "HEAD")
+   ("g" git-timemachine-show-nth-revision "by number"))
+  "Actions"
+  (("Y" git-timemachine-kill-revision "copy sha")))
+
+(cb-hydra-define git-blame
+  (:foreign-keys run
+                 :hint nil
+                 :pre (unless (bound-and-true-p magit-blame-mode)
+                        (call-interactively 'magit-blame))
+                 :post
+                 (when (bound-and-true-p magit-blame-mode)
+                   (magit-blame-quit)))
+  (hydra-title-with-aicon "git" "Git Blame")
+  "Display"
+  (("b" magit-blame "rev added")
+   ("d" magit-blame-removal "rev removed")
+   ("r" magit-blame-reverse "last rev where exists")))
 
 (cb-hydra-define git-hunks (:foreign-keys run :hint nil)
   (hydra-title-with-aicon "git" "Git Hunks")

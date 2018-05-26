@@ -1,23 +1,17 @@
 ;;; config-git.el --- Configuration for git.  -*- lexical-binding: t; -*-
-
-;; Copyright (C) 2016  Chris Barrett
-
-;; Author: Chris Barrett <chris+emacs@walrus.cool>
-
 ;;; Commentary:
-
 ;;; Code:
 
 (eval-when-compile
   (require 'use-package))
 
 (require 'config-hydras)
-(require 'evil-transient-state)
 (require 'paths)
 
 
 
-(add-to-list 'auto-mode-alist '("\\.gitignore\\'" . conf-unix-mode))
+;; Magit provides an excellent suite of interactive commands for working with
+;; git.
 
 (use-package magit
   :straight t
@@ -50,20 +44,7 @@
          (file
           (call-interactively #'magit-diff))
          (t
-          (user-error "Buffer isn't visiting a file")))))
-
-    (evil-transient-state-define git-blame
-      :title "Git Blame Transient State"
-      :doc "
-Press [_b_] again to blame further in the history, [_q_] to go up or quit."
-      :on-enter (unless (bound-and-true-p magit-blame-mode)
-                  (call-interactively 'magit-blame))
-      :foreign-keys run
-      :bindings
-      ("b" magit-blame)
-      ("q" nil :exit (progn (when (bound-and-true-p magit-blame-mode)
-                              (magit-blame-quit))
-                            (not (bound-and-true-p magit-blame-mode))))))
+          (user-error "Buffer isn't visiting a file"))))))
   :config
   (progn
     (config-hydras-insinuate magit-mode-map)
@@ -74,6 +55,8 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
             ("~/workspace" . 1)))
     (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
     (setq magit-log-section-commit-count 0)))
+
+;; Magithub adds some basic GitHub features to magit.
 
 (use-package magithub
   :straight t
@@ -88,8 +71,13 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
     (magithub-feature-autoinject t)
     (setq magithub-clone-default-directory "~/Projects")))
 
+;; This package automatically prepends JIRA ticket numbers to commit messages if
+;; the current git branch looks like it relates to a JIRA ticket.
+
 (use-package git-commit-jira-prefix
   :hook (git-commit-setup . git-commit-jira-prefix-insert))
+
+;; evil-magit reconfigures magit keybindings to better support evil.
 
 (use-package evil-magit
   :straight t
@@ -98,6 +86,9 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
   (evil-magit-init))
 
 (use-package deferred :straight t)
+
+;; git-auto-commit-mode provides a mode that automatically commits changes after
+;; saving a buffer.
 
 (use-package git-auto-commit-mode
   :straight t
@@ -118,36 +109,15 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
   :config
   (defalias 'gac-after-save-func #'config-git--maybe-commit-and-push))
 
+;; Git Time Machine lets you interactively step forward and backwards through a
+;; buffers git versions.
+
 (use-package git-timemachine
   :straight t
-  :defer t
-  :commands
-  (git-timemachine
-   git-timemachine-show-current-revision
-   git-timemachine-show-nth-revision
-   git-timemachine-show-previous-revision
-   git-timemachine-show-next-revision
-   git-timemachine-show-previous-revision
-   git-timemachine-kill-revision
-   git-timemachine-quit)
-  :preface
-  (evil-transient-state-define git-time-machine
-    :title "Git Timemachine Transient State"
-    :doc "
-[_p_/_N_] previous [_n_] next [_c_] current [_g_] goto nth rev [_Y_] copy hash [_q_] quit"
-    :on-enter (unless (bound-and-true-p git-timemachine-mode)
-                (call-interactively 'git-timemachine))
-    :on-exit (when (bound-and-true-p git-timemachine-mode)
-               (git-timemachine-quit))
-    :foreign-keys run
-    :bindings
-    ("c" git-timemachine-show-current-revision)
-    ("g" git-timemachine-show-nth-revision)
-    ("p" git-timemachine-show-previous-revision)
-    ("n" git-timemachine-show-next-revision)
-    ("N" git-timemachine-show-previous-revision)
-    ("Y" git-timemachine-kill-revision)
-    ("q" nil :exit t)))
+  :defer t)
+
+;; Diff-hl highlights changed file hunks in the fringe of the window, and
+;; provides commands for working with hunks.
 
 (use-package diff-hl
   :straight t
@@ -174,6 +144,8 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
 
     (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
     (global-diff-hl-mode +1)))
+
+;; Magit-gpg is a hack to show GPG signing status in magit's commit info.
 
 (use-package magit-gpg
   :after magit
