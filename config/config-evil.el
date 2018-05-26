@@ -12,16 +12,22 @@
   (require 'use-package))
 
 (require 'config-hydras)
+(require 'general)
+
 (straight-use-package 'link-hint)
+
+(declare-function evil-delay "evil-common")
+(declare-function evil-set-initial-state "evil-core")
 
 
 
 (use-package evil
   :straight t
   :demand t
+  :functions (evil-mode evil-delay evil-delete-backward-char-and-join)
+  :defines (evil-want-Y-yank-to-eol)
   :preface
   (progn
-    (autoload 'evil-set-initial-state "evil")
     (autoload 'evil-visual-update-x-selection "evil-states")
 
     (defun config-evil-flyspell-on ()
@@ -100,6 +106,8 @@
 
     ;; Initial states and keymaps for builtin Emacs packages.
 
+    (evil-set-initial-state 'flycheck-error-list-mode 'motion)
+
     (evil-set-initial-state 'grep-mode 'normal)
 
     (evil-set-initial-state 'occur-mode 'normal)
@@ -166,6 +174,10 @@
 
     (evil-set-initial-state 'wdired-mode 'normal)
 
+    (evil-set-initial-state 'ert-simple-view-mode 'motion)
+
+    (evil-set-initial-state 'diff-mode 'motion)
+
     ;; Add ex commands for controlling spellcheck.
 
     (evil-ex-define-cmd "nospell" #'config-evil-flyspell-off)
@@ -175,10 +187,7 @@
     ;; TODO: Move to SP config.
 
     (advice-add #'evil-delete-backward-char-and-join
-                :around #'config-evil--sp-delete-and-join-compat))
-
-  :functions (evil-mode evil-delay evil-delete-backward-char-and-join)
-  :defines (evil-want-Y-yank-to-eol))
+                :around #'config-evil--sp-delete-and-join-compat)))
 
 (use-package evil-terminal-cursor-changer
   :straight t
@@ -188,48 +197,46 @@
 
 (use-package evil-surround
   :straight t
-  :after evil
+  :demand t
+  :commands (global-evil-surround-mode)
+  :general
+  (:states 'visual :keymaps 'evil-surround-mode-map
+           "s" #'evil-surround-region
+           "S" #'evil-substitute)
   :preface
-  (progn
-    (autoload 'evil-substitute "evil-commands")
-    (defun config-evil--init-evil-surround-pairs ()
-      (make-local-variable 'evil-surround-pairs-alist)
-      (push '(?\` . ("`" . "'")) evil-surround-pairs-alist)))
+  (defun config-evil--init-evil-surround-pairs ()
+    (make-local-variable 'evil-surround-pairs-alist)
+    (push '(?\` . ("`" . "'")) evil-surround-pairs-alist))
+  :hook
+  (emacs-lisp-mode-hook . config-evil--init-evil-surround-pairs)
+  :init
+  (setq-default evil-surround-pairs-alist
+                '((?\( . ("(" . ")"))
+                  (?\[ . ("[" . "]"))
+                  (?\{ . ("{" . "}"))
 
+                  (?\) . ("(" . ")"))
+                  (?\] . ("[" . "]"))
+                  (?\} . ("{" . "}"))
+
+                  (?# . ("#{" . "}"))
+                  (?b . ("(" . ")"))
+                  (?B . ("{" . "}"))
+                  (?> . ("<" . ">"))
+                  (?t . evil-surround-read-tag)
+                  (?< . evil-surround-read-tag)
+                  (?f . evil-surround-function)))
   :config
-  (progn
-    (setq-default evil-surround-pairs-alist
-                  '((?\( . ("(" . ")"))
-                    (?\[ . ("[" . "]"))
-                    (?\{ . ("{" . "}"))
-
-                    (?\) . ("(" . ")"))
-                    (?\] . ("[" . "]"))
-                    (?\} . ("{" . "}"))
-
-                    (?# . ("#{" . "}"))
-                    (?b . ("(" . ")"))
-                    (?B . ("{" . "}"))
-                    (?> . ("<" . ">"))
-                    (?t . surround-read-tag)
-                    (?< . surround-read-tag)
-                    (?f . surround-function)))
-
-    (add-hook 'emacs-lisp-mode-hook #'config-evil--init-evil-surround-pairs)
-
-    (evil-define-key 'visual evil-surround-mode-map "s" #'evil-surround-region)
-    (evil-define-key 'visual evil-surround-mode-map "S" #'evil-substitute)
-
-    (global-evil-surround-mode +1)))
+  (global-evil-surround-mode +1))
 
 (use-package evil-iedit-state
   :straight t
   :commands (evil-iedit-state/iedit-mode)
   :config
   (progn
-    (setq iedit-current-symbol-default t)
-    (setq iedit-only-at-symbol-boundaries t)
-    (setq iedit-toggle-key-default nil)
+    (general-setq iedit-current-symbol-default t
+                  iedit-only-at-symbol-boundaries t
+                  iedit-toggle-key-default nil)
 
     ;; Enable leader key in iedit and iedit-insert states
     (config-hydras-insinuate evil-iedit-state-map)))
@@ -240,10 +247,10 @@
 
 (use-package evil-args
   :straight t
-  :bind (:map
-         evil-inner-text-objects-map ("a" . evil-inner-arg)
-         :map
-         evil-outer-text-objects-map ("a" . evil-outer-arg)))
+  :general (:keymaps
+            'evil-inner-text-objects-map "a" #'evil-inner-arg
+            :keymaps
+            'evil-outer-text-objects-map "a" #'evil-outer-arg))
 
 (use-package evil-indent-plus
   :straight t
@@ -257,10 +264,9 @@
 
 (use-package evil-numbers
   :straight t
-  :bind (:map
-         evil-normal-state-map
-         ("+" . evil-numbers/inc-at-pt)
-         ("-" . evil-numbers/dec-at-pt)))
+  :general (:states 'normal
+                    "+" #'evil-numbers/inc-at-pt
+                    "-" #'evil-numbers/dec-at-pt))
 
 (use-package evil-search-highlight-persist
   :straight t
@@ -289,18 +295,17 @@
 
 (use-package evil-nerd-commenter
   :straight t
-  :bind (:map
-         evil-normal-state-map
-         (";" . evilnc-comment-operator)
-         ;; Double all the commenting functions so that the inverse
-         ;; operations can be called without setting a flag
-         ("gc" . evilnc-comment-operator)))
+  :general (:states
+            'normal
+            ";" #'evilnc-comment-operator
+            ;; Double all the commenting functions so that the inverse
+            ;; operations can be called without setting a flag
+            "gc" #'evilnc-comment-operator))
 
 (use-package evil-funcs
-  :bind (:map
-         evil-visual-state-map
-         ("<" . evil-funcs/shift-left)
-         (">" . evil-funcs/shift-right)))
+  :general (:states 'visual
+                    "<" #'evil-funcs/shift-left
+                    ">" #'evil-funcs/shift-right))
 
 (provide 'config-evil)
 

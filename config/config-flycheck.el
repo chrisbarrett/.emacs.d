@@ -9,14 +9,13 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'config-etags)
   (require 'use-package))
 
-(autoload 'evil-define-key "evil" nil nil 'macro)
-(autoload 'evil-set-initial-state "evil")
-
+(require 'config-etags)
 (require 'dash)
 (require 'subr-x)
+
+
 
 (use-package flycheck
   :straight t
@@ -27,13 +26,24 @@
              flycheck-error-list-previous-error
              flycheck-error-list-goto-error)
 
-  :bind
-  (:map
-   flycheck-mode-map
-   ("M-n" . flycheck-next-error)
-   ("M-p" . flycheck-previous-error)
-   ("M-j" . flycheck-next-error)
-   ("M-k" . flycheck-previous-error))
+  :general
+  (:keymaps
+   'flycheck-mode-map
+   "M-n" #'flycheck-next-error
+   "M-p" #'flycheck-previous-error
+   "M-j" #'flycheck-next-error
+   "M-k" #'flycheck-previous-error)
+
+  :general
+  (:states
+   'motion
+   :keymaps 'flycheck-error-list-mode-map
+   "j" #'flycheck-error-list-next-error
+   "k" #'flycheck-error-list-previous-error
+   "RET" #'flycheck-error-list-goto-error
+   "n" #'flycheck-error-list-next-error
+   "p" #'flycheck-error-list-previous-error
+   "q" #'quit-window)
 
   :preface
   (progn
@@ -93,16 +103,6 @@
                 indium-repl-mode
                 ;; restclient buffers
                 js-mode))
-
-    (with-eval-after-load 'evil
-      (evil-set-initial-state 'flycheck-error-list-mode 'motion)
-      (evil-define-key 'motion flycheck-error-list-mode-map
-        (kbd "j") #'flycheck-error-list-next-error
-        (kbd "k") #'flycheck-error-list-previous-error
-        (kbd "RET") #'flycheck-error-list-goto-error
-        (kbd "n") #'flycheck-error-list-next-error
-        (kbd "p") #'flycheck-error-list-previous-error
-        (kbd "q") #'quit-window))
 
     (add-to-list 'display-buffer-alist
                  `(,(rx bos "*Flycheck errors*" eos)

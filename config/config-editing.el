@@ -6,6 +6,7 @@
   (require 'use-package))
 
 (require 'cb-major-mode-hydra)
+(require 'general)
 
 
 
@@ -137,17 +138,17 @@ Interactively, reverse the characters in the current region."
     "Address"
     (("g" hexl-goto-address "goto")))
 
-  :config
-  (evil-define-key 'motion hexl-mode-map
-    "]]" 'hexl-end-of-1k-page
-    "[[" 'hexl-beginning-of-1k-page
-    "h" 'hexl-backward-char
-    "l" 'hexl-forward-char
-    "j" 'hexl-next-line
-    "k" 'hexl-previous-line
-    "$" 'hexl-end-of-line
-    "^" 'hexl-beginning-of-line
-    "0" 'hexl-beginning-of-line))
+  :general
+  (:states 'motion :keymaps 'hexl-mode-map
+           "]]" #'hexl-end-of-1k-page
+           "[[" #'hexl-beginning-of-1k-page
+           "h" #'hexl-backward-char
+           "l" #'hexl-forward-char
+           "j" #'hexl-next-line
+           "k" #'hexl-previous-line
+           "$" #'hexl-end-of-line
+           "^" #'hexl-beginning-of-line
+           "0" #'hexl-beginning-of-line))
 
 ;; aggressive-indent automatically reindents code during editing.
 
@@ -156,28 +157,28 @@ Interactively, reverse the characters in the current region."
   :commands (global-aggressive-indent-mode)
   :defer 1
   :init
-  (defconst aggressive-indent-excluded-modes
-    '(cb-web-js-mode
-      diff-auto-refine-mode
-      dockerfile-mode
-      fstar-mode
-      graphviz-dot-mode
-      haskell-mode
-      idris-mode
-      idris-repl-mode
-      inf-ruby-mode
-      makefile-gmake-mode
-      makefile-mode
-      nix-mode
-      python-mode
-      restclient-mode
-      rust-mode
-      sql-mode
-      stylus-mode
-      terraform-mode
-      text-mode
-      toml-mode
-      yaml-mode))
+  (general-setq aggressive-indent-excluded-modes
+                '(cb-web-js-mode
+                  diff-auto-refine-mode
+                  dockerfile-mode
+                  fstar-mode
+                  graphviz-dot-mode
+                  haskell-mode
+                  idris-mode
+                  idris-repl-mode
+                  inf-ruby-mode
+                  makefile-gmake-mode
+                  makefile-mode
+                  nix-mode
+                  python-mode
+                  restclient-mode
+                  rust-mode
+                  sql-mode
+                  stylus-mode
+                  terraform-mode
+                  text-mode
+                  toml-mode
+                  yaml-mode))
 
   :preface
   (defun turn-off-aggressive-indent-mode ()
@@ -325,22 +326,16 @@ Interactively, reverse the characters in the current region."
 
 (use-package evil-ahs
   :commands (evil-ahs/highlight-symbol evil-ahs/goto-last-searched-symbol)
-  :bind (:map
-         evil-motion-state-map
-         ("*" . evil-ahs/enter-ahs-forward)
-         ("#" . evil-ahs/enter-ahs-backward)))
+  :general (:states 'motion
+                    "*" #'evil-ahs/enter-ahs-forward
+                    "#" #'evil-ahs/enter-ahs-backward))
 
 ;; dump-jump provides a good fallback for navigating to definitions in the
 ;; absence of tags tables or semantic analysis.
 
 (use-package dumb-jump
   :straight t
-  :commands (dumb-jump-go dumb-jump-go-other-window)
-  :preface
-  (autoload 'pop-tag-mark "etags")
-  :init
-  (with-eval-after-load 'evil
-    (evil-define-key 'normal prog-mode-map (kbd "M-.") #'dumb-jump-go))
+  :general (:states 'normal :keymaps 'prog-mode-map "M-." #'dumb-jump-go)
   :config
   (setq dumb-jump-selector 'ivy))
 

@@ -11,7 +11,6 @@
 (eval-when-compile
   (require 'use-package))
 
-(require 'evil)
 (require 'cb-major-mode-hydra)
 (require 'straight)
 (require 'subr-x)
@@ -94,12 +93,13 @@
 (use-package elisp-slime-nav
   :straight t
   :hook (emacs-lisp-mode . turn-on-elisp-slime-nav-mode)
-  :bind
-  (:map emacs-lisp-mode-map ("M-." . elisp-slime-nav-find-elisp-thing-at-point))
-  :init
-  (evil-define-key 'normal elisp-slime-nav-mode-map
-    (kbd "M-.") #'elisp-slime-nav-find-elisp-thing-at-point
-    (kbd "K") #'elisp-slime-nav-describe-elisp-thing-at-point))
+  :general
+  (:keymaps
+   'emacs-lisp-mode-map
+   "M-." #'elisp-slime-nav-find-elisp-thing-at-point
+   :states 'normal
+   "M-." #'elisp-slime-nav-find-elisp-thing-at-point
+   "K" #'elisp-slime-nav-describe-elisp-thing-at-point))
 
 ;; eldoc shows function parameters in the minibuffer.
 
@@ -149,12 +149,6 @@
         (with-current-buffer imenu-list--displayed-buffer
           (when (derived-mode-p 'emacs-lisp-mode)
             nameless-current-name))))))
-
-;; ert is the built-in elisp test runner.
-
-(use-package ert
-  :commands (ert)
-  :config (evil-set-initial-state 'ert-simple-view-mode 'motion))
 
 (provide 'config-elisp)
 

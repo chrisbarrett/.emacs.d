@@ -206,7 +206,7 @@
    ("b" git-blame-transient-state/body "diff buffer")
    ("f" cb-git-find-file "find file..."))
   ""
-  (("h" git-hunks-transient-state/body "navigate hunks")
+  (("h" git-hunks/body "navigate hunks")
    ("l" magit-log-buffer-file "log buffer")
    ("t" git-time-machine-transient-state/body "time machine"))
 
@@ -214,6 +214,15 @@
   (("g" dumb-jump-go "jump")
    ("G" dumb-jump-go-other-window "jump other window")
    ("SPC" pop-tag-mark "jump back")))
+
+(cb-hydra-define git-hunks (:foreign-keys run :hint nil)
+  (hydra-title-with-aicon "git" "Git Hunks")
+  "Navigate"
+  (("n" diff-hl-next-hunk "next")
+   ("p" diff-hl-previous-hunk "previous"))
+  "Actions"
+  (("d" diff-hl-diff-goto-hunk "show diff" :exit t)
+   ("x" diff-hl-revert-hunk "revert")))
 
 (cb-hydra-define kill (:color teal :hint nil)
   (hydra-title-with-mat-icon "close" "Kill")

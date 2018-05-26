@@ -15,8 +15,6 @@
 (require 'config-hydras)
 (require 'paths)
 
-(autoload 'evil-define-key "evil")
-
 
 
 (cb-major-mode-hydra-define dired-mode
@@ -51,6 +49,11 @@
 (use-package dired
   :defer t
   :commands (dired dired-hide-details-mode)
+  :general
+  (:states 'normal :keymaps 'dired-mode-map
+           "$" #'end-of-line
+           "j" #'diredp-next-line
+           "k" #'diredp-previous-line)
   :preface
   (progn
     (autoload 'diredp-next-line "dired+")
@@ -78,19 +81,16 @@
 
     ;; Instantly revert Dired buffers on re-visiting them, with no
     ;; message.
-    (setq dired-auto-revert-buffer t)
-
-    (evil-define-key 'normal dired-mode-map (kbd "$") #'end-of-line)
-    (evil-define-key 'normal dired-mode-map (kbd "j") #'diredp-next-line)
-    (evil-define-key 'normal dired-mode-map (kbd "k") #'diredp-previous-line)))
+    (setq dired-auto-revert-buffer t)))
 
 (use-package dired-x
   :hook (dired-mode . dired-omit-mode)
+  :general
+  (:states 'normal :keymaps 'dired-mode-map "h" #'dired-omit-mode)
   :init
   (add-hook 'dired-load-hook (lambda () (load "dired-x")))
   :config
   (progn
-    (evil-define-key 'normal dired-mode-map (kbd "h") #'dired-omit-mode)
     (setq dired-omit-verbose nil)
     (setq dired-clean-up-buffers-too t)
     (setq dired-omit-files (rx bol (or (+ ".")
@@ -105,10 +105,10 @@
   :after dired
   :preface
   (autoload 'evil-first-non-blank "evil-commands")
-  :config
-  (progn
-    (evil-define-key 'normal wdired-mode-map (kbd "^") #'evil-first-non-blank)
-    (evil-define-key 'normal dired-mode-map (kbd "C-c C-e") #'wdired-change-to-wdired-mode)))
+  :general
+  (:states 'normal
+           :keymaps 'wdired-mode-map "^" #'evil-first-non-blank
+           :keymaps 'dired-mode-map "C-c C-e" #'wdired-change-to-wdired-mode))
 
 (provide 'config-dired)
 

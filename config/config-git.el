@@ -15,8 +15,6 @@
 (require 'evil-transient-state)
 (require 'paths)
 
-(autoload 'evil-define-key "evil")
-
 
 
 (add-to-list 'auto-mode-alist '("\\.gitignore\\'" . conf-unix-mode))
@@ -24,6 +22,7 @@
 (use-package magit
   :straight t
   :commands (magit-status magit-blame magit-branch-and-checkout)
+  :general (:states 'normal :keymaps 'magit-refs-mode-map "." #'magit-branch-and-checkout)
   :functions (magit-display-buffer-fullframe-status-v1)
   :preface
   (progn
@@ -33,13 +32,13 @@
     (autoload 'magit-find-file-other-window "magit-files")
     (autoload 'magit-popup-import-file-args "magit-popup")
 
-    (defun cb-git-find-file (&optional arg)
+    (defun config-git-find-file (&optional arg)
       (interactive "P")
       (if arg
           (call-interactively #'magit-find-file)
         (call-interactively #'magit-find-file-other-window)))
 
-    (defun cb-git-diff-buffer-file (&optional arg)
+    (defun config-git-diff-buffer-file (&optional arg)
       (interactive "P")
       (let* ((file (magit-file-relative-name))
              (magit-diff-arguments
@@ -68,8 +67,6 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
   :config
   (progn
     (config-hydras-insinuate magit-mode-map)
-
-    (evil-define-key 'normal magit-refs-mode-map (kbd ".") #'magit-branch-and-checkout)
     (setq magit-repository-directories
           '(("~/Documents" . 1)
             ("~/Projects" . 1)
@@ -109,7 +106,7 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
   (add-to-list 'safe-local-variable-values '(gac-automatically-push-p . t))
   :preface
   (progn
-    (defun cb-git--maybe-commit-and-push ()
+    (defun config-git--maybe-commit-and-push ()
       (let ((file (convert-standard-filename (file-name-nondirectory (buffer-file-name)))))
         (deferred:try
           (deferred:$
@@ -119,7 +116,7 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
           :finally #'gac-push))))
 
   :config
-  (defalias 'gac-after-save-func #'cb-git--maybe-commit-and-push))
+  (defalias 'gac-after-save-func #'config-git--maybe-commit-and-push))
 
 (use-package git-timemachine
   :straight t
@@ -163,35 +160,20 @@ Press [_b_] again to blame further in the history, [_q_] to go up or quit."
              diff-hl-goto-hunk)
   :preface
   (progn
-    (defun cb-git--diff-hl-mode-on ()
+    (defun config-git--diff-hl-mode-on ()
       (diff-hl-mode -1))
 
-    (defun cb-git--diff-hl-mode-off ()
+    (defun config-git--diff-hl-mode-off ()
       (diff-hl-mode +1)))
-
-  :init
-  (evil-transient-state-define git-hunks
-    :title "Git Hunk Transient State"
-    :doc "
-[_p_/_N_] previous [_n_] next [_g_] goto [_x_] revert [_q_] quit"
-    :foreign-keys run
-    :bindings
-    ("n" diff-hl-next-hunk)
-    ("N" diff-hl-previous-hunk)
-    ("p" diff-hl-previous-hunk)
-    ("g" diff-hl-goto-hunk)
-    ("x" diff-hl-revert-hunk)
-    ("q" nil :exit t))
-
   :config
   (progn
     ;; Diff-hl interferes with iedit. Disable diff-hl temporarily while iedit is
     ;; enabled.
-    (add-hook 'iedit-mode-hook #'cb-git--diff-hl-mode-on)
-    (add-hook 'iedit-mode-end-hook #'cb-git--diff-hl-mode-off)
+    (add-hook 'iedit-mode-hook #'config-git--diff-hl-mode-on)
+    (add-hook 'iedit-mode-end-hook #'config-git--diff-hl-mode-off)
 
     (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
-    (global-diff-hl-mode)))
+    (global-diff-hl-mode +1)))
 
 (use-package magit-gpg
   :after magit

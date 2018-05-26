@@ -32,7 +32,8 @@
 (use-package exec-path-from-shell
   :straight t
   :if window-system
-  :functions (exec-path-from-shell-initialize)
+  :preface
+  (declare-function exec-path-from-shell-initialize "config-darwin")
   :init
   (progn
     (defvar exec-path-from-shell-arguments '("-l"))
@@ -54,14 +55,8 @@
 
 (use-package osx-trash
   :straight t
-  :preface
-  (autoload 'osx-trash-setup "osx-trash")
-  :config
-  (osx-trash-setup))
-
-(use-package dash-at-point
-  :straight t
-  :bind ("<f8>" . dash-at-point))
+  :preface (autoload 'osx-trash-setup "osx-trash")
+  :config (osx-trash-setup))
 
 (provide 'config-darwin)
 
