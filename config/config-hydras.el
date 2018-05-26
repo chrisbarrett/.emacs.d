@@ -300,8 +300,8 @@
    ("l" sp-end-of-sexp "end")
    ("n" sp-next-sexp "next")
    ("p" sp-previous-sexp "previous")
-   ("<" sp-backward-down-sexp "down (start)")
-   (">" sp-down-sexp "down (end)"))
+   ("<" sp-backward-up-sexp "up (start)")
+   (">" sp-up-sexp "up (end)"))
   "Killing"
   (("c" sp-convolute-sexp "convolute")
    ("D" sp-backward-kill-sexp "kill back")
