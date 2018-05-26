@@ -15,11 +15,13 @@
 
 
 
+(require 'evil-hacks)
+
 (use-package evil
   :straight t
-  :demand t
   :functions (evil-mode evil-delay evil-delete-backward-char-and-join)
   :defines (evil-want-Y-yank-to-eol)
+  :defer 1
   :preface
   (progn
     (autoload 'evil-visual-update-x-selection "evil-states")
@@ -64,8 +66,6 @@
 
   :config
   (progn
-    (require 'evil-hacks)
-
     (evil-mode +1)
     (setq evil-mode-line-format nil)
     (setq-default evil-shift-width 2)
@@ -204,15 +204,9 @@
     (advice-add #'evil-delete-backward-char-and-join
                 :around #'config-evil--sp-delete-and-join-compat)))
 
-(use-package evil-terminal-cursor-changer
-  :straight t
-  :if (not (display-graphic-p))
-  :commands (evil-terminal-cursor-changer-activate)
-  :config (evil-terminal-cursor-changer-activate))
-
 (use-package evil-surround
   :straight t
-  :demand t
+  :after evil-common
   :commands (global-evil-surround-mode)
   :general
   (:states 'visual :keymaps 'evil-surround-mode-map
@@ -247,6 +241,7 @@
 (use-package evil-iedit-state
   :straight t
   :commands (evil-iedit-state/iedit-mode)
+  :after evil-common
   :config
   (progn
     (general-setq iedit-current-symbol-default t
@@ -258,34 +253,30 @@
 
 (use-package evil-ediff
   :straight t
-  :after ediff)
+  :after (:and ediff evil-common))
 
 (use-package evil-args
   :straight t
+  :after evil-common
   :general (:keymaps
             'evil-inner-text-objects-map "a" #'evil-inner-arg
             :keymaps
             'evil-outer-text-objects-map "a" #'evil-outer-arg))
 
-(use-package evil-indent-plus
-  :straight t
-  :after evil
-  :commands (evil-indent-plus-default-bindings)
-  :config (evil-indent-plus-default-bindings))
-
 (use-package evil-matchit
   :straight t
-  :after evil)
+  :after evil-common)
 
 (use-package evil-numbers
   :straight t
+  :after evil-common
   :general (:states 'normal
                     "+" #'evil-numbers/inc-at-pt
                     "-" #'evil-numbers/dec-at-pt))
 
 (use-package evil-search-highlight-persist
   :straight t
-  :after evil
+  :after evil-common
   :commands (global-evil-search-highlight-persist
              evil-search-highlight-persist-remove-all)
   :preface
@@ -297,19 +288,21 @@
 
 (use-package vi-tilde-fringe
   :straight t
-  :after evil
+  :after evil-common
   :commands (vi-tilde-fringe-mode global-vi-tilde-fringe-mode)
   :preface
-  (defun config-evil--vi-tilde-fringe-off-if-readonly ()
-    (when buffer-read-only
-      (vi-tilde-fringe-mode -1)))
+  (defun config-evil--vi-tilde-fringe-off-if-readonly (args)
+    (if buffer-read-only
+        '(-1)
+      args))
   :config
   (progn
-    (add-hook 'after-change-major-mode-hook #'config-evil--vi-tilde-fringe-off-if-readonly)
+    (advice-add 'vi-tilde-fringe-mode :filter-args #'config-evil--vi-tilde-fringe-off-if-readonly)
     (global-vi-tilde-fringe-mode)))
 
 (use-package evil-nerd-commenter
   :straight t
+  :after evil-common
   :general (:states
             'normal
             ";" #'evilnc-comment-operator
@@ -318,6 +311,7 @@
             "gc" #'evilnc-comment-operator))
 
 (use-package evil-funcs
+  :after evil-common
   :general (:states 'visual
                     "<" #'evil-funcs/shift-left
                     ">" #'evil-funcs/shift-right))

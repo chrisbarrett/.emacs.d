@@ -2,9 +2,6 @@
 ;;; Commentary:
 ;;; Code:
 
-(eval-when-compile
-  (require 'evil))
-
 (require 'el-patch)
 (require 'straight)
 
