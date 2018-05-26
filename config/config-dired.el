@@ -1,11 +1,5 @@
 ;;; config-dired.el --- Configuration for dired.  -*- lexical-binding: t; -*-
-
-;; Copyright (C) 2016  Chris Barrett
-
-;; Author: Chris Barrett <chris+emacs@walrus.cool>
-
 ;;; Commentary:
-
 ;;; Code:
 
 (eval-when-compile

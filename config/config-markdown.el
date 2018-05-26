@@ -1,18 +1,11 @@
 ;;; config-markdown.el --- Configuration for markdown-mode.  -*- lexical-binding: t; -*-
-
-;; Copyright (C) 2016  Chris Barrett
-
-;; Author: Chris Barrett <chris+emacs@walrus.cool>
-
 ;;; Commentary:
-
 ;;; Code:
 
 (eval-when-compile
   (require 'use-package))
 
 (require 'cb-major-mode-hydra)
-(autoload 'evil-define-key "evil")
 (autoload 'evil-insert-state "evil")
 
 
@@ -47,9 +40,19 @@
   :straight t
   :mode (("\\.md\\'" . gfm-mode)
          ("\\.markdown\\'" . markdown-mode))
+
+  :general (:states 'insert :keymaps 'markdown-mode-map "`" #'config-markdown-electric-backquote)
+  :general (:states 'normal :keymaps 'markdown-mode-map
+                    "TAB" #'markdown-cycle
+                    "RET" #'markdown-follow-thing-at-point)
+  :general (:keymaps 'markdown-mode-map
+                     "C-c C-l" #'markdown-insert-link
+                     "M-<left>" #'markdown-promote
+                     "M-<right>" #'markdown-demote
+                     "M-<up>" #'markdown-move-subtree-up
+                     "M-<down>" #'markdown-move-subtree-down)
   :preface
   (progn
-
     (defun config-markdown--evil-insert-state (&rest _)
       (evil-insert-state))
 
@@ -68,19 +71,7 @@
     (setq markdown-command "multimarkdown")
     (setq markdown-fontify-code-blocks-natively t)
     (setq markdown-hide-urls t)
-
-    (advice-add 'markdown-insert-header-dwim :after #'config-markdown--evil-insert-state)
-
-    (evil-define-key 'insert markdown-mode-map (kbd "`") #'config-markdown-electric-backquote)
-    (evil-define-key 'normal markdown-mode-map (kbd "TAB") #'markdown-cycle)
-
-    (define-key markdown-mode-map (kbd "C-c C-l") #'markdown-insert-link)
-    (define-key markdown-mode-map (kbd "M-<left>") #'markdown-promote)
-    (define-key markdown-mode-map (kbd "M-<right>") #'markdown-demote)
-    (define-key markdown-mode-map (kbd "M-<up>") #'markdown-move-subtree-up)
-    (define-key markdown-mode-map (kbd "M-<down>") #'markdown-move-subtree-down)
-
-    (evil-define-key 'normal markdown-mode-map (kbd "RET") #'markdown-follow-thing-at-point)))
+    (advice-add 'markdown-insert-header-dwim :after #'config-markdown--evil-insert-state)))
 
 (use-package edit-indirect
   :straight t

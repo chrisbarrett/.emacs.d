@@ -1,59 +1,109 @@
 ;;; config-neotree.el --- Configuration for neotree.  -*- lexical-binding: t; -*-
-
-;; Copyright (C) 2016  Chris Barrett
-
-;; Author: Chris Barrett <chris+emacs@walrus.cool>
-
 ;;; Commentary:
-
 ;;; Code:
 
 (eval-when-compile
   (require 'use-package))
 
 (require 'config-hydras)
-(require 'evilified-state)
+(require 'general)
+
+(autoload 'projectile-project-root "projectile")
+
+
+
+;; Helper functions
+
+(autoload 'neo-buffer--expanded-node-p "neotree")
+(autoload 'neo-buffer--get-filename-current-line "neotree")
+(autoload 'neo-buffer--refresh "neotree")
+(autoload 'neo-buffer--set-expand "neotree")
+(autoload 'neo-point-auto-indent "neotree")
+
+(defvar config-neotree--auto-indent-point t)
+
+(defun config-neotree-expand-or-open ()
+  "Expand or open a neotree node."
+  (interactive)
+  (let ((node (neo-buffer--get-filename-current-line)))
+    (when node
+      (if (file-directory-p node)
+          (progn
+            (neo-buffer--set-expand node t)
+            (neo-buffer--refresh t)
+            (when config-neotree--auto-indent-point
+              (forward-line)
+              (neo-point-auto-indent)))
+        (call-interactively 'neotree-enter)))))
+
+(defun config-neotree-collapse ()
+  "Collapse a neotree node."
+  (interactive)
+  (let ((node (neo-buffer--get-filename-current-line)))
+    (when node
+      (when (file-directory-p node)
+        (neo-buffer--set-expand node nil)
+        (neo-buffer--refresh t))
+      (when config-neotree--auto-indent-point
+        (neo-point-auto-indent)))))
+
+(defun config-neotree-collapse-or-up ()
+  "Collapse an expanded directory node or go to the parent node."
+  (interactive)
+  (let ((node (neo-buffer--get-filename-current-line)))
+    (when node
+      (if (file-directory-p node)
+          (if (neo-buffer--expanded-node-p node)
+              (config-neotree-collapse)
+            (neotree-select-up-node))
+        (neotree-select-up-node)))))
+
+
 
 (use-package neotree
   :straight t
   :defer t
-  :commands (neotree-change-root
-             neotree-create-node
-             neotree-delete-node
-             neotree-enter
-             neotree-enter-horizontal-split
-             neotree-enter-vertical-split
-             neotree-hidden-file-toggle
-             neotree-hide
-             neotree-refresh
-             neotree-rename-node
-             neotree-select-down-node
-             neotree-select-next-sibling-node
-             neotree-select-previous-sibling-node
-             neotree-select-up-node
-             neotree-stretch-toggle
-             neotree-toggle)
+  :general
+  (:keymaps 'neotree-mode-map :states 'motion
+            "TAB" #'neotree-stretch-toggle
+            "RET" #'neotree-enter
+            "|"   #'neotree-enter-vertical-split
+            "-"   #'neotree-enter-horizontal-split
+            "c"   #'neotree-create-node
+            "d"   #'neotree-delete-node
+            "gr"  #'neotree-refresh
+            "h"   #'config-neotree-collapse-or-up
+            "H"   #'neotree-select-previous-sibling-node
+            "j"   #'next-line
+            "J"   #'neotree-select-down-node
+            "k"   #'previous-line
+            "K"   #'neotree-select-up-node
+            "l"   #'config-neotree-expand-or-open
+            "L"   #'neotree-select-next-sibling-node
+            "q"   #'neotree-hide
+            "r"   #'neotree-rename-node
+            "R"   #'neotree-change-root
+            "s"   #'neotree-hidden-file-toggle)
 
   :preface
-  (progn
-    (use-package cb-neotree-cmds
-      :commands (cb-neotree-expand-or-open
-                 cb-neotree-collapse
-                 cb-neotree-collapse-or-up
-                 cb-neotree-find-project-root)))
+  (use-package config-neotree-cmds
+    :commands (config-neotree-expand-or-open
+               config-neotree-collapse
+               config-neotree-collapse-or-up))
 
   :config
   (progn
-    (setq neo-window-width 30)
-    (setq neo-create-file-auto-open t)
-    (setq neo-banner-message "Press ? for neotree help")
-    (setq neo-show-updir-line nil)
-    (setq neo-mode-line-type 'nerd)
-    (setq neo-smart-open t)
-    (setq neo-theme 'icons)
-    (setq neo-persist-show nil)
-    (setq neo-show-hidden-files nil)
-    (setq neo-vc-integration nil)
+    (general-setq
+     neo-window-width 30
+     neo-create-file-auto-open t
+     neo-banner-message "Press ? for neotree help"
+     neo-show-updir-line nil
+     neo-mode-line-type 'nerd
+     neo-smart-open t
+     neo-theme 'icons
+     neo-persist-show nil
+     neo-show-hidden-files nil
+     neo-vc-integration nil)
 
     (add-to-list 'neo-hidden-regexp-list "target$")
     (add-to-list 'neo-hidden-regexp-list "__pycache__$")
@@ -61,31 +111,7 @@
     (add-to-list 'neo-hidden-regexp-list "scala-2\\.[0-9]+$")
 
     ;; Enable leader key in neotree
-    (config-hydras-insinuate neotree-mode-map)
-
-    (evilified-state-evilify-map neotree-mode-map
-      :mode neotree-mode
-      :bindings
-      (kbd "TAB") #'neotree-stretch-toggle
-      (kbd "RET") #'neotree-enter
-      (kbd "|")   #'neotree-enter-vertical-split
-      (kbd "-")   #'neotree-enter-horizontal-split
-      (kbd "c")   #'neotree-create-node
-      (kbd "d")   #'neotree-delete-node
-      (kbd "gr")  #'neotree-refresh
-      (kbd "h")   #'cb-neotree-collapse-or-up
-      (kbd "H")   #'neotree-select-previous-sibling-node
-      (kbd "j")   #'next-line
-      (kbd "J")   #'neotree-select-down-node
-      (kbd "k")   #'previous-line
-      (kbd "K")   #'neotree-select-up-node
-      (kbd "l")   #'cb-neotree-expand-or-open
-      (kbd "L")   #'neotree-select-next-sibling-node
-      (kbd "q")   #'neotree-hide
-      (kbd "r")   #'neotree-rename-node
-      (kbd "R")   #'neotree-change-root
-      (kbd "?")   #'cb-neotree-transient-state/body
-      (kbd "s")   #'neotree-hidden-file-toggle)))
+    (config-hydras-insinuate neotree-mode-map)))
 
 (provide 'config-neotree)
 

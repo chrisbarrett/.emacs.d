@@ -1,11 +1,5 @@
 ;;; config-yasnippet.el --- Configure yasnippet.  -*- lexical-binding: t; -*-
-
-;; Copyright (C) 2016  Chris Barrett
-
-;; Author: Chris Barrett <chris+emacs@walrus.cool>
-
 ;;; Commentary:
-
 ;;; Code:
 
 (eval-when-compile
@@ -19,16 +13,22 @@
 ;; the code, it's not useful.
 (add-to-list 'warning-suppress-types '(yasnippet backquote-change))
 
+
+
 (use-package yasnippet
   :straight t
   :defer 1
 
+  ;; Define key bindings for fancy snippet navigation.
+  :general (:states 'insert :keymaps 'yas-minor-mode-map "TAB" #'yas-expand)
+  :general (:states '(normal insert) :keymaps 'yas-keymap
+                    "SPC" #'config-yasnippet-space
+                    "<backspace>" #'config-yasnippet-backspace)
   :preface
   (progn
     (autoload 'sp-backward-delete-char "smartparens")
-    (autoload 'evil-define-key "evil")
 
-    (defun cb-yasnippet-preserve-indentation (f &rest args)
+    (defun config-yasnippet-preserve-indentation (f &rest args)
       (let ((col
              (save-excursion
                (back-to-indentation)
@@ -40,52 +40,52 @@
             (delete-horizontal-space)
             (indent-to col)))))
 
-    (defun cb-yasnippet--maybe-goto-field-end ()
+    (defun config-yasnippet--maybe-goto-field-end ()
       "Move to the end of the current field if it has been modified."
-      (when-let* ((field (cb-yasnippet--current-field)))
+      (when-let* ((field (config-yasnippet--current-field)))
         (when (and (yas--field-modified-p field)
                    (yas--field-contains-point-p field))
-          (goto-char (cb-yasnippet--end-of-field)))))
+          (goto-char (config-yasnippet--end-of-field)))))
 
-    (defun cb-yasnippet-goto-field-end (&rest _)
-      (cb-yasnippet--maybe-goto-field-end)
+    (defun config-yasnippet-goto-field-end (&rest _)
+      (config-yasnippet--maybe-goto-field-end)
       (when (and (boundp 'evil-mode) evil-mode (fboundp 'evil-insert-state))
         (evil-insert-state)))
 
-    (defun cb-yasnippet--current-field ()
+    (defun config-yasnippet--current-field ()
       "Return the current active field."
       (and (boundp 'yas--active-field-overlay)
            yas--active-field-overlay
            (overlay-buffer yas--active-field-overlay)
            (overlay-get yas--active-field-overlay 'yas--field)))
 
-    (defun cb-yasnippet--start-of-field ()
-      (when-let* ((field (cb-yasnippet--current-field)))
+    (defun config-yasnippet--start-of-field ()
+      (when-let* ((field (config-yasnippet--current-field)))
         (marker-position (yas--field-start field))))
 
-    (defun cb-yasnippet--end-of-field ()
-      (when-let* ((field (cb-yasnippet--current-field)))
+    (defun config-yasnippet--end-of-field ()
+      (when-let* ((field (config-yasnippet--current-field)))
         (marker-position (yas--field-end field))))
 
-    (defun cb-yasnippet--current-field-text ()
+    (defun config-yasnippet--current-field-text ()
       "Return the text in the active snippet field."
-      (when-let* ((field (cb-yasnippet--current-field)))
+      (when-let* ((field (config-yasnippet--current-field)))
         (yas--field-text-for-display field)))
 
-    (defun cb-yasnippet-clear-blank-field (&rest _)
+    (defun config-yasnippet-clear-blank-field (&rest _)
       "Clear the current field if it is blank."
-      (when-let* ((beg (cb-yasnippet--start-of-field))
-                  (end (cb-yasnippet--end-of-field))
-                  (str (cb-yasnippet--current-field-text)))
+      (when-let* ((beg (config-yasnippet--start-of-field))
+                  (end (config-yasnippet--end-of-field))
+                  (str (config-yasnippet--current-field-text)))
         (when (s-matches? (rx bos (+ space) eos) str)
           (delete-region beg end)
           t)))
 
 
-    (defun cb-yasnippet-space ()
+    (defun config-yasnippet-space ()
       "Clear and skip this field if it is unmodified.  Otherwise insert a space."
       (interactive "*")
-      (let ((field (cb-yasnippet--current-field))
+      (let ((field (config-yasnippet--current-field))
             ;; (sp-mode? (and (boundp 'smartparens-mode) smartparens-mode))
             )
         (cond ((and field
@@ -98,11 +98,11 @@
               (t
                (call-interactively #'self-insert-command)))))
 
-    (defun cb-yasnippet-backspace ()
+    (defun config-yasnippet-backspace ()
       "Clear the current field if the current snippet is unmodified.
 Otherwise delete backwards."
       (interactive "*")
-      (let ((field (cb-yasnippet--current-field))
+      (let ((field (config-yasnippet--current-field))
             (sp-mode? (and (boundp 'smartparens-mode) smartparens-mode)))
         (cond ((and field
                     (not (yas--field-modified-p field))
@@ -124,22 +124,14 @@ Otherwise delete backwards."
 
   :config
   (progn
-    (setq yas-wrap-around-region t)
-    (setq yas-prompt-functions '(yas-completing-prompt))
-    (setq yas-verbosity 0)
-    (setq yas-minor-mode-map (make-sparse-keymap))
+    (general-setq yas-wrap-around-region t
+                  yas-prompt-functions '(yas-completing-prompt)
+                  yas-verbosity 0
+                  yas-minor-mode-map (make-sparse-keymap))
 
     (yas-global-mode +1)
 
     (add-to-list 'yas-dont-activate-functions (lambda () (derived-mode-p 'term-mode)))
-
-    ;; Define key bindings for fancy snippet navigation.
-
-    (bind-key (kbd "TAB") #'yas-expand yas-minor-mode-map)
-    (evil-define-key 'insert yas-minor-mode-map (kbd "TAB") #'yas-expand)
-
-    (evil-define-key 'insert yas-keymap (kbd "SPC") #'cb-yasnippet-space)
-    (bind-key (kbd "<backspace>") #'cb-yasnippet-backspace yas-keymap)
 
     ;; Advise editing commands.
     ;;
@@ -147,16 +139,16 @@ Otherwise delete backwards."
     ;;
     ;; Pressing S-TAB to go to last field will place point at the end of the field.
 
-    (advice-add #'yas-next-field :before #'cb-yasnippet-clear-blank-field)
-    (advice-add #'yas-prev-field :before #'cb-yasnippet-clear-blank-field)
-    (advice-add #'yas-next-field :after #'cb-yasnippet-goto-field-end)
-    (advice-add #'yas-prev-field :after #'cb-yasnippet-goto-field-end)
+    (advice-add #'yas-next-field :before #'config-yasnippet-clear-blank-field)
+    (advice-add #'yas-prev-field :before #'config-yasnippet-clear-blank-field)
+    (advice-add #'yas-next-field :after #'config-yasnippet-goto-field-end)
+    (advice-add #'yas-prev-field :after #'config-yasnippet-goto-field-end)
 
     ;; Ensure yasnippet expansion preserves current indentation. This can be a
     ;; problem in modes with significant whitespace, where the indentation
     ;; command unconditionally indents one step.
 
-    (advice-add 'yas--expand-or-prompt-for-template :around #'cb-yasnippet-preserve-indentation))
+    (advice-add 'yas--expand-or-prompt-for-template :around #'config-yasnippet-preserve-indentation))
 
   :commands
   (yas-expand

@@ -1,11 +1,5 @@
 ;;; config-ivy.el --- Configuration for Ivy.  -*- lexical-binding: t; -*-
-
-;; Copyright (C) 2016  Chris Barrett
-
-;; Author: Chris Barrett <chris+emacs@walrus.cool>
-
 ;;; Commentary:
-
 ;;; Code:
 
 (eval-when-compile
@@ -21,21 +15,15 @@
 (use-package ivy
   :straight t
   :commands (ivy-occur ivy-help ivy-mode)
-  :bind
-  (("C-c C-r" . ivy-resume)
-   ("C-x b" . ivy-switch-buffer)
-
-   :map ivy-occur-mode-map
-   ("C-x C-w" . ivy-wgrep-change-to-wgrep-mode)
-
-   :map ivy-minibuffer-map
-   ("C-z" . ivy-dispatching-done)
-   ("C-l" . ivy-partial-or-done)
-   ("C-<return>" . ivy-immediate-done)
-
-   ;; Browse read-expression histroy with ivy
-   :map read-expression-map
-   ("C-r" . counsel-expression-history))
+  :general ("C-c C-r" #'ivy-resume "C-x b" #'ivy-switch-buffer)
+  :general (:keymaps 'ivy-occur-mode-map "C-x C-w" #'ivy-wgrep-change-to-wgrep-mode)
+  :general
+  (:keymaps 'ivy-minibuffer-map
+            "C-z" #'ivy-dispatching-done
+            "C-l" #'ivy-partial-or-done
+            "C-<return>" #'ivy-immediate-done)
+  ;; Browse read-expression histroy with ivy
+  :general (:keymaps 'read-expression-map "C-r" #'counsel-expression-history)
 
   :init
   (progn
@@ -121,15 +109,10 @@
 (use-package counsel
   :straight t
   :commands (counsel-mode)
-  :bind (("M-x" . counsel-M-x)
-         ("C-x C-f" . counsel-find-file)
-
-         :map counsel-find-file-map
-         ("C-M-j" . ivy-immediate-done)
-
-         :map counsel-find-file-map
-         ("C-h" . counsel-up-directory))
-
+  :general ("M-x" #'counsel-M-x "C-x C-f" #'counsel-find-file)
+  :general (:keymaps 'counsel-find-file-map
+                     "C-M-j" #'ivy-immediate-done
+                     "C-h" #'counsel-up-directory)
   :config
   (progn
     (require 'counsel-hacks)

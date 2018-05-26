@@ -1,11 +1,5 @@
 ;;; config-web-mode.el --- Configuration for web-mode.  -*- lexical-binding: t; -*-
-
-;; Copyright (C) 2016  Chris Barrett
-
-;; Author: Chris Barrett <chris+emacs@walrus.cool>
-
 ;;; Commentary:
-
 ;;; Code:
 
 (eval-when-compile
@@ -17,8 +11,6 @@
 (require 's)
 (require 'subr-x)
 
-(autoload 'evil-define-key "evil")
-(autoload 'evil-set-initial-state "evil")
 (autoload 'flycheck-add-mode "flycheck")
 (autoload 'projectile-project-p "projectile")
 
@@ -51,12 +43,8 @@
 
 (use-package web-mode
   :straight t
-  :defines (web-mode-markup-indent-offset
-            web-mode-css-indent-offset)
-  :mode (("\\.php\\'" . web-mode))
-
   :defer t
-
+  :mode (("\\.php\\'" . web-mode))
   :preface
   (progn
     (autoload 'sp-local-pair "smartparens")
@@ -77,10 +65,11 @@
 
   :config
   (progn
-    (setq web-mode-code-indent-offset 2)
-    (setq web-mode-css-indent-offset 2)
-    (setq web-mode-markup-indent-offset 2)
-    (setq web-mode-enable-auto-quoting nil)
+    (general-setq
+     web-mode-code-indent-offset 2
+     web-mode-css-indent-offset 2
+     web-mode-markup-indent-offset 2
+     web-mode-enable-auto-quoting nil)
 
     (add-to-list 'web-mode-comment-formats '("jsx" . "//" ))
     (add-to-list 'web-mode-comment-formats '("javascript" . "//" ))
@@ -180,7 +169,7 @@
 
 (use-package emmet-mode
   :straight t
-  :defines (emmet-expand-jsx-className?)
+  :defer t
   :commands (emmet-mode emmet-expand-yas)
   :preface
   (progn
@@ -235,22 +224,27 @@
 
 (use-package flycheck-flow
   :straight t
-  :after flycheck
+  :after (:and web-mode-submodes flycheck)
   :config
   (progn
     (flycheck-add-mode 'javascript-flow 'web-js-mode)
     (flycheck-add-next-checker 'javascript-flow 'javascript-eslint)))
 
 (use-package flow
-  :after web-mode-submodes
   :commands (flow-insert-flow-annotation)
-  :bind (:map web-js-mode-map ("C-c C-t" . flow-type-at)))
+  :general (:keymaps 'web-js-mode-map "C-c C-t" #'flow-type-at))
 
 (use-package tern
   :straight t
   :disabled t
   :commands (tern-mode)
   :hook (web-js-mode . config-web--maybe-enable-tern)
+  :general
+  (:states 'normal :keymaps 'tern-mode-keymap
+           "K" 'tern-get-docs
+           "gd"  'tern-find-definition
+           "M-." 'tern-find-definition
+           "M-," 'tern-pop-find-definition)
   :preface
   (progn
     (autoload 'flycheck-overlay-errors-at "flycheck")
@@ -274,37 +268,17 @@
     (unless (getenv "NODE_PATH")
       (setenv "NODE_PATH" "/usr/local/lib/node_modules"))
 
-    (evil-define-key 'normal tern-mode-keymap
-      (kbd "K") 'tern-get-docs
-      (kbd "gd")  'tern-find-definition
-      (kbd "M-.") 'tern-find-definition
-      (kbd "M-,") 'tern-pop-find-definition)
-
     (advice-add 'tern-show-argument-hints :around #'config-web--maybe-suppress-tern-hints)))
 
 (use-package company-tern
   :straight t
-  :after (web-mode-submodes tern)
+  :after (:and web-mode-submodes tern)
   :config
   (progn
     (setq company-tern-meta-as-single-line t)
     (setq company-tern-property-marker " <p>")
-
     (with-eval-after-load 'company
       (add-to-list 'company-backends 'company-tern))))
-
-(use-package web-beautify
-  :straight t
-  :defer t)
-
-(use-package stylus-mode
-  :straight t
-  :mode ("\\.styl\\'" . stylus-mode)
-  :preface
-  (defun config-web--set-stylus-vars ()
-    (setq-local tab-width 2))
-  :config
-  (add-hook 'stylus-mode-hook #'config-web--set-stylus-vars))
 
 (use-package aggressive-indent
   :defer t
@@ -354,7 +328,9 @@
           ;; Filename
           (group (+? nonl)) ":"
           ;; Line
-          (group (+ digit))))
+          (group (+ digit))
+          ;; No more content
+          (or eol (not (any ":")))))
 
     (-let* ((str "Error: src/components/ColorList.js:22")
             ((whole file line) (s-match config-web--flow-error-rx str)))
@@ -377,7 +353,7 @@
 
 (use-package indium
   :straight t
-  :commands (indium-run-node indium-eval-buffer)
+  :commands (indium-run-node)
   :hook
   ((web-js-mode . indium-interaction-mode)
    (js-mode . indium-interaction-mode))
@@ -391,14 +367,11 @@
       (indium-run-node "node")))
   :init
   (defalias 'run-node #'node-repl)
-  :config
-  (progn
-    (evil-set-initial-state 'indium-inspector-mode 'motion)
-    (evil-set-initial-state 'indium-repl-mode 'insert)
-    (evil-define-key 'motion indium-inspector-mode-map (kbd "^") 'indium-inspector-pop)
-    (evil-define-key 'motion indium-inspector-mode-map (kbd "r") 'indium-inspector-refresh)
-    (with-eval-after-load 'web-mode-submodes
-      (define-key web-js-mode-map (kbd "C-c C-l") 'indium-eval-buffer))))
+  :general (:keymaps 'web-js-mode-map "C-c C-l" #'indium-eval-buffer)
+  :general
+  (:states 'motion :keymaps indium-inspector-mode-map
+           "^" #'indium-inspector-pop
+           "r" #'indium-inspector-refresh))
 
 (use-package nvm
   :straight t

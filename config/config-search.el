@@ -1,15 +1,11 @@
 ;;; config-search.el --- Configuration for rg, ag etc.  -*- lexical-binding: t; -*-
-
-;; Copyright (C) 2016  Chris Barrett
-
-;; Author: Chris Barrett <chris+emacs@walrus.cool>
-
 ;;; Commentary:
-
 ;;; Code:
 
 (eval-when-compile
   (require 'use-package))
+
+
 
 (use-package ag
   :straight t
@@ -24,6 +20,8 @@
 (use-package wgrep
   :straight t
   :commands (wgrep-setup)
+  :general
+  (:keymaps 'wgrep-mode-map [remap wgrep-finish-edit] #'cb-search-wgrep-finish-edit-kill-buffer)
   :init
   (add-hook 'grep-setup-hook #'wgrep-setup)
   :preface
@@ -40,8 +38,7 @@
   :config
   (progn
     (setq wgrep-enable-key (kbd "C-c C-e"))
-    (setq wgrep-auto-save-buffer t)
-    (define-key wgrep-mode-map [remap wgrep-finish-edit] #'cb-search-wgrep-finish-edit-kill-buffer)))
+    (setq wgrep-auto-save-buffer t)))
 
 (use-package wgrep-ag
   :straight t

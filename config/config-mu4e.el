@@ -1,11 +1,5 @@
 ;;; config-mu4e.el --- Configuration for mu4e.  -*- lexical-binding: t; -*-
-
-;; Copyright (C) 2016  Chris Barrett
-
-;; Author: Chris Barrett <chris+emacs@walrus.cool>
-
 ;;; Commentary:
-
 ;;; Code:
 
 (eval-when-compile
@@ -13,8 +7,8 @@
 
 (require 'cb-major-mode-hydra)
 (require 'config-hydras)
-(require 'evilified-state)
 (require 'f)
+(require 'general)
 (require 'paths)
 
 (autoload 'mail-add-attachment "sendmail")
@@ -37,7 +31,28 @@
 (use-package mu4e
   :straight t
   :commands (mu4e mu4e-compose-new)
-  :defer t
+
+  :general
+  (:keymaps 'mu4e-main-mode-map :states 'emacs
+            "j" #'mu4e~headers-jump-to-maildir
+            "q" #'bury-buffer)
+  (:keymaps 'mu4e-headers-mode-map :states 'emacs
+            "J" #'mu4e~headers-jump-to-maildir
+            "j" #'mu4e-headers-next
+            "k" #'mu4e-headers-prev)
+  (:keymaps 'mu4e-view-mode-map :states 'motion
+            "F" #'mu4e-compose-forward
+            "J" #'mu4e~view-headers-jump-to-maildir
+            "j" #'mu4e-view-headers-next
+            "k" #'mu4e-view-headers-prev
+            "C-j" #'mu4e-view-headers-next
+            "C-k" #'mu4e-view-headers-prev
+            "RET" #'config-mu4e-view-ret)
+  ;; Evil delete command is super slow for some reason. :(
+  (:keymaps 'mu4e-compose-mode-map :states 'insert "<backspace>" #'backward-delete-char)
+  ;; Declare archive functions.
+  (:keymaps 'mu4e-headers-mode-map "r" #'mu4e-headers-mark-for-read-and-archive)
+  (:keymaps 'mu4e-view-mode-map "r" #'mu4e-view-mark-for-read-and-archive)
 
   :preface
   (progn
@@ -91,96 +106,71 @@
       (-if-let ((&alist 'keymap (&alist 'mouse-1 action)) (text-properties-at (point)))
           (call-interactively action)
         (call-interactively #'evil-ret))))
-
   :config
   (progn
-    (evilified-state-evilify-map mu4e-main-mode-map
-      :mode mu4e-main-mode
-      :bindings
-      (kbd "j") #'mu4e~headers-jump-to-maildir
-      (kbd "q") #'bury-buffer)
+    (general-setq
+     mu4e-use-fancy-chars t
+     mu4e-headers-attach-mark (purecopy '("a" . "A"))
+     mu4e-headers-unread-mark (purecopy '("u" . "●"))
+     mu4e-headers-seen-mark (purecopy '(" " . " "))
+     mu4e-hide-index-messages t
+     mu4e-headers-skip-duplicates t
+     mu4e-compose-format-flowed t
+     mu4e-completing-read-function 'completing-read
+     mu4e-index-lazy-check t
 
-    (evilified-state-evilify-map mu4e-headers-mode-map
-      :mode mu4e-headers-mode
-      :bindings
-      (kbd "J") #'mu4e~headers-jump-to-maildir
-      (kbd "j") #'mu4e-headers-next
-      (kbd "k") #'mu4e-headers-prev)
+     mu4e-view-prefer-html t
+     mu4e-view-show-images t
+     mu4e-view-show-addresses t
+     message-kill-buffer-on-exit t
 
-    (evil-set-initial-state 'mu4e-view-mode 'motion)
-    (evil-define-key 'motion mu4e-view-mode-map
-      (kbd "F") #'mu4e-compose-forward
-      (kbd "J") #'mu4e~view-headers-jump-to-maildir
-      (kbd "n") #'mu4e-view-headers-next
-      (kbd "p") #'mu4e-view-headers-prev
-      (kbd "C-j") #'mu4e-view-headers-next
-      (kbd "C-k") #'mu4e-view-headers-prev
-      ;; (kbd "w") #'evil-forward-word-begin
-      ;; (kbd "b") #'evil-backward-word-begin
-      (kbd "RET") #'config-mu4e-view-ret)
+     mu4e-maildir (f-expand "~/Maildir")
+     mu4e-headers-date-format "%d-%m-%y %k:%M"
+     sendmail-program "msmtp"
+     message-send-mail-function #'message-send-mail-with-sendmail
 
-    ;; Evil delete command is super slow for some reason. :(
-    (evil-define-key 'insert mu4e-compose-mode-map
-      (kbd "<backspace>") #'backward-delete-char)
+     mu4e-bookmarks
+     '(("flag:unread AND ((s:JIRA AND b:chrisb) OR (NOT (s:JIRA OR s:jenkins))) AND (NOT m:/walrus/trash)"
+        "Unread messages" ?u)
+       ("d:today..now AND NOT (s:JIRA OR s:jenkins)"
+        "Today's messages" ?t)
+       ("d:7d..now AND NOT (s:JIRA OR s:jenkins)"
+        "Last 7 days" ?w)
+       ("d:30d..now AND NOT (s:JIRA OR s:jenkins)"
+        "Last 30 days" ?m)
+       ("m:/walrus/inbox"
+        "Inbox" ?i)
+       ("m:/walrus/sent"
+        "Sent messages" ?s)
+       ("bitbucket OR github"
+        "Code & PRs" ?c))
 
-    ;; Set variables
+     ;; All my mailservers use IMAP. Use mbsync to synchronise mail between the
+     ;; server and my local machine.
+     mu4e-get-mail-command "mbsync -V -q -a"
+     mu4e-change-filenames-when-moving t
 
-    (setq mu4e-use-fancy-chars t)
-    (setq mu4e-headers-attach-mark (purecopy '("a" . "A")))
-    (setq mu4e-headers-unread-mark (purecopy '("u" . "●")))
-    (setq mu4e-headers-seen-mark (purecopy '(" " . " ")))
-    (setq mu4e-hide-index-messages t)
-    (setq mu4e-headers-skip-duplicates t)
-    (setq mu4e-compose-format-flowed t)
-    (setq mu4e-completing-read-function 'completing-read)
-    (setq mu4e-index-lazy-check t)
+     smtpmail-queue-mail nil
+     smtpmail-queue-dir (concat mu4e-maildir "/queue/cur")
 
-    (setq mu4e-view-prefer-html t)
-    (setq mu4e-view-show-images t)
-    (setq mu4e-view-show-addresses t)
-    (setq message-kill-buffer-on-exit t)
+     ;; Save attachments to Downloads dir.
+     mu4e-attachment-dir (f-expand "~/Downloads")
 
-    (setq mu4e-maildir (f-expand "~/Maildir"))
-    (setq mu4e-headers-date-format "%d-%m-%y %k:%M")
-    (setq sendmail-program "msmtp")
-    (setq message-send-mail-function #'message-send-mail-with-sendmail)
+     ;; Put quoted messages after signature.
+     message-forward-before-signature nil
 
-    (setq mu4e-bookmarks
-          '(("flag:unread AND ((s:JIRA AND b:chrisb) OR (NOT (s:JIRA OR s:jenkins))) AND (NOT m:/walrus/trash)"
-             "Unread messages" ?u)
-            ("d:today..now AND NOT (s:JIRA OR s:jenkins)"
-             "Today's messages" ?t)
-            ("d:7d..now AND NOT (s:JIRA OR s:jenkins)"
-             "Last 7 days" ?w)
-            ("d:30d..now AND NOT (s:JIRA OR s:jenkins)"
-             "Last 30 days" ?m)
-            ("m:/walrus/inbox"
-             "Inbox" ?i)
-            ("m:/walrus/sent"
-             "Sent messages" ?s)
-            ("bitbucket OR github"
-             "Code & PRs" ?c)))
+     ;; Use standard citation style.
+     message-citation-line-function #'message-insert-formatted-citation-line
+     message-citation-line-format "On %a, %b %d %Y, %f wrote:\n"
 
-    ;; All my mailservers use IMAP. Use mbsync to synchronise mail between the
-    ;; server and my local machine.
-    (setq mu4e-get-mail-command "mbsync -V -q -a")
-    (setq mu4e-change-filenames-when-moving t)
+     ;; Update every 2 minutes.
+     mu4e-update-interval (* 60 5)
 
-    (setq smtpmail-queue-mail nil)
-    (setq smtpmail-queue-dir (concat mu4e-maildir "/queue/cur"))
+     ;; Ensure I'm never prompted for the buffer coding system when sending mail.
+     sendmail-coding-system 'utf-8
 
-    ;; Save attachments to Downloads dir.
-    (setq mu4e-attachment-dir (f-expand "~/Downloads"))
-
-    ;; Put quoted messages after signature.
-    (setq message-forward-before-signature nil)
-
-    ;; Use standard citation style.
-    (setq message-citation-line-function #'message-insert-formatted-citation-line)
-    (setq message-citation-line-format "On %a, %b %d %Y, %f wrote:\n")
-
-    ;; Update every 2 minutes.
-    (setq mu4e-update-interval (* 60 5))
+     ;; Custom rendering of HTML messages
+     mu4e-html2text-command #'config-mu4e-shr-buffer)
 
     ;; Use word wrap instead of auto-fill.
     (add-hook 'mu4e-compose-mode-hook #'turn-off-auto-fill)
@@ -189,18 +179,12 @@
     ;; Wrap lines when viewing.
     (add-hook 'mu4e-view-mode-hook #'visual-line-mode)
 
-    ;; Put signature before quoted messages.
-    (add-hook 'mu4e-compose-mode-hook #'config-mu4e--insert-signature-before-quoted-message)
-
-    ;; use imagemagick, if available
+    ;; Use imagemagick, if available
     (when (fboundp 'imagemagick-register-types)
       (imagemagick-register-types))
 
-    ;; Ensure I'm never prompted for the buffer coding system when sending mail.
-    (setq sendmail-coding-system 'utf-8)
-
-    ;; Custom rendering of HTML messages
-    (setq mu4e-html2text-command #'config-mu4e-shr-buffer)
+    ;; Put signature before quoted messages.
+    (add-hook 'mu4e-compose-mode-hook #'config-mu4e--insert-signature-before-quoted-message)
 
     ;; View html message in eww. `av` in view to activate
     (add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
@@ -216,11 +200,6 @@
                    :prompt     "rArchive"
                    :show-target (lambda (target) "archive")
                    :action      cb-mu4e-utils-read-and-archive-action))
-
-    ;; Declare archive functions.
-
-    (define-key mu4e-headers-mode-map (kbd "r") #'mu4e-headers-mark-for-read-and-archive)
-    (define-key mu4e-view-mode-map (kbd "r") #'mu4e-view-mark-for-read-and-archive)
 
     ;; Enable leader key in mu4e maps
     (config-hydras-insinuate mu4e-headers-mode-map)

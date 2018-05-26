@@ -1,9 +1,4 @@
 ;;; config-basic-settings.el --- Basic Emacs settings.  -*- lexical-binding: t; -*-
-
-;; Copyright (C) 2016  Chris Barrett
-
-;; Author: Chris Barrett <chris+emacs@walrus.cool>
-
 ;;; Commentary:
 
 ;; This file contains most of the basic configuration for core Emacs features.
@@ -367,7 +362,7 @@
 
 
 (use-package simple
-  :bind (("M-SPC" . cycle-spacing)))
+  :general ("M-SPC" #'cycle-spacing))
 
 (use-package recentf
   :defer t
@@ -567,10 +562,9 @@
 
 (use-package man
   :defer t
-  :bind (:map
-         Man-mode-map
-         ("M-n" . Man-next-section)
-         ("M-p" . Man-previous-section)))
+  :general (:keymaps 'Man-mode-map
+                     "M-n" #'Man-next-section
+                     "M-p" #'Man-previous-section))
 
 (use-package ispell
   :defer t
@@ -614,6 +608,13 @@
   (progn
     (add-hook 'ediff-keymap-setup-hook #'config-basic-settings--setup-ediff-keybinds)
     (setq ediff-window-setup-function #'ediff-setup-windows-plain)))
+
+
+
+(require 'server)
+
+(unless (server-running-p)
+  (server-start))
 
 (provide 'config-basic-settings)
 

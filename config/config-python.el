@@ -7,7 +7,6 @@
 
 (require 'cb-major-mode-hydra)
 (require 'dash)
-(require 'evil)
 (require 'paths)
 
 
@@ -106,11 +105,17 @@
   :straight t
   :hook ((python-mode . anaconda-mode)
          (python-mode . anaconda-eldoc-mode))
-  :functions (anaconda-mode-find-definitions)
+
+  :general
+  (:states '(insert normal) :keymaps 'anaconda-mode-map
+           "M-." #'anaconda-mode-find-definitions
+           "M-," #'pop-tag-mark)
+  (:states 'normal :keymaps 'anaconda-mode-map "K" #'anaconda-mode-show-doc)
+  (:states 'motion :keymaps 'anaconda-mode-view-mode-map "q" #'quit-window)
+
   :preface
   (progn
     (autoload 'xref-push-marker-stack "xref")
-
     (defun config-python--push-mark (&rest _)
       (xref-push-marker-stack)))
 
@@ -120,19 +125,8 @@
       (f-mkdir dir)
       (setq anaconda-mode-installation-directory dir))
 
-    ;; Main keybindings
-
-    (evil-define-key 'normal anaconda-mode-map (kbd "K") #'anaconda-mode-show-doc)
-    (evil-define-key 'normal anaconda-mode-map (kbd "M-.") #'anaconda-mode-find-definitions)
-    (evil-define-key 'normal anaconda-mode-map (kbd "M-,") #'pop-tag-mark)
-    (define-key anaconda-mode-map (kbd "M-.") #'anaconda-mode-find-definitions)
-    (define-key anaconda-mode-map (kbd "M-,") #'pop-tag-mark)
-
-    (evil-set-initial-state 'anaconda-mode-view-mode 'motion)
-    (evil-define-key 'motion anaconda-mode-view-mode-map (kbd "q") 'quit-window)
-
-    ;; Advice
-
+    ;; Push a marker when navigating with ananconda so that pop marker commands
+    ;; work.
     (advice-add 'anaconda-mode-find-assignments :before #'config-python--push-mark)
     (advice-add 'anaconda-mode-find-definitions :before #'config-python--push-mark)))
 

@@ -3,11 +3,9 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'company nil t)
   (require 'use-package))
 
 (autoload 'f-ext? "f")
-(autoload 'evil-set-initial-state "evil")
 
 (use-package nix-mode
   :straight t
@@ -34,25 +32,17 @@
 (use-package nix-shell
   :commands nix-shell)
 
-(use-package nix-company
-  :after nix-mode
-  :disabled t
-  :config
-  (add-to-list 'company-backends 'company-nix))
-
 (use-package nix-repl
   :commands nix-repl-show
   :config
-  (progn
-    (evil-set-initial-state 'nix-repl-mode 'insert)
-    (add-to-list 'display-buffer-alist
-                 `(,(rx bos "*Nix-REPL*" eos)
-                   (display-buffer-reuse-window
-                    display-buffer-in-side-window)
-                   (reusable-frames . visible)
-                   (side            . bottom)
-                   (slot            . 1)
-                   (window-height   . 0.4)))))
+  (add-to-list 'display-buffer-alist
+               `(,(rx bos "*Nix-REPL*" eos)
+                 (display-buffer-reuse-window
+                  display-buffer-in-side-window)
+                 (reusable-frames . visible)
+                 (side            . bottom)
+                 (slot            . 1)
+                 (window-height   . 0.4))))
 
 (provide 'config-nix)
 

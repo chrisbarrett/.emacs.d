@@ -1,11 +1,5 @@
 ;;; config-rust.el --- Configuration for rust-mode  -*- lexical-binding: t; -*-
-
-;; Copyright (C) 2016  Chris Barrett
-
-;; Author: Chris Barrett <chris+emacs@walrus.cool>
-
 ;;; Commentary:
-
 ;;; Code:
 
 (eval-when-compile
@@ -13,8 +7,6 @@
 
 (require 'cb-major-mode-hydra)
 (require 's)
-
-(autoload 'evil-define-key "evil")
 
 
 
@@ -41,6 +33,11 @@
 (use-package rust-mode
   :straight t
   :mode ("\\.rs\\'" . rust-mode)
+
+  :general (:keymaps 'rust-mode-map "TAB" #'company-indent-or-complete-common)
+  :general (:states '(normal insert) :keymaps 'rust-mode-map "TAB" #'company-indent-or-complete-common)
+  :general (:states 'normal :keymaps 'rust-mode-map "J" #'config-rust-join-line)
+
   :preface
   (progn
     (autoload 'company-indent-or-complete-common "company")
@@ -57,15 +54,8 @@
         (delete-horizontal-space))))
 
   :config
-  (progn
-    ;; Enable backtraces in rust programs run from Emacs.
-    (setenv "RUST_BACKTRACE" "1")
-    (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
-
-    (evil-define-key 'insert rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
-    (evil-define-key 'normal rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
-
-    (evil-define-key 'normal rust-mode-map (kbd "J") #'config-rust-join-line)))
+  ;; Enable backtraces in rust programs run from Emacs.
+  (setenv "RUST_BACKTRACE" "1"))
 
 (use-package flycheck-rust
   :straight t
@@ -74,20 +64,16 @@
 (use-package racer
   :straight t
   :commands (racer-find-definition racer-describe)
-  :hook (rust-mode . racer-mode)
+  :general
+  (:states 'normal :keymaps 'rust-mode-map
+           "K" #'racer-describe
+           "M-." #'racer-find-definition)
+  :hook ((rust-mode . racer-mode)
+         (racer-mode-hook . eldoc-mode))
   :config
-  (progn
-    (add-hook 'racer-mode-hook #'eldoc-mode)
-
-    (evil-set-initial-state 'racer-help-mode 'motion)
-
-    ;; Teach compile.el about sources installed via rustup.
-    (let ((base (file-name-directory racer-rust-src-path)))
-      (add-to-list 'compilation-search-path base t))
-
-    (with-eval-after-load 'rust-mode
-      (evil-define-key 'normal rust-mode-map (kbd "K") #'racer-describe)
-      (evil-define-key 'normal rust-mode-map (kbd "M-.") #'racer-find-definition))))
+  ;; Teach compile.el about sources installed via rustup.
+  (let ((base (file-name-directory racer-rust-src-path)))
+    (add-to-list 'compilation-search-path base t)))
 
 (use-package toml-mode
   :straight t

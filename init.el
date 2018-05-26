@@ -115,7 +115,6 @@
 (use-package config-company)
 (use-package config-yasnippet)
 (use-package config-flycheck)
-(use-package config-server)
 (use-package config-neotree)
 (use-package config-mu4e)
 (use-package config-org)

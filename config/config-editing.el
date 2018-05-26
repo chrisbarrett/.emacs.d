@@ -121,7 +121,7 @@ Interactively, reverse the characters in the current region."
 ;; Align provides useful functions for aligning text.
 
 (use-package align
-  :bind (("C-x a a" . align-regexp)))
+  :general ("C-x a a" #'align-regexp))
 
 ;; Hexl is Emacs' built-in hex editor.
 
@@ -234,7 +234,7 @@ Interactively, reverse the characters in the current region."
 
 (use-package tiny
   :straight t
-  :bind ("C-:" . tiny-expand))
+  :general ("C-:" #'tiny-expand))
 
 ;; undo-tree visualises the undo history.
 

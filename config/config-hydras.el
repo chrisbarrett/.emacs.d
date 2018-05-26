@@ -216,7 +216,7 @@
    ("s" org-search-view "search..."))
 
   "Goto"
-  (("$" cb-ledger-goto-ledger-file "ledger")
+  (("$" (find-file ledger-master-file) "ledger")
    ("a" cb-org-goto-agenda "agenda")
    ("d" cb-org-goto-diary "diary")
    ("j" cb-org-goto-journal "journal")

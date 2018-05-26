@@ -1,11 +1,5 @@
 ;;; config-themes.el --- Typeface and syntax highlighting config.  -*- lexical-binding: t; -*-
-
-;; Copyright (C) 2016  Chris Barrett
-
-;; Author: Chris Barrett <chris+emacs@walrus.cool>
-
 ;;; Commentary:
-
 ;;; Code:
 
 (eval-when-compile
@@ -13,6 +7,7 @@
 
 (require 'dash)
 (require 'f)
+(require 'general)
 (require 'straight)
 
 
@@ -40,8 +35,8 @@
 
 
 (use-package menu-bar
-  :bind (("C-c e e" . toggle-debug-on-error))
   :if (bound-and-true-p menu-bar-mode)
+  :general ("C-c e e" #'toggle-debug-on-error)
   :config
   (when (fboundp 'menu-bar-mode)
     (menu-bar-mode -1)))
@@ -189,10 +184,7 @@
   :straight t
   :commands (imenu-list)
   :init (require 'imenu-list-hacks)
-  :config
-  (with-eval-after-load 'evil
-    (with-no-warnings
-      (evil-define-key 'normal imenu-list-major-mode-map (kbd "q") #'quit-window))))
+  :general (:states 'normal :keymaps 'imenu-list-major-mode-map "q" #'quit-window))
 
 
 

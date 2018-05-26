@@ -24,15 +24,10 @@
 
 (use-package graphviz-dot-mode
   :straight t
-  :mode
-  (("\\.dot\\'" . graphviz-dot-mode)
-   (("\\.gv\\'" . graphviz-dot-mode)))
-  :config
-  (progn
-    (let ((keymap (with-no-warnings graphviz-dot-mode-map)))
-      (define-key keymap (kbd "M-q") 'graphviz-dot-indent-graph)
-      (define-key keymap (kbd "{") nil)
-      (define-key keymap (kbd "}") nil))))
+  :mode (("\\.dot\\'" . graphviz-dot-mode)
+         (("\\.gv\\'" . graphviz-dot-mode)))
+  :general (:keymaps 'graphviz-dot-mode-map "M-q" #'graphviz-dot-indent-graph)
+  :init (general-unbind :keymaps 'graphviz-dot-mode-map "{" "}"))
 
 (use-package protobuf-mode
   :straight t

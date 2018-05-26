@@ -5,29 +5,26 @@
 (eval-when-compile
   (require 'use-package))
 
-(require 'evilified-state)
-
 (use-package prodigy
   :straight t
   :commands (prodigy)
-  :config
-  (progn
-    (evil-set-initial-state 'prodigy-mode 'motion)
-    (evilified-state-evilify-map prodigy-mode-map
-      "h" 'prodigy-first
-      "j" 'prodigy-next
-      "k" 'prodigy-prev
-      "l" 'prodigy-last
-      "H" 'prodigy-display-process
-      "J" 'prodigy-next-with-status
-      "K" 'prodigy-prev-with-status
-      "L" 'prodigy-start
-      "d" 'prodigy-jump-dired
-      "g" 'prodigy-jump-magit
-      "Y" 'prodigy-copy-cmd
-      "R" 'revert-buffer
-      "q" 'quit-buffer)
-    (evil-define-key 'motion prodigy-view-mode-map (kbd "gf") 'find-file-at-point)))
+  :general
+  (:states 'motion :keymaps 'prodigy-view-mode-map "gf" 'find-file-at-point)
+  :general
+  (:states 'motion :keymap 'prodigy-mode-map
+           "h" #'prodigy-first
+           "j" #'prodigy-next
+           "k" #'prodigy-prev
+           "l" #'prodigy-last
+           "H" #'prodigy-display-process
+           "J" #'prodigy-next-with-status
+           "K" #'prodigy-prev-with-status
+           "L" #'prodigy-start
+           "d" #'prodigy-jump-dired
+           "g" #'prodigy-jump-magit
+           "Y" #'prodigy-copy-cmd
+           "R" #'revert-buffer
+           "q" #'quit-buffer))
 
 (provide 'config-prodigy)
 

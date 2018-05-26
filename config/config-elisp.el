@@ -1,11 +1,5 @@
 ;;; config-elisp.el --- Configuration for Emacs Lisp.  -*- lexical-binding: t; -*-
-
-;; Copyright (C) 2016  Chris Barrett
-
-;; Author: Chris Barrett <chris+emacs@walrus.cool>
-
 ;;; Commentary:
-
 ;;; Code:
 
 (eval-when-compile
@@ -65,7 +59,7 @@
 ;; IELM is the Elisp repl built in to Emacs.
 
 (use-package ielm
-  :bind (:map emacs-lisp-mode-map ("C-c C-z" . ielm))
+  :general (:keymaps 'emacs-lisp-mode-map "C-c C-z" #'ielm)
   :preface
   (defun config-elisp-pop-to-elisp-buffer ()
     (interactive)
@@ -94,12 +88,9 @@
   :straight t
   :hook (emacs-lisp-mode . turn-on-elisp-slime-nav-mode)
   :general
-  (:keymaps
-   'emacs-lisp-mode-map
-   "M-." #'elisp-slime-nav-find-elisp-thing-at-point
-   :states 'normal
-   "M-." #'elisp-slime-nav-find-elisp-thing-at-point
-   "K" #'elisp-slime-nav-describe-elisp-thing-at-point))
+  (:keymaps 'emacs-lisp-mode-map :states 'normal
+            "M-." #'elisp-slime-nav-find-elisp-thing-at-point
+            "K" #'elisp-slime-nav-describe-elisp-thing-at-point))
 
 ;; eldoc shows function parameters in the minibuffer.
 

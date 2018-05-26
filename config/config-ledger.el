@@ -1,33 +1,23 @@
 ;;; config-ledger.el --- Configuration for ledger.  -*- lexical-binding: t; -*-
-
-;; Copyright (C) 2016  Chris Barrett
-
-;; Author: Chris Barrett <chris+emacs@walrus.cool>
-
 ;;; Commentary:
-
 ;;; Code:
 
 (eval-when-compile
   (require 'use-package))
 
 (require 'dash)
+(require 'general)
 (require 's)
+(require 'straight)
 
-(autoload 'evil-define-key "evil")
 (autoload 'evil-insert-state "evil-states")
 (autoload 'ledger-report "ledger")
 (autoload 'org-read-date "org")
 
-(defconst ledger-master-file (file-truename "~/org/accounts.ledger"))
+(general-setq ledger-master-file (file-truename "~/org/accounts.ledger"))
 
 
 ;; Utility functions
-
-(defun cb-ledger-goto-ledger-file ()
-  "Go to the ledger file."
-  (interactive)
-  (find-file ledger-master-file))
 
 (defun cb-ledger-insert-timestamp (date)
   "Insert DATE at point."
@@ -51,31 +41,27 @@
 (use-package ledger-mode
   :straight t
   :mode ("\\.ledger$" . ledger-mode)
-
-  :bind
-  (:map
-   ledger-mode-map
-   ("C-c C-c" . ledger-report)
-   ("M-RET" . ledger-toggle-current-transaction)
-   ("C-c C-." . cb-ledger-insert-timestamp))
-
+  :general (:states 'normal :keymaps 'ledger-report-mode-map "q" #'kill-buffer-and-window)
+  :general (:keymaps ledger-report-mode-map "C-c C-c" #'cb-ledger-report-from-report-buffer)
+  :general
+  (:keymaps 'ledger-mode-map
+            "C-c C-c" #'ledger-report
+            "M-RET" #'ledger-toggle-current-transaction
+            "C-c C-." #'cb-ledger-insert-timestamp)
   :config
   (progn
-
-    (evil-define-key 'normal ledger-report-mode-map (kbd "q") 'kill-buffer-and-window)
-
-    (setq ledger-report-use-header-line nil)
-    (setq ledger-post-account-alignment-column 2)
-    (setq ledger-post-use-completion-engine :ido)
-    (setq ledger-fontify-xact-state-overrides nil)
-
-    (setq ledger-reports
-          `(("assets & liabilities" "ledger -f %(ledger-file) bal '^Assets' '^Liabilities' --depth 2")
-            ("balance" "ledger -f %(ledger-file) --depth 3 bal not ^Equity")
-            ("reg this week" "ledger -f %(ledger-file) reg checking -p 'this week'")
-            ("reg this month" "ledger -f %(ledger-file) reg checking -p 'this month'")
-            ("reg since payday" "ledger -f %(ledger-file) reg checking -b %(last-payday)")
-            ("reg previous pay period" "ledger -f %(ledger-file) reg checking -p %(prev-pay-period)")))
+    (general-setq
+     ledger-report-use-header-line nil
+     ledger-post-account-alignment-column 2
+     ledger-post-use-completion-engine :ido
+     ledger-fontify-xact-state-overrides nil
+     ledger-reports
+     `(("assets & liabilities" "ledger -f %(ledger-file) bal '^Assets' '^Liabilities' --depth 2")
+       ("balance" "ledger -f %(ledger-file) --depth 3 bal not ^Equity")
+       ("reg this week" "ledger -f %(ledger-file) reg checking -p 'this week'")
+       ("reg this month" "ledger -f %(ledger-file) reg checking -p 'this month'")
+       ("reg since payday" "ledger -f %(ledger-file) reg checking -b %(last-payday)")
+       ("reg previous pay period" "ledger -f %(ledger-file) reg checking -p %(prev-pay-period)")))
 
     ;; Faces and font-locking
 
@@ -90,12 +76,11 @@
        (,(rx (+ digit) "-" (= 3 alpha) "-" (+ digit)) . 'ledger-font-posting-date-face)))
 
     ;; Fix font lock issue in ledger reports
-    (add-hook 'ledger-report-mode-hook 'font-lock-fontify-buffer)
-    (define-key ledger-report-mode-map (kbd "C-c C-c") #'cb-ledger-report-from-report-buffer)))
+    (add-hook 'ledger-report-mode-hook 'font-lock-fontify-buffer)))
 
 (use-package cb-ledger-format
   :after ledger-mode
-  :bind (:map ledger-mode-map ("M-q" . cb-ledger-format-buffer)))
+  :general (:keymap 'ledger-mode-map "M-q" #'cb-ledger-format-buffer))
 
 (use-package cb-ledger-reports
   :after ledger-mode

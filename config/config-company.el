@@ -1,11 +1,5 @@
 ;;; config-company.el --- Startup file for Emacs.  -*- lexical-binding: t; -*-
-
-;; Copyright (C) 2016  Chris Barrett
-
-;; Author: Chris Barrett <chris+emacs@walrus.cool>
-
 ;;; Commentary:
-
 ;;; Code:
 
 (eval-when-compile
@@ -29,7 +23,7 @@
    "C-h" #'company-show-doc-buffer)
 
   :preface
-  (general-unbind :keymaps 'company-active-map "C-w" nil)
+  (general-unbind :keymaps 'company-active-map "C-w")
 
   :preface
   (defun config-company--set-company-vars ()
