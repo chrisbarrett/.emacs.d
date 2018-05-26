@@ -117,7 +117,8 @@
     (setq projectile-ignored-project-function #'projectile-funcs-ignored-subdir-p)
 
     (setq projectile-globally-ignored-directories
-          '(".bzr"
+          '(
+            ".bzr"
             ".ensime_cache"
             ".eunit"
             ".fslckout"
@@ -128,9 +129,11 @@
             ".stack-work"
             ".svn"
             "dist"
-            "node_modules"
             "jars"
-            "target"))
+            "node_modules"
+            "straight/repos"
+            "target"
+            ))
 
     (projectile-mode)
 
