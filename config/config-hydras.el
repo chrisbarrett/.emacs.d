@@ -42,7 +42,7 @@
 
 (defmacro cb-hydra-define (name body title &rest heads-plist)
   (declare (indent defun))
-  `(pretty-hydra-define ,name ,body ,heads-plist
+  `(pretty-hydra-define ,name (,@body :hint nil :color teal) ,heads-plist
      :docstring-prefix ,title))
 
 (eval-and-compile
@@ -76,7 +76,7 @@
             " " title
             "\n")))
 
-(cb-hydra-define comments (:color teal :hint nil)
+(cb-hydra-define comments ()
   (hydra-title-with-octicon "comment" "Comments")
   "Toggle Comments"
   (("l" evilnc-comment-or-uncomment-lines "lines")
@@ -86,14 +86,14 @@
   "With Copy"
   (("y" evil-funcs/copy-and-comment-lines "copy")))
 
-(cb-hydra-define font-scale (:color amaranth :hint nil)
+(cb-hydra-define font-scale (:color amaranth)
   (hydra-title-with-faicon "search-plus" "Font Scale")
   ""
   (("+" (text-scale-increase 1) "zoom in")
    ("-" (text-scale-decrease 1) "zoom out")
    ("0" (text-scale-set 0) "reset")))
 
-(cb-hydra-define buffers (:color teal :hint nil)
+(cb-hydra-define buffers ()
   (hydra-title-with-faicon "files-o" "Buffer Commands")
 
   "Switch"
@@ -108,7 +108,7 @@
    ("w" save-buffer "save")
    ("v" reload-file "reload")))
 
-(cb-hydra-define windows (:color teal :hint nil)
+(cb-hydra-define windows ()
   (hydra-title-with-faicon "clone" "Window Management")
 
   "Switch"
@@ -126,7 +126,7 @@
   (("d" delete-window "window")
    ("o" delete-other-windows "others")))
 
-(cb-hydra-define files (:color teal :hint nil)
+(cb-hydra-define files ()
   (hydra-title-with-faicon "hdd-o" "File Commands")
   "Find"
   (("f" counsel-find-file "find file...")
@@ -152,7 +152,7 @@
    ("t" neotree-toggle "file tree")
    ("v" reload-file "reload")))
 
-(cb-hydra-define errors (:color teal :hint nil)
+(cb-hydra-define errors ()
   (hydra-title-with-mat-icon "error_outline" "Errors")
 
   "Navigation"
@@ -170,7 +170,7 @@
    ("s" flycheck-select-checker "select...")
    ("v" flycheck-verify-setup "verify")))
 
-(cb-hydra-define help (:color teal :hint nil :help nil)
+(cb-hydra-define help ( :help nil)
   (hydra-title-with-mat-icon "help_outline" "Help")
 
   "Docs"
@@ -191,7 +191,7 @@
    ("fl" find-library "library...")
    ("fv" find-variable "variable...")))
 
-(cb-hydra-define kill (:color teal :hint nil)
+(cb-hydra-define kill ()
   (hydra-title-with-mat-icon "close" "Kill")
   "Kill"
   (("b" #'kill-this-buffer "buffer")
@@ -199,7 +199,7 @@
   "Kill-Ring"
   (("r" counsel-yank-pop "browse...")))
 
-(cb-hydra-define narrowing (:color teal :hint nil)
+(cb-hydra-define narrowing ()
   (hydra-title-with-mat-icon "photo_size_select_small" "Narrowing")
   "Narrow to..."
   (("f" #'narrow-to-defun "function")
@@ -208,7 +208,7 @@
   "Actions"
   (("w" #'widen "widen")))
 
-(cb-hydra-define org (:color teal :hint nil)
+(cb-hydra-define org ()
   (hydra-title-with-mode-icon 'org-mode "Org")
   "Actions"
   (("k" org-capture "capture...")
@@ -227,7 +227,7 @@
    ("v" cb-org-goto-tags-list "tags")
    ("o" cb-org-goto-headline "headline...")))
 
-(cb-hydra-define project (:color teal :hint nil)
+(cb-hydra-define project ()
   (hydra-title-with-octicon "repo" "Project")
 
   "Actions"
@@ -251,7 +251,7 @@
   (("/" counsel-projectile-rg "search...")
    ("r" projectile-replace "replace...")))
 
-(cb-hydra-define symbols (:color teal :hint nil)
+(cb-hydra-define symbols ()
   (hydra-title-with-mat-icon "highlight" "Symbols")
   "Edit"
   (("e" evil-iedit-state/iedit-mode "iedit"))
@@ -259,7 +259,7 @@
   (("h" evil-ahs/highlight-symbol "highlight")
    ("H" evil-ahs/goto-last-searched-symbol "goto last searched")))
 
-(cb-hydra-define parens (:color teal :hint nil)
+(cb-hydra-define parens ()
   (hydra-title-with-mat-icon "code" "Smartparens")
 
   "Navigation"
@@ -295,7 +295,7 @@
    ("Y" sp-backward-copy-sexp "copy back")
    ("y" sp-copy-sexp "copy")))
 
-(cb-hydra-define toggles (:color teal :hint nil)
+(cb-hydra-define toggles ()
   (hydra-title-with-faicon "toggle-on" "Toggles")
   "Display"
   (("m" cb-header-line-global-mode "header line")
@@ -303,7 +303,7 @@
   "Editing"
   (("c" hide/show-comments-toggle "comments")))
 
-(cb-hydra-define yasnippet (:color teal :hint nil)
+(cb-hydra-define yasnippet ()
   (hydra-title-with-mat-icon "content_copy" "Snippets")
   ""
   (("n" #'yas-new-snippet "new")
@@ -314,7 +314,7 @@
 
 ;; Git hydras
 
-(cb-hydra-define git-and-files (:color teal :hint nil)
+(cb-hydra-define git-and-files ()
   (hydra-title-with-aicon "git" "Git and Goto")
 
   "Goto"
@@ -341,7 +341,7 @@
 
 (cb-hydra-define git-time-machine
   (:foreign-keys run
-                 :hint nil
+
                  :pre (unless (bound-and-true-p git-timemachine-mode)
                         (call-interactively 'git-timemachine))
                  :post (when (bound-and-true-p git-timemachine-mode)
@@ -358,7 +358,7 @@
 
 (cb-hydra-define git-blame
   (:foreign-keys run
-                 :hint nil
+
                  :pre (unless (bound-and-true-p magit-blame-mode)
                         (call-interactively 'magit-blame))
                  :post
@@ -370,7 +370,7 @@
    ("d" magit-blame-removal "rev removed")
    ("r" magit-blame-reverse "last rev where exists")))
 
-(cb-hydra-define git-hunks (:foreign-keys run :hint nil)
+(cb-hydra-define git-hunks (:foreign-keys run)
   (hydra-title-with-aicon "git" "Git Hunks")
   "Navigate"
   (("n" diff-hl-next-hunk "next")
@@ -381,7 +381,7 @@
 
 ;; Application hydras
 
-(cb-hydra-define applications (:color teal :hint nil)
+(cb-hydra-define applications ()
   (hydra-title-with-mat-icon "apps" "Applications")
 
   "Productivity"
@@ -402,21 +402,21 @@
   (("t" (ansi-term (getenv "SHELL")) "terminal")
    ("n" nix-repl-show "nix-repl")))
 
-(cb-hydra-define profiler (:color teal :hint nil)
+(cb-hydra-define profiler ()
   (hydra-title-with-faicon "bar-chart" "Profiler")
   ""
   (("p" profiler-start "start...")
    ("s" profiler-stop "stop")
    ("r" profiler-report "report")))
 
-(cb-hydra-define select-input-method (:color teal :hint nil)
+(cb-hydra-define select-input-method ()
   (hydra-title-with-faicon "language" "Input Method")
   ""
   (("a" (progn (set-input-method "arabic") (message "Arabic input method activated")) "arabic")
    ("t" (progn (set-input-method "TeX") (message "TeX input method activated")) "TeX")
    ("SPC" (progn (deactivate-input-method) (message "Input method cleared")) "clear")))
 
-(cb-hydra-define straight (:color teal :hint nil)
+(cb-hydra-define straight ()
   (hydra-title-with-octicon "package" "Straight Package Manager")
 
   "Global"
@@ -439,7 +439,7 @@
 
 
 
-(cb-hydra-define main-dispatcher (:color teal :hint nil)
+(cb-hydra-define main-dispatcher ()
   (concat
    (hydra-title-with-fileicon "emacs" "Overview")
    (format "%35s\n" (propertize " " 'display config-hydras--pusheen)))
