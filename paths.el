@@ -3,7 +3,6 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'recentf)
   (require 'use-package))
 
 (require 'straight)
