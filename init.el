@@ -49,6 +49,7 @@
 (straight-use-package 's)
 (straight-use-package 'noflet)
 (straight-use-package 'memoize)
+(straight-use-package 'general)
 (straight-use-package 'el-patch)
 
 (with-no-warnings

@@ -9,17 +9,14 @@
 
 
 
-(cb-major-mode-hydra-define hexl-mode
-  "Insert"
-  (("d" hexl-insert-decimal-char "decimal")
-   ("c" hexl-insert-octal-char "octal")
-   ("x" hexl-insert-hex-char "hex")
-   ("s" hexl-insert-hex-string "hex string"))
+;; Auto-indent on RET
 
-  "Address"
-  (("g" hexl-goto-address "goto")))
+(define-key global-map (kbd "RET") #'comment-indent-new-line)
 
-
+;; Enable hideshow in all programming buffers.
+
+(autoload 'hs-minor-mode "hideshow")
+(add-hook 'prog-mode-hook 'hs-minor-mode)
 
 ;; Define line transposition commands.
 
@@ -55,8 +52,91 @@
 
 
 
+;; Define some editing commands.
+
+;; Define a command to indent every line in the buffer. This should really be a
+;; thing out-of-the-box.
+
+(defun cb-indent-buffer ()
+  "Indent the entire buffer."
+  (interactive "*")
+  (save-excursion
+    (delete-trailing-whitespace)
+    (indent-region (point-min) (point-max) nil)
+    (untabify (point-min) (point-max))))
+
+(defalias 'indent-buffer #'cb-indent-buffer)
+
+(defun cb-indent-dwim (&optional justify)
+  "Indent the thing at point.
+
+Knows how to fill strings and comments, or indent code.
+
+Optional arg JUSTIFY will justify comments and strings."
+  (interactive "*P")
+  (-let [(_ _ _ string-p comment-p) (syntax-ppss)]
+    (cond
+     (string-p
+      (let ((progress (make-progress-reporter "Filling paragraph")))
+        (fill-paragraph justify)
+        (progress-reporter-done progress)))
+     (comment-p
+      (let ((progress (make-progress-reporter "Filling comment")))
+        (fill-comment-paragraph justify)
+        (progress-reporter-done progress)))
+     ((region-active-p)
+      (indent-region (region-beginning) (region-end)))
+     (t
+      (let ((progress (make-progress-reporter "Indenting buffer")))
+        (cb-indent-buffer)
+        (progress-reporter-done progress))))))
+
+(define-key prog-mode-map (kbd "M-q") #'cb-indent-dwim)
+
+
+;; Define a command for reversing the characters in the current region.
+
+(defun cb-reverse-characters (beg end)
+  "Reverse the characters in the region from BEG to END.
+Interactively, reverse the characters in the current region."
+  (interactive "*r")
+  (insert
+   (reverse
+    (delete-and-extract-region
+     beg end))))
+
+(defalias 'reverse-characters #'cb-reverse-characters)
+
+
+
+;; Configure conf-mode for use with more kinds of config files.
+
+(use-package conf-mode
+  :mode
+  (("\\.env\\.erb\\'" . conf-mode)
+   ("\\.conf\\.erb\\'" . conf-mode)
+   ("\\.kll\\'" . conf-mode)))
+
+;; Align provides useful functions for aligning text.
+
+(use-package align
+  :bind (("C-x a a" . align-regexp)))
+
+;; Hexl is Emacs' built-in hex editor.
+
 (use-package hexl
   :defer t
+  :init
+  (cb-major-mode-hydra-define hexl-mode
+    "Insert"
+    (("d" hexl-insert-decimal-char "decimal")
+     ("c" hexl-insert-octal-char "octal")
+     ("x" hexl-insert-hex-char "hex")
+     ("s" hexl-insert-hex-string "hex string"))
+
+    "Address"
+    (("g" hexl-goto-address "goto")))
+
   :config
   (evil-define-key 'motion hexl-mode-map
     "]]" 'hexl-end-of-1k-page

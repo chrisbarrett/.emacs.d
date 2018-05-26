@@ -6,12 +6,21 @@
 
 ;;; Commentary:
 
+;; This file contains most of the basic configuration for core Emacs features.
+;;
+;; Variables defined with `defcustom' can have a custom setter attribute, which
+;; executes extra code when the variable is set using `custom-set-variables'.
+;; This means that `setq' is insufficient to correctly set these variables. To
+;; avoid such issues, this file uses `general-setq' to ensure variables are set
+;; up correctly.
+
 ;;; Code:
 
 (eval-when-compile
   (require 'use-package))
 
 (require 'f)
+(require 'general)
 (require 'paths)
 (require 'subr-x)
 
@@ -28,131 +37,19 @@
 (global-unset-key (kbd "C-z"))
 
 
-;; Make <escape> quit as much as possible
-
-(define-key minibuffer-local-map (kbd "<escape>") #'keyboard-escape-quit)
-(define-key minibuffer-local-ns-map (kbd "<escape>") #'keyboard-escape-quit)
-(define-key minibuffer-local-completion-map (kbd "<escape>") #'keyboard-escape-quit)
-(define-key minibuffer-local-must-match-map (kbd "<escape>") #'keyboard-escape-quit)
-(define-key minibuffer-local-isearch-map (kbd "<escape>") #'keyboard-escape-quit)
-
 ;; Write custom settings outside init.el
 
-(setq custom-file (concat user-emacs-directory "custom.el"))
+(general-setq custom-file (concat user-emacs-directory "custom.el"))
+
 (when (file-exists-p custom-file)
   (load-file custom-file))
-
-;; Scroll smoothly.
-
-(setq scroll-preserve-screen-position t)
-(setq scroll-margin 0)
-(setq scroll-conservatively 101)
-
-;; Instantly display current keystrokes in mini buffer
-(setq echo-keystrokes 0.02)
-
-;; Auto-indent on RET
-(define-key global-map (kbd "RET") #'comment-indent-new-line)
-
-;; Disable backup files
-(setq make-backup-files nil)
-
-;; Enable hideshow in all programming buffers.
-
-(autoload 'hs-minor-mode "hideshow")
-(add-hook 'prog-mode-hook 'hs-minor-mode)
-
-;; Make files executable on save.
-
-(add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
-
-;; Show file or buffer name in the title bar.
-
-(setq frame-title-format
-      (unless (equal system-type 'darwin)
-        "Emacs"))
-
-;; Don't pollute directories with lockfiles, since I only run one instance of
-;; Emacs and never need to prevent concurrent file access.
-(setq create-lockfiles nil)
-
-;; Copy system clipboard to the kill-ring if an Emacs kill would overwrite it.
-(setq save-interprogram-paste-before-kill t)
-
-;; Don't prompt when following symlinks to vc files.
-(setq vc-follow-symlinks t)
-
-;; This should really be a thing out-of-the-box.
-
-(defun cb-indent-buffer ()
-  "Indent the entire buffer."
-  (interactive "*")
-  (save-excursion
-    (delete-trailing-whitespace)
-    (indent-region (point-min) (point-max) nil)
-    (untabify (point-min) (point-max))))
-
-(defalias 'indent-buffer #'cb-indent-buffer)
-
-(defun cb-indent-dwim (&optional justify)
-  "Indent the thing at point.
-
-Knows how to fill strings and comments, or indent code.
-
-Optional arg JUSTIFY will justify comments and strings."
-  (interactive "*P")
-  (-let [(_ _ _ string-p comment-p) (syntax-ppss)]
-    (cond
-     (string-p
-      (let ((progress (make-progress-reporter "Filling paragraph")))
-        (fill-paragraph justify)
-        (progress-reporter-done progress)))
-     (comment-p
-      (let ((progress (make-progress-reporter "Filling comment")))
-        (fill-comment-paragraph justify)
-        (progress-reporter-done progress)))
-     ((region-active-p)
-      (indent-region (region-beginning) (region-end)))
-     (t
-      (let ((progress (make-progress-reporter "Indenting buffer")))
-        (cb-indent-buffer)
-        (progress-reporter-done progress))))))
-
-(define-key prog-mode-map (kbd "M-q") #'cb-indent-dwim)
-
-
-;; Define a command for reversing the characters in the current region.
-
-(defun cb-reverse-characters (beg end)
-  "Reverse the characters in the region from BEG to END.
-Interactively, reverse the characters in the current region."
-  (interactive "*r")
-  (insert
-   (reverse
-    (delete-and-extract-region
-     beg end))))
-
-(defalias 'reverse-characters #'cb-reverse-characters)
-
-
-;; Evil breaks cursor settings when combined with hydra.
-
-(setq-default cursor-in-non-selected-windows nil)
 
 ;; 2-window scrolling is never useful, but an emergency window switch command
 ;; sure is.
 
 (global-set-key (kbd "<f2>") #'next-multiframe-window)
 
-;; Unlimited print length for eval-expression.
-(setq eval-expression-print-length nil)
-(setq eval-expression-print-level nil)
-
-;; Prevent duplicated entries in the kill ring.
-(setq kill-do-not-save-duplicates t)
-
-
-;;; Convenience aliases
+;;; Define some convenience aliases
 
 (defalias 'bb  'bury-buffer)
 (defalias 'hex 'hexl-mode)
@@ -161,12 +58,10 @@ Interactively, reverse the characters in the current region."
 (defalias 'qrr 'query-replace-regexp)
 (defalias 'cal 'calendar)
 
-
-(global-set-key (kbd "<f9>") #'save-buffer)
-
 ;;; Saving behaviour
 
-(add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
+(global-set-key (kbd "<f9>") #'save-buffer)
+(add-hook 'after-save-hook #'executable-make-buffer-file-executable-if-script-p)
 
 ;; Enable commands.
 
@@ -175,13 +70,153 @@ Interactively, reverse the characters in the current region."
 (put 'downcase-region 'disabled nil)
 (put 'erase-buffer 'disabled nil)
 
-;; Disable warnings from obsolete advice system, since these are generally not
-;; actionable.
+;; Use UTF-8 everywhere.
 
-(setq ad-redefinition-action 'accept)
+(prefer-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(set-language-environment 'utf-8)
 
+;; General settings.
 
+(setq-default fill-column 80)
+(setq-default indent-tabs-mode nil)
+(setq-default sentence-end-double-space t)
+
+(general-setq
+ sentence-end-double-space nil
+ delete-by-moving-to-trash nil
+ initial-scratch-message nil
+ inhibit-startup-message t
+ initial-major-mode 'text-mode
+ initial-buffer-choice t
+ ring-bell-function #'ignore
+ history-length 1000
+
+ kept-new-versions 6
+ require-final-newline t
+ delete-old-versions t
+ confirm-nonexistent-file-or-buffer nil
+ version-control t
+ select-enable-clipboard t
+ tramp-default-method "ssh"
+
+ ;; Do not truncate the results of `eval-expression' and friends when logging
+ ;; their output with `message'.
+ eval-expression-print-length nil
+ eval-expression-print-level nil
+
+ frame-title-format (unless (equal system-type 'darwin) "Emacs")
+
+ ;; Scroll smoothly.
+ scroll-preserve-screen-position t
+ scroll-margin 0
+ scroll-conservatively 101
+
+ ;; Instantly display current keystrokes in mini buffer
+ echo-keystrokes 0.02
+
+ ;; Disable backup files
+ make-backup-files nil
+
+ ;; Don't pollute directories with lockfiles, since I only run one instance of
+ ;; Emacs and never need to prevent concurrent file access.
+ create-lockfiles nil
+
+ ;; Copy system clipboard to the kill-ring if an Emacs kill would overwrite it.
+ save-interprogram-paste-before-kill t
+
+ ;; Don't prompt when following symlinks to vc files.
+ vc-follow-symlinks t
+
+ ;; Don't try to ping things that look like domain names
+ ffap-machine-p-known 'reject
+
+ ;; Disable warnings from obsolete advice system, since these are generally not
+ ;; actionable.
+ ad-redefinition-action 'accept
+
+ compilation-environment '("TERM=screen-256color")
+ compilation-always-kill t
+ compilation-ask-about-save nil
+ compilation-scroll-output 'first-error
+
+ comint-prompt-read-only t
+
+ ;; Always focus on help windows
+ help-window-select t
+
+ ;; Prevent duplicated entries in the kill ring.
+ kill-do-not-save-duplicates t
+
+ apropos-do-all t
+
+ hippie-expand-try-functions-list
+ '(
+   ;; Try to expand word "dynamically", searching the current buffer.
+   try-expand-dabbrev
+   ;; Try to expand word "dynamically", searching all other buffers.
+   try-expand-dabbrev-all-buffers
+   ;; Try to expand word "dynamically", searching the kill ring.
+   try-expand-dabbrev-from-kill
+   ;; Try to complete text as a file name, as many characters as unique.
+   try-complete-file-name-partially
+   ;; Try to complete text as a file name.
+   try-complete-file-name
+   ;; Try to expand word before point according to all abbrev tables.
+   try-expand-all-abbrevs
+   ;; Try to complete the current line to an entire line in the buffer.
+   try-expand-list
+   ;; Try to complete the current line to an entire line in the buffer.
+   try-expand-line
+   ;; Try to complete as an Emacs Lisp symbol, as many characters as
+   ;; unique.
+   try-complete-lisp-symbol-partially
+   ;; Try to complete word as an Emacs Lisp symbol.
+   try-complete-lisp-symbol)
+
+ winner-boring-buffers
+ '("*Completions*"
+   "*Compile-Log*"
+   "*inferior-lisp*"
+   "*Fuzzy Completions*"
+   "*Apropos*"
+   "*Help*"
+   "*cvs*"
+   "*Buffer List*"
+   "*Ibuffer*"
+   "*esh command on file*")
+
+ global-auto-revert-non-file-buffers t
+ auto-revert-verbose nil
+
+ savehist-additional-variables '(kill-ring search-ring regexp-search-ring)
+
+ url-cookie-file (concat paths-cache-directory "/cookies")
+
+ doc-view-continuous t
+
+ ;; Do not query the user to accept insecure connections. Just disconnect them.
+ nsm-noninteractive t
+ )
+
+;; Make <escape> issue a keyboard-quit in as many situations as possible.
+
+(define-key minibuffer-local-map (kbd "<escape>") #'keyboard-escape-quit)
+(define-key minibuffer-local-ns-map (kbd "<escape>") #'keyboard-escape-quit)
+(define-key minibuffer-local-completion-map (kbd "<escape>") #'keyboard-escape-quit)
+(define-key minibuffer-local-must-match-map (kbd "<escape>") #'keyboard-escape-quit)
+(define-key minibuffer-local-isearch-map (kbd "<escape>") #'keyboard-escape-quit)
+
+;; Evil breaks cursor settings when combined with hydra.
+(setq-default cursor-in-non-selected-windows nil)
+
+
 ;;; Core advice
+
+;; Don't show 'press q to close' message
+(advice-add 'help-window-display-message :override #'ignore)
 
 
 ;; Do not prompt for confirmation for active processes.
@@ -243,7 +278,7 @@ Interactively, reverse the characters in the current region."
 (advice-add #'completion--file-name-table :filter-return #'config-basic-settings--hide-boring-files-in-completion)
 
 
-;;; Hide DOS EOL
+;;; Hide DOS EOL characters.
 
 (defun config-basic-settings--hide-dos-eol ()
   "Do not show ^M in files containing mixed UNIX and DOS line endings."
@@ -289,26 +324,6 @@ Interactively, reverse the characters in the current region."
 (add-hook 'find-file-hook #'config-basic-settings--prompt-to-open-large-files-in-fundamental-mode)
 
 
-;;; General variables
-
-(setq-default fill-column 80)
-(setq-default indent-tabs-mode nil)
-(setq-default sentence-end-double-space t)
-
-(setq sentence-end-double-space nil)
-(setq delete-by-moving-to-trash nil)
-(setq initial-scratch-message nil)
-(setq inhibit-startup-message t)
-(setq initial-major-mode 'text-mode)
-(setq initial-buffer-choice t)
-(setq ring-bell-function #'ignore)
-(setq history-length 1000)
-
-(prefer-coding-system 'utf-8)
-(set-default-coding-systems 'utf-8)
-(set-terminal-coding-system 'utf-8)
-(set-keyboard-coding-system 'utf-8)
-(set-language-environment 'utf-8)
 
 ;; Display buffer customisations for inbuilt features
 
@@ -332,32 +347,23 @@ Interactively, reverse the characters in the current region."
 
 ;; Prevent display-buffer from displaying in new frames.
 
-(setq display-buffer-fallback-action
-      '((display-buffer--maybe-same-window
-         display-buffer-reuse-window
-         display-buffer-pop-up-window
-         display-buffer-in-previous-window
-         display-buffer-use-some-window
-         config-basic-settings--display-buffer-fallback)))
-
-(defun config-basic-settings--display-buffer-fallback (buffer &optional _alist)
-  (-when-let (win (split-window-sensibly))
+(defun config-basic-settings--display-buffer-fallback (buffer &rest _)
+  (when-let* ((win (split-window-sensibly)))
     (with-selected-window win
       (switch-to-buffer buffer)
       (help-window-setup (selected-window))))
   t)
 
+(general-setq
+ display-buffer-fallback-action
+ '((display-buffer--maybe-same-window
+    display-buffer-reuse-window
+    display-buffer-pop-up-window
+    display-buffer-in-previous-window
+    display-buffer-use-some-window
+    config-basic-settings--display-buffer-fallback)))
+
 
-
-;; Use conf mode for puppet templated conf files
-(use-package conf-mode
-  :mode
-  (("\\.env\\.erb\\'" . conf-mode)
-   ("\\.conf\\.erb\\'" . conf-mode)
-   ("\\.kll\\'" . conf-mode)))
-
-(use-package align
-  :bind (("C-x a a" . align-regexp)))
 
 (use-package simple
   :bind (("M-SPC" . cycle-spacing)))
@@ -398,26 +404,12 @@ Interactively, reverse the characters in the current region."
                         (f-expand (concat user-emacs-directory "etc/")))))))
 
   :config
-  (progn
-    (setq recentf-max-saved-items 1000)
-    (setq recentf-exclude
-          '(config-basic-settings--boring-filename-p
-            config-basic-settings--boring-extension-p
-            config-basic-settings--child-of-boring-relative-dir-p
-            config-basic-settings--child-of-boring-abs-dir-p))))
-
-(use-package files
-  :config
-  (progn
-    (setq kept-new-versions 6)
-    (setq require-final-newline t)
-    (setq delete-old-versions t)
-    (setq confirm-nonexistent-file-or-buffer nil)
-    (setq version-control t)))
-
-(use-package select
-  :config
-  (setq select-enable-clipboard t))
+  (general-setq
+   recentf-max-saved-items 1000
+   recentf-exclude '(config-basic-settings--boring-filename-p
+                     config-basic-settings--boring-extension-p
+                     config-basic-settings--child-of-boring-relative-dir-p
+                     config-basic-settings--child-of-boring-abs-dir-p)))
 
 (use-package compile
   :defer t
@@ -440,16 +432,10 @@ Interactively, reverse the characters in the current region."
   :config
   (progn
     (add-hook 'compilation-filter-hook #'config-basic-settings--colorize-compilation-buffer)
-
     (config-hydras-insinuate compilation-mode-map)
 
     ;; Clear default underline text properties applied to compilation highlights.
-    (setq compilation-message-face 'cb-compilation-base-face)
-
-    (setq compilation-environment '("TERM=screen-256color"))
-    (setq compilation-always-kill t)
-    (setq compilation-ask-about-save nil)
-    (setq compilation-scroll-output 'first-error)))
+    (setq compilation-message-face 'cb-compilation-base-face)))
 
 (use-package mule
   :preface
@@ -471,100 +457,26 @@ Interactively, reverse the characters in the current region."
   :config
   (add-hook 'input-method-activate-hook #'config-basic-settings--set-tex-method-vars))
 
-(use-package comint
-  :defer t
-  :config
-  (setq comint-prompt-read-only t))
-
 (use-package hippie-exp
   :bind (("M-/" . hippie-expand)
          :map
          evil-insert-state-map
-         ([remap evil-complete-previous] . hippie-expand))
-
-  :config
-  (setq hippie-expand-try-functions-list
-        '(
-          ;; Try to expand word "dynamically", searching the current buffer.
-          try-expand-dabbrev
-          ;; Try to expand word "dynamically", searching all other buffers.
-          try-expand-dabbrev-all-buffers
-          ;; Try to expand word "dynamically", searching the kill ring.
-          try-expand-dabbrev-from-kill
-          ;; Try to complete text as a file name, as many characters as unique.
-          try-complete-file-name-partially
-          ;; Try to complete text as a file name.
-          try-complete-file-name
-          ;; Try to expand word before point according to all abbrev tables.
-          try-expand-all-abbrevs
-          ;; Try to complete the current line to an entire line in the buffer.
-          try-expand-list
-          ;; Try to complete the current line to an entire line in the buffer.
-          try-expand-line
-          ;; Try to complete as an Emacs Lisp symbol, as many characters as
-          ;; unique.
-          try-complete-lisp-symbol-partially
-          ;; Try to complete word as an Emacs Lisp symbol.
-          try-complete-lisp-symbol)))
+         ([remap evil-complete-previous] . hippie-expand)))
 
 (use-package winner
-  :preface
-  (defvar config-basic-settings--winner-boring-buffers
-    '("*Completions*"
-      "*Compile-Log*"
-      "*inferior-lisp*"
-      "*Fuzzy Completions*"
-      "*Apropos*"
-      "*Help*"
-      "*cvs*"
-      "*Buffer List*"
-      "*Ibuffer*"
-      "*esh command on file*"))
-  :config
-  (progn
-    (winner-mode t)
-    (setq winner-boring-buffers (append winner-boring-buffers config-basic-settings--winner-boring-buffers))))
+  :config (winner-mode t))
 
 (use-package saveplace
-  :config
-  (save-place-mode +1))
+  :config (save-place-mode +1))
 
 (use-package savehist
-  :config
-  (progn
-    (setq savehist-additional-variables '(kill-ring search-ring regexp-search-ring))
-    (savehist-mode +1)))
-
-(use-package tramp
-  :defer t
-  :preface
-  (setq tramp-default-method "ssh"))
+  :config (savehist-mode +1))
 
 (use-package autorevert
-  :config
-  (progn
-    (setq global-auto-revert-non-file-buffers t)
-    (setq auto-revert-verbose nil)
-    (global-auto-revert-mode 1)))
+  :config (global-auto-revert-mode 1))
 
 (use-package goto-addr
   :hook (prog-mode . goto-address-prog-mode))
-
-(use-package ffap
-  :defer t
-  :config
-  ;; Don't try to ping things that look like domain names
-  (setq ffap-machine-p-known 'reject))
-
-(use-package help
-  :defer t
-  :config
-  (progn
-    ;; Don't show 'press q to close' message
-    (advice-add 'help-window-display-message :override #'ignore)
-
-    ;; Always focus on help windows
-    (setq help-window-select t)))
 
 (use-package world-time-mode
   :straight t
@@ -600,11 +512,6 @@ Interactively, reverse the characters in the current region."
                  hs-hide-block))
     (advice-add cmd :around #'config-basic-settings--ignore-errors)))
 
-(use-package apropos
-  :defer t
-  :config
-  (setq apropos-do-all t))
-
 (use-package archive-mode
   :defer t
   :preface
@@ -615,15 +522,6 @@ Interactively, reverse the characters in the current region."
       (run-hooks 'archive-mode-hook)))
   :config
   (advice-add 'archive-mode :after #'config-basic-settings--run-archive-mode-hook))
-
-(use-package doc-view
-  :defer t
-  :config (setq doc-view-continuous t))
-
-(use-package url-cookie
-  :defer t
-  :config
-  (setq url-cookie-file (concat paths-cache-directory "/cookies")))
 
 (use-package async
   :straight t
@@ -645,12 +543,6 @@ Interactively, reverse the characters in the current region."
 (use-package auth-source
   :config
   (setq auth-sources '("~/.authinfo.gpg")))
-
-(use-package nsm
-  :defer t
-  :config
-  ;; Do not query the user to accept insecure connections. Just disconnect them.
-  (setq nsm-noninteractive t))
 
 (use-package pixel-scroll
   :demand t
@@ -691,15 +583,11 @@ Interactively, reverse the characters in the current region."
     (setq ispell-silently-savep t)))
 
 (use-package info+
+  :after 'info
   :straight t
   :defer t
-  :preface
-  (defvar Info-fontify-angle-bracketed-flag)
-  :init
-  (progn
-    (with-eval-after-load 'info
-      (require 'info+))
-    (setq Info-fontify-angle-bracketed-flag nil)))
+  :config
+  (general-setq Info-fontify-angle-bracketed-flag nil))
 
 (use-package ediff
   :defer t
