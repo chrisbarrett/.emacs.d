@@ -85,12 +85,17 @@
     (setq no-littering-etc-directory paths-etc-directory)
     (setq no-littering-var-directory paths-cache-directory))
   :config
-  (with-eval-after-load 'recentf
-    (add-to-list 'recentf-exclude no-littering-etc-directory)
-    (add-to-list 'recentf-exclude no-littering-var-directory)))
+  (progn
+    (eval-when-compile
+      (require 'recentf))
+
+    (with-eval-after-load 'recentf
+      (add-to-list 'recentf-exclude no-littering-etc-directory)
+      (add-to-list 'recentf-exclude no-littering-var-directory))))
 
 ;; Load theme aggressively, or Emacs will look ugly during the startup sequence.
 (use-package config-themes
+  :functions (config-themes/dark-theme)
   :config
   (config-themes/dark-theme))
 
