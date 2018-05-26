@@ -742,7 +742,7 @@ table tr.tr-even td {
 
 (use-package evil-org
   :straight t
-  :after (:and org evil)
+  :after (:and org evil-common)
   :hook (org-mode . evil-org-mode)
   :general
   (:states 'normal :keymaps 'evil-org-mode-map "t" #'org-todo)

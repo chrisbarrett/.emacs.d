@@ -81,9 +81,8 @@
 
 (use-package evil-magit
   :straight t
-  :after (:and magit evil)
-  :config
-  (evil-magit-init))
+  :after (:and magit evil-common)
+  :config (evil-magit-init))
 
 (use-package deferred :straight t)
 
