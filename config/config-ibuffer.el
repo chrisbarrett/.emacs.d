@@ -5,8 +5,9 @@
 (eval-when-compile
   (require 'use-package))
 
-(require 'general)
 (require 'config-hydras)
+(require 'general)
+(require 'ibuffer-hacks)
 
 
 
@@ -37,6 +38,7 @@
                    "*Help*"))))
 
     (add-hook 'ibuffer-mode-hook #'hl-line-mode)
+    (add-hook 'ibuffer-mode-hook #'page-break-lines-mode)
 
     (config-hydras-insinuate ibuffer-mode-map)))
 
