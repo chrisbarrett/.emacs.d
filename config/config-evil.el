@@ -19,9 +19,9 @@
 
 (use-package evil
   :straight t
+  :demand t
   :functions (evil-mode evil-delay evil-delete-backward-char-and-join)
   :defines (evil-want-Y-yank-to-eol)
-  :defer 1
   :preface
   (progn
     (autoload 'evil-visual-update-x-selection "evil-states")
