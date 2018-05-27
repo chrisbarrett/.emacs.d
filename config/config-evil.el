@@ -206,7 +206,6 @@
 
 (use-package evil-surround
   :straight t
-  :after evil-common
   :commands (global-evil-surround-mode)
   :general
   (:states 'visual :keymaps 'evil-surround-mode-map
@@ -235,13 +234,13 @@
                   (?t . evil-surround-read-tag)
                   (?< . evil-surround-read-tag)
                   (?f . evil-surround-function)))
-  :config
-  (global-evil-surround-mode +1))
+  :init
+  (with-eval-after-load 'evil
+    (global-evil-surround-mode +1)))
 
 (use-package evil-iedit-state
   :straight t
   :commands (evil-iedit-state/iedit-mode)
-  :after evil-common
   :config
   (progn
     (general-setq iedit-current-symbol-default t
@@ -253,19 +252,23 @@
 
 (use-package evil-ediff
   :straight t
-  :after (:and ediff evil-common))
+  :after ediff)
 
 (use-package evil-args
   :straight t
-  :after evil-common
   :general (:keymaps
             'evil-inner-text-objects-map "a" #'evil-inner-arg
             :keymaps
-            'evil-outer-text-objects-map "a" #'evil-outer-arg))
+            'evil-outer-text-objects-map "a" #'evil-outer-arg)
+  :init
+  (with-eval-after-load 'evil
+    (require 'evil-args)))
 
 (use-package evil-matchit
   :straight t
-  :after evil-common)
+  :init
+  (with-eval-after-load 'evil
+    (global-evil-matchit-mode +1)))
 
 (use-package evil-numbers
   :straight t
@@ -290,15 +293,16 @@
   :straight t
   :after evil-common
   :commands (vi-tilde-fringe-mode global-vi-tilde-fringe-mode)
+  :init
+  (with-eval-after-load 'evil
+    (global-vi-tilde-fringe-mode +1))
   :preface
   (defun config-evil--vi-tilde-fringe-off-if-readonly (args)
     (if buffer-read-only
         '(-1)
       args))
   :config
-  (progn
-    (advice-add 'vi-tilde-fringe-mode :filter-args #'config-evil--vi-tilde-fringe-off-if-readonly)
-    (global-vi-tilde-fringe-mode)))
+  (advice-add 'vi-tilde-fringe-mode :filter-args #'config-evil--vi-tilde-fringe-off-if-readonly))
 
 (use-package evil-nerd-commenter
   :straight t
