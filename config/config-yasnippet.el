@@ -22,8 +22,8 @@
   ;; Define key bindings for fancy snippet navigation.
   :general (:states 'insert :keymaps 'yas-minor-mode-map "TAB" #'yas-expand)
   :general (:states '(normal insert) :keymaps 'yas-keymap
-                    "SPC" #'config-yasnippet-space
-                    "<backspace>" #'config-yasnippet-backspace)
+            "SPC" #'config-yasnippet-space
+            "<backspace>" #'config-yasnippet-backspace)
   :preface
   (progn
     (autoload 'sp-backward-delete-char "smartparens")

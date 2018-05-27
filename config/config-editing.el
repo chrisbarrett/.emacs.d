@@ -140,15 +140,15 @@ Interactively, reverse the characters in the current region."
 
   :general
   (:states 'motion :keymaps 'hexl-mode-map
-           "]]" #'hexl-end-of-1k-page
-           "[[" #'hexl-beginning-of-1k-page
-           "h" #'hexl-backward-char
-           "l" #'hexl-forward-char
-           "j" #'hexl-next-line
-           "k" #'hexl-previous-line
-           "$" #'hexl-end-of-line
-           "^" #'hexl-beginning-of-line
-           "0" #'hexl-beginning-of-line))
+   "]]" #'hexl-end-of-1k-page
+   "[[" #'hexl-beginning-of-1k-page
+   "h" #'hexl-backward-char
+   "l" #'hexl-forward-char
+   "j" #'hexl-next-line
+   "k" #'hexl-previous-line
+   "$" #'hexl-end-of-line
+   "^" #'hexl-beginning-of-line
+   "0" #'hexl-beginning-of-line))
 
 ;; aggressive-indent automatically reindents code during editing.
 
@@ -327,8 +327,8 @@ Interactively, reverse the characters in the current region."
 (use-package evil-ahs
   :commands (evil-ahs/highlight-symbol evil-ahs/goto-last-searched-symbol)
   :general (:states 'motion
-                    "*" #'evil-ahs/enter-ahs-forward
-                    "#" #'evil-ahs/enter-ahs-backward))
+            "*" #'evil-ahs/enter-ahs-forward
+            "#" #'evil-ahs/enter-ahs-backward))
 
 ;; dump-jump provides a good fallback for navigating to definitions in the
 ;; absence of tags tables or semantic analysis.

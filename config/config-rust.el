@@ -66,8 +66,8 @@
   :commands (racer-find-definition racer-describe)
   :general
   (:states 'normal :keymaps 'rust-mode-map
-           "K" #'racer-describe
-           "M-." #'racer-find-definition)
+   "K" #'racer-describe
+   "M-." #'racer-find-definition)
   :hook ((rust-mode . racer-mode)
          (racer-mode-hook . eldoc-mode))
   :config

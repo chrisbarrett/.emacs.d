@@ -563,8 +563,8 @@
 (use-package man
   :defer t
   :general (:keymaps 'Man-mode-map
-                     "M-n" #'Man-next-section
-                     "M-p" #'Man-previous-section))
+            "M-n" #'Man-next-section
+            "M-p" #'Man-previous-section))
 
 (use-package ispell
   :defer t

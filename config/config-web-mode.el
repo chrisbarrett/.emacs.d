@@ -241,10 +241,10 @@
   :hook (web-js-mode . config-web--maybe-enable-tern)
   :general
   (:states 'normal :keymaps 'tern-mode-keymap
-           "K" 'tern-get-docs
-           "gd"  'tern-find-definition
-           "M-." 'tern-find-definition
-           "M-," 'tern-pop-find-definition)
+   "K" 'tern-get-docs
+   "gd"  'tern-find-definition
+   "M-." 'tern-find-definition
+   "M-," 'tern-pop-find-definition)
   :preface
   (progn
     (autoload 'flycheck-overlay-errors-at "flycheck")
@@ -370,8 +370,8 @@
   :general (:keymaps 'web-js-mode-map "C-c C-l" #'indium-eval-buffer)
   :general
   (:states 'motion :keymaps indium-inspector-mode-map
-           "^" #'indium-inspector-pop
-           "r" #'indium-inspector-refresh))
+   "^" #'indium-inspector-pop
+   "r" #'indium-inspector-refresh))
 
 (use-package nvm
   :straight t

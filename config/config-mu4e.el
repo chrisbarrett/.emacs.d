@@ -34,20 +34,20 @@
 
   :general
   (:keymaps 'mu4e-main-mode-map :states 'emacs
-            "j" #'mu4e~headers-jump-to-maildir
-            "q" #'bury-buffer)
+   "j" #'mu4e~headers-jump-to-maildir
+   "q" #'bury-buffer)
   (:keymaps 'mu4e-headers-mode-map :states 'emacs
-            "J" #'mu4e~headers-jump-to-maildir
-            "j" #'mu4e-headers-next
-            "k" #'mu4e-headers-prev)
+   "J" #'mu4e~headers-jump-to-maildir
+   "j" #'mu4e-headers-next
+   "k" #'mu4e-headers-prev)
   (:keymaps 'mu4e-view-mode-map :states 'motion
-            "F" #'mu4e-compose-forward
-            "J" #'mu4e~view-headers-jump-to-maildir
-            "j" #'mu4e-view-headers-next
-            "k" #'mu4e-view-headers-prev
-            "C-j" #'mu4e-view-headers-next
-            "C-k" #'mu4e-view-headers-prev
-            "RET" #'config-mu4e-view-ret)
+   "F" #'mu4e-compose-forward
+   "J" #'mu4e~view-headers-jump-to-maildir
+   "j" #'mu4e-view-headers-next
+   "k" #'mu4e-view-headers-prev
+   "C-j" #'mu4e-view-headers-next
+   "C-k" #'mu4e-view-headers-prev
+   "RET" #'config-mu4e-view-ret)
   ;; Evil delete command is super slow for some reason. :(
   (:keymaps 'mu4e-compose-mode-map :states 'insert "<backspace>" #'backward-delete-char)
   ;; Declare archive functions.

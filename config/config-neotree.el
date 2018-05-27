@@ -65,25 +65,25 @@
   :defer t
   :general
   (:keymaps 'neotree-mode-map :states 'motion
-            "TAB" #'neotree-stretch-toggle
-            "RET" #'neotree-enter
-            "|"   #'neotree-enter-vertical-split
-            "-"   #'neotree-enter-horizontal-split
-            "c"   #'neotree-create-node
-            "d"   #'neotree-delete-node
-            "gr"  #'neotree-refresh
-            "h"   #'config-neotree-collapse-or-up
-            "H"   #'neotree-select-previous-sibling-node
-            "j"   #'next-line
-            "J"   #'neotree-select-down-node
-            "k"   #'previous-line
-            "K"   #'neotree-select-up-node
-            "l"   #'config-neotree-expand-or-open
-            "L"   #'neotree-select-next-sibling-node
-            "q"   #'neotree-hide
-            "r"   #'neotree-rename-node
-            "R"   #'neotree-change-root
-            "s"   #'neotree-hidden-file-toggle)
+   "TAB" #'neotree-stretch-toggle
+   "RET" #'neotree-enter
+   "|"   #'neotree-enter-vertical-split
+   "-"   #'neotree-enter-horizontal-split
+   "c"   #'neotree-create-node
+   "d"   #'neotree-delete-node
+   "gr"  #'neotree-refresh
+   "h"   #'config-neotree-collapse-or-up
+   "H"   #'neotree-select-previous-sibling-node
+   "j"   #'next-line
+   "J"   #'neotree-select-down-node
+   "k"   #'previous-line
+   "K"   #'neotree-select-up-node
+   "l"   #'config-neotree-expand-or-open
+   "L"   #'neotree-select-next-sibling-node
+   "q"   #'neotree-hide
+   "r"   #'neotree-rename-node
+   "R"   #'neotree-change-root
+   "s"   #'neotree-hidden-file-toggle)
 
   :preface
   (use-package config-neotree-cmds

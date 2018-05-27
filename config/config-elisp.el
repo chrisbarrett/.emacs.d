@@ -6,6 +6,7 @@
   (require 'use-package))
 
 (require 'cb-major-mode-hydra)
+(require 'lisp-hacks)
 (require 'straight)
 (require 'subr-x)
 

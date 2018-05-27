@@ -390,10 +390,10 @@
 
   :general
   (:keymaps 'org-mode-map
-            "C-c C-." #'org-time-stamp-inactive
-            "M-p" #'org-metaup
-            "M-n" #'org-metadown
-            "C-c c" #'org-columns)
+   "C-c C-." #'org-time-stamp-inactive
+   "M-p" #'org-metaup
+   "M-n" #'org-metadown
+   "C-c c" #'org-columns)
 
   :preface
   (progn
@@ -478,19 +478,19 @@
   :after org
   :general ("C-c a" #'org-agenda)
   :general (:states 'motion
-                    :keymaps 'org-agenda-mode-map
-                    "J" #'org-agenda-goto-date
-                    "j" #'org-agenda-next-line
-                    "k" #'org-agenda-previous-line
-                    "M-j" #'org-agenda-next-item
-                    "M-k" #'org-agenda-previous-item
-                    "M-h" #'org-agenda-earlier
-                    "M-l" #'org-agenda-later
-                    "gd" #'org-agenda-toggle-time-grid
-                    "gr" #'org-agenda-redo
-                    "M-RET" #'org-agenda-show-and-scroll-up
-                    "C-f" #'evil-scroll-page-down
-                    "C-b" #'evil-scroll-page-up)
+            :keymaps 'org-agenda-mode-map
+            "J" #'org-agenda-goto-date
+            "j" #'org-agenda-next-line
+            "k" #'org-agenda-previous-line
+            "M-j" #'org-agenda-next-item
+            "M-k" #'org-agenda-previous-item
+            "M-h" #'org-agenda-earlier
+            "M-l" #'org-agenda-later
+            "gd" #'org-agenda-toggle-time-grid
+            "gr" #'org-agenda-redo
+            "M-RET" #'org-agenda-show-and-scroll-up
+            "C-f" #'evil-scroll-page-down
+            "C-b" #'evil-scroll-page-up)
   :preface
   (progn
     (autoload 'org-get-deadline-time "org")

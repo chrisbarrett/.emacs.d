@@ -108,8 +108,8 @@
 
   :general
   (:states '(insert normal) :keymaps 'anaconda-mode-map
-           "M-." #'anaconda-mode-find-definitions
-           "M-," #'pop-tag-mark)
+   "M-." #'anaconda-mode-find-definitions
+   "M-," #'pop-tag-mark)
   (:states 'normal :keymaps 'anaconda-mode-map "K" #'anaconda-mode-show-doc)
   (:states 'motion :keymaps 'anaconda-mode-view-mode-map "q" #'quit-window)
 

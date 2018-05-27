@@ -43,14 +43,14 @@
 
   :general (:states 'insert :keymaps 'markdown-mode-map "`" #'config-markdown-electric-backquote)
   :general (:states 'normal :keymaps 'markdown-mode-map
-                    "TAB" #'markdown-cycle
-                    "RET" #'markdown-follow-thing-at-point)
+            "TAB" #'markdown-cycle
+            "RET" #'markdown-follow-thing-at-point)
   :general (:keymaps 'markdown-mode-map
-                     "C-c C-l" #'markdown-insert-link
-                     "M-<left>" #'markdown-promote
-                     "M-<right>" #'markdown-demote
-                     "M-<up>" #'markdown-move-subtree-up
-                     "M-<down>" #'markdown-move-subtree-down)
+            "C-c C-l" #'markdown-insert-link
+            "M-<left>" #'markdown-promote
+            "M-<right>" #'markdown-demote
+            "M-<up>" #'markdown-move-subtree-up
+            "M-<down>" #'markdown-move-subtree-down)
   :preface
   (progn
     (defun config-markdown--evil-insert-state (&rest _)

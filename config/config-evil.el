@@ -210,8 +210,8 @@
   :commands (global-evil-surround-mode)
   :general
   (:states 'visual :keymaps 'evil-surround-mode-map
-           "s" #'evil-surround-region
-           "S" #'evil-substitute)
+   "s" #'evil-surround-region
+   "S" #'evil-substitute)
   :preface
   (defun config-evil--init-evil-surround-pairs ()
     (make-local-variable 'evil-surround-pairs-alist)
@@ -271,8 +271,8 @@
   :straight t
   :after evil-common
   :general (:states 'normal
-                    "+" #'evil-numbers/inc-at-pt
-                    "-" #'evil-numbers/dec-at-pt))
+            "+" #'evil-numbers/inc-at-pt
+            "-" #'evil-numbers/dec-at-pt))
 
 (use-package evil-search-highlight-persist
   :straight t
@@ -313,8 +313,8 @@
 (use-package evil-funcs
   :after evil-common
   :general (:states 'visual
-                    "<" #'evil-funcs/shift-left
-                    ">" #'evil-funcs/shift-right))
+            "<" #'evil-funcs/shift-left
+            ">" #'evil-funcs/shift-right))
 
 (provide 'config-evil)
 

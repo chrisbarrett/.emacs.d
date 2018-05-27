@@ -45,9 +45,9 @@
   :commands (dired dired-hide-details-mode)
   :general
   (:states 'normal :keymaps 'dired-mode-map
-           "$" #'end-of-line
-           "j" #'diredp-next-line
-           "k" #'diredp-previous-line)
+   "$" #'end-of-line
+   "j" #'diredp-next-line
+   "k" #'diredp-previous-line)
   :preface
   (progn
     (autoload 'diredp-next-line "dired+")
@@ -101,8 +101,8 @@
   (autoload 'evil-first-non-blank "evil-commands")
   :general
   (:states 'normal
-           :keymaps 'wdired-mode-map "^" #'evil-first-non-blank
-           :keymaps 'dired-mode-map "C-c C-e" #'wdired-change-to-wdired-mode))
+   :keymaps 'wdired-mode-map "^" #'evil-first-non-blank
+   :keymaps 'dired-mode-map "C-c C-e" #'wdired-change-to-wdired-mode))
 
 (provide 'config-dired)
 

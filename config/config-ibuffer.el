@@ -19,8 +19,8 @@
             ibuffer-never-show-predicates)
   :general ("C-x C-b" #'ibuffer-other-window)
   :general (:keymaps 'ibuffer-mode-map :states 'motion
-                     "j" #'ibuffer-forward-line
-                     "k" #'ibuffer-backward-line)
+            "j" #'ibuffer-forward-line
+            "k" #'ibuffer-backward-line)
   :config
   (progn
     (general-setq
