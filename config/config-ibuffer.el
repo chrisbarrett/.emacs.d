@@ -36,6 +36,8 @@
                    "*Flycheck error messages*"
                    "*Help*"))))
 
+    (add-hook 'ibuffer-mode-hook #'hl-line-mode)
+
     (config-hydras-insinuate ibuffer-mode-map)))
 
 ;; ibuf-ext adds a few extra features to ibuffer.
