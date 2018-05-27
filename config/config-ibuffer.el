@@ -17,15 +17,20 @@
   :commands (ibuffer ibuffer-forward-line ibuffer-backward-line)
   :defines (ibuffer-show-empty-filter-groups
             ibuffer-never-show-predicates)
-  :general ("C-x C-b" #'ibuffer-other-window)
-  :general (:keymaps 'ibuffer-mode-map :states 'motion
-            "j" #'ibuffer-forward-line
-            "k" #'ibuffer-backward-line)
+  :general
+  ("C-x C-b" #'ibuffer-other-window)
+  (:keymaps 'ibuffer-mode-map :states 'motion
+   "<return>" #'ibuffer-visit-buffer
+   "j" #'ibuffer-forward-line
+   "k" #'ibuffer-backward-line)
   :config
   (progn
     (general-setq
      ibuffer-expert t
      ibuffer-show-empty-filter-groups nil
+
+     ibuffer-formats '((mark modified " " (mode 1 1) " " (name 25 25 :left :elide) " " filename-and-process))
+
      ibuffer-never-show-predicates
      (list (rx (or "*Messages*"
                    "*magit-"
@@ -64,7 +69,9 @@
     (unless (eq ibuffer-sorting-mode 'alphabetic)
       (ibuffer-do-sort-by-alphabetic)))
   :init
-  (add-hook 'ibuffer-hook #'config-ibuffer--setup-buffer))
+  (add-hook 'ibuffer-hook #'config-ibuffer--setup-buffer)
+  :config
+  (general-setq ibuffer-projectile-prefix ""))
 
 (provide 'config-ibuffer)
 

@@ -1,12 +1,53 @@
-;;; ibuffer-hacks.el --- Hacks for ibuffer.  -*- lexical-binding: t; -*-
+;;; ibuffer-hacks.el --- Hacks for ibuffer.
 ;;; Commentary:
 ;;; Code:
 
 (require 'el-patch)
+(require 'f)
 
 (el-patch-feature ibuffer)
 
 
+;; Show icon instead of mode name.
+
+(with-eval-after-load 'ibuffer
+  (with-no-warnings
+    (define-ibuffer-column mode
+      (:inline t)
+      (with-current-buffer (current-buffer)
+        (all-the-icons-icon-for-mode major-mode)))))
+
+;; Dim directory part of file path.
+
+(with-eval-after-load 'ibuffer
+  (require 'dired+)
+  (with-no-warnings
+    (define-ibuffer-column filename-and-process
+      (:name "Filename/Process")
+      (let ((proc (get-buffer-process buffer))
+            (filename (ibuffer-make-column-filename buffer mark)))
+        (if proc
+            (concat (propertize (format "(%s %s)" proc (process-status proc))
+                                'font-lock-face 'italic)
+                    (if (> (length filename) 0)
+                        (format " %s" filename)
+                      ""))
+          (propertize (f-abbrev filename) 'face 'diredp-symlink))))))
+
+;; Show buffer name in a consistent way.
+
+(with-eval-after-load 'ibuffer
+  (with-no-warnings
+    (define-ibuffer-column name
+      (:inline t)
+      (let ((string (buffer-name)))
+        (if (not (seq-position string ?\n))
+            string
+          (replace-regexp-in-string
+           "\n" (propertize "^J" 'font-lock-face 'escape-glyph) string))))))
+
+
+;; Show a horizontal rule using page-break-lines instead of using dashes.
 
 (with-eval-after-load 'ibuffer
   (with-no-warnings
@@ -101,6 +142,43 @@
              `(ibuffer-summary t))))))
 
   )
+
+;; Change the way groups are rendered.
+
+(with-eval-after-load 'ibuffer
+  (with-no-warnings
+    (el-patch-defun ibuffer-insert-filter-group (name display-name filter-string format bmarklist)
+      (add-text-properties
+       (point)
+       (progn
+         (insert (el-patch-remove "[ ")
+                 display-name
+                 (el-patch-remove " ]"))
+         (point))
+       `(ibuffer-filter-group-name
+         ,name
+         font-lock-face ,ibuffer-filter-group-name-face
+         keymap ,ibuffer-mode-filter-group-map
+         mouse-face highlight
+         help-echo ,(let ((echo '(if tooltip-mode
+                                     "mouse-1: toggle marks in this group\nmouse-2: hide/show this filtering group"
+                                   "mouse-1: toggle marks  mouse-2: hide/show")))
+                      (if (> (length filter-string) 0)
+                          `(concat ,filter-string
+                                   (if tooltip-mode "\n" " ")
+                                   ,echo)
+                        echo))))
+      (insert "\n")
+      (when bmarklist
+        (put-text-property
+         (point)
+         (progn
+           (dolist (entry bmarklist)
+             (ibuffer-insert-buffer-line (car entry) (cdr entry) format))
+           (point))
+         'ibuffer-filter-group
+         name))
+      (el-patch-add (insert "\n")))))
 
 (provide 'ibuffer-hacks)
 
