@@ -44,9 +44,9 @@
 
 (general-setq org-directory "~/org")
 
-(defvar cb-org-work-file (f-join org-directory "work_pushpay.org"))
-(defvar cb-org-journal-file (f-join org-directory "journal.org"))
-(defvar cb-org-drill-file (f-join org-directory "drill" "drill.org"))
+(defvar config-org-work-file (f-join org-directory "work_pushpay.org"))
+(defvar config-org-journal-file (f-join org-directory "journal.org"))
+(defvar config-org-drill-file (f-join org-directory "drill" "drill.org"))
 
 (general-setq
  org-default-notes-file (f-join org-directory "notes.org")
@@ -131,7 +131,7 @@
    (nil :maxlevel . 3))
 
  org-attach-directory (f-join org-directory "data")
- org-archive-default-command #'cb-org--archive-done-tasks
+ org-archive-default-command #'config-org--archive-done-tasks
 
  ;; appt
 
@@ -154,7 +154,7 @@
 (general-setq
  ;; Match projects that do not have any todos.
  org-stuck-projects '("+project-ignore-maybe-done" ("TODO") nil)
- org-agenda-auto-exclude-function #'cb-org--exclude-tasks-on-hold
+ org-agenda-auto-exclude-function #'config-org--exclude-tasks-on-hold
  org-agenda-hide-tags-regexp (rx (or "noexport" "someday" "project"))
  org-agenda-include-diary nil
  org-agenda-insert-diary-extract-time t
@@ -184,8 +184,8 @@
                               ;; exclude items with scheduled/deadline times, since
                               ;; they show up in the calendar views.
                               (org-agenda-skip-function (lambda ()
-                                                          (or (cb-org--agenda-skip-if-has-timestamp)
-                                                              (cb-org--agenda-skip-all-siblings-but-first))))))
+                                                          (or (config-org--agenda-skip-if-has-timestamp)
+                                                              (config-org--agenda-skip-all-siblings-but-first))))))
                   (agenda "")
                   (todo "WAITING"
                         ((org-agenda-overriding-header "Waiting")))
@@ -214,23 +214,23 @@
                   (tags-todo "-someday-media/TODO"
                              ((org-agenda-overriding-header "Next Actions")
                               (org-agenda-skip-function (lambda ()
-                                                          (or (cb-org--agenda-skip-if-has-timestamp)
-                                                              (cb-org--agenda-skip-all-siblings-but-first))))))
+                                                          (or (config-org--agenda-skip-if-has-timestamp)
+                                                              (config-org--agenda-skip-all-siblings-but-first))))))
                   (tags-todo "+goals+3_months+project/TODO"
                              ((org-agenda-overriding-header "Review 3 Month Goals")
                               (org-agenda-skip-function (lambda ()
-                                                          (or (cb-org--agenda-skip-if-has-timestamp)
-                                                              (cb-org--agenda-skip-all-siblings-but-first))))))
+                                                          (or (config-org--agenda-skip-if-has-timestamp)
+                                                              (config-org--agenda-skip-all-siblings-but-first))))))
                   (tags-todo "+goals+1_year+project/TODO"
                              ((org-agenda-overriding-header "Review 1 Year Goals")
                               (org-agenda-skip-function (lambda ()
-                                                          (or (cb-org--agenda-skip-if-has-timestamp)
-                                                              (cb-org--agenda-skip-all-siblings-but-first))))))
+                                                          (or (config-org--agenda-skip-if-has-timestamp)
+                                                              (config-org--agenda-skip-all-siblings-but-first))))))
                   (tags-todo "+goals+3_years+project/MAYBE|SOMEDAY|TODO"
                              ((org-agenda-overriding-header "Review 3 Year Goals")
                               (org-agenda-skip-function (lambda ()
-                                                          (or (cb-org--agenda-skip-if-has-timestamp)
-                                                              (cb-org--agenda-skip-all-siblings-but-first))))))
+                                                          (or (config-org--agenda-skip-if-has-timestamp)
+                                                              (config-org--agenda-skip-all-siblings-but-first))))))
                   (tags-todo "someday-skill/MAYBE|TODO"
                              ((org-agenda-overriding-header "Decide whether to promote any SOMEDAY items to TODOs")))
                   (tags-todo "someday&skill"
@@ -238,7 +238,7 @@
                  ((org-agenda-tag-filter-preset
                    '("-drill" "-gtd" "-ignore"))
                   (org-agenda-include-inactive-timestamps t)
-                  (org-agenda-files (list org-default-notes-file cb-org-work-file org-agenda-diary-file))
+                  (org-agenda-files (list org-default-notes-file config-org-work-file org-agenda-diary-file))
                   (org-agenda-archives-mode nil)
                   (org-agenda-dim-blocked-tasks nil)))
 
@@ -246,8 +246,8 @@
                  ((tags-todo "-study-someday-media-gtd/TODO"
                              ((org-agenda-overriding-header "Next Actions")
                               (org-agenda-skip-function (lambda ()
-                                                          (or (cb-org--agenda-skip-if-has-timestamp)
-                                                              (cb-org--agenda-skip-all-siblings-but-first))))))
+                                                          (or (config-org--agenda-skip-if-has-timestamp)
+                                                              (config-org--agenda-skip-all-siblings-but-first))))))
                   (todo "WAITING"
                         ((org-agenda-overriding-header "Waiting")))
                   (stuck "")
@@ -256,7 +256,7 @@
                         ((org-agenda-overriding-header "Standup"))))
                  ((org-agenda-tag-filter-preset '("-ignore"))
                   (org-agenda-use-tag-inheritance nil)
-                  (org-agenda-files (list cb-org-work-file org-agenda-diary-file))
+                  (org-agenda-files (list config-org-work-file org-agenda-diary-file))
                   (org-agenda-dim-blocked-tasks nil)
                   (org-agenda-archives-mode nil)
                   (org-agenda-ignore-drawer-properties '(effort appt))))))
@@ -287,7 +287,7 @@
 
                  (entry
                   "T" "Todo (work)"
-                  `(file ,cb-org-work-file) "* TODO %?")
+                  `(file ,config-org-work-file) "* TODO %?")
 
                  (entry
                   "d" "Diary"
@@ -295,11 +295,11 @@
 
                  (entry
                   "D" "Diary (work)"
-                  `(file+datetree cb-org-work-file) "* %?\n%^t")
+                  `(file+datetree config-org-work-file) "* %?\n%^t")
 
                  (entry
                   "j" "Journal"
-                  '(file cb-org-journal-file) "* %u\n\n%?"
+                  '(file config-org-journal-file) "* %u\n\n%?"
                   :type 'entry
                   :jump-to-captured t
                   :prepend nil)
@@ -312,8 +312,8 @@
 
                  (entry
                   "L" "Link (work)"
-                  `(file+olp cb-org-work-file "Links")
                   '(function cb-org-capture-url-read-url)
+                  `(file+olp config-org-work-file "Links")
                   :immediate-finish t)
 
                  (entry
@@ -338,7 +338,7 @@
 
                  (entry
                   "0" "Drill (item)"
-                  '(file+olp cb-org-drill-file "Uncategorised")
+                  '(file+olp config-org-drill-file "Uncategorised")
                   "* Item                :drill:
 
 %?
@@ -347,7 +347,7 @@
 
                  (entry
                   "1" "Drill (question)"
-                  '(file+olp cb-org-drill-file "Uncategorised")
+                  '(file+olp config-org-drill-file "Uncategorised")
                   "* Question                :drill:
 
 %?
@@ -358,7 +358,7 @@
 
                  (entry
                   "2" "Drill (two-sided)"
-                  '(file+olp cb-org-drill-file "Uncategorised")
+                  '(file+olp config-org-drill-file "Uncategorised")
                   "* Question                :drill:
 :PROPERTIES:
 :DRILL_CARD_TYPE: twosided
@@ -378,7 +378,7 @@
 
                  (entry
                   "E" "Email task (work)"
-                  `(file cb-org-work-file) "* TODO %?\n%a"))))
+                  `(file config-org-work-file) "* TODO %?\n%a"))))
 
 
 
@@ -411,18 +411,18 @@
     (defvar org-log-states)
     (defvar org-log-done)
 
-    (defun cb-org--exit-minibuffer (&rest _)
+    (defun config-org--exit-minibuffer (&rest _)
       "Exit minibuffer before adding notes."
       (when (minibufferp (window-buffer (selected-window)))
         (other-window 1)))
 
-    (defun cb-org--toggle-heading-goto-eol (&rest _)
+    (defun config-org--toggle-heading-goto-eol (&rest _)
       "Prevent point from moving to BOL when toggling headings."
       (when (s-matches? (rx bol (+ "*") (* space) eol)
                         (buffer-substring (line-beginning-position) (line-end-position)))
         (goto-char (line-end-position))))
 
-    (defun cb-org--mark-next-parent-tasks-todo ()
+    (defun config-org--mark-next-parent-tasks-todo ()
       "Visit each parent task and change state to TODO."
       (when-let* ((mystate (or (bound-and-true-p org-state)
                                (nth 2 (org-heading-components)))))
@@ -432,12 +432,12 @@
                               (nth 2 (org-heading-components)))
               (org-todo "TODO"))))))
 
-    (defun cb-org--add-local-hooks ()
+    (defun config-org--add-local-hooks ()
       "Set buffer-local hooks for orgmode."
-      (add-hook 'org-after-todo-state-change-hook #'cb-org--mark-next-parent-tasks-todo nil t)
-      (add-hook 'org-clock-in-hook #'cb-org--mark-next-parent-tasks-todo nil t))
+      (add-hook 'org-after-todo-state-change-hook #'config-org--mark-next-parent-tasks-todo nil t)
+      (add-hook 'org-clock-in-hook #'config-org--mark-next-parent-tasks-todo nil t))
 
-    (defun cb-org--children-done-parent-done (_n-done n-todo)
+    (defun config-org--children-done-parent-done (_n-done n-todo)
       "Mark the parent task as done when all children are completed."
       (let (org-log-done org-log-states) ; turn off logging
         (org-todo (if (zerop n-todo) "DONE" "TODO")))))
@@ -447,8 +447,8 @@
 
   :init
   (progn
-    (add-hook 'org-mode-hook #'cb-org--add-local-hooks)
-    (add-hook 'org-after-todo-statistics-hook #'cb-org--children-done-parent-done)
+    (add-hook 'org-mode-hook #'config-org--add-local-hooks)
+    (add-hook 'org-after-todo-statistics-hook #'config-org--children-done-parent-done)
 
     (dolist (dir (ignore-errors (f-directories "~/org/lisp/")))
       (add-to-list 'load-path (f-slash dir))))
@@ -458,8 +458,8 @@
     (setf (cdr (assoc 'file org-link-frame-setup)) #'find-file-other-window)
 
     (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
-    (advice-add 'org-add-log-note :before #'cb-org--exit-minibuffer)
-    (advice-add 'org-toggle-heading :after #'cb-org--toggle-heading-goto-eol)))
+    (advice-add 'org-add-log-note :before #'config-org--exit-minibuffer)
+    (advice-add 'org-toggle-heading :after #'config-org--toggle-heading-goto-eol)))
 
 (use-package cb-org-capture-url :after org)
 (use-package cb-org-gdrive :hook (org-mode . cb-org-gdrive-init))
@@ -498,30 +498,30 @@
     (autoload 'outline-next-heading "outline")
     (autoload 'page-break-lines--update-display-tables "page-break-lines")
 
-    (defun cb-org--draw-separator (&rest _)
+    (defun config-org--draw-separator (&rest _)
       (page-break-lines--update-display-tables))
 
-    (defun cb-org--exclude-tasks-on-hold (tag)
+    (defun config-org--exclude-tasks-on-hold (tag)
       (and (equal tag "hold") (concat "-" tag)))
 
-    (defun cb-org--agenda-skip-if-has-timestamp ()
+    (defun config-org--agenda-skip-if-has-timestamp ()
       "Skip the item if it has a scheduled or deadline timestamp."
       (when (or (org-get-scheduled-time (point))
                 (org-get-deadline-time (point)))
         (or (outline-next-heading)
             (goto-char (point-max)))))
 
-    (defun cb-org--current-headline-is-todo ()
+    (defun config-org--current-headline-is-todo ()
       (string= "TODO" (org-get-todo-state)))
 
-    (defun cb-org--agenda-skip-all-siblings-but-first ()
+    (defun config-org--agenda-skip-all-siblings-but-first ()
       "Skip all but the first non-done entry."
       (let (should-skip-entry)
-        (unless (cb-org--current-headline-is-todo)
+        (unless (config-org--current-headline-is-todo)
           (setq should-skip-entry t))
         (save-excursion
           (while (and (not should-skip-entry) (org-goto-sibling t))
-            (when (cb-org--current-headline-is-todo)
+            (when (config-org--current-headline-is-todo)
               (setq should-skip-entry t))))
         (when should-skip-entry
           (or (outline-next-heading)
@@ -538,8 +538,8 @@
     ;; changes. This is needed for page-break-lines to render the separator
     ;; correctly.
     (setq org-agenda-block-separator "")
-    (advice-add 'org-agenda :after #'cb-org--draw-separator)
-    (advice-add 'org-agenda-redo :after #'cb-org--draw-separator)))
+    (advice-add 'org-agenda :after #'config-org--draw-separator)
+    (advice-add 'org-agenda-redo :after #'config-org--draw-separator)))
 
 (use-package org-table
   :after org
@@ -561,7 +561,7 @@
     (autoload 'org-set-tags "org")
     (autoload 'org-get-tags "org")
 
-    (defun cb-org--archive-done-tasks ()
+    (defun config-org--archive-done-tasks ()
       (interactive)
       (atomic-change-group
         (org-map-entries (lambda ()
@@ -571,29 +571,29 @@
                              (org-archive-subtree)))
                          "/DONE|PAID|VOID|CANCELLED" 'tree)))
 
-    (defun cb-org--apply-inherited-tags (&rest _)
+    (defun config-org--apply-inherited-tags (&rest _)
       "Apply inherited tags when archiving."
       (org-set-tags (org-get-tags))))
 
   :config
-  (advice-add 'org-archive-subtree :before #'cb-org--apply-inherited-tags))
+  (advice-add 'org-archive-subtree :before #'config-org--apply-inherited-tags))
 
 (use-package org-src
   :after org
   :preface
   (progn
-    (defun cb-org--suppress-final-newline ()
+    (defun config-org--suppress-final-newline ()
       "Remove trailing newline in src blocks."
       (setq-local require-final-newline nil))
 
-    (defun cb-org--org-src-delete-trailing-space (&rest _)
+    (defun config-org--org-src-delete-trailing-space (&rest _)
       "Delete trailing whitespace when exiting src blocks."
       (delete-trailing-whitespace)))
 
   :config
   (progn
-    (add-hook 'org-src-mode-hook #'cb-org--suppress-final-newline)
-    (advice-add 'org-edit-src-exit :before #'cb-org--org-src-delete-trailing-space)))
+    (add-hook 'org-src-mode-hook #'config-org--suppress-final-newline)
+    (advice-add 'org-edit-src-exit :before #'config-org--org-src-delete-trailing-space)))
 
 (use-package org-clock
   :after org
@@ -601,7 +601,7 @@
   (progn
     (autoload 'org-remove-empty-drawer-at "org")
 
-    (defun cb-org--remove-empty-clock-drawers ()
+    (defun config-org--remove-empty-clock-drawers ()
       "Remove empty clock drawers at point."
       (save-excursion
         (beginning-of-line 0)
@@ -610,15 +610,15 @@
   :config
   (progn
     (org-clock-persistence-insinuate)
-    (add-hook 'org-clock-out-hook #'cb-org--remove-empty-clock-drawers t)))
+    (add-hook 'org-clock-out-hook #'config-org--remove-empty-clock-drawers t)))
 
 (use-package org-crypt
   :after org
   :preface
-  (defun cb-org--encrypt-on-save ()
+  (defun config-org--encrypt-on-save ()
     (add-hook 'before-save-hook 'org-encrypt-entries nil t))
   :init
-  (add-hook 'org-mode-hook #'cb-org--encrypt-on-save))
+  (add-hook 'org-mode-hook #'config-org--encrypt-on-save))
 
 (use-package evil
   :defer t
@@ -626,12 +626,12 @@
   (progn
     (autoload 'org-at-heading-p "org")
 
-    (defun cb-org--evil-insert-state (&rest _)
+    (defun config-org--evil-insert-state (&rest _)
       "Enter evil insert state when creating new headings."
       (when (called-interactively-p nil)
         (evil-insert-state)))
 
-    (defun cb-org--add-blank-line-after-heading (&rest _)
+    (defun config-org--add-blank-line-after-heading (&rest _)
       "Add a blank line of padding below new headings."
       (when (and (called-interactively-p nil)
                  (org-at-heading-p))
@@ -646,15 +646,15 @@
 
   :config
   (progn
-    (advice-add 'org-insert-heading :after #'cb-org--evil-insert-state)
-    (advice-add 'org-insert-heading-respect-content :after #'cb-org--evil-insert-state)
-    (advice-add 'org-insert-todo-heading-respect-content :after #'cb-org--evil-insert-state)
-    (advice-add 'org-insert-todo-heading :after #'cb-org--evil-insert-state)
+    (advice-add 'org-insert-heading :after #'config-org--evil-insert-state)
+    (advice-add 'org-insert-heading-respect-content :after #'config-org--evil-insert-state)
+    (advice-add 'org-insert-todo-heading-respect-content :after #'config-org--evil-insert-state)
+    (advice-add 'org-insert-todo-heading :after #'config-org--evil-insert-state)
 
-    (advice-add 'org-insert-heading :after #'cb-org--add-blank-line-after-heading)
-    (advice-add 'org-insert-heading-respect-content :after #'cb-org--add-blank-line-after-heading)
-    (advice-add 'org-insert-todo-heading-respect-content :after #'cb-org--add-blank-line-after-heading)
-    (advice-add 'org-insert-todo-heading :after #'cb-org--add-blank-line-after-heading)))
+    (advice-add 'org-insert-heading :after #'config-org--add-blank-line-after-heading)
+    (advice-add 'org-insert-heading-respect-content :after #'config-org--add-blank-line-after-heading)
+    (advice-add 'org-insert-todo-heading-respect-content :after #'config-org--add-blank-line-after-heading)
+    (advice-add 'org-insert-todo-heading :after #'config-org--add-blank-line-after-heading)))
 
 (use-package org-present
   :straight t
@@ -685,7 +685,7 @@
 (use-package ox-html
   :after org
   :preface
-  (defun cb-org-html-open-tags-setup
+  (defun config-org-html-open-tags-setup
       (number _group-number _start-group-p _end-group-p topp bottomp)
     (cond (topp "<tr class=\"tr-top\">")
           (bottomp "<tr class=\"tr-bottom\">")
@@ -699,7 +699,7 @@
 
    ;; Highlight alternating rows in HTML tables.
 
-   org-html-table-row-open-tag #'cb-org-html-open-tags-setup
+   org-html-table-row-open-tag #'config-org-html-open-tags-setup
    org-html-head-extra
    "
 <style type=\"text/css\">

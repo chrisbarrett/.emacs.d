@@ -24,6 +24,7 @@
 ;;; Code:
 
 (require 'dash)
+(require 'f)
 (require 'org)
 
 (autoload 'org-agenda-filter-apply "org-agenda")
@@ -53,7 +54,7 @@
 (defun cb-org-goto-work ()
   "Switch to the work file."
   (interactive)
-  (find-file cb-org-work-file))
+  (find-file config-org-work-file))
 
 ;;;###autoload
 (defun cb-org-goto-todo-list ()
