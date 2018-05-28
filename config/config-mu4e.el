@@ -57,6 +57,7 @@
 
   :preface
   (progn
+    (autoload 'evil-ret "evil-commands")
     (autoload 'message-goto-body "message")
     (autoload 'message-goto-signature "message")
     (autoload 'message-insert-formatted-citation-line "message")
