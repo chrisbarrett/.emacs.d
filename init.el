@@ -95,9 +95,9 @@
 
 ;; Load theme aggressively, or Emacs will look ugly during the startup sequence.
 (use-package config-themes
-  :functions (config-themes/dark-theme)
+  :functions (config-themes/light-theme)
   :config
-  (config-themes/dark-theme))
+  (config-themes/light-theme))
 
 (use-package config-basic-settings)
 (use-package config-darwin :if (equal system-type 'darwin))
