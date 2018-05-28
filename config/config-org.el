@@ -27,7 +27,7 @@
 
 (cb-major-mode-hydra-define org-mode
   "Tree"
-  (("c" org-archive-subtree "archive")
+  (("a" org-archive-subtree "archive")
    ("r" org-refile "refile")
    ("t" org-todo "set todo state"))
 
