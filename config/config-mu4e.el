@@ -43,16 +43,17 @@
   (:keymaps 'mu4e-view-mode-map :states 'motion
    "F" #'mu4e-compose-forward
    "J" #'mu4e~view-headers-jump-to-maildir
-   "j" #'mu4e-view-headers-next
-   "k" #'mu4e-view-headers-prev
-   "C-j" #'mu4e-view-headers-next
-   "C-k" #'mu4e-view-headers-prev
+   "C-n" #'mu4e-view-headers-next
+   "C-p" #'mu4e-view-headers-prev
    "RET" #'config-mu4e-view-ret)
   ;; Evil delete command is super slow for some reason. :(
   (:keymaps 'mu4e-compose-mode-map :states 'insert "<backspace>" #'backward-delete-char)
   ;; Declare archive functions.
   (:keymaps 'mu4e-headers-mode-map "r" #'mu4e-headers-mark-for-read-and-archive)
   (:keymaps 'mu4e-view-mode-map "r" #'mu4e-view-mark-for-read-and-archive)
+
+  :init
+  (general-unbind :keymaps 'mu4e-view-mode-map "p")
 
   :preface
   (progn
