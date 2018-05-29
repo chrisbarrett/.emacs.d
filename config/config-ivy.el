@@ -15,15 +15,21 @@
 (use-package ivy
   :straight t
   :commands (ivy-occur ivy-help ivy-mode)
-  :general ("C-c C-r" #'ivy-resume "C-x b" #'ivy-switch-buffer)
-  :general (:keymaps 'ivy-occur-mode-map "C-x C-w" #'ivy-wgrep-change-to-wgrep-mode)
   :general
+  ("C-c C-r" #'ivy-resume
+   "C-x b" #'ivy-switch-buffer)
+
+  (:keymaps 'ivy-occur-mode-map
+   "C-x C-w" #'ivy-wgrep-change-to-wgrep-mode)
+
   (:keymaps 'ivy-minibuffer-map
-            "C-z" #'ivy-dispatching-done
-            "C-l" #'ivy-partial-or-done
-            "C-<return>" #'ivy-immediate-done)
+   "C-z" #'ivy-dispatching-done
+   "C-l" #'ivy-partial-or-done
+   "C-<return>" #'ivy-immediate-done)
+
   ;; Browse read-expression histroy with ivy
-  :general (:keymaps 'read-expression-map "C-r" #'counsel-expression-history)
+  (:keymaps 'read-expression-map
+   "C-r" #'counsel-expression-history)
 
   :init
   (progn
