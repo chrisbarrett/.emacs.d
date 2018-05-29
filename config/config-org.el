@@ -166,6 +166,7 @@
  org-agenda-skip-scheduled-if-done t
  org-agenda-span 'week
  org-agenda-start-on-weekday nil
+ org-agenda-dim-blocked-tasks 'invisible
  org-agenda-sorting-strategy '((agenda time-up priority-down category-keep)
                                (todo priority-down category-keep scheduled-up)
                                (tags priority-down category-keep)
@@ -194,7 +195,6 @@
                              ((org-agenda-overriding-header "Media & Study"))))
                  ((org-agenda-tag-filter-preset '("-ignore"))
                   (org-agenda-files (list org-default-notes-file org-agenda-diary-file))
-                  (org-agenda-dim-blocked-tasks nil)
                   (org-agenda-archives-mode nil)
                   (org-agenda-ignore-drawer-properties '(effort appt))))
 
@@ -239,8 +239,7 @@
                    '("-drill" "-gtd" "-ignore"))
                   (org-agenda-include-inactive-timestamps t)
                   (org-agenda-files (list org-default-notes-file config-org-work-file org-agenda-diary-file))
-                  (org-agenda-archives-mode nil)
-                  (org-agenda-dim-blocked-tasks nil)))
+                  (org-agenda-archives-mode nil)))
 
                 ("w" "Work actions"
                  ((tags-todo "-study-someday-media-gtd/TODO"
@@ -257,7 +256,6 @@
                  ((org-agenda-tag-filter-preset '("-ignore"))
                   (org-agenda-use-tag-inheritance nil)
                   (org-agenda-files (list config-org-work-file org-agenda-diary-file))
-                  (org-agenda-dim-blocked-tasks nil)
                   (org-agenda-archives-mode nil)
                   (org-agenda-ignore-drawer-properties '(effort appt))))))
 
