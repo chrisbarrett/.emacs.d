@@ -29,7 +29,7 @@
   "Tree"
   (("a" org-archive-subtree "archive")
    ("r" org-refile "refile")
-   ("t" org-todo "set todo state"))
+   ("t" org-show-todo-tree "todo tree"))
 
   "Misc"
   (("e" org-babel/body "babel commands")))
