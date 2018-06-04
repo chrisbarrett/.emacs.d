@@ -15,7 +15,10 @@
     (define-ibuffer-column mode
       (:inline t)
       (with-current-buffer (current-buffer)
-        (all-the-icons-icon-for-mode major-mode)))))
+        (let ((icon (all-the-icons-icon-for-buffer)))
+          (if (stringp icon)
+              icon
+            " "))))))
 
 ;; Dim directory part of file path.
 
