@@ -112,7 +112,7 @@
 ;; buffers git versions.
 
 (use-package git-timemachine
-  :straight t
+  :straight (:host gitlab :repo "pidu/git-timemachine")
   :defer t)
 
 ;; Diff-hl highlights changed file hunks in the fringe of the window, and
