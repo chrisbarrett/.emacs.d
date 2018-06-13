@@ -103,7 +103,7 @@
    ("s" ivy-switch-buffer "switch..."))
 
   "Manage"
-  (("b" bury-buffer "bury" :exit nil)
+  (("b" bury-buffer "bury")
    ("d" kill-this-buffer "kill")
    ("w" save-buffer "save")
    ("v" reload-file "reload")))
