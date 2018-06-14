@@ -73,6 +73,8 @@ Fall back to the file name sans extension."
     (""        "")
     ("Promise" "bluebird")
     ("assert"  "power-assert")
+    ("VError"  "verror")
+    ("styles"  "./styles.css")
     ("stampit"   "@stamp/it")
     ("Configure" "@stamp/configure")
     ("Required"  "@stamp/required")
