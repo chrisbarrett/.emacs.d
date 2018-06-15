@@ -125,6 +125,8 @@
             "dist"
             "jars"
             "node_modules"
+            "flow-typed"
+            "vendor"
             "straight/repos"
             "target"
             ))
