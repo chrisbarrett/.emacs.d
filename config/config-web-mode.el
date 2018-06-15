@@ -39,6 +39,27 @@
   (("xn" indium-run-node "node")
    ("xc" indium-run-chrome "chrome")))
 
+(cb-major-mode-hydra-define web-ts-mode
+  "Tide"
+  (("r" tide-refactor "refactor")
+   ("e" tide-project-errors "errors in project"))
+
+  "Add Breakpoints"
+  (("bb" indium-add-breakpoint "add")
+   ("bc" indium-add-conditional-breakpoint "add conditional")
+   ("bl" indium-list-breakpoints "list")
+   ("ba" indium-activate-breakpoints "activate"))
+
+  "Modify Breakpoints"
+  (("be" indium-edit-breakpoint-condition "edit condition")
+   ("bx" indium-remove-breakpoint "remove")
+   ("bX" indium-remove-all-breakpoints-from-buffer "remove all")
+   ("bd" indium-deactivate-breakpoints "deactivate"))
+
+  "Run"
+  (("xn" indium-run-node "node")
+   ("xc" indium-run-chrome "chrome")))
+
 
 
 (use-package web-mode
@@ -158,6 +179,7 @@
     (setq flycheck-html-tidy-executable (executable-find "tidy"))
 
     (flycheck-add-mode 'typescript-tslint 'web-ts-mode)
+    (flycheck-add-mode 'typescript-tide 'web-ts-mode)
 
     (flycheck-add-mode 'javascript-eslint 'web-js-mode)
     (flycheck-add-mode 'javascript-jshint 'web-js-mode)
@@ -349,13 +371,14 @@
              js-refactor-commands-align-object-literal-values
              js-refactor-commands-toggle-sealed-object-type))
 
+
 ;; Node
 
 (use-package indium
   :straight t
   :commands (indium-run-node)
   :hook
-  ((web-js-mode . indium-interaction-mode)
+  ((web-js-base-mode . indium-interaction-mode)
    (js-mode . indium-interaction-mode))
 
   :preface
@@ -382,6 +405,22 @@
     (when (locate-dominating-file default-directory ".nvmrc")
       (nvm-use-for-buffer)
       t)))
+
+
+;; Typescript
+
+(defalias 'typescript-mode #'web-ts-mode)
+
+(use-package tide
+  :straight t
+  :preface
+  (defun config-web--setup-tide ()
+    (config-web-maybe-use-nvm)
+    (tide-setup))
+  :general (:states '(normal insert) :keymaps 'tide-mode-map
+            "M-." #'tide-jump-to-definition
+            "M-," #'tide-jump-back)
+  :hook (web-ts-mode . config-web--setup-tide))
 
 (provide 'config-web-mode)
 
