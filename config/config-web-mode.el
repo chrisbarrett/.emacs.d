@@ -417,10 +417,22 @@
   (defun config-web--setup-tide ()
     (config-web-maybe-use-nvm)
     (tide-setup))
+  :init
+  (require 'tide-hacks)
+  :general (:states 'normal :keymaps 'tide-mode-map "K" #'tide-documentation-at-point)
   :general (:states '(normal insert) :keymaps 'tide-mode-map
             "M-." #'tide-jump-to-definition
             "M-," #'tide-jump-back)
-  :hook (web-ts-mode . config-web--setup-tide))
+  :hook (web-ts-mode . config-web--setup-tide)
+  :config
+  (add-to-list 'display-buffer-alist
+               `(,(rx bos "*tide-documentation*" eos)
+                 (display-buffer-reuse-window
+                  display-buffer-in-side-window)
+                 (reusable-frames . visible)
+                 (side            . bottom)
+                 (slot            . 1)
+                 (window-width    . 0.5))))
 
 (provide 'config-web-mode)
 
