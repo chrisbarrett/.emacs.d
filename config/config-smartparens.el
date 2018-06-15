@@ -15,7 +15,7 @@
          (text-mode . smartparens-strict-mode)
          (text-mode . smartparens-strict-mode))
 
-  :general (:keyaps 'smartparens-strict-mode-map [remap c-electric-backspace] #'sp-backward-delete-char)
+  :general (:keymaps 'smartparens-strict-mode-map [remap c-electric-backspace] #'sp-backward-delete-char)
   :general (:states 'insert ")" #'sp-up-sexp)
   :general (:states 'normal "D" #'sp-kill-hybrid-sexp)
 
