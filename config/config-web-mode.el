@@ -179,8 +179,6 @@
     (setq flycheck-html-tidy-executable (executable-find "tidy"))
 
     (flycheck-add-mode 'typescript-tslint 'web-ts-mode)
-    (flycheck-add-mode 'typescript-tide 'web-ts-mode)
-
     (flycheck-add-mode 'javascript-eslint 'web-js-mode)
     (flycheck-add-mode 'javascript-jshint 'web-js-mode)
     (flycheck-add-mode 'javascript-standard 'web-js-mode)
@@ -425,14 +423,18 @@
             "M-," #'tide-jump-back)
   :hook (web-ts-mode . config-web--setup-tide)
   :config
-  (add-to-list 'display-buffer-alist
-               `(,(rx bos "*tide-documentation*" eos)
-                 (display-buffer-reuse-window
-                  display-buffer-in-side-window)
-                 (reusable-frames . visible)
-                 (side            . bottom)
-                 (slot            . 1)
-                 (window-width    . 0.5))))
+  (progn
+    (with-eval-after-load 'flycheck
+      (flycheck-add-mode 'typescript-tide 'web-ts-mode))
+
+    (add-to-list 'display-buffer-alist
+                 `(,(rx bos "*tide-documentation*" eos)
+                   (display-buffer-reuse-window
+                    display-buffer-in-side-window)
+                   (reusable-frames . visible)
+                   (side            . bottom)
+                   (slot            . 1)
+                   (window-width    . 0.5)))))
 
 (provide 'config-web-mode)
 
