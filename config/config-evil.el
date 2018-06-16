@@ -320,6 +320,15 @@
             "<" #'evil-funcs/shift-left
             ">" #'evil-funcs/shift-right))
 
+(use-package evil-ispell
+  :after evil
+  :general (:states 'normal
+            "zu" #'evil-ispell-correct-word
+            "zg" #'evil-ispell-mark-word-as-good
+            "zG" #'evil-ispell-mark-word-locally-good
+            "zn" #'evil-ispell-next-spelling-error
+            "zp" #'evil-ispell-previous-spelling-error))
+
 (provide 'config-evil)
 
 ;;; config-evil.el ends here
