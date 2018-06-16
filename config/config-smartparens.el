@@ -274,13 +274,12 @@
     (sp-with-modes 'web-mode
       (sp-local-pair "<" nil :when '(config-smartparens-web-mode-is-code-context)))
 
-    (sp-with-modes '(cb-web-json-mode
-                     cb-web-html-mode
-                     cb-web-css-mode
-                     cb-web-ts-mode)
+    (sp-with-modes '(web-json-mode
+                     web-html-mode
+                     web-css-mode)
       (sp-local-pair "\"" "\"" :bind "M-\""))
 
-    (sp-with-modes 'cb-web-js-mode
+    (sp-with-modes 'web-js-base-mode
       (sp-local-pair "\"" "\"" :bind "M-\"")
       ;; Flow strict types
       (sp-local-pair "{|" "|}" :post-handlers '(("||\n[i]" "RET") ("| " "SPC")))
