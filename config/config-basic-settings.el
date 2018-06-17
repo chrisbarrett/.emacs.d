@@ -575,6 +575,7 @@
   :config
   (progn
     (setq ispell-program-name "aspell")
+    (setq ispell-dictionary "en_GB")
     (ispell-check-version)
     (setq ispell-dictionary-alist (ispell-find-aspell-dictionaries))
     (setq ispell-silently-savep t)))
