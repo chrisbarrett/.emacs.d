@@ -479,6 +479,8 @@
    "J" #'org-agenda-goto-date
    "j" #'org-agenda-next-line
    "k" #'org-agenda-previous-line
+   "f" #'org-agenda-later
+   "b" #'org-agenda-earlier
    "M-j" #'org-agenda-next-item
    "M-k" #'org-agenda-previous-item
    "M-h" #'org-agenda-earlier
