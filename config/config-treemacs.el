@@ -25,7 +25,9 @@
 
   :config
   (progn
+    (require 'treemacs-hacks)
     (require 'projectile)
+
     (general-setq
      treemacs-follow-after-init t
      treemacs-silent-filewatch t
