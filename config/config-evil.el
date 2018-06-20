@@ -81,10 +81,10 @@
     ;; Configure cursors.
 
     (setq evil-motion-state-cursor '("plum3" box))
-    (setq evil-visual-state-cursor '("gray" (hbar . 2)))
+    (setq evil-visual-state-cursor '("gray" hbar))
     (setq evil-normal-state-cursor '("IndianRed" box))
-    (setq evil-insert-state-cursor '("chartreuse3" (bar . 2)))
-    (setq evil-emacs-state-cursor  '("SkyBlue2" hbar))
+    (setq evil-insert-state-cursor '("chartreuse3" bar))
+    (setq evil-emacs-state-cursor  '("SkyBlue2" (box . t)))
 
     ;; Motion keys for help buffers.
 
