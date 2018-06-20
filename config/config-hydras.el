@@ -149,7 +149,7 @@
 
   "Other"
   (("e" sudo-edit "edit with sudo...")
-   ("t" neotree-toggle "file tree")
+   ("t" treemacs "file tree")
    ("v" reload-file "reload")))
 
 (cb-hydra-define errors ()

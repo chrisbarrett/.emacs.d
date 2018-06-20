@@ -572,6 +572,26 @@
     (message-header-other
      ((t :weight demibold)))
 
+    ;; Treemacs
+
+    (treemacs-root-face
+     ((t :foreground ,emphasis)))
+
+    (treemacs-directory-face
+     ((t :weight normal)))
+
+    (treemacs-git-modified-face
+     ((t :slant italic)))
+
+    (treemacs-git-added-face
+     ((t :underline ,cb-theme-common-blue)))
+
+    (treemacs-git-untracked-face
+     ((t :underline t)))
+
+    (treemacs-git-ignored-face
+     ((t :foreground ,dimmed-fg)))
+
     ;; Neotree
 
     (neo-root-dir-face

@@ -115,7 +115,6 @@
 (use-package config-company)
 (use-package config-yasnippet)
 (use-package config-flycheck)
-(use-package config-neotree)
 (use-package config-mu4e)
 (use-package config-org)
 (use-package config-ledger)
@@ -131,6 +130,7 @@
 (use-package config-python)
 (use-package config-nix)
 (use-package config-etags)
+(use-package config-treemacs)
 
 (use-package personal-config
   :load-path "~/Sync/emacs")

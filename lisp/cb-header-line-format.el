@@ -178,7 +178,7 @@
       (propertize str 'face 'cb-header-line-format-nonemphasised-element))))
 
 (defconst cb-header-line-format--flycheck-icon (all-the-icons-material "error_outline"))
-(defconst cb-header-line-format--neotree-icon (all-the-icons-octicon "file-directory" :v-adjust 0.05))
+(defconst cb-header-line-format--tree-icon (all-the-icons-octicon "file-directory" :v-adjust 0.05))
 (defconst cb-header-line-format--ilist-icon (all-the-icons-fileicon "api-blueprint" :v-adjust 0.05))
 (defconst cb-header-line-format--org-icon (all-the-icons-icon-for-mode 'org-mode :v-adjust 0.05))
 
@@ -193,8 +193,8 @@
               (concat " " cb-header-line-format--org-icon " *Org Select*"))
              ("*compilation*"
               (concat " " (cb-header-line-format--major-mode-icon) " Compile"))
-             (" *NeoTree*"
-              (concat " " cb-header-line-format--neotree-icon " Filesystem"))
+             ((guard (string-match-p (rx "*Treemacs-Framebuffer-") (buffer-name)))
+              (concat " " cb-header-line-format--tree-icon " Filesystem"))
              ("*Ilist*"
               (concat " " cb-header-line-format--ilist-icon " Definitions"))
              ((guard (string-match-p (rx "-popup*" eos) (buffer-name)))
