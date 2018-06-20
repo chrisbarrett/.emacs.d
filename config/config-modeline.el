@@ -13,7 +13,7 @@
 (use-package hidden-mode-line
   :commands (hidden-mode-line-mode global-hidden-mode-line-mode)
   :init
-  (setq-default mode-line-format " "))
+  (setq-default mode-line-format '("")))
 
 (use-package cb-header-line-mode
   :commands (cb-header-line-global-mode
