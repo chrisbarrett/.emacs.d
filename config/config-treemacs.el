@@ -23,6 +23,9 @@
             (icon (apply f spec)))
       (cons key icon)))
 
+  :init
+  (general-setq treemacs-persist-file
+                (f-join paths-cache-directory "treemacs-persist"))
   :config
   (progn
     (require 'treemacs-hacks)
@@ -39,7 +42,6 @@
      treemacs-collapse-dirs (if (executable-find "python") 3 0)
      treemacs-is-never-other-window t
      treemacs-show-hidden-files nil
-     treemacs-persist-file (f-join paths-cache-directory "treemacs-persist")
      treemacs-width 30)
 
     (treemacs-follow-mode t)
