@@ -93,7 +93,9 @@
 (use-package dired+
   :straight t
   :after dired
-  :hook (dired-mode . dired-hide-details-mode))
+  :hook (dired-mode . dired-hide-details-mode)
+  :config
+  (setq diredp-wrap-around-flag nil))
 
 (use-package wdired
   :after dired
