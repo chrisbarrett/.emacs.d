@@ -29,6 +29,7 @@
     (require 'projectile)
 
     (general-setq
+     treemacs-recenter-after-file-follow nil
      treemacs-follow-after-init t
      treemacs-silent-filewatch t
      treemacs-dotfiles-regex (rx-to-string
@@ -41,6 +42,7 @@
      treemacs-persist-file (f-join paths-cache-directory "treemacs-persist")
      treemacs-width 30)
 
+    (treemacs-follow-mode t)
     (treemacs-filewatch-mode t)
     (treemacs-git-mode 'simple)
 
