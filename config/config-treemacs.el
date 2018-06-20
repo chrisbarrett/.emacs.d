@@ -44,6 +44,10 @@
     (treemacs-filewatch-mode t)
     (treemacs-git-mode 'simple)
 
+    ;; Hide ignored files.
+
+    (add-to-list 'treemacs-pre-file-insert-predicates #'treemacs-is-file-git-ignored?)
+
     ;; Use all-the-icons for treemacs.
 
     (clrhash treemacs-icons-hash)
