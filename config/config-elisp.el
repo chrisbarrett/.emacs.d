@@ -142,6 +142,18 @@
           (when (derived-mode-p 'emacs-lisp-mode)
             nameless-current-name))))))
 
+;; debug.el defines the emacs lisp debugger.
+
+(use-package debug
+  :defer t
+  :general (:keymaps 'debugger-mode-map
+            "j" 'forward-to-indentation
+            "k" 'backward-to-indentation)
+  :init
+  (add-hook 'debugger-mode-hook #'hl-line-mode)
+  :config
+  (config-hydras-insinuate debugger-mode-map))
+
 (provide 'config-elisp)
 
 ;;; config-elisp.el ends here
