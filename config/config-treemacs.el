@@ -26,6 +26,10 @@
   :init
   (general-setq treemacs-persist-file
                 (f-join paths-cache-directory "treemacs-persist"))
+  :preface
+  (defun config-treemacs-set-tab-width ()
+    (setq-local tab-width 1))
+
   :config
   (progn
     (require 'treemacs-hacks)
@@ -52,7 +56,8 @@
 
     (add-to-list 'treemacs-pre-file-insert-predicates #'treemacs-is-file-git-ignored?)
 
-    ;; Use all-the-icons for treemacs.
+    ;; HACK: Use all-the-icons for treemacs. Add tabs to the end of each icon so
+    ;; that text is more likely to be aligned.
 
     (clrhash treemacs-icons-hash)
     (--each (-map #'config-treemacs-format-icon all-the-icons-icon-alist)
@@ -66,11 +71,6 @@
     (setq treemacs-icon-open-png (concat (all-the-icons-faicon "folder-open") "\t"))
     (setq treemacs-icon-text (concat (all-the-icons-faicon "file-text-o") "\t"))
     (setq treemacs-icon-fallback (concat (all-the-icons-faicon "file") "\t"))
-
-    ;; HACK: Try to line up icons.
-
-    (defun config-treemacs-set-tab-width ()
-      (setq-local tab-width 1))
 
     (add-hook 'treemacs-mode-hook #'config-treemacs-set-tab-width)))
 
