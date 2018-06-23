@@ -180,7 +180,7 @@
    ("m" man "man..."))
 
   "Describe"
-  (("dc" describe-face "face...")
+  (("dc" counsel-describe-face "face...")
    ("dC" helpful-command "command...")
    ("df" helpful-callable "function...")
    ("dk" helpful-key "key...")
@@ -191,7 +191,7 @@
   "Find"
   (("fc" find-face-definition "face...")
    ("ff" find-function "function...")
-   ("fl" find-library "library...")
+   ("fl" counsel-find-library "library...")
    ("fv" find-variable "variable...")))
 
 (cb-hydra-define kill ()
