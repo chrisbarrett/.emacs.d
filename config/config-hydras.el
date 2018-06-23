@@ -373,7 +373,7 @@
    ("d" magit-blame-removal "rev removed")
    ("r" magit-blame-reverse "last rev where exists")))
 
-(cb-hydra-define git-hunks (:foreign-keys run)
+(cb-hydra-define git-hunks (:foreign-keys run :color red)
   (hydra-title-with-aicon "git" "Git Hunks")
   "Navigate"
   (("n" diff-hl-next-hunk "next")
