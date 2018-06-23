@@ -90,8 +90,7 @@
   :hook (emacs-lisp-mode . turn-on-elisp-slime-nav-mode)
   :general
   (:keymaps 'emacs-lisp-mode-map :states 'normal
-            "M-." #'elisp-slime-nav-find-elisp-thing-at-point
-            "K" #'elisp-slime-nav-describe-elisp-thing-at-point))
+   "M-." #'elisp-slime-nav-find-elisp-thing-at-point))
 
 ;; eldoc shows function parameters in the minibuffer.
 
@@ -153,6 +152,23 @@
   (add-hook 'debugger-mode-hook #'hl-line-mode)
   :config
   (config-hydras-insinuate debugger-mode-map))
+
+;; helpful is a more feature-rich alternative to the Emacs Lisp help buffer.
+
+(use-package helpful
+  :straight t
+  :general
+  (:keymaps 'emacs-lisp-mode-map :states 'normal
+   "K" 'helpful-at-point)
+  :config
+  (add-to-list 'display-buffer-alist
+               `(,(rx bos "*helpful ")
+                 (display-buffer-reuse-window
+                  display-buffer-in-side-window)
+                 (reusable-frames . visible)
+                 (side            . right)
+                 (slot            . 1)
+                 (window-width    . 0.5))))
 
 (provide 'config-elisp)
 

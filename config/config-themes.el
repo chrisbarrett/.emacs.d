@@ -142,6 +142,7 @@
                     (makefile-mode all-the-icons-fileicon "gnu" :face all-the-icons-dorange)
                     (makefile-bsdmake-mode all-the-icons-fileicon "gnu" :face all-the-icons-dorange)
                     (gfm-mode all-the-icons-faicon "github-alt" :v-adjust 0.0 :face all-the-icons-lblue)
+                    (helpful-mode all-the-icons-icon-for-mode help-mode)
                     (web-js-mode all-the-icons-icon-for-mode web-mode :v-adjust 0.0 :face all-the-icons-lblue)
                     (web-ts-mode all-the-icons-icon-for-mode web-mode :v-adjust 0.0 :face all-the-icons-lblue)
                     (web-css-mode all-the-icons-icon-for-mode web-mode :v-adjust 0.0 :face all-the-icons-lblue)

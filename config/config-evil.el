@@ -102,6 +102,8 @@
 
     (evil-set-initial-state 'flycheck-error-list-mode 'motion)
 
+    (evil-set-initial-state 'helpful-mode 'motion)
+
     (evil-set-initial-state 'grep-mode 'normal)
 
     (evil-set-initial-state 'occur-mode 'normal)

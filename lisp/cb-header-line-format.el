@@ -185,7 +185,7 @@
 (defconst cb-header-line-format
   '((:eval (pcase (buffer-name)
              ;; Special buffers
-             ("*Help*"
+             ((or "*Help*" (guard (string-match-p (rx bos "*helpful ") (buffer-name))))
               (concat " " (cb-header-line-format--major-mode-icon) " Help"))
              ("*Flycheck errors*"
               (concat " " cb-header-line-format--flycheck-icon " Errors"))

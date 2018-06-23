@@ -181,11 +181,12 @@
 
   "Describe"
   (("dc" describe-face "face...")
-   ("df" counsel-describe-function "function...")
-   ("dk" describe-key "key...")
+   ("dC" helpful-command "command...")
+   ("df" helpful-callable "function...")
+   ("dk" helpful-key "key...")
    ("dm" describe-mode "mode...")
    ("dp" describe-text-properties "text-props...")
-   ("dv" counsel-describe-variable "variable..."))
+   ("dv" helpful-variable "variable..."))
 
   "Find"
   (("fc" find-face-definition "face...")
