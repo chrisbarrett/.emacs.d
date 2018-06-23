@@ -12,22 +12,30 @@
 (require 'f)
 (require 'paths)
 (require 's)
+(require 'seq)
 (require 'xref)
+
+(defun jump-cmds--jump-to-file (file &optional pos)
+  (xref-push-marker-stack)
+  (let ((buf (or (get-buffer file) (find-file-noselect file))))
+    (switch-to-buffer buf)
+    (when pos
+      (goto-char pos))))
 
 (defun jump-to-init-file ()
   "Open the Emacs init.el file."
   (interactive)
-  (find-file (concat user-emacs-directory "init.el")))
+  (jump-cmds--jump-to-file (concat user-emacs-directory "init.el")))
 
 (defun jump-to-nix-packages ()
   "Open the nix packages file."
   (interactive)
-  (find-file "~/Sync/nix/packages.nix"))
+  (jump-cmds--jump-to-file "~/Sync/nix/packages.nix"))
 
 (defun jump-to-personal-config ()
   "Open the personal configuration file."
   (interactive)
-  (find-file "~/Sync/emacs/personal-config.el"))
+  (jump-cmds--jump-to-file "~/Sync/emacs/personal-config.el"))
 
 (defun jump-to-messages ()
   "Open the messages buffer."
@@ -91,12 +99,23 @@ FILE is the file to go to.
 
 POS is the buffer position to go to."
   (interactive (jump-cmds--read-use-package-ref (jump-cmds--config-files)))
-  (xref-push-marker-stack)
-  (let ((buf (or (get-buffer file) (find-file-noselect file))))
-    (switch-to-buffer buf)
-    (goto-char pos)))
+  (jump-cmds--jump-to-file file pos))
 
 
+;; Define a command for jumping to a config file.
+
+(defun jump-cmds--config-file-shortname (file-path)
+  (string-remove-prefix "config-" (f-no-ext (f-filename file-path))))
+
+(defun jump-cmds--read-config-file (files)
+  (-let* ((lookup (--map (cons (jump-cmds--config-file-shortname it) it) files))
+          (choice (completing-read "Jump to config-file: " (sort (-map #'car lookup) #'string<) nil t)))
+    (alist-get choice lookup nil nil #'string=)))
+
+(defun jump-to-config-file (file)
+  "Jump to emacs.d configuration file FILE."
+  (interactive (list (jump-cmds--read-config-file (jump-cmds--config-files))))
+  (jump-cmds--jump-to-file file))
 
 (provide 'jump-cmds)
 

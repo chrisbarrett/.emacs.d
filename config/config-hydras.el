@@ -321,10 +321,12 @@
   (hydra-title-with-aicon "git" "Git and Goto")
 
   "Goto"
-  (("i" jump-to-init-file "init file")
+  (("c" jump-to-config-file "config file...")
+   ("i" jump-to-init-file "init file")
    ("m" jump-to-messages "messages")
-   ("n" jump-to-nix-packages "nix packages")
-   ("p" jump-to-personal-config "personal config")
+   ("n" jump-to-nix-packages "nix packages"))
+  ""
+  (("p" jump-to-personal-config "personal config")
    ("u" jump-to-package-usage "package usage"))
 
   "Git"
