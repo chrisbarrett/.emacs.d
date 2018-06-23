@@ -120,7 +120,6 @@
 
 (use-package diff-hl
   :straight t
-  :after magit
   :commands (diff-hl-magit-post-refresh
              global-diff-hl-mode
              diff-hl-next-hunk
@@ -129,11 +128,18 @@
              diff-hl-goto-hunk)
   :preface
   (progn
+    ;; HACK: Hand-roll loading logic. This didn't work with :after
+    ;; for some reason.
+    (dolist (feature '(projectile flycheck magit))
+      (with-eval-after-load feature
+        (require 'diff-hl)))
+
     (defun config-git--diff-hl-mode-on ()
       (diff-hl-mode -1))
 
     (defun config-git--diff-hl-mode-off ()
       (diff-hl-mode +1)))
+
   :config
   (progn
     ;; Diff-hl interferes with iedit. Disable diff-hl temporarily while iedit is
