@@ -397,7 +397,7 @@
   (("i" select-input-method/body "input method..."))
 
   "Emacs"
-  (("?" profiler/body "profiler...")
+  (("r" profiler/body "profiler...")
    ("s" straight/body "straight package manager..."))
 
   "Shells"
