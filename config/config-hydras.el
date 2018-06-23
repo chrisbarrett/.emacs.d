@@ -12,6 +12,7 @@
 (require 'major-mode-hydra)
 (require 'pretty-hydra)
 (require 'subr-x)
+(require 'window-cmds)
 
 (eval-and-compile
   (require 'paths)
@@ -23,8 +24,6 @@
 (autoload 'evil-window-next "evil")
 (autoload 'evil-window-prev "evil")
 (autoload 'evil-window-rotate-downwards "evil")
-(autoload 'evil-window-split "evil")
-(autoload 'evil-window-vsplit "evil")
 (autoload 'generate-password/body "generate-password")
 (autoload 'ivy-switch-buffer "ivy")
 (autoload 'neotree-toggle "neotree")
@@ -118,13 +117,16 @@
    ("r" evil-window-rotate-downwards "rotate"))
 
   "Split"
-  (("/" evil-window-vsplit "vertical")
-   ("-" evil-window-split "horizontal")
+  (("/" window-cmds-split-horizontally "vertical")
+   ("-" window-cmds-split-vertically "horizontal")
    ("=" balance-windows "rebalance"))
 
   "Close"
   (("d" delete-window "window")
-   ("o" delete-other-windows "others")))
+   ("o" delete-other-windows "others"))
+
+  "Toggles"
+  (("SPC" window-cmds-toggle-current-window-dedication "toggle dedicated")))
 
 (cb-hydra-define files ()
   (hydra-title-with-faicon "hdd-o" "File Commands")
