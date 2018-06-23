@@ -344,11 +344,10 @@
 
 (cb-hydra-define git-time-machine
   (:foreign-keys run
-
-                 :pre (unless (bound-and-true-p git-timemachine-mode)
-                        (call-interactively 'git-timemachine))
-                 :post (when (bound-and-true-p git-timemachine-mode)
-                         (git-timemachine-quit)))
+   :pre (unless (bound-and-true-p git-timemachine-mode)
+          (call-interactively 'git-timemachine))
+   :post (when (bound-and-true-p git-timemachine-mode)
+           (git-timemachine-quit)))
   (hydra-title-with-aicon "git" "Git Time Machine")
   "Step"
   (("p" git-timemachine-show-previous-revision "previous")
@@ -362,11 +361,11 @@
 (cb-hydra-define git-blame
   (:foreign-keys run
 
-                 :pre (unless (bound-and-true-p magit-blame-mode)
-                        (call-interactively 'magit-blame))
-                 :post
-                 (when (bound-and-true-p magit-blame-mode)
-                   (magit-blame-quit)))
+   :pre (unless (bound-and-true-p magit-blame-mode)
+          (call-interactively 'magit-blame))
+   :post
+   (when (bound-and-true-p magit-blame-mode)
+     (magit-blame-quit)))
   (hydra-title-with-aicon "git" "Git Blame")
   "Display"
   (("b" magit-blame "rev added")
