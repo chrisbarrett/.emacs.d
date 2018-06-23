@@ -746,7 +746,7 @@
      ((t :weight demibold :foreground ,cb-theme-common-red)))
 
     (hydra-face-pink
-     ((t :weight demibold :foreground ,cb-theme-common-pink)))
+     ((t :weight demibold :foreground ,cb-theme-common-red)))
 
     (hydra-face-blue
      ((t :weight demibold :foreground ,cb-theme-common-blue)))
