@@ -12,7 +12,10 @@
 (require 'major-mode-hydra)
 (require 'pretty-hydra)
 (require 'subr-x)
-(require 'window-cmds)
+
+(use-package window-cmds
+  :general
+  (:keymaps 'global "C-SPC" 'window-cmds-tile))
 
 (eval-and-compile
   (require 'paths)
