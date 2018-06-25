@@ -158,7 +158,7 @@
 (use-package helpful
   :straight t
   :general
-  (:keymaps 'emacs-lisp-mode-map :states 'normal
+  (:keymaps '(emacs-lisp-mode-map helpful-mode-map) :states '(motion normal)
    "K" 'helpful-at-point)
   :config
   (add-to-list 'display-buffer-alist
