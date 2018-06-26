@@ -280,6 +280,8 @@
             "-" #'evil-numbers/dec-at-pt))
 
 (use-package evil-search-highlight-persist
+  ;; Disabled because highlight.el github mirror was removed.
+  :disabled t
   :straight t
   :after evil-common
   :commands (global-evil-search-highlight-persist
