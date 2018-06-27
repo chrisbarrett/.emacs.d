@@ -31,6 +31,7 @@ In contrast with Spacemacs, this config uses =use-package= pretty directly.
 
 - =init.el= :: Emacs' entrypoint for loading the config
 - =config/= :: lisp configuration files, loosely grouped by functionality
+- =hacks/= :: lisp files that monkey-patch 3rd-party packages
 - =lisp/= :: lisp packages the config depends on
 
 I also put any sensitive config in a =personal-config.el= file, not in this repo.
