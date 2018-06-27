@@ -304,7 +304,7 @@
 (cb-hydra-define toggles ()
   (hydra-title-with-faicon "toggle-on" "Toggles")
   "Display"
-  (("m" cb-header-line-global-mode "header line")
+  (("m" header-line-global-mode "header line")
    ("t" config-themes/toggle-dark-mode "theme (light/dark)"))
   "Editing"
   (("c" hide/show-comments-toggle "comments")))

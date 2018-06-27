@@ -87,10 +87,10 @@
        :foreground ,header-line-fg :weight demibold
        :box (:line-width 3 :color ,header-line-bg))))
 
-    (cb-header-line-format-nonemphasised-element
+    (header-line-format-nonemphasised-element
      ((t :weight light)))
 
-    (cb-header-line-format-emphasised-element
+    (header-line-format-emphasised-element
      ((t :weight light :foreground ,emphasis)))
 
     (mode-line

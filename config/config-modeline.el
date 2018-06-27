@@ -5,20 +5,20 @@
 (eval-when-compile
   (require 'use-package))
 
-(use-package cb-header-line-format
-  :defines cb-header-line-format
+(use-package header-line-format
+  :defines header-line-format
   :config
-  (setq-default header-line-format cb-header-line-format))
+  (setq-default header-line-format header-line-format))
 
 (use-package hidden-mode-line
   :commands (hidden-mode-line-mode global-hidden-mode-line-mode)
   :init
   (setq-default mode-line-format '("")))
 
-(use-package cb-header-line-mode
-  :commands (cb-header-line-global-mode
-             cb-header-line-mode
-             cb-header-line-mode-on)
+(use-package header-line-mode
+  :commands (header-line-global-mode
+             header-line-mode
+             header-line-mode-on)
   :demand t
 
   :preface
@@ -28,12 +28,12 @@
                     nil
                     (lambda ()
                       (with-current-buffer (get-buffer-create "*scratch*")
-                        (cb-header-line-mode -1)))))
+                        (header-line-mode -1)))))
 
   :config
   (progn
-    (cb-header-line-global-mode +1)
-    (setq cb-header-line-function (lambda () cb-header-line-format))
+    (header-line-global-mode +1)
+    (setq header-line-function (lambda () header-line-format))
     (add-hook 'after-init-hook #'config-modeline--hacky-hide-scratch-buffer-header-line)))
 
 
