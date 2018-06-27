@@ -18,8 +18,8 @@ thing. It's probably most useful for cribbing ideas. :)
 - I use Evil
 - I use [[https://github.com/raxod502/straight.el][straight.el]] for package installation, rather than package.el. It's legit.
 - I use [[https://github.com/domtronn/all-the-icons.el][all-the-icons]] in various places to make things a bit prettier.
-- I've extracted the leader key functionality from Spacemacs, so that's pretty
-  similar, though I'm porting that stuff over to hydras
+- I use Spacemacs-style commands under the =SPC= leader, although I use hydras
+  instead of which-key.
 - I've themed Emacs to remove most source code color highlighting.
   - I use font weight to represent syntax features, instead of colour
   - This makes flycheck error squiggles and other editor cues stand out more.
