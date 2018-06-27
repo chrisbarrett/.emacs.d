@@ -34,6 +34,25 @@
 
 
 
+(use-package solarized-theme
+  :straight t
+  :defer t
+  :init
+  (general-setq
+   ;; Put underline below descent for better legibility.
+   x-underline-at-descent-line t
+
+   ;; Don't use variable-pitch.
+   solarized-use-variable-pitch nil
+
+   ;; Don't use variable scale text.
+   solarized-scale-org-headlines nil
+   solarized-height-minus-1 1.0
+   solarized-height-plus-1 1.0
+   solarized-height-plus-2 1.0
+   solarized-height-plus-3 1.0
+   solarized-height-plus-4 1.0))
+
 (use-package menu-bar
   :if (bound-and-true-p menu-bar-mode)
   :general ("C-c e e" #'toggle-debug-on-error)
