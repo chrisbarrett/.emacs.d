@@ -45,7 +45,12 @@
         "TEXINPUTS"
         "RUST_SRC_PATH")))
   :config
-  (exec-path-from-shell-initialize))
+  (progn
+    (exec-path-from-shell-initialize)
+
+    ;; Use gnu coreutils ls command, if available.
+    (when-let* ((gls (executable-find "gls")))
+      (setq insert-directory-program gls))))
 
 (use-package osx-trash
   :straight t
