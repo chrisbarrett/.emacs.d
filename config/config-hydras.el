@@ -14,6 +14,9 @@
 (require 'subr-x)
 
 (use-package window-cmds
+  :commands (window-cmds-tile
+             window-cmds-split-horizontally
+             window-cmds-split-vertically)
   :general
   (:keymaps 'global "C-SPC" 'window-cmds-tile))
 
