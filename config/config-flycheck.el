@@ -94,6 +94,7 @@
     (setq flycheck-global-modes
           '(not idris-repl-mode
                 dir-locals-mode
+                org-mode
                 indium-repl-mode
                 ;; restclient buffers
                 js-mode))
