@@ -52,6 +52,10 @@
     (treemacs-filewatch-mode t)
     (treemacs-git-mode 'simple)
 
+    ;; Disable the indicator next to open files--hl-line is sufficient.
+
+    (treemacs-fringe-indicator-mode -1)
+
     ;; Hide ignored files.
 
     (add-to-list 'treemacs-pre-file-insert-predicates #'treemacs-is-file-git-ignored?)
