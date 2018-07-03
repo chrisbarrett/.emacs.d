@@ -42,6 +42,8 @@
    ;; Put underline below descent for better legibility.
    x-underline-at-descent-line t
 
+   solarized-use-less-bold t
+
    ;; Don't use variable-pitch.
    solarized-use-variable-pitch nil
 
