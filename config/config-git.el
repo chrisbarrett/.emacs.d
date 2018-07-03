@@ -62,9 +62,6 @@
   :straight t
   :after magit
   :defer t
-  :init
-  ;; HACK: Fix reference to removed function.
-  (defalias 's-blank-p #'s-blank?)
   :config
   (progn
     (require 'magithub-completion)
