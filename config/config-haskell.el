@@ -104,9 +104,9 @@
   :straight t
   :after haskell-mode
   :general
-  (:states '(normal insert emacs) :keymaps intero-mode-map
-           "M-." #'intero-goto-definition
-           "M-," #'pop-tag-mark)
+  (:states '(normal insert emacs) :keymaps 'intero-mode-map
+   "M-." #'intero-goto-definition
+   "M-," #'pop-tag-mark)
   :config
   (progn
     (intero-global-mode +1)
