@@ -148,6 +148,9 @@
 
  apropos-do-all t
 
+ ;; Don't confirm before killing subprocesses on exit.
+ confirm-kill-processes nil
+
  hippie-expand-try-functions-list
  '(
    ;; Try to expand word "dynamically", searching the current buffer.
