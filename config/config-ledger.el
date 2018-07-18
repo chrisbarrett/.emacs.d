@@ -47,7 +47,7 @@
   :straight t
   :mode ("\\.ledger$" . ledger-mode)
   :general (:states 'normal :keymaps 'ledger-report-mode-map "q" #'kill-buffer-and-window)
-  :general (:keymaps ledger-report-mode-map "C-c C-c" #'cb-ledger-report-from-report-buffer)
+  :general (:keymaps 'ledger-report-mode-map "C-c C-c" #'cb-ledger-report-from-report-buffer)
   :general
   (:keymaps 'ledger-mode-map
    "C-c C-c" #'ledger-report
