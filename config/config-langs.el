@@ -40,6 +40,9 @@
 (use-package yaml-mode
   :straight t
   :mode ("\\.\\(e?ya?\\|ra\\)ml\\'" . yaml-mode)
+  :general
+  (:states '(normal insert) :keymaps 'yaml-mode-map
+   [backtab] 'yaml-indent-line)
   :preface
   (defun config-langs--disable-autofill ()
     (auto-fill-mode -1))
