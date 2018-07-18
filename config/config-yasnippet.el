@@ -28,6 +28,10 @@
   (progn
     (autoload 'sp-backward-delete-char "smartparens")
 
+    (defconst config-yasnippet-dont-activate-modes
+      '(yaml-mode
+        term-mode))
+
     (defun config-yasnippet-preserve-indentation (f &rest args)
       (let ((col
              (save-excursion
@@ -131,7 +135,11 @@ Otherwise delete backwards."
 
     (yas-global-mode +1)
 
-    (add-to-list 'yas-dont-activate-functions (lambda () (derived-mode-p 'term-mode)))
+
+    (add-to-list 'yas-dont-activate-functions
+                 (lambda ()
+                   (apply #'derived-mode-p
+                          config-yasnippet-dont-activate-modes)))
 
     ;; Advise editing commands.
     ;;
