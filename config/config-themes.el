@@ -160,6 +160,7 @@
     ;; HACK: Declare variable which is unsafely referenced inside lib.
     (defvar web-mode-content-type nil)
     (dolist (spec '((nix-mode all-the-icons-faicon "linux" :face all-the-icons-purple)
+                    (ledger-mode all-the-icons-material "account_balance")
                     (makefile-mode all-the-icons-fileicon "gnu" :face all-the-icons-dorange)
                     (makefile-bsdmake-mode all-the-icons-fileicon "gnu" :face all-the-icons-dorange)
                     (gfm-mode all-the-icons-faicon "github-alt" :v-adjust 0.0 :face all-the-icons-lblue)
