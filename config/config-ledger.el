@@ -5,6 +5,7 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'cb-major-mode-hydra)
 (require 'dash)
 (require 'general)
 (require 's)
@@ -15,6 +16,10 @@
 (autoload 'org-read-date "org")
 
 (general-setq ledger-master-file (file-truename "~/org/accounts.ledger"))
+
+(cb-major-mode-hydra-define ledger-mode
+  "Actions"
+  (("r" #'ledger-report "report")))
 
 
 ;; Utility functions
