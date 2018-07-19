@@ -16,7 +16,7 @@
 (defun generate-password--state-to-command ()
   (let* ((alnum "A-Za-z0-9")
          (chars (concat alnum (when generate-password--special-chars-p "!\"#$%&'\''()*+,-./:;<=>?@[\]^_`{|}~"))))
-    (format "</dev/urandom tr -dc %s | head -c %s"
+    (format "LC_CTYPE=C </dev/urandom tr -dc %s | head -c %s"
             (shell-quote-argument chars)
             generate-password--length)))
 
