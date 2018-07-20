@@ -24,7 +24,7 @@
 (defconst cb-theme-common-default-height
   (pcase system-type
     (`darwin
-     145)
+     160)
     (_
      130)))
 
