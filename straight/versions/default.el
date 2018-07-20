@@ -127,7 +127,7 @@
  ("shut-up" . "a4fd18f37e20ae991c0dbba821b2c8e6f1679c39")
  ("smartparens" . "b8fdee3fa66a8a8bef973ec302072aa14e13a3ec")
  ("solarized-emacs" . "f829e99dd1508a1cdaf9146511012a33b0d4f68b")
- ("straight.el" . "abf021aac40e21f599dd09a73179dfa40b540bfa")
+ ("straight.el" . "2c74d058db8399f55b948d79429c24441b338138")
  ("swiper" . "43b8245df82a437d9010eb77e4407421d3b0a24d")
  ("tern" . "ae83725819286d3f134a6b9956f1117b341e1040")
  ("tide" . "7c5ee3052153b6ab6e56bba569f792101725e307")
