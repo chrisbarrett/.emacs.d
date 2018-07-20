@@ -37,22 +37,25 @@
                        highlight-bg
                        paren-match
                        emphasis
-                       (header-line-fg default-bg)
-                       (mid-grey "grey60")
-                       (dark-grey "grey40")
-                       (light-grey "grey80")
-                       (error-fg "red1")
-                       (dimmed-fg mid-grey)
-                       (pending-bg "#AAAA33")
-                       (light-weight 'extra-light)
+
                        (blue "#268bd2")
                        (cyan "#2aa198")
+                       (dark-grey "grey40")
+
                        (green "#859900")
+                       (light-grey "grey80")
                        (magenta "#d33682")
+                       (mid-grey "grey60")
                        (orange "#cb4b16")
+                       (pending-bg "#AAAA33")
                        (pink "pink")
                        (red "red1")
-                       (yellow "#b58900"))
+                       (yellow "#b58900")
+
+                       (dimmed-fg mid-grey)
+                       (light-weight 'extra-light)
+                       (header-line-fg default-bg)
+                       (error-fg red))
   `((default
       ((t
         :background ,default-bg
