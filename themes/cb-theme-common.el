@@ -446,7 +446,7 @@
      ((t :foreground ,default-fg :weight demibold)))
 
     (org-document-info-keyword
-     ((t :weight light)))
+     ((t :foreground ,dimmed-fg :weight light)))
 
     (org-scheduled-today
      ((t :inherit default)))
