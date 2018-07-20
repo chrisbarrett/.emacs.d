@@ -48,7 +48,8 @@
                        (light-grey "grey80")
                        (error-fg cb-theme-common-red)
                        (dimmed-fg mid-grey)
-                       (pending-bg "#AAAA33"))
+                       (pending-bg "#AAAA33")
+                       (light-weight 'extra-light))
   `((default
       ((t
         :background ,default-bg
@@ -69,9 +70,9 @@
 
     (link
      ((((background light))
-       :weight light :underline ,light-grey)
+       :weight ,light-weight :underline ,light-grey)
       (((background dark))
-       :weight light :underline ,dark-grey)))
+       :weight ,light-weight :underline ,dark-grey)))
 
     (fringe
      ((t :background ,default-bg)))
@@ -88,10 +89,10 @@
        :box (:line-width 3 :color ,header-line-bg))))
 
     (header-line-format-nonemphasised-element
-     ((t :weight light)))
+     ((t :weight ,light-weight)))
 
     (header-line-format-emphasised-element
-     ((t :weight light :foreground ,emphasis)))
+     ((t :weight ,light-weight :foreground ,emphasis)))
 
     (mode-line
      ((t :inherit header-line
@@ -118,10 +119,10 @@
     ;; General font-lock faces.
 
     (font-lock-keyword-face
-     ((t :weight light)))
+     ((t :weight ,light-weight)))
 
     (font-lock-builtin-face
-     ((t :weight light)))
+     ((t :weight ,light-weight)))
 
     (font-lock-variable-name-face
      ((t :weight normal)))
@@ -139,7 +140,7 @@
      ((t :weight normal)))
 
     (font-lock-string-face
-     ((t :weight light)))
+     ((t :weight ,light-weight)))
 
     (font-lock-comment-face
      ((t :weight demibold)))
@@ -209,28 +210,28 @@
      ((t :inherit diredp-file-suffix)))
 
     (diredp-number
-     ((t :weight light)))
+     ((t :weight ,light-weight)))
 
     (diredp-date-time
-     ((t :foreground ,mid-grey :weight light)))
+     ((t :foreground ,mid-grey :weight ,light-weight)))
 
     (diredp-dir-priv
-     ((t :weight light :foreground ,mid-grey)))
+     ((t :weight ,light-weight :foreground ,mid-grey)))
 
     (diredp-no-priv
-     ((t :weight light :foreground ,mid-grey)))
+     ((t :weight ,light-weight :foreground ,mid-grey)))
 
     (diredp-rare-priv
-     ((t :weight light :foreground ,mid-grey)))
+     ((t :weight ,light-weight :foreground ,mid-grey)))
 
     (diredp-exec-priv
-     ((t :weight light :foreground ,mid-grey)))
+     ((t :weight ,light-weight :foreground ,mid-grey)))
 
     (diredp-read-priv
-     ((t :weight light :foreground ,mid-grey)))
+     ((t :weight ,light-weight :foreground ,mid-grey)))
 
     (diredp-write-priv
-     ((t :weight light :foreground ,mid-grey)))
+     ((t :weight ,light-weight :foreground ,mid-grey)))
 
     ;; Info
 
@@ -380,11 +381,11 @@
      ((((background light))
        :background "#cceecc"
        :foreground "#22aa22"
-       :weight light)
+       :weight ,light-weight)
       (((background dark))
        :background "#1a331a"
        :foreground "#cceecc"
-       :weight light)))
+       :weight ,light-weight)))
 
     (magit-diff-file-heading
      ((t :weight normal)))
@@ -446,16 +447,16 @@
      ((t :foreground ,default-fg :weight demibold)))
 
     (org-document-info-keyword
-     ((t :foreground ,dimmed-fg :weight light)))
+     ((t :foreground ,dimmed-fg :weight ,light-weight)))
 
     (org-scheduled-today
      ((t :inherit default)))
 
     (org-date
-     ((t :weight light)))
+     ((t :weight ,light-weight)))
 
     (org-sexp-date
-     ((t :weight light)))
+     ((t :weight ,light-weight)))
 
     (org-date
      ((t :underline t)))
@@ -476,10 +477,10 @@
      ((t :foreground ,error-fg)))
 
     (org-formula
-     ((t :weight light)))
+     ((t :weight ,light-weight)))
 
     (org-tag
-     ((t :weight light)))
+     ((t :weight ,light-weight)))
 
     (org-table
      ((t :inherit default)))
@@ -488,7 +489,7 @@
      ((t :inherit default)))
 
     (org-meta-line
-     ((t :foreground ,dimmed-fg :weight light)))
+     ((t :foreground ,dimmed-fg :weight ,light-weight)))
 
     (org-agenda-structure
      ((t :weight demibold)))
@@ -518,7 +519,7 @@
     ;; Ledger
 
     (ledger-font-comment-face
-     ((t :weight light)))
+     ((t :weight ,light-weight)))
 
     (ledger-font-posting-date-face
      ((t :inherit default)))
@@ -561,10 +562,10 @@
      ((t :weight normal)))
 
     (message-header-cc
-     ((t :weight light :foreground ,mid-grey)))
+     ((t :weight ,light-weight :foreground ,mid-grey)))
 
     (message-cited-text
-     ((t :weight light :foreground ,mid-grey)))
+     ((t :weight ,light-weight :foreground ,mid-grey)))
 
     (message-header-subject
      ((t :weight normal)))
@@ -598,10 +599,10 @@
      ((t :foreground ,emphasis)))
 
     (neo-banner-face
-     ((t :foreground ,emphasis :weight light)))
+     ((t :foreground ,emphasis :weight ,light-weight)))
 
     (neo-file-link-face
-     ((t :weight light)))
+     ((t :weight ,light-weight)))
 
     (neo-dir-link-face
      ((t :weight normal)))
@@ -676,16 +677,16 @@
 
 
     (imenu-list-entry-subalist-face-0
-     ((t :inherit imenu-list-entry-face-0 :weight light)))
+     ((t :inherit imenu-list-entry-face-0 :weight ,light-weight)))
 
     (imenu-list-entry-subalist-face-1
-     ((t :inherit imenu-list-entry-face-1 :weight light)))
+     ((t :inherit imenu-list-entry-face-1 :weight ,light-weight)))
 
     (imenu-list-entry-subalist-face-2
-     ((t :inherit imenu-list-entry-face-2 :weight light)))
+     ((t :inherit imenu-list-entry-face-2 :weight ,light-weight)))
 
     (imenu-list-entry-subalist-face-3
-     ((t :inherit imenu-list-entry-face-3 :weight light)))
+     ((t :inherit imenu-list-entry-face-3 :weight ,light-weight)))
 
     ;; Kubernetes
 
@@ -738,7 +739,7 @@
      ((t :foreground ,emphasis :weight demibold)))
 
     (font-latex-sedate-face
-     ((t :weight light :foreground ,dimmed-fg)))
+     ((t :weight ,light-weight :foreground ,dimmed-fg)))
 
     ;; Hydra
 
@@ -760,7 +761,7 @@
     ;; Misc faces
 
     (page-break-lines
-     ((t :weight light :foreground ,dimmed-fg)))
+     ((t :weight ,light-weight :foreground ,dimmed-fg)))
 
     (go-peg-mode-production-name
      ((t :weight demibold)))
@@ -775,7 +776,7 @@
      ((t :foreground nil :box t)))
 
     (parenthesis
-     ((t :weight light)))
+     ((t :weight ,light-weight)))
 
     (link
      ((t :inherit default :underline t)))))
