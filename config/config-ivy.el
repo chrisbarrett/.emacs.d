@@ -114,7 +114,7 @@
 
 (use-package counsel
   :straight t
-  :commands (counsel-mode)
+  :commands (counsel-mode counsel-describe-face)
   :general ("M-x" #'counsel-M-x "C-x C-f" #'counsel-find-file)
   :general (:keymaps 'counsel-find-file-map
             "C-M-j" #'ivy-immediate-done
