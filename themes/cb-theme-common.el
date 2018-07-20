@@ -11,16 +11,6 @@
 (require 'cl-lib)
 (require 'dash)
 
-(defconst cb-theme-common-yellow "#b58900")
-(defconst cb-theme-common-orange "#cb4b16")
-(defconst cb-theme-common-red "red1")
-(defconst cb-theme-common-pink "pink")
-(defconst cb-theme-common-magenta "#d33682")
-(defconst cb-theme-common-blue "#268bd2")
-(defconst cb-theme-common-cyan "#2aa198")
-(defconst cb-theme-common-green "#859900")
-(defconst cb-theme-common-yellow "#b58900")
-
 (defconst cb-theme-common-font-family
   (--first (find-font (font-spec :name it))
            '("Iosevka" "Hasklig" "Source Code Pro" "Source Code Variable" "DejaVu Sans Mono" "Menlo")))
@@ -46,10 +36,18 @@
                        (mid-grey "grey60")
                        (dark-grey "grey40")
                        (light-grey "grey80")
-                       (error-fg cb-theme-common-red)
+                       (error-fg "red1")
                        (dimmed-fg mid-grey)
                        (pending-bg "#AAAA33")
-                       (light-weight 'extra-light))
+                       (light-weight 'extra-light)
+                       (blue "#268bd2")
+                       (cyan "#2aa198")
+                       (green "#859900")
+                       (magenta "#d33682")
+                       (orange "#cb4b16")
+                       (pink "pink")
+                       (red "red1")
+                       (yellow "#b58900"))
   `((default
       ((t
         :background ,default-bg
@@ -62,9 +60,9 @@
      ((t :family ,cb-theme-common-font-family)))
 
     (success
-     ((t :weight normal :foreground ,cb-theme-common-green)))
+     ((t :weight normal :foreground ,green)))
     (warning
-     ((t :weight normal :foreground ,cb-theme-common-orange)))
+     ((t :weight normal :foreground ,orange)))
     (error
      ((t :weight normal :foreground ,error-fg)))
 
@@ -375,7 +373,7 @@
     ;; Magit
 
     (magit-signature-untrusted
-     ((t :foreground ,cb-theme-common-cyan)))
+     ((t :foreground ,cyan)))
 
     (magit-blame-heading
      ((((background light))
@@ -585,7 +583,7 @@
      ((t :slant italic)))
 
     (treemacs-git-added-face
-     ((t :underline ,cb-theme-common-blue)))
+     ((t :underline ,blue)))
 
     (treemacs-git-untracked-face
      ((t :underline t)))
@@ -642,16 +640,16 @@
      ((t :weight demibold)))
 
     (term-color-cyan
-     ((t :foreground ,cb-theme-common-cyan)))
+     ((t :foreground ,cyan)))
 
     (term-color-green
-     ((t :foreground ,cb-theme-common-green)))
+     ((t :foreground ,green)))
 
     (term-color-magenta
-     ((t :foreground ,cb-theme-common-magenta)))
+     ((t :foreground ,magenta)))
 
     (term-color-red
-     ((t :foreground ,cb-theme-common-red)))
+     ((t :foreground ,red)))
 
     (term-color-underline
      ((t :underline t)))
@@ -660,7 +658,7 @@
      ((t :foreground ,default-fg)))
 
     (term-color-yellow
-     ((t :foreground ,cb-theme-common-yellow)))
+     ((t :foreground ,yellow)))
 
     ;; Markdown
 
@@ -744,19 +742,19 @@
     ;; Hydra
 
     (hydra-face-amaranth
-     ((t :weight demibold :foreground ,cb-theme-common-red)))
+     ((t :weight demibold :foreground ,red)))
 
     (hydra-face-pink
-     ((t :weight demibold :foreground ,cb-theme-common-red)))
+     ((t :weight demibold :foreground ,red)))
 
     (hydra-face-blue
-     ((t :weight demibold :foreground ,cb-theme-common-blue)))
+     ((t :weight demibold :foreground ,blue)))
 
     (hydra-face-red
-     ((t :weight demibold :foreground ,cb-theme-common-red)))
+     ((t :weight demibold :foreground ,red)))
 
     (hydra-face-teal
-     ((t :weight demibold :foreground ,cb-theme-common-blue)))
+     ((t :weight demibold :foreground ,blue)))
 
     ;; Misc faces
 
