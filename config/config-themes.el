@@ -12,7 +12,7 @@
 
 
 
-(defvar config-themes--dark-mode-p t)
+(defvar config-themes--dark-mode-p nil)
 
 (defun config-themes/toggle-dark-mode ()
   "Toggle between light and dark mode."
