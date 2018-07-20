@@ -117,8 +117,8 @@
   :commands (counsel-mode)
   :general ("M-x" #'counsel-M-x "C-x C-f" #'counsel-find-file)
   :general (:keymaps 'counsel-find-file-map
-                     "C-M-j" #'ivy-immediate-done
-                     "C-h" #'counsel-up-directory)
+            "C-M-j" #'ivy-immediate-done
+            "C-h" #'counsel-up-directory)
   :config
   (progn
     (require 'counsel-hacks)
