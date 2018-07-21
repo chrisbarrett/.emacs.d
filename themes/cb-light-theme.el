@@ -23,8 +23,8 @@
         :subtle-bg "#e1dddd"
         :paren-match cb-light-theme-aqua
         :highlight-bg "gray82"
-        :header-line-bg "#c6c6c6"
-        :header-line-fg "#4d4d4c"
+        :mode-line-bg "#c6c6c6"
+        :mode-line-fg "#4d4d4c"
         :emphasis cb-light-theme-blue
         :pending-bg "#FFFFAA"))
 

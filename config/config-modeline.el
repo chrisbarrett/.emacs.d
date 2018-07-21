@@ -5,15 +5,13 @@
 (eval-when-compile
   (require 'use-package))
 
-(use-package header-line-format
-  :defines header-line-format
+(use-package mode-line-format
+  :defines mode-line-format
   :config
-  (setq-default header-line-format header-line-format))
+  (setq-default mode-line-format (mode-line-format)))
 
 (use-package hidden-mode-line
-  :commands (hidden-mode-line-mode global-hidden-mode-line-mode)
-  :init
-  (setq-default mode-line-format '("")))
+  :commands (hidden-mode-line-mode global-hidden-mode-line-mode))
 
 (use-package header-line-mode
   :commands (header-line-global-mode

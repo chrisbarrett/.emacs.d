@@ -32,7 +32,7 @@
                        default-fg
                        default-bg
                        region-bg
-                       header-line-bg
+                       mode-line-bg
                        subtle-bg
                        highlight-bg
                        paren-match
@@ -54,7 +54,7 @@
 
                        (dimmed-fg mid-grey)
                        (light-weight 'extra-light)
-                       (header-line-fg default-bg)
+                       (mode-line-fg default-bg)
                        (error-fg red))
   `((default
       ((t
@@ -85,36 +85,23 @@
 
     (vertical-border
      ((t
-       :background ,header-line-bg
-       :foreground ,header-line-bg)))
-
-    (header-line
-     ((t
-       :background ,header-line-bg
-       :foreground ,header-line-fg :weight demibold
-       :box (:line-width 3 :color ,header-line-bg))))
-
-    (header-line-format-nonemphasised-element
-     ((t :weight ,light-weight)))
-
-    (header-line-format-emphasised-element
-     ((t :weight ,light-weight :foreground ,emphasis)))
+       :background ,mode-line-bg
+       :foreground ,mode-line-bg)))
 
     (mode-line
-     ((t :inherit header-line
-         :foreground ,header-line-bg
-         :box (:line-width 1 :color ,header-line-bg)
-         :height 0.1)))
-
-    (mode-line-inactive
      ((t
-       :inherit header-line
-       :foreground ,header-line-bg
-       :box (:line-width 1 :color ,header-line-bg)
-       :height 0.1)))
+       :background ,mode-line-bg
+       :foreground ,mode-line-fg :weight demibold
+       :box (:line-width 3 :color ,mode-line-bg))))
+
+    (mode-line-format-nonemphasised-element
+     ((t :weight ,light-weight)))
+
+    (mode-line-format-emphasised-element
+     ((t :weight ,light-weight :foreground ,emphasis)))
 
     (evil-transient-state-title-face
-     ((t :inherit header-line :background ,header-line-bg)))
+     ((t :inherit mode-line :background ,mode-line-bg)))
 
     (region
      ((t :background ,region-bg)))

@@ -26,8 +26,8 @@
         :emphasis cb-dark-theme-orange
         :highlight-bg "#3c3a3a"
         :error-fg cb-dark-theme-red
-        :header-line-fg "#c5c8c6"
-        :header-line-bg "#373b41"))
+        :mode-line-fg "#c5c8c6"
+        :mode-line-bg "#373b41"))
 
 (provide-theme 'cb-dark)
 
