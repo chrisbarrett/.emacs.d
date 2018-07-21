@@ -130,7 +130,8 @@
 
 (use-package rainbow-mode
   :straight t
-  :hook (web-mode . rainbow-mode))
+  :hook ((web-mode . rainbow-mode)
+         (emacs-lisp-mode . rainbow-mode)))
 
 (use-package web-mode-submodes
   :defer t
