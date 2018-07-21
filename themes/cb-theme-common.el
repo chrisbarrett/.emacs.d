@@ -100,6 +100,18 @@
     (mode-line-format-emphasised-element
      ((t :weight ,light-weight :foreground ,emphasis)))
 
+    (omnibox-selection
+     ((t :foreground ,emphasis :background ,region-bg)))
+
+    (omnibox-modeline
+     ((t :foreground ,emphasis)))
+
+    (omnibox-match
+     ((t :background ,highlight-bg)))
+
+    (omnibox-background
+     ((t :background ,subtle-bg)))
+
     (evil-transient-state-title-face
      ((t :inherit mode-line :background ,mode-line-bg)))
 

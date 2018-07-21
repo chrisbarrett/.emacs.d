@@ -79,10 +79,13 @@
   :commands (omnibox-M-x)
   :config
   (progn
+    (require 'omnibox-hacks)
     (add-to-list 'omnibox-frame-parameters '(undecorated . t))
-    ;; KLUDGE: Omnibox doesn't detect the background color on first invocation correctly.
-    (add-to-list 'omnibox-frame-parameters '(background-color . "grey90"))
     (omnibox-setup))
+
+  :config
+  (defface omnibox-background nil
+    "Face for omnibox frame background.")
 
   ;; Omnibox projects key events in the main frame into the child frame, so we
   ;; need to temporarily suspend evil-mode.
