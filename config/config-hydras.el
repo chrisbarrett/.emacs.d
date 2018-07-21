@@ -475,7 +475,7 @@
    ("z" font-scale/body "font scale..."))
 
   "Actions"
-  (("SPC" counsel-M-x "run command (M-x)")
+  (("SPC" omnibox-M-x "run command (M-x)")
    ("!" shell-command "run shell command")
    ("/" counsel-projectile-rg "search project")
    (":" eval-expression "evaluate lisp")

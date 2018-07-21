@@ -74,6 +74,37 @@
   (when (fboundp 'scroll-bar-mode)
     (scroll-bar-mode -1)))
 
+(use-package omnibox
+  :straight t
+  :commands (omnibox-M-x)
+  :config
+  (progn
+    (add-to-list 'omnibox-frame-parameters '(undecorated . t))
+    ;; KLUDGE: Omnibox doesn't detect the background color on first invocation correctly.
+    (add-to-list 'omnibox-frame-parameters '(background-color . "grey90"))
+    (omnibox-setup))
+
+  ;; Omnibox projects key events in the main frame into the child frame, so we
+  ;; need to temporarily suspend evil-mode.
+  :config
+  (with-eval-after-load 'evil
+    (defvar evil-state)
+    (defvar config-themes--omnibox-previous-evil-state)
+
+    (defun config-themes--omnibox-temporary-set-evil-state (&rest _)
+      (condition-case err
+          (progn
+            (setq config-themes--omnibox-previous-evil-state evil-state)
+            (evil-emacs-state))
+        (error
+         (config-themes--omnibox-restore-evil-state))))
+
+    (defun config-themes--omnibox-restore-evil-state (&rest _)
+      (evil-change-state config-themes--omnibox-previous-evil-state))
+
+    (advice-add 'omnibox :before #'config-themes--omnibox-temporary-set-evil-state)
+    (advice-add 'omnibox--hide :after #'config-themes--omnibox-restore-evil-state)))
+
 (use-package page-break-lines
   :straight t
   :commands (global-page-break-lines-mode)
