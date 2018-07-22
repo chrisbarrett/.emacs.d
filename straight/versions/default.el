@@ -13,6 +13,7 @@
  ("cargo.el" . "10093586bdac7252e65e11851f26da8ba4720608")
  ("company-anaconda" . "ef6cbe26af1ee526a38139ed21cec8569c1b989d")
  ("company-auctex" . "f24de90a14c46fc3b924875c658b319c7f209aff")
+ ("company-box" . "6e047e6fd7226a1b8292a74985db82bbccc679c7")
  ("company-mode" . "a9138030819833c481cea93ddf52442237e4874e")
  ("company-quickhelp" . "479676cade80a9f03802ca3d956591820ed5c537")
  ("company-tern" . "10ac058b065ae73c1f30e9fb7d969dd1a79387be")
