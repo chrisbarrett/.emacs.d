@@ -41,7 +41,16 @@
   :config
   (progn
     (setq company-box-enable-icon nil)
-    (add-to-list 'company-box-frame-parameters '(width . 90))))
+    (add-to-list 'company-box-frame-parameters '(width . 90)))
+
+  ;; Update frame background colour on theme change.
+  :config
+  (progn
+    (defun config-company--company-box-update-bg (&rest _)
+      (with-selected-frame (company-box--get-frame)
+        (set-background-color (face-background 'company-box-background nil t))))
+
+    (advice-add 'company-box--display :after #'config-company--company-box-update-bg)))
 
 (use-package company-dabbrev
   :after company

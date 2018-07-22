@@ -55,7 +55,10 @@
                        (dimmed-fg mid-grey)
                        (light-weight 'extra-light)
                        (mode-line-fg default-bg)
-                       (error-fg red))
+                       (error-fg red)
+
+                       (heavy-bg mode-line-fg)
+                       (heavy-fg default-bg))
   `((default
       ((t
         :background ,default-bg
@@ -723,8 +726,20 @@
       (((class color) (min-colors 88) (background dark))
        (:background "yellow"))))
 
+    (company-box-annotation
+     ((t :foreground ,dimmed-fg)))
+
+    (company-box-candidate
+     ((t :foreground ,heavy-fg)))
+
+    (company-box-background
+     ((t :background ,heavy-bg)))
+
+    (company-box-selection
+     ((t :foreground ,emphasis :background ,region-bg)))
+
     (company-tooltip
-     ((t :inherit tooltip)))
+     ((t :background ,subtle-bg)))
 
     (company-template-field
      ((t :inherit highlight)))
