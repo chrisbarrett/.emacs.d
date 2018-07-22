@@ -4,7 +4,7 @@
 
 (require 'el-patch)
 
-(el-patch-feature 'company-box)
+(el-patch-feature company-box)
 
 
 ;; Fix background colour on theme change.

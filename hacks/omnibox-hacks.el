@@ -5,7 +5,7 @@
 (require 'el-patch)
 (require 'dash)
 
-(el-patch-feature 'omnibox)
+(el-patch-feature omnibox)
 
 
 
