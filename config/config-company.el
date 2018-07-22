@@ -50,13 +50,6 @@
     (setq company-dabbrev-ignore-case nil)
     (setq company-dabbrev-downcase nil)))
 
-(use-package company-quickhelp
-  :straight t
-  :after company
-  :general (:keymaps 'company-active-map "C-h" #'company-quickhelp-manual-begin)
-  :commands (company-quickhelp-mode)
-  :config (company-quickhelp-mode +1))
-
 (provide 'config-company)
 
 ;;; config-company.el ends here
