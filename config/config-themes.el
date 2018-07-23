@@ -80,8 +80,7 @@
   :config
   (progn
     (require 'omnibox-hacks)
-    (add-to-list 'omnibox-frame-parameters '(undecorated . t))
-    (omnibox-setup))
+    (add-to-list 'omnibox-frame-parameters '(undecorated . t)))
 
   :config
   (defface omnibox-background nil
