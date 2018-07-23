@@ -35,8 +35,7 @@
   :general
   (:keymaps '(company-box-mode-map company-active-map company-search-map company-filter-map)
    "C-n" #'company-box--next-line
-   "C-p" #'company-box--prev-line
-   "C-h" #'company-show-doc-buffer)
+   "C-p" #'company-box--prev-line)
   :hook (company-mode . company-box-mode)
   :config
   (progn
