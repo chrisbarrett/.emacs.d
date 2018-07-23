@@ -32,7 +32,8 @@
    ("t" org-show-todo-tree "todo tree"))
 
   "Misc"
-  (("e" org-babel/body "babel commands")))
+  (("e" org-babel/body "babel commands")
+   ("p" org-present "present")))
 
 
 ;; forward-definitions to silence byte-compiler.
@@ -658,8 +659,50 @@
 (use-package org-present
   :straight t
   :commands (org-present)
+  :general
+  (:keymaps 'org-present-mode-keymap
+   "j"       'scroll-up-line
+   "k"       'scroll-down-line
+   "p"       'org-present-prev
+   "n"       'org-present-next
+   "h"       'org-present-prev
+   "l"       'org-present-next
+   "<left>"  'org-present-prev
+   "<up>"    'org-present-prev
+   "<right>" 'org-present-next
+   "<down>"  'org-present-next
+   "SPC"     'org-present-next
+   "DEL"     'org-present-prev
+   "q"       'org-present-quit
+   "<"       'org-present-beginning
+   ">"       'org-present-end)
+  :preface
+  (progn
+    (defun config-org--on-org-present-start ()
+      (evil-mode -1)
+      (vi-tilde-fringe-mode -1)
+      (diff-hl-mode -1)
+      (org-present-big)
+      (org-display-inline-images)
+      (org-present-hide-cursor)
+      (org-present-read-only)
+      (hidden-mode-line-mode +1))
+
+    (defun config-org--on-org-present-end ()
+      (evil-mode 1)
+      (vi-tilde-fringe-mode 1)
+      (diff-hl-mode 1)
+      (org-present-small)
+      (org-remove-inline-images)
+      (org-present-show-cursor)
+      (org-present-read-write)
+      (hidden-mode-line-mode -1)))
+
   :config
-  (setq org-present-text-scale 4))
+  (progn
+    (setq org-present-text-scale 4)
+    (add-hook 'org-present-mode-hook #'config-org--on-org-present-start)
+    (add-hook 'org-present-mode-quit-hook #'config-org--on-org-present-end)))
 
 (use-package ox-confluence
   :after org
