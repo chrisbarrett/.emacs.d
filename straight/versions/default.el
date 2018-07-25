@@ -15,7 +15,6 @@
  ("company-auctex" . "f24de90a14c46fc3b924875c658b319c7f209aff")
  ("company-box" . "6e047e6fd7226a1b8292a74985db82bbccc679c7")
  ("company-mode" . "a9138030819833c481cea93ddf52442237e4874e")
- ("company-quickhelp" . "479676cade80a9f03802ca3d956591820ed5c537")
  ("company-tern" . "10ac058b065ae73c1f30e9fb7d969dd1a79387be")
  ("counsel-projectile" . "5aa8a0bc8eb03ca213f794ff0fcdbdaca778b6e7")
  ("dash.el" . "a74f4cfcdc8d0642a9f602ad494f0354f27dacc9")
