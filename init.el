@@ -38,7 +38,7 @@
 
 (with-no-warnings
   (setq straight-cache-autoloads t)
-  (setq straight-check-for-modifications 'live))
+  (setq straight-check-for-modifications '(watch-files)))
 
 (require 'straight bootstrap-file t)
 
