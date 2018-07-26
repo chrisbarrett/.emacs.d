@@ -78,7 +78,6 @@
     (setq TeX-source-correlate-start-server nil)))
 
 (use-package latex
-  :straight auctex
   :defer t
   :preface
   (progn
@@ -132,7 +131,6 @@
   (setq LaTeX-fill-break-at-separators nil))
 
 (use-package tex-fold
-  :straight auctex
   :after tex)
 
 (use-package company-auctex
