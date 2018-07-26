@@ -63,7 +63,9 @@
 (defvar config-latex--command "LaTeX")
 
 (use-package tex
-  :straight auctex
+  :straight (auctex :host github :repo "raxod502/auctex"
+                    :branch "fork/1"
+                    :files (:defaults (:exclude "doc/*.texi")))
   :defer t
   :preface
   (defvar-local TeX-syntactic-comments t)
