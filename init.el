@@ -88,6 +88,9 @@
     (setq no-littering-var-directory paths-cache-directory))
   :config
   (progn
+    (setq auto-save-file-name-transforms
+          `((".*" ,(f-join paths-cache-directory "auto-save") t)))
+
     (eval-when-compile
       (require 'recentf))
 
