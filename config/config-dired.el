@@ -15,6 +15,7 @@
   "Toggle"
   (("?" dired-hide-details-mode "file flags")
    ("." dired-omit-mode "hidden files")
+   ("e" wdired-change-to-wdired-mode "edit (wdired)")
    ("s" dired-sort-toggle-or-edit "sort by date"))
 
   "Navigate"
