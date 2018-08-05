@@ -92,18 +92,6 @@
 
     (ivy-mode)))
 
-(use-package ivy-posframe
-  :straight t
-  :after ivy
-  :config
-  (progn
-    (setq ivy-posframe-border-width 10)
-    (setq ivy-posframe-parameters
-          '((min-width . 80)
-            (min-height . 10)))
-    (setq ivy-display-function #'ivy-posframe-display-at-frame-center)
-    (ivy-posframe-enable)))
-
 ;; flx is used as the fuzzy-matching indexer backend for ivy.
 
 (use-package flx

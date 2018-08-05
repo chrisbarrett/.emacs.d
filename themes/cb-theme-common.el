@@ -304,9 +304,6 @@
     (ivy-current-match
      ((t :foreground ,emphasis :background ,region-bg)))
 
-    (ivy-posframe
-     ((t :foreground ,heavy-fg :background ,heavy-bg)))
-
     ;; Highlights
 
     (highlight
