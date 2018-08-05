@@ -103,18 +103,6 @@
     (mode-line-format-emphasised-element
      ((t :weight ,light-weight :foreground ,emphasis)))
 
-    (omnibox-selection
-     ((t :foreground ,emphasis :background ,region-bg)))
-
-    (omnibox-modeline
-     ((t :foreground ,emphasis)))
-
-    (omnibox-match
-     ((t :background ,highlight-bg)))
-
-    (omnibox-background
-     ((t :background ,subtle-bg)))
-
     (evil-transient-state-title-face
      ((t :inherit mode-line :background ,mode-line-bg)))
 
@@ -314,13 +302,10 @@
      ((t :foreground ,default-fg)))
 
     (ivy-current-match
-     ((t :foreground ,emphasis :background ,highlight-bg)))
+     ((t :foreground ,emphasis :background ,region-bg)))
 
-    (ivy-minibuffer-match-face-1
-     ((t :background ,subtle-bg)))
-
-    (ivy-minibuffer-match-face-2
-     ((t :background ,subtle-bg)))
+    (ivy-posframe
+     ((t :foreground ,heavy-fg :background ,heavy-bg)))
 
     ;; Highlights
 

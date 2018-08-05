@@ -170,8 +170,6 @@
 
     (evil-set-initial-state 'wdired-mode 'normal)
 
-    (evil-set-initial-state 'omnibox-mode 'emacs)
-
     (evil-set-initial-state 'ert-simple-view-mode 'motion)
 
     (evil-set-initial-state 'diff-mode 'motion)
