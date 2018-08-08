@@ -85,7 +85,7 @@
 
 (use-package cb-ledger-format
   :after ledger-mode
-  :general (:keymap 'ledger-mode-map "M-q" #'cb-ledger-format-buffer))
+  :general (:keymaps 'ledger-mode-map "M-q" #'cb-ledger-format-buffer))
 
 (use-package cb-ledger-reports
   :after ledger-mode
