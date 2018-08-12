@@ -20,7 +20,6 @@
   :defer 1
 
   ;; Define key bindings for fancy snippet navigation.
-  :general (:states 'insert :keymaps 'yas-minor-mode-map "TAB" #'yas-expand)
   :general (:states '(normal insert) :keymaps 'yas-keymap
             "SPC" #'config-yasnippet-space
             "<backspace>" #'config-yasnippet-backspace)
@@ -135,6 +134,9 @@ Otherwise delete backwards."
 
     (yas-global-mode +1)
 
+    ;; NOTE: yas-maybe-expand is a variable.
+    (general-define-key :states 'insert :keymaps 'yas-minor-mode-map
+      "TAB" yas-maybe-expand)
 
     (add-to-list 'yas-dont-activate-functions
                  (lambda ()
@@ -159,8 +161,7 @@ Otherwise delete backwards."
     (advice-add 'yas--expand-or-prompt-for-template :around #'config-yasnippet-preserve-indentation))
 
   :commands
-  (yas-expand
-   yas-global-mode
+  (yas-global-mode
    yas-insert-snippet
    yas-new-snippet
    yas-next-field
