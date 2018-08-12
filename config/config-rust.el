@@ -59,8 +59,10 @@
 
 (use-package flycheck-rust
   :straight t
-  :after (:all rust-mode flycheck)
-  :config (flycheck-rust-setup))
+  :after flycheck
+  :init
+  (with-eval-after-load 'rust-mode
+    (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
 
 (use-package racer
   :straight t
