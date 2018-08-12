@@ -14,6 +14,8 @@
 (require 'subr-x)
 (require 'thingatpt)
 
+(autoload 'sp-get-enclosing-sexp "smartparens")
+
 ;; Declaration of dynamic variable to satisfy byte-compiler.
 (defvar yas-text nil)
 
@@ -96,6 +98,43 @@ Fall back to the file name sans extension."
 
 
 ;;; Rust
+
+(defun yas-funcs-sp-find-enclosing-pair (pred &optional prev-beg)
+  "Search up for an enclosing pair satisfying PRED.
+
+PRED is a function, called with the current pair.
+
+PREV-BEG is a buffer position used to track the position of the
+previous match and abort if no progress is made."
+  (save-excursion
+    (-when-let ((pair &as &plist :beg beg) (sp-get-enclosing-sexp))
+      (goto-char beg)
+      (cond
+       ((eq prev-beg beg))
+       ((funcall pred pair)
+        beg)
+       (t
+        (yas-funcs-sp-find-enclosing-pair pred beg))))))
+
+(defun yas-funcs-rs-in-fn-p ()
+  (yas-funcs-sp-find-enclosing-pair
+   (-lambda ((&plist :beg beg :op op))
+     (when (equal op "{")
+       (save-excursion
+         (goto-char beg)
+         (s-matches-p (rx bol (* space) (? "pub" (+ space)) "fn" symbol-end)
+                      (buffer-substring (line-beginning-position)
+                                        (line-end-position))))))))
+
+(defun yas-funcs-rs-in-test-module-p ()
+  (yas-funcs-sp-find-enclosing-pair
+   (-lambda ((&plist :beg beg :op op))
+     (when (equal op "{")
+       (save-excursion
+         (goto-char beg)
+         (s-matches-p (rx bol (* space) "mod" (+ space) "tests" symbol-end)
+                      (buffer-substring (line-beginning-position)
+                                        (line-end-position))))))))
 
 (defun yas-funcs-rs-bol-or-after-access-kw-p ()
   (save-excursion

@@ -1,0 +1,8 @@
+# key: test
+# name: test
+# condition: (and (yas-funcs-bolp) (not (yas-funcs-rs-in-fn-p)) (yas-funcs-rs-in-test-module-p))
+# --
+#[test]
+fn test_${1:feature}() {
+    $0
+}

@@ -1,6 +1,6 @@
 # key: test
 # name: mod tests
-# condition: (yas-funcs-bolp)
+# condition: (and (yas-funcs-bolp) (not (yas-funcs-rs-in-test-module-p)))
 # --
 #[cfg(test)]
 mod tests {
