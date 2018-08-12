@@ -31,17 +31,21 @@
       '(yaml-mode
         term-mode))
 
+    (defconst config-yasnippet-dont-activate-indentation-hack-modes
+      '(rust-mode))
+
     (defun config-yasnippet-preserve-indentation (f &rest args)
       (let ((col
              (save-excursion
                (back-to-indentation)
                (current-column))))
         (apply f args)
-        (save-excursion
-          (atomic-change-group
-            (goto-char (line-beginning-position))
-            (delete-horizontal-space)
-            (indent-to col)))))
+        (unless (member major-mode config-yasnippet-dont-activate-indentation-hack-modes)
+          (save-excursion
+            (atomic-change-group
+              (goto-char (line-beginning-position))
+              (delete-horizontal-space)
+              (indent-to col))))))
 
     (defun config-yasnippet--maybe-goto-field-end ()
       "Move to the end of the current field if it has been modified."
