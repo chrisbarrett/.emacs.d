@@ -165,6 +165,7 @@
                     (makefile-bsdmake-mode all-the-icons-fileicon "gnu" :face all-the-icons-dorange)
                     (gfm-mode all-the-icons-faicon "github-alt" :v-adjust 0.0 :face all-the-icons-lblue)
                     (helpful-mode all-the-icons-icon-for-mode help-mode)
+                    (debugger-mode all-the-icons-faicon "stack-overflow" :v-adjust 0.05 :face all-the-icons-pink)
                     (web-js-mode all-the-icons-icon-for-mode web-mode :v-adjust 0.0 :face all-the-icons-lblue)
                     (web-ts-mode all-the-icons-icon-for-mode web-mode :v-adjust 0.0 :face all-the-icons-lblue)
                     (web-css-mode all-the-icons-icon-for-mode web-mode :v-adjust 0.0 :face all-the-icons-lblue)
