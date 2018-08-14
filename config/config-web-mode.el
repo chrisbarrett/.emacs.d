@@ -113,6 +113,7 @@
 
     (add-to-list 'web-mode-content-types '("javascript" . "\\.es6\\'"))
     (add-to-list 'web-mode-content-types '("jsx" . "\\.jsx?\\'"))
+    (add-to-list 'web-mode-content-types '("jsx" . "\\.js\\.snap\\'"))
 
     ;; Dim Promise .then method.
 
@@ -139,6 +140,7 @@
          ("\\.eslintrc\\'" . web-json-mode)
          ("\\.babelrc\\'" . web-json-mode)
          ("\\.es6\\'"  . web-js-mode)
+         ("\\.js\\.snap\\'"  . web-js-snap-mode)
          ("\\.tsx?\\'"  . web-ts-mode)
          ("\\.jsx?\\'" . web-js-mode)
          ("\\.css\\'"  . web-css-mode)

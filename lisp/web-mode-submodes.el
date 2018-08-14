@@ -29,6 +29,10 @@
   "Derived mode for editing JavaScript files.")
 
 ;;;###autoload
+(define-derived-mode web-js-snap-mode web-js-mode "JS"
+  "Derived mode for editing Jest snapshot files.")
+
+;;;###autoload
 (define-derived-mode web-ts-mode web-js-base-mode "TS"
   "Derived mode for editing JavaScript files.")
 
