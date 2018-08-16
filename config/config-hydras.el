@@ -409,7 +409,7 @@
    ("s" straight/body "straight package manager..."))
 
   "Shells"
-  (("t" (ansi-term (getenv "SHELL")) "terminal")
+  (("t" eshell "terminal (eshell)")
    ("n" nix-repl-show "nix-repl")))
 
 (cb-hydra-define profiler ()
