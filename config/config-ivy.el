@@ -25,7 +25,8 @@
   (:keymaps 'ivy-minibuffer-map
    "C-z" #'ivy-dispatching-done
    "C-l" #'ivy-partial-or-done
-   "C-<return>" #'ivy-immediate-done)
+   "C-<return>" #'ivy-immediate-done
+   "C-SPC" #'config-ivy-eshell-action)
 
   ;; Browse read-expression histroy with ivy
   (:keymaps 'read-expression-map
@@ -50,6 +51,21 @@
     (defun config-ivy-with-empty-ivy-extra-directories (f &rest args)
       (let ((ivy-extra-directories nil))
         (apply f args)))
+
+    ;; Define a command to pop open eshell for the candidate.
+
+    (defun config-ivy-eshell-action ()
+      "Open eshell at the target."
+      (interactive)
+      (ivy-exit-with-action
+       (lambda (candidate)
+         (let ((default-directory
+                 (cond
+                  ((f-dir-p candidate) candidate)
+                  ((f-file-p candidate) (f-dirname candidate))
+                  (t
+                   (user-error "No available eshell action for candidate")))))
+           (eshell t)))))
 
     ;; Define a command for entering wgrep straight from ivy results.
 
