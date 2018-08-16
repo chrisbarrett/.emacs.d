@@ -12,7 +12,8 @@
 
 ;; Auto-indent on RET
 
-(define-key global-map (kbd "RET") #'comment-indent-new-line)
+(general-define-key :keymaps '(text-mode-map prog-mode-map)
+  "RET" #'comment-indent-new-line)
 
 ;; Enable hideshow in all programming buffers.
 
