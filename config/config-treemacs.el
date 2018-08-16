@@ -6,7 +6,6 @@
   (require 'use-package))
 
 (require 'all-the-icons)
-(require 'config-hydras)
 (require 'dash)
 (require 'general)
 
@@ -82,9 +81,7 @@
   :straight t
   :after (:and treemacs evil)
   :config
-  (progn
-    (config-hydras-insinuate evil-treemacs-state-map)
-    (setq evil-treemacs-state-cursor '("SkyBlue" box))))
+  (setq evil-treemacs-state-cursor '("SkyBlue" box)))
 
 (use-package treemacs-projectile
   :straight t

@@ -492,13 +492,16 @@
    ("l" imenu-list-smart-toggle "imenu list")
    ("q" delete-window "delete window")))
 
-(defun config-hydras-insinuate (keymap)
-  (bind-key "SPC" #'main-dispatcher/body keymap))
-
-(with-eval-after-load 'evil
-  (with-no-warnings
-    (config-hydras-insinuate evil-normal-state-map)
-    (config-hydras-insinuate evil-motion-state-map)))
+(use-package general
+  :config
+  (progn
+    (general-setq general-override-states
+                  '(insert emacs hybrid normal visual motion operator replace))
+    (general-override-mode +1)
+    (general-define-key
+     :states '(normal visual motion)
+     :keymaps 'override
+     "SPC" 'main-dispatcher/body)))
 
 (provide 'config-hydras)
 

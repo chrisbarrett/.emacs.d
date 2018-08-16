@@ -5,9 +5,10 @@
 (eval-when-compile
   (require 'use-package))
 
-(require 'config-hydras)
 (require 'general)
 (require 'ibuffer-hacks)
+
+(autoload 'page-break-lines-mode "page-break-lines")
 
 
 
@@ -43,9 +44,7 @@
                    "*Help*"))))
 
     (add-hook 'ibuffer-mode-hook #'hl-line-mode)
-    (add-hook 'ibuffer-mode-hook #'page-break-lines-mode)
-
-    (config-hydras-insinuate ibuffer-mode-map)))
+    (add-hook 'ibuffer-mode-hook #'page-break-lines-mode)))
 
 ;; ibuf-ext adds a few extra features to ibuffer.
 

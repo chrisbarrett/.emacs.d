@@ -5,7 +5,6 @@
 (eval-when-compile
   (require 'use-package))
 
-(require 'config-hydras)
 (require 'general)
 
 (straight-use-package 'link-hint)
@@ -246,13 +245,9 @@
   :straight t
   :commands (evil-iedit-state/iedit-mode)
   :config
-  (progn
-    (general-setq iedit-current-symbol-default t
-                  iedit-only-at-symbol-boundaries t
-                  iedit-toggle-key-default nil)
-
-    ;; Enable leader key in iedit and iedit-insert states
-    (config-hydras-insinuate evil-iedit-state-map)))
+  (general-setq iedit-current-symbol-default t
+                iedit-only-at-symbol-boundaries t
+                iedit-toggle-key-default nil))
 
 (use-package evil-collection
   :straight t

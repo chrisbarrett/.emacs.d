@@ -6,7 +6,6 @@
   (require 'use-package))
 
 (require 'cb-major-mode-hydra)
-(require 'config-hydras)
 (require 'f)
 (require 'general)
 (require 'paths)
@@ -201,12 +200,7 @@
                    :char       "r"
                    :prompt     "rArchive"
                    :show-target (lambda (target) "archive")
-                   :action      cb-mu4e-utils-read-and-archive-action))
-
-    ;; Enable leader key in mu4e maps
-    (config-hydras-insinuate mu4e-headers-mode-map)
-    (config-hydras-insinuate mu4e-view-mode-map)
-    (config-hydras-insinuate mu4e-main-mode-map)))
+                   :action      cb-mu4e-utils-read-and-archive-action))))
 
 (use-package cb-mu4e-utils
   :after mu4e

@@ -12,7 +12,6 @@
   (require 'use-package))
 
 (require 'cb-major-mode-hydra)
-(require 'config-hydras)
 (require 'dash)
 (require 'f)
 (require 'general)
@@ -529,9 +528,6 @@
 
   :config
   (progn
-    ;; Enable leader key in agenda.
-    (config-hydras-insinuate org-agenda-mode-map)
-
     (add-hook 'org-finalize-agenda-hook 'org-agenda-to-appt)
 
     ;; Ensure the separator line is rendered whenever the org agenda view

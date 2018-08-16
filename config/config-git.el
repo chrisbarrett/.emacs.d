@@ -5,7 +5,6 @@
 (eval-when-compile
   (require 'use-package))
 
-(require 'config-hydras)
 (require 'paths)
 
 
@@ -47,7 +46,6 @@
           (user-error "Buffer isn't visiting a file"))))))
   :config
   (progn
-    (config-hydras-insinuate magit-mode-map)
     (setq magit-repository-directories
           '(("~/Documents" . 1)
             ("~/Projects" . 1)

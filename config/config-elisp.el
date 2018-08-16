@@ -167,9 +167,7 @@
             "j" 'forward-to-indentation
             "k" 'backward-to-indentation)
   :init
-  (add-hook 'debugger-mode-hook #'hl-line-mode)
-  :config
-  (config-hydras-insinuate debugger-mode-map))
+  (add-hook 'debugger-mode-hook #'hl-line-mode))
 
 ;; helpful is a more feature-rich alternative to the Emacs Lisp help buffer.
 

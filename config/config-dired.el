@@ -6,7 +6,6 @@
   (require 'use-package))
 
 (require 'cb-major-mode-hydra)
-(require 'config-hydras)
 (require 'paths)
 
 
@@ -64,7 +63,6 @@
 
   :config
   (progn
-    (config-hydras-insinuate dired-mode-map)
     (add-hook 'dired-mode-hook #'hl-line-mode)
 
     (put 'dired-find-alternate-file 'disabled nil)
