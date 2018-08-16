@@ -210,6 +210,9 @@
 ;; Evil breaks cursor settings when combined with hydra.
 (setq-default cursor-in-non-selected-windows nil)
 
+;; Bind a key command to toggle side windows.
+(global-set-key (kbd "C-c TAB") #'window-toggle-side-windows)
+
 
 ;;; Core advice
 
