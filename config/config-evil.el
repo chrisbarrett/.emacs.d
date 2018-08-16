@@ -63,6 +63,8 @@
 
        (t
         (apply fn args)))))
+  :init
+  (setq evil-want-integration nil)
 
   :config
   (progn
@@ -252,9 +254,11 @@
     ;; Enable leader key in iedit and iedit-insert states
     (config-hydras-insinuate evil-iedit-state-map)))
 
-(use-package evil-ediff
+(use-package evil-collection
   :straight t
-  :after ediff)
+  :after evil
+  :config
+  (evil-collection-init))
 
 (use-package evil-args
   :straight t
