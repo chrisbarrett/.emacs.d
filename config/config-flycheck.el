@@ -134,9 +134,11 @@
 ;; flycheck-irony provides C/C++/ObjC checking with the Irony server.
 
 (use-package flycheck-irony
+  :straight t
   :hook (flycheck-mode . flycheck-irony-setup))
 
 (use-package irony
+  :straight t
   :hook
   ((c++-mode . irony-mode)
    (c-mode . irony-mode)
