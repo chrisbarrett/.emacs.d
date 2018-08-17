@@ -264,12 +264,15 @@
   (with-eval-after-load 'evil
     (global-vi-tilde-fringe-mode +1))
   :preface
-  (defun config-evil--vi-tilde-fringe-off-if-readonly (args)
-    (if buffer-read-only
-        '(-1)
-      args))
+  (progn
+    (defconst config-evil--vi-tilde-inhibited-modes '(eshell-mode comint-mode))
+
+    (defun config-evil--vi-tilde-fringe-maybe-inhibit (args)
+      (if (or buffer-read-only (apply #'derived-mode-p config-evil--vi-tilde-inhibited-modes))
+          '(-1)
+        args)))
   :config
-  (advice-add 'vi-tilde-fringe-mode :filter-args #'config-evil--vi-tilde-fringe-off-if-readonly))
+  (advice-add 'vi-tilde-fringe-mode :filter-args #'config-evil--vi-tilde-fringe-maybe-inhibit))
 
 (use-package evil-nerd-commenter
   :straight t
