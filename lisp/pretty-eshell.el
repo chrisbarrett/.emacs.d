@@ -62,20 +62,22 @@
         (s-concat acc pretty-eshell-sep it))
     acc))
 
-(defvar pretty-eshell--previous-section-values nil)
+(defvar-local pretty-eshell--previous-section-values nil)
 
 (defun pretty-eshell--new-prompt-sections (old-sections new-sections)
   (let ((filled-old (or old-sections (make-list (length new-sections) nil))))
-    (-non-nil (-zip-with (lambda (old new)
-                           (unless (or (equal old new) (null new) (string-blank-p new))
-                             new))
-                         filled-old new-sections))))
+    (-zip-with (lambda (old new)
+                 (unless (or (equal old new) (null new) (string-blank-p new))
+                   new))
+               filled-old new-sections)))
 
 ;;;###autoload
 (defun pretty-eshell-prompt-func ()
   "Value for `eshell-prompt-function'."
   (let* ((next-sections (seq-map #'funcall pretty-eshell-funcs))
-         (filtered (pretty-eshell--new-prompt-sections pretty-eshell--previous-section-values next-sections))
+         (filtered (-non-nil (if (null pretty-eshell--previous-section-values)
+                                 next-sections
+                               (pretty-eshell--new-prompt-sections pretty-eshell--previous-section-values next-sections))))
          (rendered (s-join "  " filtered)))
     (prog1 (concat pretty-eshell-header
                    (if (string-blank-p rendered) "\n" (concat rendered "\n"))
