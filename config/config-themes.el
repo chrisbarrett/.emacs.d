@@ -210,28 +210,18 @@
   :init (require 'imenu-list-hacks)
   :general (:states 'normal :keymaps 'imenu-list-major-mode-map "q" #'quit-window))
 
-
-
 ;; Display a winsome pusheen gif in the scratch buffer during startup.
 
-(eval-when-compile
-  (require 'paths)
-  (defvar config-themes--pusheen (create-image (f-join paths-assets-directory "pusheenicorn.gif") 'gif)))
+(use-package pusheen
+  :config
+  (progn
+    (with-current-buffer "*scratch*"
+      (let ((inhibit-read-only t))
+        (erase-buffer)
+        (insert (format "\n\n%13s" (pusheen 'unicorn)))
+        (read-only-mode +1)))
 
-(defun config-themes-display-pusheen ()
-  (with-current-buffer "*scratch*"
-    (let ((inhibit-read-only t))
-      (erase-buffer)
-      (insert (format "\n\n%13s" (propertize " " 'display config-themes--pusheen)))
-      (read-only-mode +1))))
-
-(defun config-themes-animate-pusheen ()
-  (run-with-timer 0.01 nil (lambda ()
-                             (let ((seconds 10))
-                               (image-animate config-themes--pusheen nil seconds)))))
-
-(config-themes-display-pusheen)
-(add-hook 'after-init-hook #'config-themes-animate-pusheen)
+    (add-hook 'after-init-hook #'pusheen-animate-all)))
 
 (provide 'config-themes)
 
