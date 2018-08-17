@@ -103,6 +103,7 @@
      mu4e-compose-format-flowed t
      mu4e-completing-read-function 'completing-read
      mu4e-index-lazy-check t
+     mu4e-confirm-quit nil
 
      mu4e-view-prefer-html t
      mu4e-view-show-images t
