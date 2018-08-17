@@ -20,8 +20,13 @@
   :commands (eshell)
   :config
   (progn
+    ;; keep aliases under etc directory, which is tracked by git.
+
     (f-mkdir config-eshell-etc-directory)
     (general-setq eshell-aliases-file (f-join config-eshell-etc-directory  "aliases"))))
+
+(use-package em-smart
+  :hook (eshell-mode . eshell-smart-initialize))
 
 ;; fasd teaches Emacs to update to fasd cache as files and dirs are opened.
 
