@@ -80,7 +80,7 @@
                                (pretty-eshell--new-prompt-sections pretty-eshell--previous-section-values next-sections))))
          (rendered (s-join "  " filtered)))
     (prog1 (concat pretty-eshell-header
-                   (if (string-blank-p rendered) "\n" (concat rendered "\n"))
+                   (if (string-blank-p rendered) "" (concat " " rendered "\n"))
                    pretty-eshell-prompt-string)
       (setq pretty-eshell--previous-section-values next-sections))))
 

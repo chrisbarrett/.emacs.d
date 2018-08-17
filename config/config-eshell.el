@@ -58,6 +58,7 @@
   :after eshell
   :config
   (progn
+    (setq pretty-eshell-header "\n")
     (setq eshell-prompt-function 'pretty-eshell-prompt-func)
     (setq pretty-eshell-prompt-string " > ")
     (setq eshell-prompt-regexp (rx bol (* space)  "> "))
