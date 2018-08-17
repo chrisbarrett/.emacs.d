@@ -1,1 +1,28 @@
+alias ff fasd-find-file -1 ${eshell-flatten-and-stringify $*}
+alias gf magit-fetch-popup
+alias gp magit-push-popup
+alias gm magit-merge-popup
+alias gr magit-rebase-popup
+alias gco magit-checkout
+alias gd magit-diff-popup
+alias gc magit-commit
+alias s git status --short
+alias gmv git mv
+alias grm git rm
+alias gs git show
+alias ga git add
+alias gb git branch -v
+alias grh git reset --hard
+alias gup git remote update -p && git pull --rebase
+alias g magit-status
+alias gref magit-reflog-current
+alias gl magit-log-current
+alias dco docker-compose
+alias d docker
+alias rmr rm -r
+alias tree tree -I target -I node_modules
+alias la ls -lA
+alias ll ls -l
+alias lsa ls -lah
+alias l ls
 alias e find-file $1
