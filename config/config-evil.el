@@ -141,6 +141,7 @@
     (evil-set-initial-state 'haskell-debug-mode 'motion)
 
     (evil-set-initial-state 'ibuffer-mode 'motion)
+    (evil-set-initial-state 'eshell-mode 'insert)
 
     (evil-set-initial-state 'mu4e-main-mode 'emacs)
     (evil-set-initial-state 'mu4e-headers-mode 'emacs)
