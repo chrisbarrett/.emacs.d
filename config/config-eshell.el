@@ -31,7 +31,7 @@
   :config
   (progn
     (require 'pusheen)
-    (setq eshell-banner-message (format "\n%13s\n\n%15s\n\n" (pusheen 'winky)
+    (setq eshell-banner-message (format "%13s\n%15s\n\n" (pusheen 'winky)
                                         (propertize "O hai!" 'face '(:height 400))))
     (add-hook 'eshell-mode-hook #'config-eshell-setup-keybindings)
     (add-hook 'eshell-mode-hook #'pusheen-animate-all)
