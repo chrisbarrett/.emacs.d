@@ -184,6 +184,12 @@
 
     ;; Dired
 
+    (dired-async-message
+     ((t :inherit modeline)))
+
+    (dired-async-failures
+     ((t :inherit modeline :foreground ,red)))
+
     (dired-header
      ((t :weight bold)))
 
