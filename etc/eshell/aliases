@@ -1,5 +1,5 @@
 alias pf projectile-find-file
-alias f fasd-find-file -1 eshell-flatten-and-stringify nil: command not found
+alias f fasd-find-file -1 ${eshell-flatten-and-stringify $*}
 alias gf magit-fetch-popup
 alias gp magit-push-popup
 alias gm magit-merge-popup
