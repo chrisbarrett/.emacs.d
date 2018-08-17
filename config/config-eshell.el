@@ -11,6 +11,7 @@
 (require 'dash)
 
 (defconst config-eshell-etc-directory (f-join paths-etc-directory "eshell"))
+(autoload 'evil-local-set-key "evil-core")
 
 
 
@@ -18,8 +19,19 @@
 
 (use-package eshell
   :commands (eshell)
+
+  :preface
+  (progn
+    ;; HACK eshell mode map is set as a local variable in its mode function.
+    ;; deep cry. ( -̩̩̩͡˛ -̩̩̩͡ )
+    (defun config-eshell-setup-keybindings ()
+      (evil-local-set-key 'insert (kbd "C-e") 'end-of-line)
+      (evil-local-set-key 'insert (kbd "C-a") 'eshell-bol)))
+
   :config
   (progn
+    (add-hook 'eshell-mode-hook #'config-eshell-setup-keybindings)
+
     ;; keep aliases under etc directory, which is tracked by git.
 
     (f-mkdir config-eshell-etc-directory)
