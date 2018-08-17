@@ -367,6 +367,9 @@
     (magit-signature-untrusted
      ((t :foreground ,cyan)))
 
+    (magit-log-author
+     ((t :foreground ,yellow)))
+
     (magit-blame-heading
      ((((background light))
        :background "#cceecc"
