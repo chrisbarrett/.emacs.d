@@ -30,6 +30,7 @@
 
   :config
   (progn
+    (require 'eshell-hacks)
     (require 'pusheen)
     (setq eshell-banner-message (format "%13s\n%15s\n\n" (pusheen 'winky)
                                         (propertize "O hai!" 'face '(:height 400))))
