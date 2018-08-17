@@ -5,10 +5,6 @@
 (eval-when-compile
   (require 'use-package))
 
-(use-package dockerfile-mode
-  :straight t
-  :mode ("Dockerfile\\'" . dockerfile-mode))
-
 (use-package csv-mode
   :straight t
   :mode ("\\.csv\\'" . csv-mode)

@@ -137,6 +137,7 @@
 (use-package config-etags)
 (use-package config-treemacs)
 (use-package config-eshell)
+(use-package config-docker)
 
 (use-package personal-config
   :load-path "~/Sync/emacs")

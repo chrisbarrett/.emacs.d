@@ -96,6 +96,8 @@
 
     ;; Initial states and keymaps for builtin Emacs packages.
 
+    (evil-set-initial-state 'tabulated-list-mode 'motion)
+
     (evil-set-initial-state 'flycheck-error-list-mode 'motion)
 
     (evil-set-initial-state 'helpful-mode 'motion)
