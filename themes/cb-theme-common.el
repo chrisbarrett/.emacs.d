@@ -112,6 +112,9 @@
     (hl-line
      ((t :background ,subtle-bg)))
 
+    (eshell-prompt
+     ((t :weight normal :foreground ,orange)))
+
     ;; General font-lock faces.
 
     (font-lock-keyword-face

@@ -51,6 +51,38 @@
     (apply #'start-process "*fasd*" nil "fasd" "--add" (seq-map #'shell-quote-argument recentf-list))
     (global-fasd-mode +1)))
 
+;; pretty-eshell defines some utility fns for building a nice prompt.
+
+(use-package pretty-eshell
+  :after eshell
+  :config
+  (progn
+    (setq eshell-prompt-function 'pretty-eshell-prompt-func)
+    (setq pretty-eshell-prompt-string " > ")
+    (setq eshell-prompt-regexp (rx bol (* space)  "> "))
+
+    ;; Directory
+    (pretty-eshell-define-section config-eshell-dir
+      ""
+      (abbreviate-file-name (eshell/pwd))
+      '(:foreground "#268bd2" :weight light))
+
+    (autoload 'magit-get-current-branch "magit")
+
+    ;; Git Branch
+    (pretty-eshell-define-section config-eshell-git
+      ""
+      (magit-get-current-branch)
+      '(:foreground "#cb4b16" :weight light))
+
+    ;; Time
+    (pretty-eshell-define-section config-eshell-clock
+      ""
+      (format-time-string "%H:%M" (current-time))
+      '(:foreground "grey60" :weight light))
+
+    (setq pretty-eshell-funcs (list config-eshell-dir config-eshell-git config-eshell-clock))))
+
 
 
 ;; Define some eshell commands
