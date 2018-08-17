@@ -17,7 +17,7 @@
    [remap indent-for-tab-command] #'company-manual-begin)
 
   :preface
-  (general-unbind :keymaps 'company-active-map "C-w")
+  (general-unbind :keymaps 'company-active-map "C-w" "C-h")
 
   :preface
   (defun config-company--set-company-vars ()
