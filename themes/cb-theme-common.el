@@ -196,6 +196,9 @@
     (diredp-dir-name
      ((t :foreground ,emphasis)))
 
+    (eshell-dimmed
+     ((t :foreground ,dimmed-fg)))
+
     (eshell-ls-directory
      ((t :foreground ,emphasis :bold t)))
 

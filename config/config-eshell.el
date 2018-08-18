@@ -58,13 +58,29 @@
 (use-package pretty-eshell
   :after eshell
   :preface
-  (defun config-eshell--inhibit-submission-on-empty (f &rest args)
-    (let* ((start eshell-last-output-end)
-           (end (point))
-           (input (buffer-substring-no-properties start end)))
-      (if (string-empty-p (string-trim input))
-          (delete-region start end)
-        (apply f args))))
+  (progn
+    (defface eshell-dimmed
+      '((t :inherit default))
+      "Face for dimmed text in eshell."
+      :group 'config-eshell)
+
+    (defun config-eshell--dim-commands-on-submission ()
+      (let ((start eshell-last-output-start)
+            (end (point)))
+        (let ((inhibit-read-only t))
+          (save-excursion
+            (goto-char start)
+            (search-forward "\u000c")
+            (put-text-property (point) end 'face 'eshell-dimmed)))))
+
+    (defun config-eshell--inhibit-submission-on-empty (f &rest args)
+      (let* ((start eshell-last-output-end)
+             (end (point))
+             (input (buffer-substring-no-properties start end)))
+        (if (string-empty-p (string-trim input))
+            (delete-region start end)
+          (config-eshell--dim-commands-on-submission)
+          (apply f args)))))
 
   :config
   (progn
@@ -75,12 +91,15 @@
     (setq pretty-eshell-header-fun
           (let ((page-break "\u000c"))
             (lambda ()
-              (let* ((time (format-time-string " %H:%M" (current-time)))
-                     (timestamp (s-pad-left (1- (window-width)) " "
-                                            (propertize time 'face 'page-break-lines))))
+              (let* ((time (format-time-string "%H:%M" (current-time)))
+                     (timestamp
+                      (s-pad-left (1+ (window-width))
+                                  " "
+                                  (propertize time 'face
+                                              '(:inherit eshell-dimmed
+                                                :height 0.7)))))
 
-                (prog1 (concat (if (equal time config-eshell--previous-time) "" (concat timestamp "\n"))
-                               page-break "\n")
+                (prog1 (concat timestamp "\n" page-break "\n")
                   (setq config-eshell--previous-time time))))))
 
     (require 'page-break-lines)
@@ -95,8 +114,8 @@
     (setq eshell-prompt-function 'pretty-eshell-prompt-func)
     (setq pretty-eshell-prompt-string-fun (lambda ()
                                             (concat " " (if (eshell-exit-success-p)
-                                                        ">"
-                                                      (propertize "✘" 'face 'error))
+                                                            ">"
+                                                          (propertize "✘" 'face 'error))
                                                     " ")))
     (setq eshell-prompt-regexp (rx bol (* space) (or ">" "✘") space))
 
