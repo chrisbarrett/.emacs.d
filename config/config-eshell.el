@@ -94,7 +94,7 @@
 
     (setq eshell-prompt-function 'pretty-eshell-prompt-func)
     (setq pretty-eshell-prompt-string-fun (lambda ()
-                                            (concat (if (eshell-exit-success-p)
+                                            (concat " " (if (eshell-exit-success-p)
                                                         ">"
                                                       (propertize "✘" 'face 'error))
                                                     " ")))
