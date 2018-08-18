@@ -128,7 +128,14 @@
   (:keymaps 'proced-mode-map
    :states 'normal
    "r" 'proced-refine
-   "R" 'proced-renice))
+   "R" 'proced-renice)
+  :config
+  (progn
+    (setf (nth 1 (alist-get 'comm proced-grammar-alist))
+          "%-20s")
+
+    (setq-default proced-format
+                  '(comm pid state pcpu vsize pmem user))))
 
 
 
