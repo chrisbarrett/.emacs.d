@@ -106,7 +106,7 @@
     (pretty-eshell-define-section config-eshell-dir
       ""
       (abbreviate-file-name (eshell/pwd))
-      '(:foreground "#268bd2" :weight light))
+      '(:inherit eshell-ls-directory :weight light))
 
     ;; NOTE: Load just this feature, instead of all of magit.
     (autoload 'magit-get-current-branch "magit-git")

@@ -112,9 +112,6 @@
     (hl-line
      ((t :background ,subtle-bg)))
 
-    (eshell-prompt
-     ((t :weight normal :foreground ,blue)))
-
     ;; General font-lock faces.
 
     (font-lock-keyword-face
@@ -200,28 +197,31 @@
      ((t :foreground ,emphasis)))
 
     (eshell-ls-directory
-     ((t :inherit diredp-dir-name :bold t)))
+     ((t :foreground ,emphasis :bold t)))
+
+    (eshell-prompt
+     ((t :foreground ,emphasis)))
 
     (eshell-ls-readonly
-     ((t :inherit diredp-file-name :bold t :foreground ,dark-grey)))
+     ((t :bold t :foreground ,dark-grey)))
 
     (diredp-file-name
      ((t :inherit default)))
 
     (diredp-ignored-file-name
-     ((t :inherit diredp-file-name :foreground ,dimmed-fg)))
+     ((t :foreground ,dimmed-fg)))
 
     (eshell-ls-clutter
-     ((t :inherit diredp-ignored-file-name)))
+     ((t :foreground ,dimmed-fg)))
 
     (eshell-ls-missing
      ((t :inherit error)))
 
     (diredp-symlink
-     ((t :inherit diredp-file-name :foreground ,mid-grey)))
+     ((t :foreground ,mid-grey)))
 
     (eshell-ls-symlink
-     ((t :inherit diredp-symlink :bold t)))
+     ((t :foreground ,mid-grey :bold t)))
 
     (eshell-ls-executable
      ((t :bold t :foreground ,magenta)))
