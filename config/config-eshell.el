@@ -59,11 +59,21 @@
   :after eshell
   :config
   (progn
-    ;; Show a horizontal rule between commands.
+    ;; Show a horizontal rule and timestamp between commands.
+
+    (defvar-local config-eshell--previous-time nil)
 
     (setq pretty-eshell-header-fun
-          (lambda ()
-            "\u000c\n"))
+          (let ((page-break "\u000c"))
+            (lambda ()
+              (let* ((time (format-time-string " %H:%M" (current-time)))
+                     (timestamp (s-pad-left (1- (window-width)) " "
+                                            (propertize time 'face 'page-break-lines))))
+
+                (prog1 (concat (if (equal time config-eshell--previous-time) "" (concat timestamp "\n"))
+                               page-break "\n")
+                  (setq config-eshell--previous-time time))))))
+
     (require 'page-break-lines)
     (add-hook 'eshell-mode-hook 'page-break-lines-mode)
 
@@ -95,13 +105,7 @@
       (magit-get-current-branch)
       '(:foreground "#cb4b16" :weight light))
 
-    ;; Time
-    (pretty-eshell-define-section config-eshell-clock
-      ""
-      (format-time-string "%H:%M" (current-time))
-      '(:foreground "grey60" :weight light))
-
-    (setq pretty-eshell-funcs (list config-eshell-dir config-eshell-git config-eshell-clock))))
+    (setq pretty-eshell-funcs (list config-eshell-dir config-eshell-git))))
 
 
 
