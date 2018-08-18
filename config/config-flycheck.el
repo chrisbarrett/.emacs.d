@@ -68,7 +68,10 @@
            (lambda (buf)
              (with-current-buffer buf
                (when (bound-and-true-p flycheck-mode)
-                 (flycheck-buffer))))))))
+                 ;; HACK: Inhibit checks for elisp, otherwise flycheck will
+                 ;; spawn a bunch of thrashing Emacs processes.
+                 (unless (derived-mode-p 'emacs-lisp-mode)
+                   (flycheck-buffer)))))))))
 
     (defun config-flycheck-display-error-messages (errors)
       (unless (flycheck-get-error-list-window 'current-frame)
