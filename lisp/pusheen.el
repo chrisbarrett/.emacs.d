@@ -5,14 +5,12 @@
 (eval-and-compile
   (require 'paths))
 
-(require 'memoize)
-
 (defvar pusheen-animation-duration-seconds 10)
 
 
 
 
-(defmemoize pusheen-make-gif (filename)
+(defun pusheen-make-gif (filename)
   (create-image (f-join paths-assets-directory filename) 'gif))
 
 (defvar pusheen-image-alist nil)
