@@ -59,7 +59,11 @@
   :after eshell
   :config
   (progn
-    (setq pretty-eshell-header "\n")
+    ;; Show a horizontal rule between commands.
+
+    (setq pretty-eshell-header "\n")
+    (add-hook 'eshell-mode-hook 'page-break-lines-mode)
+
     (setq eshell-prompt-function 'pretty-eshell-prompt-func)
     (setq pretty-eshell-prompt-string " > ")
     (setq eshell-prompt-regexp (rx bol (* space)  "> "))
