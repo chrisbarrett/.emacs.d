@@ -100,6 +100,7 @@
 ;; these to paths relative to the rustup sources directory.
 
 (use-package compile
+  :defer t
   :preface
   (progn
     (defun config-rust--rewrite-compilation-buffer (&optional buf &rest _)
