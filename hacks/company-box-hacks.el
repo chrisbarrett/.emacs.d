@@ -27,24 +27,24 @@
 ;; Fix the foreground and background colours of documentation popup frames.
 
 (with-eval-after-load 'company-box-doc
-
-  (el-patch-defun company-box-doc--show (selection frame)
-    (-when-let* ((valid-state (and (eq (selected-frame) frame)
-                                   (company-box--get-frame)
-                                   (frame-visible-p (company-box--get-frame))))
-                 (candidate (nth selection company-candidates))
-                 (doc (or (company-call-backend 'quickhelp-string candidate)
-                          (company-box-doc--fetch-doc-buffer candidate)))
-                 (doc (company-box-doc--make-buffer doc)))
-      (unless (frame-live-p (frame-parameter nil 'company-box-doc-frame))
-        (set-frame-parameter nil 'company-box-doc-frame (company-box-doc--make-frame doc)))
-      (el-patch-add
-        (with-selected-frame (frame-parameter nil 'company-box-doc-frame)
-          (set-foreground-color (face-foreground 'company-box-candidate nil t))
-          (set-background-color (face-background 'company-box-background nil t))))
-      (company-box-doc--set-frame-position (frame-parameter nil 'company-box-doc-frame))
-      (unless (frame-visible-p (frame-parameter nil 'company-box-doc-frame))
-        (make-frame-visible (frame-parameter nil 'company-box-doc-frame))))))
+  (with-no-warnings
+    (el-patch-defun company-box-doc--show (selection frame)
+      (-when-let* ((valid-state (and (eq (selected-frame) frame)
+                                     (company-box--get-frame)
+                                     (frame-visible-p (company-box--get-frame))))
+                   (candidate (nth selection company-candidates))
+                   (doc (or (company-call-backend 'quickhelp-string candidate)
+                            (company-box-doc--fetch-doc-buffer candidate)))
+                   (doc (company-box-doc--make-buffer doc)))
+        (unless (frame-live-p (frame-parameter nil 'company-box-doc-frame))
+          (set-frame-parameter nil 'company-box-doc-frame (company-box-doc--make-frame doc)))
+        (el-patch-add
+          (with-selected-frame (frame-parameter nil 'company-box-doc-frame)
+            (set-foreground-color (face-foreground 'company-box-candidate nil t))
+            (set-background-color (face-background 'company-box-background nil t))))
+        (company-box-doc--set-frame-position (frame-parameter nil 'company-box-doc-frame))
+        (unless (frame-visible-p (frame-parameter nil 'company-box-doc-frame))
+          (make-frame-visible (frame-parameter nil 'company-box-doc-frame)))))))
 
 (provide 'company-box-hacks)
 
