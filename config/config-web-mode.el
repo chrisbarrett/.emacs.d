@@ -8,6 +8,7 @@
 
 (require 'cb-major-mode-hydra)
 (require 'f)
+(require 'nvm-hacks)
 (require 's)
 (require 'subr-x)
 (require 'tide-hacks)
