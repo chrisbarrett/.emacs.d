@@ -82,7 +82,9 @@
       (abbreviate-file-name (eshell/pwd))
       '(:foreground "#268bd2" :weight light))
 
-    (autoload 'magit-get-current-branch "magit")
+    ;; NOTE: Load just this feature, instead of all of magit.
+    (autoload 'magit-get-current-branch "magit-git")
+    (autoload 'magit-process-file "magit-process")
 
     ;; Git Branch
     (pretty-eshell-define-section config-eshell-git
