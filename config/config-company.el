@@ -5,6 +5,8 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'company-box-hacks)
+
 (use-package company
   :straight t
   :hook (after-init . global-company-mode)
@@ -38,9 +40,7 @@
    "C-p" #'company-box--prev-line)
   :hook (company-mode . company-box-mode)
   :config
-  (progn
-    (require 'company-box-hacks)
-    (setq company-box-enable-icon nil)))
+  (setq company-box-enable-icon nil))
 
 (use-package company-dabbrev
   :after company

@@ -8,6 +8,7 @@
 (require 'all-the-icons)
 (require 'dash)
 (require 'general)
+(require 'treemacs-hacks)
 
 (use-package treemacs
   :straight t
@@ -31,7 +32,6 @@
 
   :config
   (progn
-    (require 'treemacs-hacks)
     (require 'projectile)
 
     (general-setq

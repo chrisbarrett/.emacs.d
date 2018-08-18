@@ -5,6 +5,7 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'counsel-hacks)
 (require 'noflet)
 (require 'paths)
 (require 'subr-x)
@@ -137,8 +138,6 @@
             "C-h" #'counsel-up-directory)
   :config
   (progn
-    (require 'counsel-hacks)
-
     (setq counsel-yank-pop-separator
           (propertize "\n-------------------------------------------------\n"
                       'face '(:foreground "gray50")))

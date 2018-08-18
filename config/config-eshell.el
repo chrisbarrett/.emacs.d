@@ -5,10 +5,11 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'dash)
+(require 'eshell-hacks)
 (require 'f)
 (require 'general)
 (require 'paths)
-(require 'dash)
 
 (defconst config-eshell-etc-directory (f-join paths-etc-directory "eshell"))
 (autoload 'evil-local-set-key "evil-core")
@@ -30,7 +31,6 @@
 
   :config
   (progn
-    (require 'eshell-hacks)
     (require 'pusheen)
     (setq eshell-banner-message (format "%13s\n%15s\n\n" (pusheen 'winky)
                                         (propertize "O hai!" 'face '(:height 400))))

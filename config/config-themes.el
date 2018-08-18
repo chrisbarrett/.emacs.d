@@ -8,6 +8,7 @@
 (require 'dash)
 (require 'f)
 (require 'general)
+(require 'imenu-list-hacks)
 (require 'straight)
 
 
@@ -207,7 +208,6 @@
 (use-package imenu-list
   :straight t
   :commands (imenu-list)
-  :init (require 'imenu-list-hacks)
   :general (:states 'normal :keymaps 'imenu-list-major-mode-map "q" #'quit-window))
 
 (use-package which-key
