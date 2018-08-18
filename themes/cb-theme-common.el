@@ -182,7 +182,7 @@
     (info-variable-ref-item
      ((t :weight demibold :foreground ,mid-grey)))
 
-    ;; Dired
+    ;; Dired & Eshell
 
     (dired-async-message
      ((t :inherit modeline)))
@@ -199,20 +199,41 @@
     (diredp-dir-name
      ((t :foreground ,emphasis)))
 
+    (eshell-ls-directory
+     ((t :inherit diredp-dir-name :bold t)))
+
+    (eshell-ls-readonly
+     ((t :inherit diredp-file-name :bold t :foreground ,dark-grey)))
+
     (diredp-file-name
      ((t :inherit default)))
 
     (diredp-ignored-file-name
      ((t :inherit diredp-file-name :foreground ,dimmed-fg)))
 
+    (eshell-ls-clutter
+     ((t :inherit diredp-ignored-file-name)))
+
+    (eshell-ls-missing
+     ((t :inherit error)))
+
     (diredp-symlink
      ((t :inherit diredp-file-name :foreground ,mid-grey)))
+
+    (eshell-ls-symlink
+     ((t :inherit diredp-symlink :bold t)))
+
+    (eshell-ls-executable
+     ((t :bold t :foreground ,magenta)))
 
     (diredp-file-suffix
      ((t :foreground ,dimmed-fg)))
 
     (diredp-compressed-file-suffix
      ((t :inherit diredp-file-suffix)))
+
+    (eshell-ls-archive
+     ((t :inherit diredp-compressed-file-name)))
 
     (diredp-number
      ((t :weight ,light-weight)))
