@@ -26,4 +26,5 @@ alias lsa ls -lah
 alias pf projectile-find-file
 alias rmr rm -r
 alias s magit-status
+alias t proced
 alias tree tree -I target -I node_modules
