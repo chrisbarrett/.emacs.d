@@ -18,7 +18,8 @@
              mode-line-mode
              mode-line-mode-off)
   :demand t
-  :hook (eshell-mode . mode-line-mode-off)
+  :hook ((eshell-mode . mode-line-mode-off)
+         (proced-mode . mode-line-mode-off))
 
   :preface
   ;; HACK: Suppress the header line in the scratch buffer.
