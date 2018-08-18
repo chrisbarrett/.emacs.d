@@ -113,7 +113,7 @@
      ((t :background ,subtle-bg)))
 
     (eshell-prompt
-     ((t :weight normal :foreground ,orange)))
+     ((t :weight normal :foreground ,blue)))
 
     ;; General font-lock faces.
 

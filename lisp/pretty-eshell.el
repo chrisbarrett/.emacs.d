@@ -26,7 +26,7 @@
 (defvar pretty-eshell-header "\n "
   "Initial string composing the eshell prompt.")
 
-(defvar pretty-eshell-prompt-string " "
+(defvar pretty-eshell-prompt-string-fun (lambda () " $")
   "Prompt string, must match builtin `eshell-prompt-regexp'.")
 
 (defvar pretty-eshell-prompt-num 0
@@ -81,7 +81,7 @@
          (rendered (s-join "  " filtered)))
     (prog1 (concat pretty-eshell-header
                    (if (string-blank-p rendered) "" (concat " " rendered "\n"))
-                   pretty-eshell-prompt-string)
+                   (funcall pretty-eshell-prompt-string-fun))
       (setq pretty-eshell--previous-section-values next-sections))))
 
 (provide 'pretty-eshell)

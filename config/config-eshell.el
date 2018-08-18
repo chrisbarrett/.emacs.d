@@ -64,9 +64,16 @@
     (setq pretty-eshell-header "\n")
     (add-hook 'eshell-mode-hook 'page-break-lines-mode)
 
+    ;; Change the prompt, depending on the previous command's exit code.
+
     (setq eshell-prompt-function 'pretty-eshell-prompt-func)
-    (setq pretty-eshell-prompt-string " > ")
-    (setq eshell-prompt-regexp (rx bol (* space)  "> "))
+    (setq pretty-eshell-prompt-string-fun (lambda ()
+                                            (concat (if (eshell-exit-success-p)
+                                                        ">"
+                                                      (propertize "✘" 'face 'error))
+                                                    " ")))
+    (setq eshell-prompt-regexp (rx bol (* space) (or ">" "✘") space))
+
 
     ;; Directory
     (pretty-eshell-define-section config-eshell-dir
