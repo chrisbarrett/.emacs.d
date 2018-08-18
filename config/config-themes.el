@@ -210,6 +210,31 @@
   :init (require 'imenu-list-hacks)
   :general (:states 'normal :keymaps 'imenu-list-major-mode-map "q" #'quit-window))
 
+(use-package which-key
+  :straight t
+  :config
+  (progn
+    (setq which-key-idle-delay 0.4)
+    (setq which-key-replacement-alist
+          (let ((custom-regex
+                 (rx bos
+                     ;; strip hydra prefix
+                     (? (and (+? nonl) "/"))
+                     (? (or
+                         ;; feature names
+                         "counsel"
+                         "evil")
+                        "-")
+                     (group (+ nonl)))))
+            `((("<left>") . ("←"))
+              (("<right>") . ("→"))
+              (("<\\([[:alnum:]-]+\\)>") . ("\\1"))
+              ((nil . "Prefix Command") . (nil . "prefix"))
+              ((nil . "\\`\\?\\?\\'") . (nil . "lambda"))
+              ((nil . "which-key-show-next-page-no-cycle") . (nil . "wk next pg"))
+              ((nil . ,custom-regex) . (nil . "\\1")))))
+    (which-key-mode)))
+
 ;; Display a winsome pusheen gif in the scratch buffer during startup.
 
 (use-package pusheen
