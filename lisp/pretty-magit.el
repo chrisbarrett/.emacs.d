@@ -33,7 +33,7 @@
     (add-face-text-property start end props)))
 
 ;;;###autoload
-(defun pretty-magit-add-magit-faces ()
+(defun pretty-magit-add-magit-faces (&rest _)
   "Add face properties and compose symbols for buffer from pretty-magit."
   (interactive)
   (with-silent-modifications
