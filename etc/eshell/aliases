@@ -1,7 +1,7 @@
 alias d docker $*
 alias dco docker-compose
-alias e find-file $1
-alias f fasd-find-file -1 ${eshell-flatten-and-stringify $*}
+alias e fasd-find-file -1 ${eshell-flatten-and-stringify $*}
+alias f find-file $1
 alias ga git add
 alias gb git branch -v
 alias gc magit-commit
