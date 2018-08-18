@@ -143,15 +143,24 @@
 
 (autoload 'eshell/cd "em-dirs")
 
+(defun config-eshell--fasd-dir (query)
+  (let ((result (shell-command-to-string (format "fasd -l -R -d %s" (shell-quote-argument query)))))
+    (car (split-string result "\n" t))))
+
 (defun eshell/j (&rest query)
   "Change to a directory using fasd with QUERY."
   (unless query
     (user-error "Usage error: must supply a query"))
-  (-let* ((query-string (string-join query " "))
-          (results (shell-command-to-string (format "fasd -l -R -d %s" (shell-quote-argument query-string)))))
-    (-if-let* (((dir) (split-string results "\n" t)))
-        (eshell/cd dir)
-      (user-error "No results"))))
+  (if-let ((dir (config-eshell--fasd-dir (string-join query " "))))
+      (eshell/cd dir)
+    (user-error "No results")))
+
+(defun eshell/g (&rest query)
+  "Open magit, optionally using fasd QUERY to find repo directory."
+  (if query
+      (magit-status (config-eshell--fasd-dir (string-join query " ")))
+    (magit-status)))
+
 
 (provide 'config-eshell)
 
