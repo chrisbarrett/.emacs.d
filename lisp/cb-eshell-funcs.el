@@ -19,9 +19,9 @@
 
 (defun eshell/g (&rest query)
   "Open magit, optionally using fasd QUERY to find repo directory."
-  (if query
-      (magit-status (magit-toplevel (cb-eshell-funcs--fasd-dir (string-join query " "))))
-    (magit-status)))
+  (when query
+    (apply 'eshell/j query))
+  (magit-status))
 
 (provide 'cb-eshell-funcs)
 
