@@ -74,6 +74,7 @@
                                                     " ")))
     (setq eshell-prompt-regexp (rx bol (* space) (or ">" "✘") space))
 
+    ;; Customise the prompt header.
 
     ;; Directory
     (pretty-eshell-define-section config-eshell-dir
