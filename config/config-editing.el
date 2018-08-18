@@ -156,7 +156,7 @@ Interactively, reverse the characters in the current region."
 (use-package aggressive-indent
   :straight t
   :commands (global-aggressive-indent-mode)
-  :defer 1
+  :hook (prog-mode . (lambda () (require 'aggressive-indent)))
   :init
   (general-setq aggressive-indent-excluded-modes
                 '(cb-web-js-mode
@@ -195,7 +195,8 @@ Interactively, reverse the characters in the current region."
 
 (use-package volatile-highlights
   :straight t
-  :defer 1
+  :hook ((prog-mode . (lambda () (require 'volatile-highlights)))
+         (text-mode . (lambda () (require 'volatile-highlights))))
 
   :commands (volatile-highlights-mode)
   :functions (vhl/install-extension
@@ -253,7 +254,8 @@ Interactively, reverse the characters in the current region."
 (use-package ws-butler
   :straight t
   :commands (ws-butler-global-mode)
-  :defer 1
+  :hook ((prog-mode . (lambda () (require 'ws-butler)))
+         (text-mode . (lambda () (require 'ws-butler))))
   :config
   (ws-butler-global-mode))
 

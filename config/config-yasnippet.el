@@ -17,7 +17,8 @@
 
 (use-package yasnippet
   :straight t
-  :defer 1
+  :hook ((prog-mode . (lambda () (require 'yasnippet)))
+         (text-mode . (lambda () (require 'yasnippet))))
 
   ;; Define key bindings for fancy snippet navigation.
   :general (:states '(normal insert) :keymaps 'yas-keymap
