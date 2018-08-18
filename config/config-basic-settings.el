@@ -84,7 +84,7 @@
  initial-scratch-message nil
  inhibit-startup-message t
  initial-major-mode 'text-mode
- initial-buffer-choice t
+ initial-buffer-choice #'eshell
  ring-bell-function #'ignore
  history-length 1000
 

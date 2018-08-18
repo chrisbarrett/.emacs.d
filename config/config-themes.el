@@ -238,6 +238,7 @@
 ;; Display a winsome pusheen gif in the scratch buffer during startup.
 
 (use-package pusheen
+  :disabled t
   :config
   (progn
     (with-current-buffer "*scratch*"
