@@ -120,6 +120,16 @@
 
     (setq pretty-eshell-funcs (list config-eshell-dir config-eshell-git))))
 
+;; proced provides a top-like process manager.
+
+(use-package proced
+  :commands (proced)
+  :general
+  (:keymaps 'proced-mode-map
+   :states 'normal
+   "r" 'proced-refine
+   "R" 'proced-renice))
+
 
 
 ;; Define some eshell commands
