@@ -57,6 +57,15 @@
 
 (use-package pretty-eshell
   :after eshell
+  :preface
+  (defun config-eshell--inhibit-submission-on-empty (f &rest args)
+    (let* ((start eshell-last-output-end)
+           (end (point))
+           (input (buffer-substring-no-properties start end)))
+      (if (string-empty-p (string-trim input))
+          (delete-region start end)
+        (apply f args))))
+
   :config
   (progn
     ;; Show a horizontal rule and timestamp between commands.
@@ -76,6 +85,10 @@
 
     (require 'page-break-lines)
     (add-hook 'eshell-mode-hook 'page-break-lines-mode)
+
+    ;; Prevent command submission if there's no text to submit.
+
+    (advice-add 'eshell-send-input :around #'config-eshell--inhibit-submission-on-empty)
 
     ;; Change the prompt, depending on the previous command's exit code.
 
