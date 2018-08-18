@@ -23,7 +23,7 @@
 (defvar pretty-eshell-section-delim " "
   "String delimits icons and their text.")
 
-(defvar pretty-eshell-header "\n "
+(defvar pretty-eshell-header-fun (lambda () "\n ")
   "Initial string composing the eshell prompt.")
 
 (defvar pretty-eshell-prompt-string-fun (lambda () " $")
@@ -79,7 +79,7 @@
                                  next-sections
                                (pretty-eshell--new-prompt-sections pretty-eshell--previous-section-values next-sections))))
          (rendered (s-join "  " filtered)))
-    (prog1 (concat pretty-eshell-header
+    (prog1 (concat (funcall pretty-eshell-header-fun)
                    (if (string-blank-p rendered) "" (concat " " rendered "\n"))
                    (funcall pretty-eshell-prompt-string-fun))
       (setq pretty-eshell--previous-section-values next-sections))))

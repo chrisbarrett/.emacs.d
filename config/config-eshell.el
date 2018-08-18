@@ -61,7 +61,10 @@
   (progn
     ;; Show a horizontal rule between commands.
 
-    (setq pretty-eshell-header "\n")
+    (setq pretty-eshell-header-fun
+          (lambda ()
+            "\u000c\n"))
+    (require 'page-break-lines)
     (add-hook 'eshell-mode-hook 'page-break-lines-mode)
 
     ;; Change the prompt, depending on the previous command's exit code.
