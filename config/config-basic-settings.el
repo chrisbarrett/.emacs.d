@@ -83,7 +83,7 @@
  delete-by-moving-to-trash nil
  initial-scratch-message nil
  inhibit-startup-message t
- initial-major-mode 'text-mode
+ initial-major-mode 'fundamental-mode
  initial-buffer-choice #'eshell
  ring-bell-function #'ignore
  history-length 1000
