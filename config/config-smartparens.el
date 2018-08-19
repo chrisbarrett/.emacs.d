@@ -12,7 +12,7 @@
 (use-package smartparens
   :straight t
   :hook ((prog-mode . smartparens-strict-mode)
-         (text-mode . smartparens-strict-mode)
+         (eshell-mode . smartparens-strict-mode)
          (text-mode . smartparens-strict-mode))
 
   :general (:keymaps 'smartparens-strict-mode-map [remap c-electric-backspace] #'sp-backward-delete-char)
@@ -234,7 +234,7 @@
                      :pre-handlers '(config-smartparens-add-space-before-sexp-insertion)
                      :post-handlers '(config-smartparens-add-space-after-sexp-insertion)))
 
-    (sp-with-modes sp-lisp-modes
+    (sp-with-modes (cons 'eshell-mode sp-lisp-modes)
       (sp-local-pair "(" nil
                      :pre-handlers '(config-smartparens-add-space-before-sexp-insertion)
                      :post-handlers '(config-smartparens-add-space-after-sexp-insertion))
