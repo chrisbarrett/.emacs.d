@@ -59,7 +59,7 @@
                    ('nil
                     (or (cb-eshell-funcs--nvm-version-from-nvmrc default-directory)
                         (cb-eshell-funcs--read-nvm-version)))
-                   (`(,version . _)
+                   (`(,version)
                     version)
                    (_
                     (user-error "Usage: nvm use <version>")))))
