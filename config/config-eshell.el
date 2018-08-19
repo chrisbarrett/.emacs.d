@@ -13,6 +13,7 @@
 
 (defconst config-eshell-etc-directory (f-join paths-etc-directory "eshell"))
 (autoload 'evil-local-set-key "evil-core")
+(autoload 'page-break-lines-mode "page-break-lines")
 
 
 
@@ -102,7 +103,6 @@
                 (prog1 (concat timestamp "\n" page-break "\n")
                   (setq config-eshell--previous-time time))))))
 
-    (require 'page-break-lines)
     (add-hook 'eshell-mode-hook 'page-break-lines-mode)
 
     ;; Prevent command submission if there's no text to submit.
