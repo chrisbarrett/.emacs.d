@@ -67,7 +67,7 @@
 
     (defun config-eshell--dim-commands-on-submission ()
       (let ((start eshell-last-output-start)
-            (end (point)))
+            (end (line-end-position)))
         (let ((inhibit-read-only t))
           (save-excursion
             (goto-char start)
@@ -76,7 +76,7 @@
 
     (defun config-eshell--inhibit-submission-on-empty (f &rest args)
       (let* ((start eshell-last-output-end)
-             (end (point))
+             (end (line-end-position))
              (input (buffer-substring-no-properties start end)))
         (if (string-empty-p (string-trim input))
             (delete-region start end)
