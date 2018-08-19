@@ -6,7 +6,6 @@
   (require 'use-package))
 
 (require 'dash)
-(require 'eshell-hacks)
 (require 'f)
 (require 'general)
 (require 'paths)
