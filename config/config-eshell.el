@@ -10,6 +10,7 @@
 (require 'f)
 (require 'general)
 (require 'paths)
+(require 'pusheen)
 
 (defconst config-eshell-etc-directory (f-join paths-etc-directory "eshell"))
 (autoload 'evil-local-set-key "evil-core")
@@ -32,9 +33,13 @@
 
   :config
   (progn
-    (require 'pusheen)
-    (setq eshell-banner-message (format "%13s\n%15s\n\n" (pusheen 'winky)
-                                        (propertize "O hai!" 'face '(:height 400))))
+    ;; Customise the prompt header.
+
+    (setq eshell-banner-message
+          (let ((pad-char "\u0080"))
+            (format "%s%s\n%s%s\n\n" pad-char (pusheen 'winky)
+                    pad-char
+                    (propertize " O hai!" 'face '(:height 400)))))
     (add-hook 'eshell-mode-hook #'config-eshell-setup-keybindings)
     (add-hook 'eshell-mode-hook #'pusheen-animate-all)
 
@@ -121,8 +126,6 @@
                                                     " ")))
     (setq eshell-prompt-regexp (rx bol (* space) (or ">" "✘") space))
 
-    ;; Customise the prompt header.
-
     ;; Directory
     (pretty-eshell-define-section config-eshell-dir
       ""
@@ -151,25 +154,46 @@
     (setq pretty-eshell-funcs (list config-eshell-dir config-eshell-git config-eshell-node))))
 
 
-;; Horrific hack to right-align the timestamp in the eshell prompt using C-i
-;; control character.
+;; Horrific hacks to align buffer objects via control chars:
+;;
+;; 1. right-align the timestamp in the eshell prompt using C-i control
+;; character.
+;;
+;; 2. center-align the pusheen hero image.
 ;;
 ;; Adapted from the implementation of page-break-lines.
 
+(defun config-eshell--align-timestamp ()
+  (let* ((space-char 32)
+         (timestamp-width 5) ; HH:MM
+         (spaces-count (- (1+ (window-width)) timestamp-width))
+         (width (* (char-width space-char) spaces-count))
+         (new-display-entry (vconcat (make-list width space-char))))
+    (unless (equal new-display-entry (elt buffer-display-table ?\^I))
+      (aset buffer-display-table ?\^I new-display-entry))))
+
+(defun config-eshell--align-pusheen ()
+  (-let* ((pad-control-char ?\u0080)
+          ((pusheen-cols . _y)
+           (image-size (alist-get 'winky pusheen-image-alist)))
+          (space-char 32)
+          (spaces-count (/ (- (1+ (window-width))
+                              pusheen-cols)
+                           2))
+          (width (truncate (* (char-width space-char) spaces-count)))
+          (new-display-entry (vconcat (make-list width space-char))))
+    (unless (equal new-display-entry
+                   (elt buffer-display-table pad-control-char))
+      (aset buffer-display-table pad-control-char new-display-entry))))
+
 (defun eshell-timestamp--update-display-table (window)
-  ;; KLUDGE: Make sure page-break-lines recomposition is applied appropriately.
-  (page-break-lines--update-display-table window)
   (with-current-buffer (window-buffer window)
     (with-selected-window window
+      (page-break-lines--update-display-table window)
       (unless buffer-display-table
         (setq buffer-display-table (make-display-table)))
-      (let* ((space-char 32)
-             (timestamp-width 5) ; HH:MM
-             (spaces-count (- (1+ (window-width)) timestamp-width))
-             (width (* (char-width space-char) spaces-count))
-             (new-display-entry (vconcat (make-list width space-char))))
-        (unless (equal new-display-entry (elt buffer-display-table ?\^I))
-          (aset buffer-display-table ?\^I new-display-entry))))))
+      (config-eshell--align-timestamp)
+      (config-eshell--align-pusheen))))
 
 (defun eshell-timestamp--update-display-tables  (&optional frame)
   (unless (minibufferp)
