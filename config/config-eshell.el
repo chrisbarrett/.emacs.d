@@ -140,7 +140,15 @@
         (s-truncate 20 (s-chop-prefixes '("feature/" "release/") branch)))
       '(:foreground "#cb4b16" :weight light))
 
-    (setq pretty-eshell-funcs (list config-eshell-dir config-eshell-git))))
+    ;; Node version
+    (pretty-eshell-define-section config-eshell-node
+      ""
+      (when (and (bound-and-true-p nvm-current-version)
+                 (locate-dominating-file default-directory ".nvmrc"))
+        (car nvm-current-version))
+      '(:foreground "#d33682" :weight light))
+
+    (setq pretty-eshell-funcs (list config-eshell-dir config-eshell-git config-eshell-node))))
 
 
 ;; Horrific hack to right-align the timestamp in the eshell prompt using C-i
