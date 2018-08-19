@@ -324,6 +324,15 @@
 
 (add-hook 'find-file-hook #'config-basic-settings--prompt-to-open-large-files-in-fundamental-mode)
 
+
+;; Clean up completions buffers
+
+(defun config-basic-settings--cleanup-completions-buffer ()
+  (when-let* ((buf (get-buffer "*Completions*")))
+    (kill-buffer buf)))
+
+(add-hook 'minibuffer-exit-hook #'config-basic-settings--cleanup-completions-buffer)
+
 
 
 ;; Display buffer customisations for inbuilt features
