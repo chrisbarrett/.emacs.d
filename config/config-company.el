@@ -23,6 +23,9 @@
 
   :preface
   (defun config-company--set-company-vars ()
+    ;; HACK: evil-collection-company seems to be messing with this binding, so I
+    ;; need to manually apply it again. :/
+    (define-key company-active-map (kbd "RET") #'company-complete-selection)
     (setq company-minimum-prefix-length 3)
     (setq company-tooltip-align-annotations t))
 
