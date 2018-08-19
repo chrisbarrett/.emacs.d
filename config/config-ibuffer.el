@@ -65,6 +65,7 @@
     (add-to-list 'ibuffer-filter-groups '("Dired" (mode . dired-mode)))
     (add-to-list 'ibuffer-filter-groups '("Ensime" (predicate . (s-matches? "Ensime" (buffer-name)))))
     (add-to-list 'ibuffer-filter-groups '("System" (predicate . (-contains? '("*Messages*" "*scratch*") (buffer-name)))))
+    (add-to-list 'ibuffer-filter-groups '("Shells" (mode . eshell-mode)))
     (unless (eq ibuffer-sorting-mode 'alphabetic)
       (ibuffer-do-sort-by-alphabetic)))
   :init
