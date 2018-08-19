@@ -136,7 +136,8 @@
     ;; Git Branch
     (pretty-eshell-define-section config-eshell-git
       ""
-      (magit-get-current-branch)
+      (when-let* ((branch (magit-get-current-branch)))
+        (s-truncate 20 (s-chop-prefixes '("feature/" "release/") branch)))
       '(:foreground "#cb4b16" :weight light))
 
     (setq pretty-eshell-funcs (list config-eshell-dir config-eshell-git))))
