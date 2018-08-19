@@ -95,14 +95,13 @@
     (defvar-local config-eshell--previous-time nil)
 
     (setq pretty-eshell-header-fun
-          (let ((page-break "\u000c"))
+          (let ((page-break "\u000c")
+                (horizontal-tab "\u0009"))
             (lambda ()
               (let* ((time (format-time-string "%H:%M" (current-time)))
-                     (timestamp
-                      (s-pad-left (1+ (window-width))
-                                  " "
-                                  (propertize time 'face 'eshell-timestamp))))
-
+                     (timestamp (concat
+                                 horizontal-tab
+                                 (propertize time 'face 'eshell-timestamp))))
                 (prog1 (concat timestamp "\n" page-break "\n")
                   (setq config-eshell--previous-time time))))))
 
@@ -141,6 +140,42 @@
       '(:foreground "#cb4b16" :weight light))
 
     (setq pretty-eshell-funcs (list config-eshell-dir config-eshell-git))))
+
+
+;; Horrific hack to right-align the timestamp in the eshell prompt using C-i
+;; control character.
+;;
+;; Adapted from the implementation of page-break-lines.
+
+(defun eshell-timestamp--update-display-table (window)
+  ;; KLUDGE: Make sure page-break-lines recomposition is applied appropriately.
+  (page-break-lines--update-display-table window)
+  (with-current-buffer (window-buffer window)
+    (with-selected-window window
+      (unless buffer-display-table
+        (setq buffer-display-table (make-display-table)))
+      (let* ((space-char 32)
+             (timestamp-width 5) ; HH:MM
+             (spaces-count (- (1+ (window-width)) timestamp-width))
+             (width (* (char-width space-char) spaces-count))
+             (new-display-entry (vconcat (make-list width space-char))))
+        (unless (equal new-display-entry (elt buffer-display-table ?\^I))
+          (aset buffer-display-table ?\^I new-display-entry))))))
+
+(defun eshell-timestamp--update-display-tables  (&optional frame)
+  (unless (minibufferp)
+    (mapc 'eshell-timestamp--update-display-table
+          (window-list frame 'no-minibuffer))))
+
+(defun eshell-timestamp--configure-hooks ()
+  (dolist (hook '(window-configuration-change-hook
+                  window-size-change-functions
+                  after-setting-font-hook))
+    (add-hook hook 'eshell-timestamp--update-display-tables t t)))
+
+(add-hook 'eshell-mode-hook #'eshell-timestamp--configure-hooks)
+
+
 
 ;; proced provides a top-like process manager.
 
