@@ -18,6 +18,7 @@ alias grh git reset --hard
 alias grm git rm
 alias gs git show
 alias gup git remote update -p && git pull --rebase
+alias k tree -L 2 -C
 alias l ls
 alias la ls -lA
 alias ll ls -l
