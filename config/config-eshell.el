@@ -65,6 +65,11 @@
       "Face for dimmed text in eshell."
       :group 'config-eshell)
 
+    (defface eshell-timestamp
+      '((t :inherit eshell-dimmed :height 0.7))
+      "Face for timestamps in eshell."
+      :group 'config-eshell)
+
     (defun config-eshell--dim-commands-on-submission ()
       (let ((start eshell-last-output-start)
             (end (line-end-position)))
@@ -96,9 +101,7 @@
                      (timestamp
                       (s-pad-left (1+ (window-width))
                                   " "
-                                  (propertize time 'face
-                                              '(:inherit eshell-dimmed
-                                                :height 0.7)))))
+                                  (propertize time 'face 'eshell-timestamp))))
 
                 (prog1 (concat timestamp "\n" page-break "\n")
                   (setq config-eshell--previous-time time))))))
