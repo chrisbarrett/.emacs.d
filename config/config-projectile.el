@@ -9,6 +9,7 @@
 (require 'dash-functional)
 (require 'paths)
 (require 'projectile-funcs)
+(require 'projectile-hacks)
 
 
 
