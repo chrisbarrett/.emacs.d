@@ -240,7 +240,11 @@
   :commands (prodigy)
   :general
   (:states 'motion :keymaps 'prodigy-mode-map
-   "TAB" #'prodigy-display-process))
+   "TAB" #'prodigy-display-process
+   "gr" #'prodigy-refresh)
+  :config
+  ;; Use standard completing-read.
+  (setq prodigy-completion-system 'default))
 
 (provide 'config-eshell)
 
