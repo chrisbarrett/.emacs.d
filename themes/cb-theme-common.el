@@ -329,6 +329,20 @@
        :foreground ,error-fg
        :underline ,error-fg)))
 
+    ;; Prodigy
+
+    (prodigy-red-face
+     ((t
+       :inherit error)))
+
+    (prodigy-yellow-face
+     ((t
+       :inherit warning)))
+
+    (prodigy-green-face
+     ((t
+       :inherit success)))
+
     ;; Ivy
 
     (minibuffer-prompt
