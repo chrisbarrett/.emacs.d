@@ -23,44 +23,12 @@
   (("ro" js-refactor-commands-organize-imports "organise imports")
    ("ra" js-refactor-commands-align-object-literal-values "align object values")
    ("re" js-refactor-commands-expand-comma-bindings "expand comma bindings")
-   ("rs" js-refactor-commands-toggle-sealed-object-type "toggle sealed type"))
-
-  "Add Breakpoints"
-  (("bb" indium-add-breakpoint "add")
-   ("bc" indium-add-conditional-breakpoint "add conditional")
-   ("bl" indium-list-breakpoints "list")
-   ("ba" indium-activate-breakpoints "activate"))
-
-  "Modify Breakpoints"
-  (("be" indium-edit-breakpoint-condition "edit condition")
-   ("bx" indium-remove-breakpoint "remove")
-   ("bX" indium-remove-all-breakpoints-from-buffer "remove all")
-   ("bd" indium-deactivate-breakpoints "deactivate"))
-
-  "Run"
-  (("xn" indium-run-node "node")
-   ("xc" indium-run-chrome "chrome")))
+   ("rs" js-refactor-commands-toggle-sealed-object-type "toggle sealed type")))
 
 (cb-major-mode-hydra-define web-ts-mode
   "Tide"
   (("r" tide-refactor "refactor")
-   ("e" tide-project-errors "errors in project"))
-
-  "Add Breakpoints"
-  (("bb" indium-add-breakpoint "add")
-   ("bc" indium-add-conditional-breakpoint "add conditional")
-   ("bl" indium-list-breakpoints "list")
-   ("ba" indium-activate-breakpoints "activate"))
-
-  "Modify Breakpoints"
-  (("be" indium-edit-breakpoint-condition "edit condition")
-   ("bx" indium-remove-breakpoint "remove")
-   ("bX" indium-remove-all-breakpoints-from-buffer "remove all")
-   ("bd" indium-deactivate-breakpoints "deactivate"))
-
-  "Run"
-  (("xn" indium-run-node "node")
-   ("xc" indium-run-chrome "chrome")))
+   ("e" tide-project-errors "errors in project")))
 
 
 
@@ -376,28 +344,6 @@
 
 
 ;; Node
-
-(use-package indium
-  :straight t
-  :commands (indium-run-node)
-  :hook
-  ((web-js-base-mode . indium-interaction-mode)
-   (js-mode . indium-interaction-mode))
-
-  :preface
-  (defun node-repl (arg)
-    "Run node. With prefix ARG, prompt for the command to run."
-    (interactive "P")
-    (if arg
-        (call-interactively #'indium-run-node)
-      (indium-run-node "node")))
-  :init
-  (defalias 'run-node #'node-repl)
-  :general (:keymaps 'web-js-mode-map "C-c C-l" #'indium-eval-buffer)
-  :general
-  (:states 'motion :keymaps indium-inspector-mode-map
-   "^" #'indium-inspector-pop
-   "r" #'indium-inspector-refresh))
 
 (use-package nvm
   :straight t
