@@ -38,6 +38,10 @@
   :init
   (general-unbind :keymaps 'mu4e-view-mode-map "p")
 
+  :config
+  (with-eval-after-load 'evil-collection-mu4e
+    (evil-define-key 'normal mu4e-main-mode-map (kbd "q") #'bury-buffer))
+
   :preface
   (progn
     (autoload 'evil-ret "evil-commands")
