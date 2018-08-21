@@ -242,9 +242,24 @@
   (:states 'motion :keymaps 'prodigy-mode-map
    "TAB" #'prodigy-display-process
    "gr" #'prodigy-refresh)
+  :preface
+  (defun config-eshell--display-buffer-fullframe (buffer alist)
+    (when-let ((window (or (display-buffer-reuse-window buffer alist)
+                           (display-buffer-same-window buffer alist)
+                           (display-buffer-pop-up-window buffer alist)
+                           (display-buffer-use-some-window buffer alist))))
+      (delete-other-windows window)
+      window))
   :config
-  ;; Use standard completing-read.
-  (setq prodigy-completion-system 'default))
+  (progn
+    (add-to-list 'display-buffer-alist
+                 `(,(rx bos "*prodigy*" eos)
+                   (display-buffer-reuse-window
+                    config-eshell--display-buffer-fullframe)
+                   (reusable-frames . visible)))
+
+    ;; Use standard completing-read.
+    (setq prodigy-completion-system 'default)))
 
 (provide 'config-eshell)
 
