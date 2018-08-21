@@ -238,10 +238,32 @@
 (use-package prodigy
   :straight t
   :commands (prodigy)
+  :preface
+  (progn
+    (defun prodigy-start-with-tag (tag)
+      "Start all services with TAG."
+      (interactive (list (intern (completing-read "Start processes with tag: " (prodigy-tags)))))
+      (prodigy)
+      (if-let ((services (prodigy-services-tagged-with tag)))
+          (dolist (service services)
+            (prodigy-start-service service))
+        (user-error "No services for tag")))
+
+    (defun prodigy-stop-with-tag (tag)
+      "Start all services with TAG."
+      (interactive (list (intern (completing-read "Stop processes with tag: " (prodigy-tags)))))
+      (prodigy)
+      (if-let ((services (prodigy-services-tagged-with tag)))
+          (dolist (service services)
+            (prodigy-stop-service service))
+        (user-error "No services for tag"))))
+
   :general
   (:states 'motion :keymaps 'prodigy-mode-map
    "TAB" #'prodigy-display-process
-   "gr" #'prodigy-refresh)
+   "gr" #'prodigy-refresh
+   "t" #'prodigy-start-with-tag
+   "T" #'prodigy-stop-with-tag)
   :preface
   (defun config-eshell--display-buffer-fullframe (buffer alist)
     (when-let ((window (or (display-buffer-reuse-window buffer alist)
