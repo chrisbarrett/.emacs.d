@@ -406,7 +406,8 @@
 
   "Emacs"
   (("r" profiler/body "profiler...")
-   ("s" straight/body "straight package manager..."))
+   ("s" straight/body "straight package manager...")
+   ("v" prodigy "services..."))
 
   "Shells"
   (("t" eshell "terminal (eshell)")

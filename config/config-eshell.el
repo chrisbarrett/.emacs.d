@@ -15,6 +15,12 @@
 (autoload 'evil-local-set-key "evil-core")
 (autoload 'page-break-lines-mode "page-break-lines")
 
+;; NOTE: Load just this feature, instead of all of magit.
+(autoload 'magit-get-current-branch "magit-git")
+(autoload 'magit-process-file "magit-process")
+
+(autoload 'page-break-lines--update-display-table "page-break-lines")
+
 
 
 ;; eshell implements a shell in emacs lisp.
@@ -131,10 +137,6 @@
       (abbreviate-file-name (eshell/pwd))
       '(:inherit eshell-ls-directory :weight light))
 
-    ;; NOTE: Load just this feature, instead of all of magit.
-    (autoload 'magit-get-current-branch "magit-git")
-    (autoload 'magit-process-file "magit-process")
-
     ;; Git Branch
     (pretty-eshell-define-section config-eshell-git
       ""
@@ -235,7 +237,10 @@
 
 (use-package prodigy
   :straight t
-  :commands (prodigy))
+  :commands (prodigy)
+  :general
+  (:states 'motion :keymaps 'prodigy-mode-map
+   "TAB" #'prodigy-display-process))
 
 (provide 'config-eshell)
 
