@@ -231,6 +231,12 @@
 (use-package cb-eshell-funcs
   :after eshell)
 
+;; Prodigy provides a UI for managing external processes.
+
+(use-package prodigy
+  :straight t
+  :commands (prodigy))
+
 (provide 'config-eshell)
 
 ;;; config-eshell.el ends here

@@ -23,6 +23,7 @@ alias l ls
 alias la ls -lA
 alias ll ls -l
 alias lsa ls -lah
+alias p (progn (prodigy) nil)
 alias pf projectile-find-file
 alias rmr rm -r
 alias s magit-status

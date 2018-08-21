@@ -23,6 +23,7 @@
          (magit-mode . mode-line-mode-off)
          (dired-mode . mode-line-mode-off)
          (magit-popup-mode . mode-line-mode-off)
+         (prodigy-mode . mode-line-mode-off)
          (ibuffer-mode . mode-line-mode-off))
 
   :preface
