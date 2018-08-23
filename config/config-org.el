@@ -57,6 +57,7 @@
 ;; general settings
 
 (general-setq
+ org-imenu-depth 4
  org-M-RET-may-split-line nil
  org-blank-before-new-entry '((heading . always) (plain-list-item . nil))
  org-catch-invisible-edits 'smart
