@@ -19,6 +19,7 @@
 (autoload 'magit-get-current-branch "magit-git")
 (autoload 'magit-process-file "magit-process")
 
+(autoload 'display-buffer-fullframe "display-buffer-fullframe")
 (autoload 'page-break-lines--update-display-table "page-break-lines")
 
 
@@ -264,21 +265,16 @@
    "gr" #'prodigy-refresh
    "t" #'prodigy-start-with-tag
    "T" #'prodigy-stop-with-tag)
-  :preface
-  (defun config-eshell--display-buffer-fullframe (buffer alist)
-    (when-let ((window (or (display-buffer-reuse-window buffer alist)
-                           (display-buffer-same-window buffer alist)
-                           (display-buffer-pop-up-window buffer alist)
-                           (display-buffer-use-some-window buffer alist))))
-      (delete-other-windows window)
-      window))
   :config
   (progn
     (add-to-list 'display-buffer-alist
                  `(,(rx bos "*prodigy*" eos)
                    (display-buffer-reuse-window
-                    config-eshell--display-buffer-fullframe)
+                    display-buffer-fullframe)
                    (reusable-frames . visible)))
+
+    ;; Truncate buffers.
+    (setq prodigy-view-truncate-by-default t)
 
     ;; Use standard completing-read.
     (setq prodigy-completion-system 'default)))
