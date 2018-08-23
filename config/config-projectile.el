@@ -51,13 +51,26 @@
             (projectile-files-from-cmd cmd directory))
         (funcall fn string directory)))
 
-    (defun config-projectile--file-is-child-of-test-dir (&optional has-test-prefix-or-suffix)
+    (defun config-projectile--file-has-test-suffix-p (file)
+      (string-suffix-p ".test.js" (-last-item (f-split file))))
+
+    (defun config-projectile--file-is-child-of-test-dir-p (file)
+      (seq-contains (f-split file) "test"))
+
+    (defun config-projectile--test-file-p (&optional has-test-prefix-or-suffix)
       (or has-test-prefix-or-suffix
+          (config-projectile--file-has-test-suffix-p (buffer-name))
           (when-let* ((file (buffer-file-name)))
-            (seq-contains (f-split file) "test"))))
+            (config-projectile--file-is-child-of-test-dir-p file))))
+
 
     (defun config-projectile--substitute-test-with-impl (&optional existing)
       (or existing
+          ;; File and test in same dir.
+          (when-let* ((file (buffer-file-name)))
+            (when (string-suffix-p ".test.js" file)
+              (s-replace-regexp (rx ".test.js" eos) ".js" file)))
+          ;; File in tests are in different trees.
           (when-let* ((file (buffer-file-name))
                       (impl-dir (if (f-dir? (f-join (projectile-project-root) "lib"))
                                     "/lib/"
@@ -71,6 +84,12 @@
 
     (defun config-projectile--substitute-impl-with-test (&optional existing)
       (or existing
+          ;; File and test in same dir.
+          (when-let* ((file (buffer-file-name))
+                      (guess (format "%s.test.js" (f-no-ext file))))
+            (when (file-exists-p guess)
+              guess))
+          ;; File in tests are in different trees.
           (when-let* ((file (buffer-file-name))
                       (guess (replace-regexp-in-string (rx "/" (or "lib" "src") "/") "/test/" file t t)))
             (cond
@@ -139,7 +158,7 @@
                                       :test "yarn test")
 
     ;; Teach projectile how to resolve npm srcs and tests.
-    (advice-add #'projectile-test-file-p :filter-return #'config-projectile--file-is-child-of-test-dir)
+    (advice-add #'projectile-test-file-p :filter-return #'config-projectile--test-file-p)
     (advice-add #'projectile-find-matching-file :filter-return #'config-projectile--substitute-test-with-impl)
     (advice-add #'projectile-find-matching-test :filter-return #'config-projectile--substitute-impl-with-test)
 
