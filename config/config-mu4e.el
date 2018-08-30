@@ -11,6 +11,7 @@
 (require 'paths)
 
 (autoload 'mail-add-attachment "sendmail")
+(autoload 'display-buffer-fullframe "display-buffer-fullframe")
 
 
 
@@ -182,6 +183,14 @@
     ;; View html message in external browser. `a&` in view to activate
 
     (add-to-list 'mu4e-view-actions '("&viewInExternalBrowser" . cb-mu4e-utils-view-in-external-browser-action) t)
+
+    ;; Show mu4e in full frame.
+
+    (add-to-list 'display-buffer-alist
+                 `(,(rx bos "*mu4e-main*" eos)
+                   (display-buffer-reuse-window
+                    display-buffer-fullframe)
+                   (reusable-frames . visible)))
 
     ;; Add read+archive mark
     (add-to-list 'mu4e-marks
