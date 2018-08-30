@@ -126,7 +126,7 @@
     (setq projectile-create-missing-test-files t)
 
     (setq projectile-globally-ignored-files '("TAGS" ".DS_Store"))
-    (setq projectile-globally-ignored-file-suffixes '("jsbundle" "gz" "zip" "tar" "elc"))
+    (setq projectile-globally-ignored-file-suffixes '("meta" "jsbundle" "gz" "zip" "tar" "elc"))
 
     (setq projectile-ignored-project-function #'projectile-funcs-ignored-subdir-p)
 
