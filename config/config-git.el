@@ -172,7 +172,7 @@
     (pretty-magit-add-leader (rx ":lipstick:") ?
                              '(:foreground "grey60" :height 1.2))))
 
-;; VC annotate happens to be a nice way to file changes.
+;; VC annotate happens to be a nice way to view file changes.
 
 (use-package vc-annotate
   :commands (vc-annotate)
