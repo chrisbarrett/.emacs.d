@@ -385,6 +385,30 @@
                    (slot            . 1)
                    (window-width    . 0.5)))))
 
+
+
+;; HACK: Ensure these modes are used when others are available potentially in
+;; auto-mode-alist.
+
+(defun config-web--choose-mode (&rest _)
+  (catch 'stop
+    (-each '(("\\.json\\'" . web-json-mode)
+             ("\\.eslintrc\\'" . web-json-mode)
+             ("\\.babelrc\\'" . web-json-mode)
+             ("\\.es6\\'"  . web-js-mode)
+             ("\\.js\\.snap\\'"  . web-js-snap-mode)
+             ("\\.tsx?\\'"  . web-ts-mode)
+             ("\\.jsx?\\'" . web-js-mode))
+      (-lambda ((regex . mode))
+        (if (string-match-p regex (buffer-name))
+            (progn
+              (funcall mode)
+              (throw 'stop nil))
+          (web-mode))))))
+
+(advice-add 'js-mode :override #'config-web--choose-mode)
+(advice-add 'json-mode :override #'config-web--choose-mode)
+
 (provide 'config-web-mode)
 
 ;;; config-web-mode.el ends here
