@@ -172,6 +172,18 @@
     (pretty-magit-add-leader (rx ":lipstick:") ?
                              '(:foreground "grey60" :height 1.2))))
 
+;; VC annotate happens to be a nice way to file changes.
+
+(use-package vc-annotate
+  :commands (vc-annotate)
+  :general
+  (:states 'normal :keymaps 'vc-annotate-mode-map
+   "n" 'vc-annotate-next-revision
+   "f" 'vc-annotate-next-revision
+   "p" 'vc-annotate-prev-revision
+   "b" 'vc-annotate-prev-revision
+   "." 'vc-annotate-working-revision))
+
 (provide 'config-git)
 
 ;;; config-git.el ends here
