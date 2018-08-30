@@ -57,8 +57,10 @@
           (delete-window window)
         (flycheck-list-errors)))
 
-    (defun config-flycheck--inhibit-if-query-replacing (result)
-      (and result (not config-etags-in-query-replace-session-p)))
+    (defun config-flycheck--maybe-inhibit-flycheck (result)
+      (unless (or (equal (buffer-name) "*ediff-merge*")
+                  config-etags-in-query-replace-session-p)
+        result))
 
     (defun config-flycheck--check-all-project-buffers ()
       (unless config-etags-in-query-replace-session-p
@@ -85,7 +87,7 @@
   (progn
     (global-flycheck-mode +1)
 
-    (advice-add #'flycheck-may-enable-mode :filter-return #'config-flycheck--inhibit-if-query-replacing)
+    (advice-add #'flycheck-may-enable-mode :filter-return #'config-flycheck--maybe-inhibit-flycheck)
 
     (add-hook 'after-save-hook #'config-flycheck--check-all-project-buffers)
 
