@@ -24,6 +24,8 @@
 
 
 
+(defvar config-eshell--changing-dir-interactively nil)
+
 ;; eshell implements a shell in emacs lisp.
 
 (use-package eshell
@@ -91,13 +93,16 @@
             (put-text-property (point) end 'face 'eshell-dimmed)))))
 
     (defun config-eshell--inhibit-submission-on-empty (f &rest args)
-      (let* ((start eshell-last-output-end)
-             (end (line-end-position))
-             (input (buffer-substring-no-properties start end)))
-        (if (string-empty-p (string-trim input))
-            (delete-region start end)
-          (config-eshell--dim-commands-on-submission)
-          (apply f args)))))
+      ;; Always run command if this is a dir change from hyrda.
+      (if config-eshell--changing-dir-interactively
+          (apply f args)
+        (let* ((start eshell-last-output-end)
+               (end (line-end-position))
+               (input (buffer-substring-no-properties start end)))
+          (if (string-empty-p (string-trim input))
+              (delete-region start end)
+            (config-eshell--dim-commands-on-submission)
+            (apply f args))))))
 
   :config
   (progn
@@ -278,6 +283,22 @@
 
     ;; Use standard completing-read.
     (setq prodigy-completion-system 'default)))
+
+;; Custom command to for hydra eshell command
+
+(defun cb-eshell-at-dir (&optional arg)
+  "Open eshell. With ARG, change to buffer's directory."
+  (interactive "P")
+  (if-let* ((dir default-directory)
+            (eshell-buf (get-buffer "*eshell*")))
+      (with-current-buffer eshell-buf
+        (when arg
+          (let ((config-eshell--changing-dir-interactively t))
+            (eshell/cd dir)
+            (eshell-reset t)))
+        (pop-to-buffer eshell-buf))
+    (eshell)))
+
 
 (provide 'config-eshell)
 

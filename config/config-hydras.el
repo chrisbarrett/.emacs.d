@@ -410,7 +410,7 @@
    ("v" prodigy "services..."))
 
   "Shells"
-  (("t" eshell "terminal (eshell)")
+  (("t" cb-eshell-at-dir "terminal (eshell)")
    ("n" nix-repl-show "nix-repl")))
 
 (cb-hydra-define profiler ()
