@@ -36,7 +36,10 @@
 (defconst paths-themes-directory
   (concat user-emacs-directory "themes"))
 
-(defconst paths-site-lisp-directory "~/.nix-profile/share/emacs/site-lisp")
+(defconst paths-site-lisp-directory
+  (seq-find #'file-directory-p
+            '("/run/current-system/sw/share/emacs/site-lisp"
+              "~/.nix-profile/share/emacs/site-lisp")))
 
 
 
