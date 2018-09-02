@@ -102,10 +102,21 @@
 (use-package config-themes
   :functions (config-themes/light-theme)
   :config
-  (config-themes/light-theme))
+  (pcase system-type
+    ('darwin
+     (config-themes/light-theme))
+    (_
+     (config-themes/dark-theme))))
 
 (use-package config-basic-settings)
-(use-package config-darwin :if (equal system-type 'darwin))
+
+(use-package config-darwin
+  :if (equal system-type 'darwin))
+
+(use-package config-nixos
+  :if (and (equal system-type 'gnu/linux)
+           (string-match-p "nixos" (f-read "/proc/version"))))
+
 (use-package config-modeline)
 (use-package config-editing)
 (use-package config-hydras)
