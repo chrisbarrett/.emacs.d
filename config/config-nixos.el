@@ -5,6 +5,7 @@
 (require 'general)
 
 (general-define-key "s-v" #'clipboard-yank)
+(general-define-key "<s-return>" #'toggle-frame-fullscreen)
 
 (provide 'config-nixos)
 
