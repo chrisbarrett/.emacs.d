@@ -391,6 +391,9 @@
       (seq-intersection (f-ext f)
                         '("gz" "zip" "tar")))
 
+    (defun config-basic-settings--sudo-file-p (f)
+      (string-prefix-p "/sudo:root@" f))
+
     (defun config-basic-settings--child-of-boring-relative-dir-p (f)
       (string-match-p (rx "/"
                           (or
@@ -424,6 +427,7 @@
    recentf-max-saved-items 1000
    recentf-exclude '(config-basic-settings--boring-filename-p
                      config-basic-settings--boring-extension-p
+                     config-basic-settings--sudo-file-p
                      config-basic-settings--child-of-boring-relative-dir-p
                      config-basic-settings--child-of-boring-abs-dir-p)))
 
