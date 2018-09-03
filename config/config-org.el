@@ -46,7 +46,6 @@
 
 (defvar config-org-work-file (f-join org-directory "work_pushpay.org"))
 (defvar config-org-journal-file (f-join org-directory "journal.org"))
-(defvar config-org-drill-file (f-join org-directory "drill" "drill.org"))
 
 (general-setq
  org-default-notes-file (f-join org-directory "notes.org")
@@ -115,19 +114,8 @@
  org-tags-exclude-from-inheritance '("crypt" "project")
  org-crypt-disable-auto-save 'encypt
 
- ;; org-drill
-
- org-drill-scope (let ((dir (concat org-directory "/drill")))
-                   (when (f-dir? dir)
-                     (f-files dir)))
- org-drill-learn-fraction 0.25
- org-drill-adjust-intervals-for-early-and-late-repetitions-p t
- org-drill-add-random-noise-to-intervals-p t
- org-drill-save-buffers-after-drill-sessions-p nil
-
  org-refile-targets
- '((org-drill-scope :maxlevel . 3)
-   (org-directory :maxlevel . 3)
+ '((org-directory :maxlevel . 3)
    (org-default-notes-file :maxlevel . 3)
    (nil :maxlevel . 3))
 
@@ -237,7 +225,7 @@
                   (tags-todo "someday&skill"
                              ((org-agenda-overriding-header "Decide whether to promote any learning tasks to TODOs"))))
                  ((org-agenda-tag-filter-preset
-                   '("-drill" "-gtd" "-ignore"))
+                   '("-gtd" "-ignore"))
                   (org-agenda-include-inactive-timestamps t)
                   (org-agenda-files (list org-default-notes-file config-org-work-file org-agenda-diary-file))
                   (org-agenda-archives-mode nil)))
@@ -336,42 +324,6 @@
                   "* MAYBE Read %i%?")
 
                  (entry
-                  "0" "Drill (item)"
-                  '(file+olp config-org-drill-file "Uncategorised")
-                  "* Item                :drill:
-
-%?
-"
-                  :jump-to-captured t)
-
-                 (entry
-                  "1" "Drill (question)"
-                  '(file+olp config-org-drill-file "Uncategorised")
-                  "* Question                :drill:
-
-%?
-
-** Answer
-"
-                  :jump-to-captured t)
-
-                 (entry
-                  "2" "Drill (two-sided)"
-                  '(file+olp config-org-drill-file "Uncategorised")
-                  "* Question                :drill:
-:PROPERTIES:
-:DRILL_CARD_TYPE: twosided
-:END:
-
-%?
-
-** Side 1
-
-** Side 2
-"
-                  :jump-to-captured t)
-
-                 (entry
                   "e" "Email task"
                   '(file org-default-notes-file) "* TODO %?\n%a")
 
@@ -466,7 +418,6 @@
 (use-package ob-restclient :straight t :defer t)
 (use-package ob-shell :after org)
 (use-package ob-sql :after org)
-(use-package org-drill :commands (org-drill))
 (use-package org-habit :after org-agenda)
 (use-package org-hydras :commands (org-babel/body))
 (use-package ox-gfm :straight t :after org)
@@ -799,11 +750,6 @@ table tr.tr-even td {
 (use-package org-download
   :straight t
   :hook (dired-mode . org-download-enable))
-
-(use-package org-drill-table
-  :disabled t
-  :straight t
-  :hook (org-ctrl-c-ctrl-c . org-drill-table-update))
 
 (use-package org-html-span :after org)
 
