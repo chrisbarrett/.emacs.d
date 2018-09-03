@@ -21,6 +21,7 @@
 (require 'subr-x)
 
 (autoload 'org-todo "org")
+(autoload 'jira-utils-read-issue-url-for-org-header "jira-utils")
 
 
 
@@ -291,8 +292,15 @@
 
                  (entry
                   "L" "Link (work)"
-                  '(function cb-org-capture-url-read-url)
                   `(file+olp config-org-work-file "Links")
+                  '(function cb-org-capture-url-read-url)
+                  :immediate-finish t)
+
+                 (entry
+                  "J" "Jira issue reference (work)"
+                  `(file+olp config-org-work-file "Rumble Kanban")
+                  '(function jira-utils-read-issue-url-for-org-header)
+                  :jump-to-captured t
                   :immediate-finish t)
 
                  (entry
