@@ -45,7 +45,6 @@
 (general-setq org-directory "~/org")
 
 (defvar config-org-work-file (f-join org-directory "work_pushpay.org"))
-(defvar config-org-journal-file (f-join org-directory "journal.org"))
 
 (general-setq
  org-default-notes-file (f-join org-directory "notes.org")
@@ -283,13 +282,6 @@
                  (entry
                   "D" "Diary (work)"
                   `(file+datetree config-org-work-file) "* %?\n%^t")
-
-                 (entry
-                  "j" "Journal"
-                  '(file config-org-journal-file) "* %u\n\n%?"
-                  :type 'entry
-                  :jump-to-captured t
-                  :prepend nil)
 
                  (entry
                   "l" "Link"
@@ -714,7 +706,6 @@ table tr.tr-even td {
 (use-package cb-org-goto
   :commands (cb-org-goto-agenda
              cb-org-goto-diary
-             cb-org-goto-journal
              cb-org-goto-notes
              cb-org-goto-todo-list
              cb-org-goto-work
