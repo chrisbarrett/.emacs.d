@@ -8,10 +8,15 @@
 (require 'xml)
 (require 'subr-x)
 
-(defvar jira-utils-url-base nil)
+(defvar jira-utils-url-base nil
+  "The base URL of the Jira installation to query.
+e.g. https://example.atlassian.net/")
+
+(defvar jira-utils-cookie-file "~/etc/jira_cookie.txt.gpg"
+  "Path to a gpg-encrypted file containing a non-expired Jira API token.")
 
 (defun jira-utils--cookie ()
-  (let ((cipher (f-read "~/etc/jira_cookie.txt.gpg")))
+  (let ((cipher (f-read jira-utils-cookie-file)))
     (s-trim (epg-decrypt-string (epg-make-context) cipher))))
 
 (defun jira-utils--issue-url (issue-number)
