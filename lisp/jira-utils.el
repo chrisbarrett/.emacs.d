@@ -17,10 +17,13 @@
 (defun jira-utils--issue-url (issue-number)
   (format "%s/browse/%s" jira-utils-url-base issue-number))
 
-(defun jira-utils--issue-url-from-kill-ring ()
-  (when-let* ((url (cb-org-capture-url--last-url-kill)))
-    (when (s-matches? (rx-to-string `(and bol ,jira-utils-url-base "/browse/")) url)
-      url)))
+(defun jira-utils--issue-number-or-url-from-kill-ring ()
+  (--first (s-matches? (rx-to-string `(and bos
+                                           (? (and ,jira-utils-url-base "/browse/"))
+                                           (+ alpha) "-" (+ digit)
+                                           eos))
+                       it)
+           (cons (current-kill 0 t) kill-ring)))
 
 (defun jira-utils--xml-node-with-id (id xml)
   (cl-labels ((loop (xml)
@@ -60,7 +63,7 @@
 (defun jira-utils-read-issue-url-for-org-header ()
   "Return a URL capture template string for use with `org-capture'."
   (interactive)
-  (-let* ((url (or (jira-utils--issue-url-from-kill-ring)
+  (-let* ((url (or (jira-utils--issue-number-or-url-from-kill-ring)
                    (jira-utils--issue-url (read-string "Issue number: "))))
           (html (jira-utils--get-html url))
           ((head body) (xml-node-children html))
