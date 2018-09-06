@@ -26,6 +26,7 @@ e.g. https://example.atlassian.net/")
   (--first (s-matches? (rx-to-string `(and bos
                                            (? (and ,jira-utils-url-base "/browse/"))
                                            (+ alpha) "-" (+ digit)
+                                           (? "?" (* nonl))
                                            eos))
                        it)
            (cons (current-kill 0 t) kill-ring)))
