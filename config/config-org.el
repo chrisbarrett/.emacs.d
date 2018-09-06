@@ -298,10 +298,19 @@
 
                  (entry
                   "J" "Jira issue reference (work)"
+                  `(file config-org-work-file)
+                  '(function jira-utils-read-issue-url-for-org-header)
+                  :jump-to-captured t
+                  :immediate-finish t
+                  :type 'item)
+
+                 (entry
+                  "K" "Kanban issue reference (work)"
                   `(file+olp config-org-work-file "Rumble Kanban")
                   '(function jira-utils-read-issue-url-for-org-header)
                   :jump-to-captured t
-                  :immediate-finish t)
+                  :immediate-finish t
+                  :type 'item)
 
                  (entry
                   "s" "Someday"
