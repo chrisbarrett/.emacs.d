@@ -344,6 +344,10 @@
 
 
 
+;; HACK: Dummy definitions to fix org html export incompatability.
+(defvar font-lock-beg nil)
+(defvar font-lock-end nil)
+
 (use-package org
   :straight org-plus-contrib
   :defer t
