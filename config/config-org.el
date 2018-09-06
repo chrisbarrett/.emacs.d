@@ -714,6 +714,10 @@ table tr.tr-even td {
 </style>
 "))
 
+(use-package htmlize
+  :straight t
+  :defer t)
+
 (use-package cb-org-export-koma-letter
   :after org
   :commands (cb-org-export-koma-letter-handler)
