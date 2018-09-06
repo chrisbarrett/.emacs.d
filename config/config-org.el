@@ -92,12 +92,6 @@
  ;; org-babel
 
  org-confirm-babel-evaluate nil
- org-babel-load-languages '((emacs-lisp . t)
-                            (restclient . t)
-                            (gnuplot . t)
-                            (python . t)
-                            (shell . t)
-                            (sql . t))
 
  ;; org-export
 
@@ -423,6 +417,14 @@
 
   :config
   (progn
+    (general-setq org-babel-load-languages
+                  '((emacs-lisp . t)
+                    (restclient . t)
+                    (gnuplot . t)
+                    (python . t)
+                    (shell . t)
+                    (sql . t)))
+
     (setf (cdr (assoc 'file org-link-frame-setup)) #'find-file-other-window)
 
     (add-to-list 'org-latex-default-packages-alist
