@@ -406,6 +406,9 @@
   (progn
     (setf (cdr (assoc 'file org-link-frame-setup)) #'find-file-other-window)
 
+    (add-to-list 'org-latex-default-packages-alist
+                 '("colorlinks=true" "hyperref" nil))
+
     (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
     (advice-add 'org-add-log-note :before #'config-org--exit-minibuffer)
     (advice-add 'org-toggle-heading :after #'config-org--toggle-heading-goto-eol)))
