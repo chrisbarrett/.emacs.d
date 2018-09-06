@@ -348,6 +348,10 @@
 (defvar font-lock-beg nil)
 (defvar font-lock-end nil)
 
+(use-package gnuplot :straight t :defer t)
+(use-package ob-restclient :straight t :defer t)
+(use-package ox-gfm :straight t :after org)
+
 (use-package org
   :straight org-plus-contrib
   :defer t
@@ -431,14 +435,11 @@
 (use-package cb-org-capture-url :after org)
 (use-package cb-org-gdrive :hook (org-mode . cb-org-gdrive-init))
 (use-package cb-org-pgp-decrpyt :hook (org-mode . cb-org-pgp-decrpyt-init))
-(use-package gnuplot :straight t :defer t)
 (use-package ob-gnuplot :after org)
-(use-package ob-restclient :straight t :defer t)
 (use-package ob-shell :after org)
 (use-package ob-sql :after org)
 (use-package org-habit :after org-agenda)
 (use-package org-hydras :commands (org-babel/body))
-(use-package ox-gfm :straight t :after org)
 
 (use-package org-agenda
   :after org
@@ -689,36 +690,6 @@
   :after org
   :config
   (add-to-list 'org-latex-packages-alist '("AUTO" "babel" nil)))
-
-(use-package ox-html
-  :after org
-  :preface
-  (defun config-org-html-open-tags-setup
-      (number _group-number _start-group-p _end-group-p topp bottomp)
-    (cond (topp "<tr class=\"tr-top\">")
-          (bottomp "<tr class=\"tr-bottom\">")
-          (t (if (= (mod number 2) 1)
-                 "<tr class=\"tr-odd\">"
-               "<tr class=\"tr-even\">"))))
-  :config
-  (general-setq
-   org-html-html5-fancy t
-   org-html-postamble nil
-
-   ;; Highlight alternating rows in HTML tables.
-
-   org-html-table-row-open-tag #'config-org-html-open-tags-setup
-   org-html-head-extra
-   "
-<style type=\"text/css\">
-table tr.tr-odd td {
-      background-color: #FCF6CF;
-}
-table tr.tr-even td {
-      background-color: #FEFEF2;
-}
-</style>
-"))
 
 (use-package htmlize
   :straight t
