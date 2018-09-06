@@ -102,7 +102,9 @@
  ;; org-export
 
  org-export-backends '(ascii html latex odt gfm koma-letter custom-confluence)
- org-export-exclude-tags '("noexport" "crypt")
+ org-html-html5-fancy t
+ org-html-postamble nil
+ org-export-exclude-tags '("noexport" "no_export" "crypt")
  org-export-coding-system 'utf-8
 
  ;; org-habit
