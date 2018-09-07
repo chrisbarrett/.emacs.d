@@ -40,6 +40,13 @@
 
 
 
+(use-package dired+
+  :straight t
+  :after dired
+  :hook (dired-mode . dired-hide-details-mode)
+  :config
+  (setq diredp-wrap-around-flag nil))
+
 (use-package dired
   :defer t
   :commands (dired dired-hide-details-mode)
@@ -88,13 +95,6 @@
     (setq dired-clean-up-buffers-too t)
     (setq dired-omit-files (rx bol (or (+ ".")
                                        (and "__pycache__" eol))))))
-
-(use-package dired+
-  :straight t
-  :after dired
-  :hook (dired-mode . dired-hide-details-mode)
-  :config
-  (setq diredp-wrap-around-flag nil))
 
 (use-package wdired
   :after dired
