@@ -346,9 +346,14 @@
 (use-package ob-restclient :straight t :defer t)
 (use-package ox-gfm :straight t :after org)
 
+;; Let's not fuck this one up.
+(eval-and-compile
+  (defconst cb-org-load-path (expand-file-name "straight/build/org/" user-emacs-directory)))
+
 (use-package org
   :straight org-plus-contrib
   :defer t
+  :load-path cb-org-load-path
   :general
   (:states 'normal :keymaps 'org-mode-map "RET" #'org-return)
   (:keymaps 'org-mode-map
