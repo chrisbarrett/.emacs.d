@@ -111,6 +111,11 @@ e.g. https://example.atlassian.net/")
     ((or `(- ,l ,r) `(,l - ,r))
      (format-time-string "%F" (time-subtract (jql-date-operand-to-time l)
                                              (jql-date-operand-to-time r))))
+    ((guard (string-match-p (rx bos (? "-") (or "mon" "tue" "wed" "thu" "fri" "sat" "sun"))
+                            (format "%s" expr)))
+     ;; KLUDGE: Just use orgmode to get dates for now.
+     (let ((org-rel-date (substring (s-prepend "-" (s-chop-prefix "-" (format "%s" expr))) 0 4)))
+       (org-read-date nil nil org-rel-date)))
     (_
      (pcase (s-match (rx bos (group (or "-" "+")) (group (+ nonl))) (format "%s" expr))
        (`(,_ "-" ,time)
@@ -135,6 +140,7 @@ e.g. https://example.atlassian.net/")
 
 (defconst jira-utils--date-attrs
   '((resolution-date . "resolutiondate")
+    (resolved)
     (created))
   "Alist of DSL attribute names to JQL attribute name.")
 

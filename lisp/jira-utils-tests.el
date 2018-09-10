@@ -75,6 +75,9 @@
   (should (equal (jql-eval '(created after (- 2018-01-08 1w))) "created > 2018-01-01"))
   (should (equal (jql-eval '(created after (2018-01-08 - 1w))) "created > 2018-01-01")))
 
+(ert-deftest jira-utils-tests--date-preceding-days ()
+  (should (jql-eval '(created after -thu))))
+
 (ert-deftest jira-utils-tests--date-arithmetic-relative-to-today ()
   (should (equal (jql-eval '(created after -1w)) (format-time-string "created > %F" (time-subtract nil (days-to-time 7)))))
   (should (equal (jql-eval '(created after +1w)) (format-time-string "created > %F" (time-add nil (days-to-time 7))))))
