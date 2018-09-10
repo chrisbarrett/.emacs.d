@@ -180,6 +180,18 @@ e.g. https://example.atlassian.net/")
       (`(epic ,x)
        (format "\"Epic Link\" = %s" (prin1-to-string x)))
 
+      ((and `(by ,attrs ,expr)
+            (guard (listp attrs))
+            (guard (zerop depth)))
+       (format "%s SORT BY %s" (jql-eval expr (1+ depth))
+               (string-join (--map (format "%s" it) attrs) ", ")))
+
+      ((and `(by ,attr ,expr) (guard (zerop depth)))
+       (format "%s SORT BY %s" (jql-eval expr (1+ depth)) attr))
+
+      (`(by . ,_)
+       (error "Unexpected by clause at depth %s" depth))
+
       (_
        (error "JQL parse failure: %s" expr)))))
 
@@ -200,6 +212,9 @@ e.g. https://example.atlassian.net/")
 (cl-assert (equal (jql-eval '(creator "foo")) "creator = \"foo\""))
 (cl-assert (equal (jql-eval '(assignee "foo")) "assignee = \"foo\""))
 (cl-assert (equal (jql-eval '(created today)) (format-time-string "created = %F")))
+
+(cl-assert (equal (jql-eval '(by foo 1)) "1 SORT BY foo"))
+(cl-assert (equal (jql-eval '(by (foo bar) 1)) "1 SORT BY foo, bar"))
 
 (cl-assert (equal (jql-eval '(= created 2018-01-01)) "created = 2018-01-01"))
 (cl-assert (equal (jql-eval '(created = 2018-01-01)) "created = 2018-01-01"))
