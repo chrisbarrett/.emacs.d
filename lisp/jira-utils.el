@@ -200,8 +200,12 @@ e.g. https://example.atlassian.net/")
             "")
            (`(,x)
             (format "%s = %s" jql-attr (prin1-to-string x)))
+           (`(!= ,x)
+            (format "%s != %s" jql-attr (prin1-to-string x)))
+           (`(!= . ,xs)
+            (format "%s NOT IN (%s)" jql-attr (string-join (seq-map #'prin1-to-string xs) ", ")))
            (xs
-            (format "%s in (%s)" jql-attr (string-join (seq-map #'prin1-to-string xs) ", "))))))
+            (format "%s IN (%s)" jql-attr (string-join (seq-map #'prin1-to-string xs) ", "))))))
 
       ;; Date arithmetic
 

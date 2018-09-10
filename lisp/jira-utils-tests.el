@@ -33,10 +33,12 @@
 (ert-deftest jira-utils-tests--attrs ()
   (should (equal (jql-eval '(labels)) ""))
   (should (equal (jql-eval '(labels foo)) "labels = foo"))
-  (should (equal (jql-eval '(labels foo bar baz)) "labels in (foo, bar, baz)"))
+  (should (equal (jql-eval '(labels foo bar baz)) "labels IN (foo, bar, baz)"))
   (should (equal (jql-eval '(creator "foo")) "creator = \"foo\""))
   (should (equal (jql-eval '(assignee "foo")) "assignee = \"foo\""))
   (should (equal (jql-eval '(project foo)) "project = foo"))
+  (should (equal (jql-eval '(project != foo)) "project != foo"))
+  (should (equal (jql-eval '(project != foo bar)) "project NOT IN (foo, bar)"))
   (should (equal (jql-eval '(filter foo)) "filter = foo"))
   (should (equal (jql-eval '(status foo)) "status = foo")))
 
