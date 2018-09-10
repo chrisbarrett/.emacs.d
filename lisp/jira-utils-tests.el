@@ -40,7 +40,8 @@
   (should (equal (jql-eval '(project != foo)) "project != foo"))
   (should (equal (jql-eval '(project != foo bar)) "project NOT IN (foo, bar)"))
   (should (equal (jql-eval '(filter foo)) "filter = foo"))
-  (should (equal (jql-eval '(status foo)) "status = foo")))
+  (should (equal (jql-eval '(status foo)) "status = foo"))
+  (should (equal (jql-eval '(resolution is empty)) "resolution IS EMPTY")))
 
 (ert-deftest jira-utils-tests--attr-with-custom-name ()
   (should (equal (jql-eval '(epic foo)) "\"Epic Link\" = foo")))

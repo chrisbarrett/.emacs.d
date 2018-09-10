@@ -198,6 +198,8 @@ e.g. https://example.atlassian.net/")
          (pcase xs
            (`()
             "")
+           (`(is empty)
+            (format "%s IS EMPTY" jql-attr))
            (`(,x)
             (format "%s = %s" jql-attr (prin1-to-string x)))
            (`(!= ,x)
