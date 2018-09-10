@@ -82,6 +82,7 @@ e.g. https://example.atlassian.net/")
 ;;; JQL query utils
 
 (autoload 'org-time-string-to-time "org")
+(autoload 'org-read-date "org")
 
 
 (defun jql-date-operand-to-time (x)
