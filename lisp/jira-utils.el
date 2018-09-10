@@ -175,6 +175,8 @@ e.g. https://example.atlassian.net/")
 
       (`(project ,x)
        (format "project = %s" (prin1-to-string x)))
+      (`(filter ,x)
+       (format "filter = %s" (prin1-to-string x)))
       (`(epic ,x)
        (format "\"Epic Link\" = %s" (prin1-to-string x)))
 
@@ -236,6 +238,7 @@ e.g. https://example.atlassian.net/")
 (cl-assert (equal (jql-eval '(labels foo)) "labels = foo"))
 (cl-assert (equal (jql-eval '(labels foo bar baz)) "labels in (foo, bar, baz)"))
 (cl-assert (equal (jql-eval '(project foo)) "project = foo"))
+(cl-assert (equal (jql-eval '(filter foo)) "filter = foo"))
 (cl-assert (equal (jql-eval '(epic foo)) "\"Epic Link\" = foo"))
 
 (defun jira-utils-search-issues (jql-expr)
