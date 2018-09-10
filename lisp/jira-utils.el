@@ -129,8 +129,25 @@ e.g. https://example.atlassian.net/")
     (status)
     (assignee)
     (epic . "Epic Link")
+    (resolution)
     (creator))
   "Alist of DSL attribute names to JQL attribute name.")
+
+(defconst jira-utils--date-attrs
+  '((resolution-date . "resolutiondate")
+    (created))
+  "Alist of DSL attribute names to JQL attribute name.")
+
+(defconst jira-utils--date-comparators
+  '((>)
+    (>=)
+    (<)
+    (<=)
+    (=)
+    (before . "<")
+    (after . ">")
+    (since . ">="))
+  "Alist of binary date operators to JQL operators name.")
 
 (defun jql-eval (expr &optional depth already-ordered)
   (let ((depth (or depth 0)))
@@ -182,18 +199,21 @@ e.g. https://example.atlassian.net/")
 
       ;; Date arithmetic
 
-      (`(created ,date-expr)
-       (format "created = %s" (jql-eval-date date-expr)))
-      ((and (or `(created ,op ,time) `(,op created ,time))
-            (guard (seq-contains '(> >= < <= = before after) op)))
-       (format "created %s %s"
-               (pcase op
-                 ('before "<")
-                 ('after ">")
-                 (op op))
-               (jql-eval-date time)))
-      (`(created between ,t1 ,t2)
-       (jql-eval `(and (created >= ,t1) (created <= ,t2))
+      ((and `(,attr ,expr) (guard (assoc attr jira-utils--date-attrs)))
+       (let* ((attr-name (format "%s" (or (alist-get attr jira-utils--date-attrs) attr)))
+              (jql-attr (if (string-match-p " " attr-name) (prin1-to-string attr-name) attr-name)))
+         (format "%s = %s" jql-attr (jql-eval-date expr))))
+
+      ((and (or `(,op ,attr ,expr)
+                `(,attr ,op ,expr))
+            (guard (and (assoc attr jira-utils--date-attrs) (assoc op jira-utils--date-comparators))))
+       (let* ((attr-name (format "%s" (or (alist-get attr jira-utils--date-attrs) attr)))
+              (jql-attr (if (string-match-p " " attr-name) (prin1-to-string attr-name) attr-name))
+              (jql-op (or (alist-get op jira-utils--date-comparators) op)))
+         (format "%s %s %s" jql-attr jql-op (jql-eval-date expr))))
+
+      ((and `(,attr between ,t1 ,t2))
+       (jql-eval `(and (,attr >= ,t1) (,attr <= ,t2))
                  depth))
 
       ;; Order-by clauses
