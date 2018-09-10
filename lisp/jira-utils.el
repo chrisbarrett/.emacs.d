@@ -102,10 +102,10 @@ e.g. https://example.atlassian.net/")
   (pcase expr
     ('today
      (format-time-string "%F"))
-    (`(+ ,l ,r)
+    ((or `(+ ,l ,r) `(,l + ,r))
      (format-time-string "%F" (time-add (jql-date-operand-to-time l)
                                         (jql-date-operand-to-time r))))
-    (`(- ,l ,r)
+    ((or `(- ,l ,r) `(,l - ,r))
      (format-time-string "%F" (time-subtract (jql-date-operand-to-time l)
                                              (jql-date-operand-to-time r))))
     (_
@@ -160,7 +160,8 @@ e.g. https://example.atlassian.net/")
 
       (`(created ,date-expr)
        (format "created = %s" (jql-eval-date date-expr)))
-      ((and `(created ,op ,time)
+      ((and (or `(created ,op ,time)
+                `(,op created ,time))
             (guard (seq-contains '(> >= < <= = before after) op)))
        (format "created %s %s"
                (pcase op
@@ -168,6 +169,9 @@ e.g. https://example.atlassian.net/")
                  ('after ">")
                  (op op))
                (jql-eval-date time)))
+      (`(created between ,t1 ,t2)
+       (jql-eval `(and (created >= ,t1) (created <= ,t2))
+                 depth))
 
       (`(project ,x)
        (format "project = %s" (prin1-to-string x)))
@@ -195,6 +199,7 @@ e.g. https://example.atlassian.net/")
 (cl-assert (equal (jql-eval '(assignee "foo")) "assignee = \"foo\""))
 (cl-assert (equal (jql-eval '(created today)) (format-time-string "created = %F")))
 
+(cl-assert (equal (jql-eval '(= created 2018-01-01)) "created = 2018-01-01"))
 (cl-assert (equal (jql-eval '(created = 2018-01-01)) "created = 2018-01-01"))
 (cl-assert (equal (jql-eval '(created < 2018-01-01)) "created < 2018-01-01"))
 (cl-assert (equal (jql-eval '(created <= 2018-01-01)) "created <= 2018-01-01"))
@@ -214,11 +219,15 @@ e.g. https://example.atlassian.net/")
 (cl-assert (equal (jql-eval '(created after (+ 2d 2018-01-01))) "created > 2018-01-03"))
 (cl-assert (equal (jql-eval '(created after (+ 2018-01-01 2d))) "created > 2018-01-03"))
 (cl-assert (equal (jql-eval '(created after (+ 2018-01-01 1w))) "created > 2018-01-08"))
+(cl-assert (equal (jql-eval '(created after (2018-01-01 + 1w))) "created > 2018-01-08"))
+
+(cl-assert (equal (jql-eval '(created between 2018-01-01 2018-01-03)) "created >= 2018-01-01 AND created <= 2018-01-03"))
 
 (cl-assert (equal (jql-eval '(created after (- 2018-01-04 1d))) "created > 2018-01-03"))
 (cl-assert (equal (jql-eval '(created after (- 2018-01-04 2d))) "created > 2018-01-02"))
 
 (cl-assert (equal (jql-eval '(created after (- 2018-01-08 1w))) "created > 2018-01-01"))
+(cl-assert (equal (jql-eval '(created after (2018-01-08 - 1w))) "created > 2018-01-01"))
 
 (cl-assert (equal (jql-eval '(created after -1w)) (format-time-string "created > %F" (time-subtract nil (days-to-time 7)))))
 (cl-assert (equal (jql-eval '(created after +1w)) (format-time-string "created > %F" (time-add nil (days-to-time 7)))))
