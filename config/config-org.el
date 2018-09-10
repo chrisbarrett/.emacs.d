@@ -422,6 +422,9 @@
 
   :config
   (progn
+    (with-eval-after-load 'evil
+      (evil-define-key 'normal org-mode-map (kbd "TAB") #'org-cycle))
+
     (general-setq org-babel-load-languages
                   '((emacs-lisp . t)
                     (restclient . t)
