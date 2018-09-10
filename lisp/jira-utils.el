@@ -81,6 +81,9 @@ e.g. https://example.atlassian.net/")
 
 ;;; JQL query utils
 
+(autoload 'org-time-string-to-time "org")
+
+
 (defun jql-date-operand-to-time (x)
   (pcase x
     ('today
@@ -119,13 +122,31 @@ e.g. https://example.atlassian.net/")
               (format-time-string "%F" (org-time-string-to-time (format "%s" expr))))
             expr))))))
 
-(defun jql-eval (expr &optional depth)
+(defconst jira-utils--scalar-attrs
+  '((labels)
+    (project)
+    (filter)
+    (status)
+    (assignee)
+    (epic . "Epic Link")
+    (creator))
+  "Alist of DSL attribute names to JQL attribute name.")
+
+(defun jql-eval (expr &optional depth already-ordered)
   (let ((depth (or depth 0)))
     (pcase expr
+      (`(eval ,expr)
+       (jql-eval (eval expr) (1+ depth)))
+
+      ;; Immediate values
+
       ((pred numberp)
        (number-to-string expr))
       ((or (pred symbolp) (pred stringp))
        (prin1-to-string expr))
+
+      ;; Booleans
+
       (`(and . ,xs)
        (pcase (seq-remove #'string-empty-p (--map (jql-eval it (1+ depth)) xs))
          ('() "")
@@ -144,19 +165,26 @@ e.g. https://example.atlassian.net/")
           (format "%s" (string-join clauses " OR ")))
          (clauses
           (format "(%s)" (string-join clauses " OR ")))))
-      (`(labels)
-       "")
-      (`(labels ,x)
-       (format "labels = %s" (prin1-to-string x)))
-      (`(labels . ,xs)
-       (format "labels in (%s)" (string-join (seq-map #'prin1-to-string xs) ", ")))
-      (`(eval ,expr)
-       (jql-eval (eval expr) (1+ depth)))
+
+      ;; Scalar attributes
+
+      ((and `(,attr . ,xs)
+            (guard (assoc attr jira-utils--scalar-attrs)))
+       (let* ((attr-name (format "%s" (or (alist-get attr jira-utils--scalar-attrs) attr)))
+              (jql-attr (if (string-match-p " " attr-name) (prin1-to-string attr-name) attr-name)))
+         (pcase xs
+           (`()
+            "")
+           (`(,x)
+            (format "%s = %s" jql-attr (prin1-to-string x)))
+           (xs
+            (format "%s in (%s)" jql-attr (string-join (seq-map #'prin1-to-string xs) ", "))))))
+
+      ;; Date arithmetic
 
       (`(created ,date-expr)
        (format "created = %s" (jql-eval-date date-expr)))
-      ((and (or `(created ,op ,time)
-                `(,op created ,time))
+      ((and (or `(created ,op ,time) `(,op created ,time))
             (guard (seq-contains '(> >= < <= = before after) op)))
        (format "created %s %s"
                (pcase op
@@ -168,87 +196,16 @@ e.g. https://example.atlassian.net/")
        (jql-eval `(and (created >= ,t1) (created <= ,t2))
                  depth))
 
-      ((and `(,attr ,x) (guard (seq-contains '(project filter status assignee creator) attr)))
-       (format "%s = %s" attr (prin1-to-string x)))
-      (`(epic ,x)
-       (format "\"Epic Link\" = %s" (prin1-to-string x)))
+      ;; Order-by clauses
 
-      ((and `(by ,attrs ,expr)
-            (guard (listp attrs))
-            (guard (zerop depth)))
-       (format "%s SORT BY %s" (jql-eval expr (1+ depth))
+      ((and `(by ,attrs ,expr) (guard (and (listp attrs) (not already-ordered) (zerop depth))))
+       (format "%s ORDER BY %s" (jql-eval expr depth t)
                (string-join (--map (format "%s" it) attrs) ", ")))
-
-      ((and `(by ,attr ,expr) (guard (zerop depth)))
-       (format "%s SORT BY %s" (jql-eval expr (1+ depth)) attr))
-
-      (`(by . ,_)
-       (error "Unexpected by clause at depth %s" depth))
+      ((and `(by ,attr ,expr) (guard (and (not already-ordered) (zerop depth))))
+       (format "%s ORDER BY %s" (jql-eval expr depth t) attr))
 
       (_
        (error "JQL parse failure: %s" expr)))))
-
-(cl-assert (equal (jql-eval '(and)) ""))
-(cl-assert (equal (jql-eval 1) "1"))
-(cl-assert (equal (jql-eval "hi") "\"hi\""))
-(cl-assert (equal (jql-eval 'hi) "hi"))
-(cl-assert (equal (jql-eval '(and)) ""))
-(cl-assert (equal (jql-eval '(and 1)) "1"))
-(cl-assert (equal (jql-eval '(and 1 2)) "1 AND 2"))
-(cl-assert (equal (jql-eval '(and 1 2 3)) "1 AND 2 AND 3"))
-(cl-assert (equal (jql-eval '(or)) ""))
-(cl-assert (equal (jql-eval '(or 1)) "1"))
-(cl-assert (equal (jql-eval '(or 1 2)) "1 OR 2"))
-(cl-assert (equal (jql-eval '(or 1 2 3)) "1 OR 2 OR 3"))
-(cl-assert (equal (jql-eval '(or 1 (and 2 3))) "1 OR (2 AND 3)"))
-(cl-assert (equal (jql-eval '(eval (+ 1 2))) "3"))
-(cl-assert (equal (jql-eval '(creator "foo")) "creator = \"foo\""))
-(cl-assert (equal (jql-eval '(assignee "foo")) "assignee = \"foo\""))
-(cl-assert (equal (jql-eval '(created today)) (format-time-string "created = %F")))
-
-(cl-assert (equal (jql-eval '(by foo 1)) "1 SORT BY foo"))
-(cl-assert (equal (jql-eval '(by (foo bar) 1)) "1 SORT BY foo, bar"))
-
-(cl-assert (equal (jql-eval '(= created 2018-01-01)) "created = 2018-01-01"))
-(cl-assert (equal (jql-eval '(created = 2018-01-01)) "created = 2018-01-01"))
-(cl-assert (equal (jql-eval '(created < 2018-01-01)) "created < 2018-01-01"))
-(cl-assert (equal (jql-eval '(created <= 2018-01-01)) "created <= 2018-01-01"))
-(cl-assert (equal (jql-eval '(created > 2018-01-01)) "created > 2018-01-01"))
-(cl-assert (equal (jql-eval '(created >= 2018-01-01)) "created >= 2018-01-01"))
-(cl-assert (equal (jql-eval '(created before 2018-01-01)) "created < 2018-01-01"))
-(cl-assert (equal (jql-eval '(created after 2018-01-01)) "created > 2018-01-01"))
-
-(cl-assert (equal (jql-eval '(created before "2018-01-01")) "created < 2018-01-01"))
-(cl-assert (equal (jql-eval '(created after "2018-01-01")) "created > 2018-01-01"))
-
-(cl-assert (equal (jql-eval '(created before "[2018-01-01]")) "created < 2018-01-01"))
-(cl-assert (equal (jql-eval '(created after "[2018-01-01]")) "created > 2018-01-01"))
-
-(cl-assert (equal (jql-eval '(created after (+ 1d 2018-01-01))) "created > 2018-01-02"))
-(cl-assert (equal (jql-eval '(created after (+ 2018-01-01 1d))) "created > 2018-01-02"))
-(cl-assert (equal (jql-eval '(created after (+ 2d 2018-01-01))) "created > 2018-01-03"))
-(cl-assert (equal (jql-eval '(created after (+ 2018-01-01 2d))) "created > 2018-01-03"))
-(cl-assert (equal (jql-eval '(created after (+ 2018-01-01 1w))) "created > 2018-01-08"))
-(cl-assert (equal (jql-eval '(created after (2018-01-01 + 1w))) "created > 2018-01-08"))
-
-(cl-assert (equal (jql-eval '(created between 2018-01-01 2018-01-03)) "created >= 2018-01-01 AND created <= 2018-01-03"))
-
-(cl-assert (equal (jql-eval '(created after (- 2018-01-04 1d))) "created > 2018-01-03"))
-(cl-assert (equal (jql-eval '(created after (- 2018-01-04 2d))) "created > 2018-01-02"))
-
-(cl-assert (equal (jql-eval '(created after (- 2018-01-08 1w))) "created > 2018-01-01"))
-(cl-assert (equal (jql-eval '(created after (2018-01-08 - 1w))) "created > 2018-01-01"))
-
-(cl-assert (equal (jql-eval '(created after -1w)) (format-time-string "created > %F" (time-subtract nil (days-to-time 7)))))
-(cl-assert (equal (jql-eval '(created after +1w)) (format-time-string "created > %F" (time-add nil (days-to-time 7)))))
-
-(cl-assert (equal (jql-eval '(labels)) ""))
-(cl-assert (equal (jql-eval '(labels foo)) "labels = foo"))
-(cl-assert (equal (jql-eval '(labels foo bar baz)) "labels in (foo, bar, baz)"))
-(cl-assert (equal (jql-eval '(project foo)) "project = foo"))
-(cl-assert (equal (jql-eval '(filter foo)) "filter = foo"))
-(cl-assert (equal (jql-eval '(status foo)) "status = foo"))
-(cl-assert (equal (jql-eval '(epic foo)) "\"Epic Link\" = foo"))
 
 (defun jira-utils-search-issues (jql-expr)
   (let* ((jql-param (url-hexify-string (jql-eval jql-expr)))
