@@ -12,6 +12,9 @@
   "The base URL of the Jira installation to query.
 e.g. https://example.atlassian.net/")
 
+
+;;; Utilities to support directly capturing tickets with org
+
 (defvar jira-utils-cookie-file "~/etc/jira_cookie.txt.gpg"
   "Path to a gpg-encrypted file containing a non-expired Jira API token.")
 
