@@ -267,7 +267,7 @@
     (global-vi-tilde-fringe-mode +1))
   :preface
   (progn
-    (defconst config-evil--vi-tilde-inhibited-modes '(eshell-mode comint-mode))
+    (defconst config-evil--vi-tilde-inhibited-modes '(eshell-mode comint-mode org-agenda-mode))
 
     (defun config-evil--vi-tilde-fringe-maybe-inhibit (args)
       (if (or buffer-read-only (equal "*scratch*" (buffer-name))
