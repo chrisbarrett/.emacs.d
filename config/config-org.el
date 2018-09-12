@@ -111,9 +111,9 @@
  org-crypt-disable-auto-save 'encypt
 
  org-refile-targets
- '((org-directory :maxlevel . 3)
+ '((nil . (:maxlevel . 3))
    (org-default-notes-file :maxlevel . 3)
-   (nil :maxlevel . 3))
+   (org-directory :maxlevel . 3))
 
  org-attach-directory (f-join org-directory "data")
  org-archive-default-command #'config-org--archive-done-tasks
