@@ -60,7 +60,10 @@ e.g. https://example.atlassian.net/")
                 raw-title)))
 
 (defun jira-utils-format-org-capture-reference (issue url title assignee)
-  (concat (format "- [[%s][%s]] (/%s/) :: %s" url issue (or assignee "unassigned") title)))
+  (concat (format "- [[%s][%s]]%s :: %s"
+                  url issue
+                  (if assignee (format " (/%s/)" assignee) "")
+                  title)))
 
 (defun jira-utils--parse-assignee (xml)
   (ignore-errors
