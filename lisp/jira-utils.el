@@ -161,7 +161,7 @@ e.g. https://example.atlassian.net/")
     (since . ">="))
   "Alist of binary date operators to JQL operators name.")
 
-(defconst jira-utils--status-changed-comparators
+(defconst jira-utils--time-instant-comparators
   '((on . "ON")
     (before . "BEFORE")
     (after . "AFTER"))
@@ -213,6 +213,46 @@ e.g. https://example.atlassian.net/")
        (let* ((attr-name (format "%s" (or (alist-get attr jira-utils--scalar-attrs) attr)))
               (jql-attr (if (string-match-p " " attr-name) (prin1-to-string attr-name) attr-name)))
          (pcase xs
+           (`(was . ,rest)
+            (pcase rest
+              ((and `(,xs ,op ,time)
+                    (guard (and (assoc op jira-utils--time-instant-comparators)
+                                (listp xs))))
+               (format "%s WAS IN (%s) %s %s"
+                       jql-attr
+                       (string-join (seq-map #'prin1-to-string xs) ", ")
+                       (alist-get op jira-utils--time-instant-comparators)
+                       (jql-eval-date time)))
+              ((and `(,value ,op ,time)
+                    (guard (assoc op jira-utils--time-instant-comparators)))
+               (format "%s WAS %s %s %s"
+                       jql-attr
+                       (pcase value
+                         ('empty "EMPTY")
+                         (_ value))
+                       (alist-get op jira-utils--time-instant-comparators)
+                       (jql-eval-date time)))
+              ((and `(not ,xs ,op ,time)
+                    (guard (and (assoc op jira-utils--time-instant-comparators)
+                                (listp xs))))
+               (format "%s WAS NOT IN (%s) %s %s"
+                       jql-attr
+                       (string-join (seq-map #'prin1-to-string xs) ", ")
+                       (alist-get op jira-utils--time-instant-comparators)
+                       (jql-eval-date time)))
+              ((and `(not ,value ,op ,time)
+                    (guard (and (assoc op jira-utils--time-instant-comparators)
+                                (listp xs))))
+               (format "%s WAS NOT %s %s %s"
+                       jql-attr
+                       (pcase value
+                         ('empty "EMPTY")
+                         (_ value))
+                       (alist-get op jira-utils--time-instant-comparators)
+                       (jql-eval-date time)))
+              (_
+               (error "JQL parse failure: %s" expr))))
+
            (`()
             "")
            (`(is empty)
@@ -231,8 +271,8 @@ e.g. https://example.atlassian.net/")
 
       ((and (or `(status-changed to ,status ,op ,time)
                 `(status-changed ,op ,time to ,status))
-            (guard (assoc op jira-utils--status-changed-comparators)))
-       (let ((jql-op (alist-get op jira-utils--status-changed-comparators)))
+            (guard (assoc op jira-utils--time-instant-comparators)))
+       (let ((jql-op (alist-get op jira-utils--time-instant-comparators)))
          (format "status changed TO %s %s %s"
                  (prin1-to-string status)
                  jql-op
@@ -242,8 +282,8 @@ e.g. https://example.atlassian.net/")
        (format "status changed ON %s" (jql-eval-date expr)))
 
       ((and `(status-changed ,op ,expr)
-            (guard (assoc op jira-utils--status-changed-comparators)))
-       (let ((jql-op (alist-get op jira-utils--status-changed-comparators)))
+            (guard (assoc op jira-utils--time-instant-comparators)))
+       (let ((jql-op (alist-get op jira-utils--time-instant-comparators)))
          (format "status changed %s %s" jql-op (jql-eval-date expr))))
 
       ((or `(status-changed between ,t1 and ,t2) `(status-changed between ,t1 ,t2))
@@ -254,7 +294,6 @@ e.g. https://example.atlassian.net/")
            `(status-changed between ,t1 and ,t2 to ,status) `(status-changed between ,t1 ,t2 to ,status))
        (jql-eval `(and (status-changed to ,status after ,t1) (status-changed to ,status before ,t2))
                  depth))
-
 
 
       ;; Date arithmetic

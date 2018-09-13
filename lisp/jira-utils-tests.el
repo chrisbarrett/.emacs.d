@@ -55,6 +55,16 @@
 (ert-deftest jira-utils-tests--today ()
   (should (equal (jql-eval '(created today)) (format-time-string "created = %F"))))
 
+(ert-deftest jira-utils-tests--status-was ()
+  (should (equal (jql-eval '(status was "foo" on 2018-01-01)) "status WAS foo ON 2018-01-01"))
+  (should (equal (jql-eval '(status was empty on 2018-01-01)) "status WAS EMPTY ON 2018-01-01"))
+  (should (equal (jql-eval '(status was not "foo" on 2018-01-01)) "status WAS NOT foo ON 2018-01-01"))
+  (should (equal (jql-eval '(status was not empty on 2018-01-01)) "status WAS NOT EMPTY ON 2018-01-01"))
+  (should (equal (jql-eval '(status was "foo" before 2018-01-01)) "status WAS foo BEFORE 2018-01-01"))
+  (should (equal (jql-eval '(status was (foo bar) before 2018-01-01)) "status WAS IN (foo, bar) BEFORE 2018-01-01"))
+  (should (equal (jql-eval '(status was not (foo bar) before 2018-01-01)) "status WAS NOT IN (foo, bar) BEFORE 2018-01-01"))
+  (should-error (jql-eval '(status was "foo"))))
+
 (ert-deftest jira-utils-tests--date-comparison ()
   (should (equal (jql-eval '(= created 2018-01-01)) "created = 2018-01-01"))
   (should (equal (jql-eval '(created = 2018-01-01)) "created = 2018-01-01"))
