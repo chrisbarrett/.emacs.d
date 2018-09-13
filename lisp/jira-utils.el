@@ -182,6 +182,11 @@ e.g. https://example.atlassian.net/")
 
       ;; Booleans
 
+      (`(not ,expr)
+       (let ((value (jql-eval expr (1+ depth))))
+         (if (zerop depth)
+             (format "NOT %s" value)
+           (format "(NOT %s)" value))))
       (`(and . ,xs)
        (pcase (seq-remove #'string-empty-p (--map (jql-eval it (1+ depth)) xs))
          ('() "")
@@ -244,6 +249,12 @@ e.g. https://example.atlassian.net/")
       ((or `(status-changed between ,t1 and ,t2) `(status-changed between ,t1 ,t2))
        (jql-eval `(and (status-changed after ,t1) (status-changed before ,t2))
                  depth))
+
+      ((or `(status-changed to ,status between ,t1 and ,t2) `(status-changed to ,status between ,t1 ,t2)
+           `(status-changed between ,t1 and ,t2 to ,status) `(status-changed between ,t1 ,t2 to ,status))
+       (jql-eval `(and (status-changed to ,status after ,t1) (status-changed to ,status before ,t2))
+                 depth))
+
 
 
       ;; Date arithmetic

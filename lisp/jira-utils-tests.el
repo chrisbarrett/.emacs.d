@@ -16,6 +16,12 @@
   (should (equal (jql-eval '(and 1 2)) "1 AND 2"))
   (should (equal (jql-eval '(and 1 2 3)) "1 AND 2 AND 3")))
 
+(ert-deftest jira-utils-tests--not ()
+  (should (equal (jql-eval '(not 1)) "NOT 1"))
+  (should (equal (jql-eval '(not (not 1))) "NOT (NOT 1)"))
+  (should-error (jql-eval '(not)))
+  (should-error (jql-eval '(not 1 2))))
+
 (ert-deftest jira-utils-tests--or ()
   (should (equal (jql-eval '(or)) ""))
   (should (equal (jql-eval '(or 1)) "1"))
