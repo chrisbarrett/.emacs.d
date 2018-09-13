@@ -231,7 +231,7 @@ e.g. https://example.atlassian.net/")
               (jql-op (or (alist-get op jira-utils--date-comparators) op)))
          (format "%s %s %s" jql-attr jql-op (jql-eval-date expr))))
 
-      ((and `(,attr between ,t1 ,t2))
+      ((or `(,attr between ,t1 and ,t2) `(,attr between ,t1 ,t2))
        (jql-eval `(and (,attr >= ,t1) (,attr <= ,t2))
                  depth))
 

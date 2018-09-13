@@ -64,7 +64,8 @@
   (should (equal (jql-eval '(created after "[2018-01-01]")) "created > 2018-01-01")))
 
 (ert-deftest jira-utils-tests--created-between ()
-  (should (equal (jql-eval '(created between 2018-01-01 2018-01-03)) "created >= 2018-01-01 AND created <= 2018-01-03")))
+  (should (equal (jql-eval '(created between 2018-01-01 2018-01-03)) "created >= 2018-01-01 AND created <= 2018-01-03"))
+  (should (equal (jql-eval '(created between 2018-01-01 and 2018-01-03)) "created >= 2018-01-01 AND created <= 2018-01-03")))
 
 (ert-deftest jira-utils-tests--date-arithmetic ()
   (should (equal (jql-eval '(created after (+ 1d 2018-01-01))) "created > 2018-01-02"))
