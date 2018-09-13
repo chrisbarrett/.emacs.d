@@ -63,6 +63,23 @@
   (should (equal (jql-eval '(created before "[2018-01-01]")) "created < 2018-01-01"))
   (should (equal (jql-eval '(created after "[2018-01-01]")) "created > 2018-01-01")))
 
+(ert-deftest jira-utils-tests--status-changed ()
+  (should (equal (jql-eval '(status-changed 2018-01-01)) "status changed ON 2018-01-01"))
+  (should (equal (jql-eval '(status-changed on 2018-01-01)) "status changed ON 2018-01-01"))
+  (should (equal (jql-eval '(status-changed before 2018-01-01)) "status changed BEFORE 2018-01-01"))
+  (should (equal (jql-eval '(status-changed after 2018-01-01)) "status changed AFTER 2018-01-01"))
+  (should (equal (jql-eval '(status-changed before "2018-01-01")) "status changed BEFORE 2018-01-01"))
+  (should (equal (jql-eval '(status-changed after "2018-01-01")) "status changed AFTER 2018-01-01"))
+  (should (equal (jql-eval '(status-changed before "[2018-01-01]")) "status changed BEFORE 2018-01-01"))
+  (should (equal (jql-eval '(status-changed after "[2018-01-01]")) "status changed AFTER 2018-01-01"))
+  (should (equal (jql-eval '(status-changed between 2018-01-01 2018-01-03)) "status changed AFTER 2018-01-01 AND status changed BEFORE 2018-01-03")))
+
+(ert-deftest jira-utils-tests--status-changed-to ()
+  (should (equal (jql-eval '(status-changed to "In Progress" on 2018-01-01)) "status changed TO \"In Progress\" ON 2018-01-01"))
+  (should (equal (jql-eval '(status-changed to "foo" before 2018-01-01)) "status changed TO \"foo\" BEFORE 2018-01-01"))
+  (should (equal (jql-eval '(status-changed before 2018-01-01 to "foo" )) "status changed TO \"foo\" BEFORE 2018-01-01"))
+  (should (equal (jql-eval '(status-changed to "bar" after 2018-01-01)) "status changed TO \"bar\" AFTER 2018-01-01")))
+
 (ert-deftest jira-utils-tests--created-between ()
   (should (equal (jql-eval '(created between 2018-01-01 2018-01-03)) "created >= 2018-01-01 AND created <= 2018-01-03"))
   (should (equal (jql-eval '(created between 2018-01-01 and 2018-01-03)) "created >= 2018-01-01 AND created <= 2018-01-03")))

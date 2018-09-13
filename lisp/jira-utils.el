@@ -90,7 +90,6 @@ e.g. https://example.atlassian.net/")
 (autoload 'org-time-string-to-time "org")
 (autoload 'org-read-date "org")
 
-
 (defun jql-date-operand-to-time (x)
   (pcase x
     ('today
@@ -162,6 +161,12 @@ e.g. https://example.atlassian.net/")
     (since . ">="))
   "Alist of binary date operators to JQL operators name.")
 
+(defconst jira-utils--status-changed-comparators
+  '((on . "ON")
+    (before . "BEFORE")
+    (after . "AFTER"))
+  "Alist of binary date operators to JQL operators name.")
+
 (defun jql-eval (expr &optional depth already-ordered)
   (let ((depth (or depth 0)))
     (pcase expr
@@ -215,6 +220,31 @@ e.g. https://example.atlassian.net/")
             (format "%s NOT IN (%s)" jql-attr (string-join (seq-map #'prin1-to-string xs) ", ")))
            (xs
             (format "%s IN (%s)" jql-attr (string-join (seq-map #'prin1-to-string xs) ", "))))))
+
+
+      ;; status-changed expression
+
+      ((and (or `(status-changed to ,status ,op ,time)
+                `(status-changed ,op ,time to ,status))
+            (guard (assoc op jira-utils--status-changed-comparators)))
+       (let ((jql-op (alist-get op jira-utils--status-changed-comparators)))
+         (format "status changed TO %s %s %s"
+                 (prin1-to-string status)
+                 jql-op
+                 (jql-eval-date time))))
+
+      (`(status-changed ,expr)
+       (format "status changed ON %s" (jql-eval-date expr)))
+
+      ((and `(status-changed ,op ,expr)
+            (guard (assoc op jira-utils--status-changed-comparators)))
+       (let ((jql-op (alist-get op jira-utils--status-changed-comparators)))
+         (format "status changed %s %s" jql-op (jql-eval-date expr))))
+
+      ((or `(status-changed between ,t1 and ,t2) `(status-changed between ,t1 ,t2))
+       (jql-eval `(and (status-changed after ,t1) (status-changed before ,t2))
+                 depth))
+
 
       ;; Date arithmetic
 
