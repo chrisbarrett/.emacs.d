@@ -326,6 +326,11 @@ e.g. https://example.atlassian.net/")
       (_
        (error "JQL parse failure: %s" expr)))))
 
+(defun jql-copy (expr)
+  (let ((str (jql-eval expr)))
+    (kill-new str)
+    (message "Copied JQL expression to clipboard: %s" str)))
+
 (defun jira-utils-search-issues (jql-expr)
   (let* ((jql-param (url-hexify-string (jql-eval jql-expr)))
          (url (concat jira-utils-url-base "/issues/?jql=" jql-param)))
