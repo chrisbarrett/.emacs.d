@@ -44,10 +44,12 @@
     ;; Customise the prompt header.
 
     (setq eshell-banner-message
-          (let ((pad-char "\u0080"))
-            (format "%s%s\n%s%s\n\n" pad-char (pusheen 'winky)
-                    pad-char
-                    (propertize " O hai!" 'face '(:height 400)))))
+          (let* ((pad-char "\u0080")
+                 (str
+                  (format "%s%s\n%s%s\n\n" pad-char (pusheen 'winky)
+                          pad-char
+                          (propertize " O hai!" 'face '(:height 400)))))
+            (propertize str 'read-only t)))
     (add-hook 'eshell-mode-hook #'config-eshell-setup-keybindings)
     (add-hook 'eshell-mode-hook #'pusheen-animate-all)
 
@@ -117,8 +119,10 @@
               (let* ((time (format-time-string "%H:%M" (current-time)))
                      (timestamp (concat
                                  horizontal-tab
-                                 (propertize time 'face 'eshell-timestamp))))
-                (prog1 (concat timestamp "\n" page-break "\n")
+                                 (propertize time 'face 'eshell-timestamp)))
+                     (str (propertize (concat timestamp "\n" page-break "\n")
+                                      'read-only t)))
+                (prog1 str
                   (setq config-eshell--previous-time time))))))
 
     (add-hook 'eshell-mode-hook 'page-break-lines-mode)
@@ -196,11 +200,13 @@
 (defun eshell-timestamp--update-display-table (window)
   (with-current-buffer (window-buffer window)
     (with-selected-window window
-      (page-break-lines--update-display-table window)
-      (unless buffer-display-table
-        (setq buffer-display-table (make-display-table)))
-      (config-eshell--align-timestamp)
-      (config-eshell--align-pusheen))))
+      (let ((inhibit-read-only t))
+
+        (page-break-lines--update-display-table window)
+        (unless buffer-display-table
+          (setq buffer-display-table (make-display-table)))
+        (config-eshell--align-timestamp)
+        (config-eshell--align-pusheen)))))
 
 (defun eshell-timestamp--update-display-tables  (&optional frame)
   (unless (minibufferp)
@@ -214,6 +220,12 @@
     (add-hook hook 'eshell-timestamp--update-display-tables t t)))
 
 (add-hook 'eshell-mode-hook #'eshell-timestamp--configure-hooks)
+
+(defun config-eshell--inhibit-read-only (f &rest args)
+  (let ((inhibit-read-only t))
+    (apply f args)))
+
+(advice-add 'eshell-output-filter :around #'config-eshell--inhibit-read-only)
 
 
 

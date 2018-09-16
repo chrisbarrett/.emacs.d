@@ -78,10 +78,11 @@
          (filtered (-non-nil (if (null pretty-eshell--previous-section-values)
                                  next-sections
                                (pretty-eshell--new-prompt-sections pretty-eshell--previous-section-values next-sections))))
-         (rendered (s-join "  " filtered)))
-    (prog1 (concat (funcall pretty-eshell-header-fun)
-                   (if (string-blank-p rendered) "" (concat " " rendered "\n"))
-                   (funcall pretty-eshell-prompt-string-fun))
+         (rendered (s-join "  " filtered))
+         (str (concat (funcall pretty-eshell-header-fun)
+                      (if (string-blank-p rendered) "" (concat " " rendered "\n"))
+                      (funcall pretty-eshell-prompt-string-fun))))
+    (prog1 (propertize str 'read-only t)
       (setq pretty-eshell--previous-section-values next-sections))))
 
 (provide 'pretty-eshell)
