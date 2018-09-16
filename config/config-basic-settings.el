@@ -78,13 +78,17 @@
 (setq-default indent-tabs-mode nil)
 (setq-default sentence-end-double-space t)
 
+;; Show eshell as default buffer, unless Emacs was opened to edit a file
+;; directly.
+(unless (< 1 (length command-line-args))
+  (general-setq initial-buffer-choice #'eshell))
+
 (general-setq
  sentence-end-double-space nil
  delete-by-moving-to-trash nil
  initial-scratch-message nil
  inhibit-startup-message t
  initial-major-mode 'fundamental-mode
- initial-buffer-choice #'eshell
  ring-bell-function #'ignore
  history-length 1000
 
