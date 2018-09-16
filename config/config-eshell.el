@@ -41,6 +41,8 @@
 
   :config
   (progn
+    (require 'eshell-hacks)
+
     ;; Customise the prompt header.
 
     (setq eshell-banner-message
@@ -92,7 +94,9 @@
           (save-excursion
             (goto-char start)
             (search-forward "\u000c")
-            (put-text-property (point) end 'face 'eshell-dimmed)))))
+            (put-text-property (point) end 'face 'eshell-dimmed)
+            (put-text-property (point) end 'read-only t)
+            (put-text-property (point) end 'rear-nonsticky t)))))
 
     (defun config-eshell--inhibit-submission-on-empty (f &rest args)
       ;; Always run command if this is a dir change from hyrda.
