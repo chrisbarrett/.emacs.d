@@ -340,7 +340,9 @@ Interactively, reverse the characters in the current region."
   :straight t
   :general (:states 'normal :keymaps 'prog-mode-map "M-." #'dumb-jump-go)
   :config
-  (setq dumb-jump-selector 'ivy))
+  (progn
+    (setq dumb-jump-selector 'ivy)
+    (add-to-list 'dumb-jump-language-file-exts '(:language "javascript" :ext "ts" :agtype "js" :rgtype "ts"))))
 
 
 
