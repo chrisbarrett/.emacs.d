@@ -358,7 +358,7 @@
 
 ;; Typescript
 
-(defalias 'typescript-mode #'web-ts-mode)
+(advice-add 'typescript-mode :override #'web-ts-mode)
 
 (use-package tide
   :straight t
