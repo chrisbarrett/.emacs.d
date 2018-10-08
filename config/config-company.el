@@ -31,6 +31,7 @@
 
   :config
   (progn
+    (evil-define-key 'insert company-mode-map (kbd "S-<return>") #'company-complete)
     (setq company-idle-delay 0.3)
     (setq company-require-match nil)
     (add-hook 'company-mode-hook #'config-company--set-company-vars)))
