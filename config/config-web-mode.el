@@ -18,17 +18,13 @@
 
 
 
-(cb-major-mode-hydra-define web-js-mode
-  "Refactor"
-  (("ro" js-refactor-commands-organize-imports "organise imports")
-   ("ra" js-refactor-commands-align-object-literal-values "align object values")
-   ("re" js-refactor-commands-expand-comma-bindings "expand comma bindings")
-   ("rs" js-refactor-commands-toggle-sealed-object-type "toggle sealed type")))
-
-(cb-major-mode-hydra-define web-ts-mode
-  "Tide"
-  (("r" tide-refactor "refactor")
-   ("e" tide-project-errors "errors in project")))
+(dolist (mode '(web-js-mode web-ts-mode))
+  (eval `(cb-major-mode-hydra-define ,mode
+           "Refactor"
+           (("ro" js-refactor-commands-organize-imports "organise imports")
+            ("ra" js-refactor-commands-align-object-literal-values "align object values")
+            ("re" js-refactor-commands-expand-comma-bindings "expand comma bindings")
+            ("rs" js-refactor-commands-toggle-sealed-object-type "toggle sealed type")))))
 
 
 
