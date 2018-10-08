@@ -52,7 +52,7 @@
         (funcall fn string directory)))
 
     (defun config-projectile--file-has-test-suffix-p (file)
-      (string-suffix-p ".test.js" (-last-item (f-split file))))
+      (string-match-p (rx ".test." (or "js" "ts") eos) file))
 
     (defun config-projectile--file-is-child-of-test-dir-p (file)
       (seq-contains (f-split file) "test"))
@@ -67,9 +67,11 @@
     (defun config-projectile--substitute-test-with-impl (&optional existing)
       (or existing
           ;; File and test in same dir.
-          (when-let* ((file (buffer-file-name)))
-            (when (string-suffix-p ".test.js" file)
-              (s-replace-regexp (rx ".test.js" eos) ".js" file)))
+          (when-let* ((file (buffer-file-name))
+                      (re (rx (group ".test") "." (or "js" "ts") eos)))
+            (when (string-match-p re  file)
+              (s-replace-regexp re "" file nil nil 1)))
+
           ;; File in tests are in different trees.
           (when-let* ((file (buffer-file-name))
                       (impl-dir (if (f-dir? (f-join (projectile-project-root) "lib"))
@@ -79,14 +81,14 @@
                                               ("/test/" . ,impl-dir))
                                             file)))
             (if (file-directory-p (f-no-ext guess))
-                (f-join (f-no-ext guess) "index.js")
+                (f-join (f-no-ext guess) "index.%s" (f-ext guess))
               guess))))
 
     (defun config-projectile--substitute-impl-with-test (&optional existing)
       (or existing
           ;; File and test in same dir.
           (when-let* ((file (buffer-file-name))
-                      (guess (format "%s.test.js" (f-no-ext file))))
+                      (guess (format "%s.test.%s" (f-no-ext file) (f-ext file))))
             (when (file-exists-p guess)
               guess))
           ;; File in tests are in different trees.
@@ -96,13 +98,13 @@
              ((file-exists-p guess)
               guess)
 
-             ((equal "index.js" (file-name-nondirectory file))
+             ((seq-intersection '("index.js" "index.ts") (file-name-nondirectory file))
               (let ((dir (file-name-directory (directory-file-name (file-name-directory guess))))
                     (base (file-name-base (directory-file-name (file-name-directory guess))))
                     (ext (file-name-extension guess)))
                 (f-join dir (format "%s.test.%s" base ext))))
 
-             ((equal "js" (file-name-extension guess))
+             ((seq-intersection '("js" "ts") (file-name-extension guess))
               (let ((dir (file-name-directory guess))
                     (base (file-name-nondirectory (file-name-sans-extension guess)))
                     (ext (file-name-extension guess)))
