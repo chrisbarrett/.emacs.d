@@ -362,8 +362,10 @@
   (defun config-web--setup-tide ()
     (config-web-maybe-use-nvm)
     (tide-setup))
-  :general (:states 'normal :keymaps 'tide-mode-map "K" #'tide-documentation-at-point)
-  :general (:states '(normal insert) :keymaps 'tide-mode-map
+  :general (:states 'normal
+            :keymaps 'tide-mode-map
+            "K" #'tide-documentation-at-point
+            :states '(normal insert)
             "M-." #'tide-jump-to-definition
             "M-," #'tide-jump-back)
   :hook (web-ts-mode . config-web--setup-tide)
