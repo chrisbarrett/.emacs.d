@@ -14,9 +14,16 @@
 
 (eval-when-compile
   (require 'web-mode))
+
 (autoload 'web-mode "web-mode")
+(autoload 'thing-at-point-looking-at "thingatpt")
 
 
+
+(defvar web-js-base-mode-map
+  (let ((keymap (make-sparse-keymap)))
+    (define-key keymap (kbd "/") #'web-mode-js-electric-slash)
+    keymap))
 
 ;;;###autoload
 (define-derived-mode web-js-base-mode web-mode "JS"
@@ -59,6 +66,32 @@
 (define-derived-mode avro-mode web-mode "Avro"
   "Derived mode for editing Avro schema files."
   (setq-local web-mode-content-type "json"))
+
+
+(defun web-mode-js-electric-slash (arg)
+  "Insert a slash character (ARG) or JSDoc comment."
+  (interactive "*P")
+  (cond
+   ((thing-at-point-looking-at (rx bol (* space) "//"))
+    (let ((end (point)))
+      (back-to-indentation)
+      (let* ((indent (current-indentation))
+             (comment-leader (format "%s*" (s-repeat (1+ indent) " ")))
+             (existing-line
+              (save-excursion
+                (skip-chars-forward "/ ")
+                (buffer-substring (point) end))))
+        (delete-region (point) end)
+        (insert "/**")
+        (insert (concat "\n" comment-leader))
+        (save-excursion (insert existing-line))
+        (just-one-space)
+        (goto-char (line-end-position))
+        (save-excursion
+          (insert (concat "\n" comment-leader "/"))))))
+   (t
+    (self-insert-command (prefix-numeric-value arg)))))
+
 
 (provide 'web-mode-submodes)
 
