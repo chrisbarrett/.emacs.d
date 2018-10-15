@@ -390,13 +390,14 @@
 
 (defun config-web--choose-mode (&rest _)
   (catch 'stop
-    (-each '(("\\.json\\'" . web-json-mode)
+    (-each `(("\\.json\\'" . web-json-mode)
              ("\\.eslintrc\\'" . web-json-mode)
              ("\\.babelrc\\'" . web-json-mode)
              ("\\.es6\\'"  . web-js-mode)
              ("\\.js\\.snap\\'"  . web-js-snap-mode)
              ("\\.tsx?\\'"  . web-ts-mode)
-             ("\\.jsx?\\'" . web-js-mode))
+             ("\\.jsx?\\'" . web-js-mode)
+             (,(rx bos "*Org Src" (+? nonl) "[ js ]*" eos) . web-js-mode))
       (-lambda ((regex . mode))
         (if (string-match-p regex (buffer-name))
             (progn

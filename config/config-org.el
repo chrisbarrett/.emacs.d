@@ -428,6 +428,7 @@
     (general-setq org-babel-load-languages
                   '((emacs-lisp . t)
                     (restclient . t)
+                    (js . t)
                     (gnuplot . t)
                     (python . t)
                     (shell . t)
