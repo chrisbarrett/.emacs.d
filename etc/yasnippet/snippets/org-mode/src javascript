@@ -3,6 +3,6 @@
 # name: src javascript
 # condition: (yas-funcs-bolp)
 # --
-#+begin_src javascript
+#+begin_src js
 $0
 #+end_src
