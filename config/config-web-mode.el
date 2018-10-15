@@ -24,7 +24,9 @@
            (("ro" js-refactor-commands-organize-imports "organise imports")
             ("ra" js-refactor-commands-align-object-literal-values "align object values")
             ("re" js-refactor-commands-expand-comma-bindings "expand comma bindings")
-            ("rs" js-refactor-commands-toggle-sealed-object-type "toggle sealed type")))))
+            ("rs" js-refactor-commands-toggle-sealed-object-type "toggle sealed type"))
+           "Test"
+           (("t" js-test-commands-test-this-file-dwim "test file")))))
 
 
 
@@ -337,6 +339,9 @@
              js-refactor-commands-expand-comma-bindings
              js-refactor-commands-align-object-literal-values
              js-refactor-commands-toggle-sealed-object-type))
+
+(use-package js-test-commands
+  :commands (js-test-commands-test-this-file-dwim))
 
 
 ;; Node

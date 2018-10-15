@@ -11,6 +11,9 @@
 (require 'projectile-funcs)
 (require 'projectile-hacks)
 
+(autoload 'js-test-commands-locate-impl-file "js-test-commands")
+(autoload 'js-test-commands-locate-test-file "js-test-commands")
+
 
 
 ;; projectile-funcs contains functions used by the configuration for projectile.
@@ -63,54 +66,15 @@
           (when-let* ((file (buffer-file-name)))
             (config-projectile--file-is-child-of-test-dir-p file))))
 
-
     (defun config-projectile--substitute-test-with-impl (&optional existing)
       (or existing
-          ;; File and test in same dir.
-          (when-let* ((file (buffer-file-name))
-                      (re (rx (group ".test") "." (or "js" "ts") eos)))
-            (when (string-match-p re  file)
-              (s-replace-regexp re "" file nil nil 1)))
-
-          ;; File in tests are in different trees.
-          (when-let* ((file (buffer-file-name))
-                      (impl-dir (if (f-dir? (f-join (projectile-project-root) "lib"))
-                                    "/lib/"
-                                  "/src/"))
-                      (guess (s-replace-all `((".test" . "")
-                                              ("/test/" . ,impl-dir))
-                                            file)))
-            (if (file-directory-p (f-no-ext guess))
-                (f-join (f-no-ext guess) "index.%s" (f-ext guess))
-              guess))))
+          (when-let* ((file (buffer-file-name)))
+            (js-test-commands-locate-impl-file file))))
 
     (defun config-projectile--substitute-impl-with-test (&optional existing)
       (or existing
-          ;; File and test in same dir.
-          (when-let* ((file (buffer-file-name))
-                      (guess (format "%s.test.%s" (f-no-ext file) (f-ext file))))
-            (when (file-exists-p guess)
-              guess))
-          ;; File in tests are in different trees.
-          (when-let* ((file (buffer-file-name))
-                      (guess (replace-regexp-in-string (rx "/" (or "lib" "src") "/") "/test/" file t t)))
-            (cond
-             ((file-exists-p guess)
-              guess)
-
-             ((seq-intersection '("index.js" "index.ts") (file-name-nondirectory file))
-              (let ((dir (file-name-directory (directory-file-name (file-name-directory guess))))
-                    (base (file-name-base (directory-file-name (file-name-directory guess))))
-                    (ext (file-name-extension guess)))
-                (f-join dir (format "%s.test.%s" base ext))))
-
-             ((seq-intersection '("js" "ts") (file-name-extension guess))
-              (let ((dir (file-name-directory guess))
-                    (base (file-name-nondirectory (file-name-sans-extension guess)))
-                    (ext (file-name-extension guess)))
-                (f-join dir (format "%s.test.%s" base ext))))
-             (t
-              guess)))))
+          (when-let* ((file (buffer-file-name)))
+            (js-test-commands-locate-test-file file))))
 
     (defun config-projectile-test-project (arg)
       (interactive "P")
@@ -134,6 +98,7 @@
 
     (setq projectile-globally-ignored-directories
           '(
+            "coverage"
             ".bzr"
             ".ensime_cache"
             ".eunit"
