@@ -62,7 +62,8 @@ With prefix arg ARG, don't select the new window."
    (with-current-buffer (-first #'buffer-file-name (buffer-list))
      (list (current-buffer)
            (find-file-noselect (projectile-find-implementation-or-test (buffer-file-name)))
-           (get-buffer "*projectile-test*")))
+           (get-buffer "*projectile-test*")
+           (get-buffer "*compilation*")))
    (-uniq)
    (-non-nil)))
 
