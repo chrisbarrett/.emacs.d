@@ -147,7 +147,7 @@ If INTERACTIVE is set, raise an error if not at a binding site."
 
 (defun js-refactor-commands--import-kind (line)
   (cond
-   ((string-match-p (rx bol (* space) "import" (* space) "type" (* space)) line)
+   ((string-match-p (rx bol (* space) "import" (* space) "type" symbol-end (* space)) line)
     'flow-type)
    ((string-match-p js-refactor-commands--match-relative-import line)
     'relative)
