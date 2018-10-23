@@ -42,6 +42,7 @@
 ;; sure is.
 
 (global-set-key (kbd "<f2>") #'next-multiframe-window)
+(global-set-key (kbd "S-<f2>") #'previous-multiframe-window)
 
 ;;; Define some convenience aliases
 
