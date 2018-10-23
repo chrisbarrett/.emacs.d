@@ -21,34 +21,51 @@
 (eval-when-compile
   (defvar projectile-test-cmd-map (make-hash-table :test 'equal)))
 
+(defun js-test-commands--impl-to-colocated-test-file (impl-file)
+  (format "%s.test.%s" (f-no-ext impl-file) (f-ext impl-file)))
+
+(defun js-test-commands--impl-to-test-file-in-test-tree (impl-file)
+  (replace-regexp-in-string (rx "/" (or "lib" "src") "/") "/test/" impl-file t t))
+
 (defun js-test-commands--test-file-in-same-dir-p (impl-file)
-  (when-let* ((guess (format "%s.test.%s" (f-no-ext impl-file) (f-ext impl-file))))
+  (let ((guess (js-test-commands--impl-to-colocated-test-file impl-file)))
     (when (file-exists-p guess)
       guess)))
 
 (defun js-test-commands--test-file-in-test-tree-p (impl-file)
-  (when-let* ((guess (replace-regexp-in-string (rx "/" (or "lib" "src") "/") "/test/" impl-file t t)))
+  (when-let* ((guess (js-test-commands--impl-to-test-file-in-test-tree impl-file)))
     (cond
      ((file-exists-p guess)
       guess)
-
      ((seq-intersection '("index.js" "index.ts") (file-name-nondirectory impl-file))
       (let ((dir (file-name-directory (directory-file-name (file-name-directory guess))))
             (base (file-name-base (directory-file-name (file-name-directory guess))))
             (ext (file-name-extension guess)))
         (f-join dir (format "%s.test.%s" base ext))))
-
      ((seq-intersection '("js" "ts") (file-name-extension guess))
       (let ((dir (file-name-directory guess))
             (base (file-name-nondirectory (file-name-sans-extension guess)))
             (ext (file-name-extension guess)))
-        (f-join dir (format "%s.test.%s" base ext))))
-     (t
-      guess))))
+        (f-join dir (format "%s.test.%s" base ext)))))))
+
+(defun js-test-commands--guess-test-style (file)
+  (if (locate-dominating-file file "test")
+      'test-dir
+    'colocate))
+
+(defun js-test-commands--new-test-file-path (impl-file)
+  (pcase (js-test-commands--guess-test-style impl-file)
+    ('colocate
+     (js-test-commands--impl-to-colocated-test-file impl-file))
+    ('test-dir
+     (js-test-commands--impl-to-test-file-in-test-tree impl-file))
+    (_
+     (error "Unable to determine what test style this project should use"))))
 
 (defun js-test-commands-locate-test-file (impl-file)
   (or (js-test-commands--test-file-in-same-dir-p impl-file)
-      (js-test-commands--test-file-in-test-tree-p impl-file)))
+      (js-test-commands--test-file-in-test-tree-p impl-file)
+      (js-test-commands--new-test-file-path impl-file)))
 
 (defun js-test-commands--impl-file-in-same-dir-p (test-file)
   (let ((re (rx (group ".test") "." (or "js" "ts") eos)))
