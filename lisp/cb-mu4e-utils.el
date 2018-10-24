@@ -9,14 +9,8 @@
 ;;; Code:
 
 (require 'dash)
+(require 'f)
 (require 'mu4e)
-
-
-;; Expands to: mu4e-view-mark-for-read-and-archive
-(mu4e~headers-defun-mark-for read-and-archive)
-
-;; Expands to: mu4e-headers-mark-for-read-and-archive
-(mu4e~view-defun-mark-for read-and-archive)
 
 (defun cb-mu4e-utils-view-in-external-browser-action (msg)
   "View the current message MSG in the browser."
@@ -26,23 +20,39 @@
 
 (defun cb-mu4e-utils--refile-to-sent-maildir-p (sent-dir msg)
   (-let [(&plist :maildir message-dir :from ((_ . from-address))) msg]
-    (or (equal message-dir sent-dir)
-        (mu4e-user-mail-address-p from-address)
+    (equal message-dir sent-dir)))
+
+(defun cb-mu4e-utils--refile-to-notifications-maildir-p (notifications-dir msg)
+  (-let [(&plist :maildir message-dir) msg]
+    (equal message-dir notifications-dir)))
+
+(defun cb-mu4e-utils--from-me-p (msg)
+  (-let [(&plist :maildir message-dir :from ((_ . from-address))) msg]
+    (or (mu4e-user-mail-address-p from-address)
         (string-match-p (rx "@walrus.cool" eos) from-address))))
 
 (defun cb-mu4e-utils--select-target-dir-for-refile (msg)
-  (let ((refile-dir (mu4e-get-refile-folder msg))
-        (sent-dir (mu4e-get-sent-folder msg)))
+  ;; Move to refile dir, unless:
+  ;; - this is a sent message (which can happen if I attempt to archive a thread).
+  ;; - this is a notification
+  ;; - this is a message to myself (it's already in sent messages, and can be trashed)
+  (let* ((refile-dir (mu4e-get-refile-folder msg))
+         (notifications-dir (f-expand "../notifications" refile-dir))
+         (sent-dir (mu4e-get-sent-folder msg)))
     (cond
      ((cb-mu4e-utils--refile-to-sent-maildir-p sent-dir msg)
       sent-dir)
+     ((cb-mu4e-utils--from-me-p msg)
+      (mu4e-get-trash-folder msg))
+     ((cb-mu4e-utils--refile-to-notifications-maildir-p notifications-dir msg)
+      notifications-dir)
      (t
       refile-dir))))
 
-(defun cb-mu4e-utils-read-and-archive-action (docid msg _target)
+(defun cb-mu4e-utils-read-and-archive-action (docid msg target)
   ;; Retag must come before proc-move since retag runs 'sed' on the file
   (mu4e-action-retag-message msg "-\\Inbox")
-  (mu4e~proc-move docid (cb-mu4e-utils--select-target-dir-for-refile) "+S-u-N"))
+  (mu4e~proc-move docid target "+S-u-N"))
 
 (provide 'cb-mu4e-utils)
 

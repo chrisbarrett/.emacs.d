@@ -31,16 +31,16 @@
 (use-package mu4e
   :straight t
   :commands (mu4e mu4e-compose-new)
-  :general
-  (:keymaps '(mu4e-headers-mode-map
-              mu4e-view-mode-map)
-   "r" #'mu4e-headers-mark-for-read-and-archive)
-
+  :functions (mu4e-view-open-attachment)
   :init
   (general-unbind :keymaps 'mu4e-view-mode-map "p")
-
   :config
   (with-eval-after-load 'evil-collection-mu4e
+    (general-define-key
+     :state 'normal
+     :keymaps '(mu4e-headers-mode-map mu4e-view-mode-map)
+     "r" #'mu4e-headers-mark-for-read-and-archive)
+
     (evil-define-key 'normal mu4e-main-mode-map (kbd "q") #'bury-buffer))
 
   :preface
@@ -192,23 +192,31 @@
                  `(,(rx bos "*mu4e-main*" eos)
                    (display-buffer-reuse-window
                     display-buffer-fullframe)
-                   (reusable-frames . visible)))
+                   (reusable-frames . visible)))))
+
+(use-package cb-mu4e-utils
+  :after mu4e
+  :functions (cb-mu4e-utils-view-in-external-browser-action
+              cb-mu4e-utils-read-and-archive-action)
+  :config
+  (progn
+    ;; Expands to: mu4e-view-mark-for-read-and-archive
+    (mu4e~headers-defun-mark-for read-and-archive)
+
+    ;; Expands to: mu4e-headers-mark-for-read-and-archive
+    (mu4e~view-defun-mark-for read-and-archive)
 
     ;; Add read+archive mark
     (add-to-list 'mu4e-marks
                  '(read-and-archive
                    :char       "r"
                    :prompt     "rArchive"
-                   :show-target (lambda (target) "archive")
-                   :action      cb-mu4e-utils-read-and-archive-action))))
+                   :show-target file-name-nondirectory
+                   :dyn-target (lambda (target msg) (cb-mu4e-utils--select-target-dir-for-refile msg))
+                   :action      cb-mu4e-utils-read-and-archive-action))
 
-(use-package cb-mu4e-utils
-  :after mu4e
-  :functions (cb-mu4e-utils-view-in-external-browser-action
-              cb-mu4e-utils-read-and-archive-action
-              mu4e-view-open-attachment
-              mu4e-headers-mark-for-read-and-archive
-              mu4e-view-mark-for-read-and-archive))
+    (advice-add 'mu4e-headers-mark-for-refile :override #'mu4e-headers-mark-for-read-and-archive)
+    (advice-add 'mu4e-view-mark-for-refile :override #'mu4e-view-mark-for-read-and-archive)))
 
 (use-package org-mu4e
   :after (:and org mu4e))
