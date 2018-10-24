@@ -150,7 +150,7 @@
 (use-package config-docker)
 
 (use-package personal-config
-  :load-path "~/Sync/emacs")
+  :load-path "~/Sync/personal-config")
 
 (unless user-full-name (warn "`user-full-name' not set"))
 (unless user-mail-address (warn "`user-mail-address' not set"))

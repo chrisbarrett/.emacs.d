@@ -35,7 +35,7 @@
 (defun jump-to-personal-config ()
   "Open the personal configuration file."
   (interactive)
-  (jump-cmds--jump-to-file "~/Sync/emacs/personal-config.el"))
+  (jump-cmds--jump-to-file (find-library-name "personal-config")))
 
 (defun jump-to-messages ()
   "Open the messages buffer."
