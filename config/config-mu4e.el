@@ -131,6 +131,8 @@
         "Last 30 days" ?m)
        ("m:/walrus/inbox"
         "Inbox" ?i)
+       ("m:/walrus/notifications"
+        "Notifications" ?n)
        ("m:/walrus/sent"
         "Sent messages" ?s)
        ("bitbucket OR github"
