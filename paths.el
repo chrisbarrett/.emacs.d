@@ -41,6 +41,12 @@
             '("/run/current-system/sw/share/emacs/site-lisp"
               "~/.nix-profile/share/emacs/site-lisp")))
 
+(defconst paths-project-directories
+  (seq-filter #'file-directory-p '("~/Documents"
+                                   "~/Projects"
+                                   "~/Sync"
+                                   "~/workspace")))
+
 
 
 (defun paths-initialise (&optional interactive-p)

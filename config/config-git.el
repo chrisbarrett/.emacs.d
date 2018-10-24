@@ -46,11 +46,7 @@
           (user-error "Buffer isn't visiting a file"))))))
   :config
   (progn
-    (setq magit-repository-directories
-          '(("~/Documents" . 1)
-            ("~/Projects" . 1)
-            ("~/Sync" . 1)
-            ("~/workspace" . 1)))
+    (setq magit-repository-directories (--map (cons it 1) paths-project-directories))
 
     (setq magit-blame-styles
           '((margin

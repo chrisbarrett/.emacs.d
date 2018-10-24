@@ -86,6 +86,7 @@
     (advice-add 'projectile-load-known-projects :override #'projectile-funcs-refresh-projects)
     (advice-add 'projectile-save-known-projects :override #'ignore)
 
+    (setq projectile-project-search-path paths-project-directories)
     (setq projectile-completion-system 'ivy)
     (setq projectile-switch-project-action #'dired)
     (setq projectile-enable-caching t)
