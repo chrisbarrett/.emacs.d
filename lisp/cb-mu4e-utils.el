@@ -30,15 +30,19 @@
         (mu4e-user-mail-address-p from-address)
         (string-match-p (rx "@walrus.cool" eos) from-address))))
 
+(defun cb-mu4e-utils--select-target-dir-for-refile (msg)
+  (let ((refile-dir (mu4e-get-refile-folder msg))
+        (sent-dir (mu4e-get-sent-folder msg)))
+    (cond
+     ((cb-mu4e-utils--refile-to-sent-maildir-p sent-dir msg)
+      sent-dir)
+     (t
+      refile-dir))))
+
 (defun cb-mu4e-utils-read-and-archive-action (docid msg _target)
-  ;; Must come before proc-move since retag runs 'sed' on the file
+  ;; Retag must come before proc-move since retag runs 'sed' on the file
   (mu4e-action-retag-message msg "-\\Inbox")
-  ;; Move to refile dir, unless this is a sent message (which can happen if I
-  ;; attempt to archive a thread).
-  (let* ((refile-dir (mu4e-get-refile-folder msg))
-         (sent-dir (mu4e-get-sent-folder msg))
-         (target-dir (if (cb-mu4e-utils--refile-to-sent-maildir-p sent-dir msg) sent-dir refile-dir)))
-    (mu4e~proc-move docid target-dir "+S-u-N")))
+  (mu4e~proc-move docid (cb-mu4e-utils--select-target-dir-for-refile) "+S-u-N"))
 
 (provide 'cb-mu4e-utils)
 
