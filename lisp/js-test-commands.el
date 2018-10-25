@@ -87,15 +87,24 @@
   (or (js-test-commands--impl-file-in-same-dir-p test-file)
       (js-test-commands--impl-file-in-src-tree-p test-file)))
 
+(defvar js-test-commands--format-test-command-pattern "jest %s"
+  "String used to construct the test runner shell command.
+
+It should have one interpolation symbol, which will be filled
+with the shell-escaped file name for the selected test suite.")
+
+(put 'js-test-commands--format-test-command-pattern 'safe-local-variable 'stringp)
+
 (defun js-test-commands-test-this-file-dwim (file)
   "Run test suite corresponding to FILE."
   (interactive (list
                 (if (projectile-test-file-p (buffer-file-name))
                     (buffer-file-name)
                   (js-test-commands-locate-test-file (buffer-file-name)))))
-  (let ((command (format "jest %s" (shell-quote-argument file)))
-        (project-root (projectile-project-root))
-        (compilation-buffer-name-function (lambda (&rest _) "*projectile-test*")))
+  (let* ((command (format js-test-commands--format-test-command-pattern (shell-quote-argument file)))
+         (project-root (projectile-project-root))
+         (compilation-buffer-name-function (lambda (&rest _) "*projectile-test*"))
+         (default-directory project-root))
     (save-some-buffers (not compilation-ask-about-save)
                        (lambda ()
                          (projectile-project-buffer-p (current-buffer)
