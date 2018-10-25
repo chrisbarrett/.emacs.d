@@ -113,7 +113,7 @@
             "dist"
             "jars"
             "node_modules"
-            "flow-typed"
+            "flow-typed/npm"
             "vendor"
             "straight/repos"
             "target"
