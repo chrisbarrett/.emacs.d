@@ -3,4 +3,4 @@
 # key: it
 # condition: (and (yas-funcs-bolp) (not (save-excursion (search-backward-regexp (rx bol (* space) symbol-start "describe" symbol-end) nil t))))
 # --
-import type { ${1:T} } from '$0';
+import { type ${1:T} } from '$0';
