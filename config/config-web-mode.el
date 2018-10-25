@@ -287,8 +287,7 @@
 
 (use-package prettier-js
   :straight t
-  :commands (prettier-js-mode prettier-js)
-  :after web-mode-submodes
+  :hook (web-mode . prettier-js-mode)
   :preface
   (progn
     (defvar prettier-js-inhibited-for-project nil)
@@ -298,17 +297,13 @@
     (defun config-web--child-file-of-node-modules-p ()
       (and (buffer-file-name) (string-match-p "/node_modules/" (buffer-file-name))))
 
-    (defun config-web--maybe-enable-prettier ()
-      (unless prettier-js-inhibited-for-project
-        (when (and (derived-mode-p 'web-js-mode 'web-ts-mode)
-                   (not (config-web--child-file-of-node-modules-p)))
-          (prettier-js-mode +1))))
-
-    (define-globalized-minor-mode prettier-js-global-mode
-      prettier-js-mode config-web--maybe-enable-prettier))
-
+    (defun config-web--maybe-inhibit-prettier (f &rest args)
+      (when (derived-mode-p 'web-js-base-mode)
+        (unless (or prettier-js-inhibited-for-project
+                    (config-web--child-file-of-node-modules-p))
+          (apply f args)))))
   :config
-  (prettier-js-global-mode +1))
+  (advice-add #'prettier-js :around #'config-web--maybe-inhibit-prettier))
 
 (use-package compile
   :defer t
