@@ -76,7 +76,7 @@
     (let ((end (point)))
       (back-to-indentation)
       (let* ((indent (current-indentation))
-             (comment-leader (format "%s*" (s-repeat (1+ indent) " ")))
+             (comment-leader (format "%s*" (make-string (1+ indent) (string-to-char " "))))
              (existing-line
               (save-excursion
                 (skip-chars-forward "/ ")
