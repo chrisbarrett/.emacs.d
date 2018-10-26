@@ -87,7 +87,7 @@
   (or (js-test-commands--impl-file-in-same-dir-p test-file)
       (js-test-commands--impl-file-in-src-tree-p test-file)))
 
-(defvar js-test-commands--format-test-command-pattern "jest %s"
+(defvar js-test-commands--format-test-command-pattern "jest %s --coverage"
   "String used to construct the test runner shell command.
 
 It should have one interpolation symbol, which will be filled
