@@ -15,6 +15,8 @@
 (require 'seq)
 (require 'xref)
 
+(autoload 'find-library-name "find-func")
+
 (defun jump-cmds--jump-to-file (file &optional pos)
   (xref-push-marker-stack)
   (let ((buf (or (get-buffer file) (find-file-noselect file))))
