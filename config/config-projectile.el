@@ -92,7 +92,7 @@
     (setq projectile-enable-caching t)
     (setq projectile-create-missing-test-files t)
 
-    (setq projectile-globally-ignored-files '("TAGS" ".DS_Store"))
+    (setq projectile-globally-ignored-files '("TAGS" ".DS_Store" "package-lock.json"))
     (setq projectile-globally-ignored-file-suffixes '("meta" "jsbundle" "gz" "zip" "tar" "elc"))
 
     (setq projectile-ignored-project-function #'projectile-funcs-ignored-subdir-p)
