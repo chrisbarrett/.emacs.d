@@ -141,6 +141,8 @@ e.g. https://example.atlassian.net/")
     (assignee)
     (epic . "Epic Link")
     (resolution)
+    (issuetype)
+    (issue-type . "issuetype")
     (creator))
   "Alist of DSL attribute names to JQL attribute name.")
 
