@@ -171,7 +171,7 @@
     (defconst config-git-jira-projects '("CAPPS"))
 
     (pretty-magit-add-leader
-     (rx-to-string `(group (+ space) (or ,@config-git-jira-projects) "-" (+ digit)))
+     (rx-to-string `(group (+ space) (or ,@config-git-jira-projects) "-" (+ digit) symbol-end))
      nil '(face magit-hash)
      '(magit-log-mode))
 
