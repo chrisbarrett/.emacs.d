@@ -149,6 +149,7 @@
 (use-package config-eshell)
 (use-package config-docker)
 (use-package config-lsp)
+(use-package config-java)
 
 (use-package personal-config
   :load-path "~/Sync/personal-config")
