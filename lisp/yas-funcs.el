@@ -161,6 +161,38 @@ previous match and abort if no progress is made."
   (or (ignore-errors (f-filename (f-no-ext (buffer-file-name))))
       "TestFixture"))
 
+
+
+;;; Java
+
+(defun yas-funcs-java-ctor-name ()
+  (save-excursion
+    (if (search-backward-regexp (rx "class" symbol-end (+ space) symbol-start (group (+? nonl)) symbol-end))
+        (match-string-no-properties 1)
+      "ClassName")))
+
+(defun yas-funcs--java-ctor-parse-param-string (param-string)
+  (--keep (-let* ((it (s-trim it))
+                  (tokens (s-split (rx (+ space)) it))
+                  (type (s-join " " (-butlast tokens)))
+                  (ident (-last-item tokens)))
+            (unless (-any #'string-blank-p (list ident type))
+              (list :type type :ident ident)))
+          (s-split (rx (any ",")) param-string t)))
+
+(defun yas-funcs-java-ctor-body (param-string)
+  (let ((lines (-map
+                (-lambda ((&plist :ident ident))
+                  (format "_%s = %s;" ident ident))
+                (yas-funcs--java-ctor-parse-param-string param-string))))
+    (s-join "\n" lines)))
+
+(defun yas-funcs-java-ctor-fields (param-string)
+  (let ((lines (-map
+                (-lambda ((&plist :ident ident :type type))
+                  (format "private %s _%s = null;" type ident))
+                (yas-funcs--java-ctor-parse-param-string param-string))))
+    (s-join "\n" lines)))
 
 (provide 'yas-funcs)
 
