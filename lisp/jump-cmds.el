@@ -15,6 +15,10 @@
 (require 'seq)
 (require 'xref)
 
+(autoload 'dumb-jump-go "dumb-jump")
+(autoload 'dumb-jump-go-other-window "dumb-jump")
+(autoload 'lsp-ui-peek-find-definitions "lsp-methods")
+
 (autoload 'find-library-name "find-func")
 
 (defun jump-cmds--jump-to-file (file &optional pos)
@@ -118,6 +122,27 @@ POS is the buffer position to go to."
   "Jump to emacs.d configuration file FILE."
   (interactive (list (jump-cmds--read-config-file (jump-cmds--config-files))))
   (jump-cmds--jump-to-file file))
+
+
+;; Commands for jumping around source files
+
+(defun jump-to-definition ()
+  "Go to the definition of the symbol at point."
+  (interactive)
+  (if (bound-and-true-p lsp-mode)
+      (lsp-ui-peek-find-definitions)
+    (dumb-jump-go)))
+
+(defun jump-to-definition-other-window ()
+  "Go to the definition of the symbol at point."
+  (interactive)
+  (if (bound-and-true-p lsp-mode)
+      (display-buffer
+       (save-window-excursion
+         (lsp-ui-peek-find-definitions)
+         (current-buffer)))
+    (dumb-jump-go-other-window)))
+
 
 (provide 'jump-cmds)
 

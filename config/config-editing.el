@@ -7,6 +7,7 @@
 
 (require 'cb-major-mode-hydra)
 (require 'general)
+(require 'jump-cmds)
 
 
 
@@ -338,7 +339,7 @@ Interactively, reverse the characters in the current region."
 
 (use-package dumb-jump
   :straight t
-  :general (:states 'normal :keymaps 'prog-mode-map "M-." #'dumb-jump-go)
+  :general (:states 'normal :keymaps 'prog-mode-map "M-." #'jump-to-definition)
   :config
   (progn
     (setq dumb-jump-selector 'ivy)

@@ -329,8 +329,8 @@
   "Goto"
   (("c" jump-to-config-file "config file...")
    ("i" jump-to-init-file "init file")
-   ("m" jump-to-messages "messages")
-   ("n" jump-to-nix-packages "nix packages"))
+   ("n" jump-to-nix-packages "nix packages")
+   ("?" jump-to-messages "messages"))
   ""
   (("p" jump-to-personal-config "personal config")
    ("u" jump-to-package-usage "package usage"))
@@ -345,9 +345,10 @@
    ("l" magit-log-buffer-file "log buffer")
    ("t" git-time-machine/body "time machine"))
 
-  "Jump to Def"
-  (("g" dumb-jump-go "jump")
-   ("G" dumb-jump-go-other-window "jump other window")
+  "Symbol Definition"
+  (("g" jump-to-definition "symbol/type")
+   ("o" jump-to-definition-other-window "symbol/type (other window)")
+   ("m" lsp-goto-implementation "symbol implementation")
    ("SPC" pop-tag-mark "jump back")))
 
 (cb-hydra-define git-time-machine
