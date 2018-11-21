@@ -205,8 +205,11 @@
         (emmet-expand-yas))))
 
   :init
-  (with-eval-after-load 'web-mode
-    (define-key web-mode-map (kbd "<C-return>") #'emmet-expand-line))
+  (progn
+    (with-eval-after-load 'nxml-mode
+      (define-key nxml-mode-map (kbd "<C-return>") #'emmet-expand-line))
+    (with-eval-after-load 'web-mode
+      (define-key web-mode-map (kbd "<C-return>") #'emmet-expand-line)))
 
   :config
   (progn
