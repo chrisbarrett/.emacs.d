@@ -483,6 +483,7 @@
    (":" eval-expression "evaluate lisp")
    ("C" compile "compile")
    ("d" dired "dired")
+   ("D" dired-other-window "dired (other window)")
    ("r" ivy-resume "ivy-resume")
    ("u" universal-argument "universal argument"))
 
