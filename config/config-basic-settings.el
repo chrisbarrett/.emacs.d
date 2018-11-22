@@ -417,15 +417,22 @@
                           "/")
                       f))
 
+    (defconst config-basic-settings--abs-dirs
+      (seq-map (lambda (it) (f-slash (file-truename it)))
+               (list "/var/folders/"
+                     "/usr/local/Cellar/"
+                     "/tmp/"
+                     "/nix/store/"
+                     paths-cache-directory
+                     paths-etc-directory)))
+
     (defun config-basic-settings--child-of-boring-abs-dir-p (f)
       (let ((ignore-case (eq system-type 'darwin)))
         (seq-find (lambda (d)
-                    (string-prefix-p d f ignore-case))
-                  (list "/var/folders/"
-                        "/usr/local/Cellar/"
-                        "/tmp/"
-                        "/nix/store/"
-                        (f-expand (concat user-emacs-directory "etc/")))))))
+                    (or
+                     (string-prefix-p d f ignore-case)
+                     (string-prefix-p d (file-truename f) ignore-case)))
+                  config-basic-settings--abs-dirs))))
 
   :config
   (general-setq
