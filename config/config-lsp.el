@@ -21,7 +21,7 @@
 
 (use-package lsp-ui
   :straight t
-  :hook ((java-mode . lsp-ui-mode))
+  :hook (lsp-mode . lsp-ui-mode)
   :config
   (progn
     (general-setq lsp-ui-sideline-enable nil
