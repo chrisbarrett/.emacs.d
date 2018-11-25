@@ -156,7 +156,10 @@
 
     (flycheck-add-mode 'css-csslint 'web-css-mode)
     (flycheck-add-mode 'json-jsonlint 'web-json-mode)
-    (flycheck-add-mode 'html-tidy 'web-html-mode)))
+    (flycheck-add-mode 'html-tidy 'web-html-mode)
+
+    (with-eval-after-load 'lsp-ui
+      (flycheck-add-next-checker 'lsp-ui 'javascript-eslint))))
 
 (use-package emmet-mode
   :straight t
@@ -215,64 +218,6 @@
   (progn
     (setq emmet-move-cursor-between-quotes t)
     (add-hook 'web-js-mode-hook #'config-web--set-jsx-classname-on)))
-
-(use-package flycheck-flow
-  :straight t
-  :after (:and web-mode-submodes flycheck)
-  :config
-  (progn
-    (flycheck-add-mode 'javascript-flow 'web-js-mode)
-    (flycheck-add-next-checker 'javascript-flow 'javascript-eslint)))
-
-(use-package flow
-  :commands (flow-insert-flow-annotation)
-  :general (:keymaps 'web-js-mode-map "C-c C-t" #'flow-type-at))
-
-(use-package tern
-  :straight t
-  :disabled t
-  :commands (tern-mode)
-  :hook (web-js-mode . config-web--maybe-enable-tern)
-  :general
-  (:states 'normal :keymaps 'tern-mode-keymap
-   "K" 'tern-get-docs
-   "gd"  'tern-find-definition
-   "M-." 'tern-find-definition
-   "M-," 'tern-pop-find-definition)
-  :preface
-  (progn
-    (autoload 'flycheck-overlay-errors-at "flycheck")
-
-    (defun config-web--maybe-enable-tern ()
-      (unless config-etags-in-query-replace-session-p
-        (tern-mode +1)))
-
-    (defun config-web--flycheck-errors-at-point-p ()
-      (when (bound-and-true-p flycheck-mode)
-        (flycheck-overlay-errors-at (point))))
-
-    (defun config-web--maybe-suppress-tern-hints (f &rest args)
-      (unless (config-web--flycheck-errors-at-point-p)
-        (apply f args))))
-
-  :config
-  (progn
-    (setq tern-command (add-to-list 'tern-command "--no-port-file" t))
-
-    (unless (getenv "NODE_PATH")
-      (setenv "NODE_PATH" "/usr/local/lib/node_modules"))
-
-    (advice-add 'tern-show-argument-hints :around #'config-web--maybe-suppress-tern-hints)))
-
-(use-package company-tern
-  :straight t
-  :after (:and web-mode-submodes tern)
-  :config
-  (progn
-    (setq company-tern-meta-as-single-line t)
-    (setq company-tern-property-marker " <p>")
-    (with-eval-after-load 'company
-      (add-to-list 'company-backends 'company-tern))))
 
 (use-package aggressive-indent
   :defer t
@@ -340,6 +285,35 @@
 
 (use-package js-test-commands
   :commands (js-test-commands-test-this-file-dwim))
+
+
+;; LSP
+;;
+;; Configure language server protocol for JS and Typescript.
+
+(defun config-web--lsp-company-transformer (candidates)
+  (let ((completion-ignore-case t))
+    (all-completions (company-grab-symbol) candidates)))
+
+(defun config-web-enable-lsp ()
+  (if (locate-dominating-file default-directory ".flowconfig")
+      (lsp-javascript-flow-enable)
+    (lsp-typescript-enable))
+
+  (with-no-warnings
+    (make-local-variable 'company-transformers)
+    (setq-local company-backends '(company-lsp))
+    (push 'config-web--lsp-company-transformer company-transformers)))
+
+(add-hook 'web-js-base-mode-hook #'config-web-enable-lsp)
+
+(use-package lsp-javascript-flow
+  :straight (:host github :repo "emacs-lsp/lsp-javascript")
+  :commands (lsp-javascript-flow-enable))
+
+(use-package lsp-typescript
+  :straight (:host github :repo "emacs-lsp/lsp-javascript")
+  :commands (lsp-typescript-enable))
 
 
 ;; Node
