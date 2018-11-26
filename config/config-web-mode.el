@@ -298,7 +298,7 @@
 (defun config-web-enable-lsp ()
   (if (locate-dominating-file default-directory ".flowconfig")
       (lsp-javascript-flow-enable)
-    (lsp-typescript-enable))
+    (lsp-javascript-typescript-enable))
 
   (with-no-warnings
     (make-local-variable 'company-transformers)
@@ -311,9 +311,9 @@
   :straight (:host github :repo "emacs-lsp/lsp-javascript")
   :commands (lsp-javascript-flow-enable))
 
-(use-package lsp-typescript
+(use-package lsp-javascript-typescript
   :straight (:host github :repo "emacs-lsp/lsp-javascript")
-  :commands (lsp-typescript-enable))
+  :commands (lsp-javascript-typescript-enable))
 
 
 ;; Node
@@ -327,38 +327,6 @@
     (when (locate-dominating-file default-directory ".nvmrc")
       (nvm-use-for-buffer)
       t)))
-
-
-;; Typescript
-
-(advice-add 'typescript-mode :override #'web-ts-mode)
-
-(use-package tide
-  :straight t
-  :preface
-  (defun config-web--setup-tide ()
-    (config-web-maybe-use-nvm)
-    (tide-setup))
-  :general (:states 'normal
-            :keymaps 'tide-mode-map
-            "K" #'tide-documentation-at-point
-            :states '(normal insert)
-            "M-." #'tide-jump-to-definition
-            "M-," #'tide-jump-back)
-  :hook (web-ts-mode . config-web--setup-tide)
-  :config
-  (progn
-    (with-eval-after-load 'flycheck
-      (flycheck-add-mode 'typescript-tide 'web-ts-mode))
-
-    (add-to-list 'display-buffer-alist
-                 `(,(rx bos "*tide-documentation*" eos)
-                   (display-buffer-reuse-window
-                    display-buffer-in-side-window)
-                   (reusable-frames . visible)
-                   (side            . bottom)
-                   (slot            . 1)
-                   (window-width    . 0.5)))))
 
 
 
