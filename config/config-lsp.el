@@ -5,12 +5,18 @@
 (eval-when-compile
   (require 'use-package))
 
+(defvar lsp-dockerfile-server "docker-langserver")
+
 (use-package lsp-mode
   :straight t
   :config
   (general-setq lsp-eldoc-render-all nil
                 lsp-inhibit-message t
-                lsp-highlight-symbol-at-point nil))
+                lsp-highlight-symbol-at-point nil)
+  :config
+  (progn
+    (lsp-define-stdio-client lsp-dockerfile "Docker" (lambda () default-directory) (list lsp-dockerfile-server "--stdio"))
+    (add-hook 'dockerfile-mode-hook #'lsp-dockerfile-enable)))
 
 (use-package company-lsp
   :after company

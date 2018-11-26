@@ -3,7 +3,8 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'use-package))
+  (require 'use-package)
+  (require 'lsp-mode nil t))
 
 ;; dockerfile-mode provides a major mode for docker files.
 
@@ -64,6 +65,18 @@
    "D" 'docker-volume-rm-popup
    "d" 'docker-volume-dired-selection
    "l" 'docker-volume-ls-popup))
+
+;; configure LSP support for dockerfiles.
+
+(defconst lsp-dockerfile-server "docker-langserver")
+
+(with-eval-after-load 'lsp-mode
+  (lsp-define-stdio-client lsp-dockerfile
+                           "Docker"
+                           (lambda () default-directory)
+                           (list lsp-dockerfile-server "--stdio"))
+  (add-hook 'dockerfile-mode-hook #'lsp-dockerfile-enable))
+
 
 
 
