@@ -410,6 +410,7 @@
                            "Maildir"
                            "build"
                            "dist"
+                           "flow-typed/npm"
                            "straight/repos"
                            "target"
                            "vendor"
