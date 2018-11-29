@@ -118,12 +118,38 @@
          ("\\.avsc\\'" . avro-mode)
          ("\\.avro\\'" . avro-mode))
   :preface
-  (defun config-web--enable-readonly-mode-in-node-modules ()
-    (when (and (buffer-file-name)
-               (string-match-p (rx "/node_modules/") (buffer-file-name)))
-      (read-only-mode +1)))
+  (progn
+    (defun config-web--choose-mode (&rest _)
+      (catch 'stop
+        (-each `(("\\.json\\'" . web-json-mode)
+                 ("\\.eslintrc\\'" . web-json-mode)
+                 ("\\.babelrc\\'" . web-json-mode)
+                 ("\\.es6\\'"  . web-js-mode)
+                 ("\\.js\\.snap\\'"  . web-js-snap-mode)
+                 ("\\.tsx?\\'"  . web-ts-mode)
+                 ("\\.jsx?\\'" . web-js-mode)
+                 (,(rx bos "*Org Src" (+? nonl) "[ js ]*" eos) . web-js-mode))
+          (-lambda ((regex . mode))
+            (if (string-match-p regex (buffer-name))
+                (progn
+                  (funcall mode)
+                  (throw 'stop nil))
+              (web-mode))))))
+
+    (defun config-web--enable-readonly-mode-in-node-modules ()
+      (when (and (buffer-file-name)
+                 (string-match-p (rx "/node_modules/") (buffer-file-name)))
+        (read-only-mode +1))))
   :init
-  (add-hook 'find-file-hook #'config-web--enable-readonly-mode-in-node-modules))
+  (progn
+    (add-hook 'find-file-hook #'config-web--enable-readonly-mode-in-node-modules)
+
+    ;; HACK: Ensure these modes always override other web programming major modes.
+    (advice-add 'js-mode :override #'config-web--choose-mode)
+    (advice-add 'json-mode :override #'config-web--choose-mode)
+    (advice-add 'typescript-mode :override #'config-web--choose-mode)
+    (advice-add 'javascript-mode :override #'config-web--choose-mode)
+    (advice-add 'js2-mode :override #'config-web--choose-mode)))
 
 (use-package flycheck
   :defer t
@@ -327,31 +353,6 @@
     (when (locate-dominating-file default-directory ".nvmrc")
       (nvm-use-for-buffer)
       t)))
-
-
-
-;; HACK: Ensure these modes are used when others are available potentially in
-;; auto-mode-alist.
-
-(defun config-web--choose-mode (&rest _)
-  (catch 'stop
-    (-each `(("\\.json\\'" . web-json-mode)
-             ("\\.eslintrc\\'" . web-json-mode)
-             ("\\.babelrc\\'" . web-json-mode)
-             ("\\.es6\\'"  . web-js-mode)
-             ("\\.js\\.snap\\'"  . web-js-snap-mode)
-             ("\\.tsx?\\'"  . web-ts-mode)
-             ("\\.jsx?\\'" . web-js-mode)
-             (,(rx bos "*Org Src" (+? nonl) "[ js ]*" eos) . web-js-mode))
-      (-lambda ((regex . mode))
-        (if (string-match-p regex (buffer-name))
-            (progn
-              (funcall mode)
-              (throw 'stop nil))
-          (web-mode))))))
-
-(advice-add 'js-mode :override #'config-web--choose-mode)
-(advice-add 'json-mode :override #'config-web--choose-mode)
 
 (provide 'config-web-mode)
 
