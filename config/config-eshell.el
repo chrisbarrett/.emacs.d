@@ -42,6 +42,21 @@
   :config
   (progn
     (require 'eshell-hacks)
+    (general-setq eshell-modules-list
+                  '(eshell-tramp
+                    eshell-alias
+                    eshell-banner
+                    eshell-basic
+                    eshell-cmpl
+                    eshell-dirs
+                    eshell-glob
+                    eshell-hist
+                    eshell-ls
+                    eshell-pred
+                    eshell-prompt
+                    eshell-script
+                    eshell-term
+                    eshell-unix))
 
     ;; Customise the prompt header.
 
