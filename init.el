@@ -100,13 +100,10 @@
 
 ;; Load theme aggressively, or Emacs will look ugly during the startup sequence.
 (use-package config-themes
-  :functions (config-themes/light-theme)
+  :commands (config-themes/dark-theme)
+  :demand t
   :config
-  (pcase system-type
-    ('darwin
-     (config-themes/light-theme))
-    (_
-     (config-themes/dark-theme))))
+  (config-themes/dark-theme))
 
 (use-package config-basic-settings)
 
