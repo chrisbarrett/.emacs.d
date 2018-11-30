@@ -95,7 +95,12 @@
      ((t
        :background ,mode-line-bg
        :foreground ,mode-line-fg :weight demibold
-       :box (:line-width 3 :color ,mode-line-bg))))
+       :box (:line-width 2 :color ,dimmed-fg))))
+
+    (mode-line-inactive
+     ((t
+       :inherit mode-line
+       :box (:line-width 2 :color ,mode-line-bg))))
 
     (mode-line-format-nonemphasised-element
      ((t :weight ,light-weight)))
