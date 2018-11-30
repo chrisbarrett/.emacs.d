@@ -140,7 +140,7 @@
  ("tablist" . "c834a84efb6efa32497efe1e73160fade741b836")
  ("tiny" . "012b2e7a67b9f067bbfa0292479861ffbaa201fa")
  ("toml-mode.el" . "f6c61817b00f9c4a3cab1bae9c309e0fc45cdd06")
- ("treemacs" . "a9c09aa839c6947e5612d5c5f65f2320a7361e0d")
+ ("treemacs" . "bec7f6888819b2550712ac0e5dc7306533bd52d9")
  ("typescript.el" . "7c6fd0f4a8f32fdda3eecbd423a124302cfcfcf5")
  ("unfill" . "df0c4dee19a3874b11c7c7f04e8a2fba629fda9b")
  ("use-package" . "3fb8f39f5901a4c0ef7887283e56e60b541675ea")
