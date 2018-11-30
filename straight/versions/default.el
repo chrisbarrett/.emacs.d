@@ -130,6 +130,7 @@
  ("pyvenv" . "0ff4351f5e3a63575c0a88b293df9d3ccbad4ed6")
  ("restclient.el" . "859d944796ce298b5779d9d256bd8d271d57e221")
  ("rg.el" . "30110601ec8fef9f6cf67d501615167d2bf141a3")
+ ("rmsbolt" . "609f781b3afbd4365c0a9691c5745c0c649ff2ad")
  ("rust-mode" . "106aeab800fb3404baf231845d3e3549ec235afa")
  ("s.el" . "03410e6a7a2b11e47e1fea3b7d9899c7df26435e")
  ("shut-up" . "081d6b01e3ba0e60326558e545c4019219e046ce")

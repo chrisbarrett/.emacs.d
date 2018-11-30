@@ -45,6 +45,20 @@
   :config
   (add-hook 'yaml-mode-hook #'config-langs--disable-autofill))
 
+(use-package rmsbolt
+  :straight
+  (:host gitlab :repo "jgkamat/rmsbolt")
+  :preface
+  (defun config-langs--override-haskell-compile-command (f &rest args)
+    (let ((rmsbolt-command
+           (if (locate-dominating-file default-directory "stack.yaml")
+               "stack ghc --"
+             "ghc")))
+      (apply f args)))
+
+  :config
+  (advice-add 'rmsbolt--hs-compile-cmd :around #'config-langs--override-haskell-compile-command))
+
 (provide 'config-langs)
 
 ;;; config-langs.el ends here
