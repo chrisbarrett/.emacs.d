@@ -333,6 +333,7 @@
    ("?" jump-to-messages "messages"))
   ""
   (("p" jump-to-personal-config "personal config")
+   ("H" jump-to-host-file "host file")
    ("u" jump-to-package-usage "package usage"))
 
   "Git"

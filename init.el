@@ -151,6 +151,9 @@
 (use-package personal-config
   :load-path "~/Sync/personal-config")
 
+(when (file-exists-p paths-hostfile)
+  (load-file paths-hostfile))
+
 (unless user-full-name (warn "`user-full-name' not set"))
 (unless user-mail-address (warn "`user-mail-address' not set"))
 

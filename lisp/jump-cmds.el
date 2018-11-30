@@ -33,6 +33,11 @@
   (interactive)
   (jump-cmds--jump-to-file (concat user-emacs-directory "init.el")))
 
+(defun jump-to-host-file ()
+  "Open the Emacs host config file."
+  (interactive)
+  (jump-cmds--jump-to-file paths-hostfile))
+
 (defun jump-to-nix-packages ()
   "Open the nix packages file."
   (interactive)
