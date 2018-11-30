@@ -35,6 +35,9 @@
     (require 'projectile)
 
     (general-setq
+     ;; Disable the indicator next to open files--hl-line is sufficient.
+     treemacs-fringe-indicator-mode nil
+
      treemacs-recenter-after-file-follow nil
      treemacs-follow-after-init t
      treemacs-silent-filewatch t
@@ -50,10 +53,6 @@
     (treemacs-follow-mode t)
     (treemacs-filewatch-mode t)
     (treemacs-git-mode 'simple)
-
-    ;; Disable the indicator next to open files--hl-line is sufficient.
-
-    (treemacs-fringe-indicator-mode -1)
 
     ;; Hide ignored files.
 
@@ -79,9 +78,12 @@
 
 (use-package treemacs-evil
   :straight t
-  :after (:and treemacs evil)
+  :after treemacs
   :config
-  (setq evil-treemacs-state-cursor '("SkyBlue" box)))
+  (progn
+    (evil-define-key 'treemacs treemacs-mode-map (kbd "J") 'treemacs-next-project)
+    (evil-define-key 'treemacs treemacs-mode-map (kbd "K") 'treemacs-previous-project)
+    (setq evil-treemacs-state-cursor '("SkyBlue" box))))
 
 (use-package treemacs-projectile
   :straight t
