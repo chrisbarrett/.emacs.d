@@ -627,7 +627,7 @@
      ((t :weight normal)))
 
     (treemacs-git-modified-face
-     ((t :slant italic)))
+     ((t :underline ,yellow)))
 
     (treemacs-git-added-face
      ((t :underline ,blue)))
