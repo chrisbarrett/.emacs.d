@@ -27,8 +27,12 @@
   (general-setq treemacs-persist-file
                 (f-join paths-cache-directory "treemacs-persist"))
   :preface
-  (defun config-treemacs-set-tab-width ()
-    (setq-local tab-width 1))
+  (defun config-treemacs--setup-buffer ()
+    (setq-local tab-width 1)
+    (setq-local cursor-type nil))
+
+  :hook
+  (treemacs-mode . config-treemacs--setup-buffer)
 
   :config
   (progn
@@ -73,18 +77,22 @@
     (setq treemacs-icon-closed-png (concat (all-the-icons-faicon "folder") "\t"))
     (setq treemacs-icon-open-png (concat (all-the-icons-faicon "folder-open") "\t"))
     (setq treemacs-icon-text (concat (all-the-icons-faicon "file-text-o") "\t"))
-    (setq treemacs-icon-fallback (concat (all-the-icons-faicon "file") "\t"))
-
-    (add-hook 'treemacs-mode-hook #'config-treemacs-set-tab-width)))
+    (setq treemacs-icon-fallback (concat (all-the-icons-faicon "file") "\t"))))
 
 (use-package treemacs-evil
   :straight t
   :after treemacs
+  :preface
+  (defun config-treemacs--buffer-setup ()
+    (require 'treemacs-evil)
+    (setq evil-treemacs-state-cursor (list (face-background 'hl-line) nil))
+    (evil-treemacs-state +1))
+  :hook
+  (treemacs-mode . config-treemacs--buffer-setup)
   :config
   (progn
     (evil-define-key 'treemacs treemacs-mode-map (kbd "J") 'treemacs-next-project)
-    (evil-define-key 'treemacs treemacs-mode-map (kbd "K") 'treemacs-previous-project)
-    (setq evil-treemacs-state-cursor '("SkyBlue" nil))))
+    (evil-define-key 'treemacs treemacs-mode-map (kbd "K") 'treemacs-previous-project)))
 
 (use-package treemacs-projectile
   :straight t
