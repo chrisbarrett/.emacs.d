@@ -50,6 +50,7 @@
      treemacs-show-hidden-files nil
      treemacs-width 30)
 
+    (treemacs-fringe-indicator-mode t)
     (treemacs-follow-mode t)
     (treemacs-filewatch-mode t)
     (treemacs-git-mode 'simple)
@@ -83,7 +84,7 @@
   (progn
     (evil-define-key 'treemacs treemacs-mode-map (kbd "J") 'treemacs-next-project)
     (evil-define-key 'treemacs treemacs-mode-map (kbd "K") 'treemacs-previous-project)
-    (setq evil-treemacs-state-cursor '("SkyBlue" box))))
+    (setq evil-treemacs-state-cursor '("SkyBlue" nil))))
 
 (use-package treemacs-projectile
   :straight t
