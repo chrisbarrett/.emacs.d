@@ -49,8 +49,8 @@
       (when-let* ((bin (config-web--node-modules-bin-dir)))
         (setq-local exec-path (cons bin exec-path)))))
 
-  :init
-  (setq web-mode-extra-keywords '(("javascript" . ("type"))))
+  :custom
+  (web-mode-extra-keywords '(("javascript" . ("declare" "module" "type"))))
 
   :config
   (progn
