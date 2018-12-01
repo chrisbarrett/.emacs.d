@@ -144,7 +144,7 @@
  ("treemacs" . "bec7f6888819b2550712ac0e5dc7306533bd52d9")
  ("typescript.el" . "7c6fd0f4a8f32fdda3eecbd423a124302cfcfcf5")
  ("unfill" . "df0c4dee19a3874b11c7c7f04e8a2fba629fda9b")
- ("use-package" . "3fb8f39f5901a4c0ef7887283e56e60b541675ea")
+ ("use-package" . "39a8b8812c2c9f6f0b299e6a04e504ef393694ce")
  ("vi-tilde-fringe" . "f1597a8d54535bb1d84b442577b2024e6f910308")
  ("volatile-highlights.el" . "9a20091f0ce7fc0a6b3e641a6a46d5f3ac4d8392")
  ("web-mode" . "e31d1dd4ee436db8aaca3f35223af5a05fb47dec")
