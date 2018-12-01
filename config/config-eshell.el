@@ -210,17 +210,17 @@
           (spaces-count (/ (- (1+ (window-width))
                               pusheen-cols)
                            2))
-          (width (truncate (* (char-width space-char) spaces-count)))
-          (new-display-entry (vconcat (make-list width space-char))))
-    (unless (equal new-display-entry
-                   (elt buffer-display-table pad-control-char))
-      (aset buffer-display-table pad-control-char new-display-entry))))
+          (width (truncate (* (char-width space-char) spaces-count))))
+    (when (plusp width)
+      (let ((new-display-entry (vconcat (make-list width space-char))))
+        (unless (equal new-display-entry
+                       (elt buffer-display-table pad-control-char))
+          (aset buffer-display-table pad-control-char new-display-entry))))))
 
 (defun eshell-timestamp--update-display-table (window)
   (with-current-buffer (window-buffer window)
     (with-selected-window window
       (let ((inhibit-read-only t))
-
         (page-break-lines--update-display-table window)
         (unless buffer-display-table
           (setq buffer-display-table (make-display-table)))
@@ -228,9 +228,10 @@
         (config-eshell--align-pusheen)))))
 
 (defun eshell-timestamp--update-display-tables  (&optional frame)
-  (unless (minibufferp)
-    (mapc 'eshell-timestamp--update-display-table
-          (window-list frame 'no-minibuffer))))
+  (dolist (window (window-list frame 'no-minibuffer))
+    (with-current-buffer (window-buffer window)
+      (when (derived-mode-p 'eshell-mode)
+        (eshell-timestamp--update-display-table window)))))
 
 (defun eshell-timestamp--configure-hooks ()
   (dolist (hook '(window-configuration-change-hook
