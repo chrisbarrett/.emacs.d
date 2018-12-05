@@ -10,12 +10,35 @@
 
 (require 'f)
 (require 's)
+(require 'subr-x)
 
 (autoload 'projectile-project-buffer-p "projectile")
 (autoload 'projectile-project-p "projectile")
 (autoload 'projectile-project-root "projectile")
 (autoload 'projectile-run-compilation "projectile")
 (autoload 'projectile-test-file-p "projectile")
+
+(defvar js-test-commands--format-test-command-pattern "jest %s --coverage"
+  "A templated shell command string used to run tests.
+
+The following template variables are processed:
+
+- The strings \"%s\" and \"%{file}\" are replaced with the
+  filename of the test.
+
+- The string %{desc} is replaced with the description from the
+  outermost describe, test or it.")
+
+(put 'js-test-commands--format-test-command-pattern 'safe-local-variable 'stringp)
+
+(defvar js-test-commands-find-test-function #'ignore
+  "A function to find a test file name for the given impl file path.
+
+If the function cannot find the file, it should return nil.")
+
+(put 'js-test-commands--format-test-command-pattern 'safe-local-variable 'functionp)
+
+
 
 ;; Silence byte-compiler warning.
 (eval-when-compile
@@ -62,10 +85,12 @@
     (_
      (error "Unable to determine what test style this project should use"))))
 
-(defun js-test-commands-locate-test-file (impl-file)
+(defun js-test-commands-locate-test-file (impl-file &optional must-exist-p)
   (or (js-test-commands--test-file-in-same-dir-p impl-file)
       (js-test-commands--test-file-in-test-tree-p impl-file)
-      (js-test-commands--new-test-file-path impl-file)))
+      (funcall js-test-commands-find-test-function)
+      (unless must-exist-p
+        (js-test-commands--new-test-file-path impl-file))))
 
 (defun js-test-commands--impl-file-in-same-dir-p (test-file)
   (let ((re (rx (group ".test") "." (or "js" "ts") eos)))
@@ -87,22 +112,38 @@
   (or (js-test-commands--impl-file-in-same-dir-p test-file)
       (js-test-commands--impl-file-in-src-tree-p test-file)))
 
-(defvar js-test-commands--format-test-command-pattern "jest %s --coverage"
-  "String used to construct the test runner shell command.
+(defun js-test-commands--format-desc-regex (descs)
+  (shell-quote-argument (string-join descs "|")))
 
-It should have one interpolation symbol, which will be filled
-with the shell-escaped file name for the selected test suite.")
+(defun js-test-commands--format-test-command (&optional file descs)
+  (s-replace-all `(("%s" . ,(shell-quote-argument file))
+                   ("%{file}" . ,(shell-quote-argument file))
+                   ("%{desc}" . ,(js-test-commands--format-desc-regex descs)))
+                 js-test-commands--format-test-command-pattern))
 
-(put 'js-test-commands--format-test-command-pattern 'safe-local-variable 'stringp)
+(defconst js-test-commands--match-test-suite
+  (rx bol (or "describe" "test" "it") symbol-end (* space)
+      ;; Start of bracket group
+      "(" (* space)
+      ;; Start of string
+      (any "\"" "'" "`")
+      ;; String content
+      (group (+? any))
+      ;; String close.
+      (any "\"" "'" "`") (* space) ","))
+
+(defun js-test-commands--find-test-descs (file)
+  (seq-map #'cadr (s-match-strings-all js-test-commands--match-test-suite (f-read file 'utf-8))))
 
 (defun js-test-commands-test-this-file-dwim (file)
   "Run test suite corresponding to FILE."
   (interactive (list
                 (if (projectile-test-file-p (buffer-file-name))
                     (buffer-file-name)
-                  (js-test-commands-locate-test-file (buffer-file-name)))))
-  (let* ((command (format js-test-commands--format-test-command-pattern (shell-quote-argument file)))
+                  (js-test-commands-locate-test-file (buffer-file-name) t))))
+  (let* ((descs (when file (js-test-commands--find-test-descs file)))
          (project-root (projectile-project-root))
+         (command (js-test-commands--format-test-command file descs))
          (compilation-buffer-name-function (lambda (&rest _) "*projectile-test*"))
          (default-directory project-root))
     (save-some-buffers (not compilation-ask-about-save)
