@@ -99,7 +99,11 @@ If INTERACTIVE is set, raise an error if not at a binding site."
 (defun js-refactor-commands--import-line-p (line)
   (string-match-p (rx bol (* space)
                       (or "import"
-                          (and (or "const" "let" "var") (+ space) (+? nonl) "=" (* space) "require" (* space) "(")))
+                          (and (or "const" "let" "var") (+ space) (+? nonl) "="
+                               ;; Bluebird promise wrapping
+                               (? (* space) (or "Promise" "Bluebird") ".promisifyAll" (* space) "(")
+                               ;; Import proper
+                               (* space) "require" (* space) "(")))
                   line))
 
 (defun js-refactor-commands--forward-to-end-of-imports ()
