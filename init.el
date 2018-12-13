@@ -147,6 +147,7 @@
 (use-package config-docker)
 (use-package config-lsp)
 (use-package config-java)
+(use-package config-csharp)
 
 (use-package personal-config
   :load-path "~/Sync/personal-config")

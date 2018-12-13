@@ -1,11 +1,8 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: class
 # key: cl
-# binding: direct-keybinding
+# name: class
 # condition: (yas-funcs-bolp)
 # --
-sealed class ${1:Name} {
-  ${2:public $1 (${3:args...}) {
-    $0
-  }}
+public sealed class ${1:`(yas-funcs-csharp-default-class-name)`}
+{
+  $0
 }

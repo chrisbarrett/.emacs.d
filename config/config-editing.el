@@ -168,6 +168,7 @@ Interactively, reverse the characters in the current region."
   :init
   (general-setq aggressive-indent-excluded-modes
                 '(cb-web-js-mode
+                  csharp-mode
                   diff-auto-refine-mode
                   dockerfile-mode
                   fstar-mode

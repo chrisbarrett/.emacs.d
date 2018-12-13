@@ -4,6 +4,7 @@
 # binding: direct-keybinding
 # condition: (yas-funcs-bolp)
 # --
-if (${1:test}) {
+if (${1:test})
+{
   $0
 }

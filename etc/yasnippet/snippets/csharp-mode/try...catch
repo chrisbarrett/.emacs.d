@@ -4,8 +4,11 @@
 # binding: direct-keybinding
 # condition: (yas-funcs-bolp)
 # --
-try {
+try
+{
   $0
 }
-catch (${1:T}Exception ex) {
+catch (${1:T}Exception ex)
+{
+
 }

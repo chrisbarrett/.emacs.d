@@ -163,6 +163,23 @@ previous match and abort if no progress is made."
 
 
 
+;;; C#
+
+(defun yas-funcs-csharp-ctor-name ()
+  (save-excursion
+    (if (search-backward-regexp (rx "class" symbol-end (+ space) symbol-start (group (+? nonl)) symbol-end) nil t)
+        (match-string-no-properties 1)
+      "ClassName")))
+
+(defun yas-funcs-csharp-default-class-name ()
+  (let ((default (file-name-nondirectory (file-name-sans-extension (buffer-file-name)))))
+    (save-excursion
+      (goto-char (point-min))
+      (if (search-forward-regexp (rx-to-string `(and "class" (+ space) ,default)) nil t)
+          "Name"
+        default))))
+
+
 ;;; Java
 
 (defun yas-funcs-java-ctor-name ()

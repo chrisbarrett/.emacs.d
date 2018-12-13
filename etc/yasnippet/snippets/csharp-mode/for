@@ -3,6 +3,7 @@
 # key: for
 # binding: direct-keybinding
 # --
-for (int i = 0; i < ${1:limit}; i++) {
+for (int i = 0; i < ${1:limit}; i++)
+{
   $0
 }

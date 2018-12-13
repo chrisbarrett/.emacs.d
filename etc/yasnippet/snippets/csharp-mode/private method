@@ -4,6 +4,7 @@
 # binding: direct-keybinding
 # condition: (yas-funcs-bolp)
 # --
-private ${3:T} ${1:Mthd}(${2:args...}) {
+private ${3:T} ${1:Mthd}(${2:args...})
+{
   $0
 }

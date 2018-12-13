@@ -4,7 +4,8 @@
 # binding: direct-keybinding
 # condition: (yas-funcs-bolp)
 # --
-static int Main(string[] argv) {
+static int Main(string[] argv)
+{
   $0
 
   return 0;

@@ -3,6 +3,7 @@
 # key: ei
 # binding: direct-keybinding
 # --
-else if (${1:test}) {
+else if (${1:test})
+{
    $0
 }

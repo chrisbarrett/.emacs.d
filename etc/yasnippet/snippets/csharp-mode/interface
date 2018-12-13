@@ -4,6 +4,7 @@
 # binding: direct-keybinding
 # condition: (yas-funcs-bolp)
 # --
-interface ${1:Name} {
+interface ${1:Name}
+{
   $0
 }

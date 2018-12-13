@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: using (import)
+# key: u
+# condition: (and (yas-funcs-bolp) (not (sp-get-enclosing-sexp)))
+# --
+using $0;

@@ -3,6 +3,7 @@
 # key: m
 # binding: direct-keybinding
 # --
-public ${3:T} ${1:Mthd}(${2:args...}) {
+public ${3:T} ${1:Mthd}(${2:args...})
+{
   $0
 }

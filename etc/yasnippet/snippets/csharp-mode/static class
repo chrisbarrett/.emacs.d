@@ -4,6 +4,7 @@
 # binding: direct-keybinding
 # condition: (yas-funcs-bolp)
 # --
-static class ${1:Name} {
+static class ${1:Name}
+{
   $0
 }

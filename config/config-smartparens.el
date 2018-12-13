@@ -44,6 +44,14 @@
       (when (eq this-command 'eval-expression)
         (smartparens-mode)))
 
+    (defun config-smartparens-k&r-curlies (&rest _)
+      (save-excursion
+        (search-backward "{")
+        (newline-and-indent))
+      (save-excursion
+        (newline-and-indent))
+      (indent-according-to-mode))
+
     (defun config-smartparens-add-space-after-sexp-insertion (id action _context)
       (when (eq action 'insert)
         (save-excursion
@@ -262,6 +270,11 @@
       (sp-local-pair "[|" "|]" :post-handlers '(("||\n[i]" "RET") ("| " "SPC")))
       (sp-local-pair "{-" "-}" :post-handlers '(("||\n[i]" "RET") ("- " "SPC")))
       (sp-local-pair "{-#" "#-}" :post-handlers '(("||\n[i]" "RET") ("-# " "SPC"))))
+
+    (sp-with-modes 'csharp-mode
+      (sp-local-pair "{" "}"
+                     :pre-handlers '(config-smartparens-add-space-before-sexp-insertion)
+                     :post-handlers '((config-smartparens-k&r-curlies "RET") ("| " "SPC"))))
 
     (sp-with-modes '(nix-mode nix-repl-mode)
       (sp-local-pair "(" nil

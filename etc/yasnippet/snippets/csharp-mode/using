@@ -2,8 +2,9 @@
 # name: using
 # key: using
 # binding: direct-keybinding
-# condition: (yas-funcs-bolp)
+# condition: (and (yas-funcs-bolp) (sp-get-enclosing-sexp))
 # --
-using (var ${1:x} = ${2:y}) {
+using (var ${1:x} = ${2:y})
+{
   $0
 }
