@@ -112,6 +112,13 @@ Interactively, reverse the characters in the current region."
 
 
 
+;; Teach Emacs to respect editorconfig files.
+
+(use-package editorconfig
+  :straight t
+  :config
+  (editorconfig-mode 1))
+
 ;; Configure conf-mode for use with more kinds of config files.
 
 (use-package conf-mode
