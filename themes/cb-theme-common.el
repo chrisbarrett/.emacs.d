@@ -26,7 +26,7 @@
     (`darwin
      160)
     (_
-     130)))
+     100)))
 
 (cl-defun cb-theme-common-make-theme (&key
                        default-fg
