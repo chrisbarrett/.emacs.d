@@ -45,6 +45,13 @@
   :config
   (add-hook 'yaml-mode-hook #'config-langs--disable-autofill))
 
+(use-package lua-mode
+  :straight t
+  :mode ("\\.lua\\'" . lua-mode)
+  :interpreter ("lua" . lua-mode)
+  :config
+  (general-setq lua-indent-level 2))
+
 (use-package rmsbolt
   :straight
   (:host gitlab :repo "jgkamat/rmsbolt")
