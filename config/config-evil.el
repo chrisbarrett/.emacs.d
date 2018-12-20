@@ -24,6 +24,7 @@
   :preface
   (progn
     (autoload 'evil-visual-update-x-selection "evil-states")
+    (general-setq evil-want-keybinding nil)
 
     (defun config-evil-flyspell-on ()
       "Enable flyspell."
