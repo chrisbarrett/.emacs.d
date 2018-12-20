@@ -60,17 +60,9 @@
     (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
     (setq magit-log-section-commit-count 0)))
 
-;; Magithub adds some basic GitHub features to magit.
-
-(use-package magithub
-  :straight t
+(use-package forge
   :after magit
-  :defer t
-  :config
-  (progn
-    (require 'magithub-completion)
-    (magithub-feature-autoinject t)
-    (setq magithub-clone-default-directory "~/Projects")))
+  :straight (:host github :repo "magit/forge"))
 
 ;; This package automatically prepends JIRA ticket numbers to commit messages if
 ;; the current git branch looks like it relates to a JIRA ticket.
