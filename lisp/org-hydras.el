@@ -7,6 +7,15 @@
 (require 'hydra)
 (require 'org)
 
+(defun org-hydras-open-babel-block-in-buffer ()
+  "Eval the org src block at point and show the result in a new buffer."
+  (interactive)
+  (org-babel-execute-src-block nil nil '((:results . "output")
+                                         (:format . "raw")
+                                         (:exports . "results")))
+  (org-babel-open-src-block-result)
+  (org-babel-remove-result))
+
 (defhydra org-babel ()
   "
 [_i_] block info         [_?_] check header
@@ -18,7 +27,7 @@ Execute   ^^              Navigate        ^^^^               Tangle    ^^
 [_b_] buffer              [_h_] head                      ^^ [_c_] clean
 [_s_] subtree             [_u_] up heading                ^^ [_d_] detangle
 [_k_] delete result                                     ^^^^ [_j_] jump to org file
-          ^^              [_B_] goto named block
+[_o_] execute and open    [_B_] goto named block
           ^^              [_N_] goto named result
           ^^              [_r_] goto this block's result
 Sessions
@@ -39,6 +48,7 @@ Sessions
   ("l" org-babel-load-in-session)
   ("k" org-babel-remove-result)
   ("n" org-babel-next-src-block)
+  ("o" org-hydras-open-babel-block-in-buffer :exit t)
   ("p" org-babel-previous-src-block)
   ("r" org-babel-open-src-block-result)
   ("s" org-babel-execute-subtree :exit t)
