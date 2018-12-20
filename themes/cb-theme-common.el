@@ -419,6 +419,12 @@
     (magit-signature-untrusted
      ((t :foreground ,cyan)))
 
+    (magit-signature-good
+     ((t :foreground ,green)))
+
+    (magit-signature-bad
+     ((t :foreground ,red :weight bold)))
+
     (magit-log-author
      ((t :foreground ,yellow)))
 
