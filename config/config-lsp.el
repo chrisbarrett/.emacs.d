@@ -13,10 +13,15 @@
   (general-setq lsp-eldoc-render-all nil
                 lsp-inhibit-message t
                 lsp-highlight-symbol-at-point nil)
+  :hook ((dockerfile-mode . lsp)
+         (web-js-mode . lsp)
+         (web-ts-wode . lsp))
   :config
   (progn
-    (lsp-define-stdio-client lsp-dockerfile "Docker" (lambda () default-directory) (list lsp-dockerfile-server "--stdio"))
-    (add-hook 'dockerfile-mode-hook #'lsp-dockerfile-enable)))
+    (lsp-register-client
+     (make-lsp-client :new-connection (lsp-stdio-connection (format "%s --stdio" lsp-dockerfile-server))
+                      :major-modes '(dockerfile-mode)
+                      :server-id 'dockerfile))))
 
 (use-package company-lsp
   :after company

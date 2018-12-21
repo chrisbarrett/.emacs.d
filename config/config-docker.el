@@ -3,8 +3,7 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'use-package)
-  (require 'lsp-mode nil t))
+  (require 'use-package))
 
 ;; dockerfile-mode provides a major mode for docker files.
 
