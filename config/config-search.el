@@ -40,11 +40,6 @@
     (setq wgrep-enable-key (kbd "C-c C-e"))
     (setq wgrep-auto-save-buffer t)))
 
-(use-package wgrep-ag
-  :straight t
-  :after (:any ag rg)
-  :hook (rg-mode . wgrep-ag-setup))
-
 (provide 'config-search)
 
 ;;; config-search.el ends here
