@@ -313,35 +313,6 @@
   :commands (js-test-commands-test-this-file-dwim))
 
 
-;; LSP
-;;
-;; Configure language server protocol for JS and Typescript.
-
-(defun config-web--lsp-company-transformer (candidates)
-  (let ((completion-ignore-case t))
-    (all-completions (company-grab-symbol) candidates)))
-
-(defun config-web-enable-lsp ()
-  (if (locate-dominating-file default-directory ".flowconfig")
-      (lsp-javascript-flow-enable)
-    (lsp-javascript-typescript-enable))
-
-  (with-no-warnings
-    (make-local-variable 'company-transformers)
-    (setq-local company-backends '(company-lsp))
-    (push 'config-web--lsp-company-transformer company-transformers)))
-
-(add-hook 'web-js-base-mode-hook #'config-web-enable-lsp)
-
-(use-package lsp-javascript-flow
-  :straight (:host github :repo "emacs-lsp/lsp-javascript")
-  :commands (lsp-javascript-flow-enable))
-
-(use-package lsp-javascript-typescript
-  :straight (:host github :repo "emacs-lsp/lsp-javascript")
-  :commands (lsp-javascript-typescript-enable))
-
-
 ;; Node
 
 (use-package nvm

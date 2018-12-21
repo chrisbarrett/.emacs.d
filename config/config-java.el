@@ -29,23 +29,6 @@
   (when (bound-and-true-p java-mode-map)
     (define-key java-mode-map [remap c-fill-paragraph] #'indent-buffer)))
 
-;; Add LSP support for Java.
-
-(use-package lsp-java
-  :straight t
-  :hook ((java-mode . lsp-java-enable))
-  :preface
-  (defun config-lsp--java-mode-setup ()
-    (setq-local company-backends '(company-lsp)))
-  :init
-  (add-hook 'java-mode-hook #'config-lsp--java-mode-setup)
-  :config
-  (let ((cache-dir (f-join paths-cache-directory "lsp-java")))
-    (f-mkdir cache-dir)
-    (general-setq lsp-java-server-install-dir (f-join cache-dir "eclipse.jdt.ls/server/")
-                  lsp-java-workspace-dir (f-join cache-dir "workspace/")
-                  lsp-java-workspace-cache-dir (f-join cache-dir "workspace" ".cache/"))))
-
 (provide 'config-java)
 
 ;;; config-java.el ends here
