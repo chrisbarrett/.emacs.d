@@ -69,7 +69,6 @@
  org-hierarchical-todo-statistics nil
  org-indirect-buffer-display 'current-window
  org-insert-heading-respect-content t
- org-link-abbrev-alist '(("att" . org-attach-expand-link))
  org-log-done 'time
  org-log-into-drawer t
  org-log-repeat nil
