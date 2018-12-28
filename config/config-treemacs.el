@@ -11,7 +11,7 @@
 (require 'treemacs-hacks)
 
 (use-package treemacs
-  :straight t
+  :straight (:host github :repo "Alexander-Miller/treemacs" :files ("src/elisp/*.el" "src/extra/*.el" "src/scripts/*.py"))
   :commands (treemacs
              treemacs-follow-mode
              treemacs-git-mode
@@ -39,6 +39,8 @@
     (require 'projectile)
 
     (general-setq
+     treemacs-python-executable (executable-find "python3")
+
      ;; Disable the indicator next to open files--hl-line is sufficient.
      treemacs-fringe-indicator-mode nil
 
@@ -80,8 +82,7 @@
     (setq treemacs-icon-fallback (concat (all-the-icons-faicon "file") "\t"))))
 
 (use-package treemacs-evil
-  :straight t
-  :after treemacs
+  :after (:and treemacs evil)
   :preface
   (defun config-treemacs--buffer-setup ()
     (require 'treemacs-evil)
@@ -95,7 +96,6 @@
     (evil-define-key 'treemacs treemacs-mode-map (kbd "K") 'treemacs-previous-project)))
 
 (use-package treemacs-projectile
-  :straight t
   :after (:and treemacs projectile))
 
 (provide 'config-treemacs)
