@@ -6,9 +6,25 @@
   (require 'use-package))
 
 (require 'all-the-icons)
+(require 'cb-major-mode-hydra)
 (require 'dash)
 (require 'general)
 (require 'treemacs-hacks)
+
+
+
+(cb-major-mode-hydra-define treemacs-mode
+  "View"
+  (("." treemacs-toggle-show-dotfiles "hidden files"))
+  "File"
+  (("fr" treemacs-rename "rename...")
+   ("fx" treemacs-delete "delete..."))
+  "Projects"
+  (("pa" treemacs-add-project-to-workspace "add...")
+   ("pr" treemacs-rename-project "rename...")
+   ("px" treemacs-remove-project-from-workspace "remove...")))
+
+
 
 (use-package treemacs
   :straight (:host github :repo "Alexander-Miller/treemacs" :files ("src/elisp/*.el" "src/extra/*.el" "src/scripts/*.py"))
