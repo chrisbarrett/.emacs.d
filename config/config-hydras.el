@@ -400,7 +400,7 @@
   (("c" quick-calc "quick calc...")
    ("C" full-calc "calc")
    ("m" mu4e "mu4e")
-   ("p" generate-password/body "gen password...")
+   ("p" pass "password-store")
    ("w" world-time-list "world clock"))
 
   "Editing"

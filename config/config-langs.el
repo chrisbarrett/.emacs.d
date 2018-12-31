@@ -75,6 +75,18 @@
     (general-setq pdf-view-display-size 'fit-page
                   pdf-annot-activate-created-annotations t)))
 
+(use-package pass
+  :straight (:host github :repo "NicolasPetton/pass")
+  :commands (pass)
+  :init
+  (add-to-list 'display-buffer-alist
+               `(,(rx bos "*Password-Store*" eos)
+                 (display-buffer-reuse-window
+                  display-buffer-fullframe)
+                 (reusable-frames . visible)))
+  :config
+  (require 'pass-hacks))
+
 (provide 'config-langs)
 
 ;;; config-langs.el ends here
