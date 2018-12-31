@@ -87,8 +87,8 @@
 (setq-default sentence-end-double-space t)
 
 ;; Show eshell as default buffer, unless Emacs was opened to edit a file
-;; directly.
-(unless (< 1 (length command-line-args))
+;; directly or as a daemon.
+(unless (or (daemonp) (< 1 (length command-line-args)))
   (general-setq initial-buffer-choice #'eshell))
 
 (general-setq

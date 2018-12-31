@@ -70,7 +70,7 @@
     (tool-bar-mode -1)))
 
 (use-package scroll-bar
-  :if (display-graphic-p)
+  :if (bound-and-true-p scroll-bar-mode)
   :config
   (when (fboundp 'scroll-bar-mode)
     (scroll-bar-mode -1)))

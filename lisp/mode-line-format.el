@@ -206,9 +206,6 @@
                 "%e"
                 " "
 
-                ;; Emacsclient info
-                mode-line-client
-
                 ;; Major mode icon
                 (:eval (mode-line-format--major-mode-info))
 
