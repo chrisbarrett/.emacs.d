@@ -331,6 +331,12 @@
         (pop-to-buffer eshell-buf))
     (eshell)))
 
+(defun config-eshell-raise ()
+  "Utility function for emacsclient to pop open an eshell."
+  (with-current-buffer (eshell)
+    (goto-char (point-max))
+    (when (bound-and-true-p evil-mode)
+      (evil-append-line nil))))
 
 (provide 'config-eshell)
 
