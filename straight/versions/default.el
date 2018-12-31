@@ -106,7 +106,7 @@
  ("nvm.el" . "bc0a33257ec16e9f575bb6914b5949199897ada9")
  ("ob-restclient.el" . "00b2c5a6637ab6e504708612357ffb29b5416e4b")
  ("omnisharp-emacs" . "ec73a732c3bc903af33fe6ebc31d893ba45dd42c")
- ("org" . "908b55124cb1abdcb3b7b6e3276e0ac22c86d254")
+ ("org" . "c4e744ec8e397b5b4a52fda8bfcf302cf1d1197e")
  ("org-download" . "07b98eb4f7252e3f64a306c09dfb618be6ac181d")
  ("org-present" . "d13acd70eff6a1608bc991920232146a0de76b21")
  ("ox-gfm" . "99f93011b069e02b37c9660b8fcb45dab086a07f")
