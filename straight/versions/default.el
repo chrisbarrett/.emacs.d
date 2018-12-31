@@ -114,6 +114,7 @@
  ("package-lint" . "c2bdb3668abf46d576f5728e66c551a919c0bc14")
  ("page-break-lines" . "fd3b7e38ad8747cd009ead7ef1bb150849ccc693")
  ("paren-face" . "a45d111153a76c481fa0b36d6172ac90e073dfc4")
+ ("pdf-tools" . "a4cd69ea1d50b8e74ea515eec95948ad87c6c732")
  ("pfuture" . "c06e78b37ac3fba72ea446f11da38a6a5cba428c")
  ("pip-requirements.el" . "216cd1690f80cc965d4ae47b8753fc185f778ff6")
  ("pkg-info.el" . "76ba7415480687d05a4353b27fea2ae02b8d9d61")

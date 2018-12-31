@@ -66,6 +66,15 @@
   :config
   (advice-add 'rmsbolt--hs-compile-cmd :around #'config-langs--override-haskell-compile-command))
 
+(use-package pdf-tools
+  :straight t
+  :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
+  :config
+  (progn
+    (pdf-tools-install)
+    (general-setq pdf-view-display-size 'fit-page
+                  pdf-annot-activate-created-annotations t)))
+
 (provide 'config-langs)
 
 ;;; config-langs.el ends here
