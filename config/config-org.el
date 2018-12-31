@@ -308,6 +308,13 @@
                   :type 'item)
 
                  (entry
+                  "r" "Recipe"
+                  '(file+olp org-default-notes-file "Recipes")
+                  '(function org-chef-get-recipe-from-url)
+                  :jump-to-captured t
+                  :immediate-finish t)
+
+                 (entry
                   "s" "Someday"
                   '(file+olp org-default-notes-file "Someday")
                   "* SOMEDAY %?")
@@ -742,6 +749,10 @@
   ;; Remove weird keybindings.
   (general-unbind :states '(normal insert) :keymaps 'evil-org-mode-map
     "M-l" "M-h" "J" "O" "M-l" "M-h"))
+
+(use-package org-chef
+  :straight t
+  :commands (org-chef-get-recipe-from-url))
 
 
 
