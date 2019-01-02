@@ -4,6 +4,7 @@
 
 (require 'general)
 
+(general-define-key "s-c" #'clipboard-kill-ring-save)
 (general-define-key "s-v" #'clipboard-yank)
 (general-define-key "<s-return>" #'toggle-frame-fullscreen)
 
