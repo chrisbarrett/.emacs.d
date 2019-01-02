@@ -5,6 +5,10 @@
 (eval-when-compile
   (require 'use-package))
 
+(use-package poporg
+  :straight t
+  :commands (poporg-dwim))
+
 (use-package csv-mode
   :straight t
   :mode ("\\.csv\\'" . csv-mode)

@@ -482,6 +482,7 @@
    ("!" shell-command "run shell command")
    ("/" counsel-projectile-rg "search project")
    (":" eval-expression "evaluate lisp")
+   ("'" poporg-dwim "edit comment...")
    ("C" compile "compile")
    ("d" dired "dired")
    ("D" dired-other-window "dired (other window)")
