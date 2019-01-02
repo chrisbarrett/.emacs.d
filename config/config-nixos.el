@@ -3,6 +3,7 @@
 ;;; Code:
 
 (require 'general)
+(require 'awesomewm)
 
 (general-define-key "s-c" #'clipboard-kill-ring-save)
 (general-define-key "s-v" #'clipboard-yank)
