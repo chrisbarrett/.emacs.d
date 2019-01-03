@@ -82,6 +82,8 @@
 (use-package pass
   :straight (:host github :repo "NicolasPetton/pass")
   :commands (pass)
+  :general
+  (:states '(normal) :keymaps 'pass-view-mode-map "q" #'kill-this-buffer)
   :init
   (add-to-list 'display-buffer-alist
                `(,(rx bos "*Password-Store*" eos)
