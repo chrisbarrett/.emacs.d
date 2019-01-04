@@ -38,10 +38,10 @@
   (interactive)
   (jump-cmds--jump-to-file paths-hostfile))
 
-(defun jump-to-nix-packages ()
-  "Open the nix packages file."
+(defun jump-to-nix-config ()
+  "Open the nix home-manager config file."
   (interactive)
-  (jump-cmds--jump-to-file "~/Sync/nix/packages.nix"))
+  (jump-cmds--jump-to-file "~/Sync/nix/home.nix"))
 
 (defun jump-to-personal-config ()
   "Open the personal configuration file."
