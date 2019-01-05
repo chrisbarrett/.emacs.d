@@ -86,6 +86,14 @@
                 display-buffer-fullframe)
                (reusable-frames . visible)))
 
+
+;; Show a desktop notification when Emacs wants you to enter your password.
+
+(defun config-nixos--notify-on-ask-password (&rest _)
+  (awesomewm-notify "Password required" "Emacs is waiting on password entry."))
+
+(advice-add #'read-passwd :before #'config-nixos--notify-on-ask-password)
+
 (provide 'config-nixos)
 
 ;;; config-nixos.el ends here
