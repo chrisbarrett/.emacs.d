@@ -100,10 +100,10 @@
 
 ;; Load theme aggressively, or Emacs will look ugly during the startup sequence.
 (use-package config-themes
-  :commands (config-themes/light-theme)
+  :commands (config-themes-set-for-time-of-day)
   :demand t
   :config
-  (config-themes/light-theme))
+  (add-hook 'before-make-frame-hook #'config-themes-set-for-time-of-day))
 
 (use-package config-basic-settings)
 

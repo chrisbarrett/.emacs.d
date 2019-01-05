@@ -13,25 +13,30 @@
 
 
 
-(defvar config-themes--dark-mode-p nil)
-
 (defun config-themes/toggle-dark-mode ()
   "Toggle between light and dark mode."
   (interactive)
-  (if config-themes--dark-mode-p
+  (if (equal 'cb-dark (car custom-enabled-themes))
       (config-themes/light-theme)
-    (config-themes/dark-theme))
-  (setq config-themes--dark-mode-p (not config-themes--dark-mode-p)))
+    (config-themes/dark-theme)))
 
 (defun config-themes/light-theme ()
   "Load the light theme."
   (interactive)
-  (load-theme 'cb-light t))
+  (unless (equal 'cb-light (car custom-enabled-themes))
+    (load-theme 'cb-light t)))
 
 (defun config-themes/dark-theme ()
   "Load the dark theme."
   (interactive)
-  (load-theme 'cb-dark t))
+  (unless (equal 'cb-dark (car custom-enabled-themes))
+    (load-theme 'cb-dark t)))
+
+(defun config-themes-set-for-time-of-day ()
+  (-let [(_sec _min hour) (decode-time)]
+    (if (< 8 hour 20)
+        (config-themes/light-theme)
+      (config-themes/dark-theme))))
 
 
 
