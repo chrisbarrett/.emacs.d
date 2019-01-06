@@ -32,11 +32,9 @@
             (with-current-buffer buf
               (pcase (string-trim msg)
                 ((and "finished" (guard (string-match-p (rx bol "make: Nothing to be done for 'install'") (buffer-string))))
-                 (awesomewm-notify "NixOS build" "No changes made to system.")
-                 (delete-frame))
+                 (awesomewm-notify "NixOS build" "No changes made to system."))
                 ("finished"
-                 (awesomewm-notify "NixOS build" "Finished successfully.")
-                 (delete-frame))
+                 (awesomewm-notify "NixOS build" "Finished successfully."))
                 (_
                  (awesomewm-notify-error "NixOS build" "Aborted with errors."))))))
 
@@ -44,8 +42,7 @@
 
     (compile "make" t)
     (with-current-buffer buf
-      (add-hook 'compilation-finish-functions on-complete nil t))
-    (display-buffer buf)))
+      (add-hook 'compilation-finish-functions on-complete nil t))))
 
 (defun config-nixos-set-stable ()
   "Build the NixOS environment."
@@ -64,11 +61,9 @@
             (with-current-buffer buf
               (pcase (string-trim msg)
                 ((and "finished" (guard (string-match-p (rx bol "make: Nothing to be done for 'install'") (buffer-string))))
-                 (awesomewm-notify "NixOS build" "No changes made to system.")
-                 (delete-frame))
+                 (awesomewm-notify "NixOS build" "No changes made to system."))
                 ("finished"
-                 (awesomewm-notify "NixOS build" "Marked system as stable.")
-                 (delete-frame))
+                 (awesomewm-notify "NixOS build" "Marked system as stable."))
                 (_
                  (awesomewm-notify-error "NixOS build" "Aborted with errors."))))))
 
@@ -76,8 +71,7 @@
 
     (compile "make stable" t)
     (with-current-buffer buf
-      (add-hook 'compilation-finish-functions on-complete nil t))
-    (display-buffer buf)))
+      (add-hook 'compilation-finish-functions on-complete nil t))))
 
 
 (add-to-list 'display-buffer-alist
