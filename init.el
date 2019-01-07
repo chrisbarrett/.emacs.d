@@ -14,6 +14,7 @@
 
 (setenv "INSIDE_EMACS" "true")
 
+(add-to-list 'exec-path "~/.nix-profile/bin")
 
 ;; Make sure package.el doesn't get a chance to load anything.
 
@@ -103,7 +104,11 @@
   :commands (config-themes-set-for-time-of-day)
   :demand t
   :config
-  (add-hook 'before-make-frame-hook #'config-themes-set-for-time-of-day))
+  (progn
+    (when (equal system-type 'darwin)
+      (config-themes-set-for-time-of-day))
+
+    (add-hook 'before-make-frame-hook #'config-themes-set-for-time-of-day)))
 
 (use-package config-basic-settings)
 
