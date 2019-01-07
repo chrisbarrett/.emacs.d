@@ -109,7 +109,7 @@
 
   "Manage"
   (("b" bury-buffer "bury")
-   ("d" kill-this-buffer "kill")
+   ("d" kill-current-buffer "kill")
    ("w" save-buffer "save")
    ("v" reload-file "reload")))
 
