@@ -14,8 +14,6 @@
 
 (setenv "INSIDE_EMACS" "true")
 
-(add-to-list 'exec-path "~/.nix-profile/bin")
-
 ;; Make sure package.el doesn't get a chance to load anything.
 
 (setq package-enable-at-startup nil)
