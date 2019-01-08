@@ -329,7 +329,8 @@
   "Goto"
   (("c" jump-to-config-file "config file...")
    ("i" jump-to-init-file "init file")
-   ("n" jump-to-nix-config "nix config")
+   ("n" jump-to-nix-config "nix home config")
+   ("S" jump-to-nix-system-config "nix system config")
    ("?" jump-to-messages "messages"))
   ""
   (("p" jump-to-personal-config "personal config")

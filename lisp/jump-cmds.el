@@ -42,7 +42,12 @@
   "Open the nix home-manager config file."
   (interactive)
   (let ((os (if (equal system-type 'darwin) 'darwin 'linux)))
-    (jump-cmds--jump-to-file (format "~/Sync/nix/home-%s.nix" os))))
+    (jump-cmds--jump-to-file (format "~/Sync/nix/home/%s.nix" os))))
+
+(defun jump-to-nix-system-config ()
+  "Open the nix system config file."
+  (interactive)
+  (jump-cmds--jump-to-file (format "~/Sync/nix/system/%s.nix" (system-name))))
 
 (defun jump-to-personal-config ()
   "Open the personal configuration file."
