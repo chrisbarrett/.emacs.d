@@ -272,14 +272,6 @@
                   `(file ,config-org-work-file) "* TODO %?")
 
                  (entry
-                  "d" "Diary"
-                  '(file+datetree org-agenda-diary-file) "* %?\n%^t")
-
-                 (entry
-                  "D" "Diary (work)"
-                  `(file+datetree config-org-work-file) "* %?\n%^t")
-
-                 (entry
                   "l" "Link"
                   '(file+olp org-default-notes-file "Links")
                   '(function cb-org-capture-url-read-url)
