@@ -622,6 +622,11 @@
   :config
   (general-setq Info-fontify-angle-bracketed-flag nil))
 
+(use-package direnv
+  :straight t
+  :config
+  (direnv-mode))
+
 (use-package ediff
   :defer t
   :preface
