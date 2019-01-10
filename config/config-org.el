@@ -25,15 +25,16 @@
 
 
 
-(cb-major-mode-hydra-define org-mode
-  "Tree"
-  (("a" org-archive-subtree "archive")
-   ("r" org-refile "refile")
-   ("t" org-show-todo-tree "todo tree"))
+(with-no-warnings
+  (cb-major-mode-hydra-define org-mode
+    "Tree"
+    (("a" org-archive-subtree "archive")
+     ("r" org-refile "refile")
+     ("t" org-show-todo-tree "todo tree"))
 
-  "Misc"
-  (("e" org-babel/body "babel commands")
-   ("p" org-present "present")))
+    "Misc"
+    (("e" org-babel/body "babel commands")
+     ("p" org-present "present"))))
 
 
 ;; forward-definitions to silence byte-compiler.
