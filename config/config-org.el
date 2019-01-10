@@ -247,6 +247,8 @@
 
 ;; org-capture templates
 
+(autoload 'cb-org-team-log-heading "cb-org-team")
+
 (general-setq org-capture-templates
               (cl-labels ((entry
                            (key label form template
@@ -290,6 +292,12 @@
                   "* TODO %?\n%a")
 
                  '("w" "Work")
+                 (entry
+                  "wa" "Team member activity"
+                  '(file+function config-org-work-file cb-org-team-log-heading)
+                  "- %?"
+                  :type 'item
+                  :jump-to-captured t)
                  (entry
                   "wt" "Todo"
                   `(file ,config-org-work-file) "* TODO %?")
