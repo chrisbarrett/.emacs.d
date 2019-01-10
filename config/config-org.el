@@ -250,89 +250,63 @@
 (general-setq org-capture-templates
               (cl-labels ((entry
                            (key label form template
-                                &rest kws
                                 &key
+                                immediate-finish
+                                jump-to-captured
                                 (type 'entry)
                                 (prepend t)
                                 (clock-keep t)
-                                (empty-lines 1)
-                                &allow-other-keys)
-                           (append
-                            (list key label type form template
-                                  :clock-keep clock-keep
-                                  :empty-lines empty-lines
-                                  :prepend prepend)
-                            kws)))
+                                (empty-lines 1))
+                           (list key label type form template
+                                 :clock-keep clock-keep
+                                 :empty-lines empty-lines
+                                 :prepend prepend
+                                 :immediate-finish immediate-finish
+                                 jump-to-captured :jump-to-captured)))
                 (list
                  (entry
-                  "t" "Todo"
-                  '(file org-default-notes-file) "* TODO %?")
-
+                  "t" "Todo" '(file org-default-notes-file) "* TODO %?")
                  (entry
-                  "T" "Todo (work)"
-                  `(file ,config-org-work-file) "* TODO %?")
-
+                  "s" "Someday" '(file+olp org-default-notes-file "Someday")
+                  "* SOMEDAY %?")
                  (entry
-                  "l" "Link"
-                  '(file+olp org-default-notes-file "Links")
-                  '(function cb-org-capture-url-read-url)
+                  "l" "Link" '(file+olp org-default-notes-file "Links") '(function cb-org-capture-url-read-url)
                   :immediate-finish t)
-
                  (entry
-                  "L" "Link (work)"
+                  "r" "Reading" '(file+olp org-default-notes-file "Media" "Reading")
+                  "* MAYBE Read %i%?")
+                 (entry
+                  "R" "Recipe" '(file+olp org-default-notes-file "Recipes") '(function org-chef-get-recipe-from-url)
+                  :jump-to-captured t
+                  :immediate-finish t)
+                 (entry
+                  "m" "Listening" '(file+olp org-default-notes-file "Media" "Listening")
+                  "* MAYBE Listen to %i%?")
+                 (entry
+                  "v" "Viewing" '(file+olp org-default-notes-file "Media" "Viewing")
+                  "* MAYBE Watch %i%?")
+                 (entry
+                  "e" "Email task" '(file org-default-notes-file)
+                  "* TODO %?\n%a")
+
+                 '("w" "Work")
+                 (entry
+                  "wt" "Todo"
+                  `(file ,config-org-work-file) "* TODO %?")
+                 (entry
+                  "wl" "Link"
                   `(file+olp config-org-work-file "Links")
                   '(function cb-org-capture-url-read-url)
                   :immediate-finish t)
-
                  (entry
-                  "J" "Jira issue reference (work)"
+                  "wj" "Jira issue reference"
                   `(file config-org-work-file)
                   '(function jira-utils-read-issue-url-for-org-header)
                   :jump-to-captured t
                   :immediate-finish t
                   :type 'item)
-
                  (entry
-                  "K" "Kanban issue reference (work)"
-                  `(file+olp config-org-work-file "Rumble Kanban")
-                  '(function jira-utils-read-issue-url-for-org-header)
-                  :jump-to-captured t
-                  :immediate-finish t
-                  :type 'item)
-
-                 (entry
-                  "r" "Recipe"
-                  '(file+olp org-default-notes-file "Recipes")
-                  '(function org-chef-get-recipe-from-url)
-                  :jump-to-captured t
-                  :immediate-finish t)
-
-                 (entry
-                  "s" "Someday"
-                  '(file+olp org-default-notes-file "Someday")
-                  "* SOMEDAY %?")
-
-                 (entry
-                  "m" "Listening"
-                  '(file+olp org-default-notes-file "Media" "Listening")
-                  "* MAYBE Listen to %i%?")
-
-                 (entry
-                  "v" "Viewing"
-                  '(file+olp org-default-notes-file "Media" "Viewing")
-                  "* MAYBE Watch %i%?")
-
-                 (entry
-                  "r" "Reading"
-                  '(file+olp org-default-notes-file "Media" "Reading")
-                  "* MAYBE Read %i%?")
-
-                 (entry
-                  "e" "Email task"
-                  '(file org-default-notes-file) "* TODO %?\n%a")
-
-                 (entry
-                  "E" "Email task (work)"
+                  "we" "Email task"
                   `(file config-org-work-file) "* TODO %?\n%a"))))
 
 
