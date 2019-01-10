@@ -10,7 +10,9 @@
 (use-package nix-mode
   :straight t
   :mode (("\\.nix\\'" . nix-mode)
-         ("\\.nix.in\\'" . nix-mode)))
+         ("\\.nix.in\\'" . nix-mode))
+  :config
+  (general-setq nix-indent-function #'nix-indent-line))
 
 (use-package compile
   :defer t
