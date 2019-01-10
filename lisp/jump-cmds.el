@@ -47,7 +47,7 @@
 (defun jump-to-nix-system-config ()
   "Open the nix system config file."
   (interactive)
-  (jump-cmds--jump-to-file (format "~/Sync/nix/system/%s.nix" (system-name))))
+  (jump-cmds--jump-to-file (format "~/Sync/nix/system/%s.nix" (string-remove-suffix ".local" (system-name)))))
 
 (defun jump-to-personal-config ()
   "Open the personal configuration file."
