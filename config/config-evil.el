@@ -63,8 +63,6 @@
 
        (t
         (apply fn args)))))
-  :init
-  (setq evil-want-integration nil)
 
   :config
   (progn
