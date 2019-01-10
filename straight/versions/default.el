@@ -129,7 +129,7 @@
  ("pos-tip" . "051e08fec5cf30b7574bdf439f79fef7d42d689d")
  ("prettier-emacs" . "fac9dd29720f8417bd8cd5dd8ab5138c6dd7d701")
  ("prodigy.el" . "701dccaa56de9e6a330c05bde33bce4f3b3d6a97")
- ("projectile" . "d625ecb09e3a9fb319740686402197bdf6fc109b")
+ ("projectile" . "208793de6e6d063a3bde535339fccc3396aa7336")
  ("protobuf" . "152c8301cf36c8e94bf7d7be0f775d49b85ff44d")
  ("py-isort.el" . "e67306f459c47c53a65604e4eea88a3914596560")
  ("py-yapf.el" . "a878304202ad827a1f3de3dce1badd9ca8731146")

@@ -9,7 +9,6 @@
 (require 'dash-functional)
 (require 'paths)
 (require 'projectile-funcs)
-(require 'projectile-hacks)
 
 (autoload 'js-test-commands-locate-impl-file "js-test-commands")
 (autoload 'js-test-commands-locate-test-file "js-test-commands")
@@ -81,6 +80,9 @@
       (let ((compilation-buffer-name-function (-const "*projectile-test*")))
         (projectile-test-project arg))))
 
+  :init
+  (projectile-mode +1)
+
   :config
   (progn
     (advice-add 'projectile-load-known-projects :override #'projectile-funcs-refresh-projects)
@@ -119,11 +121,6 @@
             "target"
             ))
 
-    (projectile-mode)
-
-    (projectile-register-project-type 'yarn '("yarn.lock")
-                                      :compile "yarn build"
-                                      :test "yarn test")
 
     ;; Teach projectile how to resolve npm srcs and tests.
     (advice-add #'projectile-test-file-p :filter-return #'config-projectile--test-file-p)
