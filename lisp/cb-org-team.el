@@ -59,10 +59,16 @@
 
 (defun cb-org-team--ensure-children-exist (path-strings)
   (dolist (path path-strings)
-    (unless (cb-org-team--goto-subheading path)
+    (cond
+     ((cb-org-team--goto-subheading path)
+      (ignore-errors
+        (org-sort-entries nil ?a)))
+     (t
       (goto-char (line-end-position))
       (org-insert-subheading nil)
-      (insert (format "%s\n" path)))))
+      (insert path)))
+
+    (goto-char (line-end-position))))
 
 (defun cb-org-team-log-heading ()
   (cl-assert cb-org-team-members t)
@@ -73,7 +79,13 @@
     (save-restriction
       (widen)
       (cb-org-team--goto-toplevel-heading top)
+      ;; Create subheadings
+      (save-excursion
+        (cb-org-team--ensure-children-exist children))
+      (org-sort-entries nil ?A)
+      ;; Goto appropriate child
       (cb-org-team--ensure-children-exist children)
+      (forward-line 1)
       (point))))
 
 
