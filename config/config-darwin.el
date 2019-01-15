@@ -28,7 +28,6 @@
 
 (use-package exec-path-from-shell
   :straight t
-  :if window-system
   :preface
   (declare-function exec-path-from-shell-initialize "config-darwin")
   :init
