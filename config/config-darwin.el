@@ -12,6 +12,7 @@
 (global-set-key (kbd "s-w") 'delete-frame)
 (global-unset-key (kbd "s-p"))
 (global-unset-key (kbd "s-t"))
+(global-set-key (kbd "s-q") 'delete-frame)
 
 (global-unset-key (kbd "<f11>"))
 (global-set-key (kbd "<s-return>") #'toggle-frame-fullscreen)
