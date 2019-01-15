@@ -17,6 +17,15 @@
     (setq-local require-final-newline nil))
   :config (add-hook 'csv-mode-hook #'config-langs--suppress-final-newline))
 
+(use-package make-mode
+  :preface
+  (defun config-langs--set-up-makefile-mode ()
+    (setq-local tab-width 8)
+    (setq-local indent-tabs-mode t))
+  :init
+  (add-hook 'makefile-mode-hook #'config-langs--set-up-makefile-mode))
+
+
 (use-package groovy-mode
   :straight t
   :mode ("\\.g\\(?:ant\\|roovy\\|radle\\)\\'" . groovy-mode)

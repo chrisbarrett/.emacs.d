@@ -79,11 +79,6 @@
 
 (setq-default indent-tabs-mode nil)
 
-(defun indent-tabs-mode-on ()
-  (setq-local indent-tabs-mode t))
-
-(add-hook 'makefile-mode-hook #'indent-tabs-mode-on)
-
 (setq-default sentence-end-double-space t)
 
 ;; Show eshell as default buffer, unless Emacs was opened to edit a file
