@@ -11,6 +11,9 @@
 (general-define-key "s-v" #'clipboard-yank)
 (general-define-key "<s-return>" #'toggle-frame-fullscreen)
 
+(set-frame-parameter (selected-frame) 'alpha '(97 80))
+(add-to-list 'default-frame-alist '(alpha 97 80))
+
 
 
 (defconst config-nixos--compile-bufname "*nixos-build*")
