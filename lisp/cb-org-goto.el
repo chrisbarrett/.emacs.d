@@ -88,8 +88,7 @@
                              (not cb-org-goto-on-holiday?))
                         "w"
                       "A")))
-    (org-agenda current-prefix-arg agenda-key))
-  (delete-other-windows))
+    (org-agenda current-prefix-arg agenda-key)))
 
 ;;;###autoload
 (defun cb-org-goto-headline ()

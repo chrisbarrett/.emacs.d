@@ -151,6 +151,7 @@
  org-agenda-skip-scheduled-if-done t
  org-agenda-span 'week
  org-agenda-start-on-weekday nil
+ org-agenda-window-setup 'only-window
  org-agenda-dim-blocked-tasks 'invisible
  org-agenda-sorting-strategy '((agenda time-up priority-down category-keep)
                                (todo priority-down category-keep scheduled-up)
