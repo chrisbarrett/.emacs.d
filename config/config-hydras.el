@@ -226,7 +226,7 @@
 
   "Goto"
   (("$" (find-file ledger-master-file) "ledger")
-   ("a" cb-org-goto-agenda "agenda")
+   ("a" config-org-agenda/body "agenda")
    ("d" cb-org-goto-diary "diary")
    ("j" cb-org-goto-journal "journal")
    ("n" cb-org-goto-notes "notes"))

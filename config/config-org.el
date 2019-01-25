@@ -184,6 +184,24 @@
                   (org-agenda-archives-mode nil)
                   (org-agenda-ignore-drawer-properties '(effort appt))))
 
+                ("w" "Work actions"
+                 ((tags-todo "-study-someday-media-gtd/TODO"
+                             ((org-agenda-overriding-header "Next Actions")
+                              (org-agenda-skip-function (lambda ()
+                                                          (or (config-org--agenda-skip-if-has-timestamp)
+                                                              (config-org--agenda-skip-all-siblings-but-first))))))
+                  (todo "WAITING"
+                        ((org-agenda-overriding-header "Waiting")))
+                  (stuck "")
+                  (agenda "")
+                  (tags "+standup"
+                        ((org-agenda-overriding-header "Standup"))))
+                 ((org-agenda-tag-filter-preset '("-ignore"))
+                  (org-agenda-use-tag-inheritance nil)
+                  (org-agenda-files (list config-org-work-file org-agenda-diary-file))
+                  (org-agenda-archives-mode nil)
+                  (org-agenda-ignore-drawer-properties '(effort appt))))
+
                 ("r" "Weekly Review"
                  ((agenda ""
                           ((org-agenda-overriding-header "Review Previous Week")
@@ -225,25 +243,24 @@
                    '("-gtd" "-ignore"))
                   (org-agenda-include-inactive-timestamps t)
                   (org-agenda-files (list org-default-notes-file config-org-work-file org-agenda-diary-file))
-                  (org-agenda-archives-mode nil)))
+                  (org-agenda-archives-mode nil)))))
 
-                ("w" "Work actions"
-                 ((tags-todo "-study-someday-media-gtd/TODO"
-                             ((org-agenda-overriding-header "Next Actions")
-                              (org-agenda-skip-function (lambda ()
-                                                          (or (config-org--agenda-skip-if-has-timestamp)
-                                                              (config-org--agenda-skip-all-siblings-but-first))))))
-                  (todo "WAITING"
-                        ((org-agenda-overriding-header "Waiting")))
-                  (stuck "")
-                  (agenda "")
-                  (tags "+standup"
-                        ((org-agenda-overriding-header "Standup"))))
-                 ((org-agenda-tag-filter-preset '("-ignore"))
-                  (org-agenda-use-tag-inheritance nil)
-                  (org-agenda-files (list config-org-work-file org-agenda-diary-file))
-                  (org-agenda-archives-mode nil)
-                  (org-agenda-ignore-drawer-properties '(effort appt))))))
+(defun config-org-agenda-open-nth-view (n)
+  (when-let ((choice (car (nth n org-agenda-custom-commands))))
+    (org-agenda nil choice)))
+
+(defun config-org-agenda-nth-name (n)
+  (or (cadr (nth n org-agenda-custom-commands))
+      ""))
+
+(pretty-hydra-define config-org-agenda
+  (:hint nil :foreign-keys run :quit-key "q"
+   :pre (config-org-agenda-open-nth-view 0)
+   :post (org-agenda-quit))
+  ("Agenda Views"
+   (("1" (config-org-agenda-open-nth-view 0) (config-org-agenda-nth-name 0))
+    ("2" (config-org-agenda-open-nth-view 1) (config-org-agenda-nth-name 1))
+    ("3" (config-org-agenda-open-nth-view 2) (config-org-agenda-nth-name 2)))))
 
 
 ;; org-capture templates
@@ -437,7 +454,6 @@
 (use-package org-agenda
   :after org
   :general
-  ("C-c a" #'org-agenda)
   (:keymaps 'org-agenda-mode-map :states 'motion
    "t" #'org-agenda-todo
    "J" #'org-agenda-goto-date
