@@ -161,7 +161,26 @@
  org-agenda-inhibit-startup t
  org-agenda-tags-column -100
  org-agenda-text-search-extra-files '(agenda-archives)
- org-agenda-use-time-grid nil)
+ org-agenda-use-time-grid nil
+ org-agenda-category-icon-alist `(("Emacs"
+                                   ,(list (all-the-icons-fileicon "emacs" :height 0.8 :v-adjust 0.05))
+                                   nil nil
+                                   :ascent center)
+                                  ("projects?"
+                                   ,(list (all-the-icons-octicon "repo" :v-adjust 0.05))
+                                   nil
+                                   nil
+                                   :ascent center)
+                                  ("goals?"
+                                   ,(list (all-the-icons-octicon "checklist" :v-adjust 0.05))
+                                   nil
+                                   nil
+                                   :ascent center)
+                                  ("notes"
+                                   ,(list (all-the-icons-faicon "tasks" :height 0.9 :v-adjust 0.05))
+                                   nil
+                                   nil
+                                   :ascent center)))
 
 (general-setq org-agenda-custom-commands
               '(("A" "Agenda and next actions"
