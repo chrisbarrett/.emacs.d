@@ -10,6 +10,8 @@
 (require 'subr-x)
 (require 'seq)
 
+(autoload 'hostname (concat user-emacs-directory "lisp/hostname"))
+
 
 
 (defconst paths-assets-directory
@@ -42,8 +44,7 @@
               "~/.nix-profile/share/emacs/site-lisp")))
 
 (defconst paths-hostfile
-  (let ((hostname (car (split-string (downcase (system-name)) (rx ".")))))
-    (format "~/Sync/personal-config/hostfile-%s.el" hostname)))
+  (format "~/Sync/personal-config/hostfile-%s.el" (hostname)))
 
 (defconst paths-project-directories
   (seq-filter #'file-directory-p '("~/Documents"

@@ -41,14 +41,12 @@
 (defun jump-to-nix-config ()
   "Open the nix home-manager config file."
   (interactive)
-  (let ((hostname (car (split-string (downcase (system-name)) (rx ".")))))
-    (jump-cmds--jump-to-file (format "~/nix/home/%s.nix" hostname))))
+  (jump-cmds--jump-to-file (format "~/nix/home/%s.nix" (hostname))))
 
 (defun jump-to-nix-system-config ()
   "Open the nix system config file."
   (interactive)
-  (let ((hostname (car (split-string (downcase (system-name)) (rx ".")))))
-    (jump-cmds--jump-to-file (format "~/nix/system/%s.nix" hostname))))
+  (jump-cmds--jump-to-file (format "~/nix/system/%s.nix" (hostname))))
 
 (defun jump-to-personal-config ()
   "Open the personal configuration file."
