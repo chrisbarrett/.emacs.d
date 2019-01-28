@@ -41,13 +41,14 @@
 (defun jump-to-nix-config ()
   "Open the nix home-manager config file."
   (interactive)
-  (let ((os (if (equal system-type 'darwin) 'darwin 'linux)))
-    (jump-cmds--jump-to-file (format "~/Sync/nix/home/%s.nix" os))))
+  (let ((hostname (car (split-string (downcase (system-name)) (rx ".")))))
+    (jump-cmds--jump-to-file (format "~/nix/home/%s.nix" hostname))))
 
 (defun jump-to-nix-system-config ()
   "Open the nix system config file."
   (interactive)
-  (jump-cmds--jump-to-file (format "~/Sync/nix/system/%s.nix" (string-remove-suffix ".local" (system-name)))))
+  (let ((hostname (car (split-string (downcase (system-name)) (rx ".")))))
+    (jump-cmds--jump-to-file (format "~/nix/system/%s.nix" hostname))))
 
 (defun jump-to-personal-config ()
   "Open the personal configuration file."
