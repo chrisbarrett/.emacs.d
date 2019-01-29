@@ -176,6 +176,21 @@
                                    nil
                                    nil
                                    :ascent center)
+                                  ("gtd"
+                                   ,(list (all-the-icons-faicon "check-square-o" :v-adjust 0.05))
+                                   nil
+                                   nil
+                                   :ascent center)
+                                  (,(rx (or "Holiday" "Birthday"))
+                                   ,(list (all-the-icons-faicon "calendar-o" :v-adjust 0.05))
+                                   nil
+                                   nil
+                                   :ascent center)
+                                  ("Bill"
+                                   ,(list (all-the-icons-material "monetization_on"))
+                                   nil
+                                   nil
+                                   :ascent center)
                                   ("notes"
                                    ,(list (all-the-icons-faicon "tasks" :height 0.9 :v-adjust 0.05))
                                    nil
