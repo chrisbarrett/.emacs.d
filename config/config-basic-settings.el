@@ -442,6 +442,7 @@
    recentf-max-saved-items 1000
    recentf-exclude '(config-basic-settings--boring-filename-p
                      config-basic-settings--boring-extension-p
+                     file-remote-p
                      config-basic-settings--sudo-file-p
                      config-basic-settings--child-of-boring-relative-dir-p
                      config-basic-settings--child-of-boring-abs-dir-p)))
