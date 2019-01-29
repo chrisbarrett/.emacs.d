@@ -280,7 +280,7 @@
                                                     ".ensime_cache/"
                                                     ,@completion-ignored-extensions)
                                                 eos))))
-        (--remove (string-match-p matches-boring it) result))
+        (--remove (and (stringp it) (string-match-p matches-boring it)) result))
     result))
 
 (advice-add #'completion--file-name-table :filter-return #'config-basic-settings--hide-boring-files-in-completion)
