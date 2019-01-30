@@ -289,7 +289,7 @@
 
 (pretty-hydra-define config-org-agenda
   (:hint nil :foreign-keys run :quit-key "q"
-   :pre (config-org-agenda-open-nth-view 0)
+   :body-pre (config-org-agenda-open-nth-view 0)
    :post (org-agenda-quit))
   ("Agenda Views"
    (("1" (config-org-agenda-open-nth-view 0) (config-org-agenda-nth-name 0))
