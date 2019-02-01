@@ -2,6 +2,9 @@
 ;;; Commentary:
 ;;; Code:
 
+(eval-when-compile
+  (require 'use-package))
+
 (require 'awesomewm)
 (require 'dash-functional)
 (require 'general)
@@ -13,6 +16,15 @@
 
 (set-frame-parameter (selected-frame) 'alpha '(97 80))
 (add-to-list 'default-frame-alist '(alpha 97 80))
+
+
+
+;; When Emacs needs help getting ssh-agent running when started under systemd.
+(use-package keychain-environment
+  :when (executable-find "keychain")
+  :straight t
+  :config
+  (keychain-refresh-environment))
 
 
 
