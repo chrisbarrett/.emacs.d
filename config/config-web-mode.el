@@ -319,6 +319,7 @@
   :straight t
   :hook (web-mode . config-web-maybe-use-nvm)
   :functions (nvm-use-for-buffer)
+  :custom ((nvm-dir "~/.config/nvm"))
   :preface
   (defun config-web-maybe-use-nvm ()
     (when (locate-dominating-file default-directory ".nvmrc")
