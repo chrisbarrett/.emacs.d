@@ -176,6 +176,11 @@
                                    nil
                                    nil
                                    :ascent center)
+                                  ("car"
+                                   ,(list (all-the-icons-material "directions_car"))
+                                   nil
+                                   nil
+                                   :ascent center)
                                   ("gtd"
                                    ,(list (all-the-icons-faicon "check-square-o" :v-adjust 0.05))
                                    nil
