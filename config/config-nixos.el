@@ -33,7 +33,7 @@
 (defun config-nixos-build ()
   "Build the NixOS environment."
   (interactive)
-  (let* ((default-directory "~/Sync/nix")
+  (let* ((default-directory "~/nix")
          (compilation-buffer-name-function (-const config-nixos--compile-bufname))
 
          (compilation-process-setup-function
@@ -62,7 +62,7 @@
 (defun config-nixos-set-stable ()
   "Build the NixOS environment."
   (interactive)
-  (let* ((default-directory "~/Sync/nix")
+  (let* ((default-directory "~/nix")
          (compilation-buffer-name-function (-const config-nixos--compile-bufname))
 
          (compilation-process-setup-function
