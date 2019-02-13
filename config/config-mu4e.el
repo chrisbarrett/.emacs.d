@@ -121,7 +121,7 @@
      message-send-mail-function #'message-send-mail-with-sendmail
 
      mu4e-bookmarks
-     '(("flag:unread AND ((s:JIRA AND b:chrisb) OR (NOT (s:JIRA OR s:jenkins))) AND (NOT m:/walrus/trash)"
+     '(("flag:unread AND ((s:JIRA AND b:chrisb) OR (NOT (s:JIRA OR s:jenkins))) AND (NOT m:/walrus/Trash)"
         "Unread messages" ?u)
        ("d:today..now AND NOT (s:JIRA OR s:jenkins)"
         "Today's messages" ?t)
@@ -129,11 +129,11 @@
         "Last 7 days" ?w)
        ("d:30d..now AND NOT (s:JIRA OR s:jenkins)"
         "Last 30 days" ?m)
-       ("m:/walrus/inbox"
+       ("m:/walrus/INBOX"
         "Inbox" ?i)
-       ("m:/walrus/notifications"
+       ("m:/walrus/Notifications"
         "Notifications" ?n)
-       ("m:/walrus/sent"
+       ("m:/walrus/Sent"
         "Sent messages" ?s)
        ("bitbucket OR github"
         "Code & PRs" ?c))

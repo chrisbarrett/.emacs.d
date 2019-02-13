@@ -37,7 +37,7 @@
   ;; - this is a notification
   ;; - this is a message to myself (it's already in sent messages, and can be trashed)
   (let* ((refile-dir (mu4e-get-refile-folder msg))
-         (notifications-dir (f-expand "../notifications" refile-dir))
+         (notifications-dir (f-expand "../Notifications" refile-dir))
          (sent-dir (mu4e-get-sent-folder msg)))
     (cond
      ((cb-mu4e-utils--refile-to-sent-maildir-p sent-dir msg)
