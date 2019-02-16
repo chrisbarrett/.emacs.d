@@ -35,6 +35,9 @@ A customised version of the Arabic input method.
  ("$" ?ُ)
  ("%" ?ْ)
  ("Z" ?ّ)
+ ("*" ?ً)
+ ("+" ?ٍ)
+ ("-" ?ٌ)
 
  ("a" ?ا)
  ("A" ?آ)
