@@ -206,6 +206,9 @@
   (with-eval-after-load 'evil
     (global-evil-surround-mode +1)))
 
+(use-package evil-bidi
+  :after evil)
+
 (use-package evil-iedit-state
   :straight t
   :commands (evil-iedit-state/iedit-mode)
