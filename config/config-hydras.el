@@ -405,7 +405,7 @@
    ("w" world-time-list "world clock"))
 
   "Editing"
-  (("i" select-input-method/body "input method..."))
+  (("i" toggle-input-method "toggle input method"))
 
   "Emacs"
   (("r" profiler/body "profiler...")
@@ -422,13 +422,6 @@
   (("p" profiler-start "start...")
    ("s" profiler-stop "stop")
    ("r" profiler-report "report")))
-
-(cb-hydra-define select-input-method ()
-  (hydra-title-with-faicon "language" "Input Method")
-  ""
-  (("a" (progn (set-input-method "arabic") (message "Arabic input method activated")) "arabic")
-   ("e" (progn (set-input-method "british") (message "English input method activated")) "english")
-   ("t" (progn (set-input-method "TeX") (message "TeX input method activated")) "TeX")))
 
 (cb-hydra-define straight ()
   (hydra-title-with-octicon "package" "Straight Package Manager")

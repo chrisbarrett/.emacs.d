@@ -11,6 +11,10 @@
 
 
 
+(use-package walrus-arabic
+  :config
+  (setq default-input-method "walrus-arabic"))
+
 ;; Auto-indent on RET
 
 (general-define-key :keymaps '(text-mode-map prog-mode-map)
