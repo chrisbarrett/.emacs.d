@@ -437,6 +437,9 @@
                               (nth 2 (org-heading-components)))
               (org-todo "TODO"))))))
 
+    (defun config-org--set-bidi-env ()
+      (setq bidi-paragraph-direction nil))
+
     (defun config-org--add-local-hooks ()
       "Set buffer-local hooks for orgmode."
       (add-hook 'org-after-todo-state-change-hook #'config-org--mark-next-parent-tasks-todo nil t)
@@ -453,6 +456,7 @@
   :init
   (progn
     (add-hook 'org-mode-hook #'config-org--add-local-hooks)
+    (add-hook 'org-mode-hook #'config-org--set-bidi-env)
     (add-hook 'org-after-todo-statistics-hook #'config-org--children-done-parent-done)
 
     (dolist (dir (ignore-errors (f-directories "~/org/lisp/")))
