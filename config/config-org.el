@@ -191,7 +191,7 @@
                                    nil
                                    nil
                                    :ascent center)
-                                  ("Bill"
+                                  (,(rx (or "flat" "bill" "income"))
                                    ,(list (all-the-icons-material "monetization_on"))
                                    nil
                                    nil
