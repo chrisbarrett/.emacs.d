@@ -353,6 +353,12 @@
                   "e" "Email task" '(file org-default-notes-file)
                   "* TODO %?\n%a")
 
+                 '("a" "Arabic")
+                 `("an" "Noun" item (file+olp "study/arabic.org" "Vocab")
+                   #'capture-arabic-read-noun
+                   :jump-to-captured t
+                   :immediate-finish t)
+
                  '("w" "Work")
                  (entry
                   "wa" "Team member activity"
@@ -490,6 +496,7 @@
     (advice-add 'org-add-log-note :before #'config-org--exit-minibuffer)
     (advice-add 'org-toggle-heading :after #'config-org--toggle-heading-goto-eol)))
 
+(use-package capture-arabic :after org)
 (use-package cb-org-capture-url :after org)
 (use-package cb-org-gdrive :hook (org-mode . cb-org-gdrive-init))
 (use-package cb-org-pgp-decrpyt :hook (org-mode . cb-org-pgp-decrpyt-init))
