@@ -326,7 +326,7 @@
                                  :empty-lines empty-lines
                                  :prepend prepend
                                  :immediate-finish immediate-finish
-                                 jump-to-captured :jump-to-captured)))
+                                 :jump-to-captured jump-to-captured)))
                 (list
                  (entry
                   "t" "Todo" '(file org-default-notes-file) "* TODO %?")
