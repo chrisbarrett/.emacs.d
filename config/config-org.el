@@ -101,6 +101,11 @@
  org-export-exclude-tags '("noexport" "no_export" "crypt")
  org-export-coding-system 'utf-8
 
+ ;; latex
+
+ org-latex-compiler "tectonic"
+ org-latex-pdf-process '("tectonic --outdir %o %f")
+
  ;; org-habit
 
  org-habit-graph-column 68
