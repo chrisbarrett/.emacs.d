@@ -53,6 +53,7 @@
   :config
   (progn
     (exec-path-from-shell-initialize)
+    (add-to-list 'exec-path "~/.local/bin")
 
     ;; Use gnu coreutils ls command, if available.
     (when-let* ((gls (executable-find "gls")))
