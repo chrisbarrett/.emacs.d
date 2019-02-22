@@ -19,6 +19,7 @@
 (require 's)
 (require 'straight)
 (require 'subr-x)
+(require 'org-hacks)
 
 (autoload 'org-todo "org")
 (autoload 'jira-utils-read-issue-url-for-org-header "jira-utils")
