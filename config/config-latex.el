@@ -119,6 +119,7 @@
 
   :init
   (progn
+    (add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)
     (add-hook 'LaTeX-mode-hook 'flyspell-mode)
     (add-hook 'LaTeX-mode-hook 'config-latex--auto-fill-mode)
     (add-hook 'LaTeX-mode-hook 'TeX-fold-mode)
@@ -127,8 +128,13 @@
     (add-hook 'LaTeX-mode-hook 'TeX-PDF-mode))
 
   :config
-  ;; Don't insert line-break at inline math.
-  (setq LaTeX-fill-break-at-separators nil))
+  (general-setq
+   ;; Don't insert line-break at inline math.
+   LaTeX-fill-break-at-separators nil
+
+   ;; Use Emacs pdf-tools as viewer.
+   TeX-view-program-selection '((output-pdf "PDF Tools"))
+   TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view))))
 
 (use-package tex-fold
   :after tex)
