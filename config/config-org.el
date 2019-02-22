@@ -22,6 +22,7 @@
 
 (autoload 'org-todo "org")
 (autoload 'jira-utils-read-issue-url-for-org-header "jira-utils")
+(autoload 'org-drill "org-drill" nil t)
 
 
 
@@ -354,9 +355,10 @@
                   "* TODO %?\n%a")
 
                  '("a" "Arabic")
-                 `("an" "Noun" item (file+olp "study/arabic.org" "Vocab")
+                 `("an" "Noun" entry (file+olp "study/arabic.org" "Vocab")
                    #'capture-arabic-read-noun
                    :jump-to-captured t
+                   :empty-lines 1
                    :immediate-finish t)
 
                  '("w" "Work")

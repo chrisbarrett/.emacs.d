@@ -2,6 +2,8 @@
 ;;; Commentary:
 ;;; Code:
 
+(require 'dash)
+
 (defvar capture-arabic--arabic-input-history nil)
 
 (defvar capture-arabic--english-input-history nil)
@@ -23,14 +25,28 @@
 (defun capture-arabic-read-noun ()
   (let ((english (capture-arabic--read-english "English word: "))
         (arabic-singular (capture-arabic--read-arabic "Arabic Singular: "))
-        (arabic-plural (capture-arabic--read-arabic "Arabic Plural: ")))
-    (format "- %s :: %s" english
-            (with-temp-buffer
-              (insert arabic-singular)
-              (insert "،")
-              (insert " ")
-              (insert arabic-plural)
-              (buffer-string)))))
+        (arabic-plural (capture-arabic--read-arabic "Arabic Plural: "))
+        (properties
+         (concat ":PROPERTIES:\n"
+                 ":ID: " (org-id-uuid) "\n"
+                 ":DRILL_CARD_TYPE: multisided\n"
+                 ":END:")))
+    (string-join (-non-nil (list
+                            (format "* %s: %s        :drill:\n%s" english
+                                    (with-temp-buffer
+                                      (insert arabic-singular)
+                                      (unless (string-blank-p arabic-plural)
+                                        (insert "،")
+                                        (insert " ")
+                                        (insert arabic-plural))
+                                      (buffer-string))
+                                    properties)
+                            (format "** Definition      :noexport:\n%s" english)
+                            (unless (string-blank-p arabic-singular)
+                              (format "** Arabic Singular :noexport:\n%s" arabic-singular))
+                            (unless (string-blank-p arabic-plural)
+                              (format "** Arabic Plural   :noexport:\n%s" arabic-plural))))
+                 "\n\n")))
 
 (provide 'capture-arabic)
 
