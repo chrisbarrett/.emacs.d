@@ -11,7 +11,6 @@
 (require 'nvm-hacks)
 (require 's)
 (require 'subr-x)
-(require 'tide-hacks)
 
 (autoload 'flycheck-add-mode "flycheck")
 (autoload 'projectile-project-p "projectile")
