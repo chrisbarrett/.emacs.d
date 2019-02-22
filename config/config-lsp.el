@@ -21,8 +21,30 @@
          (rust-mode . lsp)
          (sh-mode . lsp)
          (web-mode . lsp))
+  :preface
+  (defun config-lsp--setup-buffer ()
+    (setq-local evil-lookup-func #'lsp-describe-thing-at-point)
+
+    ;; Use server highlighting.
+    (when (gethash "documentHighlightProvider" (lsp--server-capabilities))
+      (highlight-thing-mode -1))
+
+    ;; Format on save.
+    (when (gethash "documentFormattingProvider" (lsp--server-capabilities))
+      (add-hook 'before-save-hook #'lsp-format-buffer nil t)))
+
+  :init
+  (progn
+    (setq lsp-prefer-flymake nil)
+    (setq lsp-enable-on-type-formatting nil)
+    (setq lsp-session-file (f-join paths-cache-directory "lsp-session-v1")))
+
   :config
   (progn
+    (add-hook 'lsp-after-open-hook #'config-lsp--setup-buffer)
+
+    ;; Add custom LSP clients.
+
     (lsp-register-client
      (make-lsp-client :new-connection (lsp-stdio-connection (format "%s --stdio" lsp-dockerfile-server))
                       :major-modes '(dockerfile-mode)
