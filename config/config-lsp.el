@@ -5,6 +5,8 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'lsp-mode-hacks)
+
 (defvar lsp-dockerfile-server "docker-langserver")
 
 (use-package lsp-mode
@@ -20,7 +22,8 @@
          (python . lsp)
          (rust-mode . lsp)
          (sh-mode . lsp)
-         (web-mode . lsp))
+         (web-js-mode . lsp)
+         (web-ts-mode . lsp))
   :preface
   (defun config-lsp--setup-buffer ()
     (setq-local evil-lookup-func #'lsp-describe-thing-at-point)
