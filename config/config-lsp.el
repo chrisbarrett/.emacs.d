@@ -78,6 +78,7 @@
 
 (use-package lsp-ui
   :straight t
+  :after lsp-mode
   :hook (lsp-mode . lsp-ui-mode)
   :config
   (progn
