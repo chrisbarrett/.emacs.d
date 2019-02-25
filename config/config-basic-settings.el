@@ -621,7 +621,9 @@
 (use-package direnv
   :straight t
   :config
-  (direnv-mode))
+  (progn
+    (general-setq direnv-always-show-summary nil)
+    (direnv-mode)))
 
 (use-package ediff
   :defer t
