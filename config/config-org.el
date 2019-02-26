@@ -626,6 +626,9 @@
 
   :config
   (progn
+    (setf (alist-get "js" org-src-lang-modes) 'web-js)
+    (setf (alist-get "ts" org-src-lang-modes) 'web-ts)
+    (setf (alist-get "json" org-src-lang-modes) 'web-json)
     (add-hook 'org-src-mode-hook #'config-org--suppress-final-newline)
     (advice-add 'org-edit-src-exit :before #'config-org--org-src-delete-trailing-space)))
 
