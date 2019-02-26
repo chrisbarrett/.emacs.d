@@ -49,7 +49,8 @@
 (defconst paths-project-directories
   (seq-filter #'file-directory-p '("~/Documents"
                                    "~/Projects"
-                                   "~/workspace")))
+                                   "~/workspace"
+                                   "~/.local/src")))
 
 
 
