@@ -14,11 +14,11 @@
 (defun capture-arabic--read-en (prompt &optional default)
   (read-string (concat "[en] " prompt) default 'capture-arabic--english-input-history))
 
-(defun capture-arabic--read-ar (prompt)
+(defun capture-arabic--read-ar (prompt &optional default)
   (let ((setup (lambda () (set-input-method "walrus-arabic"))))
     (add-hook 'minibuffer-setup-hook setup)
     (unwind-protect
-        (read-string (concat "‎[العربية] " prompt) nil 'capture-arabic--arabic-input-history nil t)
+        (read-string (concat "‎[العربية] " prompt) default 'capture-arabic--arabic-input-history nil t)
       (remove-hook 'minibuffer-setup-hook setup))))
 
 (defun capture-arabic--read-gender ()
@@ -47,13 +47,19 @@
                         (concat word "s")))))
     (string-join (cons pluralised rest) " (")))
 
+(defun capture-arabic--pluralise-ar (word)
+  (cond
+   ((string-suffix-p "ة" word)
+    (concat (string-remove-suffix "ة" word) "ات"))))
 
 (defun capture-arabic-read-noun-as-table-row ()
-  (let ((en-sing (capture-arabic--read-en "Singular: ")))
-    (concat "|"  en-sing
-            "|" (capture-arabic--read-en "plural: " (capture-arabic--pluralise-en en-sing))
-            "|" (capture-arabic--read-ar "singular: ")
-            "|" (capture-arabic--read-ar "plural: ")
+  (let* ((en-sing (capture-arabic--read-en "singular: "))
+         (en-pl (capture-arabic--read-en "plural: " (capture-arabic--pluralise-en en-sing)))
+         (ar-sing (capture-arabic--read-ar "singular: ")))
+    (concat "|" en-sing
+            "|" en-pl
+            "|" ar-sing
+            "|" (capture-arabic--read-ar "plural: " (capture-arabic--pluralise-ar ar-sing))
             "|" (capture-arabic--read-gender)
             "|")))
 
