@@ -364,6 +364,10 @@
                    #'capture-arabic-read-phrase-as-table-row
                    :jump-to-captured t
                    :immediate-finish t)
+                 `("av" "Verb" table-line (file+olp "study/arabic.org" "Verbs")
+                   #'capture-arabic-read-verb-as-table-row
+                   :jump-to-captured t
+                   :immediate-finish t)
 
                  '("w" "Work")
                  (entry

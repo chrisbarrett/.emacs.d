@@ -60,6 +60,13 @@
           "|" (capture-arabic--read-ar "phrase: ")
           "|"))
 
+(defun capture-arabic-read-verb-as-table-row ()
+  (concat "|" (capture-arabic--read-en "verb: ")
+          "|" (capture-arabic--read-ar "past: ")
+          "|" (capture-arabic--read-ar "present")
+          "|" (capture-arabic--read-ar "masdar")
+          "|"))
+
 (provide 'capture-arabic)
 
 ;;; capture-arabic.el ends here
