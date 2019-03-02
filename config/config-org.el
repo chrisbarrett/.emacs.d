@@ -356,10 +356,9 @@
                   "* TODO %?\n%a")
 
                  '("a" "Arabic")
-                 `("an" "Noun" entry (file+olp "study/arabic.org" "Vocab")
-                   #'capture-arabic-read-noun
+                 `("an" "Noun" table-line (file+olp "study/arabic.org" "Nouns/Adjectives")
+                   #'capture-arabic-read-noun-as-table-row
                    :jump-to-captured t
-                   :empty-lines 1
                    :immediate-finish t)
 
                  '("w" "Work")
