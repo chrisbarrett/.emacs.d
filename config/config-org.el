@@ -360,6 +360,10 @@
                    #'capture-arabic-read-noun-as-table-row
                    :jump-to-captured t
                    :immediate-finish t)
+                 `("ap" "Phrase" table-line (file+olp "study/arabic.org" "Phrases")
+                   #'capture-arabic-read-phrase-as-table-row
+                   :jump-to-captured t
+                   :immediate-finish t)
 
                  '("w" "Work")
                  (entry

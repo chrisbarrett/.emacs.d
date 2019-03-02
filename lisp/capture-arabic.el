@@ -55,6 +55,11 @@
             "|" (capture-arabic--read-gender)
             "|")))
 
+(defun capture-arabic-read-phrase-as-table-row ()
+  (concat "|" (capture-arabic--read-en "phrase: ")
+          "|" (capture-arabic--read-ar "phrase: ")
+          "|"))
+
 (provide 'capture-arabic)
 
 ;;; capture-arabic.el ends here
