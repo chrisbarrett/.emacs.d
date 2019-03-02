@@ -61,6 +61,7 @@
             "|" ar-sing
             "|" (capture-arabic--read-ar "plural: " (capture-arabic--pluralise-ar ar-sing))
             "|" (capture-arabic--read-gender)
+            "|"
             "|")))
 
 (defun capture-arabic-read-phrase-as-table-row ()
