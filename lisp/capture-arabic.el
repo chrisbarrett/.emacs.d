@@ -29,21 +29,23 @@
 
 
 (defun capture-arabic--pluralise-en (word)
-  (cond
-   ((string-suffix-p "us" word)
-    (concat (string-remove-suffix "us" word) "i"))
-   ((string-suffix-p "on" word)
-    (concat (string-remove-suffix "on" word) "a"))
-   ((or (string-suffix-p "s" word)
-        (string-suffix-p "o" word)
-        (string-suffix-p "sh" word)
-        (string-suffix-p "ch" word)
-        (string-suffix-p "is" word)
-        (string-suffix-p "x" word)
-        (string-suffix-p "z" word))
-    (concat word "es"))
-   (t
-    (concat word "s"))))
+  (-let* (((word . rest) (split-string word "[(]" nil "[ ]*"))
+          (pluralised (cond
+                       ((string-suffix-p "us" word)
+                        (concat (string-remove-suffix "us" word) "i"))
+                       ((string-suffix-p "on" word)
+                        (concat (string-remove-suffix "on" word) "a"))
+                       ((or (string-suffix-p "s" word)
+                            (string-suffix-p "o" word)
+                            (string-suffix-p "sh" word)
+                            (string-suffix-p "ch" word)
+                            (string-suffix-p "is" word)
+                            (string-suffix-p "x" word)
+                            (string-suffix-p "z" word))
+                        (concat word "es"))
+                       (t
+                        (concat word "s")))))
+    (string-join (cons pluralised rest) " (")))
 
 
 (defun capture-arabic-read-noun-as-table-row ()
