@@ -2,7 +2,9 @@
 ;;; Commentary:
 ;;; Code:
 
+(require 'anki)
 (require 'dash)
+(require 'pretty-hydra)
 (require 'subr-x)
 
 
@@ -69,17 +71,32 @@
    ((string-suffix-p "ة" word)
     (concat (string-remove-suffix "ة" word) "ات"))))
 
-(defun capture-arabic-read-noun-as-table-row ()
+(defun capture-arabic--remove-ar-vowels (str)
+  (s-replace-regexp (rx (or "َ" "ِ" "ُ" "ْ"))
+                    ""
+                    str))
+
+(defun capture-arabic-noun ()
+  "Capture a noun to Anki."
+  (interactive)
   (let* ((en-sing (capture-arabic--read-en "singular"))
          (en-pl (capture-arabic--read-en "plural" (capture-arabic--pluralise-en en-sing)))
-         (ar-sing (capture-arabic--read-ar "singular")))
-    (concat "|" en-sing
-            "|" en-pl
-            "|" ar-sing
-            "|" (capture-arabic--read-ar "plural" (capture-arabic--pluralise-ar ar-sing))
-            "|" (capture-arabic--read-gender)
-            "|"
-            "|")))
+         (ar-sing (capture-arabic--read-ar "singular"))
+         (ar-pl (capture-arabic--read-ar "plural" (capture-arabic--pluralise-ar ar-sing)))
+         (note
+          `((deckName . "Arabic")
+            (modelName . "Arabic Noun")
+            (tags . [])
+            (fields . ,(-filter #'cdr `(("en_s" . ,en-sing)
+                                        ("en_p" . ,en-pl)
+                                        ("ar_s_v" . ,ar-sing)
+                                        ("ar_s" . ,(capture-arabic--remove-ar-vowels ar-sing))
+                                        ("ar_p_v" . ,ar-pl)
+                                        ("ar_p" . ,(capture-arabic--remove-ar-vowels ar-pl))
+                                        ("ar_g" . ,(if (eq (capture-arabic--read-gender) ?m)
+                                                       "مذكّر"
+                                                     "مؤنّث"))))))))
+    (anki-add-note note)))
 
 (defun capture-arabic-read-phrase-as-table-row ()
   (concat "|" (capture-arabic--read-en "phrase")
@@ -92,6 +109,11 @@
           "|" (capture-arabic--read-ar "present")
           "|" (capture-arabic--read-ar "masdar")
           "|"))
+
+(pretty-hydra-define capture-arabic (:hint nil :color teal)
+  ("Capture"
+   (("n" capture-arabic-noun "Noun...")))
+  :docstring-prefix "‎العربية\n")
 
 (provide 'capture-arabic)
 

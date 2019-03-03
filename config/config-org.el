@@ -353,20 +353,6 @@
                   "e" "Email task" '(file org-default-notes-file)
                   "* TODO %?\n%a")
 
-                 '("a" "Arabic")
-                 `("an" "Noun" table-line (file+olp "study/arabic.org" "Nouns/Adjectives")
-                   #'capture-arabic-read-noun-as-table-row
-                   :jump-to-captured t
-                   :immediate-finish t)
-                 `("ap" "Phrase" table-line (file+olp "study/arabic.org" "Phrases")
-                   #'capture-arabic-read-phrase-as-table-row
-                   :jump-to-captured t
-                   :immediate-finish t)
-                 `("av" "Verb" table-line (file+olp "study/arabic.org" "Verbs")
-                   #'capture-arabic-read-verb-as-table-row
-                   :jump-to-captured t
-                   :immediate-finish t)
-
                  '("w" "Work")
                  (entry
                   "wa" "Team member activity"

@@ -15,6 +15,10 @@
   :config
   (setq default-input-method "walrus-arabic"))
 
+(use-package anki
+  :init
+  (use-package request :straight t))
+
 ;; Auto-indent on RET
 
 (general-define-key :keymaps '(text-mode-map prog-mode-map)

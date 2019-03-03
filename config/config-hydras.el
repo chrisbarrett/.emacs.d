@@ -7,6 +7,7 @@
 
 (require 'all-the-icons)
 (require 'buffer-cmds)
+(require 'capture-arabic)
 (require 'dash)
 (require 'jump-cmds)
 (require 'major-mode-hydra)
@@ -414,7 +415,10 @@
 
   "Shells"
   (("t" cb-eshell-at-dir "terminal (eshell)")
-   ("n" nix-repl-show "nix-repl")))
+   ("n" nix-repl-show "nix-repl"))
+
+  "Anki"
+  (("a" capture-arabic/body "arabic...")))
 
 (cb-hydra-define profiler ()
   (hydra-title-with-faicon "bar-chart" "Profiler")
