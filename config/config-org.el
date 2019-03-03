@@ -19,11 +19,9 @@
 (require 's)
 (require 'straight)
 (require 'subr-x)
-(require 'org-hacks)
 
 (autoload 'org-todo "org")
 (autoload 'jira-utils-read-issue-url-for-org-header "jira-utils")
-(autoload 'org-drill "org-drill" nil t)
 
 
 
@@ -410,7 +408,7 @@
   (defconst cb-org-load-path (expand-file-name "straight/build/org/" user-emacs-directory)))
 
 (use-package org
-  :straight org-plus-contrib
+  :straight t
   :defer t
   :load-path cb-org-load-path
   :general
