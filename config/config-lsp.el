@@ -78,7 +78,7 @@
 
 (use-package lsp-ui
   :straight t
-  :after lsp-mode
+  :after (lsp-mode flycheck)
   :hook (lsp-mode . lsp-ui-mode)
   :config
   (progn
