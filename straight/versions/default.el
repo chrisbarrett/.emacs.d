@@ -41,7 +41,7 @@
  ("emacs-memoize" . "9a561268ffb550b257a08710489a95cd087998b6")
  ("emacs-noflet" . "7ae84dc3257637af7334101456dafe1759c6b68a")
  ("emacs-racer" . "7e1c0166ace3d56ba8914e1d07cb9faf0580b7b5")
- ("emacs-request" . "db88fd21d25399ff9940c208173665b12493992b")
+ ("emacs-request" . "569cbbb1153a97e443f6af1cca2d2b5fc692edff")
  ("emacs-terraform-mode" . "6973d1acaba2835dfdf174f5a5e27de6366002e1")
  ("emacs-which-key" . "43e3e3d7641a8e1c298b37e6a277612bf0898708")
  ("emacs-world-time-mode" . "ce7a3b45c87eb24cfe61eee453175d64f741d7cc")

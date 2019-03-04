@@ -17,7 +17,8 @@
 
 (use-package anki
   :init
-  (use-package request :straight t))
+  (use-package request
+    :straight (:host github :repo "tkf/emacs-request" :branch "development")))
 
 ;; Auto-indent on RET
 
