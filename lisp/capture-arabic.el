@@ -13,6 +13,8 @@
 
 (defvar capture-arabic--english-input-history nil)
 
+(defvar capture-arabic--tags-input-history nil)
+
 (defun capture-arabic--read-en (prompt &optional default)
   (let ((prompt-str (concat "‎[en] "
                             (if default
@@ -20,6 +22,16 @@
                               prompt)
                             ": ")))
     (read-string prompt-str nil 'capture-arabic--english-input-history default)))
+
+(defun capture-arabic--read-tags ()
+  (let* ((default (car capture-arabic--tags-input-history))
+         (prompt-str (concat "Tags"
+                             (if default (concat " [default: " default "]") "")
+                             ": " ))
+         (input (read-string prompt-str nil 'capture-arabic--tags-input-history default)))
+    (-uniq (s-split (rx (+ (any space ",")))
+                    input
+                    t))))
 
 (defun capture-arabic--read-ar (prompt &optional default)
   (let ((setup (lambda () (set-input-method "walrus-arabic")))
@@ -76,12 +88,6 @@
                     ""
                     str))
 
-(defun capture-arabic--read-tags ()
-  (let ((input (read-string "Tags: ")))
-    (-uniq (s-split (rx (+ (any space ",")))
-                    input
-                    t))))
-
 (defun capture-arabic-noun ()
   "Capture a noun to Anki."
   (interactive)
@@ -110,7 +116,6 @@
                                         ("ar_s_audio" . "")
                                         ("ar_p_audio" . "")
                                         ("ar_s_p_audio" . "")))))))
-    (setq test-note note)
     (anki-add-note note)))
 
 (defun capture-arabic-read-phrase-as-table-row ()
