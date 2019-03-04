@@ -76,6 +76,12 @@
                     ""
                     str))
 
+(defun capture-arabic--read-tags ()
+  (let ((input (read-string "Tags: ")))
+    (-uniq (s-split (rx (+ (any space ",")))
+                    input
+                    t))))
+
 (defun capture-arabic-noun ()
   "Capture a noun to Anki."
   (interactive)
@@ -83,19 +89,28 @@
          (en-pl (capture-arabic--read-en "plural" (capture-arabic--pluralise-en en-sing)))
          (ar-sing (capture-arabic--read-ar "singular"))
          (ar-pl (capture-arabic--read-ar "plural" (capture-arabic--pluralise-ar ar-sing)))
+         (ar-s-pl (concat ar-sing "، " ar-pl))
+         (gender-code (capture-arabic--read-gender))
+         (tags (capture-arabic--read-tags))
          (note
           `((deckName . "Arabic")
             (modelName . "Arabic Noun")
-            (tags . [])
+            (tags . ,(seq-into tags 'vector))
             (fields . ,(-filter #'cdr `(("en_s" . ,en-sing)
                                         ("en_p" . ,en-pl)
-                                        ("ar_s_v" . ,ar-sing)
                                         ("ar_s" . ,(capture-arabic--remove-ar-vowels ar-sing))
-                                        ("ar_p_v" . ,ar-pl)
+                                        ("ar_s_v" . ,ar-sing)
                                         ("ar_p" . ,(capture-arabic--remove-ar-vowels ar-pl))
-                                        ("ar_g" . ,(if (eq (capture-arabic--read-gender) ?m)
-                                                       "مذكّر"
-                                                     "مؤنّث"))))))))
+                                        ("ar_p_v" . ,ar-pl)
+                                        ("ar_s_p" . ,(capture-arabic--remove-ar-vowels ar-s-pl))
+                                        ("ar_s_p_v" . ,ar-s-pl)
+                                        ("ar_g" . ,(if (eq gender-code "m") "مذكّر" "مؤنّث"))
+                                        ("ar_g_code" . ,gender-code)
+                                        ;; Sound fields are left unpopulated.
+                                        ("ar_s_audio" . "")
+                                        ("ar_p_audio" . "")
+                                        ("ar_s_p_audio" . "")))))))
+    (setq test-note note)
     (anki-add-note note)))
 
 (defun capture-arabic-read-phrase-as-table-row ()
