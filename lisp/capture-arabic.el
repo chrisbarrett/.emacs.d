@@ -97,6 +97,13 @@
          (ar-pl (capture-arabic--read-ar "plural" (capture-arabic--pluralise-ar ar-sing)))
          (ar-s-pl (concat ar-sing "، " ar-pl))
          (gender-code (capture-arabic--read-gender))
+         (ar-g (pcase gender-code
+                 ("m"
+                  "مذكّر")
+                 ("f"
+                  "مؤنّث")
+                 (c
+                  (error "Unknown gender code: %s" c))))
          (tags (capture-arabic--read-tags))
          (note
           `((deckName . "Arabic")
@@ -110,7 +117,7 @@
                                         ("ar_p_v" . ,ar-pl)
                                         ("ar_s_p" . ,(capture-arabic--remove-ar-vowels ar-s-pl))
                                         ("ar_s_p_v" . ,ar-s-pl)
-                                        ("ar_g" . ,(if (eq gender-code "m") "مذكّر" "مؤنّث"))
+                                        ("ar_g" . ,ar-g)
                                         ("ar_g_code" . ,gender-code)
                                         ;; Sound fields are left unpopulated.
                                         ("ar_s_audio" . "")
