@@ -125,10 +125,22 @@
                                         ("ar_s_p_audio" . "")))))))
     (anki-add-note note)))
 
-(defun capture-arabic-read-phrase-as-table-row ()
-  (concat "|" (capture-arabic--read-en "phrase")
-          "|" (capture-arabic--read-ar "phrase")
-          "|"))
+(defun capture-arabic-phrase ()
+  "Capture a phrase to Anki."
+  (interactive)
+  (let* ((ar (capture-arabic--read-ar "Arabic phrase"))
+         (en (capture-arabic--read-en "English meaning"))
+         (tags (capture-arabic--read-tags))
+         (note
+          `((deckName . "Arabic")
+            (modelName . "Arabic Phrase")
+            (tags . ,(seq-into tags 'vector))
+            (fields . ,(-filter #'cdr `(("en" . ,en)
+                                        ("ar_v" . ,ar)
+                                        ("ar" . ,(capture-arabic--remove-ar-vowels ar))
+                                        ;; Sound fields are left unpopulated.
+                                        ("ar_audio" . "")))))))
+    (anki-add-note note)))
 
 (defun capture-arabic-read-verb-as-table-row ()
   (concat "|" (capture-arabic--read-en "verb")
@@ -137,9 +149,10 @@
           "|" (capture-arabic--read-ar "masdar")
           "|"))
 
-(pretty-hydra-define capture-arabic (:hint nil :color teal)
+(pretty-hydra-define capture-arabic (:hint nil :color teal :quit nil)
   ("Capture"
-   (("n" capture-arabic-noun "Noun...")))
+   (("n" capture-arabic-noun "Noun...")
+    ("p" capture-arabic-phrase "Phrase...")))
   :docstring-prefix "‎العربية\n")
 
 (provide 'capture-arabic)
