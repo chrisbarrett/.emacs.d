@@ -20,6 +20,10 @@
   (use-package request
     :straight (:host github :repo "tkf/emacs-request" :branch "development")))
 
+(use-package default-text-scale
+  :commands (default-text-scale-increase default-text-scale-decrease default-text-scale-reset)
+  :straight t)
+
 ;; Auto-indent on RET
 
 (general-define-key :keymaps '(text-mode-map prog-mode-map)

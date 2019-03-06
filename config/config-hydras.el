@@ -95,9 +95,9 @@
 (cb-hydra-define font-scale (:color amaranth)
   (hydra-title-with-faicon "search-plus" "Font Scale")
   ""
-  (("+" (text-scale-increase 1) "zoom in")
-   ("-" (text-scale-decrease 1) "zoom out")
-   ("0" (text-scale-set 0) "reset")))
+  (("+" (default-text-scale-increase) "zoom in")
+   ("-" (default-text-scale-decrease) "zoom out")
+   ("0" (default-text-scale-reset) "reset")))
 
 (cb-hydra-define buffers ()
   (hydra-title-with-faicon "files-o" "Buffer Commands")
