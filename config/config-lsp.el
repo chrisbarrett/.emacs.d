@@ -78,7 +78,7 @@
 
 (use-package lsp-ui
   :straight t
-  :after (lsp-mode flycheck)
+  :after lsp-mode
   :hook (lsp-mode . lsp-ui-mode)
   :config
   (progn
@@ -90,6 +90,10 @@
     (define-key lsp-ui-mode-map [remap evil-lookup] #'lsp-describe-thing-at-point)
     (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
     (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)))
+
+(use-package lsp-ui-flycheck
+  :after lsp-mode
+  :hook (lsp-after-open . lsp-ui-flycheck-enable))
 
 (provide 'config-lsp)
 
