@@ -140,7 +140,7 @@
           "|" (capture-arabic--read-ar "masdar")
           "|"))
 
-(pretty-hydra-define capture-arabic (:hint nil :color teal :quit nil)
+(pretty-hydra-define capture-arabic (:hint nil :exit nil)
   ("Capture"
    (("n" capture-arabic-noun "Noun...")
     ("p" capture-arabic-phrase "Phrase...")))
