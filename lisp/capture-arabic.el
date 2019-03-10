@@ -120,8 +120,8 @@
             (modelName . "Arabic Phrase")
             (tags . ,(seq-into tags 'vector))
             (fields . ,(-filter #'cdr `(("en" . ,en)
-                                        ("ar_v" . ,ar)
                                         ("ar" . ,(capture-arabic--remove-ar-vowels ar))
+                                        ("ar_v" . ,ar)
                                         ;; Sound fields are left unpopulated.
                                         ("ar_audio" . "")))))))
     (anki-add-note note)))
