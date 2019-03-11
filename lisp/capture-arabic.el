@@ -146,6 +146,24 @@
     ("p" capture-arabic-phrase "Phrase...")))
   :docstring-prefix "‎العربية\n")
 
+
+
+;; Backfills for future reference
+
+(cl-defun capture-arabic--backfill-nouns-1 (note)
+  (-let* (((&alist 'noteId noteId 'fields (&alist 'ar_v (&alist 'value ar-s-pl))) note)
+          ((ar-s ar-p) (-map #'s-trim (s-split (rx "،") ar-s-pl))))
+    `((id . ,noteId)
+      (fields . ,(-filter #'cdr `(("ar_s" . ,(capture-arabic--remove-ar-vowels ar-s))
+                                  ("ar_s_v" . ,ar-s)
+                                  ("ar_p" . ,(when ar-p (capture-arabic--remove-ar-vowels ar-p)))
+                                  ("ar_p_v" . ,ar-p)))))))
+
+;; (defvar arabic-noun-note-ids (anki-find-notes "note:\"Arabic Noun\""))
+;; (defvar arabic-nouns (anki-notes-info arabic-noun-note-ids))
+;; (defvar arabic-noun-field-updates (seq-map #'capture-arabic--backfill-nouns-1 arabic-nouns))
+;; (mapc #'anki-update-note-fields arabic-noun-field-updates)
+
 (provide 'capture-arabic)
 
 ;;; capture-arabic.el ends here
