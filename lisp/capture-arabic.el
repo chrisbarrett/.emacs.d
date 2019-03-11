@@ -91,11 +91,14 @@
 (defun capture-arabic-noun ()
   "Capture a noun to Anki."
   (interactive)
-  (let* ((ar-sing (capture-arabic--read-ar "singular"))
-         (ar-pl (capture-arabic--read-ar "plural" (capture-arabic--pluralise-ar ar-sing)))
+  (let* ((ar-s (capture-arabic--read-ar "singular"))
+         (ar-p (capture-arabic--read-ar "plural" (capture-arabic--pluralise-ar ar-s)))
          (ar-g (capture-arabic--read-gender))
          (en-sing (capture-arabic--read-en "singular"))
-         (ar-s-pl (concat ar-sing "، " ar-pl))
+         (ar-s-pl
+          (if (string-blank-p ar-p)
+              ar-s
+            (concat ar-s "، " ar-p)))
          (tags (capture-arabic--read-tags))
          (note
           `((deckName . "Arabic")
@@ -104,6 +107,10 @@
             (fields . ,(-filter #'cdr `(("en" . ,en-sing)
                                         ("ar" . ,(capture-arabic--remove-ar-vowels ar-s-pl))
                                         ("ar_v" . ,ar-s-pl)
+                                        ("ar_s" . ,(capture-arabic--remove-ar-vowels ar-s))
+                                        ("ar_s_v" . ,ar-s)
+                                        ("ar_p" . ,(capture-arabic--remove-ar-vowels ar-p))
+                                        ("ar_p_v" . ,ar-p)
                                         ("ar_g" . ,ar-g)
                                         ;; Sound fields are left unpopulated.
                                         ("ar_audio" . "")))))))
