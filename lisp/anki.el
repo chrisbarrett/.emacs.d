@@ -95,7 +95,7 @@
 
   (defun anki--marshall-note-update (it)
     (cl-assert (listp it))
-    (cl-assert (stringp (alist-get 'id it)))
+    (cl-assert (integerp (alist-get 'id it)))
     (cl-assert (listp (alist-get 'fields it)))
     it)
 
