@@ -16,9 +16,15 @@
 
 (defun anki--parse-json-response ()
   (-let [(&alist 'result result 'error err) (json-read-from-string (buffer-string))]
-    (if err
-        (error "%s" err)
-      result)))
+    (cond
+     (err
+      (error "%s" err))
+     ;; If we have no error and 'null' as the response, assume this was a
+     ;; side-effecting operation that succeeded.
+     ((null result)
+      t)
+     (t
+      result))))
 
 (defun anki--request (method action data)
   (let* ((body `(("action" . ,(s-lower-camel-case (symbol-name action)))
@@ -172,7 +178,7 @@
          ,(anki--specs-to-defun-paramlist specs)
        ,docstring
        (anki--request "POST" ',action
-         (list ,@(anki--param-spec-to-postdata specs))))))
+                  (list ,@(anki--param-spec-to-postdata specs))))))
 
 
 
