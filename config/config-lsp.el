@@ -54,8 +54,6 @@
                       :server-id 'dockerfile))))
 
 (use-package lsp-java
-  ;; TODO: re-enable once the library is updated to use latest lsp API.
-  :disabled t
   :straight t
   :preface
   (defun config-lsp--java-mode-setup ()
