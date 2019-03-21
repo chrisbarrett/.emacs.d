@@ -133,16 +133,32 @@
                                         ("ar_audio" . "")))))))
     (anki-add-note note)))
 
-(defun capture-arabic-read-verb-as-table-row ()
-  (concat "|" (capture-arabic--read-en "verb")
-          "|" (capture-arabic--read-ar "past")
-          "|" (capture-arabic--read-ar "present")
-          "|" (capture-arabic--read-ar "masdar")
-          "|"))
+(defun capture-arabic-verb ()
+  "Capture a noun to Anki."
+  (interactive)
+  (let* ((ar-past (capture-arabic--read-ar "Past"))
+         (ar-present (capture-arabic--read-ar "Present"))
+         (ar-past-present (concat ar-past "، " ar-present))
+         (en (capture-arabic--read-en "Present"))
+         (tags (capture-arabic--read-tags))
+         (note
+          `((deckName . "Arabic")
+            (modelName . "Arabic Verb")
+            (tags . ,(seq-into tags 'vector))
+            (fields . ,(-filter #'cdr `(("en" . ,en)
+                                        ("ar_past" . ,(capture-arabic--remove-ar-vowels ar-past))
+                                        ("ar_present" . ,(capture-arabic--remove-ar-vowels ar-present))
+                                        ("ar_past_v" . ,ar-past)
+                                        ("ar_present_v" . ,ar-present)
+                                        ("ar_past_present_v" . ,ar-past-present)
+                                        ;; Sound fields are left unpopulated.
+                                        ("ar_audio" . "")))))))
+    (anki-add-note note)))
 
 (pretty-hydra-define capture-arabic (:hint nil :exit nil)
   ("Capture"
    (("n" capture-arabic-noun "Noun...")
+    ("v" capture-arabic-verb "Verb...")
     ("p" capture-arabic-phrase "Phrase...")))
   :docstring-prefix "‎العربية\n")
 
