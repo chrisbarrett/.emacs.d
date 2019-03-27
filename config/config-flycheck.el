@@ -146,8 +146,7 @@
   (require 'flycheck-posframe-hacks)
   :config
   (progn
-    (setq flycheck-posframe-override-parameters '((alpha 100 100))
-          flycheck-posframe-border-width 5)
+    (setq flycheck-posframe-override-parameters '((alpha 100 100)))
     (flycheck-posframe-configure-pretty-defaults)))
 
 
