@@ -76,23 +76,24 @@
 
 (use-package lsp-ui
   :straight t
-  :after (lsp-mode flycheck)
   :init
-  (with-eval-after-load 'lsp-mode
-    (define-key lsp-mode-map (kbd "C-c u") #'lsp-ui-mode))
+  (progn
+    (require 'lsp-ui-flycheck)
+    (with-eval-after-load 'lsp-mode
+      (define-key lsp-mode-map (kbd "C-c u") #'lsp-ui-mode)))
   :config
   (progn
-    (general-setq lsp-ui-sideline-enable nil
+    (add-hook 'lsp-after-open-hook #'lsp-ui-flycheck-enable)
+    (general-setq lsp-ui-sideline-enable t
+                  lsp-ui-sideline-show-code-actions nil
+                  lsp-ui-sideline-show-flycheck nil
                   lsp-ui-doc-enable nil)
+
     (define-key lsp-ui-mode-map (kbd "C-c C-c") #'lsp-goto-type-definition)
     (define-key lsp-ui-mode-map (kbd "C-c i") #'lsp-goto-implementation)
     (define-key lsp-ui-mode-map [remap evil-lookup] #'lsp-describe-thing-at-point)
     (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
     (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)))
-
-(use-package lsp-ui-flycheck
-  :after (lsp-mode flycheck)
-  :hook (lsp-after-open . lsp-ui-flycheck-enable))
 
 (provide 'config-lsp)
 
