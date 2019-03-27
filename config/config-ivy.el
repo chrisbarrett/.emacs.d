@@ -151,10 +151,7 @@
             "C-h" #'counsel-up-directory)
   :config
   (progn
-    (setq counsel-yank-pop-separator
-          (propertize "\n-------------------------------------------------\n"
-                      'face '(:foreground "gray50")))
-
+    (setq counsel-yank-pop-separator (concat "\n" (make-vector 120 ?─) "\n"))
     (counsel-mode +1)))
 
 ;; historian remembers your choices in completion menus.

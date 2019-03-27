@@ -349,6 +349,9 @@
     (ivy-current-match
      ((t :foreground ,emphasis :background ,region-bg)))
 
+    (ivy-separator
+     ((t :foreground ,dimmed-fg)))
+
     (ivy-posframe
      ((t
        :background ,default-bg
