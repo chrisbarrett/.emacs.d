@@ -109,6 +109,18 @@
 
     (ivy-mode)))
 
+;; ivy-posframe shows ivy in a child frame.
+
+(use-package ivy-posframe
+  :straight t
+  :hook (ivy-mode . ivy-posframe-enable)
+  :config
+  (general-setq ivy-display-function #'ivy-posframe-display-at-frame-center
+                ivy-posframe-border-width 20
+                ivy-posframe-width 120
+                ivy-posframe-hide-minibuffer t
+                ivy-posframe-parameters '((alpha 100 100))))
+
 ;; flx is used as the fuzzy-matching indexer backend for ivy.
 
 (use-package flx
