@@ -76,6 +76,10 @@
 
 (use-package lsp-ui
   :straight t
+  :preface
+  (defun config-lsp--configure-ui ()
+    (remove-hook 'lsp-eldoc-hook 'lsp-hover t)
+    (lsp-ui-flycheck-enable))
   :init
   (progn
     (require 'lsp-ui-flycheck)
@@ -83,7 +87,7 @@
       (define-key lsp-mode-map (kbd "C-c u") #'lsp-ui-mode)))
   :config
   (progn
-    (add-hook 'lsp-after-open-hook #'lsp-ui-flycheck-enable)
+    (add-hook 'lsp-after-open-hook #'config-lsp--configure-ui)
     (general-setq lsp-ui-sideline-enable t
                   lsp-ui-sideline-show-code-actions nil
                   lsp-ui-sideline-show-flycheck nil
