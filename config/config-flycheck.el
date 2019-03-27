@@ -141,7 +141,13 @@
 (use-package flycheck-posframe
   :after flycheck
   :straight t
-  :hook (flycheck-mode . flycheck-posframe-mode)
+  :commands (flycheck-posframe-mode)
+  :preface
+  (defun config-flycheck--maybe-enable-posframe ()
+    (unless (bound-and-true-p lsp-ui-mode)
+      (flycheck-posframe-mode +1)))
+
+  :hook (flycheck-mode . config-flycheck--maybe-enable-posframe)
   :init
   (require 'flycheck-posframe-hacks)
   :config
