@@ -76,13 +76,14 @@
 
 (use-package lsp-ui
   :straight t
-  :after lsp-mode
-  :hook (lsp-mode . lsp-ui-mode)
+  :after (lsp-mode flycheck)
+  :init
+  (with-eval-after-load 'lsp-mode
+    (define-key lsp-mode-map (kbd "C-c u") #'lsp-ui-mode))
   :config
   (progn
     (general-setq lsp-ui-sideline-enable nil
                   lsp-ui-doc-enable nil)
-
     (define-key lsp-ui-mode-map (kbd "C-c C-c") #'lsp-goto-type-definition)
     (define-key lsp-ui-mode-map (kbd "C-c i") #'lsp-goto-implementation)
     (define-key lsp-ui-mode-map [remap evil-lookup] #'lsp-describe-thing-at-point)
@@ -90,7 +91,7 @@
     (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)))
 
 (use-package lsp-ui-flycheck
-  :after lsp-mode
+  :after (lsp-mode flycheck)
   :hook (lsp-after-open . lsp-ui-flycheck-enable))
 
 (provide 'config-lsp)
