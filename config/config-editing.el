@@ -310,15 +310,15 @@ Interactively, reverse the characters in the current region."
         (nreverse result)))
 
     (defun config-editing--should-highlight-p (res)
-      "Do not highlight symbol if looking at certain faces."
-      (when res
-        (let ((excluded-faces '(font-lock-string-face
-                                font-lock-keyword-face
-                                font-lock-comment-face
-                                font-lock-preprocessor-face
-                                font-lock-builtin-face))
-              (faces (seq-mapcat #'config-editing--face-ancestors (face-at-point nil t))))
-          (null (seq-intersection faces excluded-faces))))))
+      (unless (bound-and-true-p lsp-ui-mode)
+        (when res
+          (let ((excluded-faces '(font-lock-string-face
+                                  font-lock-keyword-face
+                                  font-lock-comment-face
+                                  font-lock-preprocessor-face
+                                  font-lock-builtin-face))
+                (faces (seq-mapcat #'config-editing--face-ancestors (face-at-point nil t))))
+            (null (seq-intersection faces excluded-faces)))))))
 
   :config
   (progn

@@ -110,6 +110,21 @@
     (flycheck-posframe-background-face
      ((t :inherit region)))
 
+    (lsp-ui-sideline-global
+     ((t :foreground ,dimmed-fg)))
+
+    (lsp-ui-sideline-symbol-info
+     ((t)))
+
+    (lsp-ui-sideline-current-symbol
+     ((t :box (:line-width -1 :color ,emphasis))))
+
+    (lsp-face-highlight-read
+     ((t :inherit highlight-thing)))
+
+    (lsp-ui-sideline-symbol
+     ((t)))
+
     (hl-line
      ((t :background ,subtle-bg)))
 
