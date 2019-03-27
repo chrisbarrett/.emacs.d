@@ -66,6 +66,7 @@
  ("flycheck" . "9ff19a34e5637ac18eee1fde5eb8e4940bab2669")
  ("flycheck-ledger" . "8d7f52a4c7f80ca396ef0fc6c7d8e9f005778dfc")
  ("flycheck-package" . "6d99248b45eea1e5236062f38e524230efdb1a84")
+ ("flycheck-posframe" . "61bdfd4b04e1651163fdcaa7dc631ad073b3e513")
  ("flycheck-rust" . "f1220ccd9acbdb2556765f49f2f3dcb00dca2970")
  ("forge" . "f5886b4b03689eb5929edef094a403d68b4d09d3")
  ("general.el" . "ab5f0bbb74075aa0a7771c0147c3caeaccf78b55")

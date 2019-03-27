@@ -107,6 +107,9 @@
     (region
      ((t :background ,region-bg)))
 
+    (flycheck-posframe-background-face
+     ((t :inherit region)))
+
     (hl-line
      ((t :background ,subtle-bg)))
 

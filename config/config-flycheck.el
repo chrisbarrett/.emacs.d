@@ -136,6 +136,21 @@
     (setq checkdoc-force-docstrings-flag nil)
     (setq checkdoc-arguments-in-order-flag nil)))
 
+;; flycheck-posframe shows flycheck errors in a child frame.
+
+(use-package flycheck-posframe
+  :after flycheck
+  :straight t
+  :hook (flycheck-mode . flycheck-posframe-mode)
+  :init
+  (require 'flycheck-posframe-hacks)
+  :config
+  (progn
+    (setq flycheck-posframe-override-parameters '((alpha 100 100))
+          flycheck-posframe-border-width 5)
+    (flycheck-posframe-configure-pretty-defaults)))
+
+
 (provide 'config-flycheck)
 
 ;;; config-flycheck.el ends here
