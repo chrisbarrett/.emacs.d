@@ -43,6 +43,13 @@
     (evil-global-set-key 'motion (kbd ",") #'cb-major-mode-hydra)
     (evil-global-set-key 'normal (kbd ",") #'cb-major-mode-hydra)))
 
+(use-package hydra-posframe
+  :straight (:host github :repo "Ladicle/hydra-posframe")
+  :hook (after-init . hydra-posframe-enable)
+  :config
+  (setq hydra-posframe-parameters '((alpha 100 100))
+        hydra-posframe-border-width 20))
+
 
 ;; Define hydras as main interface for running commands.
 
