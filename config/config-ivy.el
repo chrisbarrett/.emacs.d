@@ -89,6 +89,7 @@
     (setq ivy-count-format "(%d/%d) ")
     (setq ivy-re-builders-alist '((t . ivy--regex-plus)))
     (setq ivy-magic-slash-non-match-action nil)
+    (setq ivy-height 20)
 
     ;; Do not show extra directories when finding files.
     (setq ivy-extra-directories '("."))
@@ -152,6 +153,7 @@
   :config
   (progn
     (setq counsel-yank-pop-separator (concat "\n" (make-vector 120 ?─) "\n"))
+    (setf (alist-get 'counsel-yank-pop ivy-height-alist) 20)
     (counsel-mode +1)))
 
 ;; historian remembers your choices in completion menus.
