@@ -61,7 +61,7 @@
      ledger-post-use-completion-engine :ido
      ledger-fontify-xact-state-overrides nil
      ledger-reports
-     `(("assets & liabilities" "ledger -f %(ledger-file) bal '^Assets' '^Liabilities' --depth 2")
+     `(("assets & liabilities" "ledger -f %(ledger-file) bal '^Assets' '^Liabilities' '^Holdings' --depth 2")
        ("balance" "ledger -f %(ledger-file) --depth 3 bal not ^Equity")
        ("reg this week" "ledger -f %(ledger-file) reg checking -p 'this week'")
        ("reg this month" "ledger -f %(ledger-file) reg checking -p 'this month'")
