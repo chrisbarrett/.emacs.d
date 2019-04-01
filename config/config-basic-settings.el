@@ -347,7 +347,7 @@
 (add-to-list 'display-buffer-alist
              `(,(rx bos "*Help*" eos)
                (display-buffer-reuse-window
-                display-buffer-in-side-window)
+                display-buffer-pop-up-window)
                (reusable-frames . visible)
                (side            . right)
                (slot            . 1)
