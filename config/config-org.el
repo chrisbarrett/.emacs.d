@@ -297,10 +297,7 @@
   (or (cadr (nth n org-agenda-custom-commands))
       ""))
 
-(pretty-hydra-define config-org-agenda
-  (:hint nil :foreign-keys run :quit-key "q"
-   :body-pre (config-org-agenda-open-nth-view 0)
-   :post (org-agenda-quit))
+(pretty-hydra-define config-org-agenda (:hint nil :color teal)
   ("Agenda Views"
    (("1" (config-org-agenda-open-nth-view 0) (config-org-agenda-nth-name 0))
     ("2" (config-org-agenda-open-nth-view 1) (config-org-agenda-nth-name 1))
