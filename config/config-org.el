@@ -297,11 +297,12 @@
   (or (cadr (nth n org-agenda-custom-commands))
       ""))
 
-(pretty-hydra-define config-org-agenda (:hint nil :color teal)
-  ("Agenda Views"
-   (("1" (config-org-agenda-open-nth-view 0) (config-org-agenda-nth-name 0))
-    ("2" (config-org-agenda-open-nth-view 1) (config-org-agenda-nth-name 1))
-    ("3" (config-org-agenda-open-nth-view 2) (config-org-agenda-nth-name 2)))))
+
+(eval `(pretty-hydra-define config-org-agenda (:hint nil :color teal)
+         ("Agenda Views"
+          (("1" (config-org-agenda-open-nth-view 0) ,(config-org-agenda-nth-name 0))
+           ("2" (config-org-agenda-open-nth-view 1) ,(config-org-agenda-nth-name 1))
+           ("3" (config-org-agenda-open-nth-view 2) ,(config-org-agenda-nth-name 2))))))
 
 
 ;; org-capture templates
