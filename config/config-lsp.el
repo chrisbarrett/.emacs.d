@@ -46,6 +46,8 @@
   (progn
     (add-hook 'lsp-after-open-hook #'config-lsp--setup-buffer)
 
+    (define-key lsp-mode-map (kbd "C-c SPC") #'lsp-execute-code-action)
+
     ;; Add custom LSP clients.
 
     (lsp-register-client
