@@ -89,7 +89,7 @@
         (lsp-hover)))
 
     (defun config-lsp--configure-ui ()
-      (lsp-ui-flycheck-enable)))
+      (lsp-ui-flycheck-enable t)))
   :init
   (progn
     (require 'lsp-ui-flycheck)
