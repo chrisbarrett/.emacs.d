@@ -44,6 +44,10 @@
 
   :config
   (progn
+    ;; HACK: Load this early so that patches work correcly.
+    (when (and lsp-auto-configure lsp-auto-require-clients)
+      (require 'lsp-clients))
+
     (add-hook 'lsp-after-open-hook #'config-lsp--setup-buffer)
 
     (define-key lsp-mode-map (kbd "C-c SPC") #'lsp-execute-code-action)
