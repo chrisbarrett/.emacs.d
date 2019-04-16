@@ -410,6 +410,7 @@
    ("C" full-calc "calc")
    ("m" mu4e "mu4e")
    ("p" pass "password-store")
+   ("P" generate-password/body "generate password...")
    ("w" world-time-list "world clock"))
 
   "Editing"
