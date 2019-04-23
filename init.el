@@ -102,11 +102,7 @@
   :commands (config-themes-set-for-time-of-day)
   :demand t
   :config
-  (progn
-    (when (equal system-type 'darwin)
-      (config-themes-set-for-time-of-day))
-
-    (add-hook 'before-make-frame-hook #'config-themes-set-for-time-of-day)))
+  (add-hook 'before-make-frame-hook #'config-themes-set-for-time-of-day))
 
 (use-package config-basic-settings)
 
