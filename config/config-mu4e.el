@@ -129,7 +129,7 @@
         "Last 7 days" ?w)
        ("d:30d..now AND NOT (s:JIRA OR s:jenkins)"
         "Last 30 days" ?m)
-       ("m:/walrus/INBOX"
+       ("m:/walrus/Inbox"
         "Inbox" ?i)
        ("m:/walrus/Notifications"
         "Notifications" ?n)
