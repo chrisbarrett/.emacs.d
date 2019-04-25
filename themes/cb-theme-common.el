@@ -467,12 +467,7 @@
      ((t :background ,subtle-bg)))
 
     (magit-diff-context-highlight
-     ((((background light))
-       :background "grey90"
-       :foreground "grey50")
-      (((background dark))
-       :background "grey20"
-       :foreground "grey70")))
+     ((t :background ,subtle-bg)))
 
     (magit-popup-disabled-argument
      ((t :foreground ,mid-grey)))
