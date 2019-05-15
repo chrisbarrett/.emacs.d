@@ -86,4 +86,15 @@
       (add-to-list 'recentf-exclude no-littering-etc-directory)
       (add-to-list 'recentf-exclude no-littering-var-directory))))
 
+
+;; Load host-specific overrides last.
+
+(when (file-exists-p paths-personal-config)
+  (load-file paths-personal-config))
+
+(when (file-exists-p paths-hostfile)
+  (load-file paths-hostfile))
+
+
+
 ;;; init.el ends here

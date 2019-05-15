@@ -46,6 +46,9 @@
 (defconst paths-hostfile
   (format "~/Sync/personal-config/hostfile-%s.el" (hostname)))
 
+(defconst paths-personal-config
+  "~/Sync/personal-config/personal-config.el")
+
 (defconst paths-project-directories
   (seq-filter #'file-directory-p '("~/Documents"
                                    "~/Projects"
