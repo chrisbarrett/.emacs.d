@@ -89,6 +89,9 @@
       (add-to-list 'recentf-exclude no-littering-var-directory))))
 
 
+(use-package config-basic-settings)
+
+
 ;; Load host-specific overrides last.
 
 (when (file-exists-p paths-personal-config)
