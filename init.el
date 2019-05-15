@@ -89,6 +89,8 @@
       (add-to-list 'recentf-exclude no-littering-etc-directory)
       (add-to-list 'recentf-exclude no-littering-var-directory))))
 
+;; Load theme aggressively, or Emacs will look ugly during the startup sequence.
+(use-package config-themes)
 
 (use-package config-basic-settings)
 
