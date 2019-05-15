@@ -89,6 +89,9 @@
       (add-to-list 'recentf-exclude no-littering-etc-directory)
       (add-to-list 'recentf-exclude no-littering-var-directory))))
 
+(use-package config-darwin
+  :if (equal system-type 'darwin))
+
 ;; Load theme aggressively, or Emacs will look ugly during the startup sequence.
 (use-package config-themes)
 
