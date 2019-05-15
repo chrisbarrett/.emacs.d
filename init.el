@@ -39,14 +39,6 @@
 
 ;; Install some basic packages
 
-(straight-use-package 'dash)
-(straight-use-package 'dash-functional)
-(straight-use-package 'f)
-(straight-use-package 's)
-(straight-use-package 'memoize)
-(straight-use-package 'general)
-(straight-use-package 'el-patch)
-
 (with-no-warnings
   (setq use-package-verbose t))
 
@@ -55,6 +47,15 @@
 
 (eval-when-compile
   (require 'use-package))
+
+(use-package dash :straight t)
+(use-package dash-functional :straight t)
+(use-package f :straight t)
+(use-package s :straight t)
+(use-package memoize :straight t)
+(use-package general :straight t :demand t)
+(use-package el-patch :straight t)
+
 
 
 ;; Load features.
@@ -79,7 +80,7 @@
   :config
   (progn
     (setq auto-save-file-name-transforms
-          `((".*" ,(f-join paths-cache-directory "auto-save") t)))
+          `((".*" ,(expand-file-name "auto-save" paths-cache-directory) t)))
 
     (eval-when-compile
       (require 'recentf))
