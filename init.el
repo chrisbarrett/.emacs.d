@@ -55,5 +55,35 @@
   (require 'use-package))
 
 
+;; Load features.
+
+(require 'paths (expand-file-name "paths.el" user-emacs-directory))
+(paths-initialise)
+(add-to-list 'custom-theme-load-path paths-themes-directory)
+
+;; no-littering overrides many common paths to keep the .emacs.d directory
+;; clean.
+;;
+;; Load it here since we want to refer to path vars, and need to make sure it's
+;; loaded very early in the startup process.
+
+(use-package no-littering
+  :straight t
+  :demand t
+  :init
+  (progn
+    (setq no-littering-etc-directory paths-etc-directory)
+    (setq no-littering-var-directory paths-cache-directory))
+  :config
+  (progn
+    (setq auto-save-file-name-transforms
+          `((".*" ,(f-join paths-cache-directory "auto-save") t)))
+
+    (eval-when-compile
+      (require 'recentf))
+
+    (with-eval-after-load 'recentf
+      (add-to-list 'recentf-exclude no-littering-etc-directory)
+      (add-to-list 'recentf-exclude no-littering-var-directory))))
 
 ;;; init.el ends here
