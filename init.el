@@ -5,6 +5,8 @@
 (when (version< emacs-version "26")
   (error "This version of Emacs is not supported"))
 
+(defconst emacs-start-time (current-time))
+
 (setenv "INSIDE_EMACS" "true")
 
 ;; Make sure package.el doesn't get a chance to load anything.
@@ -96,5 +98,18 @@
   (load-file paths-hostfile))
 
 
+;;; Print overall startup time.
+
+(unless noninteractive
+  (let ((elapsed (float-time (time-subtract (current-time) emacs-start-time))))
+    (message "Loading %s...done (%.3fs)" load-file-name elapsed))
+
+  (add-hook 'after-init-hook
+            `(lambda ()
+               (let ((elapsed (float-time (time-subtract (current-time)
+                                                         emacs-start-time))))
+                 (message "Loading %s...done (%.3fs) [after-init]"
+                          ,load-file-name elapsed)))
+            t))
 
 ;;; init.el ends here
