@@ -1,0 +1,22 @@
+# Compiled
+*.elc
+.yas-compiled-snippets.el
+
+# Packaging
+.cask
+
+# Internal
+elpa
+.cache
+/projectile-bookmarks.eld
+/magithub
+/custom.el
+/history
+/auto-save-list/
+
+
+# For straight, only add lockfiles to source control.
+/straight/*
+!/straight/versions/
+!/straight/versions/*
+/var/
