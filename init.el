@@ -96,6 +96,20 @@
       (add-to-list 'recentf-exclude no-littering-etc-directory)
       (add-to-list 'recentf-exclude no-littering-var-directory))))
 
+
+;; Load el-patch hacks.
+
+(dolist (feature (seq-reduce (lambda (acc it)
+                               (when (string-suffix-p ".el" it)
+                                 (cons (intern (string-remove-suffix ".el" it))
+                                       acc)))
+                             (directory-files paths-hacks-directory)
+                             nil))
+  (eval `(use-package ,feature :demand t)))
+
+
+;; Load OS-specific configuration.
+
 (use-package config-darwin
   :if (equal system-type 'darwin))
 
