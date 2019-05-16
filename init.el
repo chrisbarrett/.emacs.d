@@ -96,6 +96,7 @@
 (use-package config-themes)
 
 (use-package config-basic-settings)
+(use-package config-editing)
 
 
 ;; Load host-specific overrides last.
