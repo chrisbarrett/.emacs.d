@@ -1,4 +1,4 @@
-;;; config-darwin.el --- OSX-specific configuration.  -*- lexical-binding: t; -*-
+;;; config-darwin-os.el --- OSX-specific configuration.  -*- lexical-binding: t; -*-
 ;;; Commentary:
 ;;; Code:
 
@@ -33,7 +33,7 @@
 (use-package exec-path-from-shell
   :straight t
   :preface
-  (declare-function exec-path-from-shell-initialize "config-darwin")
+  (declare-function exec-path-from-shell-initialize "config-darwin-os")
   :init
   (progn
     (defvar exec-path-from-shell-arguments '("-l"))
@@ -59,6 +59,6 @@
     (when-let* ((gls (executable-find "gls")))
       (setq insert-directory-program gls))))
 
-(provide 'config-darwin)
+(provide 'config-darwin-os)
 
-;;; config-darwin.el ends here
+;;; config-darwin-os.el ends here

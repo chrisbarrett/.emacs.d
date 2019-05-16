@@ -110,8 +110,9 @@
 
 ;; Load OS-specific configuration.
 
-(use-package config-darwin
-  :if (equal system-type 'darwin))
+(use-package config-darwin-os
+  :if (equal system-type 'darwin)
+  :demand t)
 
 ;; Load theme aggressively, or Emacs will look ugly during the startup sequence.
 
