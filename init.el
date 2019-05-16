@@ -100,11 +100,13 @@
   :if (equal system-type 'darwin))
 
 ;; Load theme aggressively, or Emacs will look ugly during the startup sequence.
+
 (use-package config-themes)
+
+;; Load remaining features.
 
 (use-package config-basic-settings)
 (use-package config-editing)
-
 
 ;; Load host-specific overrides last.
 
