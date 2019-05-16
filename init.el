@@ -5,7 +5,14 @@
 (when (version< emacs-version "26")
   (error "This version of Emacs is not supported"))
 
+(require 'subr-x)
+
 (defconst emacs-start-time (current-time))
+
+;; Allow overriding user-emacs-directory with envvar.
+(setq user-emacs-directory (or (when-let* ((dir (getenv "USER_EMACS_DIRECTORY")))
+                                 (if (string-suffix-p "/" dir) dir (concat dir "/")))
+                               user-emacs-directory))
 
 (setenv "INSIDE_EMACS" "true")
 
