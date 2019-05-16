@@ -165,8 +165,7 @@ Interactively, reverse the characters in the current region."
   :hook (prog-mode . (lambda () (require 'aggressive-indent)))
   :init
   (general-setq aggressive-indent-excluded-modes
-                '(cb-web-js-mode
-                  csharp-mode
+                '(csharp-mode
                   diff-auto-refine-mode
                   dockerfile-mode
                   fstar-mode
@@ -187,6 +186,7 @@ Interactively, reverse the characters in the current region."
                   terraform-mode
                   text-mode
                   toml-mode
+                  web-js-mode
                   yaml-mode))
 
   :preface

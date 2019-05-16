@@ -114,14 +114,21 @@
   :if (equal system-type 'darwin)
   :demand t)
 
-;; Load theme aggressively, or Emacs will look ugly during the startup sequence.
+;; Load some config files first for consistency.
 
-(use-package config-themes)
+(use-package-require 'config-themes)
+(use-package-require 'config-basic-settings)
 
-;; Load remaining features.
+;; Load remaining config files.
 
-(use-package config-basic-settings)
-(use-package config-editing)
+(dolist (feature (seq-reduce (lambda (acc it)
+                               (when (string-suffix-p ".el" it)
+                                 (unless (string-suffix-p "-os.el" it)
+                                   (cons (intern (string-remove-suffix ".el" it))
+                                         acc))))
+                             (directory-files paths-config-directory)
+                             nil))
+  (eval `(use-package ,feature :demand t)))
 
 ;; Load host-specific overrides last.
 
