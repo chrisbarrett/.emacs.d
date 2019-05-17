@@ -5,6 +5,9 @@
 (eval-when-compile
   (require 'use-package))
 
+;; menu-bar, tool-bar and scroll-bar are builtin features that aren't very
+;; useful in a keyboard-driven interface.
+
 (use-package menu-bar
   :if (bound-and-true-p menu-bar-mode)
   :general ("C-c e e" #'toggle-debug-on-error)
@@ -12,13 +15,11 @@
   (when (fboundp 'menu-bar-mode)
     (menu-bar-mode -1)))
 
-
 (use-package tool-bar
   :if (bound-and-true-p tool-bar-mode)
   :config
   (when (fboundp 'tool-bar-mode)
     (tool-bar-mode -1)))
-
 
 (use-package scroll-bar
   :if (bound-and-true-p scroll-bar-mode)
@@ -26,6 +27,8 @@
   (when (fboundp 'scroll-bar-mode)
     (scroll-bar-mode -1)))
 
+;; page-break-lines shows a horizontal separator in buffers instead of a
+;; page-break control character (^L).
 
 (use-package page-break-lines
   :straight t
@@ -43,6 +46,8 @@
 
     (global-page-break-lines-mode)))
 
+;; paren-face applies a separate face for parens, allowing them to be
+;; de-emphasised.
 
 (use-package paren-face
   :straight t
@@ -74,6 +79,7 @@
 
     (global-paren-face-mode +1)))
 
+;; hl-todo applies a separate face for todo keywords so they can be highlighted.
 
 (use-package hl-todo
   :straight t
@@ -96,6 +102,7 @@
                    "NOTE")))
     (add-hook 'text-mode-hook #'config-themes--enable-hl-todo-unless-org-buffer)))
 
+;; all-the-icons provides a set of icons that can be rendered by Emacs.
 
 (use-package all-the-icons
   :straight t
@@ -124,6 +131,7 @@
                     (mu4e-compose-mode all-the-icons-octicon "comment-discussion" :face all-the-icons-orange)))
       (add-to-list 'all-the-icons-mode-icon-alist spec))))
 
+;; hydra provides keyboard-driven UI elements.
 
 (use-package hydra
   :straight t
@@ -138,6 +146,40 @@
   :config
   (advice-add 'lv-window :after #'config-themes--set-up-hydra-buffer))
 
+;; imenu-list provides a list UI for imenu items.
+
+(use-package imenu-list
+  :straight t
+  :commands (imenu-list)
+  :general (:states 'normal :keymaps 'imenu-list-major-mode-map "q" #'quit-window))
+
+;; which-key displays available key bindings under the current prefix.
+
+(use-package which-key
+  :straight t
+  :defer t
+  :hook (after-init . which-key-mode)
+  :config
+  (progn
+    (setq which-key-idle-delay 0.4)
+    (setq which-key-replacement-alist
+          (let ((custom-regex
+                 (rx bos
+                     ;; strip hydra prefix
+                     (? (and (+? nonl) "/"))
+                     (? (or
+                         ;; feature names
+                         "counsel"
+                         "evil")
+                        "-")
+                     (group (+ nonl)))))
+            `((("<left>") . ("←"))
+              (("<right>") . ("→"))
+              (("<\\([[:alnum:]-]+\\)>") . ("\\1"))
+              ((nil . "Prefix Command") . (nil . "prefix"))
+              ((nil . "\\`\\?\\?\\'") . (nil . "lambda"))
+              ((nil . "which-key-show-next-page-no-cycle") . (nil . "wk next pg"))
+              ((nil . ,custom-regex) . (nil . "\\1")))))))
 
 (provide 'config-themes)
 
