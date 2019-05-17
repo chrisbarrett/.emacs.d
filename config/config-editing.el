@@ -7,6 +7,7 @@
 
 (require 'dash)
 (require 'general)
+(require 'major-mode-hydra)
 
 ;; Auto-indent on RET
 
@@ -155,7 +156,17 @@ Interactively, reverse the characters in the current region."
    "k" #'hexl-previous-line
    "$" #'hexl-end-of-line
    "^" #'hexl-beginning-of-line
-   "0" #'hexl-beginning-of-line))
+   "0" #'hexl-beginning-of-line)
+  :config
+  (progn
+    (major-mode-hydra-bind hexl-mode "Insert"
+      ("d" hexl-insert-decimal-char "decimal")
+      ("c" hexl-insert-octal-char "octal")
+      ("x" hexl-insert-hex-char "hex")
+      ("s" hexl-insert-hex-string "hex string"))
+
+    (major-mode-hydra-bind hexl-mode "Address"
+      ("g" hexl-goto-address "goto"))))
 
 ;; aggressive-indent automatically reindents code during editing.
 
