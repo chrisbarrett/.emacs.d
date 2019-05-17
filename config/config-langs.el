@@ -3,6 +3,7 @@
 ;;; Code:
 
 (autoload 'display-buffer-fullframe "display-buffer-fullframe")
+(autoload 'indent-buffer "config-editing")
 
 (eval-when-compile
   (require 'use-package))
@@ -26,6 +27,12 @@
     (setq-local indent-tabs-mode t))
   :init
   (add-hook 'makefile-mode-hook #'config-langs--set-up-makefile-mode))
+
+(use-package java-mode
+  :defer t
+  :config
+  (when (bound-and-true-p java-mode-map)
+    (define-key java-mode-map [remap c-fill-paragraph] #'indent-buffer)))
 
 (use-package groovy-mode
   :straight t
