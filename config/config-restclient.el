@@ -5,6 +5,14 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'major-mode-hydra)
+
+(major-mode-hydra-bind restclient-mode "Execute"
+  ("c" restclient-http-send-current "other window")
+  ("o" restclient-http-send-current-stay-in-window "this window"))
+
+
+
 (use-package restclient
   :straight t
   :commands (restclient-mode
