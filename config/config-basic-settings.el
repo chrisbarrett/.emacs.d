@@ -471,6 +471,8 @@
 
 
 (use-package winner
+  :general ("<C-left>" 'winner-undo
+            "<C-right>"'winner-redo)
   :config (winner-mode t))
 
 
