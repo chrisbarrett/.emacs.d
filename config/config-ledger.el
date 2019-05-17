@@ -7,6 +7,7 @@
 
 (require 'dash)
 (require 'general)
+(require 'major-mode-hydra)
 (require 's)
 
 (autoload 'evil-insert-state "evil-states")
@@ -14,6 +15,9 @@
 (autoload 'org-read-date "org")
 
 (general-setq ledger-master-file (file-truename "~/org/accounts.ledger"))
+
+(major-mode-hydra-bind ledger-mode "Actions"
+  ("r" #'ledger-report "report"))
 
 
 ;; Utility functions
