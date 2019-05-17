@@ -1,0 +1,10 @@
+# key: lm
+# name: Lemma
+# expand-env: ((yas-indent-line (quote fixed)))
+# condition: (yas-funcs-bolp)
+# --
+Lemma ${1:name} :
+  forall $0.
+Proof.
+  intros.
+Qed.

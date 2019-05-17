@@ -1,0 +1,10 @@
+# key: ex
+# name: Example
+# condition: (yas-funcs-bolp)
+# expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 't))
+# --
+Example ${1:name} :
+  forall $0.
+Proof.
+  intros.
+Qed.

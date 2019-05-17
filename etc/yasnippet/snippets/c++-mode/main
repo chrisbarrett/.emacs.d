@@ -1,0 +1,9 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: main
+# key: main
+# binding: direct-keybinding
+# condition: (yas-funcs-bolp)
+# --
+int main() {
+  $0
+}

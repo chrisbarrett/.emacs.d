@@ -1,0 +1,5 @@
+# key: req
+# name: require
+# condition: (yas-funcs-bolp)
+# --
+local ${1:name} = require('${2:$1}')

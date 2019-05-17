@@ -1,0 +1,4 @@
+# key: a
+# name: array
+# --
+[${1:size}]${2:int}{$0}

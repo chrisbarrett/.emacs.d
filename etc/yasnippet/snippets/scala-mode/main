@@ -1,0 +1,7 @@
+# key: main
+# name: main
+# condition: (yas-funcs-bolp)
+# --
+def main(args: Array[String]): Unit = {
+  $0
+}

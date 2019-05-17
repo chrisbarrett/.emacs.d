@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: match
+# key: m
+# --
+match ${1:value} with
+  | ${2:pat} -> $0

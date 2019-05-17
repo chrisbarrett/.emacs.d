@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: method
+# key: m
+# --
+func (${1:receiever}) ${2:name}($3) $4 {
+  $0
+}

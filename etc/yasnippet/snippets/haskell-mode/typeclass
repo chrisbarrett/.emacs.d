@@ -1,0 +1,7 @@
+# key: cl
+# name: typeclass
+# condition: (yas-funcs-bolp)
+# expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 't))
+# --
+class ${1:Name} where
+  $0

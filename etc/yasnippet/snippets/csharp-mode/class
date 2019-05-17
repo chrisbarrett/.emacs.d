@@ -1,0 +1,8 @@
+# key: cl
+# name: class
+# condition: (yas-funcs-bolp)
+# --
+public sealed class ${1:`(yas-funcs-csharp-default-class-name)`}
+{
+  $0
+}

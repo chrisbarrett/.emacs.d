@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: eval-and-compile
+# key: eac
+# --
+(eval-and-compile
+  $0)

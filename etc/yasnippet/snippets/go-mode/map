@@ -1,0 +1,5 @@
+# key: map
+# name: map
+# expand-env: ((yas-indent-line (quote fixed)) (yas-wrap-around-region (quote t)))
+# --
+map[${1:string}]${2:T}{$0}

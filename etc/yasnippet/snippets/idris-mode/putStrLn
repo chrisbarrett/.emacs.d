@@ -1,0 +1,6 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: putStrLn
+# key: p
+# binding: direct-keybinding
+# --
+putStrLn $0

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: deriving
+# key: de
+# --
+deriving ($0)

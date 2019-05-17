@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: constructor
+# key: ctor
+# --
+constructor($1) {
+  super();
+  ${1:$(yas-funcs-js-ctor-body yas-text)}
+}

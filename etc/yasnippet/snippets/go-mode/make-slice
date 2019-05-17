@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: make-slice
+# key: ms
+# --
+make([]${1:T}, ${2:size})

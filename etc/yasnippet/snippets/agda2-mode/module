@@ -1,0 +1,8 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: module
+# key: m
+# binding: direct-keybinding
+# condition: (yas-funcs-bolp)
+# --
+module ${1:Name} where
+  $0
