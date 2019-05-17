@@ -5,6 +5,7 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'major-mode-hydra)
 (require 'straight)
 (require 'subr-x)
 
@@ -32,6 +33,24 @@
   (message "Evaluating %s... done." (buffer-name)))
 
 
+;; Define hydras
+
+(major-mode-hydra-bind emacs-lisp-mode "Eval"
+  ("eb" config-elisp-eval-buffer "buffer")
+  ("ee" eval-expression "expression"))
+
+(major-mode-hydra-bind emacs-lisp-mode "Debug"
+  ("d" debug-on-entry "on function called")
+  ("cd" cancel-debug-on-entry "cancel debug function")
+  ("v" debug-on-variable-change "on variable changed")
+  ("cv" cancel-debug-on-variable-change "cancel debug variable"))
+
+(major-mode-hydra-bind emacs-lisp-mode "Test"
+  ("tt" (ert t) "run all")
+  ("tf" (ert-select-tests :failed t) "run failing")
+  ("tn" (ert-select-tests :passed t) "run new")
+  ("ts" ert "run with selector"))
+
 ;; IELM is the Elisp repl built in to Emacs.
 
 (use-package ielm
