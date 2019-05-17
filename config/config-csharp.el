@@ -3,7 +3,8 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'use-package))
+  (require 'use-package)
+  (require 'major-mode-hydra))
 
 
 
@@ -43,7 +44,31 @@
          (omnisharp-mode . config-csharp--set-up-omnisharp-buffer))
   :general
   (:states '(insert normal) :keymaps 'omnisharp-mode-map
-   "M-." 'omnisharp-go-to-definition))
+   "M-." 'omnisharp-go-to-definition)
+  :config
+  (progn
+    (major-mode-hydra-bind csharp-mode "Solution"
+      ("e" omnisharp-solution-errors "errors")
+      ("j" omnisharp-navigate-to-solution-member "jump to member...")
+      ("l" omnisharp-reload-solution))
+
+    (major-mode-hydra-bind csharp-mode "Refactor"
+      ("," omnisharp-run-code-action-refactoring "choose action...")
+      ("rf" (if (region-active-p)
+                (omnisharp-code-format-region)
+              (omnisharp-code-format-entire-file))
+       "reformat")
+      ("rn" omnisharp-rename "rename...")
+      ("ro" omnisharp-fix-usings "clean up usings"))
+
+    (major-mode-hydra-bind csharp-mode "Show"
+      ("o" omnisharp-show-overloads-at-point "overloads...")
+      ("u" omnisharp-find-usages "usages..."))
+
+    (major-mode-hydra-bind csharp-mode "Test"
+      ("tt" omnisharp-unit-test-last "re-run")
+      ("tp" omnisharp-unit-test-at-point "point")
+      ("tb" omnisharp-unit-test-buffer "buffer"))))
 
 (provide 'config-csharp)
 

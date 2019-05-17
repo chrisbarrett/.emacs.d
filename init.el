@@ -63,6 +63,11 @@
 (use-package general :straight t :demand t)
 (use-package el-patch :straight t)
 
+(use-package hydra :straight t)
+
+(use-package major-mode-hydra
+  :straight t
+  :general (:states '(normal motion) "," #'major-mode-hydra))
 
 
 ;; Load features.
