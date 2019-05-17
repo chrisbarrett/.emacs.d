@@ -5,8 +5,27 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'major-mode-hydra)
 (require 's)
 
+(major-mode-hydra-bind rust-mode "Project"
+  ("b" cargo-process-build "build")
+  ("c" cargo-process-clean "clean")
+  ("u" cargo-process-update "update")
+  ("d" cargo-process-doc "docs"))
+
+(major-mode-hydra-bind rust-mode "Test"
+  ("t" cargo-process-test "all tests")
+  ("o" cargo-process-current-file-tests "file tests")
+  ("f" cargo-process-current-test "current test")
+  ("e" cargo-process-bench "benchmarks"))
+
+(major-mode-hydra-bind rust-mode "Misc"
+  ("." cargo-process-repeat "repeat last cargo command")
+  ("s" cargo-process-search "search")
+  ("x" cargo-process-run "run"))
+
+
 (use-package rust-mode
   :straight t
   :mode ("\\.rs\\'" . rust-mode)
