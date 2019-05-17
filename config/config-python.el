@@ -6,7 +6,28 @@
   (require 'use-package))
 
 (require 'dash)
+(require 'major-mode-hydra)
 (require 'paths)
+
+(major-mode-hydra-bind python-mode "Eval"
+  ("eb" python-shell-send-buffer "buffer")
+  ("ef" python-shell-send-file "file"))
+
+(major-mode-hydra-bind python-mode "Find"
+  ("a" anaconda-mode-find-assignments "assignments")
+  ("r" anaconda-mode-find-references "references"))
+
+(major-mode-hydra-bind python-mode "Test"
+  ("ta" pytest-all "all")
+  ("tt" pytest-one "one")
+  ("tm" pytest-module "module")
+  ("ts" pytest-suite "suite"))
+
+(major-mode-hydra-bind python-mode "Venv"
+  ("vi" config-python-pyvenv-init "init")
+  ("va" pyvenv-activate "activate")
+  ("vd" pyvenv-deactivate "deactivate")
+  ("vw" pyvenv-workon "workon"))
 
 
 
@@ -163,7 +184,7 @@ Return the first non-nil result of evalutating PRED."
 
     (defun config-python-pyvenv-dir ()
       (config-python--directory-first-ancestor default-directory
-                                               #'config-python--find-venv-in-directory))
+                                  #'config-python--find-venv-in-directory))
 
     (defun config-python-pyvenv-activate-if-found ()
       (-when-let (env (config-python-pyvenv-dir))
