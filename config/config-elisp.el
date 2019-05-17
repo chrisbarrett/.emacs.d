@@ -144,7 +144,24 @@
             "j" 'forward-to-indentation
             "k" 'backward-to-indentation)
   :init
-  (add-hook 'debugger-mode-hook #'hl-line-mode))
+  (add-hook 'debugger-mode-hook #'hl-line-mode)
+  :config
+  (progn
+    (major-mode-hydra-bind debugger-mode "Control"
+      ("," debugger-step-through "step")
+      ("b" debugger-frame "enter frame")
+      ("c" debugger-continue "continue")
+      ("j" debugger-jump "jump")
+      ("u" debugger-frame-clear "stop on frame"))
+
+    (major-mode-hydra-bind debugger-mode "Values"
+      ("e" debugger-eval-expression "eval...")
+      ("R" debugger-record-expression "eval and record...")
+      ("r" debugger-return-value "return..."))
+
+    (major-mode-hydra-bind debugger-mode "Assistance"
+      ("l" debugger-list-functions "list functions")
+      ("v" debugger-toggle-locals "toggle vars"))))
 
 ;; helpful is a more feature-rich alternative to the Emacs Lisp help buffer.
 
