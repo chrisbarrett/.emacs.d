@@ -5,6 +5,22 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'major-mode-hydra)
+
+(major-mode-hydra-bind haskell-mode "Insert"
+  ("i" haskell-imports-insert-qualified "import")
+  ("u" haskell-imports-insert-unqualified "import (unqualified)")
+  ("p" haskell-pragmas-insert "language pragma"))
+
+(major-mode-hydra-bind haskell-mode "Intero"
+  (("t" intero-targets "set targets")))
+
+(major-mode-hydra-bind haskell-mode "Format"
+  ("f" hindent-reformat-buffer "buffer")
+  ("." hindent-reformat-decl-or-fill "decl at pt"))
+
+
+
 (use-package haskell-mode
   :straight t
   :mode
