@@ -5,7 +5,33 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'major-mode-hydra)
+
 (autoload 'evil-insert-state "evil")
+
+(dolist (mode '(gfm-mode markdown-mode))
+  (eval
+   `(progn
+      (major-mode-hydra-bind ,mode "Insert"
+        ("ih" markdown-insert-header-dwim "header")
+        ("ic" markdown-insert-gfm-code-block "code block")
+        ("ii" markdown-insert-image "image")
+        ("if" markdown-insert-footnote "footnote")
+        ("il" markdown-insert-link "link")
+        ("iw" markdown-insert-wiki-link "wiki link")
+        ("i-" markdown-insert-hr "horizontal rule"))
+
+      (major-mode-hydra-bind ,mode "Markup"
+        ("mb" markdown-insert-bold)
+        ("mi" markdown-insert-italic)
+        ("mk" markdown-insert-kbd "keyboard code")
+        ("mq" markdown-insert-blockquote)
+        ("ms" markdown-insert-strike-through "strikethrough"))
+
+      (major-mode-hydra-bind ,mode "Actions"
+        ("o" markdown-preview "open in browser")
+        ("p" markdown-live-preview-mode "live preview mode")
+        ("e" markdown-export)))))
 
 
 
