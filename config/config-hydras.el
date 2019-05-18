@@ -276,17 +276,6 @@
    (("/" counsel-projectile-rg "search...")
     ("r" projectile-replace "replace..."))))
 
-(pretty-hydra-define symbols
-  (:hint nil
-   :color teal
-   :title (hydra-title-with-mat-icon "highlight" "Symbols"))
-  ("Edit"
-   (("e" evil-iedit-state/iedit-mode "iedit"))
-   "Navigate"
-   (("d" ahs-backward-definition "first occurence" :exit nil)
-    ("h" ahs-forward "highlight" :exit nil)
-    ("H" ahs-backward "goto last searched" :exit nil))))
-
 (pretty-hydra-define parens
   (:hint nil
    :color teal
@@ -492,7 +481,6 @@
    (("n" narrowing/body "narrowing...")
     ("o" org/body "org...")
     ("p" project/body "project...")
-    ("s" symbols/body "symbols...")
     ("t" toggles/body "toggles...")
     ("w" windows/body "windows...")
     ("y" yasnippet/body "snippets...")
