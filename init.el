@@ -121,8 +121,8 @@
 
 ;; Load some config files first for consistency.
 
-(use-package-require 'config-themes)
-(use-package-require 'config-basic-settings)
+(use-package config-themes)
+(use-package config-basic-settings)
 
 ;; Load remaining config files.
 
