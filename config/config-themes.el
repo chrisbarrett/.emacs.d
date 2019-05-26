@@ -55,6 +55,7 @@
   :commands (global-paren-face-mode)
   :config
   (progn
+    (set-face-attribute 'parenthesis nil :inherit 'font-lock-comment-face :italic nil)
     (add-to-list 'paren-face-modes 'scala-mode)
     (add-to-list 'paren-face-modes 'js-mode)
     (add-to-list 'paren-face-modes 'rust-mode)
