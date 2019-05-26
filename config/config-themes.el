@@ -181,6 +181,12 @@
               ((nil . "which-key-show-next-page-no-cycle") . (nil . "wk next pg"))
               ((nil . ,custom-regex) . (nil . "\\1")))))))
 
+;; doom-modeline is a custom modeline.
+
+(use-package doom-modeline
+  :straight t
+  :hook (after-init . doom-modeline-mode))
+
 (provide 'config-themes)
 
 ;;; config-themes.el ends here
