@@ -191,6 +191,8 @@
   :config
   (progn
     (load-theme 'doom-one t)
+    (set-face-font 'default "Iosevka")
+    (set-face-attribute 'default nil :height 160)
     (doom-themes-treemacs-config)
     (doom-themes-org-config)))
 
