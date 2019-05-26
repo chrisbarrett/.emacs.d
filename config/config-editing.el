@@ -299,6 +299,8 @@ Interactively, reverse the characters in the current region."
 
   :config
   (progn
+    (set-face-attribute 'highlight-thing nil :inherit 'highlight)
+
     (setq highlight-thing-what-thing 'symbol)
     (setq highlight-thing-delay-seconds 0.5)
     (setq highlight-thing-limit-to-defun nil)
