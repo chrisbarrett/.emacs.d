@@ -187,6 +187,17 @@
   :straight t
   :hook (after-init . doom-modeline-mode))
 
+(use-package doom-themes
+  :straight t
+  :init
+  (general-setq doom-themes-enable-bold t
+                doom-themes-enable-italic t)
+  :config
+  (progn
+    (load-theme 'doom-one t)
+    (doom-themes-treemacs-config)
+    (doom-themes-org-config)))
+
 (provide 'config-themes)
 
 ;;; config-themes.el ends here
