@@ -21,7 +21,7 @@
   :preface
   (progn
     (defconst config-restclient--js-modes
-      '(js-mode js2-mode web-js-base-mode web-json-mode yaml-mode))
+      '(js-mode js2-mode yaml-mode))
 
     (defun config-restclient--delete-trailing-comments ()
       (cl-labels

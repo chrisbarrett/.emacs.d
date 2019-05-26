@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: var
-# key: v
-# condition: (and (yas-funcs-bolp) (-contains? '("jsx" "javascript") web-mode-content-type))
-# --
-var $1 = $0;

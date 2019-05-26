@@ -119,7 +119,7 @@ $0
 ")))
 
 (defconst autoinsert-funcs-html-form
-  '((web-html-mode . "HTML") . autoinsert-funcs-html-template-string))
+  '((html-mode . "HTML") . autoinsert-funcs-html-template-string))
 
 
 

@@ -101,8 +101,7 @@
                 org-mode
                 indium-repl-mode
                 ;; restclient buffers
-                js-mode
-                web-js-snap-mode))
+                js-mode))
 
     (add-to-list 'display-buffer-alist
                  `(,(rx bos "*Flycheck errors*" eos)

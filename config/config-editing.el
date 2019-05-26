@@ -197,7 +197,6 @@ Interactively, reverse the characters in the current region."
                   terraform-mode
                   text-mode
                   toml-mode
-                  web-js-mode
                   yaml-mode))
 
   :preface

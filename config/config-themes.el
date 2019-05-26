@@ -56,7 +56,7 @@
   :config
   (progn
     (add-to-list 'paren-face-modes 'scala-mode)
-    (add-to-list 'paren-face-modes 'web-mode)
+    (add-to-list 'paren-face-modes 'js-mode)
     (add-to-list 'paren-face-modes 'rust-mode)
     (add-to-list 'paren-face-modes 'yaml-mode)
     (setq paren-face-regexp (rx (any "{}();,")))
@@ -120,11 +120,6 @@
                     (gfm-mode all-the-icons-faicon "github-alt" :v-adjust 0.0 :face all-the-icons-lblue)
                     (helpful-mode all-the-icons-icon-for-mode help-mode)
                     (debugger-mode all-the-icons-faicon "stack-overflow" :v-adjust 0.05 :face all-the-icons-pink)
-                    (web-js-mode all-the-icons-icon-for-mode web-mode :v-adjust 0.0 :face all-the-icons-lblue)
-                    (web-ts-mode all-the-icons-icon-for-mode web-mode :v-adjust 0.0 :face all-the-icons-lblue)
-                    (web-css-mode all-the-icons-icon-for-mode web-mode :v-adjust 0.0 :face all-the-icons-lblue)
-                    (web-html-mode all-the-icons-icon-for-mode web-mode :v-adjust 0.0 :face all-the-icons-lblue)
-                    (web-json-mode all-the-icons-icon-for-mode web-mode :v-adjust 0.0 :face all-the-icons-lblue)
                     (mu4e-main-mode all-the-icons-octicon "inbox" :face all-the-icons-dsilver)
                     (mu4e-headers-mode all-the-icons-octicon "inbox" :face all-the-icons-dsilver)
                     (mu4e-view-mode all-the-icons-octicon "comment-discussion" :face all-the-icons-dsilver)

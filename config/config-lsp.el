@@ -18,11 +18,10 @@
          (dockerfile-mode . lsp)
          (go . lsp)
          (groovy . lsp)
+         (js-mode . lsp)
          (python . lsp)
          (rust-mode . lsp)
-         (sh-mode . lsp)
-         (web-js-mode . lsp)
-         (web-ts-mode . lsp))
+         (sh-mode . lsp))
   :preface
   (defun config-lsp--setup-buffer ()
     (setq-local evil-lookup-func #'lsp-describe-thing-at-point)

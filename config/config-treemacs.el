@@ -70,8 +70,6 @@
       (-let [(file-ext . icon) it]
         (treemacs-define-custom-icon icon file-ext)))
 
-    (treemacs-define-custom-icon (all-the-icons-icon-for-mode 'web-json-mode) "json")
-
     (setq treemacs-icon-root-png (concat (all-the-icons-octicon "repo") "\t"))
     (setq treemacs-icon-closed-png (concat (all-the-icons-faicon "folder") "\t"))
     (setq treemacs-icon-open-png (concat (all-the-icons-faicon "folder-open") "\t"))
