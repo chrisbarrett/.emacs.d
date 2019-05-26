@@ -302,7 +302,7 @@ Interactively, reverse the characters in the current region."
     (set-face-attribute 'highlight-thing nil :inherit 'highlight)
 
     (setq highlight-thing-what-thing 'symbol)
-    (setq highlight-thing-delay-seconds 0.5)
+    (setq highlight-thing-delay-seconds 0.1)
     (setq highlight-thing-limit-to-defun nil)
     (setq highlight-thing-case-sensitive-p t)
 
