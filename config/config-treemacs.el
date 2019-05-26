@@ -7,6 +7,23 @@
 
 (require 'dash)
 (require 'general)
+(require 'major-mode-hydra)
+
+
+
+(major-mode-hydra-bind treemacs-mode "View"
+  ("." treemacs-toggle-show-dotfiles "hidden files"))
+
+(major-mode-hydra-bind treemacs-mode "File"
+  ("fr" treemacs-rename "rename...")
+  ("fx" treemacs-delete "delete..."))
+
+(major-mode-hydra-bind treemacs-mode "Projects"
+  ("pa" treemacs-add-project-to-workspace "add...")
+  ("pr" treemacs-rename-project "rename...")
+  ("px" treemacs-remove-project-from-workspace "remove..."))
+
+
 
 (use-package treemacs
   :straight (:host github :repo "Alexander-Miller/treemacs" :files ("src/elisp/*.el" "src/extra/*.el" "src/scripts/*.py"))
