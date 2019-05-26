@@ -12,6 +12,8 @@
 
 (autoload 'hostname (concat user-emacs-directory "lisp/hostname"))
 
+(defvar org-directory "~/org")
+
 
 
 (defconst paths-assets-directory
