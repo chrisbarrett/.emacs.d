@@ -23,33 +23,33 @@
 (eval-and-compile
   (defun hydra-title-with-octicon (icon title)
     (concat (all-the-icons-octicon icon :face 'all-the-icons-orange :v-adjust 0.05)
-	    " " title
-	    "\n"))
+            " " title
+            "\n"))
 
   (defun hydra-title-with-fileicon (icon title)
     (concat (all-the-icons-fileicon icon :face 'all-the-icons-orange :v-adjust -0.15)
-	    " " title
-	    "\n"))
+            " " title
+            "\n"))
 
   (defun hydra-title-with-mode-icon (mode title)
     (concat (all-the-icons-icon-for-mode mode)
-	    " " title
-	    "\n"))
+            " " title
+            "\n"))
 
   (defun hydra-title-with-faicon (icon title)
     (concat (all-the-icons-faicon icon :face 'all-the-icons-orange :v-adjust 0.05)
-	    " " title
-	    "\n"))
+            " " title
+            "\n"))
 
   (defun hydra-title-with-aicon (icon title)
     (concat (all-the-icons-alltheicon icon :face 'all-the-icons-orange :v-adjust 0.05)
-	    " " title
-	    "\n"))
+            " " title
+            "\n"))
 
   (defun hydra-title-with-mat-icon (icon title)
     (concat (all-the-icons-material icon :face 'all-the-icons-orange)
-	    " " title
-	    "\n")))
+            " " title
+            "\n")))
 
 (use-package all-the-icons :straight t)
 
@@ -59,8 +59,8 @@
   :preface
   (defun config-hydras--add-quit-bindings (result)
     (append '(("q" nil :exit t)
-	      ("<escape>" nil :exit t))
-	    result))
+              ("<escape>" nil :exit t))
+            result))
   :config
   (advice-add #'pretty-hydra--get-heads :filter-return #'config-hydras--add-quit-bindings))
 
@@ -70,7 +70,7 @@
   :hook (after-init . hydra-posframe-enable)
   :config
   (setq hydra-posframe-parameters '((alpha 100 100))
-	hydra-posframe-border-width 20))
+        hydra-posframe-border-width 20))
 
 
 ;; Hydra definitions
@@ -367,9 +367,9 @@
 (pretty-hydra-define git-time-machine
   (:foreign-keys run
    :pre (unless (bound-and-true-p git-timemachine-mode)
-	  (call-interactively 'git-timemachine))
+          (call-interactively 'git-timemachine))
    :post (when (bound-and-true-p git-timemachine-mode)
-	   (git-timemachine-quit))
+           (git-timemachine-quit))
    :title (hydra-title-with-aicon "git" "Git Time Machine"))
   ("Step"
    (("p" git-timemachine-show-previous-revision "previous")
@@ -383,7 +383,7 @@
 (pretty-hydra-define git-blame
   (:foreign-keys run
    :pre (unless (bound-and-true-p magit-blame-mode)
-	  (call-interactively 'magit-blame))
+          (call-interactively 'magit-blame))
    :post
    (when (bound-and-true-p magit-blame-mode)
      (magit-blame-quit))
@@ -496,6 +496,7 @@
     ("d" dired "dired")
     ("D" dired-other-window "dired (other window)")
     ("r" ivy-resume "ivy-resume")
+    ("s" evil-iedit-state/iedit-mode "iedit")
     ("u" universal-argument "universal argument"))
 
    "Buffer/Window"
@@ -513,7 +514,7 @@
   :config
   (progn
     (general-setq general-override-states
-		  '(insert emacs hybrid normal visual motion operator replace))
+                  '(insert emacs hybrid normal visual motion operator replace))
     (general-override-mode +1)
     (general-define-key
      :states '(normal visual motion)

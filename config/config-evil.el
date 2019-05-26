@@ -275,6 +275,14 @@
             "zn" #'evil-ispell-next-spelling-error
             "zp" #'evil-ispell-previous-spelling-error))
 
+;; iedit adds useful mass-renaming functionality. This package provides evil
+;; compatability.
+
+(use-package evil-iedit-state
+  :straight t
+  :commands (evil-iedit-state/iedit-mode))
+
+
 (provide 'config-evil)
 
 ;;; config-evil.el ends here
