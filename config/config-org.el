@@ -400,13 +400,21 @@
     (add-to-list 'load-path (expand-file-name "lisp" org-directory))
     (add-hook 'org-mode-hook #'config-org--add-local-hooks)
     (add-hook 'org-mode-hook #'config-org--set-bidi-env)
-    (add-hook 'org-after-todo-statistics-hook #'config-org--children-done-parent-done)
-
-    (dolist (dir (ignore-errors (f-directories "~/org/lisp/")))
-      (add-to-list 'load-path (f-slash dir))))
+    (add-hook 'org-after-todo-statistics-hook #'config-org--children-done-parent-done))
 
   :config
   (progn
+    ;; Load lisp files in ~/org/lisp.
+    (let* ((dir (expand-file-name "lisp" org-directory))
+           (features (seq-reduce (lambda (acc it)
+                                   (if (string-suffix-p ".el" it)
+                                       (cons (intern (string-remove-suffix ".el" it)) acc)
+                                     acc))
+                                 (directory-files dir)
+                                 nil)))
+      (dolist (feature features)
+        (eval `(use-package ,feature :demand t :load-path ,dir))))
+
     (with-eval-after-load 'evil
       (evil-define-key 'normal org-mode-map (kbd "TAB") #'org-cycle))
 
@@ -431,6 +439,7 @@
 (use-package cb-org-capture-url :after org)
 
 (use-package cb-org-gdrive :hook (org-mode . cb-org-gdrive-init))
+
 (use-package cb-org-pgp-decrpyt :hook (org-mode . cb-org-pgp-decrpyt-init))
 
 (use-package org-hydras :commands (org-babel/body))
