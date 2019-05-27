@@ -23,10 +23,6 @@
 (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
 (add-to-list 'default-frame-alist '(ns-appearance . nil))
 
-;; Never show a proxy icon in the title bar.
-
-(setq ns-use-proxy-icon nil)
-
 ;; Graphical applications in macOS inherit their process environment from
 ;; launchd, not from a shell process which loads a profile.
 
