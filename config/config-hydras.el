@@ -241,7 +241,8 @@
 
    "Goto"
    (("$" (find-file ledger-master-file) "ledger")
-    ("a" config-org-agenda/body "agenda")
+    ("aa" (org-agenda nil "A") "agenda")
+    ("aw" (org-agenda nil "w") "agenda (work)")
     ("d" cb-org-goto-diary "diary")
     ("j" cb-org-goto-journal "journal")
     ("n" cb-org-goto-notes "notes"))
