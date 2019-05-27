@@ -105,9 +105,10 @@
 ;; Load el-patch hacks.
 
 (dolist (feature (seq-reduce (lambda (acc it)
-                               (when (string-suffix-p ".el" it)
-                                 (cons (intern (string-remove-suffix ".el" it))
-                                       acc)))
+                               (if (string-suffix-p ".el" it)
+                                   (cons (intern (string-remove-suffix ".el" it))
+                                         acc)
+                                 acc))
                              (directory-files paths-hacks-directory)
                              nil))
   (eval `(use-package ,feature :demand t)))
@@ -127,10 +128,11 @@
 ;; Load remaining config files.
 
 (dolist (feature (seq-reduce (lambda (acc it)
-                               (when (string-suffix-p ".el" it)
-                                 (unless (string-suffix-p "-os.el" it)
+                               (if (and (string-suffix-p ".el" it)
+                                        (not (string-suffix-p "-os.el" it)))
                                    (cons (intern (string-remove-suffix ".el" it))
-                                         acc))))
+                                         acc)
+                                 acc))
                              (directory-files paths-config-directory)
                              nil))
   (eval `(use-package ,feature :demand t)))
