@@ -114,7 +114,6 @@
   (general-setq ivy-display-function #'ivy-posframe-display-at-frame-center
                 ivy-posframe-border-width 20
                 ivy-posframe-width 120
-                ivy-posframe-height 20
                 ivy-posframe-hide-minibuffer t
                 ivy-posframe-parameters '((alpha 100 100))))
 
