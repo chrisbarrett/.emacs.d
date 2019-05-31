@@ -190,9 +190,9 @@
                 doom-themes-enable-italic t)
   :config
   (progn
-    (load-theme 'doom-one t)
+    (load-theme 'doom-solarized-light t)
     (set-face-font 'default "Iosevka")
-    (set-face-attribute 'default nil :height 160)
+    (set-face-attribute 'default nil :height 180)
     (doom-themes-treemacs-config)
     (doom-themes-org-config)))
 
