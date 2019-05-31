@@ -7,6 +7,11 @@
 
 
 
+(use-package js
+  :defer t
+  :config
+  (general-setq js--prettify-symbols-alist '(("function" . ?ƒ))))
+
 (use-package rjsx-mode
   :straight t
   :mode ("\\.jsx?\\'" . rjsx-mode))
