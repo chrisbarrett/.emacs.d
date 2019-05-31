@@ -59,6 +59,7 @@
 (use-package dash-functional :straight t)
 (use-package f :straight t)
 (use-package s :straight t)
+(use-package noflet :straight t)
 (use-package memoize :straight t)
 (use-package general :straight t :demand t)
 (use-package el-patch :straight t)
