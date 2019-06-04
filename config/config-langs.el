@@ -12,18 +12,6 @@
 
 
 
-;; prettify-symbols-mode allows characters to be displayed in a different way.
-
-(use-package prettify-symbols-mode
-  :hook (prog-mode . prettify-symbols-mode)
-  :preface
-  (defun config-langs--set-up-prettify-symbols ()
-    (cond
-     ((derived-mode-p 'emacs-lisp-mode 'lisp-mode 'scheme-mode)
-      (setq-local prettify-symbols-alist '(("lambda" . ?λ))))))
-  :config
-  (add-hook 'prettify-symbols-mode-hook #'config-langs--set-up-prettify-symbols))
-
 (use-package poporg
   :straight t
   :commands (poporg-dwim))
