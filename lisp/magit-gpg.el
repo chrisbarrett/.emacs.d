@@ -25,9 +25,9 @@
     (magit-rev-insert-format format rev args)
     (split-string (buffer-string) "\0")))
 
-(defun magit-gpg-insert-revision-gpg (rev)
-  (let* ((res (magit-gpg--rev-format-items "%G?%x00%GS%x00%GK%x00%GG" rev))
-         (type (aref (car res) 0)))
+(defun magit-gpg-insert-revision-gpg (&optional rev)
+  (when-let* ((res (magit-gpg--rev-format-items "%G?%x00%GS%x00%GK%x00%GG" rev))
+              (type (aref (car res) 0)))
     (unless (eq type ?N)
       (let* ((signer (cl-second res))
              (key (cl-third res))
