@@ -1,0 +1,5 @@
+# key: sc
+# name: select-case
+# --
+case ${1:${2:name} :=} <-${3:chan}:
+     $0

@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: deftype
+# key: dt
+# condition: (yas-funcs-bolp)
+# --
+(deftype ${1:Name} [${2:fields...}])

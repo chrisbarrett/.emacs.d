@@ -1,0 +1,9 @@
+# key: ctor
+# name: constructor
+# condition: (yas-funcs-bolp)
+# --
+public `(yas-funcs-java-ctor-name)`($1) {
+  ${1:$(yas-funcs-java-ctor-body yas-text)}$0
+}
+
+${1:$(yas-funcs-java-ctor-fields yas-text)}

@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: let rec
+# key: lr
+# condition: (yas-funcs-bolp)
+# --
+let rec ${1:lhs} = $0

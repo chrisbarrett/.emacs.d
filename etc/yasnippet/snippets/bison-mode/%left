@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: %left
+# key: l
+# condition: (yas-funcs-bolp)
+# --
+%left $0

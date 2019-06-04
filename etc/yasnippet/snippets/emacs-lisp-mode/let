@@ -1,0 +1,6 @@
+# key: l
+# name: let
+# condition: (not (s-matches? "-l" (buffer-substring (line-beginning-position) (line-end-position))))
+# --
+(let (($1))
+  $0)

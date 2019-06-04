@@ -1,0 +1,7 @@
+# key: f
+# name: function
+# condition: (yas-funcs-bolp)
+# --
+${1:fname}() {
+    $0
+}

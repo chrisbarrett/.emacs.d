@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: val
+# key: v
+# --
+val ${1:ident} : $0

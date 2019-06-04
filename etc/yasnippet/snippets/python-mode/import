@@ -1,0 +1,5 @@
+# key: im
+# name: import
+# condition: (yas-funcs-bolp)
+# --
+import $0

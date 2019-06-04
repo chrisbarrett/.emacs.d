@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: pcase
+# key: pc
+# --
+(pcase ${1:form}
+  ($0))

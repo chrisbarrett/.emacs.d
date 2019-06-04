@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: make-chan
+# key: mc
+# --
+make(chan ${1:string})

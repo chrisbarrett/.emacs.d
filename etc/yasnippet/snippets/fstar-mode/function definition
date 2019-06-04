@@ -1,0 +1,8 @@
+# key: f
+# name: function definition
+# condition: (yas-funcs-bolp)
+# expand-env: ((yas-indent-line (quote fixed)) (yas-wrap-around-region (quote t)))
+# --
+val ${1:fname} : ${2:ty}
+let $1 ${3:params} =
+  $0

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: make-map
+# key: mm
+# --
+make(map[${1:string}]${2:T})

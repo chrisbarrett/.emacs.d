@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: private property
+# key: p
+# --
+private ${1:Type} _${2:name} = $0;

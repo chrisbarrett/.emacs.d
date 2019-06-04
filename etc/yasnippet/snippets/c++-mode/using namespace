@@ -1,0 +1,5 @@
+# key: un
+# name: using namespace
+# condition: (yas-funcs-bolp)
+# --
+using namespace $0;

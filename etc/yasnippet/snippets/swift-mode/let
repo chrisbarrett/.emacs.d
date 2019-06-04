@@ -1,0 +1,7 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: let
+# key: l
+# binding: direct-keybinding
+# condition: (yas-funcs-bolp)
+# --
+let $0

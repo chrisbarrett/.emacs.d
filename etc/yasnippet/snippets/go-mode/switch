@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# key: s
+# name: switch
+# condition: (yas-funcs-bolp)
+# --
+switch ${1:value} {
+  case ${2:_}:
+    $0
+}

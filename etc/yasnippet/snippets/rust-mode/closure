@@ -1,0 +1,6 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: closure
+# key: |
+# binding: direct-keybinding
+# --
+|${1:args...}| $0

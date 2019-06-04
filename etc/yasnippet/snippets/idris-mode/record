@@ -1,0 +1,5 @@
+# key: r
+# name: record
+# condition: (yas-funcs-bolp)
+# --
+record $0

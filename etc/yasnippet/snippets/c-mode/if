@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: if
+# key: i
+# condition: (yas-funcs-bolp)
+# --
+if (${1:condition})
+{
+  $0
+}

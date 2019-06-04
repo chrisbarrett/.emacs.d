@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# key: ca
+# name: case
+# condition: (yas-funcs-bolp)
+# --
+case $1:
+  $0

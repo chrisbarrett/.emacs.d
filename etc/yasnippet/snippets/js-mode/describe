@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: describe
+# key: ds
+# --
+describe('${1:feature}', () => {
+  $0
+});

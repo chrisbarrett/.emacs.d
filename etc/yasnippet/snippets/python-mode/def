@@ -1,0 +1,6 @@
+# key: d
+# name: def
+# condition: (yas-funcs-bolp)
+# --
+def ${1:name}($2):
+    ${3:pass}

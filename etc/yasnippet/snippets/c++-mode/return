@@ -1,0 +1,5 @@
+# key: r
+# name: return
+# condition: (yas-funcs-bolp)
+# --
+return $0;

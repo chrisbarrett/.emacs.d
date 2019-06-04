@@ -1,0 +1,9 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: enum
+# key: e
+# binding: direct-keybinding
+# condition: (yas-funcs-rs-bol-or-after-access-kw-p)
+# --
+enum ${1:Name} {
+    $0
+}
