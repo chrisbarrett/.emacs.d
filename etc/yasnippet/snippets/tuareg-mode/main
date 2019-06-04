@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# name: main
-# key: main
-# condition: (yas-funcs-bolp)
-# --
-(* Program entry-point *)
-let () =
-  $0

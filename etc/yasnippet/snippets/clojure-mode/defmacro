@@ -1,9 +1,0 @@
-# -*- mode: snippet -*-
-# name: defmacro
-# key: m
-# condition: (yas-funcs-bolp)
-# --
-(defmacro ${1:name} ${2:
-  "$3"
-  }[$4]
-  $0)

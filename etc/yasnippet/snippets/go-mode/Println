@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: Println
-# key: p
-# --
-fmt.Println(${1:"$2", $3}$0)

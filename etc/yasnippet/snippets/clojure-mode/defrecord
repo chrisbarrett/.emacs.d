@@ -1,5 +1,0 @@
-# key: dr
-# name: defrecord
-# condition: (yas-funcs-bolp)
-# --
-(defrecord ${1:Name} [${2:fields...}])

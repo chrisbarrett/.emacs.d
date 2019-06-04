@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# name: src ruby
-# key: rb
-# condition: (yas-funcs-bolp)
-# --
-#+begin_src ruby
-$0
-#+end_src

@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: import
-# key: im
-# condition: (yas-funcs-bolp)
-# --
-import $0

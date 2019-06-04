@@ -1,7 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: ONBUILD
-# key: ob
-# binding: direct-keybinding
-# condition: (yas-funcs-bolp)
-# --
-ONBUILD $0

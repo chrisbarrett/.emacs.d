@@ -1,9 +1,0 @@
-# -*- mode: snippet -*-
-# name: defcustom
-# key: dc
-# condition: (yas-funcs-bolp)
-# --
-(defcustom ${1:name} ${2:value}
-  "$3"
-  :group '`(yas-funcs-el-custom-group)`
-  :type '$4)

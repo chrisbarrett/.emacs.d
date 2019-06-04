@@ -1,9 +1,0 @@
-# -*- mode: snippet -*-
-# name: defn
-# key: d
-# condition: (yas-funcs-bolp)
-# --
-(defn ${1:name} ${2:
-  "$3"
-  }[$4]
-  $0)

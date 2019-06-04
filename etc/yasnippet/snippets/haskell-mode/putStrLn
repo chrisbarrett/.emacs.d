@@ -1,5 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: putStrLn
-# key: p
-# --
-putStrLn $0

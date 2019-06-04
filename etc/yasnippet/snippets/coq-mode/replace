@@ -1,5 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: replace
-# key: rp
-# --
-replace (${1:t}) with (${2:u}). $0

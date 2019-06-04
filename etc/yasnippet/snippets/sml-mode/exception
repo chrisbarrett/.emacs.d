@@ -1,7 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: exception
-# key: ex
-# binding: direct-keybinding
-# condition: (yas-funcs-bolp)
-# --
-exception $0

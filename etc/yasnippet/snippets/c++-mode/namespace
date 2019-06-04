@@ -1,9 +1,0 @@
-# key: ns
-# name: namespace
-# condition: (yas-funcs-bolp)
-# --
-namespace ${1:Name} {
-
-$0
-
-}

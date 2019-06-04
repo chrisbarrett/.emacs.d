@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: comment separator
-# key: cs
-# condition: (yas-funcs-bolp)
-# --
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

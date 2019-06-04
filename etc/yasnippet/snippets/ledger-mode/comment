@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: comment
-# key: comment
-# --
-comment
-  $0
-end comment

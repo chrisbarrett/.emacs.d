@@ -1,7 +1,0 @@
-# key: ic
-# name: implicit class
-# condition: (yas-funcs-bolp)
-# --
-implicit class ${1:Name} {
-  $0
-}

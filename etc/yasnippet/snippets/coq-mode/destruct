@@ -1,4 +1,0 @@
-# key: ds
-# name: destruct
-# --
-destruct ${1:x}. $0

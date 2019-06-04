@@ -1,5 +1,0 @@
-# key: u
-# name: use
-# condition: (yas-funcs-bolp)
-# --
-use ${1:ident};

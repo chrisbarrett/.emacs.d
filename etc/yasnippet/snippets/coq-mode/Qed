@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: Qed
-# key: q
-# condition: (yas-funcs-bolp)
-# --
-Qed.

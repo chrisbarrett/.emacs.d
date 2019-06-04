@@ -1,6 +1,0 @@
-# key: ex
-# name: EXPOSE
-# condition: (yas-funcs-bolp)
-# --
-EXPOSE ${1:port}
-$0

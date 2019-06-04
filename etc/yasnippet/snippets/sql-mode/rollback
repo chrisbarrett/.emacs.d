@@ -1,6 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: rollback
-# key: rb
-# binding: direct-keybinding
-# --
-ROLLBACK $0

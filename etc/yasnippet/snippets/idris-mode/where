@@ -1,7 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: where
-# key: wh
-# binding: direct-keybinding
-# --
-where
-  $0

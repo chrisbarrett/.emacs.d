@@ -1,6 +1,0 @@
-# key: c
-# name: case
-# condition: (yas-funcs-bolp)
-# --
-case ${1:expr}
-of ${2:binder} => $0

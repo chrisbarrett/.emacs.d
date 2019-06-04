@@ -1,5 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: symmetry
-# key: sy
-# --
-symmetry. $0

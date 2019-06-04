@@ -1,9 +1,0 @@
-# -*- mode: snippet -*-
-# name: else
-# key: e
-# condition: (yas-funcs-bolp)
-# --
-else
-{
-    $0
-}

@@ -1,7 +1,0 @@
-# key: new
-# name: new
-# condition: (yas-funcs-bolp)
-# --
-def __new__(mcs, name, bases, dict):
-    $0
-    return type.__new__(mcs, name, bases, dict)

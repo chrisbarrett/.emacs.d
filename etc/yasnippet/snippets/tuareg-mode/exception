@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: exception
-# key: ex
-# conditon: (yas-funcs-bolp)
-# --
-exception $0

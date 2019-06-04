@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: Assets
-# key: a
-# --
-Assets:${1:Checking}$0

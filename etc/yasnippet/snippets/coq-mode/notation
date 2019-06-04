@@ -1,7 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: notation
-# key: not
-# binding: direct-keybinding
-# condition: (yas-funcs-bolp)
-# --
-Notation "${1:syntax}" := (${2:def})${3: (at level ${4:n})}.

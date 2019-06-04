@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: use overtone
-# key: uo
-# --
-(use 'overtone.live)

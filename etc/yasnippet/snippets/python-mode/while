@@ -1,6 +1,0 @@
-# key: wh
-# name: while
-# condition: (yas-funcs-bolp)
-# --
-while ${1:True}:
-    ${2:pass}

@@ -1,4 +1,0 @@
-# key: ap
-# name: apply
-# --
-apply ${1:hyp}. $0

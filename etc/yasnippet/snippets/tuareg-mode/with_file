@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# name: with_file
-# key: wf
-# condition: (yas-funcs-bolp)
-# --
-In_channel.with_file ${1:filename} ~f:(fun inc ->
-  $0
-)

@@ -1,7 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: sealed trait
-# key: st
-# binding: direct-keybinding
-# condition: (yas-funcs-bolp)
-# --
-sealed trait ${1:Name}

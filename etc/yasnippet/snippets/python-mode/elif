@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: elif
-# key: ei
-# --
-elif ${1:test}:
-     ${2:pass}

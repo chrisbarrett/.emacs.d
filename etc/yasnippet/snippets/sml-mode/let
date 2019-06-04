@@ -1,9 +1,0 @@
-# key: l
-# name: let
-# condition: (cb-sml/at-start-of-expr-for-snippet? 1)
-# --
-let
-  val ${1:binder} = ${2:value}
-in
-  $0
-end

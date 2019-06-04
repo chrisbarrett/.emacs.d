@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: method
-# key: me
-# condition: (yas-funcs-bolp)
-# --
-method $1 =
-  $0

@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: module type of
-# key: mto
-# --
-(module type of $0)

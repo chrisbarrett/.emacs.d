@@ -1,5 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: apply...with
-# key: aw
-# --
-apply ${1:hyp} with ${3:val}. $0

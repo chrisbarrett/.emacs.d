@@ -1,7 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: template decl
-# key: t
-# binding: direct-keybinding
-# --
-template<typename ${1:T}>
-$0

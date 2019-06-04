@@ -1,7 +1,0 @@
-# key: el
-# name: src elisp
-# condition: (yas-funcs-bolp)
-# --
-#+begin_src emacs-lisp
-$0
-#+end_src

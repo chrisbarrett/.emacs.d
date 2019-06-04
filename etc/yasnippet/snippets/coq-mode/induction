@@ -1,4 +1,0 @@
-# key: ind
-# name: induction
-# --
-induction ${1:n}. $0

@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# name: function
-# key: f
-# condition: (not (yas-funcs-bolp))
-# expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 't))
-# --
-function
-  | ${1:pat} -> $0

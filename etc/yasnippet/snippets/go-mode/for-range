@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: for-range
-# key: fr
-# --
-for ${1:x} := range ${2:xs} {
-    $0
-}

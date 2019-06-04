@@ -1,8 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: context (HSpec)
-# key: context
-# binding: direct-keybinding
-# expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 't))
-# --
-context "$1" $ do
-    $0

@@ -1,4 +1,0 @@
-# key: sum
-# name: Table Sum Column
-# --
-#+TBLFM: @>$${1:column number}=vsum(@I..@II)

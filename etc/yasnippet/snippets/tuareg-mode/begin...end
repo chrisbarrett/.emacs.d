@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: begin...end
-# key: b
-# --
-begin $0
-end

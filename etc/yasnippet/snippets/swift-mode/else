@@ -1,9 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: else
-# key: e
-# binding: direct-keybinding
-# condition: (or (yas-funcs-bolp) (thing-at-point-looking-at (rx "}" (* space) "e")))
-# --
-else {
-  $0
-}

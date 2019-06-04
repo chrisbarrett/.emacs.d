@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: progn
-# key: p
-# --
-(progn
- $0)

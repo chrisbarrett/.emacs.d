@@ -1,7 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: property (auto)
-# key: p
-# binding: direct-keybinding
-# condition: (yas-funcs-bolp)
-# --
-public ${1:T} ${2:Name} { get; set; }

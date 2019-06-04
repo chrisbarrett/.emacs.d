@@ -1,4 +1,0 @@
-# key: b
-# name: do-binding
-# --
-${1:b} `(haskell/fmt-larrow)` $0

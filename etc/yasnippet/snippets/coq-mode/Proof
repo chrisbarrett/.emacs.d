@@ -1,5 +1,0 @@
-# key: p
-# name: Proof
-# condition: (yas-funcs-bolp)
-# --
-Proof. reflexivity. Qed.

@@ -1,4 +1,0 @@
-# key: s
-# name: slice
-# --
-[]${1:int}{$0}

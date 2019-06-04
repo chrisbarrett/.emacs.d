@@ -1,8 +1,0 @@
-# key: f
-# name: method
-# condition: (yas-funcs-bolp)
-# expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 't))
-# --
-${1:Type} ${2:name}(${3:args...}) {
-  $0
-}

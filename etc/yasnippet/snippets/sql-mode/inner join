@@ -1,7 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: inner join
-# key: ij
-# binding: direct-keybinding
-# --
-INNER JOIN ${1:rel}
-  $0

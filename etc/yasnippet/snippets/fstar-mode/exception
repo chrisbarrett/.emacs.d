@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: exception
-# key: ex
-# --
-exception ${1:name}

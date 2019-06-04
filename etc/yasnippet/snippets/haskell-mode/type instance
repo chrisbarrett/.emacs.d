@@ -1,6 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: type instance
-# key: ti
-# condition: (yas-funcs-bolp)
-# --
-type instance $0

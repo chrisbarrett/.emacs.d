@@ -1,5 +1,0 @@
-# key: t
-# name: Type
-# condition: (or (cbidris:at-data-decl?) (cbidris:at-typedecl?))
-# --
-Type

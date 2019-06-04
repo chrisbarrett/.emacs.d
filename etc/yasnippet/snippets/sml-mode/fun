@@ -1,7 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: fun
-# key: f
-# binding: direct-keybinding
-# condition: (yas-funcs-bolp)
-# --
-fun ${1:header} = $0
