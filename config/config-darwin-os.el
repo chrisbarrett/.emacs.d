@@ -42,7 +42,6 @@
         "NIX_PROFILES"
         "NIX_SSL_CERT_FILE"
         "NIX_PATH"
-        "SSH_AGENT_PID"
         "GPG_TTY"
         "TEXINPUTS"
         "RUST_SRC_PATH")))
