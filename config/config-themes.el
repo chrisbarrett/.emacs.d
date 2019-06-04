@@ -209,6 +209,7 @@
           'doom-solarized-light
           '(default ((t (:foreground "#556b72" :background "#FDF6E3" :height 180))))
           '(font-lock-comment-face ((t (:weight bold))))
+          '(font-lock-keyword-face ((t (:weight light :foreground "#268bd2"))))
           '(parenthesis ((t (:foreground "#9c9c9c" :weight light))))
           '(outline-1 ((t (:weight bold :foreground "#268bd2"))))))
         (`doom-one
@@ -217,6 +218,7 @@
           '(default ((t (:foreground "#bbc2cf" :background "#282c34" :height 180))))
           '(parenthesis ((t (:foreground "#787878" :weight light))))
           '(font-lock-comment-face ((t (:weight bold))))
+          '(font-lock-keyword-face ((t (:weight light :foreground "#51afef"))))
           '(outline-1 ((t (:weight bold :foreground "#51afef"))))
           ;; HACK: This doesn't seem to get set properly.
           '(org-block-end-line ((t :foreground "#5B6268" :background "#23272e"))))))
