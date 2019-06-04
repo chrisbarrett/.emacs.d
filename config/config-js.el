@@ -10,7 +10,14 @@
 (use-package js
   :defer t
   :config
-  (general-setq js--prettify-symbols-alist '(("function" . ?ƒ))))
+  (progn
+    (general-setq js--prettify-symbols-alist '(("function" . ?ƒ)))
+    (custom-theme-set-faces
+     'user
+     '(js2-external-variable ((t (:inherit font-lock-keyword-face))))
+     '(js2-function-call ((t (:inherit default :foreground nil))))
+     '(js2-object-property-access ((t (:inherit js2-object-property :foreground nil :italic nil))))
+     '(js2-object-property ((t (:italic t :foreground nil)))))))
 
 (use-package rjsx-mode
   :straight t
