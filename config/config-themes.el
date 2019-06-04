@@ -55,11 +55,17 @@
   :commands (global-paren-face-mode)
   :config
   (progn
-    (set-face-attribute 'parenthesis nil :inherit 'font-lock-comment-face :italic nil)
+    (set-face-attribute 'parenthesis nil
+                        :inherit 'font-lock-comment-face
+                        :weight 'light
+                        :italic nil
+                        :background nil)
+
     (add-to-list 'paren-face-modes 'scala-mode)
     (add-to-list 'paren-face-modes 'js-mode)
     (add-to-list 'paren-face-modes 'rust-mode)
     (add-to-list 'paren-face-modes 'yaml-mode)
+
     (setq paren-face-regexp (rx (any "{}();,")))
 
     (font-lock-add-keywords 'rust-mode
