@@ -196,32 +196,39 @@
                 doom-themes-enable-italic t
                 doom-treemacs-enable-variable-pitch nil)
   :preface
-  (defun config-themes-toggle (&optional set-to)
-    (let* ((current-theme (or set-to (car custom-enabled-themes)))
-           (dark-p (equal 'doom-one current-theme))
-           (new-theme (if dark-p 'doom-solarized-light 'doom-one)))
+  (defun config-themes-toggle (&optional theme)
+    (interactive)
+    (let* ((current-theme (car custom-enabled-themes))
+           (new-theme (or theme (if (equal 'doom-one current-theme)
+                                    'doom-solarized-light
+                                  'doom-one))))
       (enable-theme new-theme)
       (pcase new-theme
-        ('doom-solarized-light
+        (`doom-solarized-light
          (custom-theme-set-faces
           'doom-solarized-light
-          '(default ((t (:foreground "#556b72" :height 180))))
+          '(default ((t (:foreground "#556b72" :background "#FDF6E3" :height 180))))
           '(font-lock-comment-face ((t (:weight bold))))
+          '(parenthesis ((t (:foreground "#9c9c9c" :weight light))))
           '(outline-1 ((t (:weight bold :foreground "#268bd2"))))))
-        ('doom-one
+        (`doom-one
          (custom-theme-set-faces
           'doom-one
-          '(paren-face ((t (:weight bold :foreground "#3f444a"))))
+          '(default ((t (:foreground "#bbc2cf" :background "#282c34" :height 180))))
+          '(parenthesis ((t (:foreground "#787878" :weight light))))
           '(font-lock-comment-face ((t (:weight bold))))
+          '(outline-1 ((t (:weight bold :foreground "#51afef"))))
           ;; HACK: This doesn't seem to get set properly.
-          '(org-block-end-line ((t :foreground "#5B6268" :background "#23272e"))))))))
+          '(org-block-end-line ((t :foreground "#5B6268" :background "#23272e"))))))
+
+      ;; Apply settings to all faces, including child frames.
+      (set-face-font 'default "Iosevka")
+      (set-face-attribute 'default nil :height 180)))
 
   :config
   (progn
     (load-theme 'doom-one t t)
     (load-theme 'doom-solarized-light t t)
-
-    (set-face-font 'default "Iosevka")
 
     (doom-themes-treemacs-config)
     (doom-themes-org-config)
