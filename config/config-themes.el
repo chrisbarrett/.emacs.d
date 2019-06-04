@@ -193,7 +193,8 @@
   :straight t
   :init
   (general-setq doom-themes-enable-bold t
-                doom-themes-enable-italic t)
+                doom-themes-enable-italic t
+                doom-treemacs-enable-variable-pitch nil)
   :preface
   (defun config-themes-toggle (&optional set-to)
     (let* ((current-theme (or set-to (car custom-enabled-themes)))
