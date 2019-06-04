@@ -319,7 +319,8 @@
    :color teal
    :title (hydra-title-with-faicon "toggle-on" "Toggles"))
   (""
-   (("c" hide/show-comments-toggle "comments"))))
+   (("t" config-themes-toggle "theme")
+    ("c" hide/show-comments-toggle "comments"))))
 
 (pretty-hydra-define yasnippet
   (:hint nil

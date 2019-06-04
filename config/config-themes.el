@@ -194,30 +194,37 @@
   :init
   (general-setq doom-themes-enable-bold t
                 doom-themes-enable-italic t)
+  :preface
+  (defun config-themes-toggle (&optional set-to)
+    (let* ((current-theme (or set-to (car custom-enabled-themes)))
+           (dark-p (equal 'doom-one current-theme))
+           (new-theme (if dark-p 'doom-solarized-light 'doom-one)))
+      (enable-theme new-theme)
+      (pcase new-theme
+        ('doom-solarized-light
+         (custom-theme-set-faces
+          'doom-solarized-light
+          '(default ((t (:foreground "#556b72" :height 180))))
+          '(font-lock-comment-face ((t (:weight bold))))
+          '(outline-1 ((t (:weight bold :foreground "#268bd2"))))))
+        ('doom-one
+         (custom-theme-set-faces
+          'doom-one
+          '(paren-face ((t (:weight bold :foreground "#3f444a"))))
+          '(font-lock-comment-face ((t (:weight bold))))
+          ;; HACK: This doesn't seem to get set properly.
+          '(org-block-end-line ((t :foreground "#5B6268" :background "#23272e"))))))))
+
   :config
   (progn
     (load-theme 'doom-one t t)
     (load-theme 'doom-solarized-light t t)
 
-    (custom-theme-set-faces
-     'doom-solarized-light
-     '(default ((t (:foreground "#556b72" :height 180))))
-     '(font-lock-comment-face ((t (:weight bold))))
-     '(outline-1 ((t (:weight bold :foreground "#268bd2")))))
-
-    (custom-theme-set-faces
-     'doom-one
-     '(paren-face ((t (:weight bold :foreground "#3f444a"))))
-     '(font-lock-comment-face ((t (:weight bold))))
-     ;; HACK: This doesn't seem to get set properly.
-     '(org-block-end-line ((t :foreground "#5B6268" :background "#23272e"))))
-
     (set-face-font 'default "Iosevka")
 
     (doom-themes-treemacs-config)
     (doom-themes-org-config)
-
-    (enable-theme 'doom-solarized-light)))
+    (config-themes-toggle 'doom-solarized-light)))
 
 (provide 'config-themes)
 
