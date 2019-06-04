@@ -189,6 +189,8 @@
   :straight t
   :hook (after-init . doom-modeline-mode))
 
+;; doom-themes provides the main doom theme sets.
+
 (use-package doom-themes
   :straight t
   :init
