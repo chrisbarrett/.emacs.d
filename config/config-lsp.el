@@ -12,8 +12,11 @@
   :defer t
   :config
   (general-setq lsp-eldoc-render-all nil
-                lsp-inhibit-message t
-                lsp-highlight-symbol-at-point nil)
+                lsp-prefer-flymake nil
+                lsp-session-file (f-join paths-cache-directory "lsp-session-v1")
+                lsp-restart 'auto-restart
+                lsp-enable-on-type-formatting nil)
+
   :hook ((c-mode-common . lsp)
          (dockerfile-mode . lsp)
          (go . lsp)
@@ -22,6 +25,7 @@
          (python . lsp)
          (rust-mode . lsp)
          (sh-mode . lsp))
+
   :preface
   (defun config-lsp--setup-buffer ()
     (setq-local evil-lookup-func #'lsp-describe-thing-at-point)
@@ -33,12 +37,6 @@
     ;; Format on save.
     (when (gethash "documentFormattingProvider" (lsp--server-capabilities))
       (add-hook 'before-save-hook #'lsp-format-buffer nil t)))
-
-  :init
-  (progn
-    (setq lsp-prefer-flymake nil)
-    (setq lsp-enable-on-type-formatting nil)
-    (setq lsp-session-file (f-join paths-cache-directory "lsp-session-v1")))
 
   :config
   (progn
