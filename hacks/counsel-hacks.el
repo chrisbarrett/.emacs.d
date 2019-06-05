@@ -30,6 +30,7 @@
                 :action (lambda (f)
                           (with-ivy-window
                             (find-file f)))
+                :require-match t
                 :caller 'counsel-recentf))))
 
 

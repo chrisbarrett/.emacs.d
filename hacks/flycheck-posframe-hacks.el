@@ -17,7 +17,8 @@
     (el-patch-defun flycheck-posframe-show-posframe (errors)
       "Display ERRORS, using posframe.el library."
       (flycheck-posframe-hide-posframe)
-      (when errors
+      (when (and errors
+                 (not (run-hook-with-args-until-success 'flycheck-posframe-inhibit-functions)))
         (posframe-show
          flycheck-posframe-buffer
          :string (flycheck-posframe-format-errors errors)
