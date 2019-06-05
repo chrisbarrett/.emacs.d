@@ -37,10 +37,6 @@
             (key (s-replace-all '(("^" . "") ("\\" . "") ("$" . "") ("." . "")) pattern))
             (icon (apply f spec)))
       (cons key icon)))
-
-  :init
-  (general-setq treemacs-persist-file
-                (f-join paths-cache-directory "treemacs-persist"))
   :preface
   (defun config-treemacs--setup-buffer ()
     (setq-local tab-width 1)
@@ -48,6 +44,12 @@
 
   :hook
   (treemacs-mode . config-treemacs--setup-buffer)
+
+  :init
+  (let ((cache-dir (f-join paths-cache-directory "treemacs")))
+    (f-mkdir cache-dir)
+    (general-setq treemacs-persist-file (f-join cache-dir "treemacs-persist")
+                  treemacs--last-error-persist-file (f-join cache-dir "treemacs-errors")))
 
   :config
   (progn
