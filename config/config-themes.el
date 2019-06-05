@@ -195,6 +195,16 @@
   :config
   (add-hook 'prettify-symbols-mode-hook #'config-langs--set-up-prettify-symbols))
 
+;; emojify adds support for rendering emojis.
+
+(use-package emojify
+  :straight t
+  :hook (after-init . global-emojify-mode)
+  :config
+  (general-setq emojify-emoji-styles '(github unicode)
+                emojify-program-contexts '(comments string)
+                emojify-point-entered-behaviour 'uncover))
+
 ;; doom-modeline is a custom modeline.
 
 (use-package doom-modeline
