@@ -148,9 +148,9 @@
   :hook (flycheck-mode . config-flycheck--maybe-enable-posframe)
   :config
   (progn
+    (set-face-attribute 'flycheck-posframe-background-face nil :inherit 'ivy-posframe :background nil)
     (setq flycheck-posframe-override-parameters '((alpha 100 100)))
     (flycheck-posframe-configure-pretty-defaults)))
-
 
 (provide 'config-flycheck)
 

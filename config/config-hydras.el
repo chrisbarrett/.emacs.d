@@ -69,8 +69,10 @@
   :straight (:host github :repo "Ladicle/hydra-posframe")
   :hook (after-init . hydra-posframe-enable)
   :config
-  (setq hydra-posframe-parameters '((alpha 100 100))
-        hydra-posframe-border-width 20))
+  (progn
+    (set-face-attribute 'hydra-posframe-face nil :inherit 'ivy-posframe)
+    (setq hydra-posframe-parameters '((alpha 100 100))
+          hydra-posframe-border-width 20)))
 
 
 ;; Hydra definitions
