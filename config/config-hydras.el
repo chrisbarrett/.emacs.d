@@ -320,6 +320,7 @@
    :title (hydra-title-with-faicon "toggle-on" "Toggles"))
   (""
    (("t" config-themes-toggle "theme")
+    ("i" toggle-input-method "input method")
     ("c" hide/show-comments-toggle "comments"))))
 
 (pretty-hydra-define yasnippet
@@ -419,12 +420,9 @@
     ("P" generate-password/body "generate password...")
     ("w" world-time-list "world clock"))
 
-   "Editing"
-   (("i" toggle-input-method "toggle input method"))
-
    "Emacs"
    (("r" profiler/body "profiler...")
-    ("s" straight/body "straight package manager...")
+    ("s" straight/body "lisp package manager...")
     ("v" prodigy "services..."))
 
    "Shells"
