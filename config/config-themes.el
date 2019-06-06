@@ -224,13 +224,50 @@
     :group 'config-themes)
 
   :preface
-  (defun config-themes-toggle (&optional theme)
-    (interactive)
-    (let* ((current-theme (car custom-enabled-themes))
-           (new-theme (or theme (if (equal 'doom-one current-theme)
-                                    'doom-solarized-light
-                                  'doom-one))))
-      (enable-theme new-theme)))
+  (progn
+    (defun config-themes-toggle (&optional theme)
+      (interactive)
+      (let* ((current-theme (car custom-enabled-themes))
+             (new-theme (or theme (if (equal 'doom-one current-theme)
+                                      'doom-solarized-light
+                                    'doom-one))))
+        (config-themes-override-themes new-theme)
+        (enable-theme new-theme)))
+
+    (defun config-themes-override-themes (theme)
+      (set-face-attribute 'default nil :family parameters-default-font-family)
+      (set-face-attribute 'default nil :height parameters-default-text-height)
+      (apply 'custom-theme-set-faces theme
+             (append
+
+              ;; Common settings
+
+              `((font-lock-comment-face ((t (:weight bold))))
+                (font-lock-keyword-face ((t (:weight light))))
+                (ivy-posframe-border ((t (:inherit posframe-border))))
+                (hydra-posframe-border-face ((t (:inherit posframe-border))))
+                (lsp-ui-sideline-symbol ((t :height 0.99)))
+                (lsp-ui-sideline-symbol-info ((t :foreground "grey" :slant italic :height 0.99 :weight light)))
+                (lsp-ui-sideline-current-symbol ((t (:inherit lsp-face-highlight-read :height 0.99)))))
+
+              ;; Theme-specific settings.
+
+              (pcase theme
+                ('doom-one
+                 (let ((blue "#51afef")
+                       (green "#98be65"))
+                   `((font-lock-string-face ((t (:weight light :foreground ,green))))
+                     (parenthesis ((t (:foreground "#787878" :weight light))))
+                     (outline-1 ((t (:weight bold :foreground ,blue))))
+                     ;; HACK: This doesn't seem to get set properly in the face definition.
+                     (org-block-end-line ((t :foreground "#5B6268" :background "#23272e"))))))
+
+                ('doom-solarized-light
+                 (let ((blue "#268bd2")
+                       (turquoise "#2aa198"))
+                   `((font-lock-string-face ((t (:weight light :foreground ,turquoise))))
+                     (parenthesis ((t (:foreground "#9c9c9c" :weight light))))
+                     (outline-1 ((t (:weight bold :foreground ,blue))))))))))))
 
   :config
   (progn
@@ -240,36 +277,7 @@
     ;; Customise themes.
 
     (dolist (theme '(doom-one doom-solarized-light))
-      (load-theme theme t t)
-      (custom-theme-set-faces
-       theme
-       `(default ((t (:height ,parameters-default-text-height :family ,parameters-default-font-family))))
-       `(font-lock-comment-face ((t (:weight bold))))
-       `(font-lock-keyword-face ((t (:weight light))))
-       `(ivy-posframe-border ((t (:inherit posframe-border))))
-       `(hydra-posframe-border-face ((t (:inherit posframe-border))))
-       `(lsp-ui-sideline-symbol ((t :height 0.99)))
-       `(lsp-ui-sideline-symbol-info ((t :foreground "grey" :slant italic :height 0.99 :weight light)))
-       `(lsp-ui-sideline-current-symbol ((t (:inherit lsp-face-highlight-read :height 0.99))))))
-
-    (let ((blue "#51afef")
-          (green "#98be65"))
-      (load-theme 'doom-one t t)
-      (custom-theme-set-faces
-       'doom-one
-       `(font-lock-string-face ((t (:weight light :foreground ,green))))
-       `(parenthesis ((t (:foreground "#787878" :weight light))))
-       `(outline-1 ((t (:weight bold :foreground ,blue))))
-       ;; HACK: This doesn't seem to get set properly in the face definition.
-       `(org-block-end-line ((t :foreground "#5B6268" :background "#23272e")))))
-
-    (let ((blue "#268bd2")
-          (turquoise "#2aa198"))
-      (custom-theme-set-faces
-       'doom-solarized-light
-       `(font-lock-string-face ((t (:weight light :foreground ,turquoise))))
-       `(parenthesis ((t (:foreground "#9c9c9c" :weight light))))
-       `(outline-1 ((t (:weight bold :foreground ,blue))))))
+      (load-theme theme t t))
 
     ;; Enable theme.
 
