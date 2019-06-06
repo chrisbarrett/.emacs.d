@@ -229,23 +229,36 @@
       (enable-theme new-theme)
       (pcase new-theme
         (`doom-solarized-light
-         (custom-theme-set-faces
-          'doom-solarized-light
-          '(default ((t (:foreground "#556b72" :background "#FDF6E3" :height 180))))
-          '(font-lock-comment-face ((t (:weight bold))))
-          '(font-lock-keyword-face ((t (:weight light :foreground "#268bd2"))))
-          '(parenthesis ((t (:foreground "#9c9c9c" :weight light))))
-          '(outline-1 ((t (:weight bold :foreground "#268bd2"))))))
+         (let ((blue "#268bd2")
+               (turquoise "#2aa198"))
+           (custom-theme-set-faces
+            'doom-solarized-light
+            `(default ((t (:foreground "#556b72" :background "#FDF6E3" :height 180))))
+            `(font-lock-comment-face ((t (:weight bold))))
+            `(font-lock-string-face ((t (:weight light :foreground ,turquoise))))
+            `(font-lock-keyword-face ((t (:weight light))))
+            `(parenthesis ((t (:foreground "#9c9c9c" :weight light))))
+            `(outline-1 ((t (:weight bold :foreground ,blue))))
+            `(lsp-ui-sideline-symbol ((t :height 0.99)))
+            `(lsp-ui-sideline-symbol-info ((t :foreground "grey" :slant italic :height 0.99 :weight light)))
+            `(lsp-ui-sideline-current-symbol ((t (:inherit lsp-face-highlight-read :height 0.99)))))))
+
         (`doom-one
-         (custom-theme-set-faces
-          'doom-one
-          '(default ((t (:foreground "#bbc2cf" :background "#282c34" :height 180))))
-          '(parenthesis ((t (:foreground "#787878" :weight light))))
-          '(font-lock-comment-face ((t (:weight bold))))
-          '(font-lock-keyword-face ((t (:weight light :foreground "#51afef"))))
-          '(outline-1 ((t (:weight bold :foreground "#51afef"))))
-          ;; HACK: This doesn't seem to get set properly.
-          '(org-block-end-line ((t :foreground "#5B6268" :background "#23272e"))))))
+         (let ((blue "#51afef")
+               (green "#98be65"))
+           (custom-theme-set-faces
+            'doom-one
+            `(default ((t (:foreground "#bbc2cf" :background "#282c34" :height 180))))
+            `(parenthesis ((t (:foreground "#787878" :weight light))))
+            `(font-lock-comment-face ((t (:weight bold))))
+            `(font-lock-string-face ((t (:weight light :foreground ,green))))
+            `(font-lock-keyword-face ((t (:weight light))))
+            `(outline-1 ((t (:weight bold :foreground ,blue))))
+            ;; HACK: This doesn't seem to get set properly.
+            `(org-block-end-line ((t :foreground "#5B6268" :background "#23272e")))
+            `(lsp-ui-sideline-symbol ((t :height 0.99)))
+            `(lsp-ui-sideline-symbol-info ((t :foreground "grey" :slant italic :height 0.99 :weight light)))
+            `(lsp-ui-sideline-current-symbol ((t (:inherit lsp-face-highlight-read :height 0.99))))))))
 
       ;; Apply settings to all faces, including child frames.
       (set-face-font 'default "Iosevka")
