@@ -133,7 +133,6 @@
 
 ;; Load some config files first for consistency.
 
-(use-package config-themes)
 (use-package config-basic-settings)
 
 ;; Load remaining config files.
