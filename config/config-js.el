@@ -5,23 +5,27 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'general)
+(require 'paths)
+
 
 
 (use-package js
-  :defer t
+  :mode ("\\.jsx?\\'" . js-mode)
+  :load-path paths-lisp-directory
   :config
   (progn
-    (general-setq js--prettify-symbols-alist '(("function" . ?ƒ)))
+    (with-eval-after-load 'lsp-mode
+      (add-to-list 'lsp-language-id-configuration '(js-mode . "javascript")))
+    (general-setq js-indent-level 2
+                  js-switch-indent-offset 2
+                  js--prettify-symbols-alist '(("function" . ?ƒ)))
     (custom-theme-set-faces
      'user
      '(js2-external-variable ((t (:inherit font-lock-keyword-face))))
      '(js2-function-call ((t (:inherit default :foreground nil))))
      '(js2-object-property-access ((t (:inherit js2-object-property :foreground nil :italic nil))))
      '(js2-object-property ((t (:italic t :foreground nil)))))))
-
-(use-package rjsx-mode
-  :straight t
-  :mode ("\\.jsx?\\'" . rjsx-mode))
 
 (use-package nvm
   :straight t
