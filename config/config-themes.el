@@ -188,12 +188,12 @@
 (use-package prettify-symbols-mode
   :hook (prog-mode . prettify-symbols-mode)
   :preface
-  (defun config-langs--set-up-prettify-symbols ()
+  (defun config-themes--set-up-prettify-symbols ()
     (cond
      ((derived-mode-p 'emacs-lisp-mode 'lisp-mode 'scheme-mode)
       (setq-local prettify-symbols-alist '(("lambda" . ?λ))))))
   :config
-  (add-hook 'prettify-symbols-mode-hook #'config-langs--set-up-prettify-symbols))
+  (add-hook 'prettify-symbols-mode-hook #'config-themes--set-up-prettify-symbols))
 
 ;; emojify adds support for rendering emojis.
 
@@ -233,7 +233,7 @@
                (turquoise "#2aa198"))
            (custom-theme-set-faces
             'doom-solarized-light
-            `(default ((t (:foreground "#556b72" :background "#FDF6E3" :height 180))))
+            `(default ((t (:foreground "#556b72" :background "#FDF6E3"))))
             `(font-lock-comment-face ((t (:weight bold))))
             `(font-lock-string-face ((t (:weight light :foreground ,turquoise))))
             `(font-lock-keyword-face ((t (:weight light))))
@@ -248,7 +248,7 @@
                (green "#98be65"))
            (custom-theme-set-faces
             'doom-one
-            `(default ((t (:foreground "#bbc2cf" :background "#282c34" :height 180))))
+            `(default ((t (:foreground "#bbc2cf" :background "#282c34"))))
             `(parenthesis ((t (:foreground "#787878" :weight light))))
             `(font-lock-comment-face ((t (:weight bold))))
             `(font-lock-string-face ((t (:weight light :foreground ,green))))
