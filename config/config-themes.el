@@ -213,6 +213,8 @@
 
 (use-package doom-themes
   :straight t
+  :defer t
+  :hook (after-init . (lambda () (require 'doom-themes)))
   :init
   (general-setq doom-themes-enable-bold t
                 doom-themes-enable-italic t
