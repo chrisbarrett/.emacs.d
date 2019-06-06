@@ -221,6 +221,12 @@
   (general-setq doom-themes-enable-bold t
                 doom-themes-enable-italic t
                 doom-treemacs-enable-variable-pitch nil)
+  :init
+  (defface posframe-border
+    '((t ()))
+    "Face for posframe borders."
+    :group 'config-themes)
+
   :preface
   (defun config-themes-toggle (&optional theme)
     (interactive)
@@ -228,52 +234,49 @@
            (new-theme (or theme (if (equal 'doom-one current-theme)
                                     'doom-solarized-light
                                   'doom-one))))
-      (enable-theme new-theme)
-      (pcase new-theme
-        (`doom-solarized-light
-         (let ((blue "#268bd2")
-               (turquoise "#2aa198"))
-           (custom-theme-set-faces
-            'doom-solarized-light
-            `(default ((t (:foreground "#556b72"
-                           :background "#FDF6E3"
-                           :height ,vars-default-text-height
-                           :family ,vars-default-font-family))))
-            `(font-lock-comment-face ((t (:weight bold))))
-            `(font-lock-string-face ((t (:weight light :foreground ,turquoise))))
-            `(font-lock-keyword-face ((t (:weight light))))
-            `(parenthesis ((t (:foreground "#9c9c9c" :weight light))))
-            `(outline-1 ((t (:weight bold :foreground ,blue))))
-            `(lsp-ui-sideline-symbol ((t :height 0.99)))
-            `(lsp-ui-sideline-symbol-info ((t :foreground "grey" :slant italic :height 0.99 :weight light)))
-            `(lsp-ui-sideline-current-symbol ((t (:inherit lsp-face-highlight-read :height 0.99)))))))
-
-        (`doom-one
-         (let ((blue "#51afef")
-               (green "#98be65"))
-           (custom-theme-set-faces
-            'doom-one
-            `(default ((t (:foreground "#bbc2cf"
-                           :background "#282c34"
-                           :height ,vars-default-text-height
-                           :family ,vars-default-font-family))))
-            `(parenthesis ((t (:foreground "#787878" :weight light))))
-            `(font-lock-comment-face ((t (:weight bold))))
-            `(font-lock-string-face ((t (:weight light :foreground ,green))))
-            `(font-lock-keyword-face ((t (:weight light))))
-            `(outline-1 ((t (:weight bold :foreground ,blue))))
-            ;; HACK: This doesn't seem to get set properly.
-            `(org-block-end-line ((t :foreground "#5B6268" :background "#23272e")))
-            `(lsp-ui-sideline-symbol ((t :height 0.99)))
-            `(lsp-ui-sideline-symbol-info ((t :foreground "grey" :slant italic :height 0.99 :weight light)))
-            `(lsp-ui-sideline-current-symbol ((t (:inherit lsp-face-highlight-read :height 0.99))))))))))
+      (enable-theme new-theme)))
 
   :config
   (progn
-    (load-theme 'doom-one t t)
-    (load-theme 'doom-solarized-light t t)
     (doom-themes-treemacs-config)
     (doom-themes-org-config)
+
+    ;; Customise themes.
+
+    (dolist (theme '(doom-one doom-solarized-light))
+      (load-theme theme t t)
+      (custom-theme-set-faces
+       theme
+       `(default ((t (:height ,vars-default-text-height :family ,vars-default-font-family))))
+       `(font-lock-comment-face ((t (:weight bold))))
+       `(font-lock-keyword-face ((t (:weight light))))
+       `(ivy-posframe-border ((t (:inherit posframe-border))))
+       `(hydra-posframe-border-face ((t (:inherit posframe-border))))
+       `(lsp-ui-sideline-symbol ((t :height 0.99)))
+       `(lsp-ui-sideline-symbol-info ((t :foreground "grey" :slant italic :height 0.99 :weight light)))
+       `(lsp-ui-sideline-current-symbol ((t (:inherit lsp-face-highlight-read :height 0.99))))))
+
+    (let ((blue "#51afef")
+          (green "#98be65"))
+      (load-theme 'doom-one t t)
+      (custom-theme-set-faces
+       'doom-one
+       `(font-lock-string-face ((t (:weight light :foreground ,green))))
+       `(parenthesis ((t (:foreground "#787878" :weight light))))
+       `(outline-1 ((t (:weight bold :foreground ,blue))))
+       ;; HACK: This doesn't seem to get set properly in the face definition.
+       `(org-block-end-line ((t :foreground "#5B6268" :background "#23272e")))))
+
+    (let ((blue "#268bd2")
+          (turquoise "#2aa198"))
+      (custom-theme-set-faces
+       'doom-solarized-light
+       `(font-lock-string-face ((t (:weight light :foreground ,turquoise))))
+       `(parenthesis ((t (:foreground "#9c9c9c" :weight light))))
+       `(outline-1 ((t (:weight bold :foreground ,blue))))))
+
+    ;; Enable theme.
+
     (config-themes-toggle vars-default-theme)))
 
 (provide 'config-themes)
