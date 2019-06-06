@@ -252,6 +252,7 @@
                 (font-lock-builtin-face ((t (:italic t))))
                 (ivy-posframe-border ((t (:inherit posframe-border))))
                 (hydra-posframe-border-face ((t (:inherit posframe-border))))
+                (doom-modeline-project-dir ((t (:inherit font-lock-string-face :weight normal :bold t))))
                 (lsp-ui-sideline-symbol ((t :height 0.99)))
                 (lsp-ui-sideline-symbol-info ((t :foreground "grey" :slant italic :height 0.99 :weight light)))
                 (lsp-ui-sideline-current-symbol ((t (:inherit lsp-face-highlight-read :height 0.99)))))
@@ -260,18 +261,22 @@
 
               (pcase theme
                 ('doom-one
-                 (let ((blue "#51afef")
+                 (let ((base5 "#5B6268")
+                       (blue "#51afef")
                        (green "#98be65"))
                    `((font-lock-string-face ((t (:weight light :foreground ,green))))
+                     (doom-modeline-project-parent-dir ((t (:foreground ,base5 :bold t))))
                      (parenthesis ((t (:foreground "#787878" :weight light))))
                      (outline-1 ((t (:weight bold :foreground ,blue))))
                      ;; HACK: This doesn't seem to get set properly in the face definition.
-                     (org-block-end-line ((t :foreground "#5B6268" :background "#23272e"))))))
+                     (org-block-end-line ((t :foreground ,base5 :background "#23272e"))))))
 
                 ('doom-solarized-light
-                 (let ((blue "#268bd2")
+                 (let ((base6 "#96A7A9")
+                       (blue "#268bd2")
                        (turquoise "#2aa198"))
                    `((font-lock-string-face ((t (:weight light :foreground ,turquoise))))
+                     (doom-modeline-project-parent-dir ((t (:foreground ,base6 :bold t))))
                      (parenthesis ((t (:foreground "#9c9c9c" :weight light))))
                      (outline-1 ((t (:weight bold :foreground ,blue))))))))))))
 
