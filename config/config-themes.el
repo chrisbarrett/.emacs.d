@@ -5,7 +5,7 @@
 (eval-when-compile
   (require 'use-package))
 
-(require 'vars)
+(require 'parameters)
 
 ;; menu-bar, tool-bar and scroll-bar are builtin features that aren't very
 ;; useful in a keyboard-driven interface.
@@ -243,7 +243,7 @@
       (load-theme theme t t)
       (custom-theme-set-faces
        theme
-       `(default ((t (:height ,vars-default-text-height :family ,vars-default-font-family))))
+       `(default ((t (:height ,parameters-default-text-height :family ,parameters-default-font-family))))
        `(font-lock-comment-face ((t (:weight bold))))
        `(font-lock-keyword-face ((t (:weight light))))
        `(ivy-posframe-border ((t (:inherit posframe-border))))
@@ -273,7 +273,7 @@
 
     ;; Enable theme.
 
-    (config-themes-toggle vars-default-theme)))
+    (config-themes-toggle parameters-default-theme)))
 
 (provide 'config-themes)
 

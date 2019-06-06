@@ -6,7 +6,7 @@
   (require 'use-package))
 
 (require 'paths)
-(require 'vars)
+(require 'parameters)
 
 (global-set-key (kbd "s-v") 'yank)
 (global-set-key (kbd "s-c") 'copy-region-as-kill)
@@ -24,7 +24,7 @@
 (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
 (add-to-list 'default-frame-alist '(ns-appearance . nil))
 
-(setq vars-default-text-height 180)
+(setq parameters-default-text-height 180)
 
 ;; Graphical applications in macOS inherit their process environment from
 ;; launchd, not from a shell process which loads a profile.
