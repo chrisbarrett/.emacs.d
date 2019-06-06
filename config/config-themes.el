@@ -5,6 +5,8 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'vars)
+
 ;; menu-bar, tool-bar and scroll-bar are builtin features that aren't very
 ;; useful in a keyboard-driven interface.
 
@@ -233,7 +235,10 @@
                (turquoise "#2aa198"))
            (custom-theme-set-faces
             'doom-solarized-light
-            `(default ((t (:foreground "#556b72" :background "#FDF6E3"))))
+            `(default ((t (:foreground "#556b72"
+                           :background "#FDF6E3"
+                           :height ,vars-default-text-height
+                           :family ,vars-default-font-family))))
             `(font-lock-comment-face ((t (:weight bold))))
             `(font-lock-string-face ((t (:weight light :foreground ,turquoise))))
             `(font-lock-keyword-face ((t (:weight light))))
@@ -248,7 +253,10 @@
                (green "#98be65"))
            (custom-theme-set-faces
             'doom-one
-            `(default ((t (:foreground "#bbc2cf" :background "#282c34"))))
+            `(default ((t (:foreground "#bbc2cf"
+                           :background "#282c34"
+                           :height ,vars-default-text-height
+                           :family ,vars-default-font-family))))
             `(parenthesis ((t (:foreground "#787878" :weight light))))
             `(font-lock-comment-face ((t (:weight bold))))
             `(font-lock-string-face ((t (:weight light :foreground ,green))))
@@ -258,20 +266,15 @@
             `(org-block-end-line ((t :foreground "#5B6268" :background "#23272e")))
             `(lsp-ui-sideline-symbol ((t :height 0.99)))
             `(lsp-ui-sideline-symbol-info ((t :foreground "grey" :slant italic :height 0.99 :weight light)))
-            `(lsp-ui-sideline-current-symbol ((t (:inherit lsp-face-highlight-read :height 0.99))))))))
-
-      ;; Apply settings to all faces, including child frames.
-      (set-face-font 'default "Iosevka")
-      (set-face-attribute 'default nil :height 180)))
+            `(lsp-ui-sideline-current-symbol ((t (:inherit lsp-face-highlight-read :height 0.99))))))))))
 
   :config
   (progn
     (load-theme 'doom-one t t)
     (load-theme 'doom-solarized-light t t)
-
     (doom-themes-treemacs-config)
     (doom-themes-org-config)
-    (config-themes-toggle 'doom-solarized-light)))
+    (config-themes-toggle vars-default-theme)))
 
 (provide 'config-themes)
 
