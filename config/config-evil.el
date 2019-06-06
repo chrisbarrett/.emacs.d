@@ -135,10 +135,6 @@
     (evil-set-initial-state 'ibuffer-mode 'motion)
     (evil-set-initial-state 'eshell-mode 'insert)
 
-    (evil-set-initial-state 'mu4e-main-mode 'emacs)
-    (evil-set-initial-state 'mu4e-headers-mode 'emacs)
-    (evil-set-initial-state 'mu4e-view-mode 'motion)
-
     (evil-set-initial-state 'nix-repl-mode 'insert)
 
     (evil-set-initial-state 'prodigy-mode 'motion)
@@ -146,9 +142,6 @@
     (evil-set-initial-state 'anaconda-mode-view-mode 'motion)
 
     (evil-set-initial-state 'racer-help-mode 'motion)
-
-    (evil-set-initial-state 'indium-inspector-mode 'motion)
-    (evil-set-initial-state 'indium-repl-mode 'insert)
 
     (evil-set-initial-state 'org-agenda-mode 'motion)
 

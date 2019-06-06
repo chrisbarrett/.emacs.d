@@ -128,11 +128,7 @@
                     (makefile-bsdmake-mode all-the-icons-fileicon "gnu" :face all-the-icons-dorange)
                     (gfm-mode all-the-icons-faicon "github-alt" :v-adjust 0.0 :face all-the-icons-lblue)
                     (helpful-mode all-the-icons-icon-for-mode help-mode)
-                    (debugger-mode all-the-icons-faicon "stack-overflow" :v-adjust 0.05 :face all-the-icons-pink)
-                    (mu4e-main-mode all-the-icons-octicon "inbox" :face all-the-icons-dsilver)
-                    (mu4e-headers-mode all-the-icons-octicon "inbox" :face all-the-icons-dsilver)
-                    (mu4e-view-mode all-the-icons-octicon "comment-discussion" :face all-the-icons-dsilver)
-                    (mu4e-compose-mode all-the-icons-octicon "comment-discussion" :face all-the-icons-orange)))
+                    (debugger-mode all-the-icons-faicon "stack-overflow" :v-adjust 0.05 :face all-the-icons-pink)))
       (add-to-list 'all-the-icons-mode-icon-alist spec))))
 
 ;; hydra provides keyboard-driven UI elements.
