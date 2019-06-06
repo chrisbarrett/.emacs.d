@@ -121,6 +121,16 @@
   :if (equal system-type 'darwin)
   :demand t)
 
+
+;; Load host-specific overrides for vars.
+
+(when (file-exists-p paths-personal-config)
+  (load-file paths-personal-config))
+
+(when (file-exists-p paths-hostfile)
+  (load-file paths-hostfile))
+
+
 ;; Load some config files first for consistency.
 
 (use-package config-themes)
@@ -137,14 +147,6 @@
                              (directory-files paths-config-directory)
                              nil))
   (eval `(use-package ,feature :demand t)))
-
-;; Load host-specific overrides last.
-
-(when (file-exists-p paths-personal-config)
-  (load-file paths-personal-config))
-
-(when (file-exists-p paths-hostfile)
-  (load-file paths-hostfile))
 
 
 ;;; Print overall startup time.
