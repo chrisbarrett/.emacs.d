@@ -236,20 +236,21 @@
              (new-theme (or theme (if (equal 'doom-one current-theme)
                                       'doom-solarized-light
                                     'doom-one))))
-        (config-themes-override-themes new-theme)
-        (enable-theme new-theme)))
+        (enable-theme new-theme)
+        (config-themes-override-themes new-theme)))
 
     (defun config-themes-override-themes (theme)
       (set-face-attribute 'default nil :family parameters-default-font-family)
       (set-face-attribute 'default nil :height parameters-default-text-height)
+      (set-face-attribute 'font-lock-keyword-face nil :weight 'light)
+      (set-face-attribute 'font-lock-string-face nil :weight 'light)
+
       (apply 'custom-theme-set-faces theme
              (append
 
               ;; Common settings
 
               `((font-lock-comment-face ((t (:weight bold))))
-                (font-lock-keyword-face ((t (:weight light))))
-                (font-lock-builtin-face ((t (:italic t))))
                 (ivy-posframe-border ((t (:inherit posframe-border))))
                 (hydra-posframe-border-face ((t (:inherit posframe-border))))
                 (doom-modeline-project-dir ((t (:inherit font-lock-string-face :weight normal :bold t))))
@@ -262,10 +263,8 @@
               (pcase theme
                 ('doom-one
                  (let ((base5 "#5B6268")
-                       (blue "#51afef")
-                       (green "#98be65"))
-                   `((font-lock-string-face ((t (:weight light :foreground ,green))))
-                     (doom-modeline-project-parent-dir ((t (:foreground ,base5 :bold t))))
+                       (blue "#51afef"))
+                   `((doom-modeline-project-parent-dir ((t (:foreground ,base5 :bold t))))
                      (parenthesis ((t (:foreground "#787878" :weight light))))
                      (outline-1 ((t (:weight bold :foreground ,blue))))
                      ;; HACK: This doesn't seem to get set properly in the face definition.
@@ -273,10 +272,8 @@
 
                 ('doom-solarized-light
                  (let ((base6 "#96A7A9")
-                       (blue "#268bd2")
-                       (turquoise "#2aa198"))
-                   `((font-lock-string-face ((t (:weight light :foreground ,turquoise))))
-                     (doom-modeline-project-parent-dir ((t (:foreground ,base6 :bold t))))
+                       (blue "#268bd2"))
+                   `((doom-modeline-project-parent-dir ((t (:foreground ,base6 :bold t))))
                      (parenthesis ((t (:foreground "#9c9c9c" :weight light))))
                      (outline-1 ((t (:weight bold :foreground ,blue))))))))))))
 
