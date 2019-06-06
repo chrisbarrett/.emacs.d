@@ -68,7 +68,10 @@
     (add-to-list 'paren-face-modes 'rust-mode)
     (add-to-list 'paren-face-modes 'yaml-mode)
 
-    (setq paren-face-regexp (rx (any "{}():;,")))
+    (setq paren-face-regexp (rx (any "{}();,")))
+
+    (font-lock-add-keywords 'js-mode
+                    `((,(rx (any ":")) 0 'parenthesis)))
 
     (font-lock-add-keywords 'rust-mode
                     `(;; Type assertions
@@ -246,6 +249,7 @@
 
               `((font-lock-comment-face ((t (:weight bold))))
                 (font-lock-keyword-face ((t (:weight light))))
+                (font-lock-builtin-face ((t (:italic t))))
                 (ivy-posframe-border ((t (:inherit posframe-border))))
                 (hydra-posframe-border-face ((t (:inherit posframe-border))))
                 (lsp-ui-sideline-symbol ((t :height 0.99)))
