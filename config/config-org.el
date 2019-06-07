@@ -334,6 +334,7 @@
 
 (use-package org
   :defer t
+  :straight t
   :general
   (:states 'normal :keymaps 'org-mode-map "RET" #'org-return)
   (:keymaps 'org-mode-map

@@ -118,6 +118,7 @@
  ("nvm.el" . "4aeb672d543ce2372dcca289719092aa4c38a6cd")
  ("ob-restclient.el" . "fab4559d07993ce554ab6b06b50f4b445b36716c")
  ("omnisharp-emacs" . "9c0bc9de44e71184e3b23cce62d70db43cf616e7")
+ ("org" . "fb509122280d8215b6a5ed2c55d23d35ce8df0cc")
  ("package-lint" . "152492f8325451f002c5090b837f7abcf5861e8b")
  ("page-break-lines" . "6f19d894bda6a981c10a58df5e23419f4d2ba353")
  ("paren-face" . "a45d111153a76c481fa0b36d6172ac90e073dfc4")
