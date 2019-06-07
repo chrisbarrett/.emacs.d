@@ -662,6 +662,9 @@
   :general
   (:states 'normal :keymaps 'org-mode-map "C-c C-k" #'cb-org-ctrl-c-ctrl-k))
 
+(use-package ox-slack
+  :commands (org-slack-export-to-clipboard-as-slack))
+
 (provide 'config-org)
 
 ;;; config-org.el ends here
