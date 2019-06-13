@@ -81,6 +81,16 @@
   (require 'all-the-icons)
   (require 'pretty-hydra))
 
+(defmacro pretty-hydra-define-at-bottom (name body heads-plist)
+  "Show this hydra at the bottom of the screen so it doesn't obscure code."
+  (declare (indent defun))
+  `(pretty-hydra-define ,name ,(append '(:pre (progn
+                                                (setq hydra-hint-display-type 'lv))
+                                         :post (when (featurep 'hydra-posframe)
+                                                 (hydra-posframe-enable)))
+                                       body)
+     ,heads-plist))
+
 (pretty-hydra-define comments
   (:hint nil
    :color teal
@@ -93,7 +103,7 @@
    "With Copy"
    (("y" evil-funcs/copy-and-comment-lines "copy"))))
 
-(pretty-hydra-define font-scale
+(pretty-hydra-define-at-bottom font-scale
   (:hint nil
    :color amaranth
    :title (hydra-title-with-faicon "search-plus" "Font Scale"))
@@ -168,7 +178,7 @@
     ("t" treemacs "file tree")
     ("v" reload-file "reload"))))
 
-(pretty-hydra-define errors
+(pretty-hydra-define-at-bottom errors
   (:hint nil
    :color teal
    :title (hydra-title-with-mat-icon "error_outline" "Errors"))
@@ -279,7 +289,7 @@
    (("/" counsel-projectile-rg "search...")
     ("r" projectile-replace "replace..."))))
 
-(pretty-hydra-define parens
+(pretty-hydra-define-at-bottom parens
   (:hint nil
    :color teal
    :title (hydra-title-with-mat-icon "code" "Smartparens"))
@@ -398,8 +408,9 @@
     ("d" magit-blame-removal "rev removed")
     ("r" magit-blame-reverse "last rev where exists"))))
 
-(pretty-hydra-define git-hunks
+(pretty-hydra-define-at-bottom git-hunks
   (:foreign-keys run
+   :hint nil
    :color red
    :title (hydra-title-with-aicon "git" "Git Hunks"))
   ("Navigate"
@@ -462,17 +473,10 @@
     ("pr" straight-rebuild-package "rebuild...")
     ("pu" straight-pull-package "pull..."))))
 
-(pretty-hydra-define lsp-debugger
+(pretty-hydra-define-at-bottom lsp-debugger
   (:hint nil
    :color teal
-   :title (hydra-title-with-faicon "bug" "LSP Debugger")
-   ;; Show this hydra at the bottom of the screen so it doesn't obscure code.
-   :pre
-   (progn
-     (setq hydra-hint-display-type 'lv))
-   :post
-   (when (featurep 'hydra-posframe)
-     (hydra-posframe-enable)))
+   :title (hydra-title-with-faicon "bug" "LSP Debugger"))
   ("Global"
    (("g" dap-debug "run debugger...")
     ("G" dap-debug-edit-template "debug with configuration...")
