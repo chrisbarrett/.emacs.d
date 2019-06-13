@@ -84,10 +84,10 @@
 (defmacro pretty-hydra-define-at-bottom (name body heads-plist)
   "Show this hydra at the bottom of the screen so it doesn't obscure code."
   (declare (indent defun))
-  `(pretty-hydra-define ,name ,(append '(:pre (setq hydra-hint-display-type 'lv)
-                                         :post (when (featurep 'hydra-posframe)
-                                                 (hydra-posframe-enable)))
-                                       body)
+  `(pretty-hydra-define ,name (:pre (setq hydra-hint-display-type 'lv)
+                               :post (when (featurep 'hydra-posframe)
+                                       (hydra-posframe-enable))
+                               ,@body)
      ,heads-plist))
 
 (pretty-hydra-define comments
