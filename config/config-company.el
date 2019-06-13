@@ -45,7 +45,8 @@
    "C-p" #'company-box--prev-line)
   :hook (company-mode . company-box-mode)
   :config
-  (setq company-box-enable-icon nil))
+  (general-setq company-box-icons-alist 'company-box-icons-all-the-icons
+                company-box-enable-icon t))
 
 (use-package company-dabbrev
   :after company
