@@ -55,6 +55,21 @@
                       :major-modes '(dockerfile-mode)
                       :server-id 'dockerfile))))
 
+(use-package dap-mode
+  :straight t
+  :hook ((lsp-mode . dap-mode)
+         (lsp-mode . dap-ui-mode))
+  :init
+  (use-package dap-node :hook (js-mode . dap-node-setup))
+  :preface
+  (defvar config-lsp--dap-cache-dir (expand-file-name "dap" paths-cache-directory))
+  :init
+  (progn
+    (f-mkdir config-lsp--dap-cache-dir)
+    (general-setq dap-utils-extension-path (expand-file-name "extensions" config-lsp--dap-cache-dir)))
+  :config
+  (general-setq dap--breakpoints-file (expand-file-name "breakpoints" config-lsp--dap-cache-dir)))
+
 (use-package lsp-java
   :straight t
   :defer t

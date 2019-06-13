@@ -462,6 +462,41 @@
     ("pr" straight-rebuild-package "rebuild...")
     ("pu" straight-pull-package "pull..."))))
 
+(pretty-hydra-define lsp-debugger
+  (:hint nil
+   :color teal
+   :title (hydra-title-with-faicon "bug" "LSP Debugger")
+   ;; Show this hydra at the bottom of the screen so it doesn't obscure code.
+   :pre
+   (progn
+     (setq hydra-hint-display-type 'lv))
+   :post
+   (when (featurep 'hydra-posframe)
+     (hydra-posframe-enable)))
+  ("Global"
+   (("g" dap-debug "run debugger...")
+    ("G" dap-debug-edit-template "debug with configuration...")
+    ("i" dap-ui-inspect "inspect")
+    ("K" dap-ui-inspect-thing-at-point "inspect at point..."))
+   ""
+   (("b" dap-ui-breakpoints "show breakpoints")
+    ("l" dap-ui-sessions "list sessions")
+    ("r" dap-ui-repl "REPL")
+    ("x" dap-disconnect "disconnect"))
+   "Breakpoints"
+   (("TAB" dap-breakpoint-toggle "toggle on line")
+    ("k" dap-breakpoint-condition "set condition...")
+    ("h" dap-breakpoint-hit-condition "set hit condition..."))
+   "Eval"
+   (("e" dap-eval "string...")
+    ("E" dap-eval-thing-at-point "thing at point..."))
+   "Control"
+   (("." dap-next "next" :exit nil)
+    ("c" dap-continue "continue" :exit nil)
+    ("s" dap-step-in "step in" :exit nil)
+    ("u" dap-step-out "step out" :exit nil)
+    ("R" dap-restart-frame "restart frame" :exit nil))))
+
 
 
 (pretty-hydra-define main-dispatcher
@@ -477,7 +512,8 @@
     ("f" files/body "files...")
     ("g" git-and-files/body "git and goto...")
     ("h" help/body "help...")
-    ("k" kill/body "kill..."))
+    ("k" kill/body "kill...")
+    ("." lsp-debugger/body "debugger..."))
    ""
    (("n" narrowing/body "narrowing...")
     ("o" org/body "org...")
