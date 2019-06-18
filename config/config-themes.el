@@ -41,7 +41,6 @@
     (setq page-break-lines-modes
           '(prog-mode
             text-mode
-            imenu-list-major-mode
             compilation-mode
             help-mode
             org-agenda-mode))
@@ -148,13 +147,6 @@
           (force-mode-line-update)))))
   :config
   (advice-add 'lv-window :after #'config-themes--set-up-hydra-buffer))
-
-;; imenu-list provides a list UI for imenu items.
-
-(use-package imenu-list
-  :straight t
-  :commands (imenu-list)
-  :general (:states 'normal :keymaps 'imenu-list-major-mode-map "q" #'quit-window))
 
 ;; which-key displays available key bindings under the current prefix.
 

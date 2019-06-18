@@ -472,6 +472,15 @@
     ("pr" straight-rebuild-package "rebuild...")
     ("pu" straight-pull-package "pull..."))))
 
+(pretty-hydra-define language-server
+  (:hint nil
+   :color teal
+   :title (hydra-title-with-octicon "code" "Language Server"))
+  ("Peek"
+   (("d" lsp-ui-peek-find-definitions "definitions")
+    ("i" lsp-ui-peek-find-implementation "implementation")
+    ("r" lsp-ui-peek-find-references "references"))))
+
 (pretty-hydra-define-at-bottom lsp-debugger
   (:hint nil
    :color teal
@@ -518,7 +527,8 @@
     ("k" kill/body "kill...")
     ("." lsp-debugger/body "debugger..."))
    ""
-   (("n" narrowing/body "narrowing...")
+   (("l" language-server/body  "language server...")
+    ("n" narrowing/body "narrowing...")
     ("o" org/body "org...")
     ("p" project/body "project...")
     ("t" toggles/body "toggles...")
@@ -544,7 +554,6 @@
     ("?" counsel-descbinds "describe key bindings")
     ("|" cb/toggle-window-split "toggle window split")
     ("i" counsel-imenu "imenu")
-    ("l" imenu-list-smart-toggle "imenu list")
     ("q" delete-window "delete window"))))
 
 ;; Use general to globally bind the main dispatcher.

@@ -113,27 +113,7 @@
                    (window-width   . 0.25)))
 
     (setq nameless-prefix ":")
-    (setq nameless-private-prefix t))
-
-  ;; Teach nameless mode how to insinuate itself into imenu-list.
-  :init
-  (add-hook 'imenu-list-update-hook #'config-elisp--configure-imenu-list)
-  :preface
-  (progn
-    (defvar nameless-current-name nil)
-
-    (defun config-elisp--configure-imenu-list ()
-      (when (bound-and-true-p imenu-list-buffer-name)
-        (with-current-buffer imenu-list-buffer-name
-          (if-let* ((nameless-current-name (config-elisp--nameless-name-for-ilist-buffer)))
-              (nameless-mode +1)
-            (nameless-mode -1)))))
-
-    (defun config-elisp--nameless-name-for-ilist-buffer ()
-      (when (bound-and-true-p imenu-list--displayed-buffer)
-        (with-current-buffer imenu-list--displayed-buffer
-          (when (derived-mode-p 'emacs-lisp-mode)
-            nameless-current-name))))))
+    (setq nameless-private-prefix t)))
 
 ;; debug.el defines the emacs lisp debugger.
 
