@@ -366,13 +366,12 @@ Interactively, reverse the characters in the current region."
   :general (:keymaps 'deadgrep-mode-map "C-c C-w" #'deadgrep-edit-mode)
 
   :preface
-  (progn
-    (defun config-editing--deadgrep-requery ()
-      (interactive)
-      (let ((button (save-excursion
-                      (goto-char (point-min))
-                      (forward-button 1))))
-        (button-activate button))))
+  (defun config-editing--deadgrep-requery ()
+    (interactive)
+    (let ((button (save-excursion
+                    (goto-char (point-min))
+                    (forward-button 1))))
+      (button-activate button)))
   :general (:states 'normal :keymaps 'deadgrep-mode-map "c" #'config-editing--deadgrep-requery)
 
   :preface
