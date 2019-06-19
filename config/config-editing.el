@@ -377,10 +377,17 @@ Interactively, reverse the characters in the current region."
 
   :general (:keymaps 'deadgrep-mode-map "C-c C-w" #'deadgrep-edit-mode)
   :preface
-  (defun config-editing--on-deadgrep-edit-mode (&rest _)
+  (defun config-editing--on-enter-deadgrep-edit-mode (&rest _)
     (message "Entering edit mode. Changes will be made to underlying files as you edit."))
   :config
-  (advice-add #'deadgrep-edit-mode :after #'config-editing--on-deadgrep-edit-mode))
+  (advice-add #'deadgrep-edit-mode :after #'config-editing--on-enter-deadgrep-edit-mode)
+
+  :preface
+  (defun config-editing--on-exit-deadgrep-edit-mode (&rest _)
+    (when (derived-mode-p 'deadgrep-edit-mode)
+      (message "Exiting edit mode.")))
+  :config
+  (advice-add #'deadgrep-mode :before #'config-editing--on-exit-deadgrep-edit-mode))
 
 (provide 'config-editing)
 
