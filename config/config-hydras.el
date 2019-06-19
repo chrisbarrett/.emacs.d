@@ -539,7 +539,8 @@
    "Actions"
    (("SPC" counsel-M-x "run command (M-x)")
     ("!" shell-command "run shell command")
-    ("/" counsel-projectile-rg "search project")
+    ("/" counsel-projectile-rg "search (incrementally)")
+    ("S" deadgrep "search (ripgrep)")
     (":" eval-expression "evaluate lisp")
     ("'" poporg-dwim "edit comment...")
     ("C" compile "compile")

@@ -372,6 +372,30 @@ Interactively, reverse the characters in the current region."
   :config
   (setq rg-group-result t))
 
+;; deadgrep provides a polished frontend for `ripgrep'.
+
+(use-package deadgrep
+  :straight t
+  :commands (deadgrep)
+
+  :preface
+  (progn
+    (defun config-editing--deadgrep-change ()
+      (interactive)
+      (let ((button (save-excursion
+                      (goto-char (point-min))
+                      (forward-button 1)
+                      (point))))
+        (push-button button))))
+  :general (:states 'normal :keymaps 'deadgrep-mode-map "c" #'config-editing--deadgrep-change)
+
+  :general (:keymaps 'deadgrep-mode-map "C-c C-w" #'deadgrep-edit-mode)
+  :preface
+  (defun config-editing--on-deadgrep-edit-mode (&rest _)
+    (message "Entering edit mode. Changes will be made to underlying files as you edit."))
+  :config
+  (advice-add #'deadgrep-edit-mode :after #'config-editing--on-deadgrep-edit-mode))
+
 ;; wgrep allows you to edit search results in a buffer then write those changes
 ;; to disk.
 
