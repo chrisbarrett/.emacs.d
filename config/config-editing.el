@@ -114,6 +114,8 @@ Interactively, reverse the characters in the current region."
 
 
 
+;; Provides nice commands for changing text scale for all buffers simultaneously.
+
 (use-package default-text-scale
   :commands (default-text-scale-increase default-text-scale-decrease default-text-scale-reset)
   :straight t)
