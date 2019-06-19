@@ -363,6 +363,7 @@ Interactively, reverse the characters in the current region."
 (use-package deadgrep
   :straight t
   :commands (deadgrep)
+  :general (:keymaps 'deadgrep-mode-map "C-c C-w" #'deadgrep-edit-mode)
 
   :preface
   (progn
@@ -374,7 +375,6 @@ Interactively, reverse the characters in the current region."
         (button-activate button))))
   :general (:states 'normal :keymaps 'deadgrep-mode-map "c" #'config-editing--deadgrep-requery)
 
-  :general (:keymaps 'deadgrep-mode-map "C-c C-w" #'deadgrep-edit-mode)
   :preface
   (defun config-editing--on-enter-deadgrep-edit-mode (&rest _)
     (message "Entering edit mode. Changes will be made to underlying files as you edit."))
