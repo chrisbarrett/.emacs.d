@@ -33,20 +33,6 @@
                 :require-match t
                 :caller 'counsel-recentf))))
 
-
-
-;; Prefill counsel search functions with the symbol at point.
-
-(autoload 'ivy-immediate-done "ivy")
-
-(defun counsel-hacks--populate-with-symbol-at-point (f &rest args)
-  (if-let* ((sym (symbol-at-point)))
-      (apply f (symbol-name sym) (cdr args))
-    (apply f args)))
-
-(advice-add 'counsel-rg :around #'counsel-hacks--populate-with-symbol-at-point)
-(advice-add 'counsel-ag :around #'counsel-hacks--populate-with-symbol-at-point)
-
 (provide 'counsel-hacks)
 
 ;;; counsel-hacks.el ends here

@@ -132,7 +132,9 @@
   :straight t
   :hook (after-init . counsel-projectile-mode)
   :config
-  (setq counsel-projectile-switch-project-action #'dired))
+  (progn
+    (setq counsel-projectile-rg-initial-input '(projectile-symbol-or-selection-at-point))
+    (setq counsel-projectile-switch-project-action #'dired)))
 
 (provide 'config-projectile)
 
