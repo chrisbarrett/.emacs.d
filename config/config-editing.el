@@ -390,8 +390,8 @@ Interactively, reverse the characters in the current region."
   (advice-add #'deadgrep-mode :before #'config-editing--on-exit-deadgrep-edit-mode)
 
   :preface
-  (defun deadgrep-from-ivy (query)
-    (interactive (list (if (bound-and-true-p ivy-text) ivy-text "")))
+  (defun deadgrep-from-ivy ()
+    (interactive)
     (ivy-exit-with-action
      (lambda (&rest _)
        (deadgrep (replace-regexp-in-string (rx (+ space)) ".*" ivy-text)))))
