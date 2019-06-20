@@ -394,7 +394,8 @@ Interactively, reverse the characters in the current region."
     (interactive)
     (ivy-exit-with-action
      (lambda (&rest _)
-       (deadgrep (replace-regexp-in-string (rx (+ space)) ".*" ivy-text)))))
+       (let ((deadgrep--search-type 'regexp))
+         (deadgrep (replace-regexp-in-string (rx (+ space)) ".*?" ivy-text))))))
   :init
   (general-define-key :keymaps 'counsel-ag-map "C-c C-e" #'deadgrep-from-ivy))
 
