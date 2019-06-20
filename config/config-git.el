@@ -15,7 +15,8 @@
 (use-package magit
   :straight t
   :commands (magit-status magit-blame magit-branch-and-checkout)
-  :general (:states 'normal :keymaps 'magit-refs-mode-map "." #'magit-branch-and-checkout)
+  :general (:keymaps 'transient-base-map "<escape>" #'transient-quit-one
+            :states 'normal :keymaps 'magit-refs-mode-map "." #'magit-branch-and-checkout)
   :functions (magit-display-buffer-fullframe-status-v1)
   :preface
   (progn
