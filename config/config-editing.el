@@ -387,7 +387,16 @@ Interactively, reverse the characters in the current region."
     (when (derived-mode-p 'deadgrep-edit-mode)
       (message "Exiting edit mode.")))
   :config
-  (advice-add #'deadgrep-mode :before #'config-editing--on-exit-deadgrep-edit-mode))
+  (advice-add #'deadgrep-mode :before #'config-editing--on-exit-deadgrep-edit-mode)
+
+  :preface
+  (defun deadgrep-from-ivy (query)
+    (interactive (list (if (bound-and-true-p ivy-text) ivy-text "")))
+    (ivy-exit-with-action
+     (lambda (&rest _)
+       (deadgrep (replace-regexp-in-string (rx (+ space)) ".*" ivy-text)))))
+  :init
+  (general-define-key :keymaps 'counsel-ag-map "C-c C-e" #'deadgrep-from-ivy))
 
 (provide 'config-editing)
 
