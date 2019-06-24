@@ -366,6 +366,8 @@ Interactively, reverse the characters in the current region."
   :straight t
   :commands (deadgrep)
   :general (:keymaps 'deadgrep-mode-map "C-c C-w" #'deadgrep-edit-mode)
+  :init
+  (defalias 'rg #'deadgrep)
 
   :preface
   (defun config-editing--deadgrep-requery ()
