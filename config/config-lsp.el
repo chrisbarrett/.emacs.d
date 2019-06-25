@@ -24,7 +24,8 @@
          (js-mode . lsp)
          (python . lsp)
          (rust-mode . lsp)
-         (sh-mode . lsp))
+         (sh-mode . lsp)
+         (typescript-mode . lsp))
 
   :preface
   (defun config-lsp--setup-buffer ()
