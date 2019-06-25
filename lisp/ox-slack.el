@@ -7,7 +7,7 @@
 
 (autoload 'gfm-mode "markdown-mode")
 
-(defun ox-slack-markup-headline (headline contents info)
+(defun ox-slack--markup-headline (headline contents info)
   (let* ((text (org-export-data (org-element-property :title headline) info))
          (todo (org-export-data (org-element-property :todo-keyword headline) info))
          (todo-text (unless (or (not (plist-get info :with-todo-keywords))
@@ -18,13 +18,13 @@
      "*" text "*"
      "\n\n" (when (org-string-nw-p contents) contents))))
 
-(defun ox-slack-italic (_italic contents _info)
+(defun ox-slack--italic (_italic contents _info)
   (format "_%s_" contents))
 
-(defun ox-slack-bold (_bold contents _info)
+(defun ox-slack--bold (_bold contents _info)
   (format "*%s*" contents))
 
-(defun ox-slack-item (item contents info)
+(defun ox-slack--item (item contents info)
   (let* ((type (org-element-property :type (org-export-get-parent item)))
          (struct (org-element-property :structure item))
          (bullet (if (not (eq type 'ordered)) "-"
@@ -46,11 +46,23 @@
             (and contents
                  (org-trim (replace-regexp-in-string "^" "    " contents))))))
 
+(defun ox-slack--fixed-width-block (example-block _contents info)
+  "Transcode EXAMPLE-BLOCK element into Markdown format.
+CONTENTS is nil.  INFO is a plist used as a communication
+channel."
+  (format "```\n%s\n```"
+          (org-remove-indentation
+           (org-export-format-code-default example-block info))))
+
 (org-export-define-derived-backend 'slack 'md
-  :translate-alist '((headline . ox-slack-markup-headline)
-                     (item . ox-slack-item)
-                     (italic . ox-slack-markup-italic)
-                     (bold . ox-slack-markup-bold))
+  :translate-alist '((headline . ox-slack--markup-headline)
+                     (toc . ox-slack--toc)
+                     (item . ox-slack--item)
+                     (italic . ox-slack--italic)
+                     (bold . ox-slack--bold)
+                     (example-block . ox-slack--fixed-width-block)
+                     (fixed-width . ox-slack--fixed-width-block)
+                     (src-block . ox-slack--fixed-width-block))
   :menu-entry
   '(?s "Export to Slack Markup"
        ((?s "To temporary buffer"

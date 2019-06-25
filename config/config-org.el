@@ -74,7 +74,7 @@
 
  ;; org-export
 
- org-export-backends '(ascii html latex odt gfm koma-letter custom-confluence)
+ org-export-backends '(ascii html latex odt slack gfm koma-letter custom-confluence)
  org-html-html5-fancy t
  org-html-postamble nil
  org-export-exclude-tags '("noexport" "no_export" "crypt")
