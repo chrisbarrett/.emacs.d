@@ -65,7 +65,9 @@ channel."
                      (src-block . ox-slack--fixed-width-block))
   :menu-entry
   '(?s "Export to Slack Markup"
-       ((?s "To temporary buffer"
+       ((?c "To clipboard"
+            (lambda (a s v b) (ox-slack-export-to-clipboard a s v)))
+        (?s "To temporary buffer"
             (lambda (a s v b) (ox-slack-export-to-buffer a s v))))))
 
 (defun ox-slack-export-to-buffer (&optional async subtreep visible-only)
@@ -75,6 +77,18 @@ ASYNC, SUBTREEP and VISIBLE-ONLY are as specified in the export dispatcher."
   (interactive)
   (org-export-to-buffer 'slack "*Org Slack Export*"
     async subtreep visible-only nil nil (lambda () (gfm-mode))))
+
+(defun ox-slack-export-to-clipboard (&optional async subtreep visible-only)
+  "Export the buffer to Slack markup.
+
+ASYNC, SUBTREEP and VISIBLE-ONLY are as specified in the export dispatcher."
+  (interactive)
+  (let ((org-export-show-temporary-export-buffer nil))
+    (org-export-to-buffer 'slack "*Org Slack Export*"
+      async subtreep visible-only nil nil (lambda ()
+                                            (gfm-mode)
+                                            (kill-new (buffer-string))
+                                            (message "Buffer contents copied to clipboard")))))
 
 (provide 'ox-slack)
 
