@@ -71,7 +71,7 @@
  ("flycheck-package" . "6d99248b45eea1e5236062f38e524230efdb1a84")
  ("flycheck-posframe" . "d1591cfaef04c67e1a01a32833f140ab27c33773")
  ("flycheck-rust" . "a139cd53c5062697e9ed94ad80b803c37d999600")
- ("forge" . "fc323c4398b3f41c0a3f9056350d224f3cb948b0")
+ ("forge" . "6f719e2686191043d56833443b91bcaddca77116")
  ("general.el" . "356654668ee4f77aa330398c54b62fb33345fdff")
  ("ghub" . "e7f5832d86b2e5286469e1167c0dcc2903c4d250")
  ("git-auto-commit-mode" . "2c8197e5d7813734d6a49f9b9c0b227b7ae022a8")
