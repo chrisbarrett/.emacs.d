@@ -1,4 +1,4 @@
-;;; ox-slack.el --- Export backend for Rumble Cell Updates  -*- lexical-binding: t; -*-
+;;; ox-slack.el --- Export backend for Slack-style markdown.  -*- lexical-binding: t; -*-
 ;;; Commentary:
 ;;; Code:
 
