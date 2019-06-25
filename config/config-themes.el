@@ -246,6 +246,7 @@
                 (ivy-posframe-border ((t (:inherit posframe-border))))
                 (hydra-posframe-border-face ((t (:inherit posframe-border))))
                 (doom-modeline-project-dir ((t (:inherit font-lock-string-face :weight normal :bold t))))
+                (markdown-list-face ((t :inherit markdown-blockquote-face)))
                 (lsp-ui-sideline-symbol ((t :height 0.99)))
                 (lsp-ui-sideline-symbol-info ((t :foreground "grey" :slant italic :height 0.99 :weight light)))
                 (lsp-ui-sideline-current-symbol ((t (:inherit lsp-face-highlight-read :height 0.99)))))
