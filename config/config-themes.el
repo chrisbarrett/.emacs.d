@@ -64,6 +64,7 @@
 
     (add-to-list 'paren-face-modes 'scala-mode)
     (add-to-list 'paren-face-modes 'js-mode)
+    (add-to-list 'paren-face-modes 'typescript-mode)
     (add-to-list 'paren-face-modes 'rust-mode)
     (add-to-list 'paren-face-modes 'yaml-mode)
 
