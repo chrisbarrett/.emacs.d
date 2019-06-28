@@ -393,6 +393,8 @@
       (let (org-log-done org-log-states) ; turn off logging
         (org-todo (if (zerop n-todo) "DONE" "TODO")))))
 
+  :hook (org-mode . visual-line-mode)
+
   :commands
   (org-refile)
 
