@@ -5,8 +5,6 @@
 (eval-when-compile
   (require 'use-package))
 
-(defvar lsp-dockerfile-server "docker-langserver")
-
 (use-package lsp-mode
   :straight t
   :defer t
@@ -47,14 +45,7 @@
 
     (add-hook 'lsp-after-open-hook #'config-lsp--setup-buffer)
 
-    (define-key lsp-mode-map (kbd "C-c SPC") #'lsp-execute-code-action)
-
-    ;; Add custom LSP clients.
-
-    (lsp-register-client
-     (make-lsp-client :new-connection (lsp-stdio-connection (format "%s --stdio" lsp-dockerfile-server))
-                      :major-modes '(dockerfile-mode)
-                      :server-id 'dockerfile))))
+    (define-key lsp-mode-map (kbd "C-c SPC") #'lsp-execute-code-action)))
 
 (use-package dap-mode
   :straight t
