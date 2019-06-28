@@ -268,12 +268,6 @@
             "zn" #'evil-ispell-next-spelling-error
             "zp" #'evil-ispell-previous-spelling-error))
 
-(use-package evil-escape
-  :straight t
-  :hook (evil-mode . evil-escape-mode)
-  :config
-  (general-setq evil-escape-key-sequence "jk"))
-
 ;; iedit adds useful mass-renaming functionality. This package provides evil
 ;; compatability.
 
