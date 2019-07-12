@@ -19,7 +19,8 @@
   :load-path paths-lisp-directory
   :custom ((js-indent-level 2)
            (js-switch-indent-offset 2)
-           (js--prettify-symbols-alist '(("function" . ?ƒ))))
+           (js--prettify-symbols-alist '(("function" . ?ƒ)))
+           (js-js-tmpdir (f-join paths-cache-directory "js")))
   :config
   (with-eval-after-load 'lsp-mode
     (add-to-list 'lsp-language-id-configuration '(js-mode . "javascript"))))
