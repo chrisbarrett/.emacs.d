@@ -109,33 +109,39 @@
   :straight (:host gitlab :repo "pidu/git-timemachine")
   :defer t)
 
-;; Diff-hl highlights changed file hunks in the fringe of the window, and
-;; provides commands for working with hunks.
+;; git-gutter shows git hunk status in buffers.
 
-(use-package diff-hl
+(use-package git-gutter
   :straight t
-  :hook (after-init . global-diff-hl-mode)
-  :commands (diff-hl-magit-post-refresh
-             diff-hl-next-hunk
-             diff-hl-previous-hunk
-             diff-hl-revert-hunk
-             diff-hl-goto-hunk)
-  :preface
-  (progn
-    (defun config-git--diff-hl-mode-on ()
-      (diff-hl-mode -1))
+  :hook ((markdown-mode . git-gutter-mode)
+         (prog-mode . git-gutter-mode)
+         (conf-mode . git-gutter-mode))
+  :init
+  :custom ((git-gutter:disabled-modes '(org-mode asm-mode image-mode))
+           (git-gutter:update-interval 1)
+           (git-gutter:window-width 2)
+           (git-gutter:ask-p nil)))
 
-    (defun config-git--diff-hl-mode-off ()
-      (diff-hl-mode +1)))
+;; git-gutter-fringe moves the git-gutter into the fringe, so it doesn't
+;; interact with buffer text.
 
+(use-package git-gutter-fringe
+  :after git-gutter
+  :straight t
+  :init
+  ;; places the git gutter outside the margins.
+  (setq-default fringes-outside-margins t)
   :config
   (progn
-    ;; Diff-hl interferes with iedit. Disable diff-hl temporarily while iedit is
-    ;; enabled.
-    (add-hook 'iedit-mode-hook #'config-git--diff-hl-mode-on)
-    (add-hook 'iedit-mode-end-hook #'config-git--diff-hl-mode-off)
-
-    (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)))
+    (define-fringe-bitmap 'git-gutter-fr:added
+      [224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224]
+      nil nil 'center)
+    (define-fringe-bitmap 'git-gutter-fr:modified
+      [224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224]
+      nil nil 'center)
+    (define-fringe-bitmap 'git-gutter-fr:deleted
+      [0 0 0 0 0 0 0 0 0 0 0 0 0 128 192 224 240 248]
+      nil nil 'center)))
 
 ;; Magit-gpg is a hack to show GPG signing status in magit's commit info.
 
