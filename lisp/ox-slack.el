@@ -24,6 +24,9 @@
 (defun ox-slack--bold (_bold contents _info)
   (format "*%s*" contents))
 
+(defun ox-slack--strike-through (_italic contents _info)
+  (format "~%s~" contents))
+
 (defun ox-slack--item (item contents info)
   (let* ((type (org-element-property :type (org-export-get-parent item)))
          (struct (org-element-property :structure item))
@@ -59,7 +62,9 @@ channel."
                      (toc . ox-slack--toc)
                      (item . ox-slack--item)
                      (italic . ox-slack--italic)
+                     (underline . ox-slack--italic)
                      (bold . ox-slack--bold)
+                     (strike-through . ox-slack--strike-through)
                      (example-block . ox-slack--fixed-width-block)
                      (fixed-width . ox-slack--fixed-width-block)
                      (src-block . ox-slack--fixed-width-block))
