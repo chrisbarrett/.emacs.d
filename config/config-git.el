@@ -171,10 +171,7 @@
     (pretty-magit-add-leader
      (rx-to-string `(group (+ space) (or ,@config-git-jira-projects) "-" (+ digit) symbol-end))
      nil '(face magit-hash)
-     '(magit-log-mode))
-
-    (pretty-magit-add-leader (rx ":lipstick:") ?
-                             '(:foreground "grey60" :height 1.2))))
+     '(magit-log-mode))))
 
 ;; VC annotate happens to be a nice way to view file changes.
 
