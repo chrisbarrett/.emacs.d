@@ -13,7 +13,7 @@
   ("p" haskell-pragmas-insert "language pragma"))
 
 (major-mode-hydra-bind haskell-mode "Intero"
-  (("t" intero-targets "set targets")))
+  ("t" intero-targets "set targets"))
 
 (major-mode-hydra-bind haskell-mode "Format"
   ("f" hindent-reformat-buffer "buffer")
