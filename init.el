@@ -68,7 +68,9 @@
 
 (use-package major-mode-hydra
   :straight t
-  :general (:states '(normal motion) "," #'major-mode-hydra))
+  :demand t
+  :general (:states '(normal motion) "," #'major-mode-hydra)
+  :custom ((major-mode-hydra-invisible-quit-key "q")))
 
 
 ;; Load features.
