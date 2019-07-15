@@ -70,7 +70,22 @@
   :straight t
   :demand t
   :general (:states '(normal motion) "," #'major-mode-hydra)
-  :custom ((major-mode-hydra-invisible-quit-key "q")))
+  :preface
+  (progn
+    (use-package all-the-icons
+      :straight t
+      :functions (all-the-icons-icon-for-mode))
+
+    (defun init--major-mode-hydra-title-generator (mode)
+      (let* ((icon (all-the-icons-icon-for-mode mode :v-adjust -0.15))
+             (mode-title (string-remove-suffix "-mode" (symbol-name mode)))
+             (components
+              (seq-filter #'stringp
+                          (list icon (s-titleized-words mode-title) "Commands"))))
+        (string-join components " "))))
+
+  :custom ((major-mode-hydra-invisible-quit-key "q")
+           (major-mode-hydra-title-generator #'init--major-mode-hydra-title-generator)))
 
 
 ;; Load features.
