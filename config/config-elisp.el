@@ -5,8 +5,6 @@
 (eval-when-compile
   (require 'use-package))
 
-(require 'major-mode-hydra)
-(require 'straight)
 (require 'subr-x)
 
 
@@ -19,37 +17,41 @@
 (add-to-list 'auto-mode-alist '("/Cask\\'" . caskfile-mode))
 
 
-;; Define an eval-buffer command for elisp that executes within a straight
-;; transaction.
 
-(defun config-elisp-eval-buffer ()
-  "Evaluate the current buffer as Elisp code, within a straight transaction."
-  (interactive)
-  (message "Evaluating %s..." (buffer-name))
-  (straight-transaction
-    (when (and (buffer-file-name) (string= (buffer-file-name) user-init-file))
-      (straight-mark-transaction-as-init))
-    (eval-buffer))
-  (message "Evaluating %s... done." (buffer-name)))
+;; simple.el is the basic text-editor command package.
 
-
-;; Define hydras
+(use-package simple
+  :defer t
+  :mode-hydra
+  (emacs-lisp-mode
+   ("Eval"
+    (("eb" eval-buffer "buffer")
+     ("ee" eval-expression "expression")))))
 
-(major-mode-hydra-bind emacs-lisp-mode "Eval"
-  ("eb" config-elisp-eval-buffer "buffer")
-  ("ee" eval-expression "expression"))
+;; debug provides a debugger interface for elisp.
 
-(major-mode-hydra-bind emacs-lisp-mode "Debug"
-  ("d" debug-on-entry "on function called")
-  ("cd" cancel-debug-on-entry "cancel debug function")
-  ("v" debug-on-variable-change "on variable changed")
-  ("cv" cancel-debug-on-variable-change "cancel debug variable"))
+(use-package debug
+  :defer t
+  :mode-hydra
+  (emacs-lisp-mode
+   ("Debug"
+    (("d" debug-on-entry "on function called")
+     ("cd" cancel-debug-on-entry "cancel debug function")
+     ("v" debug-on-variable-change "on variable changed")
+     ("cv" cancel-debug-on-variable-change "cancel debug variable")))))
 
-(major-mode-hydra-bind emacs-lisp-mode "Test"
-  ("tt" (ert t) "run all")
-  ("tf" (ert-select-tests :failed t) "run failing")
-  ("tn" (ert-select-tests :passed t) "run new")
-  ("ts" ert "run with selector"))
+;; ERT is the builtin emacs lisp test framework.
+
+(use-package ert
+  :defer t
+  :mode-hydra
+  (emacs-lisp-mode
+   ("Test"
+    (("tt" (ert t) "run all")
+     ("tf" (ert-select-tests :failed t) "run failing")
+     ("tn" (ert-select-tests :passed t) "run new")
+     ("ts" ert "run with selector")))))
+
 
 ;; IELM is the Elisp repl built in to Emacs.
 
