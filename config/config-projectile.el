@@ -79,44 +79,39 @@
       (let ((compilation-buffer-name-function (-const "*projectile-test*")))
         (projectile-test-project arg))))
 
+  :custom
+  ((projectile-project-search-path paths-project-directories)
+   (projectile-completion-system 'ivy)
+   (projectile-switch-project-action #'dired)
+   (projectile-enable-caching t)
+   (projectile-create-missing-test-files t)
+   (projectile-globally-ignored-files '("TAGS" ".DS_Store" "package-lock.json"))
+   (projectile-globally-ignored-file-suffixes '("meta" "jsbundle" "gz" "zip" "tar" "elc"))
+   (projectile-ignored-project-function #'projectile-funcs-ignored-subdir-p)
+   (projectile-globally-ignored-directories
+    '("coverage"
+      ".bzr"
+      ".ensime_cache"
+      ".eunit"
+      ".fslckout"
+      ".g8"
+      ".git"
+      ".hg"
+      ".idea"
+      ".stack-work"
+      ".svn"
+      "dist"
+      "jars"
+      "node_modules"
+      "flow-typed/npm"
+      "vendor"
+      "straight/repos"
+      "target")))
+
   :config
   (progn
     (advice-add 'projectile-load-known-projects :override #'projectile-funcs-refresh-projects)
     (advice-add 'projectile-save-known-projects :override #'ignore)
-
-    (setq projectile-project-search-path paths-project-directories)
-    (setq projectile-completion-system 'ivy)
-    (setq projectile-switch-project-action #'dired)
-    (setq projectile-enable-caching t)
-    (setq projectile-create-missing-test-files t)
-
-    (setq projectile-globally-ignored-files '("TAGS" ".DS_Store" "package-lock.json"))
-    (setq projectile-globally-ignored-file-suffixes '("meta" "jsbundle" "gz" "zip" "tar" "elc"))
-
-    (setq projectile-ignored-project-function #'projectile-funcs-ignored-subdir-p)
-
-    (setq projectile-globally-ignored-directories
-          '(
-            "coverage"
-            ".bzr"
-            ".ensime_cache"
-            ".eunit"
-            ".fslckout"
-            ".g8"
-            ".git"
-            ".hg"
-            ".idea"
-            ".stack-work"
-            ".svn"
-            "dist"
-            "jars"
-            "node_modules"
-            "flow-typed/npm"
-            "vendor"
-            "straight/repos"
-            "target"
-            ))
-
 
     ;; Teach projectile how to resolve npm srcs and tests.
     (advice-add #'projectile-test-file-p :filter-return #'config-projectile--test-file-p)
@@ -131,10 +126,9 @@
 (use-package counsel-projectile
   :straight t
   :hook (after-init . counsel-projectile-mode)
-  :config
-  (progn
-    (setq counsel-projectile-rg-initial-input '(projectile-symbol-or-selection-at-point))
-    (setq counsel-projectile-switch-project-action #'dired)))
+  :custom
+  ((counsel-projectile-rg-initial-input '(projectile-symbol-or-selection-at-point))
+   (counsel-projectile-switch-project-action #'dired)))
 
 (provide 'config-projectile)
 
