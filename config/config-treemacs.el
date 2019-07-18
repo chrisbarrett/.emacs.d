@@ -9,7 +9,7 @@
 (require 'general)
 
 (use-package treemacs
-  :straight (:host github :repo "Alexander-Miller/treemacs" :files ("src/elisp/*.el" "src/extra/*.el" "src/scripts/*.py"))
+  :straight t
   :commands (treemacs
              treemacs-follow-mode
              treemacs-git-mode
@@ -79,7 +79,8 @@
     ;; HACK: Use all-the-icons for treemacs. Add tabs to the end of each icon so
     ;; that text is more likely to be aligned.
 
-    (clrhash treemacs-icons-hash)
+    (when (boundp 'treemacs-icons-hash)
+      (clrhash treemacs-icons-hash))
     (--each (-map #'config-treemacs-format-icon all-the-icons-icon-alist)
       (-let [(file-ext . icon) it]
         (treemacs-define-custom-icon icon file-ext)))
@@ -91,6 +92,7 @@
     (setq treemacs-icon-fallback (concat (all-the-icons-faicon "file") "\t"))))
 
 (use-package treemacs-evil
+  :straight t
   :after (:and treemacs evil)
   :defer t
   :preface

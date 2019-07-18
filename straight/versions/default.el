@@ -154,7 +154,7 @@
  ("toml-mode.el" . "f6c61817b00f9c4a3cab1bae9c309e0fc45cdd06")
  ("transient" . "2eff8d57e851ec7403e5e042147ad2644b336633")
  ("tree-mode" . "b06078826d5875d74b0e7b7ac47b0d0917610534")
- ("treemacs" . "c639085595485ce749d150f65589d26d38b3aab9")
+ ("treemacs" . "c70e503fabd70531948763ffad1ce82642c2c3f8")
  ("treepy.el" . "b40e6b09eb9be45da67b8c9e4990a5a0d7a2a09d")
  ("typescript.el" . "c0f11efdfd693aa55a192c8e4a26fc6fcd2c9f90")
  ("undo-tree" . "d54ef13e3c69655e39f977b8bf75399a6d2b5e42")
