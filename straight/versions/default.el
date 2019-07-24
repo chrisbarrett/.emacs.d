@@ -1,4 +1,5 @@
-(("Nameless" . "a3a1ce3ec0c5724bcbfe553d831bd4f6b3fe863a")
+(("Emacs-wgrep" . "379afd89ebd76f63842c8589127d66096a8bb595")
+ ("Nameless" . "a3a1ce3ec0c5724bcbfe553d831bd4f6b3fe863a")
  ("ace-window" . "138a80cbc4e9ed17d3a085a3687f5223a142a9a3")
  ("aggressive-indent-mode" . "3803f24020ef0a656dc5345713c4964073aec9a8")
  ("all-the-icons.el" . "f996fafa5b2ea072d0ad1df9cd98acc75820f530")

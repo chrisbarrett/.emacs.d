@@ -401,6 +401,12 @@ Interactively, reverse the characters in the current region."
   :init
   (general-define-key :keymaps 'counsel-ag-map "C-c C-e" #'deadgrep-from-ivy))
 
+;; `wgrep' provides a mode for editing files directly from grep buffers.
+
+(use-package wgrep
+  :straight t
+  :defer t)
+
 (provide 'config-editing)
 
 ;;; config-editing.el ends here
