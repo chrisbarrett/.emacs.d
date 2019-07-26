@@ -83,16 +83,17 @@ ASYNC, SUBTREEP and VISIBLE-ONLY are as specified in the export dispatcher."
   (org-export-to-buffer 'slack "*Org Slack Export*"
     async subtreep visible-only nil nil (lambda () (gfm-mode))))
 
-(defun ox-slack-export-to-clipboard (&optional async subtreep visible-only)
+(defun ox-slack-export-to-clipboard (&optional async subtreep visible-only formatter)
   "Export the buffer to Slack markup.
 
-ASYNC, SUBTREEP and VISIBLE-ONLY are as specified in the export dispatcher."
+ASYNC, SUBTREEP and VISIBLE-ONLY are as specified in the export dispatcher.
+
+FORMATTER allows you to modify the output string before copying."
   (interactive)
   (let ((org-export-show-temporary-export-buffer nil))
     (org-export-to-buffer 'slack "*Org Slack Export*"
       async subtreep visible-only nil nil (lambda ()
-                                            (gfm-mode)
-                                            (kill-new (buffer-string))
+                                            (kill-new (funcall formatter (buffer-string)))
                                             (message "Buffer contents copied to clipboard")))))
 
 (provide 'ox-slack)
