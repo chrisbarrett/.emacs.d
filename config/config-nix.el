@@ -40,9 +40,8 @@
   (add-to-list 'display-buffer-alist
                `(,(rx bos "*Nix-REPL*" eos)
                  (display-buffer-reuse-window
-                  display-buffer-in-side-window)
+                  display-buffer-at-bottom)
                  (reusable-frames . visible)
-                 (side            . bottom)
                  (slot            . 1)
                  (window-height   . 0.4))))
 

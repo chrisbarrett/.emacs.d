@@ -94,9 +94,8 @@
     (add-to-list 'display-buffer-alist
                  `(,(rx bos "*Python*" eos)
                    (display-buffer-reuse-window
-                    display-buffer-in-side-window)
+                    display-buffer-at-bottom)
                    (reusable-frames . visible)
-                   (side            . bottom)
                    (slot            . 0)
                    (window-height   . 0.2)))))
 

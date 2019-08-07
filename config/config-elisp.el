@@ -71,9 +71,8 @@
     (add-to-list 'display-buffer-alist
                  `(,(rx bos "*ielm*" eos)
                    (display-buffer-reuse-window
-                    display-buffer-in-side-window)
+                    display-buffer-at-bottom)
                    (reusable-frames . visible)
-                   (side            . bottom)
                    (slot            . 0)
                    (window-height   . 0.2)))
     (define-key inferior-emacs-lisp-mode-map (kbd "C-c C-z") #'config-elisp-pop-to-elisp-buffer)))
