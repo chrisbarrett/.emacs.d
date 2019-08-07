@@ -12,6 +12,9 @@
 
 
 
+(use-package apiwrap
+  :straight t)
+
 (use-package poporg
   :straight t
   :commands (poporg-dwim))
