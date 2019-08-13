@@ -8,6 +8,10 @@
 (require 'paths)
 (require 'parameters)
 
+;; Settings for emacs-mac port
+(setq mac-option-modifier 'meta)
+(setq mac-command-modifier 'super)
+
 (global-set-key (kbd "s-v") 'yank)
 (global-set-key (kbd "s-c") 'copy-region-as-kill)
 (global-set-key (kbd "s-w") 'delete-frame)
