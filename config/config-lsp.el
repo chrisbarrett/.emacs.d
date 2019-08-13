@@ -31,12 +31,7 @@
 
     ;; Use server highlighting.
     (when (gethash "documentHighlightProvider" (lsp--server-capabilities))
-      (highlight-thing-mode -1))
-
-    ;; Format on save.
-    (when (and lsp-before-save-edits
-               (gethash "documentFormattingProvider" (lsp--server-capabilities)))
-      (add-hook 'before-save-hook #'lsp-format-buffer nil t)))
+      (highlight-thing-mode -1)))
 
   :config
   (progn
