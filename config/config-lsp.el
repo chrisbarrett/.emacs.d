@@ -34,7 +34,8 @@
       (highlight-thing-mode -1))
 
     ;; Format on save.
-    (when (gethash "documentFormattingProvider" (lsp--server-capabilities))
+    (when (and lsp-before-save-edits
+               (gethash "documentFormattingProvider" (lsp--server-capabilities)))
       (add-hook 'before-save-hook #'lsp-format-buffer nil t)))
 
   :config
