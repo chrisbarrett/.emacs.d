@@ -26,6 +26,7 @@
     (add-to-list 'lsp-language-id-configuration '(js-mode . "javascript"))))
 
 (use-package typescript-mode
+  :mode ("\\.tsx?\\'" . typescript-mode)
   :straight t
   :custom ((typescript-indent-level 2)))
 
