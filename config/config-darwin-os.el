@@ -22,9 +22,6 @@
 (global-unset-key (kbd "<f11>"))
 (global-set-key (kbd "<s-return>") #'toggle-frame-fullscreen)
 
-(set-frame-parameter (selected-frame) 'alpha '(97 80))
-(add-to-list 'default-frame-alist '(alpha 97 80))
-
 (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
 (add-to-list 'default-frame-alist '(ns-appearance . nil))
 
