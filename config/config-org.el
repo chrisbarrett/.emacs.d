@@ -286,29 +286,23 @@
                           (entry
                            "l" "Link" '(file+olp org-default-notes-file "Links") '(function cb-org-capture-url-read-url)
                            :immediate-finish t)
-                          (entry
-                           "r" "Reading" '(file+olp org-default-notes-file "Media" "Reading")
-                           "* MAYBE Read %i%?")
-                          (entry
-                           "R" "Recipe" '(file+olp org-default-notes-file "Recipes") '(function org-chef-get-recipe-from-url)
-                           :jump-to-captured t
-                           :immediate-finish t)
-                          (entry
-                           "m" "Listening" '(file+olp org-default-notes-file "Media" "Listening")
-                           "* MAYBE Listen to %i%?")
-                          (entry
-                           "v" "Viewing" '(file+olp org-default-notes-file "Media" "Viewing")
-                           "* MAYBE Watch %i%?")
-                          (entry
-                           "e" "Email task" '(file org-default-notes-file)
-                           "* TODO %?\n%a")
-
                           '("w" "Work")
                           (entry
-                           "wa" "Team member activity"
-                           '(file+function config-org-work-file cb-org-team-log-heading)
-                           "- %?"
-                           :type 'item
+                           "wu" "Cell Update"
+                           `(file+olp config-org-work-file "Cell Updates")
+                           "* %u
+
+** My Top 3
+
+1. %?
+
+** Feature:
+
+** Feature:
+
+** Feature:
+"
+                           :immediate-finish t
                            :jump-to-captured t)
                           (entry
                            "wt" "Todo"
