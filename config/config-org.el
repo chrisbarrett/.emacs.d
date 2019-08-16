@@ -11,7 +11,6 @@
 (require 'paths)
 
 (autoload 'all-the-icons-fileicon "all-the-icons")
-(autoload 'cb-org-team-log-heading "cb-org-team")
 
 ;; Important paths to set in advance.
 
