@@ -19,9 +19,6 @@
 (global-unset-key (kbd "s-t"))
 (global-set-key (kbd "s-q") 'delete-frame)
 
-(global-unset-key (kbd "<f11>"))
-(global-set-key (kbd "<s-return>") #'toggle-frame-fullscreen)
-
 (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
 (add-to-list 'default-frame-alist '(ns-appearance . nil))
 
