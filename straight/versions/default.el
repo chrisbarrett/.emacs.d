@@ -4,6 +4,7 @@
  ("aggressive-indent-mode" . "3803f24020ef0a656dc5345713c4964073aec9a8")
  ("all-the-icons.el" . "f996fafa5b2ea072d0ad1df9cd98acc75820f530")
  ("anaconda-mode" . "2becd12a2e69ee2353ac7dcf7692a53177508f71")
+ ("apiwrap.el" . "e4c9c57d6620a788ec8a715ff1bb50542edea3a6")
  ("auctex" . "5f007f11d52f3460244fe8486d5eb3dfd39cbdfe")
  ("auto-complete" . "2e83566ddfa758c69afe50b8a1c62a66f47471e3")
  ("auto-highlight-symbol" . "26573de912d760e04321b350897aea70958cee8b")
