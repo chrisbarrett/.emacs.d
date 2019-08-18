@@ -12,10 +12,10 @@
   "If nil, show the work agenda during work hours.")
 
 ;;;###autoload
-(defun cb-org-goto-diary ()
-  "Switch to the diary file."
+(defun cb-org-goto-inbox ()
+  "Switch to the inbox file."
   (interactive)
-  (find-file org-agenda-diary-file))
+  (find-file (f-join org-directory "inbox.org")))
 
 ;;;###autoload
 (defun cb-org-goto-notes ()

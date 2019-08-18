@@ -254,7 +254,7 @@
    (("$" (find-file ledger-master-file) "ledger")
     ("aa" (org-agenda nil "A") "agenda")
     ("aw" (org-agenda nil "w") "agenda (work)")
-    ("d" cb-org-goto-diary "diary")
+    ("i" cb-org-goto-inbox "inbox")
     ("j" cb-org-goto-journal "journal")
     ("n" cb-org-goto-notes "notes"))
    ""

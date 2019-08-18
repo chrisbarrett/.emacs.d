@@ -626,7 +626,7 @@
 
 (use-package cb-org-goto
   :commands (cb-org-goto-agenda
-             cb-org-goto-diary
+             cb-org-goto-inbox
              cb-org-goto-notes
              cb-org-goto-todo-list
              cb-org-goto-work
