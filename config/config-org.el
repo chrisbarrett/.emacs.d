@@ -275,17 +275,17 @@
                                           :jump-to-captured jump-to-captured)))
                          (list
                           (entry
-                           "t" "Todo" '(file org-default-notes-file) "* TODO %?")
+                           "t" "Todo" '(file "inbox.org") "* TODO %?")
                           (entry
-                           "s" "Someday" '(file+olp org-default-notes-file "Someday")
+                           "s" "Someday" '(file "someday.org" "Someday")
                            "* SOMEDAY %?")
                           (entry
-                           "l" "Link" '(file+olp org-default-notes-file "Links") '(function cb-org-capture-url-read-url)
+                           "l" "Link" '(file "inbox.org") '(function cb-org-capture-url-read-url)
                            :immediate-finish t)
                           '("w" "Work")
                           (entry
                            "wu" "Cell Update"
-                           `(file+olp config-org-work-file "Cell Updates")
+                           `(file+olp config-org-work-file "Post cell update")
                            "* %u
 ** My Top 3
 1. %?
@@ -299,20 +299,12 @@
                            "wt" "Todo"
                            `(file ,config-org-work-file) "* TODO %?")
                           (entry
-                           "wl" "Link"
-                           `(file+olp config-org-work-file "Links")
-                           '(function cb-org-capture-url-read-url)
-                           :immediate-finish t)
-                          (entry
                            "wj" "Jira issue reference"
                            `(file config-org-work-file)
                            '(function jira-utils-read-issue-url-for-org-header)
                            :jump-to-captured t
                            :immediate-finish t
-                           :type 'item)
-                          (entry
-                           "we" "Email task"
-                           `(file config-org-work-file) "* TODO %?\n%a")))
+                           :type 'item)))
  )
 
 
