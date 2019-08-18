@@ -37,7 +37,7 @@
 (general-setq
  org-imenu-depth 4
  org-M-RET-may-split-line nil
- org-blank-before-new-entry '((heading . always) (plain-list-item . nil))
+ org-blank-before-new-entry '((heading . nil) (plain-list-item . nil))
  org-catch-invisible-edits 'smart
  org-checkbox-hierarchical-statistics t
  org-confirm-elisp-link-function nil
@@ -267,11 +267,9 @@
                                          jump-to-captured
                                          (type 'entry)
                                          (prepend t)
-                                         (clock-keep t)
-                                         (empty-lines 1))
+                                         (clock-keep t))
                                     (list key label type form template
                                           :clock-keep clock-keep
-                                          :empty-lines empty-lines
                                           :prepend prepend
                                           :immediate-finish immediate-finish
                                           :jump-to-captured jump-to-captured)))
@@ -289,15 +287,10 @@
                            "wu" "Cell Update"
                            `(file+olp config-org-work-file "Cell Updates")
                            "* %u
-
 ** My Top 3
-
 1. %?
-
 ** Feature:
-
 ** Feature:
-
 ** Feature:
 "
                            :immediate-finish t
