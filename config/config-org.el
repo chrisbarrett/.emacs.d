@@ -61,8 +61,7 @@
  org-startup-indented t
  org-startup-with-inline-images t
 
- org-todo-keywords '((type "TODO(t)" "MAYBE(m)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")
-                     (type "SOMEDAY(s)" "|"))
+ org-todo-keywords '((type "TODO(t)" "WAITING(w)" "|" "DONE(d)"))
 
  org-src-fontify-natively t
  org-src-window-setup 'current-window
@@ -93,8 +92,9 @@
  org-tags-exclude-from-inheritance '("crypt" "project")
  org-crypt-disable-auto-save 'encypt
 
+ org-refile-use-outline-path 'file
  org-refile-targets
- '((nil . (:maxlevel . 3))
+ '((org-agenda-files . (:maxlevel . 3))
    (org-default-notes-file :maxlevel . 3)
    (org-directory :maxlevel . 3))
 
@@ -181,84 +181,28 @@
                                    :ascent center))
 
  org-agenda-custom-commands '(("A" "Agenda and next actions"
-                               ((tags-todo "-study-someday-media-gtd/TODO"
-                                           ((org-agenda-overriding-header "Next Actions")
-                                            ;; Take the first item from each todo list. Also
-                                            ;; exclude items with scheduled/deadline times, since
-                                            ;; they show up in the calendar views.
-                                            (org-agenda-skip-function (lambda ()
-                                                                        (or (config-org--agenda-skip-if-has-timestamp)
-                                                                            (config-org--agenda-skip-all-siblings-but-first))))))
+                               ((todo "TODO"
+                                      ((org-agenda-overriding-header "Next Actions")
+                                       ;; Take the first item from each todo list. Also
+                                       ;; exclude items with scheduled/deadline times, since
+                                       ;; they show up in the calendar views.
+                                       (org-agenda-skip-function (lambda ()
+                                                                   (or (config-org--agenda-skip-if-has-timestamp)
+                                                                       (config-org--agenda-skip-all-siblings-but-first))))))
                                 (agenda "")
                                 (todo "WAITING"
                                       ((org-agenda-overriding-header "Waiting")))
-                                (stuck "")
-                                (tags-todo "media|study/TODO"
-                                           ((org-agenda-overriding-header "Media & Study"))))
-                               ((org-agenda-tag-filter-preset '("-ignore"))
-                                (org-agenda-files (f-files org-directory (lambda (it) (and (f-ext? it "org") (not (string-prefix-p "work" (f-filename it)))))))
+                                (stuck ""))
+                               ((org-agenda-tag-filter-preset '("-ignore" "-@someday"))
+                                (org-agenda-files (f-files org-directory
+                                                           (lambda (it)
+                                                             (let ((work-file-p (string-prefix-p "work" (f-filename it)))
+                                                                   (working-hours-p (<= 9 (string-to-number (format-time-string "%H")) 18)))
+                                                               (and (f-ext? it "org")
+                                                                    (or working-hours-p
+                                                                        (not work-file-p)))))))
                                 (org-agenda-archives-mode nil)
-                                (org-agenda-ignore-drawer-properties '(effort appt))))
-
-                              ("w" "Work actions"
-                               ((tags-todo "-study-someday-media-gtd/TODO"
-                                           ((org-agenda-overriding-header "Next Actions")
-                                            (org-agenda-skip-function (lambda ()
-                                                                        (or (config-org--agenda-skip-if-has-timestamp)
-                                                                            (config-org--agenda-skip-all-siblings-but-first))))))
-                                (todo "WAITING"
-                                      ((org-agenda-overriding-header "Waiting")))
-                                (stuck "")
-                                (agenda "")
-                                (tags "+standup"
-                                      ((org-agenda-overriding-header "Standup"))))
-                               ((org-agenda-tag-filter-preset '("-ignore"))
-                                (org-agenda-use-tag-inheritance nil)
-                                (org-agenda-files (f-files org-directory (lambda (it) (and (f-ext? it "org") (string-prefix-p "work" (f-filename it))))))
-                                (org-agenda-archives-mode nil)
-                                (org-agenda-ignore-drawer-properties '(effort appt))))
-
-                              ("r" "Weekly Review"
-                               ((agenda ""
-                                        ((org-agenda-overriding-header "Review Previous Week")
-                                         (org-agenda-ndays 7)
-                                         (org-agenda-start-day "-7d")))
-                                (agenda ""
-                                        ((org-agenda-overriding-header "Review Upcoming Events")
-                                         (org-agenda-ndays 14)))
-                                (stuck ""
-                                       ((org-agenda-overriding-header "Review Stuck Projects")))
-                                (todo "WAITING"
-                                      ((org-agenda-overriding-header "Review Tasks on Hold")))
-
-                                (tags-todo "-someday-media/TODO"
-                                           ((org-agenda-overriding-header "Next Actions")
-                                            (org-agenda-skip-function (lambda ()
-                                                                        (or (config-org--agenda-skip-if-has-timestamp)
-                                                                            (config-org--agenda-skip-all-siblings-but-first))))))
-                                (tags-todo "+goals+3_months+project/TODO"
-                                           ((org-agenda-overriding-header "Review 3 Month Goals")
-                                            (org-agenda-skip-function (lambda ()
-                                                                        (or (config-org--agenda-skip-if-has-timestamp)
-                                                                            (config-org--agenda-skip-all-siblings-but-first))))))
-                                (tags-todo "+goals+1_year+project/TODO"
-                                           ((org-agenda-overriding-header "Review 1 Year Goals")
-                                            (org-agenda-skip-function (lambda ()
-                                                                        (or (config-org--agenda-skip-if-has-timestamp)
-                                                                            (config-org--agenda-skip-all-siblings-but-first))))))
-                                (tags-todo "+goals+3_years+project/MAYBE|SOMEDAY|TODO"
-                                           ((org-agenda-overriding-header "Review 3 Year Goals")
-                                            (org-agenda-skip-function (lambda ()
-                                                                        (or (config-org--agenda-skip-if-has-timestamp)
-                                                                            (config-org--agenda-skip-all-siblings-but-first))))))
-                                (tags-todo "someday-skill/MAYBE|TODO"
-                                           ((org-agenda-overriding-header "Decide whether to promote any SOMEDAY items to TODOs")))
-                                (tags-todo "someday&skill"
-                                           ((org-agenda-overriding-header "Decide whether to promote any learning tasks to TODOs"))))
-                               ((org-agenda-tag-filter-preset
-                                 '("-gtd" "-ignore"))
-                                (org-agenda-include-inactive-timestamps t)
-                                (org-agenda-archives-mode nil))))
+                                (org-agenda-ignore-drawer-properties '(effort appt)))))
 
  org-capture-templates (cl-labels ((entry
                                     (key label form template
