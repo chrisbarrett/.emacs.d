@@ -246,16 +246,14 @@
    :color teal
    :title (hydra-title-with-mode-icon 'org-mode "Org"))
   ("Actions"
-   (("k" org-capture "capture...")
+   (("a" (org-agenda nil "A") "show agenda...")
+    ("k" org-capture "capture...")
     ("l" org-store-link "store link...")
     ("s" org-search-view "search..."))
 
    "Goto"
    (("$" (find-file ledger-master-file) "ledger")
-    ("aa" (org-agenda nil "A") "agenda")
-    ("aw" (org-agenda nil "w") "agenda (work)")
     ("i" cb-org-goto-inbox "inbox")
-    ("j" cb-org-goto-journal "journal")
     ("n" cb-org-goto-notes "notes"))
    ""
    (("t" cb-org-goto-todo-list "todo list")
