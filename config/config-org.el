@@ -14,11 +14,10 @@
 
 ;; Important paths to set in advance.
 
-(defvar config-org-work-file (f-join org-directory "work_pushpay.org"))
+(defvar config-org-work-file (f-join org-directory "work.org"))
 
 (general-setq
- org-default-notes-file (f-join org-directory "notes.org")
- org-agenda-diary-file (f-join org-directory "diary.org")
+ org-default-notes-file (f-join org-directory "personal.org")
  org-agenda-files (f-files org-directory (lambda (f) (f-ext? f "org"))))
 
 
@@ -197,7 +196,7 @@
                                 (tags-todo "media|study/TODO"
                                            ((org-agenda-overriding-header "Media & Study"))))
                                ((org-agenda-tag-filter-preset '("-ignore"))
-                                (org-agenda-files (list org-default-notes-file org-agenda-diary-file))
+                                (org-agenda-files (f-files org-directory (lambda (it) (and (f-ext? it "org") (not (string-prefix-p "work" (f-filename it)))))))
                                 (org-agenda-archives-mode nil)
                                 (org-agenda-ignore-drawer-properties '(effort appt))))
 
@@ -215,7 +214,7 @@
                                       ((org-agenda-overriding-header "Standup"))))
                                ((org-agenda-tag-filter-preset '("-ignore"))
                                 (org-agenda-use-tag-inheritance nil)
-                                (org-agenda-files (list config-org-work-file org-agenda-diary-file))
+                                (org-agenda-files (f-files org-directory (lambda (it) (and (f-ext? it "org") (string-prefix-p "work" (f-filename it))))))
                                 (org-agenda-archives-mode nil)
                                 (org-agenda-ignore-drawer-properties '(effort appt))))
 
@@ -259,7 +258,6 @@
                                ((org-agenda-tag-filter-preset
                                  '("-gtd" "-ignore"))
                                 (org-agenda-include-inactive-timestamps t)
-                                (org-agenda-files (list org-default-notes-file config-org-work-file org-agenda-diary-file))
                                 (org-agenda-archives-mode nil))))
 
  org-capture-templates (cl-labels ((entry
