@@ -23,14 +23,15 @@
 
 
 
-(major-mode-hydra-bind org-mode "Tree"
-  ("a" org-archive-subtree "archive")
-  ("r" org-refile "refile")
-  ("t" org-show-todo-tree "todo tree"))
+(major-mode-hydra-define org-mode nil
+  ("Tree"
+   (("a" org-archive-subtree "archive")
+    ("r" org-refile "refile")
+    ("t" org-show-todo-tree "todo tree"))
 
-(major-mode-hydra-bind org-mode "Misc"
-  ("e" org-babel/body "babel commands")
-  ("p" org-present "present"))
+   "Misc"
+   (("e" org-babel/body "babel commands")
+    ("p" org-present "present"))))
 
 ;; General variables
 

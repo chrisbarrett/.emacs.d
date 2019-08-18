@@ -112,7 +112,7 @@
  ("lua-mode" . "95c64bb5634035630e8c59d10d4a1d1003265743")
  ("magit" . "c06beaac0a5eca1cba011a7128e1cbc65b5f7eb8")
  ("magit-popup" . "4250c3a606011e3ff2477e3b5bbde2b493f3c85c")
- ("major-mode-hydra.el" . "854827d0585a4fc9310708bfae2514957f4dc341")
+ ("major-mode-hydra.el" . "d9fb688dae3e134bb1ff7f35474c58f33a5bb992")
  ("markdown-mode" . "115f77df9755c6a453f3e5d9623ff885d207ea82")
  ("melpa" . "b7a3cf4c5ed3bb0995eac9dcce939b518a0ef987")
  ("nix-mode" . "1e53bed4d47c526c71113569f592c82845a17784")

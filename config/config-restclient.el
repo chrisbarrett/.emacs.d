@@ -7,11 +7,10 @@
 
 (require 'major-mode-hydra)
 
-(major-mode-hydra-bind restclient-mode "Execute"
-  ("c" restclient-http-send-current "other window")
-  ("o" restclient-http-send-current-stay-in-window "this window"))
-
-
+(major-mode-hydra-define restclient-mode nil
+  ("Execute"
+   (("c" restclient-http-send-current "other window")
+    ("o" restclient-http-send-current-stay-in-window "this window"))))
 
 (use-package restclient
   :straight t

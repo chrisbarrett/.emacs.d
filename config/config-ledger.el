@@ -16,8 +16,9 @@
 
 (general-setq ledger-master-file (file-truename "~/org/accounts.ledger"))
 
-(major-mode-hydra-bind ledger-mode "Actions"
-  ("r" #'ledger-report "report"))
+(major-mode-hydra-define ledger-mode nil
+  ("Actions"
+   (("r" #'ledger-report "report"))))
 
 
 ;; Utility functions
