@@ -8,7 +8,9 @@
 (require 'f)
 (require 'general)
 (require 'major-mode-hydra)
+(require 'org-funcs)
 (require 'paths)
+(require 's)
 
 (autoload 'all-the-icons-fileicon "all-the-icons")
 
@@ -116,9 +118,9 @@
  org-clock-report-include-clocking-task t
 
  ;; agenda
- org-stuck-projects '("+project-ignore-maybe-done" ("TODO") nil)
- org-agenda-auto-exclude-function #'config-org--exclude-tasks-on-hold
- org-agenda-hide-tags-regexp (rx (or "noexport" "someday" "project"))
+ org-stuck-projects '("+project-ignore-@someday" ("TODO") nil "")
+ org-agenda-auto-exclude-function #'org-funcs-exclude-tasks-on-hold
+ org-agenda-hide-tags-regexp (rx (or "noexport" "@someday" "project"))
  org-agenda-include-diary nil
  org-agenda-insert-diary-extract-time t
  org-agenda-search-view-always-boolean t
@@ -139,124 +141,55 @@
  org-agenda-inhibit-startup t
  org-agenda-tags-column -100
  org-agenda-text-search-extra-files '(agenda-archives)
- org-agenda-use-time-grid nil
- org-agenda-category-icon-alist `(("Emacs"
-                                   ,(list (all-the-icons-fileicon "emacs" :height 0.8 :v-adjust 0.05))
-                                   nil nil
-                                   :ascent center)
-                                  ("projects?"
-                                   ,(list (all-the-icons-octicon "repo" :v-adjust 0.05))
-                                   nil
-                                   nil
-                                   :ascent center)
-                                  ("goals?"
-                                   ,(list (all-the-icons-octicon "checklist" :v-adjust 0.05))
-                                   nil
-                                   nil
-                                   :ascent center)
-                                  ("car"
-                                   ,(list (all-the-icons-material "directions_car"))
-                                   nil
-                                   nil
-                                   :ascent center)
-                                  ("gtd"
-                                   ,(list (all-the-icons-faicon "check-square-o" :v-adjust 0.05))
-                                   nil
-                                   nil
-                                   :ascent center)
-                                  (,(rx (or "Holiday" "Birthday"))
-                                   ,(list (all-the-icons-faicon "calendar-o" :v-adjust 0.05))
-                                   nil
-                                   nil
-                                   :ascent center)
-                                  (,(rx (or "flat" "bill" "income"))
-                                   ,(list (all-the-icons-material "monetization_on"))
-                                   nil
-                                   nil
-                                   :ascent center)
-                                  ("notes"
-                                   ,(list (all-the-icons-faicon "tasks" :height 0.9 :v-adjust 0.05))
-                                   nil
-                                   nil
-                                   :ascent center))
+ org-agenda-use-time-grid nil)
 
- org-agenda-custom-commands
- '(("A" "Agenda and next actions"
-    ((agenda ""
-             ((org-agenda-overriding-header "Today")
-              (org-agenda-use-time-grid t)))
-     (todo "TODO"
-           ((org-agenda-overriding-header "Next Project Actions")
-            (org-agenda-skip-function (lambda ()
-                                        ;; Take the first item from each todo
-                                        ;; list. Also exclude items with
-                                        ;; scheduled/deadline times, since they
-                                        ;; show up in the calendar views.
-                                        (or (config-org--agenda-skip-if-has-timestamp)
-                                            (config-org--agenda-skip-all-siblings-but-first))))))
-     (todo "WAITING"
-           ((org-agenda-overriding-header "Delegated")))
-     (stuck ""))
-    ((org-agenda-tag-filter-preset '("-ignore" "-@someday"))
-     (org-agenda-span 'day)
-     (org-agenda-files (f-files org-directory (lambda (it)
-                                                ;; Show work context items
-                                                ;; during working hours, and
-                                                ;; personal context items
-                                                ;; outside of these hours.
-                                                (-let* ((work-file-p (string-prefix-p "work" (f-filename it)))
-                                                        ((_s _m h d m y) (decode-time))
-                                                        (day-of-week (calendar-day-of-week (list m d y)))
-                                                        (working-hours-p (and (<= 1 day-of-week 5)
-                                                                              (or (<= 8 h 12) (<= 13 h 17)))))
-                                                  (if working-hours-p
-                                                      work-file-p
-                                                    (not work-file-p))))))
-     (org-agenda-archives-mode nil)
-     (org-agenda-ignore-drawer-properties '(effort appt)))))
+(general-setq org-agenda-custom-commands
+              '(("A" "Agenda and next actions"
+                 ((agenda ""
+                          ((org-agenda-overriding-header "Today")
+                           (org-agenda-use-time-grid t)))
+                  (todo "TODO"
+                        ((org-agenda-overriding-header "Next Project Actions")
+                         (org-agenda-skip-function #'org-funcs-skip-duplicates-for-agenda)))
+                  (todo "WAITING"
+                        ((org-agenda-overriding-header "Delegated")))
+                  (stuck ""
+                         ((org-agenda-overriding-header "Stuck Projects"))))
+                 ((org-agenda-tag-filter-preset '("-ignore" "-@someday"))
+                  (org-agenda-span 'day)
+                  (org-agenda-files (org-funcs-agenda-files-for-time-of-day))
+                  (org-agenda-archives-mode nil)
+                  (org-agenda-ignore-drawer-properties '(effort appt))))))
 
- org-capture-templates (cl-labels ((entry
-                                    (key label form template
-                                         &key
-                                         immediate-finish
-                                         jump-to-captured
-                                         (type 'entry)
-                                         (prepend t)
-                                         (clock-keep t))
-                                    (list key label type form template
-                                          :clock-keep clock-keep
-                                          :prepend prepend
-                                          :immediate-finish immediate-finish
-                                          :jump-to-captured jump-to-captured)))
-                         (list
-                          (entry
-                           "t" "Todo" '(file "inbox.org") "* TODO %?")
-                          (entry
-                           "l" "Link" '(file "inbox.org") '(function cb-org-capture-url-read-url)
-                           :immediate-finish t)
-                          '("w" "Work")
-                          (entry
-                           "wt" "Todo"
-                           `(file ,config-org-work-file) "* TODO %?")
-                          (entry
-                           "wu" "Cell Update"
-                           `(file+olp config-org-work-file "Post cell update")
-                           "* %u
+(general-setq org-capture-templates
+              (list
+               (org-funcs-capture-template
+                "t" "Todo" '(file "inbox.org") "* TODO %?")
+               (org-funcs-capture-template
+                "l" "Link" '(file "inbox.org") '(function cb-org-capture-url-read-url)
+                :immediate-finish t)
+               '("w" "Work")
+               (org-funcs-capture-template
+                "wt" "Todo"
+                `(file ,config-org-work-file) "* TODO %?")
+               (org-funcs-capture-template
+                "wj" "Jira issue reference"
+                `(file config-org-work-file)
+                '(function jira-utils-read-issue-url-for-org-header)
+                :jump-to-captured t
+                :immediate-finish t
+                :type 'item)
+               (org-funcs-capture-template
+                "wu" "Cell Update"
+                `(file+olp config-org-work-file "Post cell update")
+                "* %u
 ** My Top 3
 1. %?
 ** Feature:
 ** Feature:
 ** Feature:
 "
-                           :jump-to-captured t)
-                          (entry
-                           "wj" "Jira issue reference"
-                           `(file config-org-work-file)
-                           '(function jira-utils-read-issue-url-for-org-header)
-                           :jump-to-captured t
-                           :immediate-finish t
-                           :type 'item)))
- )
+                :jump-to-captured t)))
 
 
 
@@ -273,14 +206,9 @@
 
   :preface
   (progn
-    (autoload 'org-entry-get "org")
-    (autoload 'org-get-scheduled-time "org")
-    (autoload 'org-get-todo-state "org")
     (autoload 'org-heading-components "org")
     (autoload 'org-todo "org")
     (autoload 'org-up-heading-safe "org")
-    (autoload 'outline-forward-same-level "outline")
-    (autoload 's-matches? "s")
 
     ;; KLUDGE: Pre-declare dynamic variables used by orgmode.
     (defvar org-state)
@@ -411,33 +339,7 @@
     (autoload 'page-break-lines--update-display-tables "page-break-lines")
 
     (defun config-org--draw-separator (&rest _)
-      (page-break-lines--update-display-tables))
-
-    (defun config-org--exclude-tasks-on-hold (tag)
-      (and (equal tag "hold") (concat "-" tag)))
-
-    (defun config-org--agenda-skip-if-has-timestamp ()
-      "Skip the item if it has a scheduled or deadline timestamp."
-      (when (or (org-get-scheduled-time (point))
-                (org-get-deadline-time (point)))
-        (or (outline-next-heading)
-            (goto-char (point-max)))))
-
-    (defun config-org--current-headline-is-todo ()
-      (string= "TODO" (org-get-todo-state)))
-
-    (defun config-org--agenda-skip-all-siblings-but-first ()
-      "Skip all but the first non-done entry."
-      (let (should-skip-entry)
-        (unless (config-org--current-headline-is-todo)
-          (setq should-skip-entry t))
-        (save-excursion
-          (while (and (not should-skip-entry) (org-goto-sibling t))
-            (when (config-org--current-headline-is-todo)
-              (setq should-skip-entry t))))
-        (when should-skip-entry
-          (or (outline-next-heading)
-              (goto-char (point-max)))))))
+      (page-break-lines--update-display-tables)))
 
   :config
   (progn
