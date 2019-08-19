@@ -375,7 +375,8 @@
   :after org
   :general
   (:keymaps 'org-agenda-mode-map :states 'motion
-   "r" #'org-agenda-filter-by-tag
+   "/" #'org-agenda-filter-by-tag
+   "]" #'org-agenda-view-mode-dispatch
    "t" #'org-agenda-todo
    "J" #'org-agenda-goto-date
    "j" #'org-agenda-next-line

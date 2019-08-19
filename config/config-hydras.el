@@ -256,7 +256,7 @@
     ("i" cb-org-goto-inbox "inbox")
     ("n" cb-org-goto-notes "notes"))
    ""
-   (("t" cb-org-goto-todo-list "todo list")
+   (("t" (org-agenda nil "T") "todo list")
     ("w" cb-org-goto-work "work")
     ("v" cb-org-goto-tags-list "tags")
     ("o" cb-org-goto-headline "headline..."))))
