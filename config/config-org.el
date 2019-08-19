@@ -14,9 +14,12 @@
 
 (autoload 'all-the-icons-fileicon "all-the-icons")
 
-;; Important paths to set in advance.
+;; Silence byte-compiler.
 
-(defvar config-org-work-file (f-join org-directory "work.org"))
+(eval-when-compile
+  (defvar org-done-keywords))
+
+;; Important paths to set in advance.
 
 (general-setq
  org-default-notes-file (f-join org-directory "inbox.org")
@@ -171,17 +174,17 @@
                '("w" "Work")
                (org-funcs-capture-template
                 "wt" "Todo"
-                `(file ,config-org-work-file) "* TODO %?")
+                `(file "work.org") "* TODO %?")
                (org-funcs-capture-template
                 "wj" "Jira issue reference"
-                `(file config-org-work-file)
+                `(file "work.org")
                 '(function jira-utils-read-issue-url-for-org-header)
                 :jump-to-captured t
                 :immediate-finish t
                 :type 'item)
                (org-funcs-capture-template
                 "wu" "Cell Update"
-                `(file+olp config-org-work-file "Post cell update")
+                `(file+olp "work.org" "Post cell update")
                 "* %u
 ** My Top 3
 1. %?

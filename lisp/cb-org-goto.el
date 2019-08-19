@@ -21,7 +21,7 @@
 (defun cb-org-goto-notes ()
   "Switch to the default notes file."
   (interactive)
-  (find-file org-default-notes-file))
+  (find-file (f-join org-directory "personal.org")))
 
 ;;;###autoload
 (defun cb-org-goto-journal ()
@@ -33,7 +33,7 @@
 (defun cb-org-goto-work ()
   "Switch to the work file."
   (interactive)
-  (find-file config-org-work-file))
+  (find-file (f-join org-directory "work.org")))
 
 ;;;###autoload
 (defun cb-org-goto-todo-list ()
@@ -52,10 +52,8 @@
 (defun cb-org-goto-headline ()
   "Prompt for a headline to jump to."
   (interactive)
-  (let ((buf (if (derived-mode-p 'org-mode)
-                 (current-buffer)
-               (find-file-noselect org-default-notes-file))))
-    (org-refile '(4) buf)))
+  (org-refile '(4) (when (derived-mode-p 'org-mode)
+                     (current-buffer))))
 
 (provide 'cb-org-goto)
 
