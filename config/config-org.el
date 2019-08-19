@@ -17,7 +17,7 @@
 (defvar config-org-work-file (f-join org-directory "work.org"))
 
 (general-setq
- org-default-notes-file (f-join org-directory "personal.org")
+ org-default-notes-file (f-join org-directory "inbox.org")
  org-agenda-files (f-files org-directory (lambda (f) (f-ext? f "org"))))
 
 
