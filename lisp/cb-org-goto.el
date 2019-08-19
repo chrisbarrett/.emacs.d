@@ -48,17 +48,6 @@
   (interactive)
   (org-tags-view nil))
 
-(defconst cb-org-goto--show-agenda-work-start-hour 8)
-(defconst cb-org-goto--show-agenda-work-end-hour 17)
-
-(defun cb-org-goto--is-work-time? (time)
-  (-let* (((_s _m h d m y) time)
-          (day-of-week (calendar-day-of-week (list m d y))))
-    (and (<= cb-org-goto--show-agenda-work-start-hour h)
-         (>= cb-org-goto--show-agenda-work-end-hour h)
-         (<= 1 day-of-week)
-         (>= 5 day-of-week))))
-
 ;;;###autoload
 (defun cb-org-goto-headline ()
   "Prompt for a headline to jump to."

@@ -180,29 +180,35 @@
                                    nil
                                    :ascent center))
 
- org-agenda-custom-commands '(("A" "Agenda and next actions"
-                               ((todo "TODO"
-                                      ((org-agenda-overriding-header "Next Actions")
-                                       ;; Take the first item from each todo list. Also
-                                       ;; exclude items with scheduled/deadline times, since
-                                       ;; they show up in the calendar views.
-                                       (org-agenda-skip-function (lambda ()
-                                                                   (or (config-org--agenda-skip-if-has-timestamp)
-                                                                       (config-org--agenda-skip-all-siblings-but-first))))))
-                                (agenda "")
-                                (todo "WAITING"
-                                      ((org-agenda-overriding-header "Waiting")))
-                                (stuck ""))
-                               ((org-agenda-tag-filter-preset '("-ignore" "-@someday"))
-                                (org-agenda-files (f-files org-directory
-                                                           (lambda (it)
-                                                             (let ((work-file-p (string-prefix-p "work" (f-filename it)))
-                                                                   (working-hours-p (<= 9 (string-to-number (format-time-string "%H")) 18)))
-                                                               (and (f-ext? it "org")
-                                                                    (or working-hours-p
-                                                                        (not work-file-p)))))))
-                                (org-agenda-archives-mode nil)
-                                (org-agenda-ignore-drawer-properties '(effort appt)))))
+ org-agenda-custom-commands
+ '(("A" "Agenda and next actions"
+    ((agenda ""
+             ((org-agenda-overriding-header "Today")
+              (org-agenda-use-time-grid t)))
+     (todo "TODO"
+           ((org-agenda-overriding-header "Next Project Actions")
+            (org-agenda-skip-function (lambda ()
+                                        ;; Take the first item from each todo list. Also
+                                        ;; exclude items with scheduled/deadline times, since
+                                        ;; they show up in the calendar views.
+                                        (or (config-org--agenda-skip-if-has-timestamp)
+                                            (config-org--agenda-skip-all-siblings-but-first))))))
+     (todo "WAITING"
+           ((org-agenda-overriding-header "Delegated")))
+     (stuck ""))
+    ((org-agenda-tag-filter-preset '("-ignore" "-@someday"))
+     (org-agenda-span 'day)
+     (org-agenda-files (f-files org-directory (lambda (it)
+                                                (-let* ((work-file-p (string-prefix-p "work" (f-filename it)))
+                                                        ((_s _m h d m y) (decode-time))
+                                                        (day-of-week (calendar-day-of-week (list m d y)))
+                                                        (working-hours-p (and (<= 1 day-of-week 5)
+                                                                              (or (<= 8 h 12) (<= 13 h 17)))))
+                                                  (if working-hours-p
+                                                      work-file-p
+                                                    (not work-file-p))))))
+     (org-agenda-archives-mode nil)
+     (org-agenda-ignore-drawer-properties '(effort appt)))))
 
  org-capture-templates (cl-labels ((entry
                                     (key label form template
@@ -220,9 +226,6 @@
                          (list
                           (entry
                            "t" "Todo" '(file "inbox.org") "* TODO %?")
-                          (entry
-                           "s" "Someday" '(file "someday.org" "Someday")
-                           "* SOMEDAY %?")
                           (entry
                            "l" "Link" '(file "inbox.org") '(function cb-org-capture-url-read-url)
                            :immediate-finish t)
