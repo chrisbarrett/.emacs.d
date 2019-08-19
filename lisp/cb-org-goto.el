@@ -60,16 +60,6 @@
          (>= 5 day-of-week))))
 
 ;;;###autoload
-(defun cb-org-goto-agenda ()
-  "Show the agenda fullscreen."
-  (interactive)
-  (let ((agenda-key (if (and (cb-org-goto--is-work-time? (decode-time))
-                             (not cb-org-goto-on-holiday?))
-                        "w"
-                      "A")))
-    (org-agenda current-prefix-arg agenda-key)))
-
-;;;###autoload
 (defun cb-org-goto-headline ()
   "Prompt for a headline to jump to."
   (interactive)
