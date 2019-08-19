@@ -383,7 +383,7 @@
             (org-save-all-org-buffers)
             (org-agenda-redo))
    "/" #'org-agenda-filter-by-tag
-   "]" #'org-agenda-view-mode-dispatch
+   "v" #'org-agenda-view-mode-dispatch
    "t" #'org-agenda-todo
    "J" #'org-agenda-goto-date
    "j" #'org-agenda-next-line
