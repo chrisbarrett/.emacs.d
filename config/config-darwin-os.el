@@ -18,6 +18,7 @@
 (global-unset-key (kbd "s-p"))
 (global-unset-key (kbd "s-t"))
 (global-set-key (kbd "s-q") 'delete-frame)
+(global-set-key (kbd "s-n") 'make-frame)
 
 (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
 (add-to-list 'default-frame-alist '(ns-appearance . nil))
