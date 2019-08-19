@@ -21,20 +21,18 @@
 (eval-when-compile
   (defvar org-directory nil))
 
-(defun org-funcs-agenda-files-for-time-of-day ()
-  "Compute the set of org files to use for the agenda.
+(defun org-funcs-working-hours-p ()
+  (-let* (((_s _m h d m y) (decode-time))
+          (day-of-week (calendar-day-of-week (list m d y))))
+    (and (<= 1 day-of-week 5)
+         (or (<= 8 h 12) (<= 13 h 17)))))
 
-Show work context items during working hours, and personal
-context items outside of these hours."
-  (f-files org-directory (lambda (it)
-                           (-let* ((work-file-p (string-prefix-p "work" (f-filename it)))
-                                   ((_s _m h d m y) (decode-time))
-                                   (day-of-week (calendar-day-of-week (list m d y)))
-                                   (working-hours-p (and (<= 1 day-of-week 5)
-                                                         (or (<= 8 h 12) (<= 13 h 17)))))
-                             (if working-hours-p
-                                 work-file-p
-                               (not work-file-p))))))
+(defun org-funcs-agenda-for-time-of-day ()
+  "Show the org agenda for the time of day."
+  (interactive)
+  (if (org-funcs-working-hours-p)
+      (org-agenda nil "w")
+    (org-agenda nil "p")))
 
 (defun org-funcs-exclude-tasks-on-hold (tag)
   (and (equal tag "hold") (concat "-" tag)))

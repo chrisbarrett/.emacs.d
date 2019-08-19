@@ -147,22 +147,25 @@
  org-agenda-use-time-grid nil)
 
 (general-setq org-agenda-custom-commands
-              '(("A" "Agenda and next actions"
-                 ((agenda ""
-                          ((org-agenda-overriding-header "Today")
-                           (org-agenda-use-time-grid t)))
-                  (todo "TODO"
-                        ((org-agenda-overriding-header "Next Actions")
-                         (org-agenda-skip-function #'org-funcs-skip-duplicates-for-agenda)))
-                  (todo "WAITING"
-                        ((org-agenda-overriding-header "Delegated")))
-                  (stuck ""
-                         ((org-agenda-overriding-header "Stuck Projects"))))
-                 ((org-agenda-tag-filter-preset '("-ignore" "-@someday"))
-                  (org-agenda-span 'day)
-                  (org-agenda-files (org-funcs-agenda-files-for-time-of-day))
-                  (org-agenda-archives-mode nil)
-                  (org-agenda-ignore-drawer-properties '(effort appt))))))
+              (let ((contexts '("@personal" "@work")))
+                (seq-map (lambda (tag)
+                           `(,(substring tag 1 2)
+                             ,(format "Agenda for context: %s" tag)
+                             ((agenda ""
+                                      ((org-agenda-overriding-header "Today")
+                                       (org-agenda-use-time-grid t)))
+                              (todo "TODO"
+                                    ((org-agenda-overriding-header "Next Actions")
+                                     (org-agenda-skip-function #'org-funcs-skip-duplicates-for-agenda)))
+                              (todo "WAITING"
+                                    ((org-agenda-overriding-header "Delegated")))
+                              (stuck ""
+                                     ((org-agenda-overriding-header "Stuck Projects"))))
+                             ((org-agenda-tag-filter-preset '(,(format "+%s" tag) "-@someday" "-ignore"))
+                              (org-agenda-span 'day)
+                              (org-agenda-archives-mode nil)
+                              (org-agenda-ignore-drawer-properties '(effort appt)))))
+                         contexts)))
 
 (general-setq org-capture-templates
               (list
