@@ -45,7 +45,7 @@
   (let* ((default (or (thing-at-point-url-at-point) (cb-org-capture-url--last-url-kill)))
          (url (cb-org-capture-url--read-string-with-default "URL" default))
          (title (cb-org-capture-url--parse-html-title (cb-org-capture-url--retrieve-html url))))
-    (format "* [[%s][%s]]" url (or title url))))
+    (format "* TODO Review [[%s][%s]]" url (or title url))))
 
 (provide 'cb-org-capture-url)
 

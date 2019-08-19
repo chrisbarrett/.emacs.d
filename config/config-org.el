@@ -231,6 +231,9 @@
                            :immediate-finish t)
                           '("w" "Work")
                           (entry
+                           "wt" "Todo"
+                           `(file ,config-org-work-file) "* TODO %?")
+                          (entry
                            "wu" "Cell Update"
                            `(file+olp config-org-work-file "Post cell update")
                            "* %u
@@ -240,11 +243,7 @@
 ** Feature:
 ** Feature:
 "
-                           :immediate-finish t
                            :jump-to-captured t)
-                          (entry
-                           "wt" "Todo"
-                           `(file ,config-org-work-file) "* TODO %?")
                           (entry
                            "wj" "Jira issue reference"
                            `(file config-org-work-file)
