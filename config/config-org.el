@@ -152,7 +152,7 @@
                           ((org-agenda-overriding-header "Today")
                            (org-agenda-use-time-grid t)))
                   (todo "TODO"
-                        ((org-agenda-overriding-header "Next Project Actions")
+                        ((org-agenda-overriding-header "Next Actions")
                          (org-agenda-skip-function #'org-funcs-skip-duplicates-for-agenda)))
                   (todo "WAITING"
                         ((org-agenda-overriding-header "Delegated")))
