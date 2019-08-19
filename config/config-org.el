@@ -161,7 +161,8 @@
                                     ((org-agenda-overriding-header "Delegated")))
                               (stuck ""
                                      ((org-agenda-overriding-header "Stuck Projects"))))
-                             ((org-agenda-tag-filter-preset '(,(format "+%s" tag) "-@someday" "-ignore"))
+                             ((org-agenda-files (f-files org-directory (lambda (it) (f-ext? it "org"))))
+                              (org-agenda-tag-filter-preset '(,(format "+%s" tag) "-@someday" "-ignore"))
                               (org-agenda-span 'day)
                               (org-agenda-archives-mode nil)
                               (org-agenda-ignore-drawer-properties '(effort appt)))))
