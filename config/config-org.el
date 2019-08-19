@@ -188,9 +188,10 @@
      (todo "TODO"
            ((org-agenda-overriding-header "Next Project Actions")
             (org-agenda-skip-function (lambda ()
-                                        ;; Take the first item from each todo list. Also
-                                        ;; exclude items with scheduled/deadline times, since
-                                        ;; they show up in the calendar views.
+                                        ;; Take the first item from each todo
+                                        ;; list. Also exclude items with
+                                        ;; scheduled/deadline times, since they
+                                        ;; show up in the calendar views.
                                         (or (config-org--agenda-skip-if-has-timestamp)
                                             (config-org--agenda-skip-all-siblings-but-first))))))
      (todo "WAITING"
@@ -199,6 +200,10 @@
     ((org-agenda-tag-filter-preset '("-ignore" "-@someday"))
      (org-agenda-span 'day)
      (org-agenda-files (f-files org-directory (lambda (it)
+                                                ;; Show work context items
+                                                ;; during working hours, and
+                                                ;; personal context items
+                                                ;; outside of these hours.
                                                 (-let* ((work-file-p (string-prefix-p "work" (f-filename it)))
                                                         ((_s _m h d m y) (decode-time))
                                                         (day-of-week (calendar-day-of-week (list m d y)))
