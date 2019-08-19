@@ -259,6 +259,8 @@
                  (let ((base5 "#5B6268")
                        (blue "#51afef"))
                    `((doom-modeline-project-parent-dir ((t (:foreground ,base5 :bold t))))
+                     (org-scheduled ((t (:foreground "#9ca0a4"))))
+                     (org-scheduled-today ((t (:foreground "#bbc2cf"))))
                      (parenthesis ((t (:foreground "#787878" :weight light))))
                      (outline-1 ((t (:weight bold :foreground ,blue))))
                      ;; HACK: This doesn't seem to get set properly in the face definition.
