@@ -25,7 +25,7 @@
   (-let* (((_s _m h d m y) (decode-time))
           (day-of-week (calendar-day-of-week (list m d y))))
     (and (<= 1 day-of-week 5)
-         (or (<= 8 h 12) (<= 13 h 17)))))
+         (or (< 8 h 12) (< 13 h 17)))))
 
 (defun org-funcs-agenda-for-time-of-day ()
   "Show the org agenda for the time of day."
