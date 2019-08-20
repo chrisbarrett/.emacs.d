@@ -454,28 +454,10 @@
     (when (called-interactively-p nil)
       (evil-insert-state)))
 
-  (defun config-org--add-blank-line-after-heading (&rest _)
-    "Add a blank line of padding below new headings."
-    (when (and (called-interactively-p nil)
-               (org-at-heading-p))
-      (let ((next-line-blank?
-             (save-excursion
-               (forward-line)
-               (s-blank? (buffer-substring (line-beginning-position) (line-end-position))))))
-        (unless next-line-blank?
-          (save-excursion
-            (goto-char (line-end-position))
-            (open-line 1))))))
-
   (advice-add 'org-insert-heading :after #'config-org--evil-insert-state)
   (advice-add 'org-insert-heading-respect-content :after #'config-org--evil-insert-state)
   (advice-add 'org-insert-todo-heading-respect-content :after #'config-org--evil-insert-state)
-  (advice-add 'org-insert-todo-heading :after #'config-org--evil-insert-state)
-
-  (advice-add 'org-insert-heading :after #'config-org--add-blank-line-after-heading)
-  (advice-add 'org-insert-heading-respect-content :after #'config-org--add-blank-line-after-heading)
-  (advice-add 'org-insert-todo-heading-respect-content :after #'config-org--add-blank-line-after-heading)
-  (advice-add 'org-insert-todo-heading :after #'config-org--add-blank-line-after-heading))
+  (advice-add 'org-insert-todo-heading :after #'config-org--evil-insert-state))
 
 (use-package ox-koma-letter
   :after org
