@@ -19,12 +19,6 @@
 (eval-when-compile
   (defvar org-done-keywords))
 
-;; Important paths to set in advance.
-
-(general-setq
- org-default-notes-file (f-join org-directory "inbox.org")
- org-agenda-files (f-files org-directory (lambda (f) (f-ext? f "org"))))
-
 
 
 (major-mode-hydra-define org-mode nil
@@ -97,12 +91,6 @@
  org-tags-exclude-from-inheritance '("crypt" "project")
  org-crypt-disable-auto-save 'encypt
 
- org-refile-use-outline-path 'file
- org-refile-targets
- '((org-agenda-files . (:maxlevel . 3))
-   (org-default-notes-file :maxlevel . 3)
-   (org-directory :maxlevel . 3))
-
  org-attach-directory (f-join org-directory "data")
  org-archive-default-command #'config-org--archive-done-tasks
 
@@ -161,8 +149,7 @@
                                     ((org-agenda-overriding-header "Delegated")))
                               (stuck ""
                                      ((org-agenda-overriding-header "Stuck Projects"))))
-                             ((org-agenda-files (f-files org-directory (lambda (it) (f-ext? it "org"))))
-                              (org-agenda-tag-filter-preset '(,(format "+%s" tag) "-@someday" "-ignore"))
+                             ((org-agenda-tag-filter-preset '(,(format "+%s" tag) "-@someday" "-ignore"))
                               (org-agenda-span 'day)
                               (org-agenda-archives-mode nil)
                               (org-agenda-ignore-drawer-properties '(effort appt)))))
@@ -267,6 +254,17 @@
     (add-hook 'org-mode-hook #'config-org--add-local-hooks)
     (add-hook 'org-mode-hook #'config-org--set-bidi-env)
     (add-hook 'org-after-todo-statistics-hook #'config-org--children-done-parent-done))
+
+  :config
+  (general-setq
+   org-default-notes-file (f-join org-directory "inbox.org")
+   org-agenda-files (f-files org-directory (lambda (f) (f-ext? f "org")))
+
+   org-refile-use-outline-path 'file
+   org-refile-targets
+   '((org-agenda-files . (:maxlevel . 3))
+     (org-default-notes-file :maxlevel . 3)
+     (org-directory :maxlevel . 3)))
 
   :config
   (progn
