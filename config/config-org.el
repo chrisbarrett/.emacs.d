@@ -191,6 +191,10 @@
   :defer t
   :straight t
   :general
+  ("C-c a" #'org-agenda
+   "C-c s" #'org-search-view
+   "C-c t" #'org-todo-list
+   "C-c /" #'org-tags-view)
   (:states 'normal :keymaps 'org-mode-map "RET" #'org-return)
   (:keymaps 'org-mode-map
    "C-c C-." #'org-time-stamp-inactive
