@@ -163,6 +163,8 @@
                (org-funcs-capture-template
                 "t" "Todo" '(file "inbox.org") "* TODO %?")
                (org-funcs-capture-template
+                "n" "Note" '(file "inbox.org") "* Note captured %T\n- %?")
+               (org-funcs-capture-template
                 "l" "Link" '(file "inbox.org") '(function cb-org-capture-url-read-url)
                 :immediate-finish t)
                '("w" "Work")
