@@ -148,7 +148,8 @@
                                     ((org-agenda-overriding-header "Next Actions")
                                      (org-agenda-skip-function #'org-funcs-skip-duplicates-for-agenda)))
                               (todo "WAITING"
-                                    ((org-agenda-overriding-header "Delegated")))
+                                    ((org-agenda-overriding-header "Delegated")
+                                     (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp)))
                               (stuck ""
                                      ((org-agenda-overriding-header "Stuck Projects"))))
                              ((org-agenda-tag-filter-preset '(,(format "+%s" tag) "-@someday" "-ignore"))
