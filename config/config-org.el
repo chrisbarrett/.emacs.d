@@ -12,6 +12,8 @@
 (require 'paths)
 (require 's)
 
+(autoload 'org-heading-components "org")
+
 (autoload 'all-the-icons-fileicon "all-the-icons")
 
 ;; Silence byte-compiler.
@@ -204,7 +206,6 @@
 
   :preface
   (progn
-    (autoload 'org-heading-components "org")
     (autoload 'org-todo "org")
     (autoload 'org-up-heading-safe "org")
 
@@ -443,9 +444,6 @@
   ;; Remove weird keybindings.
   (general-unbind :states '(normal insert) :keymaps 'evil-org-mode-map
     "M-l" "M-h" "J" "O" "M-l" "M-h"))
-
-(autoload 'org-at-heading-p "org")
-(autoload 'org-heading-components "org")
 
 (with-eval-after-load 'evil
 
