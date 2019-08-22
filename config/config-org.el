@@ -14,8 +14,6 @@
 
 (autoload 'org-heading-components "org")
 
-(autoload 'all-the-icons-fileicon "all-the-icons")
-
 ;; Silence byte-compiler.
 
 (eval-when-compile
