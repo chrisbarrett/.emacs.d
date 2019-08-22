@@ -161,14 +161,17 @@
               (list
                (org-funcs-capture-template
                 "t" "Todo" '(file "inbox.org") "* TODO %?")
-               '("n" "Note" '(file+olp+datetree org-default-notes-file) :tree-type week)
+
+               '("n" "Note" entry
+                 (file+function org-default-notes-file org-reverse-datetree-goto-date-in-file)
+                 "* %?" :tree-type week)
+
                (org-funcs-capture-template
                 "l" "Link" '(file "inbox.org") '(function cb-org-capture-url-read-url)
                 :immediate-finish t)
+
                '("w" "Work")
-               (org-funcs-capture-template
-                "wt" "Todo"
-                `(file "work.org") "* TODO %?")
+
                (org-funcs-capture-template
                 "wj" "Jira issue reference"
                 `(file "work.org")
@@ -176,6 +179,7 @@
                 :jump-to-captured t
                 :immediate-finish t
                 :type 'item)
+
                (org-funcs-capture-template
                 "wu" "Cell Update"
                 `(file+olp "work.org" "Post cell update")
@@ -457,6 +461,15 @@
   (advice-add 'org-insert-heading-respect-content :after #'config-org--evil-insert-state)
   (advice-add 'org-insert-todo-heading-respect-content :after #'config-org--evil-insert-state)
   (advice-add 'org-insert-todo-heading :after #'config-org--evil-insert-state))
+
+;; org-reverse-datetree provides a more customisable way of creating date trees.
+(use-package org-reverse-datetree
+  :straight t
+  :commands (org-reverse-datetree-goto-date-in-file)
+  :config
+  (setq-default org-reverse-datetree-level-formats
+                '("%Y-%m %B"
+                  "[%Y-%m-%d %a]")))
 
 (use-package ox-koma-letter
   :after org
