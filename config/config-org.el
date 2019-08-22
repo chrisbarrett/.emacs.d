@@ -71,7 +71,7 @@
 
  ;; org-export
 
- org-export-backends '(ascii html latex odt slack gfm koma-letter custom-confluence)
+ org-export-backends '(ascii html latex odt slack gfm koma-letter)
  org-html-html5-fancy t
  org-html-postamble nil
  org-export-exclude-tags '("noexport" "no_export" "crypt" "ignore")
@@ -161,8 +161,7 @@
               (list
                (org-funcs-capture-template
                 "t" "Todo" '(file "inbox.org") "* TODO %?")
-               (org-funcs-capture-template
-                "n" "Note" '(file "inbox.org") "* Note captured %T\n- %?")
+               '("n" "Note" '(file+olp+datetree org-default-notes-file) :tree-type week)
                (org-funcs-capture-template
                 "l" "Link" '(file "inbox.org") '(function cb-org-capture-url-read-url)
                 :immediate-finish t)
