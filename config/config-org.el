@@ -92,7 +92,7 @@
  org-crypt-disable-auto-save 'encypt
 
  org-attach-directory (f-join org-directory "data")
- org-archive-location "archive.org::/datetree/"
+ org-archive-location "archive.org::datetree/"
  org-archive-default-command #'config-org--archive-done-tasks
 
  ;; appt
