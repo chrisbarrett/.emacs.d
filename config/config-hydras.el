@@ -254,7 +254,7 @@
 
    "Goto"
    (("i" cb-org-goto-inbox "inbox")
-    ("p" cb-org-goto-notes "personal")
+    ("p" cb-org-goto-personal "personal")
     ("w" cb-org-goto-work "work")
     ("n" cb-org-goto-notes "notes"))
    ""
