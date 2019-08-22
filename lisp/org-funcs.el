@@ -16,10 +16,12 @@
 (autoload 'org-get-scheduled-time "org")
 (autoload 'org-get-todo-state "org")
 (autoload 'org-goto-sibling "org")
+(autoload 'org-refile "org")
 (autoload 'outline-next-heading "outline")
 
 ;; Silence byte-compiler.
 (eval-when-compile
+  (defvar org-default-notes-file nil)
   (defvar org-directory nil))
 
 (defun org-funcs-working-hours-p ()
@@ -86,6 +88,34 @@
   (interactive)
   (org-agenda prefix-arg "t")
   (org-agenda-filter-apply '("-someday") 'tag))
+
+
+
+(defun org-funcs-goto-inbox ()
+  "Switch to the inbox file."
+  (interactive)
+  (find-file (f-join org-directory "inbox.org")))
+
+(defun org-funcs-goto-personal ()
+  "Switch to the personal notes file."
+  (interactive)
+  (find-file (f-join org-directory "personal.org")))
+
+(defun org-funcs-goto-notes ()
+  "Switch to the default notes file."
+  (interactive)
+  (find-file (f-join org-directory org-default-notes-file)))
+
+(defun org-funcs-goto-work ()
+  "Switch to the work file."
+  (interactive)
+  (find-file (f-join org-directory "work.org")))
+
+(defun org-funcs-goto-headline ()
+  "Prompt for a headline to jump to."
+  (interactive)
+  (org-refile '(4) (when (derived-mode-p 'org-mode)
+                     (current-buffer))))
 
 (provide 'org-funcs)
 

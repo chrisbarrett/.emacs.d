@@ -253,14 +253,14 @@
     ("s" org-search-view "search..."))
 
    "Goto"
-   (("i" cb-org-goto-inbox "inbox")
-    ("p" cb-org-goto-personal "personal")
-    ("w" cb-org-goto-work "work")
-    ("n" cb-org-goto-notes "notes"))
+   (("i" org-funcs-goto-inbox "inbox")
+    ("p" org-funcs-goto-personal "personal")
+    ("w" org-funcs-goto-work "work")
+    ("n" org-funcs-goto-notes "notes"))
    ""
    (("t" org-funcs-todo "todo list")
     ("v" org-tags-view "tags")
-    ("o" cb-org-goto-headline "headline..."))))
+    ("o" org-funcs-goto-headline "headline..."))))
 
 (pretty-hydra-define project
   (:hint nil

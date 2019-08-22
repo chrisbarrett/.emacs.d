@@ -474,14 +474,6 @@
     (add-to-list 'org-latex-classes `("koma-letter" ,cb-org-export-koma-letter-latex-class))
     (add-hook 'org-ctrl-c-ctrl-c-hook #'cb-org-export-koma-letter-handler t)))
 
-(use-package cb-org-goto
-  :commands (cb-org-goto-inbox
-             cb-org-goto-notes
-             cb-org-goto-todo-list
-             cb-org-goto-work
-             cb-org-goto-tags-list
-             cb-org-goto-headline))
-
 (use-package cb-org-ctrl-c-ret
   :after org
   :general (:states '(normal emacs) :keymaps 'org-mode-map "C-c RET" #'cb-org-ctrl-c-ret))
