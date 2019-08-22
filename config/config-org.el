@@ -453,8 +453,7 @@
 ;; org-bullets displays orgmode bullets using pretty utf-8 characters.
 (use-package org-bullets
   :straight t
-  :hook (org-mode . org-bullets-mode)
-  :custom (org-bullets-bullet-list '("◉" "○" "✸")))
+  :hook (org-mode . org-bullets-mode))
 
 (with-eval-after-load 'evil
 
