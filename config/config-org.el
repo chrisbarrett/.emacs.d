@@ -450,6 +450,12 @@
   (general-unbind :states '(normal insert) :keymaps 'evil-org-mode-map
     "M-l" "M-h" "J" "O" "M-l" "M-h"))
 
+;; org-bullets displays orgmode bullets using pretty utf-8 characters.
+(use-package org-bullets
+  :straight t
+  :hook (org-mode . org-bullets-mode)
+  :custom (org-bullets-bullet-list '("◉" "○" "✸")))
+
 (with-eval-after-load 'evil
 
   (defun config-org--evil-insert-state (&rest _)
