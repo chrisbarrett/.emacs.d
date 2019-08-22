@@ -258,7 +258,7 @@
     ("w" org-funcs-goto-work "work")
     ("n" org-funcs-goto-notes "notes"))
    ""
-   (("t" org-funcs-todo "todo list")
+   (("t" org-funcs-todo-list "todo list")
     ("v" org-tags-view "tags")
     ("o" org-funcs-goto-headline "headline..."))))
 
