@@ -6,8 +6,6 @@
 (require 'f)
 (require 'org)
 
-(autoload 'org-agenda-filter-apply "org-agenda")
-
 (defvar cb-org-goto-on-holiday? nil
   "If nil, show the work agenda during work hours.")
 
@@ -40,19 +38,6 @@
   "Switch to the work file."
   (interactive)
   (find-file (f-join org-directory "work.org")))
-
-;;;###autoload
-(defun cb-org-goto-todo-list ()
-  "Show the todo list."
-  (interactive)
-  (org-agenda prefix-arg "t")
-  (org-agenda-filter-apply '("-someday") 'tag))
-
-;;;###autoload
-(defun cb-org-goto-tags-list ()
-  "Show all tagged items."
-  (interactive)
-  (org-tags-view nil))
 
 ;;;###autoload
 (defun cb-org-goto-headline ()

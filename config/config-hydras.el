@@ -7,6 +7,7 @@
 
 (require 'buffer-cmds)
 (require 'jump-cmds)
+(require 'org-funcs)
 (require 'window-cmds)
 
 (autoload 'cb/toggle-window-split "cb-toggle-window-split")
@@ -252,13 +253,13 @@
     ("s" org-search-view "search..."))
 
    "Goto"
-   (("$" (find-file ledger-master-file) "ledger")
-    ("i" cb-org-goto-inbox "inbox")
+   (("i" cb-org-goto-inbox "inbox")
+    ("p" cb-org-goto-notes "personal")
+    ("w" cb-org-goto-work "work")
     ("n" cb-org-goto-notes "notes"))
    ""
-   (("t" (org-agenda nil "T") "todo list")
-    ("w" cb-org-goto-work "work")
-    ("v" cb-org-goto-tags-list "tags")
+   (("t" org-funcs-todo "todo list")
+    ("v" org-tags-view "tags")
     ("o" cb-org-goto-headline "headline..."))))
 
 (pretty-hydra-define project

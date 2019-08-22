@@ -11,6 +11,7 @@
 (require 'f)
 
 (autoload 'calendar-day-of-week "calendar")
+(autoload 'org-agenda-filter-apply "org-agenda")
 (autoload 'org-get-deadline-time "org")
 (autoload 'org-get-scheduled-time "org")
 (autoload 'org-get-todo-state "org")
@@ -79,6 +80,12 @@
         :prepend prepend
         :immediate-finish immediate-finish
         :jump-to-captured jump-to-captured))
+
+(defun org-funcs-todo-list ()
+  "Show the todo list."
+  (interactive)
+  (org-agenda prefix-arg "t")
+  (org-agenda-filter-apply '("-someday") 'tag))
 
 (provide 'org-funcs)
 
