@@ -60,7 +60,7 @@
  org-startup-indented t
  org-startup-with-inline-images t
 
- org-todo-keywords '((type "TODO(t)" "WAITING(w)" "|" "DONE(d)"))
+ org-todo-keywords '((type "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)"))
 
  org-src-fontify-natively t
  org-src-window-setup 'current-window
