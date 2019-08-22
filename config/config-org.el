@@ -202,7 +202,9 @@
    "C-c s" #'org-search-view
    "C-c t" #'org-todo-list
    "C-c /" #'org-tags-view)
-  (:states 'normal :keymaps 'org-mode-map "RET" #'org-return)
+  (:states 'normal :keymaps 'org-mode-map
+   "RET" #'org-return
+   "<backtab>" #'org-global-cycle)
   (:keymaps 'org-mode-map
    "C-c C-." #'org-time-stamp-inactive
    "M-p" #'org-metaup
