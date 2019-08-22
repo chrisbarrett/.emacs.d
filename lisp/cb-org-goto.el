@@ -18,10 +18,16 @@
   (find-file (f-join org-directory "inbox.org")))
 
 ;;;###autoload
+(defun cb-org-goto-personal ()
+  "Switch to the personal notes file."
+  (interactive)
+  (find-file (f-join org-directory "personal.org")))
+
+;;;###autoload
 (defun cb-org-goto-notes ()
   "Switch to the default notes file."
   (interactive)
-  (find-file (f-join org-directory "personal.org")))
+  (find-file (f-join org-directory org-default-notes-file)))
 
 ;;;###autoload
 (defun cb-org-goto-journal ()
