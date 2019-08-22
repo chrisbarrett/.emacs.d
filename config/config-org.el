@@ -265,7 +265,7 @@
 
   :config
   (general-setq
-   org-default-notes-file (f-join org-directory "inbox.org")
+   org-default-notes-file (f-join org-directory "notes.org")
    org-agenda-files (f-files org-directory (lambda (f) (f-ext? f "org")))
 
    org-refile-use-outline-path 'file
