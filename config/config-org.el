@@ -204,7 +204,7 @@
 
                (org-funcs-capture-template
                 "wu" "Cell Update"
-                `(file+olp "work.org" "Post cell update")
+                `(file+headline "work.org" "Post cell update")
                 "* %u
 ** My Top 3
 1. %?
