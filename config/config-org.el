@@ -153,6 +153,7 @@
                                      ((org-agenda-overriding-header "Stuck Projects"))))
                              ((org-agenda-tag-filter-preset '(,(format "+%s" tag) "-@someday" "-ignore"))
                               (org-agenda-span 'day)
+                              (org-agenda-show-future-repeats nil)
                               (org-agenda-archives-mode nil)
                               (org-agenda-ignore-drawer-properties '(effort appt)))))
                          contexts)))
