@@ -8,7 +8,12 @@
 (require 'f)
 (require 'general)
 (require 'major-mode-hydra)
-(require 'org-funcs)
+
+(use-package org-funcs
+  :demand t
+  :general
+  (:states 'normal :keymaps 'org-mode-map "C-c C-k" #'org-funcs-ctrl-c-ctrl-k))
+
 (require 'paths)
 (require 's)
 
@@ -519,11 +524,6 @@
 (use-package cb-org-ctrl-c-ret
   :after org
   :general (:states '(normal emacs) :keymaps 'org-mode-map "C-c RET" #'cb-org-ctrl-c-ret))
-
-(use-package cb-org-ctrl-c-ctrl-k
-  :after org
-  :general
-  (:states 'normal :keymaps 'org-mode-map "C-c C-k" #'cb-org-ctrl-c-ctrl-k))
 
 (use-package ox-slack
   :commands (org-slack-export-to-clipboard-as-slack))

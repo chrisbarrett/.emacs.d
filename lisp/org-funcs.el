@@ -12,10 +12,14 @@
 
 (autoload 'calendar-day-of-week "calendar")
 (autoload 'org-agenda-filter-apply "org-agenda")
+(autoload 'org-capture-kill "org-capture")
+(autoload 'org-copy-subtree "org")
+(autoload 'org-cut-subtree "org")
 (autoload 'org-get-deadline-time "org")
 (autoload 'org-get-scheduled-time "org")
 (autoload 'org-get-todo-state "org")
 (autoload 'org-goto-sibling "org")
+(autoload 'org-kill-note-or-show-branches "org")
 (autoload 'org-refile "org")
 (autoload 'outline-next-heading "outline")
 
@@ -117,6 +121,16 @@
   (org-refile '(4) (when (derived-mode-p 'org-mode)
                      (current-buffer))))
 
+(defun org-funcs-ctrl-c-ctrl-k (&optional n)
+  "Kill subtrees, unless we're in a special buffer where it should cancel."
+  (interactive "p")
+  (cond
+   ((and (boundp 'org-capture-mode) org-capture-mode)
+    (org-capture-kill))
+   ((s-starts-with? "*Org" (buffer-name))
+    (org-kill-note-or-show-branches))
+   (t
+    (org-cut-subtree n))))
 (provide 'org-funcs)
 
 ;;; org-funcs.el ends here
