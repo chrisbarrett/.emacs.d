@@ -216,6 +216,16 @@
                  (file+function org-default-notes-file org-reverse-datetree-goto-date-in-file)
                  "* %?" :tree-type week)
 
+               '("r" "Weekly Review" entry
+                 (file+function org-default-notes-file org-reverse-datetree-goto-date-in-file)
+                 "* What am I doing at the moment?
+- %s
+* What should I be doing?
+-
+* What would I like to do?
+-
+" :tree-type week)
+
                (org-funcs-capture-template
                 "l" "Link" '(file "inbox.org") '(function cb-org-capture-url-read-url)
                 :immediate-finish t)
