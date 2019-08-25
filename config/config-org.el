@@ -110,7 +110,7 @@
  org-clock-report-include-clocking-task t
 
  ;; agenda
- org-stuck-projects '("+project-ignore-@someday" ("TODO") nil "")
+ org-stuck-projects '("+project-ignore-@someday-archived" ("TODO") nil "")
  org-agenda-auto-exclude-function #'org-funcs-exclude-tasks-on-hold
  org-agenda-hide-tags-regexp (rx (or "noexport" "@someday" "project"))
  org-agenda-include-diary nil
