@@ -59,6 +59,7 @@
  org-reverse-note-order nil
  org-startup-indented t
  org-startup-with-inline-images t
+ org-adapt-indentation nil
 
  org-todo-keywords '((type "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)"))
 
