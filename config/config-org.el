@@ -12,7 +12,9 @@
 (use-package org-funcs
   :demand t
   :general
-  (:states 'normal :keymaps 'org-mode-map "C-c C-k" #'org-funcs-ctrl-c-ctrl-k))
+  (:states 'normal :keymaps 'org-mode-map
+   "C-c RET" #'org-funcs-ctrl-c-ret
+   "C-c C-k" #'org-funcs-ctrl-c-ctrl-k))
 
 (require 'paths)
 (require 's)
@@ -520,10 +522,6 @@
     (general-setq org-latex-hyperref-template "")
     (add-to-list 'org-latex-classes `("koma-letter" ,cb-org-export-koma-letter-latex-class))
     (add-hook 'org-ctrl-c-ctrl-c-hook #'cb-org-export-koma-letter-handler t)))
-
-(use-package cb-org-ctrl-c-ret
-  :after org
-  :general (:states '(normal emacs) :keymaps 'org-mode-map "C-c RET" #'cb-org-ctrl-c-ret))
 
 (use-package ox-slack
   :commands (org-slack-export-to-clipboard-as-slack))
