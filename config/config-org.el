@@ -375,8 +375,6 @@
 
 (use-package cb-org-capture-url :after org)
 
-(use-package cb-org-gdrive :hook (org-mode . cb-org-gdrive-init))
-
 (use-package cb-org-pgp-decrpyt :hook (org-mode . cb-org-pgp-decrpyt-init))
 
 (use-package org-hydras :commands (org-babel/body))
