@@ -146,10 +146,29 @@
 (general-setq org-agenda-custom-commands
               (let ((contexts '("@personal" "@work")))
                 (-mapcat (lambda (tag)
-                           `((,(concat "r" (substring tag 1 2))
-                              ,(format "Plan/review for context: %s" tag)
+                           `((,(concat (substring tag 1 2) "a")
+                              ,(format "Agenda for context: %s" tag)
                               ((agenda ""
-                                       ((org-agenda-overriding-header "Review agenda this month")
+                                       ((org-agenda-overriding-header "Today")
+                                        (org-agenda-use-time-grid t)))
+                               (todo "TODO"
+                                     ((org-agenda-overriding-header "Next Actions")
+                                      (org-agenda-skip-function #'org-funcs-skip-duplicates-for-agenda)))
+                               (todo "WAITING"
+                                     ((org-agenda-overriding-header "Delegated")
+                                      (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp)))
+                               (stuck ""
+                                      ((org-agenda-overriding-header "Stuck Projects"))))
+                              ((org-agenda-tag-filter-preset '(,(format "+%s" tag) "-@someday" "-ignore"))
+                               (org-agenda-span 'day)
+                               (org-agenda-show-future-repeats nil)
+                               (org-agenda-archives-mode nil)
+                               (org-agenda-ignore-drawer-properties '(effort appt))))
+
+                             (,(concat (substring tag 1 2) "p")
+                              ,(format "Plan for context: %s" tag)
+                              ((agenda ""
+                                       ((org-agenda-overriding-header "Review agenda this week")
                                         (org-agenda-use-time-grid t)))
                                (todo "WAITING"
                                      ((org-agenda-overriding-header "Review Delegated Actions. Should I follow up today or course correct?")))
@@ -167,21 +186,22 @@
                                (org-agenda-archives-mode nil)
                                (org-agenda-ignore-drawer-properties '(effort appt))))
 
-                             (,(substring tag 1 2)
-                              ,(format "Agenda for context: %s" tag)
+                             (,(concat (substring tag 1 2) "r")
+                              ,(format "Review for context: %s" tag)
                               ((agenda ""
-                                       ((org-agenda-overriding-header "Today")
-                                        (org-agenda-use-time-grid t)))
+                                       ((org-agenda-overriding-header "Review agenda this week, then for month.")
+                                        (org-agenda-show-log t)
+                                        (org-agenda-start-day "-7d")))
                                (todo "TODO"
-                                     ((org-agenda-overriding-header "Next Actions")
+                                     ((org-agenda-overriding-header "Review Next Actions. Are these the next thing to do?")
                                       (org-agenda-skip-function #'org-funcs-skip-duplicates-for-agenda)))
-                               (todo "WAITING"
-                                     ((org-agenda-overriding-header "Delegated")
-                                      (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp)))
-                               (stuck ""
-                                      ((org-agenda-overriding-header "Stuck Projects"))))
+                               (tags-todo "+LEVEL=1+TODO=\"TODO\""
+                                          ((org-agenda-overriding-header "Review unscheduled actions. Any of these need to be prioritised?")
+                                           (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp)))
+                               (tags "+project"
+                                     ((org-agenda-overriding-header "Review projects. Are these all healthy?"))))
                               ((org-agenda-tag-filter-preset '(,(format "+%s" tag) "-@someday" "-ignore"))
-                               (org-agenda-span 'day)
+                               (org-agenda-span 'week)
                                (org-agenda-show-future-repeats nil)
                                (org-agenda-archives-mode nil)
                                (org-agenda-ignore-drawer-properties '(effort appt))))))

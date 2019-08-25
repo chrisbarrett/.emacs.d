@@ -41,8 +41,8 @@
   "Show the org agenda for the time of day."
   (interactive)
   (if (org-funcs-working-hours-p)
-      (org-agenda nil "w")
-    (org-agenda nil "p")))
+      (org-agenda nil "wa")
+    (org-agenda nil "pa")))
 
 (defun org-funcs-exclude-tasks-on-hold (tag)
   (and (equal tag "hold") (concat "-" tag)))
