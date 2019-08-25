@@ -555,6 +555,10 @@
 (use-package ox-slack
   :commands (org-slack-export-to-clipboard-as-slack))
 
+(use-package ox-gfm
+  :straight t
+  :defer t)
+
 (provide 'config-org)
 
 ;;; config-org.el ends here
