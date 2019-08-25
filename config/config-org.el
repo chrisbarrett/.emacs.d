@@ -178,7 +178,7 @@
                                (tags-todo "+LEVEL=1+TODO=\"TODO\""
                                           ((org-agenda-overriding-header "Review unscheduled actions. Any of these need to be prioritised?")
                                            (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp)))
-                               (tags "+project"
+                               (tags "+project-archived"
                                      ((org-agenda-overriding-header "Review projects. Are these all healthy?"))))
                               ((org-agenda-tag-filter-preset '(,(format "+%s" tag) "-@someday" "-ignore"))
                                (org-agenda-span 'week)
@@ -198,7 +198,7 @@
                                (tags-todo "+LEVEL=1+TODO=\"TODO\""
                                           ((org-agenda-overriding-header "Review unscheduled actions. Any of these need to be prioritised?")
                                            (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp)))
-                               (tags "+project"
+                               (tags "+project-archived"
                                      ((org-agenda-overriding-header "Review projects. Are these all healthy?"))))
                               ((org-agenda-tag-filter-preset '(,(format "+%s" tag) "-@someday" "-ignore"))
                                (org-agenda-span 'week)
