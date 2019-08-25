@@ -305,8 +305,9 @@
     (defun config-org--set-bidi-env ()
       (setq bidi-paragraph-direction nil))
 
-    (defun config-org--add-local-hooks ()
-      "Set buffer-local hooks for orgmode."
+    (defun config-org--set-local-vars-and-hooks ()
+      (setq-local prettify-symbols-alist '(("[#A]" . ?⦿)))
+      (prettify-symbols-mode)
       (add-hook 'org-after-todo-state-change-hook #'config-org--mark-next-parent-tasks-todo nil t)
       (add-hook 'org-clock-in-hook #'config-org--mark-next-parent-tasks-todo nil t))
 
@@ -323,7 +324,7 @@
   :init
   (progn
     (add-to-list 'load-path (expand-file-name "lisp" org-directory))
-    (add-hook 'org-mode-hook #'config-org--add-local-hooks)
+    (add-hook 'org-mode-hook #'config-org--set-local-vars-and-hooks)
     (add-hook 'org-mode-hook #'config-org--set-bidi-env)
     (add-hook 'org-after-todo-statistics-hook #'config-org--children-done-parent-done))
 
