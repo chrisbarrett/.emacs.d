@@ -189,7 +189,7 @@
                              (,(concat (substring tag 1 2) "r")
                               ,(format "Review for context: %s" tag)
                               ((agenda ""
-                                       ((org-agenda-overriding-header "Review agenda this week, then for month.")
+                                       ((org-agenda-overriding-header "Review agenda this week")
                                         (org-agenda-show-log t)
                                         (org-agenda-start-day "-7d")))
                                (todo "TODO"
@@ -201,7 +201,7 @@
                                (tags "+project-archived"
                                      ((org-agenda-overriding-header "Review projects. Are these all healthy?"))))
                               ((org-agenda-tag-filter-preset '(,(format "+%s" tag) "-@someday" "-ignore"))
-                               (org-agenda-span 'week)
+                               (org-agenda-span 14)
                                (org-agenda-show-future-repeats nil)
                                (org-agenda-archives-mode nil)
                                (org-agenda-ignore-drawer-properties '(effort appt))))))
