@@ -57,7 +57,7 @@ channel."
           (org-remove-indentation
            (org-export-format-code-default example-block info))))
 
-(org-export-define-derived-backend 'slack 'md
+(org-export-define-derived-backend 'slack 'gfm
   :translate-alist '((headline . ox-slack--markup-headline)
                      (toc . ox-slack--toc)
                      (item . ox-slack--item)
@@ -93,7 +93,7 @@ FORMATTER allows you to modify the output string before copying."
   (let ((org-export-show-temporary-export-buffer nil))
     (org-export-to-buffer 'slack "*Org Slack Export*"
       async subtreep visible-only nil nil (lambda ()
-                                            (kill-new (funcall formatter (buffer-string)))
+                                            (kill-new (funcall (or formatter #'string-trim) (buffer-string)))
                                             (message "Buffer contents copied to clipboard")))))
 
 (provide 'ox-slack)
