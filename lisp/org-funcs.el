@@ -20,11 +20,13 @@
 (autoload 'org-get-scheduled-time "org")
 (autoload 'org-get-todo-state "org")
 (autoload 'org-goto-sibling "org")
+(autoload 'org-heading-components "org")
 (autoload 'org-insert-todo-heading "org")
 (autoload 'org-kill-note-or-show-branches "org")
 (autoload 'org-refile "org")
 (autoload 'org-table-hline-and-move "org-table")
 (autoload 'outline-next-heading "outline")
+(autoload 'thing-at-point-url-at-point "thingatpt")
 
 ;; Silence byte-compiler.
 (eval-when-compile
@@ -147,6 +149,18 @@
   (if (org-at-table-p)
       (call-interactively #'org-table-hline-and-move)
     (call-interactively #'org-insert-todo-heading)))
+
+
+
+(defun org-funcs--last-url-kill ()
+  "Return the most recent URL in the kill ring or X pasteboard."
+  (--first (s-matches? (rx bos (or "http" "https" "www")) it)
+           (cons (current-kill 0 t) kill-ring)))
+
+(defun org-funcs-read-url (prompt)
+  (let ((default (or (thing-at-point-url-at-point) (org-funcs--last-url-kill))))
+    (read-string (concat (if default (format "%s (default %s)" prompt default) prompt) ": ")
+                 nil nil default)))
 
 (provide 'org-funcs)
 

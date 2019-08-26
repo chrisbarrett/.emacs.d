@@ -3,9 +3,8 @@
 ;;; Code:
 
 (require 'dash)
+(require 'org-funcs)
 (require 's)
-
-(autoload 'thing-at-point-url-at-point "thingatpt")
 
 (defun cb-org-capture-url--decode-html-entities (str)
   (with-temp-buffer
@@ -31,19 +30,9 @@
     (with-current-buffer (url-retrieve-synchronously url t)
       (buffer-string))))
 
-(defun cb-org-capture-url--last-url-kill ()
-  "Return the most recent URL in the kill ring or X pasteboard."
-  (--first (s-matches? (rx bos (or "http" "https" "www")) it)
-           (cons (current-kill 0 t) kill-ring)))
-
-(defun cb-org-capture-url--read-string-with-default (prompt default &optional initial-input history)
-  (read-string (concat (if default (format "%s (default %s)" prompt default) prompt) ": ")
-               initial-input history default))
-
 (defun cb-org-capture-url-read-url ()
   "Return a URL capture template string for use with `org-capture'."
-  (let* ((default (or (thing-at-point-url-at-point) (cb-org-capture-url--last-url-kill)))
-         (url (cb-org-capture-url--read-string-with-default "URL" default))
+  (let* ((url (org-funcs-read-url "URL"))
          (title (cb-org-capture-url--parse-html-title (cb-org-capture-url--retrieve-html url))))
     (format "* TODO Review [[%s][%s]]" url (or title url))))
 
