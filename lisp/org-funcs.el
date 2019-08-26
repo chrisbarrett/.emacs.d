@@ -75,11 +75,11 @@
 (defun org-funcs-high-priority-p ()
   (equal ?A (nth 3 (org-heading-components))))
 
-(defun org-funcs-skip-duplicates-for-agenda ()
-  (if (org-funcs-high-priority-p)
-      nil
-    (or
-     (org-funcs-skip-item-if-timestamp)
+(defun org-funcs-skip-items-already-in-agenda ()
+  (or
+   (org-funcs-skip-item-if-timestamp)
+   (if (org-funcs-high-priority-p)
+       nil
      (org-funcs-agenda-skip-all-siblings-but-first))))
 
 (cl-defun org-funcs-capture-template (key

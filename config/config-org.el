@@ -153,7 +153,7 @@
                                         (org-agenda-use-time-grid t)))
                                (tags-todo "TODO=\"TODO\"|+PRIORITY=\"A\""
                                           ((org-agenda-overriding-header "Next Actions")
-                                           (org-agenda-skip-function #'org-funcs-skip-duplicates-for-agenda)))
+                                           (org-agenda-skip-function #'org-funcs-skip-items-already-in-agenda)))
                                (todo "WAITING"
                                      ((org-agenda-overriding-header "Delegated")
                                       (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp)))
@@ -174,7 +174,7 @@
                                      ((org-agenda-overriding-header "Review Delegated Actions. Should I follow up today or course correct?")))
                                (todo "TODO"
                                      ((org-agenda-overriding-header "Review Next Actions. Are these the next thing to do?")
-                                      (org-agenda-skip-function #'org-funcs-skip-duplicates-for-agenda)))
+                                      (org-agenda-skip-function #'org-funcs-skip-items-already-in-agenda)))
                                (tags-todo "+LEVEL=1+TODO=\"TODO\""
                                           ((org-agenda-overriding-header "Review unscheduled actions. Any of these need to be prioritised?")
                                            (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp)))
@@ -194,7 +194,7 @@
                                         (org-agenda-start-day "-7d")))
                                (todo "TODO"
                                      ((org-agenda-overriding-header "Review Next Actions. Are these the next thing to do?")
-                                      (org-agenda-skip-function #'org-funcs-skip-duplicates-for-agenda)))
+                                      (org-agenda-skip-function #'org-funcs-skip-items-already-in-agenda)))
                                (tags-todo "+LEVEL=1+TODO=\"TODO\""
                                           ((org-agenda-overriding-header "Review unscheduled actions. Any of these need to be prioritised?")
                                            (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp)))
@@ -235,10 +235,8 @@
                (org-funcs-capture-template
                 "wj" "Jira issue reference"
                 `(file "work.org")
-                '(function jira-utils-read-issue-url-for-org-header)
-                :jump-to-captured t
-                :immediate-finish t
-                :type 'item)
+                '(function jira-utils-todo-from-issue)
+                :jump-to-captured t)
 
                (org-funcs-capture-template
                 "wu" "Cell Update"
@@ -324,6 +322,7 @@
   :init
   (progn
     (add-to-list 'load-path (expand-file-name "lisp" org-directory))
+    (add-hook 'org-mode-hook #'auto-revert-mode)
     (add-hook 'org-mode-hook #'config-org--set-local-vars-and-hooks)
     (add-hook 'org-mode-hook #'config-org--set-bidi-env)
     (add-hook 'org-after-todo-statistics-hook #'config-org--children-done-parent-done))
