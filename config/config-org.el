@@ -72,6 +72,16 @@
  org-src-fontify-natively t
  org-src-window-setup 'current-window
 
+ ;; I customise priorities so that headlines are either 'prioritised' an show a
+ ;; bullet cookie or 'cleared', which indicates no special priority.
+ ;;
+ ;; org-hacks.el patches the interactive commands to enforce this.
+ org-priority-start-cycle-with-default t
+ org-highest-priority ?A
+ org-lowest-priority ?B
+ org-default-priority ?B
+
+
  ;; org-babel
 
  org-confirm-babel-evaluate nil
@@ -259,14 +269,14 @@
    "C-c s" #'org-search-view
    "C-c t" #'org-todo-list
    "C-c /" #'org-tags-view)
-  (:states 'normal :keymaps 'org-mode-map
-   "RET" #'org-return
-   "<backtab>" #'org-global-cycle)
-  (:keymaps 'org-mode-map
+  (:states '(emacs normal) :keymaps 'org-mode-map
+   "<backtab>" #'org-global-cycle
    "C-c C-." #'org-time-stamp-inactive
-   "M-p" #'org-metaup
+   "C-c c" #'org-columns
+   "C-c p" #'org-priority-down
    "M-n" #'org-metadown
-   "C-c c" #'org-columns)
+   "M-p" #'org-metaup
+   "RET" #'org-return)
 
   :preface
   (progn
@@ -386,6 +396,7 @@
             (interactive)
             (org-save-all-org-buffers)
             (org-agenda-redo))
+   "C-c p" #'org-agenda-priority-down
    "/" #'org-agenda-filter-by-tag
    "v" #'org-agenda-view-mode-dispatch
    "t" #'org-agenda-todo
