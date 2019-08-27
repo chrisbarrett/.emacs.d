@@ -78,7 +78,7 @@
 (defun org-funcs-skip-items-already-in-agenda ()
   (or
    (org-funcs-skip-item-if-timestamp)
-   (if (org-funcs-high-priority-p)
+   (if (and (org-funcs-high-priority-p) (org-funcs--current-headline-is-todo))
        nil
      (org-funcs-agenda-skip-all-siblings-but-first))))
 
