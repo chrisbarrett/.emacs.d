@@ -256,15 +256,18 @@
 
               (pcase theme
                 ('doom-one
-                 (let ((base5 "#5B6268")
+                 (let ((fg "#bbc2cf")
+                       (base3 "#23272e")
+                       (base4 "#9ca0a4")
+                       (base5 "#5B6268")
                        (blue "#51afef"))
                    `((doom-modeline-project-parent-dir ((t (:foreground ,base5 :bold t))))
-                     (org-scheduled ((t (:foreground "#9ca0a4"))))
-                     (org-scheduled-today ((t (:foreground "#bbc2cf"))))
+                     (org-scheduled ((t (:foreground ,base4))))
+                     (org-scheduled-today ((t (:foreground ,fg))))
                      (parenthesis ((t (:foreground "#787878" :weight light))))
                      (outline-1 ((t (:weight bold :foreground ,blue))))
                      ;; HACK: This doesn't seem to get set properly in the face definition.
-                     (org-block-end-line ((t :foreground ,base5 :background "#23272e"))))))
+                     (org-block-end-line ((t :foreground ,base5 :background ,base3))))))
 
                 ('doom-solarized-light
                  (let ((base6 "#96A7A9")
