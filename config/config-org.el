@@ -35,8 +35,7 @@
     ("t" org-show-todo-tree "todo tree"))
 
    "Misc"
-   (("e" org-babel/body "babel commands")
-    ("p" org-present "present"))))
+   (("e" org-babel/body "babel commands"))))
 
 ;; General variables
 
