@@ -4,6 +4,7 @@
 
 (require 'ox)
 (require 'ox-md)
+(require 'subr-x)
 
 (autoload 'gfm-mode "markdown-mode")
 
