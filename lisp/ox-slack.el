@@ -25,6 +25,9 @@
 (defun ox-slack--bold (_bold contents _info)
   (format "*%s*" contents))
 
+(defun ox-slack--link (link _contents _info)
+  (org-element-property :raw-link link))
+
 (defun ox-slack--strike-through (_italic contents _info)
   (format "~%s~" contents))
 
@@ -61,6 +64,7 @@ channel."
 (org-export-define-derived-backend 'slack 'gfm
   :translate-alist '((headline . ox-slack--markup-headline)
                      (toc . ox-slack--toc)
+                     (link . ox-slack--link)
                      (item . ox-slack--item)
                      (italic . ox-slack--italic)
                      (underline . ox-slack--italic)
