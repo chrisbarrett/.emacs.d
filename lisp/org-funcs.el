@@ -30,7 +30,6 @@
 
 ;; Silence byte-compiler.
 (eval-when-compile
-  (defvar org-default-notes-file nil)
   (defvar org-directory nil))
 
 (defun org-funcs-working-hours-p ()
@@ -119,6 +118,7 @@
 (defun org-funcs-goto-notes ()
   "Switch to the default notes file."
   (interactive)
+  (require 'org)
   (find-file (f-join org-directory org-default-notes-file)))
 
 (defun org-funcs-goto-work ()
