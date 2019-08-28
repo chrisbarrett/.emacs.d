@@ -10,27 +10,14 @@
 
 (require 'f)
 
+(eval-when-compile
+  (require 'org nil t)
+  (require 'org-agenda nil t)
+  (require 'org-capture nil t))
+
 (autoload 'calendar-day-of-week "calendar")
-(autoload 'org-agenda-filter-apply "org-agenda")
-(autoload 'org-at-table-p "org-table")
-(autoload 'org-capture-kill "org-capture")
-(autoload 'org-copy-subtree "org")
-(autoload 'org-cut-subtree "org")
-(autoload 'org-get-deadline-time "org")
-(autoload 'org-get-scheduled-time "org")
-(autoload 'org-get-todo-state "org")
-(autoload 'org-goto-sibling "org")
-(autoload 'org-heading-components "org")
-(autoload 'org-insert-todo-heading "org")
-(autoload 'org-kill-note-or-show-branches "org")
-(autoload 'org-refile "org")
-(autoload 'org-table-hline-and-move "org-table")
 (autoload 'outline-next-heading "outline")
 (autoload 'thing-at-point-url-at-point "thingatpt")
-
-;; Silence byte-compiler.
-(eval-when-compile
-  (defvar org-directory nil))
 
 (defun org-funcs-working-hours-p ()
   (-let* (((_s _m h d m y) (decode-time))
