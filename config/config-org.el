@@ -13,8 +13,11 @@
   :demand t
   :general
   (:states 'normal :keymaps 'org-mode-map
+   "C-c p" #'org-funcs-toggle-priority
    "C-c RET" #'org-funcs-ctrl-c-ret
-   "C-c C-k" #'org-funcs-ctrl-c-ctrl-k))
+   "C-c C-k" #'org-funcs-ctrl-c-ctrl-k)
+  (:states 'motion :keymaps 'org-agenda-mode-map
+   "C-c p" #'org-funcs-agenda-toggle-priority))
 
 (require 'paths)
 (require 's)
@@ -276,7 +279,6 @@
    "<backtab>" #'org-global-cycle
    "C-c C-." #'org-time-stamp-inactive
    "C-c c" #'org-columns
-   "C-c p" #'org-priority-down
    "M-n" #'org-metadown
    "M-p" #'org-metaup
    "RET" #'org-return)
@@ -399,7 +401,6 @@
             (interactive)
             (org-save-all-org-buffers)
             (org-agenda-redo))
-   "C-c p" #'org-agenda-priority-down
    "/" #'org-agenda-filter-by-tag
    "v" #'org-agenda-view-mode-dispatch
    "t" #'org-agenda-todo
