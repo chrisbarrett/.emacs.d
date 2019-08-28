@@ -53,9 +53,6 @@
  org-hierarchical-todo-statistics nil
  org-indirect-buffer-display 'current-window
  org-insert-heading-respect-content t
- org-log-done 'time
- org-log-into-drawer t
- org-log-repeat nil
  org-outline-path-complete-in-steps nil
  org-pretty-entities t
  org-refile-allow-creating-parent-nodes 'confirm
@@ -66,6 +63,12 @@
  org-startup-indented t
  org-startup-with-inline-images t
  org-adapt-indentation nil
+
+ org-log-into-drawer t
+ org-log-done 'time
+ org-log-redeadline 'time
+ org-log-reschedule 'time
+ org-log-repeat 'time
 
  org-todo-keywords '((type "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)"))
 
