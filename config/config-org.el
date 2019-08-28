@@ -233,13 +233,8 @@
 
                '("r" "Weekly Review" entry
                  (file+function org-default-notes-file org-reverse-datetree-goto-date-in-file)
-                 "* What am I doing at the moment?
-- %s
-* What should I be doing?
--
-* What would I like to do?
--
-" :tree-type week)
+                 `(file ,(f-join org-directory "templates" "review.template.org"))
+                 :tree-type week)
 
                (org-funcs-capture-template
                 "l" "Link" '(file "inbox.org") '(function cb-org-capture-url-read-url)
@@ -254,15 +249,16 @@
                 :jump-to-captured t)
 
                (org-funcs-capture-template
+                "wp" "Postmortem Facilitation"
+                `(file "work.org")
+                `(file ,(f-join org-directory "templates" "postmortem.template.org"))
+                :immediate-finish t
+                :jump-to-captured t)
+
+               (org-funcs-capture-template
                 "wu" "Cell Update"
                 `(file+headline "work.org" "Post cell update")
-                "* %u
-** My Top 3
-1. %?
-** Feature:
-** Feature:
-** Feature:
-"
+                `(file ,(f-join org-directory "templates" "cell-update.template.org"))
                 :jump-to-captured t)))
 
 
