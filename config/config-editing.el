@@ -406,6 +406,14 @@ Interactively, reverse the characters in the current region."
   :straight t
   :defer t)
 
+;; `flyspell' provides spellchecking.
+
+(use-package flyspell
+  :hook (org-mode . flyspell-mode)
+  :custom
+  ((flyspell-issue-welcome-flag nil)
+   (flyspell-default-dictionary "en_GB")))
+
 (provide 'config-editing)
 
 ;;; config-editing.el ends here
