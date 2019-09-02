@@ -14,6 +14,9 @@
 
 (defvar org-directory "~/Dropbox/org")
 
+(defconst paths-org-lisp-directory
+  (expand-file-name "lisp" org-directory))
+
 
 
 (defconst paths-assets-directory

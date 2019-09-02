@@ -348,17 +348,6 @@
 
   :config
   (progn
-    ;; Load lisp files in ~/org/lisp.
-    (let* ((dir (expand-file-name "lisp" org-directory))
-           (features (seq-reduce (lambda (acc it)
-                                   (if (string-suffix-p ".el" it)
-                                       (cons (intern (string-remove-suffix ".el" it)) acc)
-                                     acc))
-                                 (directory-files dir)
-                                 nil)))
-      (dolist (feature features)
-        (eval `(use-package ,feature :demand t :load-path ,dir))))
-
     (with-eval-after-load 'evil
       (evil-define-key 'normal org-mode-map (kbd "TAB") #'org-cycle))
 
