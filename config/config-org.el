@@ -40,6 +40,25 @@
    "Misc"
    (("e" org-babel/body "babel commands"))))
 
+;; Load ox backends.
+
+(use-package ox-gfm
+  :straight t
+  :after org)
+
+(use-package ox-slack
+  :commands (org-slack-export-to-clipboard-as-slack))
+
+(use-package ox-koma-letter
+  :after org
+  :defer t
+  :config
+  (add-to-list 'org-latex-packages-alist '("AUTO" "babel" nil)))
+
+(use-package ob-restclient
+  :straight t
+  :defer t)
+
 ;; General variables
 
 (general-setq
@@ -375,8 +394,6 @@
 
 (use-package org-hydras :commands (org-babel/body))
 
-(use-package ob-restclient :straight t :defer t)
-
 (use-package org-agenda
   :defer t
   :after org
@@ -533,12 +550,6 @@
                 '("%Y-%m %B"
                   "[%Y-%m-%d %a]")))
 
-(use-package ox-koma-letter
-  :after org
-  :defer t
-  :config
-  (add-to-list 'org-latex-packages-alist '("AUTO" "babel" nil)))
-
 (use-package cb-org-export-koma-letter
   :after org
   :commands (cb-org-export-koma-letter-handler)
@@ -547,13 +558,6 @@
     (general-setq org-latex-hyperref-template "")
     (add-to-list 'org-latex-classes `("koma-letter" ,cb-org-export-koma-letter-latex-class))
     (add-hook 'org-ctrl-c-ctrl-c-hook #'cb-org-export-koma-letter-handler t)))
-
-(use-package ox-gfm
-  :straight t
-  :defer t)
-
-(use-package ox-slack
-  :commands (org-slack-export-to-clipboard-as-slack))
 
 (provide 'config-org)
 
