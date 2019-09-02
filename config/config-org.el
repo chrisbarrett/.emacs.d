@@ -559,12 +559,12 @@
     (add-to-list 'org-latex-classes `("koma-letter" ,cb-org-export-koma-letter-latex-class))
     (add-hook 'org-ctrl-c-ctrl-c-hook #'cb-org-export-koma-letter-handler t)))
 
-(use-package ox-slack
-  :commands (org-slack-export-to-clipboard-as-slack))
-
 (use-package ox-gfm
   :straight t
   :defer t)
+
+(use-package ox-slack
+  :commands (org-slack-export-to-clipboard-as-slack))
 
 (provide 'config-org)
 
