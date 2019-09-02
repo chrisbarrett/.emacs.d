@@ -231,9 +231,9 @@
                  (file+function org-default-notes-file org-reverse-datetree-goto-date-in-file)
                  "* %?" :tree-type week)
 
-               '("r" "Weekly Review" entry
+               `("r" "Weekly Review" entry
                  (file+function org-default-notes-file org-reverse-datetree-goto-date-in-file)
-                 `(file ,(f-join org-directory "templates" "review.template.org"))
+                 (file ,(f-join org-directory "templates" "review.template.org"))
                  :tree-type week)
 
                (org-funcs-capture-template
