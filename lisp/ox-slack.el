@@ -3,7 +3,7 @@
 ;;; Code:
 
 (require 'ox)
-(require 'ox-md)
+(require 'ox-gfm)
 (require 'subr-x)
 
 (autoload 'gfm-mode "markdown-mode")
