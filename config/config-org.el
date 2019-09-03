@@ -255,7 +255,7 @@
      :tree-type week)
 
    (org-funcs-capture-template
-    "l" "Link" '(file "inbox.org") '(function cb-org-capture-url-read-url)
+    "l" "Link" '(file "inbox.org") '(function org-funcs-read-url-for-capture)
     :immediate-finish t)))
 
 
@@ -386,8 +386,6 @@
     (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
     (advice-add 'org-add-log-note :before #'config-org--exit-minibuffer)
     (advice-add 'org-toggle-heading :after #'config-org--toggle-heading-goto-eol)))
-
-(use-package cb-org-capture-url :after org)
 
 (use-package cb-org-pgp-decrpyt :hook (org-mode . cb-org-pgp-decrpyt-init))
 

@@ -150,6 +150,35 @@
     (read-string (concat (if default (format "%s (default %s)" prompt default) prompt) ": ")
                  nil nil default)))
 
+(defun org-funcs--decode-html-entities (str)
+  (with-temp-buffer
+    (insert str)
+    (pcase (libxml-parse-html-region (point-min) (point-max))
+      (`(html nil
+              (body nil
+                    (p nil
+                       ,(and (pred stringp) decoded))))
+       decoded))))
+
+(defun org-funcs--parse-html-title (html)
+  "Extract the title from an HTML document."
+  (-let (((_ title) (s-match (rx "<title>" (group (* nonl)) "</title>") html))
+         ((_ charset) (-map 'intern (s-match (rx "charset=" (group (+ (any "-" alnum)))) html))))
+    (org-funcs--decode-html-entities (if (-contains? coding-system-list charset)
+                                         (decode-coding-string title charset)
+                                       title))))
+
+(defun org-funcs--retrieve-html (url)
+  (unless (s-matches? (rx "." (or "pdf" "mov" "mp4" "m4v" "aiff" "wav" "mp3") eol) url)
+    (with-current-buffer (url-retrieve-synchronously url t)
+      (buffer-string))))
+
+(defun org-funcs-read-url-for-capture ()
+  "Return a URL capture template string for use with `org-capture'."
+  (let* ((url (org-funcs-read-url "URL"))
+         (title (org-funcs--parse-html-title (org-funcs--retrieve-html url))))
+    (format "* TODO Review [[%s][%s]]" url (or title url))))
+
 
 
 (defun org-funcs-toggle-priority ()
