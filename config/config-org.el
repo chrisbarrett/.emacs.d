@@ -76,7 +76,7 @@
  org-indirect-buffer-display 'current-window
  org-insert-heading-respect-content t
  org-outline-path-complete-in-steps nil
- org-pretty-entities t
+ org-pretty-entities nil
  org-refile-allow-creating-parent-nodes 'confirm
  org-refile-target-verify-function (lambda () (not (member (nth 2 (org-heading-components)) org-done-keywords)))
  org-refile-use-outline-path t
