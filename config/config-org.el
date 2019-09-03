@@ -135,7 +135,6 @@
 
  org-attach-directory (f-join paths-org-directory "data")
  org-archive-location "archive.org::datetree/"
- org-archive-default-command #'config-org--archive-done-tasks
 
  ;; appt
 
@@ -447,19 +446,8 @@
   :commands (org-archive-subtree)
   :preface
   (progn
-    (autoload 'org-map-entries "org")
     (autoload 'org-set-tags "org")
     (autoload 'org-get-tags "org")
-
-    (defun config-org--archive-done-tasks ()
-      (interactive)
-      (atomic-change-group
-        (org-map-entries (lambda ()
-                           ;; HACK: Ensure point does not move past the next
-                           ;; item to archive.
-                           (let ((org-map-continue-from (point)))
-                             (org-archive-subtree)))
-                         "/DONE|PAID|VOID|CANCELLED" 'tree)))
 
     (defun config-org--apply-inherited-tags (&rest _)
       "Apply inherited tags when archiving."
