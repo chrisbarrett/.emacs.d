@@ -155,6 +155,7 @@
 ;; Load some config files first for consistency.
 
 (use-package config-basic-settings)
+(use-package config-evil)
 
 ;; Load remaining config files.
 
