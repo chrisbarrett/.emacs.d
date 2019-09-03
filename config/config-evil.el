@@ -156,6 +156,14 @@
     (advice-add #'evil-delete-backward-char-and-join
                 :around #'config-evil--sp-delete-and-join-compat)))
 
+(use-package undo-tree
+  :straight t
+  :general
+  ("C-x t" 'undo-tree-visualize)
+  (:states 'normal :keymaps 'org-mode-map
+   "C-r" 'undo-tree-redo
+   "u" 'undo-tree-undo))
+
 (use-package evil-surround
   :straight t
   :commands (global-evil-surround-mode)
