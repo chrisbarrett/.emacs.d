@@ -133,7 +133,7 @@
  org-tags-exclude-from-inheritance '("crypt" "project")
  org-crypt-disable-auto-save 'encypt
 
- org-attach-directory (f-join org-directory "data")
+ org-attach-directory (f-join paths-org-directory "data")
  org-archive-location "archive.org::datetree/"
  org-archive-default-command #'config-org--archive-done-tasks
 
@@ -252,7 +252,7 @@
 
    `("r" "Weekly Review" entry
      (file+function org-default-notes-file org-reverse-datetree-goto-date-in-file)
-     (file ,(f-join org-directory "templates" "review.template.org"))
+     (file "templates/review.template.org")
      :tree-type week)
 
    (org-funcs-capture-template
@@ -340,7 +340,6 @@
   (progn
     (add-hook 'org-after-refile-insert-hook #'config-org--sort-buffer-after-refile)
     (add-hook 'org-after-refile-insert-hook #'save-buffer t)
-    (add-to-list 'load-path (expand-file-name "lisp" org-directory))
     (add-hook 'org-mode-hook #'auto-revert-mode)
     (add-hook 'org-mode-hook #'config-org--set-local-vars-and-hooks)
     (add-hook 'org-mode-hook #'config-org--set-bidi-env)
@@ -348,14 +347,15 @@
 
   :config
   (general-setq
-   org-default-notes-file (f-join org-directory "notes.org")
-   org-agenda-files (f-files org-directory (lambda (f) (f-ext? f "org")))
+   org-directory paths-org-directory
+   org-default-notes-file (f-join paths-org-directory "notes.org")
+   org-agenda-files (f-files paths-org-directory (lambda (f) (f-ext? f "org")))
 
    org-refile-use-outline-path 'file
    org-refile-targets
    '((org-agenda-files . (:maxlevel . 3))
      (org-default-notes-file :maxlevel . 3)
-     (org-directory :maxlevel . 3)))
+     (paths-org-directory :maxlevel . 3)))
 
   :config
   (progn

@@ -12,13 +12,13 @@
 
 (autoload 'hostname (concat user-emacs-directory "lisp/hostname"))
 
-(defvar org-directory "~/Dropbox/org")
+(defvar paths-org-directory "~/Dropbox/org")
 
 (defconst paths-org-lisp-directory
-  (expand-file-name "lisp" org-directory))
+  (expand-file-name "lisp" paths-org-directory))
 
 (defconst paths-org-templates-directory
-  (expand-file-name "templates" org-directory))
+  (expand-file-name "templates" paths-org-directory))
 
 
 

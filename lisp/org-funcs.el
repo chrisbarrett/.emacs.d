@@ -9,6 +9,7 @@
 ;;; Code:
 
 (require 'f)
+(require 'paths)
 
 (eval-when-compile
   (require 'org nil t)
@@ -95,23 +96,23 @@
 (defun org-funcs-goto-inbox ()
   "Switch to the inbox file."
   (interactive)
-  (find-file (f-join org-directory "inbox.org")))
+  (find-file (f-join paths-org-directory "inbox.org")))
 
 (defun org-funcs-goto-personal ()
   "Switch to the personal notes file."
   (interactive)
-  (find-file (f-join org-directory "personal.org")))
+  (find-file (f-join paths-org-directory "personal.org")))
 
 (defun org-funcs-goto-notes ()
   "Switch to the default notes file."
   (interactive)
   (require 'org)
-  (find-file (f-join org-directory org-default-notes-file)))
+  (find-file (f-join paths-org-directory org-default-notes-file)))
 
 (defun org-funcs-goto-work ()
   "Switch to the work file."
   (interactive)
-  (find-file (f-join org-directory "work.org")))
+  (find-file (f-join paths-org-directory "work.org")))
 
 (defun org-funcs-goto-headline ()
   "Prompt for a headline to jump to."
