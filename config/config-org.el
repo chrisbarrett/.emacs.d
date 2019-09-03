@@ -241,44 +241,23 @@
                                (org-agenda-ignore-drawer-properties '(effort appt))))))
                          contexts)))
 
-(general-setq org-capture-templates
-              (list
-               (org-funcs-capture-template
-                "t" "Todo" '(file "inbox.org") "* TODO %?")
+(defconst config-org-capture-templates
+  (list
+   (org-funcs-capture-template
+    "t" "Todo" '(file "inbox.org") "* TODO %?")
 
-               '("n" "Note" entry
-                 (file+function org-default-notes-file org-reverse-datetree-goto-date-in-file)
-                 "* %?" :tree-type week)
+   '("n" "Note" entry
+     (file+function org-default-notes-file org-reverse-datetree-goto-date-in-file)
+     "* %?" :tree-type week)
 
-               `("r" "Weekly Review" entry
-                 (file+function org-default-notes-file org-reverse-datetree-goto-date-in-file)
-                 (file ,(f-join org-directory "templates" "review.template.org"))
-                 :tree-type week)
+   `("r" "Weekly Review" entry
+     (file+function org-default-notes-file org-reverse-datetree-goto-date-in-file)
+     (file ,(f-join org-directory "templates" "review.template.org"))
+     :tree-type week)
 
-               (org-funcs-capture-template
-                "l" "Link" '(file "inbox.org") '(function cb-org-capture-url-read-url)
-                :immediate-finish t)
-
-               '("w" "Work")
-
-               (org-funcs-capture-template
-                "wj" "Jira issue reference"
-                `(file "work.org")
-                '(function jira-utils-todo-from-issue)
-                :jump-to-captured t)
-
-               (org-funcs-capture-template
-                "wp" "Postmortem Facilitation"
-                `(file "work.org")
-                `(file ,(f-join org-directory "templates" "postmortem.template.org"))
-                :immediate-finish t
-                :jump-to-captured t)
-
-               (org-funcs-capture-template
-                "wu" "Cell Update"
-                `(file+headline "work.org" "Post cell update")
-                `(file ,(f-join org-directory "templates" "cell-update.template.org"))
-                :jump-to-captured t)))
+   (org-funcs-capture-template
+    "l" "Link" '(file "inbox.org") '(function cb-org-capture-url-read-url)
+    :immediate-finish t)))
 
 
 
@@ -367,6 +346,12 @@
 
   :config
   (progn
+    ;; Configure capture templates
+    (setq org-capture-templates config-org-capture-templates)
+    (let ((custom-templates-initfile (f-join paths-org-templates-directory "init.el")))
+      (when (file-exists-p custom-templates-initfile)
+        (load-file custom-templates-initfile)))
+
     (with-eval-after-load 'evil
       (evil-define-key 'normal org-mode-map (kbd "TAB") #'org-cycle))
 

@@ -17,6 +17,9 @@
 (defconst paths-org-lisp-directory
   (expand-file-name "lisp" org-directory))
 
+(defconst paths-org-templates-directory
+  (expand-file-name "templates" org-directory))
+
 
 
 (defconst paths-assets-directory
