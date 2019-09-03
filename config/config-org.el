@@ -308,16 +308,18 @@
                               (nth 2 (org-heading-components)))
               (org-todo "TODO"))))))
 
-    (defun config-org--sort-buffer-after-refile ()
-      (when (-some->> (org-heading-components) (nth 2))
-        (ignore-errors
-          (save-restriction
-            (widen)
-            (save-mark-and-excursion
-              (goto-char (point-min))
-              (org-sort-entries nil ?p)
-              (goto-char (point-min))
-              (org-sort-entries nil ?o))))))
+    (defun config-org--after-refile (&rest _)
+      (dolist (file org-agenda-files)
+        (with-current-buffer (find-file-noselect file)
+          (ignore-errors
+            (save-restriction
+              (widen)
+              (save-mark-and-excursion
+                (goto-char (point-min))
+                (org-sort-entries nil ?p)
+                (goto-char (point-min))
+                (org-sort-entries nil ?o))))
+          (save-buffer))))
 
     (defun config-org--set-bidi-env ()
       (setq bidi-paragraph-direction nil))
@@ -338,8 +340,7 @@
 
   :init
   (progn
-    (add-hook 'org-after-refile-insert-hook #'config-org--sort-buffer-after-refile)
-    (add-hook 'org-after-refile-insert-hook #'save-buffer t)
+    (advice-add 'org-refile :after #'config-org--after-refile)
     (add-hook 'org-mode-hook #'auto-revert-mode)
     (add-hook 'org-mode-hook #'config-org--set-local-vars-and-hooks)
     (add-hook 'org-mode-hook #'config-org--set-bidi-env)
