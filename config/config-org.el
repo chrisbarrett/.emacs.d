@@ -387,8 +387,6 @@
     (advice-add 'org-add-log-note :before #'config-org--exit-minibuffer)
     (advice-add 'org-toggle-heading :after #'config-org--toggle-heading-goto-eol)))
 
-(use-package cb-org-pgp-decrpyt :hook (org-mode . cb-org-pgp-decrpyt-init))
-
 (use-package org-hydras :commands (org-babel/body))
 
 (use-package org-agenda
