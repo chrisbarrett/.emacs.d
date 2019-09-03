@@ -263,7 +263,7 @@
 
 (use-package org
   :defer t
-  :straight t
+  :straight (:type built-in)
   :general
   ("C-c a" #'org-agenda
    "C-c s" #'org-search-view
