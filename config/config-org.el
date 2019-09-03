@@ -308,6 +308,17 @@
                               (nth 2 (org-heading-components)))
               (org-todo "TODO"))))))
 
+    (defun config-org--sort-buffer-after-refile ()
+      (when (-some->> (org-heading-components) (nth 2))
+        (ignore-errors
+          (save-restriction
+            (widen)
+            (save-mark-and-excursion
+              (goto-char (point-min))
+              (org-sort-entries nil ?p)
+              (goto-char (point-min))
+              (org-sort-entries nil ?o))))))
+
     (defun config-org--set-bidi-env ()
       (setq bidi-paragraph-direction nil))
 
@@ -327,6 +338,7 @@
 
   :init
   (progn
+    (add-hook 'org-after-refile-insert-hook #'config-org--sort-buffer-after-refile)
     (add-to-list 'load-path (expand-file-name "lisp" org-directory))
     (add-hook 'org-mode-hook #'auto-revert-mode)
     (add-hook 'org-mode-hook #'config-org--set-local-vars-and-hooks)
