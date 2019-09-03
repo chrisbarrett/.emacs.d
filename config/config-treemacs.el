@@ -48,9 +48,10 @@
 
   :config
   (progn
-    (general-setq treemacs-dotfiles-regex (rx-to-string
-                                           `(and bol (or (and "." (1+ any))
-                                                         ,@projectile-globally-ignored-directories))))
+    (with-eval-after-load 'projectile
+      (general-setq treemacs-dotfiles-regex (rx-to-string
+                                             `(and bol (or (and "." (1+ any))
+                                                           ,@projectile-globally-ignored-directories)))))
 
     (general-setq
      treemacs-python-executable (executable-find "python3")
