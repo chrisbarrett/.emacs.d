@@ -49,6 +49,7 @@
  ("emacs-noflet" . "7ae84dc3257637af7334101456dafe1759c6b68a")
  ("emacs-racer" . "f9fc3e9847210867f4a621ceeddcb1724cc0001b")
  ("emacs-request" . "db88fd21d25399ff9940c208173665b12493992b")
+ ("emacs-rotate" . "091b5ac4fc310773253efb317e3dbe8e46959ba6")
  ("emacs-terraform-mode" . "6973d1acaba2835dfdf174f5a5e27de6366002e1")
  ("emacs-which-key" . "ba03e7e5bcbe3f7d95be2cfddd71454151bb98c8")
  ("emacs-world-time-mode" . "ce7a3b45c87eb24cfe61eee453175d64f741d7cc")

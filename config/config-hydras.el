@@ -10,7 +10,6 @@
 (require 'org-funcs)
 (require 'window-cmds)
 
-(autoload 'cb/toggle-window-split "cb-toggle-window-split")
 (autoload 'counsel-find-file "config-ivy")
 (autoload 'counsel-recentf "config-ivy")
 (autoload 'evil-window-next "evil")
@@ -552,7 +551,7 @@
    "Buffer/Window"
    (("<tab>" alternate-buffer "alternate buffer")
     ("?" counsel-descbinds "describe key bindings")
-    ("|" cb/toggle-window-split "toggle window split")
+    ("|" rotate-layout "rotate layout")
     ("i" counsel-imenu "imenu")
     ("q" delete-window "delete window"))))
 

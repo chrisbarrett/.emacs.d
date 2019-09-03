@@ -414,6 +414,12 @@ Interactively, reverse the characters in the current region."
   ((flyspell-issue-welcome-flag nil)
    (flyspell-default-dictionary "en_GB")))
 
+;; `rotate' provides handy commands for manipulating the window layout.
+
+(use-package rotate
+  :straight t
+  :commands (rotate-layout))
+
 (provide 'config-editing)
 
 ;;; config-editing.el ends here
