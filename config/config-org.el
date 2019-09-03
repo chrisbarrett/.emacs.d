@@ -3,6 +3,7 @@
 ;;; Code:
 
 (eval-when-compile
+  (require 'evil nil t)
   (require 'use-package))
 
 (require 'f)
@@ -515,10 +516,11 @@
 
 (with-eval-after-load 'evil
 
-  (defun config-org--evil-insert-state (&rest _)
-    "Enter evil insert state when creating new headings."
-    (when (called-interactively-p nil)
-      (evil-insert-state)))
+  (eval-and-compile
+    (defun config-org--evil-insert-state (&rest _)
+      "Enter evil insert state when creating new headings."
+      (when (called-interactively-p nil)
+        (evil-insert-state))))
 
   (advice-add 'org-insert-heading :after #'config-org--evil-insert-state)
   (advice-add 'org-insert-heading-respect-content :after #'config-org--evil-insert-state)
