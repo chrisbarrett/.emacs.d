@@ -80,7 +80,12 @@
  org-pretty-entities nil
  org-refile-allow-creating-parent-nodes 'confirm
  org-refile-target-verify-function (lambda () (not (member (nth 2 (org-heading-components)) org-done-keywords)))
- org-refile-use-outline-path t
+ org-refile-use-outline-path 'file
+ org-refile-targets
+ '((org-agenda-files . (:maxlevel . 3))
+   (org-default-notes-file :maxlevel . 3)
+   (paths-org-directory :maxlevel . 3))
+
  org-return-follows-link t
  org-reverse-note-order nil
  org-startup-indented t
@@ -348,19 +353,12 @@
     (add-hook 'org-after-todo-statistics-hook #'config-org--children-done-parent-done))
 
   :config
-  (general-setq
-   org-directory paths-org-directory
-   org-default-notes-file (f-join paths-org-directory "notes.org")
-   org-agenda-files (f-files paths-org-directory (lambda (f) (f-ext? f "org")))
-
-   org-refile-use-outline-path 'file
-   org-refile-targets
-   '((org-agenda-files . (:maxlevel . 3))
-     (org-default-notes-file :maxlevel . 3)
-     (paths-org-directory :maxlevel . 3)))
-
-  :config
   (progn
+    (general-setq
+     org-directory paths-org-directory
+     org-default-notes-file (f-join paths-org-directory "notes.org")
+     org-agenda-files (f-files paths-org-directory (lambda (f) (f-ext? f "org"))))
+
     ;; Configure capture templates
     (setq org-capture-templates config-org-capture-templates)
     (let ((custom-templates-initfile (f-join paths-org-templates-directory "init.el")))

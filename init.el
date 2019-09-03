@@ -171,8 +171,9 @@
 
 ;; Load files in org lisp directory
 
-(when (file-directory-p paths-org-lisp-directory)
-  (load (expand-file-name "init.el" paths-org-lisp-directory) t))
+(with-eval-after-load 'org
+  (when (file-directory-p paths-org-lisp-directory)
+    (load (expand-file-name "init.el" paths-org-lisp-directory) t)))
 
 
 ;;; Print overall startup time.

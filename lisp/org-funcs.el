@@ -11,11 +11,6 @@
 (require 'f)
 (require 'paths)
 
-(eval-when-compile
-  (require 'org nil t)
-  (require 'org-agenda nil t)
-  (require 'org-capture nil t))
-
 (autoload 'calendar-day-of-week "calendar")
 (autoload 'outline-next-heading "outline")
 (autoload 'thing-at-point-url-at-point "thingatpt")
