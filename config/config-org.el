@@ -339,6 +339,7 @@
   :init
   (progn
     (add-hook 'org-after-refile-insert-hook #'config-org--sort-buffer-after-refile)
+    (add-hook 'org-after-refile-insert-hook #'save-buffer t)
     (add-to-list 'load-path (expand-file-name "lisp" org-directory))
     (add-hook 'org-mode-hook #'auto-revert-mode)
     (add-hook 'org-mode-hook #'config-org--set-local-vars-and-hooks)
