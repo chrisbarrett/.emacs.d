@@ -230,7 +230,10 @@
                                       'doom-solarized-light
                                     'doom-one))))
         (enable-theme new-theme)
-        (config-themes-override-themes new-theme)))
+        (config-themes-override-themes new-theme))
+      ;; HACK: Make sure bullets are re-fontified.
+      (when (bound-and-true-p org-bullets-mode)
+        (font-lock-fontify-buffer)))
 
     (defun config-themes-override-themes (theme)
       (set-face-attribute 'default nil :family parameters-default-font-family)
