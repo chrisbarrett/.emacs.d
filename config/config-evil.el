@@ -232,21 +232,6 @@
             "+" #'evil-numbers/inc-at-pt
             "-" #'evil-numbers/dec-at-pt))
 
-(use-package vi-tilde-fringe
-  :straight t
-  :hook (after-init . global-vi-tilde-fringe-mode)
-  :preface
-  (progn
-    (defconst config-evil--vi-tilde-inhibited-modes '(eshell-mode comint-mode org-agenda-mode))
-
-    (defun config-evil--vi-tilde-fringe-maybe-inhibit (args)
-      (if (or buffer-read-only (equal "*scratch*" (buffer-name))
-              (apply #'derived-mode-p config-evil--vi-tilde-inhibited-modes))
-          '(-1)
-        args)))
-  :init
-  (advice-add 'vi-tilde-fringe-mode :filter-args #'config-evil--vi-tilde-fringe-maybe-inhibit))
-
 (use-package evil-nerd-commenter
   :straight t
   :defer t
