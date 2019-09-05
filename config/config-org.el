@@ -276,6 +276,7 @@
    "C-c /" #'org-tags-view)
   (:states '(emacs normal) :keymaps 'org-mode-map
    "<backtab>" #'org-global-cycle
+   "<tab>" #'org-cycle
    "C-c C-." #'org-time-stamp-inactive
    "C-c c" #'org-columns
    "M-n" #'org-metadown
