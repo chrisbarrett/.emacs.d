@@ -61,45 +61,49 @@ channel."
           (org-remove-indentation
            (org-export-format-code-default example-block info))))
 
+(defun ox-slack--timestamp (timestamp _contents _info)
+  (org-timestamp-translate timestamp))
+
 (org-export-define-derived-backend 'slack 'gfm
-  :translate-alist '((headline . ox-slack--markup-headline)
-                     (toc . ox-slack--toc)
-                     (link . ox-slack--link)
-                     (item . ox-slack--item)
-                     (italic . ox-slack--italic)
-                     (underline . ox-slack--italic)
-                     (bold . ox-slack--bold)
-                     (strike-through . ox-slack--strike-through)
+  :translate-alist '((bold . ox-slack--bold)
                      (example-block . ox-slack--fixed-width-block)
                      (fixed-width . ox-slack--fixed-width-block)
-                     (src-block . ox-slack--fixed-width-block))
+                     (headline . ox-slack--markup-headline)
+                     (italic . ox-slack--italic)
+                     (item . ox-slack--item)
+                     (link . ox-slack--link)
+                     (src-block . ox-slack--fixed-width-block)
+                     (strike-through . ox-slack--strike-through)
+                     (timestamp . ox-slack--timestamp)
+                     (underline . ox-slack--italic))
   :menu-entry
   '(?s "Export to Slack Markup"
-       ((?c "To clipboard"
-            (lambda (a s v b) (ox-slack-export-to-clipboard a s v)))
-        (?s "To temporary buffer"
-            (lambda (a s v b) (ox-slack-export-to-buffer a s v))))))
+       ((?c "To clipboard" ox-slack-export-to-clipboard)
+        (?s "To temporary buffer" ox-slack-export-to-buffer))))
 
-(defun ox-slack-export-to-buffer (&optional async subtreep visible-only)
-  "Export the buffer to Slack markup.
+(defmacro ox-slack--with-default-export-options (&rest body)
+  (declare (indent 0))
+  `(let ((org-export-with-author nil)
+         (org-export-with-toc nil)
+         (org-export-with-creator nil)
+         (org-export-with-email nil))
+     ,@body))
 
-ASYNC, SUBTREEP and VISIBLE-ONLY are as specified in the export dispatcher."
+(defun ox-slack-export-to-buffer (&optional async subtreep visible-only body-only ext-plist)
   (interactive)
-  (org-export-to-buffer 'slack "*Org Slack Export*"
-    async subtreep visible-only nil nil (lambda () (gfm-mode))))
+  (ox-slack--with-default-export-options
+    (org-export-to-buffer 'slack "*Org Slack Export*"
+      async subtreep visible-only body-only ext-plist (lambda () (gfm-mode)))))
 
-(defun ox-slack-export-to-clipboard (&optional async subtreep visible-only formatter)
-  "Export the buffer to Slack markup.
-
-ASYNC, SUBTREEP and VISIBLE-ONLY are as specified in the export dispatcher.
-
-FORMATTER allows you to modify the output string before copying."
+(defun ox-slack-export-to-clipboard (&optional async subtreep visible-only body-only ext-plist)
   (interactive)
   (let ((org-export-show-temporary-export-buffer nil))
-    (org-export-to-buffer 'slack "*Org Slack Export*"
-      async subtreep visible-only nil nil (lambda ()
-                                            (kill-new (funcall (or formatter #'string-trim) (buffer-string)))
-                                            (message "Buffer contents copied to clipboard")))))
+    (ox-slack--with-default-export-options
+      (org-export-to-buffer 'slack "*Org Slack Export*"
+        async subtreep visible-only body-only ext-plist
+        (lambda ()
+          (kill-new (string-trim (buffer-string)))
+          (message "Buffer contents copied to clipboard"))))))
 
 (provide 'ox-slack)
 
