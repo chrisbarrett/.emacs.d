@@ -112,8 +112,24 @@
 (defun org-funcs-goto-headline ()
   "Prompt for a headline to jump to."
   (interactive)
-  (org-refile '(4) (when (derived-mode-p 'org-mode)
-                     (current-buffer))))
+  (-let [(_ file _ pos)
+         (org-refile-get-location "Goto"
+                                  (when (derived-mode-p 'org-mode)
+                                    (current-buffer)))]
+    (find-file file)
+    (widen)
+    (cond
+     (pos
+      (goto-char pos)
+      (org-narrow-to-subtree)
+      (outline-hide-subtree)
+      (org-show-entry)
+      (org-show-children)
+      (org-show-set-visibility 'canonical))
+     (t
+      (goto-char (point-min))
+      (org-overview)
+      (org-forward-heading-same-level 1)))))
 
 (defun org-funcs-ctrl-c-ctrl-k ()
   "Kill subtrees, unless we're in a special buffer where it should cancel."
