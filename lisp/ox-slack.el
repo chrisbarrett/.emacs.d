@@ -95,14 +95,14 @@ channel."
     (org-export-to-buffer 'slack "*Org Slack Export*"
       async subtreep visible-only body-only ext-plist (lambda () (gfm-mode)))))
 
-(defun ox-slack-export-to-clipboard (&optional async subtreep visible-only body-only ext-plist)
+(defun ox-slack-export-to-clipboard (&optional async subtreep visible-only body-only ext-plist formatter)
   (interactive)
   (let ((org-export-show-temporary-export-buffer nil))
     (ox-slack--with-default-export-options
       (org-export-to-buffer 'slack "*Org Slack Export*"
         async subtreep visible-only body-only ext-plist
         (lambda ()
-          (kill-new (string-trim (buffer-string)))
+          (kill-new (funcall (or formatter #'identity) (string-trim (buffer-string))))
           (message "Buffer contents copied to clipboard"))))))
 
 (provide 'ox-slack)
