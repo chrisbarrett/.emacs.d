@@ -26,8 +26,8 @@
     (el-patch-defun org-agenda-fontify-priorities ()
       "Make highest priority lines bold, and lowest italic."
       (interactive)
-      (mapc (lambda (o) (when (eq (overlay-get o 'org-type) 'org-priority)
-                     (delete-overlay o)))
+      (mapc (lambda (o) (if (eq (overlay-get o 'org-type) 'org-priority)
+                       (delete-overlay o)))
             (overlays-in (point-min) (point-max)))
       (save-excursion
         (let (b e p ov h l)
