@@ -336,6 +336,7 @@
       (setq bidi-paragraph-direction nil))
 
     (defun config-org--set-local-vars-and-hooks ()
+      (org-indent-mode +1)
       (add-hook 'org-after-todo-state-change-hook #'config-org--mark-next-parent-tasks-todo nil t)
       (add-hook 'org-clock-in-hook #'config-org--mark-next-parent-tasks-todo nil t))
 
