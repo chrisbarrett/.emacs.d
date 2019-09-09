@@ -409,7 +409,6 @@ Interactively, reverse the characters in the current region."
 ;; `flyspell' provides spellchecking.
 
 (use-package flyspell
-  :hook (org-mode . flyspell-mode)
   :custom
   ((flyspell-issue-welcome-flag nil)
    (flyspell-default-dictionary "en_GB")))
