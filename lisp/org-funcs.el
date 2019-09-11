@@ -164,21 +164,14 @@ With prefix ARG, clock into the default task."
        nil
      (org-funcs-agenda-skip-all-siblings-but-first))))
 
-(cl-defun org-funcs-capture-template (key
-                             label
-                             form
-                             template
-                             &key
-                             immediate-finish
-                             jump-to-captured
-                             (type 'entry)
-                             (prepend t)
-                             (clock-keep t))
-  (list key label type form template
-        :clock-keep clock-keep
-        :prepend prepend
-        :immediate-finish immediate-finish
-        :jump-to-captured jump-to-captured))
+(cl-defun org-funcs-capture-template (key label form template &rest keywords)
+  (let ((defaults '(:clock-keep t
+                    :prepend t
+                    :immediate-finish nil
+                    :jump-to-captured nil)))
+    (cl-list* key label 'entry form template (ht->plist (ht-merge
+                                                         (ht-from-plist defaults)
+                                                         (ht-from-plist keywords))))))
 
 (defun org-funcs-todo-list ()
   "Show the todo list."
