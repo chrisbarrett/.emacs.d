@@ -555,6 +555,11 @@
     (add-to-list 'org-latex-classes `("koma-letter" ,cb-org-export-koma-letter-latex-class))
     (add-hook 'org-ctrl-c-ctrl-c-hook #'cb-org-export-koma-letter-handler t)))
 
+;; htmlize is required for HTML exports.
+(use-package htmlize
+  :straight t
+  :defer t)
+
 (provide 'config-org)
 
 ;;; config-org.el ends here
