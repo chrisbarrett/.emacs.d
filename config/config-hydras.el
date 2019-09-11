@@ -246,7 +246,7 @@
    :color teal
    :title (hydra-title-with-mode-icon 'org-mode "Org"))
   ("Actions"
-   (("a" org-funcs-agenda-for-time-of-day "show agenda...")
+   (("a" org-funcs-agenda-dwim "show agenda...")
     ("k" org-capture "capture...")
     ("l" org-store-link "store link...")
     ("s" org-search-view "search..."))

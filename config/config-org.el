@@ -394,7 +394,10 @@
     (advice-add 'org-add-log-note :before #'config-org--exit-minibuffer)
     (advice-add 'org-toggle-heading :after #'config-org--toggle-heading-goto-eol)))
 
-(use-package org-hydras :commands (org-babel/body))
+(use-package org-hydras
+  :commands (org-babel/body)
+  :general
+  ("<f12>" #'org-clock/body))
 
 (use-package org-agenda
   :defer t
@@ -493,6 +496,7 @@
   :config
   (progn
     (org-clock-persistence-insinuate)
+    (add-hook 'org-clock-out-hook 'org-funcs-clock-out-maybe t)
     (add-hook 'org-clock-out-hook #'config-org--remove-empty-clock-drawers t)))
 
 (use-package org-crypt

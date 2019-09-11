@@ -6,6 +6,8 @@
 
 (require 'hydra)
 (require 'org)
+(require 'org-funcs)
+(require 'pretty-hydra)
 
 (defun org-hydras-open-babel-block-in-buffer ()
   "Eval the org src block at point and show the result in a new buffer."
@@ -58,6 +60,17 @@ Sessions
   ("z" org-babel-switch-to-session :exit t)
   ("Z" org-babel-switch-to-session-with-code :exit t)
   ("q" hydra-keyboard-quit :exit t))
+
+(pretty-hydra-define org-clock
+  (:hint nil
+   :color teal
+   :title (hydra-title-with-octicon "clock" "Clocking"))
+  ("Clocking"
+   (("i" org-funcs-punch-in "punch in")
+    ("o" org-funcs-punch-out "punch out")
+    ("r" org-funcs-punching-resume "resume"))
+   ""
+   (("g" org-clock-goto "goto"))))
 
 (provide 'org-hydras)
 
