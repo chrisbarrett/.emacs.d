@@ -240,6 +240,7 @@
                                (tags "+project-archived"
                                      ((org-agenda-overriding-header "Review projects. Are these all healthy?"))))
                               ((org-agenda-tag-filter-preset '(,(format "+%s" tag) "-@someday" "-ignore"))
+                               (org-agenda-start-with-clockreport-mode t)
                                (org-agenda-span 14)
                                (org-agenda-show-future-repeats nil)
                                (org-agenda-archives-mode nil)
