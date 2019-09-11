@@ -483,21 +483,10 @@
 (use-package org-clock
   :after org
   :defer t
-  :preface
-  (progn
-    (autoload 'org-remove-empty-drawer-at "org")
-
-    (defun config-org--remove-empty-clock-drawers ()
-      "Remove empty clock drawers at point."
-      (save-excursion
-        (beginning-of-line 0)
-        (org-remove-empty-drawer-at (point)))))
-
   :config
   (progn
     (org-clock-persistence-insinuate)
-    (add-hook 'org-clock-out-hook 'org-funcs-clock-out-maybe t)
-    (add-hook 'org-clock-out-hook #'config-org--remove-empty-clock-drawers t)))
+    (add-hook 'org-clock-out-hook 'org-funcs-clock-out-maybe t)))
 
 (use-package org-crypt
   :after org
