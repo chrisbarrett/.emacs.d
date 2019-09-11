@@ -10,6 +10,12 @@
 
 (require 'f)
 (require 'paths)
+(require 'ht)
+
+(eval-when-compile
+  (require 'org)
+  (require 'org-agenda)
+  (require 'org-capture))
 
 (autoload 'calendar-day-of-week "calendar")
 (autoload 'outline-next-heading "outline")
@@ -228,6 +234,11 @@
         (setq updated-heading (org-get-heading)))
       (org-agenda-change-all-lines updated-heading heading-marker)
       (org-move-to-column col))))
+
+(defun org-funcs-update-capture-templates (templates)
+  "Merge TEMPLATES with existing values in `org-capture-templates'."
+  (let ((ht (ht-merge (ht-from-alist org-capture-templates) (ht-from-alist templates))))
+    (setq org-capture-templates (-sort (-on 'string-lessp 'car) (ht->alist ht)))))
 
 (provide 'org-funcs)
 

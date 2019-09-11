@@ -246,23 +246,23 @@
                                (org-agenda-ignore-drawer-properties '(effort appt))))))
                          contexts)))
 
-(defconst config-org-capture-templates
-  (list
-   (org-funcs-capture-template
-    "t" "Todo" '(file "inbox.org") "* TODO %?")
+(org-funcs-update-capture-templates
+ (list
+  (org-funcs-capture-template
+   "t" "Todo" '(file "inbox.org") "* TODO %?")
 
-   '("n" "Note" entry
-     (file+function org-default-notes-file org-reverse-datetree-goto-date-in-file)
-     "* %?" :tree-type week)
+  '("n" "Note" entry
+    (file+function org-default-notes-file org-reverse-datetree-goto-date-in-file)
+    "* %?" :tree-type week)
 
-   `("r" "Weekly Review" entry
-     (file+function org-default-notes-file org-reverse-datetree-goto-date-in-file)
-     (file "templates/review.template.org")
-     :tree-type week)
+  `("r" "Weekly Review" entry
+    (file+function org-default-notes-file org-reverse-datetree-goto-date-in-file)
+    (file "templates/review.template.org")
+    :tree-type week)
 
-   (org-funcs-capture-template
-    "l" "Link" '(file "inbox.org") '(function org-funcs-read-url-for-capture)
-    :immediate-finish t)))
+  (org-funcs-capture-template
+   "l" "Link" '(file "inbox.org") '(function org-funcs-read-url-for-capture)
+   :immediate-finish t)))
 
 
 
@@ -369,7 +369,6 @@
                                                           (not (equal "archive.org" (f-filename f)))))))
 
     ;; Configure capture templates
-    (setq org-capture-templates config-org-capture-templates)
     (let ((custom-templates-initfile (f-join paths-org-templates-directory "init.el")))
       (when (file-exists-p custom-templates-initfile)
         (load-file custom-templates-initfile)))
