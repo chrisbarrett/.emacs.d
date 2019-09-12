@@ -253,11 +253,12 @@
    "t" "Todo" '(file "inbox.org") "* TODO %?")
 
   '("n" "Note" entry
-    (file+function org-default-notes-file org-reverse-datetree-goto-date-in-file)
-    "* %?" :tree-type week)
+    (file+datetree org-default-notes-file)
+    "* %?"
+    :tree-type week)
 
   `("r" "Weekly Review" entry
-    (file+function org-default-notes-file org-reverse-datetree-goto-date-in-file)
+    (file+datetree org-default-notes-file)
     (file "templates/review.template.org")
     :tree-type week)
 
@@ -526,15 +527,6 @@
   (advice-add 'org-insert-heading-respect-content :after #'config-org--evil-insert-state)
   (advice-add 'org-insert-todo-heading-respect-content :after #'config-org--evil-insert-state)
   (advice-add 'org-insert-todo-heading :after #'config-org--evil-insert-state))
-
-;; org-reverse-datetree provides a more customisable way of creating date trees.
-(use-package org-reverse-datetree
-  :straight t
-  :commands (org-reverse-datetree-goto-date-in-file)
-  :config
-  (setq-default org-reverse-datetree-level-formats
-                '("%Y-%m %B"
-                  "[%Y-%m-%d %a]")))
 
 (use-package cb-org-export-koma-letter
   :after org
