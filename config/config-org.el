@@ -264,7 +264,16 @@
 
   (org-funcs-capture-template
    "l" "Link" '(file "inbox.org") '(function org-funcs-read-url-for-capture)
-   :immediate-finish t)))
+   :immediate-finish t)
+
+  (org-funcs-capture-template
+   "z" "Journal log"
+   '(file+datetree org-default-notes-file)
+   "* %?"
+   :tree-type 'week
+   :clock-keep nil
+   :clock-resume t
+   :clock-in t)))
 
 
 
