@@ -378,8 +378,7 @@
      org-directory paths-org-directory
      org-default-notes-file (f-join paths-org-directory "notes.org")
      org-agenda-files (f-files paths-org-directory (lambda (f)
-                                                     (and (f-ext? f "org")
-                                                          (not (equal "archive.org" (f-filename f)))))))
+                                                     (f-ext? f "org"))))
 
     ;; Configure capture templates
     (let ((custom-templates-initfile (f-join paths-org-templates-directory "init.el")))
