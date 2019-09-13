@@ -98,7 +98,7 @@
  org-log-reschedule 'time
  org-log-repeat 'time
 
- org-todo-keywords '((type "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)"))
+ org-todo-keywords '((type "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c@)"))
 
  org-src-fontify-natively t
  org-src-window-setup 'current-window
