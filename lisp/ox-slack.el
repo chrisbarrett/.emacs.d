@@ -45,9 +45,9 @@
     (concat bullet
             " "
             (pcase (org-element-property :checkbox item)
-              (`on "[X] ")
-              (`trans "[-] ")
-              (`off "[ ] "))
+              (`on "`[X]` ")
+              (`trans "`[-]` ")
+              (`off "`[ ]` "))
             (let ((tag (org-element-property :tag item)))
               (and tag (format "*%s:* "(org-export-data tag info))))
             (and contents
