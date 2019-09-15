@@ -178,7 +178,7 @@
                                (tags priority-down category-keep)
                                (search category-keep))
  org-agenda-clockreport-parameter-plist (list :compact t :maxlevel 5 :fileskip0 t :step 'week)
- org-agenda-inhibit-startup t
+ org-agenda-inhibit-startup nil
  org-agenda-tags-column -100
  org-agenda-text-search-extra-files '(agenda-archives)
  org-agenda-use-time-grid nil)
