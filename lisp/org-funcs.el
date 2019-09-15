@@ -34,13 +34,6 @@
       (org-agenda nil "wa")
     (org-agenda nil "pa")))
 
-(defun org-funcs-clock-in-out ()
-  "Clock in or out."
-  (interactive)
-  (if (org-clocking-p)
-      (call-interactively #'org-clock-out)
-    (call-interactively #'org-clock-in)))
-
 (defvar org-funcs--keep-clock-running nil)
 
 (defconst org-funcs--organization-task-id "2DC83799-8380-43E0-80D7-53C27D9D9AEA"
