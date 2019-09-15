@@ -5,6 +5,8 @@
 (eval-when-compile
   (require 'use-package))
 
+(global-set-key (kbd "s-v") #'clipboard-yank)
+
 
 
 (use-package nix-mode
