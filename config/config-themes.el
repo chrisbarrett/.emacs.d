@@ -203,7 +203,9 @@
 
 (use-package doom-modeline
   :straight t
-  :hook (after-init . doom-modeline-mode))
+  :hook (after-init . doom-modeline-mode)
+  :custom ((doom-modeline-buffer-encoding nil)
+           (doom-modeline-enable-word-count t)))
 
 ;; doom-themes provides the main doom theme sets.
 
