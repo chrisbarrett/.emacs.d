@@ -231,7 +231,7 @@
                               ((agenda ""
                                        ((org-agenda-overriding-header "Review agenda this week")
                                         (org-agenda-show-log t)
-                                        (org-agenda-start-day "-7d")))
+                                        (org-agenda-start-day "-8d")))
                                (todo "TODO"
                                      ((org-agenda-overriding-header "Review Next Actions. Are these the next thing to do?")
                                       (org-agenda-skip-function #'org-funcs-skip-items-already-in-agenda)))
@@ -243,7 +243,7 @@
                               ((org-agenda-tag-filter-preset '(,(format "+%s" tag) "-@someday" "-ignore"))
                                (org-agenda-start-with-clockreport-mode t)
                                (org-agenda-log-mode-items '(closed))
-                               (org-agenda-span 14)
+                               (org-agenda-span 10)
                                (org-agenda-show-future-repeats nil)
                                (org-agenda-archives-mode nil)
                                (org-agenda-ignore-drawer-properties '(effort appt))))))
