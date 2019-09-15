@@ -177,7 +177,7 @@
                                (todo priority-down category-keep scheduled-up)
                                (tags priority-down category-keep)
                                (search category-keep))
- org-agenda-clockreport-parameter-plist (list :compact t :maxlevel 5 :fileskip0 t :step 'week)
+ org-agenda-clockreport-parameter-plist (list :link t :compact t :maxlevel 2 :fileskip0 t :step 'week)
  org-agenda-inhibit-startup nil
  org-agenda-tags-column -100
  org-agenda-text-search-extra-files '(agenda-archives)
