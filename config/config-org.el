@@ -552,6 +552,12 @@
   :straight t
   :defer t)
 
+(use-package org-gcal
+  :straight t
+  :after org
+  :config
+  (add-to-list 'org-agenda-files (f-join paths-org-directory "gcal")))
+
 (provide 'config-org)
 
 ;;; config-org.el ends here
