@@ -27,10 +27,19 @@
 ;;
 ;; Stolen from http://doc.norang.ca/org-mode.html#Clocking
 
+(defun org-funcs-clocked-task-tags ()
+  (when (marker-buffer org-clock-marker)
+    (save-excursion
+      (with-current-buffer (marker-buffer org-clock-marker)
+        (org-get-tags-at (marker-position org-clock-marker))))))
+
+(defun org-funcs-work-context-p ()
+  (seq-contains (org-funcs-clocked-task-tags) "@work"))
+
 (defun org-funcs-agenda-dwim ()
   "Show the appropriate org agenda view."
   (interactive)
-  (if (org-clocking-p)
+  (if (org-funcs-work-context-p)
       (org-agenda nil "wa")
     (org-agenda nil "pa")))
 
