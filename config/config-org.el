@@ -79,12 +79,8 @@
  org-outline-path-complete-in-steps nil
  org-pretty-entities nil
  org-refile-allow-creating-parent-nodes 'confirm
- org-refile-target-verify-function (lambda () (not (member (nth 2 (org-heading-components)) org-done-keywords)))
+ org-refile-target-verify-function #'org-funcs-refile-verify-function
  org-refile-use-outline-path 'file
- org-refile-targets
- '((org-agenda-files . (:maxlevel . 3))
-   (org-default-notes-file :maxlevel . 3)
-   (paths-org-directory :maxlevel . 3))
 
  org-return-follows-link t
  org-reverse-note-order nil
@@ -382,11 +378,18 @@
 
   :config
   (progn
-    (general-setq
-     org-directory paths-org-directory
-     org-default-notes-file (f-join paths-org-directory "notes.org")
-     org-agenda-files (f-files paths-org-directory (lambda (f)
-                                                     (f-ext? f "org"))))
+    (general-setq org-directory paths-org-directory
+                  org-default-notes-file (f-join paths-org-directory "notes.org"))
+
+    ;; Populate org-agenda-files
+    (cl-labels ((org-file-p (f) (f-ext? f "org")))
+      (let ((toplevel-files (f-files paths-org-directory #'org-file-p))
+            (special-files (--map (f-join paths-org-directory it)
+                                  '("init.org" "archive.org")))
+            (calendar-files (f-files paths-org-gcal-directory #'org-file-p)))
+        (setq org-refile-targets `((,(seq-difference toplevel-files special-files) . (:maxlevel . 3))))
+        (dolist (file (append toplevel-files calendar-files))
+          (add-to-list 'org-agenda-files file))))
 
     ;; Configure capture templates
     (let ((custom-templates-initfile (f-join paths-org-templates-directory "init.el")))
@@ -562,9 +565,7 @@
 
 (use-package org-gcal
   :straight t
-  :after org
-  :config
-  (add-to-list 'org-agenda-files (f-join paths-org-directory "gcal")))
+  :defer t)
 
 (provide 'config-org)
 

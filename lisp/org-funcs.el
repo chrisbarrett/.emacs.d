@@ -333,6 +333,12 @@ With prefix ARG, clock into the default task."
       (org-agenda-change-all-lines updated-heading heading-marker)
       (org-move-to-column col))))
 
+
+
+(defun org-funcs-refile-verify-function ()
+  (let ((keyword (nth 2 (org-heading-components))))
+    (not (member keyword org-done-keywords))))
+
 (provide 'org-funcs)
 
 ;;; org-funcs.el ends here
