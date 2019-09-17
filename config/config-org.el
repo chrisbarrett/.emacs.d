@@ -331,24 +331,6 @@
                               (nth 2 (org-heading-components)))
               (org-todo "TODO"))))))
 
-    (defun config-org--sort-org-buffers (&rest _)
-      (dolist (buf (buffer-list))
-        (with-current-buffer buf
-          (when (and (derived-mode-p 'org-mode) (buffer-modified-p))
-            (org-with-wide-buffer
-             (ignore-errors
-               (goto-char (point-min))
-               (org-sort-entries nil ?p)
-               (goto-char (point-min))
-               (org-sort-entries nil ?o)))
-            (org-content 3))))
-      (org-save-all-org-buffers))
-
-    (defun config-org--after-refile (arg &rest _)
-      ;; Don't do anything if we're just navigating.
-      (unless arg
-        (config-org--sort-org-buffers)))
-
     (defun config-org--set-bidi-env ()
       (setq bidi-paragraph-direction nil))
 
@@ -369,8 +351,6 @@
 
   :init
   (progn
-    (advice-add 'org-refile :after #'config-org--after-refile)
-    (advice-add 'org-archive-subtree :after #'config-org--sort-org-buffers)
     (add-hook 'org-mode-hook #'auto-revert-mode)
     (add-hook 'org-mode-hook #'config-org--set-local-vars-and-hooks)
     (add-hook 'org-mode-hook #'config-org--set-bidi-env)
