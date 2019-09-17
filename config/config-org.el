@@ -339,6 +339,12 @@
       (add-hook 'org-after-todo-state-change-hook #'config-org--mark-next-parent-tasks-todo nil t)
       (add-hook 'org-clock-in-hook #'config-org--mark-next-parent-tasks-todo nil t))
 
+    (defun config-org--after-refile (&rest _)
+      (org-save-all-org-buffers))
+
+    (defun config-org--after-archive (&rest _)
+      (org-save-all-org-buffers))
+
     (defun config-org--children-done-parent-done (_n-done n-todo)
       "Mark the parent task as done when all children are completed."
       (let (org-log-done org-log-states) ; turn off logging
@@ -351,6 +357,9 @@
 
   :init
   (progn
+    (advice-add 'org-refile :after #'config-org--after-refile)
+    (advice-add 'org-archive-subtree :after #'config-org--after-archive)
+
     (add-hook 'org-mode-hook #'auto-revert-mode)
     (add-hook 'org-mode-hook #'config-org--set-local-vars-and-hooks)
     (add-hook 'org-mode-hook #'config-org--set-bidi-env)
