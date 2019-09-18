@@ -12,6 +12,8 @@
 
 (use-package org-funcs
   :demand t
+  :hook ((org-clock-in-prepare . org-funcs-on-clock-on)
+         (org-clock-out . org-funcs-on-clock-out))
   :general
   (:states 'normal :keymaps 'org-mode-map
    "C-c p" #'org-funcs-toggle-priority
@@ -402,6 +404,7 @@
     (add-to-list 'org-latex-default-packages-alist
                  '("colorlinks=true" "hyperref" nil))
 
+    (org-clock-persistence-insinuate)
     (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
     (advice-add 'org-add-log-note :before #'config-org--exit-minibuffer)
     (advice-add 'org-toggle-heading :after #'config-org--toggle-heading-goto-eol)))
@@ -491,14 +494,6 @@
   (progn
     (add-hook 'org-src-mode-hook #'config-org--suppress-final-newline)
     (advice-add 'org-edit-src-exit :before #'config-org--org-src-delete-trailing-space)))
-
-(use-package org-clock
-  :after org
-  :defer t
-  :config
-  (progn
-    (org-clock-persistence-insinuate)
-    (add-hook 'org-clock-out-hook 'org-funcs-clock-out-maybe t)))
 
 ;; evil-org provides better compatability with org-mode.
 (use-package evil-org
