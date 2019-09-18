@@ -102,6 +102,10 @@
     (general-setq pdf-view-display-size 'fit-page
                   pdf-annot-activate-created-annotations t)))
 
+(use-package graphql-mode
+  :straight t
+  :mode ("\\.graphql\\'" . graphql-mode))
+
 (use-package pass
   :straight (:host github :repo "NicolasPetton/pass")
   :commands (pass)
