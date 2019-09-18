@@ -68,7 +68,8 @@ Sessions
   ("Clocking"
    (("i" org-funcs-punch-in "punch in")
     ("o" org-funcs-punch-out "punch out")
-    ("r" org-funcs-punching-resume "resume"))
+    ("r" org-resolve-clocks "resolve...")
+    ("c" org-funcs-punching-resume "resume"))
    ""
    (("g" org-clock-goto "goto"))))
 
