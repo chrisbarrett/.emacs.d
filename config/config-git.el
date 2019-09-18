@@ -112,6 +112,7 @@
 ;; git-gutter shows git hunk status in buffers.
 
 (use-package git-gutter
+  :disabled t
   :straight t
   :hook ((markdown-mode . git-gutter-mode)
          (prog-mode . git-gutter-mode)
@@ -126,6 +127,7 @@
 ;; interact with buffer text.
 
 (use-package git-gutter-fringe
+  :disabled t
   :after git-gutter
   :straight t
   :init
