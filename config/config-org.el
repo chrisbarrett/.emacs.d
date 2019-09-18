@@ -500,15 +500,6 @@
     (org-clock-persistence-insinuate)
     (add-hook 'org-clock-out-hook 'org-funcs-clock-out-maybe t)))
 
-(use-package org-crypt
-  :after org
-  :defer t
-  :preface
-  (defun config-org--encrypt-on-save ()
-    (add-hook 'before-save-hook 'org-encrypt-entries nil t))
-  :init
-  (add-hook 'org-mode-hook #'config-org--encrypt-on-save))
-
 ;; evil-org provides better compatability with org-mode.
 (use-package evil-org
   :straight t
