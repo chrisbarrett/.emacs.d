@@ -49,26 +49,29 @@
 Return the position of the headline."
   (when-let* ((pos (org-find-exact-headline-in-buffer "Notes" buffer t)))
     (with-current-buffer buffer
-      (goto-char pos)
-      (org-datetree-find-iso-week-create (calendar-current-date))
-      (point))))
+      (save-excursion
+        (goto-char pos)
+        (org-datetree-find-iso-week-create (calendar-current-date))
+        (point)))))
 
 (defvar org-funcs--punching-in-p nil)
 (defvar org-funcs--punching-out-p nil)
 
-(defun org-funcs-buffer-for-context ()
+(defun org-funcs-buffer-for-context (&optional choose-interactively-p)
   (let* ((work-file (f-join org-directory "work.org"))
          (personal-file (f-join org-directory "personal.org")))
-    (if (member (buffer-file-name) (list work-file personal-file))
-        (current-buffer)
+    (cond
+     ((member (buffer-file-name) (list work-file personal-file))
+      (current-buffer))
+     (choose-interactively-p
       (let ((choice (pcase (read-char-choice "Choose context: [w]ork [p]ersonal" '(?w ?p))
                       (?w work-file)
                       (?p personal-file))))
-        (find-file-noselect choice)))))
+        (find-file-noselect choice))))))
 
 (defun org-funcs-punch-in (buffer)
   "Punch in with the default date tree in the given BUFFER."
-  (interactive (list (org-funcs-buffer-for-context)))
+  (interactive (list (org-funcs-buffer-for-context t)))
   (let ((org-funcs--punching-in-p t))
     (with-current-buffer buffer
       (save-excursion
@@ -86,9 +89,22 @@ Return the position of the headline."
       (org-clock-out))
     (org-agenda-remove-restriction-lock)))
 
+(defun org-funcs--at-default-task-p ()
+  (when (equal (current-buffer)
+               (marker-buffer org-clock-default-task))
+    (save-excursion
+      (org-back-to-heading t)
+      (equal (point) (marker-position org-clock-default-task)))))
+
 (defun org-funcs--clocking-on-default-task-p ()
-  (and (equal (marker-buffer org-clock-marker) (marker-buffer org-clock-default-task))
-       (equal (marker-position org-clock-marker) (marker-buffer org-clock-default-task))))
+  (cl-labels ((org-marker-pos
+               (marker)
+               (org-with-point-at marker
+                 (org-back-to-heading t)
+                 (point))))
+    (and (equal (marker-buffer org-clock-marker) (marker-buffer org-clock-default-task))
+         (equal (org-marker-pos org-clock-marker)
+                (org-marker-pos org-clock-default-task)))))
 
 (defun org-funcs--clock-in-default-task ()
   (save-excursion
@@ -100,15 +116,20 @@ Return the position of the headline."
 (defun org-funcs-on-clock-on ()
   (unless org-funcs--punching-in-p
     (save-excursion
-      (when-let* ((pos (org-funcs--ensure-default-datetree-entry (org-funcs-buffer-for-context))))
+      (when-let* ((buf (org-funcs-buffer-for-context))
+                  (pos (org-funcs--ensure-default-datetree-entry buf)))
+        (org-clock-out nil 'no-error)
         (goto-char pos)
         (org-clock-mark-default-task)))))
 
 (defun org-funcs-on-clock-out ()
   (unless org-funcs--punching-out-p
-    (if (org-funcs--clocking-on-default-task-p)
-        (org-clock-out)
-      (org-funcs--clock-in-default-task))))
+    (save-excursion
+      (cond
+       ((org-funcs--clocking-on-default-task-p)
+        (org-clock-out))
+       ((not (org-funcs--at-default-task-p))
+        (org-funcs--clock-in-default-task))))))
 
 
 ;; Agenda utils
