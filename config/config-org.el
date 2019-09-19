@@ -15,6 +15,7 @@
   :hook ((org-clock-in-prepare . org-funcs-on-clock-on)
          (org-clock-out . org-funcs-on-clock-out))
   :general
+  ("<f12>" #'org-funcs-punch-in-or-out)
   (:states 'normal :keymaps 'org-mode-map
    "C-c p" #'org-funcs-toggle-priority
    "C-c RET" #'org-funcs-ctrl-c-ret
@@ -410,9 +411,7 @@
     (advice-add 'org-toggle-heading :after #'config-org--toggle-heading-goto-eol)))
 
 (use-package org-hydras
-  :commands (org-babel/body)
-  :general
-  ("<f12>" #'org-clock/body))
+  :commands (org-babel/body))
 
 (use-package org-agenda
   :defer t

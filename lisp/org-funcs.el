@@ -89,6 +89,13 @@ Return the position of the headline."
       (org-clock-out))
     (org-agenda-remove-restriction-lock)))
 
+(defun org-funcs-punch-in-or-out ()
+  "Punch in or out of the current clock."
+  (interactive)
+  (call-interactively (if (org-clocking-p)
+                          #'org-funcs-punch-out
+                        #'org-funcs-punch-in)))
+
 (defun org-funcs--at-default-task-p ()
   (when (equal (current-buffer)
                (marker-buffer org-clock-default-task))
