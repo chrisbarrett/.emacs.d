@@ -86,6 +86,7 @@ channel."
   `(let ((org-export-with-author nil)
          (org-export-with-toc nil)
          (org-export-with-creator nil)
+         (org-html-special-string-regexps nil)
          (org-export-with-email nil))
      ,@body))
 
