@@ -34,7 +34,11 @@
         (org-get-tags-at (marker-position org-clock-marker))))))
 
 (defun org-funcs-work-context-p ()
-  (seq-contains (org-funcs-clocked-task-tags) "@work"))
+  (save-excursion
+    (let ((tags (seq-map #'substring-no-properties
+                         (append (ignore-errors (org-get-tags-at))
+                                 (org-funcs-clocked-task-tags)))))
+      (seq-contains tags "@work"))))
 
 (defun org-funcs-agenda-dwim ()
   "Show the appropriate org agenda view."
@@ -106,14 +110,15 @@ Return the position of the headline."
       (equal (point) (marker-position org-clock-default-task)))))
 
 (defun org-funcs--clocking-on-default-task-p ()
-  (cl-labels ((org-marker-pos
-               (marker)
-               (org-with-point-at marker
-                 (org-back-to-heading t)
-                 (point))))
-    (and (equal (marker-buffer org-clock-marker) (marker-buffer org-clock-default-task))
-         (equal (org-marker-pos org-clock-marker)
-                (org-marker-pos org-clock-default-task)))))
+  (ignore-errors
+    (cl-labels ((org-marker-pos
+                 (marker)
+                 (org-with-point-at marker
+                   (org-back-to-heading t)
+                   (point))))
+      (and (equal (marker-buffer org-clock-marker) (marker-buffer org-clock-default-task))
+           (equal (org-marker-pos org-clock-marker)
+                  (org-marker-pos org-clock-default-task))))))
 
 (defun org-funcs--clock-in-default-task ()
   (save-excursion
@@ -137,7 +142,7 @@ Return the position of the headline."
       (cond
        ((org-funcs--clocking-on-default-task-p)
         (org-clock-out))
-       ((not (org-funcs--at-default-task-p))
+       ((and (org-funcs-work-context-p) (not (org-funcs--at-default-task-p)))
         (org-funcs--clock-in-default-task))))))
 
 
