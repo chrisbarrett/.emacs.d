@@ -26,6 +26,11 @@
     (with-eval-after-load 'lsp-mode
       (add-to-list 'lsp-language-id-configuration '(js-mode . "javascript")))))
 
+(use-package css-mode
+  :defer t
+  :custom
+  ((css-indent-offset 2)))
+
 ;; `emmet-mode' provides support for expandable HTML/JSX snippets.
 
 (use-package emmet-mode
