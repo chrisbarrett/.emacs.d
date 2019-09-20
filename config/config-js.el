@@ -37,7 +37,9 @@
   :straight t
   :general (:states '(normal insert)
             :keymaps 'js-mode-map
-            "C-t" #'emmet-expand-line)
+            "C-M-n" 'emmet-next-edit-point
+            "C-M-p" 'emmet-prev-edit-point
+            "C-t" 'emmet-expand-line)
   :hook (js-mode . emmet-mode)
   :config
   (progn
