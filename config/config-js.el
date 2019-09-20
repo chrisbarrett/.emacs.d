@@ -25,6 +25,19 @@
   (with-eval-after-load 'lsp-mode
     (add-to-list 'lsp-language-id-configuration '(js-mode . "javascript"))))
 
+;; `emmet-mode' provides support for expandable HTML/JSX snippets.
+
+(use-package emmet-mode
+  :straight t
+  :general (:states '(normal insert)
+            :keymaps 'js-mode-map
+            "C-t" #'emmet-expand-line)
+  :hook (js-mode . emmet-mode)
+  :config
+  (progn
+    (setq emmet-expand-jsx-className? t)
+    (setq emmet-move-cursor-between-quotes t)))
+
 (use-package typescript-mode
   :mode ("\\.tsx?\\'" . typescript-mode)
   :straight t
