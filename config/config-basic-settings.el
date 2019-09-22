@@ -209,6 +209,9 @@
 ;; Bind a key command to toggle side windows.
 (global-set-key (kbd "C-c TAB") #'window-toggle-side-windows)
 
+(setq bidi-paragraph-separate-re "^")
+(setq bidi-paragraph-start-re "^")
+
 
 ;;; Core advice
 
