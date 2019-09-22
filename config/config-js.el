@@ -36,11 +36,12 @@
 (use-package emmet-mode
   :straight t
   :general (:states '(normal insert)
-            :keymaps 'js-mode-map
+            :keymaps '(js-mode-map typescript-mode-map)
             "C-M-n" 'emmet-next-edit-point
             "C-M-p" 'emmet-prev-edit-point
             "C-t" 'emmet-expand-line)
-  :hook (js-mode . emmet-mode)
+  :hook ((js-mode . emmet-mode)
+         (typescript-mode . emmet-mode))
   :config
   (progn
     (setq emmet-expand-jsx-className? t)
