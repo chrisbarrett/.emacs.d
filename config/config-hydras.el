@@ -18,6 +18,7 @@
 (autoload 'generate-password/body "generate-password")
 (autoload 'ivy-switch-buffer "ivy")
 (autoload 'neotree-toggle "neotree")
+(autoload 'org-clock/body "org-hydras")
 (autoload 'org-narrow-to-subtree "org")
 
 (eval-and-compile
