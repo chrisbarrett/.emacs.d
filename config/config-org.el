@@ -265,11 +265,6 @@
     "* %?"
     :tree-type week)
 
-  `("r" "Weekly Review" entry
-    (file+datetree org-default-notes-file)
-    (file "templates/review.template.org")
-    :tree-type week)
-
   (org-funcs-capture-template
    "l" "Link" '(file "inbox.org") '(function org-funcs-read-url-for-capture)
    :immediate-finish t)
