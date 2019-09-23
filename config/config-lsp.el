@@ -56,7 +56,7 @@
     (f-mkdir config-lsp--dap-cache-dir)
     (general-setq dap-utils-extension-path (expand-file-name "extensions" config-lsp--dap-cache-dir)))
   :config
-  (general-setq dap--breakpoints-file (expand-file-name "breakpoints" config-lsp--dap-cache-dir)))
+  (general-setq dap-breakpoints-file (expand-file-name "breakpoints" config-lsp--dap-cache-dir)))
 
 (use-package lsp-java
   :straight t
