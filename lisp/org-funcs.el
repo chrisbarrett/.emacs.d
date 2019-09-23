@@ -51,14 +51,10 @@
   "Create the default heading for clocking in BUFFER.
 
 Return the position of the headline."
-  (with-current-buffer buffer
-    (save-excursion
-      (goto-char (point-min))
-      (when-let* ((pos (org-find-exact-headline-in-buffer "Notes" (current-buffer) t)))
-        (save-excursion
-          (goto-char pos)
-          (org-datetree-find-iso-week-create (calendar-current-date))
-          (point))))))
+  (save-excursion
+    (org-with-point-at (org-find-exact-headline-in-buffer "Notes" buffer)
+      (org-datetree-find-iso-week-create (calendar-current-date))
+      (point))))
 
 (defvar org-funcs--punching-in-p nil)
 (defvar org-funcs--punching-out-p nil)
