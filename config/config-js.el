@@ -63,6 +63,7 @@
       (nvm-use-for-buffer)
       t))
   :hook ((js-mode . config-js-maybe-use-nvm)
+         (org-mode . config-js-maybe-use-nvm)
          (typescript-mode . config-js-maybe-use-nvm)))
 
 (use-package prettier
