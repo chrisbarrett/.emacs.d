@@ -20,6 +20,8 @@
 (autoload 'neotree-toggle "neotree")
 (autoload 'org-clock/body "org-hydras")
 (autoload 'org-narrow-to-subtree "org")
+(autoload 'profiler-report "profiler")
+(autoload 'profiler-stop "profiler")
 
 (eval-and-compile
   (defun hydra-title-with-octicon (icon title)
