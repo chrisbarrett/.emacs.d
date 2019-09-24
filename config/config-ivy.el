@@ -111,8 +111,8 @@
   :straight t
   :hook (ivy-mode . ivy-posframe-enable)
   :config
-  (general-setq ivy-display-function #'ivy-posframe-display-at-frame-center
-                ivy-posframe-border-width 20
+  (general-setq ivy-posframe-border-width 20
+                ivy-posframe-style 'frame-center
                 ivy-posframe-hide-minibuffer t
                 ivy-posframe-parameters '((alpha 100 100))))
 
