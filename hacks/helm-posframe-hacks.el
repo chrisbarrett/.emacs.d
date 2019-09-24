@@ -20,6 +20,7 @@ Argument BUFFER."
        :min-width 50
        :font helm-posframe-font
        (el-patch-add
+         :internal-border-width 10
          :background-color (face-background 'ivy-posframe nil t))
        :override-parameters helm-posframe-parameters
        :respect-header-line t))))
