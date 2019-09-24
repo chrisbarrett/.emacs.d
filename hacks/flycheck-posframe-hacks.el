@@ -27,8 +27,8 @@
            :string (flycheck-posframe-format-errors errors)
            :background-color (face-background 'flycheck-posframe-background-face nil t)
            :position (point)
-           :internal-border-width flycheck-posframe-border-width :internal-border-color
-           (face-foreground 'flycheck-posframe-border-face nil t)
+           :internal-border-width flycheck-posframe-border-width
+           :internal-border-color (face-foreground 'flycheck-posframe-border-face nil t)
            :poshandler poshandler
            (el-patch-add
              :internal-border-width flycheck-posframe-internal-border-width
