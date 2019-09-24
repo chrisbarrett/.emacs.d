@@ -251,7 +251,7 @@
     ("c" org-clock/body "clock...")
     ("k" org-capture "capture...")
     ("l" org-store-link "store link...")
-    ("s" org-search-view "search..."))
+    ("s" helm-org-rifle-org-directory "search..."))
 
    "Goto"
    (("i" org-funcs-goto-inbox "inbox")
@@ -537,7 +537,8 @@
     ("z" font-scale/body "font scale..."))
 
    "Actions"
-   (("SPC" counsel-M-x "run command (M-x)")
+   (("SPC" helm-mini "helm")
+    ("x" counsel-M-x "run command (M-x)")
     ("!" shell-command "run shell command")
     ("/" counsel-projectile-rg "search (incrementally)")
     ("S" deadgrep "search (ripgrep)")
