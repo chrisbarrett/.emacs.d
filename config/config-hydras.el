@@ -272,7 +272,7 @@
   ("Actions"
    (("!" projectile-run-async-shell-command-in-root "shell command...")
     ("SPC" helm-projectile "helm...")
-    ("c" projectile-compile-project "compile...")
+    ("c" helm-taskrunner "task...")
     ("u" projectile-run-project "run...")
     ("t" config-projectile-test-project "test..."))
 

@@ -419,6 +419,19 @@ Interactively, reverse the characters in the current region."
   :straight t
   :commands (rotate-layout))
 
+;; `taskrunner' provides a consistent way to run project build commands (e.g.
+;; from makefiles, npm scripts, etc.)
+
+(use-package taskrunner
+  :straight (:host github :repo "emacs-taskrunner/emacs-taskrunner")
+  :defer t)
+
+;; `helm-taskrunner' is a helm frontend to `taskrunner'.
+
+(use-package helm-taskrunner
+  :straight (:host github :repo "emacs-taskrunner/helm-taskrunner")
+  :commands (helm-taskrunner))
+
 (provide 'config-editing)
 
 ;;; config-editing.el ends here
