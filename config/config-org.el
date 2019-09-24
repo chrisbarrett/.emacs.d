@@ -364,6 +364,8 @@
 
   :config
   (progn
+    (require 'org-id)
+
     (general-setq org-directory paths-org-directory
                   org-default-notes-file (f-join paths-org-directory "notes.org"))
 
