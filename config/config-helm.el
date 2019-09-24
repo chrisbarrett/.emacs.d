@@ -18,6 +18,7 @@
   (progn
     (setq helm-posframe-width 130)
     (setq helm-posframe-height 20)
+    (setq helm-posframe-poshandler #'posframe-poshandler-frame-center)
     (helm-posframe-enable)))
 
 ;; `helm-org-rifle' provides a really good search interface for org-mode.
