@@ -13,6 +13,7 @@
   (with-no-warnings
     (el-patch-defun taskrunner-read-cache-file ()
       "Read the task cache file and initialize the task caches with its contents."
+      (el-patch-add (f-mkdir (f-dirname taskrunner-hacks--cache-file)))
       (with-temp-buffer
         (let ((taskrunner-cache-filepath (el-patch-swap (expand-file-name "taskrunner-tasks.eld" user-emacs-directory)
                                                         taskrunner-hacks--cache-file))
@@ -35,6 +36,7 @@
 
     (el-patch-defun taskrunner-write-cache-file ()
       "Save all tasks in the cache to the cache file in Emacs user directory."
+      (el-patch-add (f-mkdir (f-dirname taskrunner-hacks--cache-file)))
       (let ((taskrunner-cache-filepath (el-patch-swap (expand-file-name "taskrunner-tasks.eld" user-emacs-directory)
                                                       taskrunner-hacks--cache-file)))
         (write-region (format "%s%s\n" taskrunner--cache-file-header-warning
