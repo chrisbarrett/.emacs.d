@@ -271,6 +271,7 @@
    :title (hydra-title-with-octicon "repo" "Project"))
   ("Actions"
    (("!" projectile-run-async-shell-command-in-root "shell command...")
+    ("SPC" helm-projectile "helm...")
     ("c" projectile-compile-project "compile...")
     ("u" projectile-run-project "run...")
     ("t" config-projectile-test-project "test..."))

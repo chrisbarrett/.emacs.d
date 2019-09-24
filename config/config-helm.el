@@ -24,7 +24,15 @@
 ;; `helm-org-rifle' provides a really good search interface for org-mode.
 (use-package helm-org-rifle
   :straight t
-  :commands (helm-org-rifle helm-org-rifle-org-directory))
+  :commands (helm-org-rifle helm-org-rifle-org-directory)
+  :config
+  ;; KLUDGE: Ensure the posframe is removed when we exit.
+  (add-hook 'helm-org-rifle-after-command-hook 'posframe-hide-all))
+
+;; `helm-projectile' adds a helm buffer for project files and buffers.
+(use-package helm-projectile
+  :straight t
+  :commands (helm-projectile))
 
 (provide 'config-helm)
 
