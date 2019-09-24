@@ -375,7 +375,7 @@
             (special-files (--map (f-join paths-org-directory it)
                                   '("init.org" "archive.org")))
             (calendar-files (f-files paths-org-gcal-directory #'org-file-p)))
-        (setq org-refile-targets `((,(seq-difference toplevel-files special-files) . (:maxlevel . 3))))
+        (setq org-refile-targets `((,(seq-difference toplevel-files special-files) . (:maxlevel . 4))))
         (dolist (file (append toplevel-files calendar-files))
           (add-to-list 'org-agenda-files file))))
 
