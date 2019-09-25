@@ -176,11 +176,13 @@
                                (todo priority-down category-keep scheduled-up)
                                (tags priority-down category-keep)
                                (search category-keep))
- org-agenda-clockreport-parameter-plist (list :link t :compact t :maxlevel 2 :fileskip0 t :step 'week)
  org-agenda-inhibit-startup nil
  org-agenda-tags-column -100
  org-agenda-text-search-extra-files '(agenda-archives)
  org-agenda-use-time-grid nil)
+
+(defconst config-org--agenda-clockreport-defaults
+  '(:link t :compact t :maxlevel 4 :fileskip0 t :step week))
 
 (defun config-org--agenda-for-context (tag)
   `(,(concat (substring tag 1 2) "a")
@@ -197,6 +199,7 @@
      (stuck ""
             ((org-agenda-overriding-header "Stuck Projects"))))
     ((org-agenda-tag-filter-preset '(,(format "+%s" tag) "-@someday" "-ignore"))
+     (org-agenda-clockreport-parameter-plist ',(append config-org--agenda-clockreport-defaults (list :tags tag)))
      (org-agenda-span 'day)
      (org-agenda-show-future-repeats nil)
      (org-agenda-archives-mode nil)
@@ -219,6 +222,7 @@
      (tags "+project-archived"
            ((org-agenda-overriding-header "Review projects. Are these all healthy?"))))
     ((org-agenda-tag-filter-preset '(,(format "+%s" tag) "-@someday" "-ignore"))
+     (org-agenda-clockreport-parameter-plist ',(append config-org--agenda-clockreport-defaults (list :tags tag)))
      (org-agenda-span 'week)
      (org-agenda-show-future-repeats nil)
      (org-agenda-archives-mode nil)
@@ -240,6 +244,7 @@
      (tags "+project-archived"
            ((org-agenda-overriding-header "Review projects. Are these all healthy?"))))
     ((org-agenda-tag-filter-preset '(,(format "+%s" tag) "-@someday" "-ignore"))
+     (org-agenda-clockreport-parameter-plist ',(append config-org--agenda-clockreport-defaults (list :tags tag)))
      (org-agenda-start-with-clockreport-mode t)
      (org-agenda-log-mode-items '(closed))
      (org-agenda-show-future-repeats nil)
