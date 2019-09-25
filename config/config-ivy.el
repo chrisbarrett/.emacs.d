@@ -22,6 +22,7 @@
    "C-z" #'ivy-dispatching-done
    "C-l" #'ivy-partial-or-done
    "C-<return>" #'ivy-immediate-done
+   "M-<return>" #'ivy-immediate-done
    "C-SPC" #'config-ivy-eshell-action)
 
   ;; Browse read-expression histroy with ivy
