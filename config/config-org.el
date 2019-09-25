@@ -65,6 +65,9 @@
 
 ;; General variables
 
+(setq org-directory paths-org-directory)
+(setq org-default-notes-file (f-join paths-org-directory "notes.org"))
+
 (general-setq
  org-imenu-depth 4
  org-M-RET-may-split-line nil
@@ -307,6 +310,18 @@
     (autoload 'org-todo "org")
     (autoload 'org-up-heading-safe "org")
 
+    (defun config-org-set-agenda-files ()
+      ;; Populate org-agenda-files
+      (cl-labels ((org-file-p (f) (f-ext? f "org")))
+        (let ((toplevel-files (f-files paths-org-directory #'org-file-p))
+              (special-files (--map (f-join paths-org-directory it)
+                                    '("init.org" "archive.org"))))
+          (setq org-refile-targets `((,(seq-difference toplevel-files special-files) . (:maxlevel . 4))))
+          (dolist (file (cons paths-org-gcal-directory toplevel-files))
+            (add-to-list 'org-agenda-files file)))))
+
+    (add-hook 'org-load-hook #'config-org-set-agenda-files)
+
     ;; KLUDGE: Pre-declare dynamic variables used by orgmode.
     (defvar org-state)
     (defvar org-log-states)
@@ -371,20 +386,7 @@
   (progn
     (require 'org-id)
 
-    (general-setq org-directory paths-org-directory
-                  org-default-notes-file (f-join paths-org-directory "notes.org"))
-
-    ;; Populate org-agenda-files
-    (cl-labels ((org-file-p (f) (f-ext? f "org")))
-      (let ((toplevel-files (f-files paths-org-directory #'org-file-p))
-            (special-files (--map (f-join paths-org-directory it)
-                                  '("init.org" "archive.org")))
-            (calendar-files (f-files paths-org-gcal-directory #'org-file-p)))
-        (setq org-refile-targets `((,(seq-difference toplevel-files special-files) . (:maxlevel . 4))))
-        (dolist (file (append toplevel-files calendar-files))
-          (add-to-list 'org-agenda-files file))))
-
-    ;; Configure capture templates
+    ;; Configure private capture templates
     (let ((custom-templates-initfile (f-join paths-org-templates-directory "init.el")))
       (when (file-exists-p custom-templates-initfile)
         (load-file custom-templates-initfile)))
