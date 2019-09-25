@@ -542,7 +542,18 @@
 
 (use-package org-gcal
   :straight t
-  :defer t)
+  :defer t
+  :preface
+  (defun config-org--after-gcal (&rest _)
+    (save-some-buffers t (lambda () (and
+                                (derived-mode-p 'org-mode)
+                                (string-match-p "gcal" (buffer-file-name)))))
+    (when (featurep 'org-id)
+      (org-id-locations-save)))
+  :config
+  (progn
+    (advice-add 'org-gcal-sync-buffer :after #'config-org--after-gcal)
+    (advice-add 'org-gcal-sync :after #'config-org--after-gcal)))
 
 (provide 'config-org)
 
