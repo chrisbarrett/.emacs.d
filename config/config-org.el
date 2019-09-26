@@ -288,6 +288,7 @@
 
 
 
+;; Configure the main `org' package.
 (use-package org
   :defer t
   :straight (:type built-in)
@@ -416,9 +417,12 @@
     (advice-add 'org-add-log-note :before #'config-org--exit-minibuffer)
     (advice-add 'org-toggle-heading :after #'config-org--toggle-heading-goto-eol)))
 
+;; `org-hydras' provides a few org-specific hydras.
 (use-package org-hydras
   :commands (org-babel/body))
 
+;; `org-agenda' provides mechanisms for collating and inspecting org headings
+;; and other data sources into a single planning/agenda buffer.
 (use-package org-agenda
   :defer t
   :after org
@@ -466,6 +470,7 @@
     (advice-add 'org-agenda :after #'config-org--draw-separator)
     (advice-add 'org-agenda-redo :after #'config-org--draw-separator)))
 
+;; `org-archive' implements heading archival functionality.
 (use-package org-archive
   :after org
   :defer t
@@ -482,6 +487,7 @@
   :config
   (advice-add 'org-archive-subtree :before #'config-org--apply-inherited-tags))
 
+;; `org-src' implements src code blocks.
 (use-package org-src
   :after org
   :defer t
@@ -500,7 +506,7 @@
     (add-hook 'org-src-mode-hook #'config-org--suppress-final-newline)
     (advice-add 'org-edit-src-exit :before #'config-org--org-src-delete-trailing-space)))
 
-;; evil-org provides better compatability with org-mode.
+;; `evil-org' provides better compatability with org-mode.
 (use-package evil-org
   :straight t
   :hook (org-mode . evil-org-mode)
@@ -511,11 +517,12 @@
   (general-unbind :states '(normal insert) :keymaps 'evil-org-mode-map
     "M-l" "M-h" "J" "O" "M-l" "M-h"))
 
-;; org-bullets displays orgmode bullets using pretty utf-8 characters.
+;; `org-bullets' displays orgmode bullets using pretty utf-8 characters.
 (use-package org-bullets
   :straight t
   :hook (org-mode . org-bullets-mode))
 
+;; Automatically enter insert state when inserting new headings.
 (with-eval-after-load 'evil
 
   (eval-and-compile
@@ -529,6 +536,8 @@
   (advice-add 'org-insert-todo-heading-respect-content :after #'config-org--evil-insert-state)
   (advice-add 'org-insert-todo-heading :after #'config-org--evil-insert-state))
 
+;; `cb-org-export-koma-letter' provides a C-c C-c handler for exporting the
+;; heading at point as a koma letter.
 (use-package cb-org-export-koma-letter
   :after org
   :commands (cb-org-export-koma-letter-handler)
@@ -538,14 +547,16 @@
     (add-to-list 'org-latex-classes `("koma-letter" ,cb-org-export-koma-letter-latex-class))
     (add-hook 'org-ctrl-c-ctrl-c-hook #'cb-org-export-koma-letter-handler t)))
 
-;; htmlize is required for HTML exports.
+;; `htmlize' is required for HTML exports.
 (use-package htmlize
   :straight t
   :defer t)
 
+;; `org-id' provides support for linking to org headings via UUIDs.
 (use-package org-id
   :after org)
 
+;; `org-gcal' pulls down Google Calendar events into org files.
 (use-package org-gcal
   :straight t
   :after org
