@@ -560,6 +560,7 @@
 (use-package org-gcal
   :straight t
   :after org
+  :general (:states 'motion :keymaps 'org-agenda-mode-map "gR" 'org-gcal-fetch)
   :preface
   (progn
     (defvar config-org--gcal-refresh-interval (* 5 60)
