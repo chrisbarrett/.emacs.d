@@ -550,23 +550,19 @@
   :straight t
   :after org
   :preface
-  (defun config-org-gcal-sync ()
-    (when (org-funcs-work-context-p)
-      (message "Syncing gcal files")
-      (dolist (file (seq-map #'cdr org-gcal-file-alist))
-        (let ((buf (find-file-noselect file)))
-          (with-current-buffer buf
-            (save-restriction
-              (widen)
-              (deferred:nextc (org-gcal-fetch-buffer nil t t)
-                (lambda ()
-                  (message "Saving %s" file)
-                  (ignore-errors
-                    (save-buffer buf))))))))))
+  (progn
+    (defvar config-org--gcal-refresh-interval (* 5 60)
+      "The frequency in seconds to schedule calendar refreshes.")
+
+    (defun config-org-gcal-sync-loop ()
+      (run-with-idle-timer 10 nil
+                           (lambda ()
+                             (message "Syncing calendars")
+                             (let ((org-gcal-notify-p nil))
+                               (org-gcal-fetch))
+                             (run-with-timer config-org--gcal-refresh-interval nil #'config-org-gcal-sync-loop)))))
   :config
-  ;; Update every 5 minutes when at work.
-  ;; (run-with-timer 0 (* 5 60) #'config-org-gcal-sync)
-  )
+  (config-org-gcal-sync-loop))
 
 (provide 'config-org)
 
