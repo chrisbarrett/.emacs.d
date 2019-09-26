@@ -310,7 +310,7 @@
     (autoload 'org-todo "org")
     (autoload 'org-up-heading-safe "org")
 
-    (defun config-org-set-agenda-files ()
+    (defun config-org-set-org-agenda-files ()
       ;; Populate org-agenda-files
       (cl-labels ((org-file-p (f) (f-ext? f "org")))
         (let ((toplevel-files (f-files paths-org-directory #'org-file-p))
@@ -319,8 +319,6 @@
           (setq org-refile-targets `((,(seq-difference toplevel-files special-files) . (:maxlevel . 4))))
           (dolist (file (cons paths-org-gcal-directory toplevel-files))
             (add-to-list 'org-agenda-files file)))))
-
-    (add-hook 'org-load-hook #'config-org-set-agenda-files)
 
     ;; KLUDGE: Pre-declare dynamic variables used by orgmode.
     (defvar org-state)
@@ -362,6 +360,9 @@
     (defun config-org--after-archive (&rest _)
       (org-save-all-org-buffers))
 
+    (defun config-org--before-agenda (&rest _)
+      (config-org-set-org-agenda-files))
+
     (defun config-org--children-done-parent-done (_n-done n-todo)
       "Mark the parent task as done when all children are completed."
       (let (org-log-done org-log-states) ; turn off logging
@@ -374,6 +375,9 @@
 
   :init
   (progn
+    (config-org-set-org-agenda-files)
+    (advice-add 'org-agenda :before #'config-org--before-agenda)
+
     (advice-add 'org-refile :after #'config-org--after-refile)
     (advice-add 'org-archive-subtree :after #'config-org--after-archive)
 
@@ -384,7 +388,6 @@
 
   :config
   (progn
-    (require 'org-id)
 
     ;; Configure private capture templates
     (let ((custom-templates-initfile (f-join paths-org-templates-directory "init.el")))
@@ -540,20 +543,30 @@
   :straight t
   :defer t)
 
+(use-package org-id
+  :after org)
+
 (use-package org-gcal
   :straight t
-  :defer t
+  :after org
   :preface
-  (defun config-org--after-gcal (&rest _)
-    (save-some-buffers t (lambda () (and
-                                (derived-mode-p 'org-mode)
-                                (string-match-p "gcal" (buffer-file-name)))))
-    (when (featurep 'org-id)
-      (org-id-locations-save)))
+  (defun config-org-gcal-sync ()
+    (when (org-funcs-work-context-p)
+      (message "Syncing gcal files")
+      (dolist (file (seq-map #'cdr org-gcal-file-alist))
+        (let ((buf (find-file-noselect file)))
+          (with-current-buffer buf
+            (save-restriction
+              (widen)
+              (deferred:nextc (org-gcal-fetch-buffer nil t t)
+                (lambda ()
+                  (message "Saving %s" file)
+                  (ignore-errors
+                    (save-buffer buf))))))))))
   :config
-  (progn
-    (advice-add 'org-gcal-sync-buffer :after #'config-org--after-gcal)
-    (advice-add 'org-gcal-sync :after #'config-org--after-gcal)))
+  ;; Update every 5 minutes when at work.
+  ;; (run-with-timer 0 (* 5 60) #'config-org-gcal-sync)
+  )
 
 (provide 'config-org)
 
