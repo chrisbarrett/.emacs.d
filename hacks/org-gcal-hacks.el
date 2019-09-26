@@ -6,9 +6,51 @@
 (el-patch-feature org-gcal)
 
 
+(define-minor-mode org-gcal-debug-mode
+  "Minor mode for enabling gcal debugging.")
+
+(defun org-gcal-debug-maybe-enable ()
+  (when (derived-mode-p 'org-mode)
+    (org-gcal-debug-mode)))
+
+(define-global-minor-mode org-gcal-debug org-gcal-debug-mode org-gcal-debug-maybe-enable)
 
 (with-eval-after-load 'org-gcal
+
   (with-no-warnings
+    (el-patch-defun org-gcal--archive-old-event ()
+      (save-excursion
+        (goto-char (point-min))
+        (while (re-search-forward org-heading-regexp nil t)
+          (condition-case nil
+              (goto-char (cdr (org-gcal--timestamp-successor)))
+            (error (error "Org-gcal error: Couldn't parse %s"
+                          (buffer-file-name))))
+          (let ((elem (org-element-headline-parser (point-max) t))
+                (tobj (cadr (org-element-timestamp-parser))))
+            (when (>
+                   (time-to-seconds (time-subtract (current-time) (days-to-time org-gcal-up-days)))
+                   (time-to-seconds (encode-time 0  (if (plist-get tobj :minute-end)
+                                                        (plist-get tobj :minute-end) 0)
+                                                 (if (plist-get tobj :hour-end)
+                                                     (plist-get tobj :hour-end) 24)
+                                                 (plist-get tobj :day-end)
+                                                 (plist-get tobj :month-end)
+                                                 (plist-get tobj :year-end))))
+              (org-gcal--notify "Archived event." (org-element-property :title elem))
+              (let ((kill-ring kill-ring)
+                    (select-enable-clipboard nil)
+                    (el-patch-add (inhibit-message (not org-gcal-debug-mode))))
+                (el-patch-wrap 2 1
+                  (condition-case nil
+                      (org-archive-subtree)
+                    (error
+                     (when org-gcal-debug-mode
+                       (message "%s: Failed to archive subtree: %s"
+                                (file-name-nondirectory (buffer-file-name))
+                                elem)))))))))
+        (save-buffer)))
+
     (el-patch-defun org-gcal-sync (&optional a-token skip-export silent)
       "Import events from calendars.
 Using A-TOKEN and export the ones to the calendar if unless
