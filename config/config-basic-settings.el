@@ -604,8 +604,8 @@
 
 
 (use-package info+
-  :after 'info
-  :straight t
+  :after info
+  :straight (:host github :repo "emacsmirror/info-plus")
   :defer t
   :config
   (general-setq Info-fontify-angle-bracketed-flag nil))
