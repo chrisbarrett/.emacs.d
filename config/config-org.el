@@ -559,24 +559,7 @@
 ;; `org-gcal' pulls down Google Calendar events into org files.
 (use-package org-gcal
   :straight t
-  :general (:states 'motion :keymaps 'org-agenda-mode-map "gR" 'org-gcal-fetch)
-  :preface
-  (progn
-    (defvar config-org--gcal-refresh-interval (* 5 60)
-      "The frequency in seconds to schedule calendar refreshes.")
-
-    (defun config-org-gcal-sync-loop ()
-      (run-with-idle-timer 10 nil
-                           (lambda ()
-                             (message "Syncing calendars")
-                             (let ((org-gcal-notify-p nil))
-                               (org-gcal-fetch))
-                             (run-with-timer config-org--gcal-refresh-interval nil #'config-org-gcal-sync-loop)))))
-  :init
-  (with-eval-after-load 'org
-    (require 'org-gcal))
-  :config
-  (config-org-gcal-sync-loop))
+  :general (:states 'motion :keymaps 'org-agenda-mode-map "gR" 'org-gcal-fetch))
 
 (provide 'config-org)
 
