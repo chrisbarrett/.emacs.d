@@ -14,6 +14,8 @@
 (use-package helm-posframe
   :straight t
   :after helm
+  ;; KLUDGE: helm posframe seems to close the main frame on linux :/
+  :when (equal system-type 'darwin)
   :config
   (progn
     (setq helm-posframe-width 130)
