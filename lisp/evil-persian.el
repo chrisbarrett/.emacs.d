@@ -5,6 +5,61 @@
 (require 'evil)
 (require 'dash)
 
+(defconst evil-persian-programmer-dvorak-to-farsi-standard-layout-alist
+  '(
+    ;; Number row
+    ("$" . "‍") ("~" . "÷")
+    ("&" . "۱") ("%" . "!")
+    ("[" . "۲") ("7" . "٬")
+    ("{" . "۳") ("5" . "٫")
+    ("}" . "۴") ("3" . "﷼")
+    ("(" . "۵") ("1" . "٪")
+    ("=" . "۶") ("9" . "×")
+    ("*" . "۷") ("0" . "،")
+    (")" . "۸") ("2" . "*")
+    ("+" . "۹") ("4" . ")")
+    ("]" . "۰") ("6" . "(")
+    ("!" . "-") ("8" . "ـ")
+    ("#" . "=") ("`" . "+")
+
+    ;; NB. I swap ';' and ':' on my layout.
+    (":" . "ض") (";" . "ْ")
+    ("," . "ص") ("<" . "ٌ")
+    ("." . "ث") (">" . "ٍ")
+    ("p" . "ق") ("P" . "ً")
+    ("y" . "ف") ("Y" . "ُ")
+    ("f" . "غ") ("F" . "ِ")
+    ("g" . "ع") ("G" . "َ")
+    ("c" . "ه") ("C" . "ّ")
+    ("r" . "خ") ("R" . "]")
+    ("l" . "ح") ("L" . "[")
+    ("/" . "ج") ("?" . "}")
+    ("@" . "چ") ("^" . "{")
+    ("|" . "\\") ("\\" . "|")
+
+    ("a" . "ش") ("A" . "ؤ")
+    ("o" . "س") ("O" . "ئ")
+    ("e" . "ی") ("E" . "ي")
+    ("u" . "ب") ("U" . "إ")
+    ("i" . "ل") ("I" . "أ")
+    ("d" . "ا") ("D" . "آ")
+    ("h" . "ت") ("H" . "ة")
+    ("t" . "ن") ("T" . "«")
+    ("n" . "م") ("N" . "»")
+    ("s" . "ک") ("S" . ":")
+    ("-" . "گ") ("_" . "؛")
+
+    ("'" . "ظ") ("\"" . "ك")
+    ("q" . "ط") ("Q" . "ٓ")
+    ("j" . "ز") ("J" . "ژ")
+    ("k" . "ر") ("K" . "ٰ")
+    ("x" . "ذ") ("X" . "‌")
+    ("b" . "د") ("B" . "ٔ")
+    ("m" . "پ") ("M" . "ء")
+    ("w" . "و") ("W" . "<")
+    ("v" . ".") ("V" . ">")
+    ("z" . "/") ("Z" . "؟")))
+
 (evil-define-state persian-insert
   "Insert state, where keys are remapped to Persian characters"
   :tag " <I>[ف] "
@@ -35,58 +90,7 @@
 
 (define-key evil-persian-insert-state-map (kbd "<escape>") #'evil-normal-state)
 
-(-each '(
-         ;; Number row
-         ("$" . "‍") ("~" . "÷")
-         ("&" . "۱") ("%" . "!")
-         ("[" . "۲") ("7" . "٬")
-         ("{" . "۳") ("5" . "٫")
-         ("}" . "۴") ("3" . "﷼")
-         ("(" . "۵") ("1" . "٪")
-         ("=" . "۶") ("9" . "×")
-         ("*" . "۷") ("0" . "،")
-         (")" . "۸") ("2" . "*")
-         ("+" . "۹") ("4" . ")")
-         ("]" . "۰") ("6" . "(")
-         ("!" . "-") ("8" . "ـ")
-         ("#" . "=") ("`" . "+")
-
-         (":" . "ض") (";" . "ْ")
-         ("," . "ص") ("<" . "ٌ")
-         ("." . "ث") (">" . "ٍ")
-         ("p" . "ق") ("P" . "ً")
-         ("y" . "ف") ("Y" . "ُ")
-         ("f" . "غ") ("F" . "ِ")
-         ("g" . "ع") ("G" . "َ")
-         ("c" . "ه") ("C" . "ّ")
-         ("r" . "خ") ("R" . "]")
-         ("l" . "ح") ("L" . "[")
-         ("/" . "ج") ("?" . "}")
-         ("@" . "چ") ("^" . "{")
-         ("|" . "\\") ("\\" . "|")
-
-         ("a" . "ش") ("A" . "ؤ")
-         ("o" . "س") ("O" . "ئ")
-         ("e" . "ی") ("E" . "ي")
-         ("u" . "ب") ("U" . "إ")
-         ("i" . "ل") ("I" . "أ")
-         ("d" . "ا") ("D" . "آ")
-         ("h" . "ت") ("H" . "ة")
-         ("t" . "ن") ("T" . "«")
-         ("n" . "م") ("N" . "»")
-         ("s" . "ک") ("S" . ":")
-         ("-" . "گ") ("_" . "؛")
-
-         ("'" . "ظ") ("\"" . "ك")
-         ("q" . "ط") ("Q" . "ٓ")
-         ("j" . "ز") ("J" . "ژ")
-         ("k" . "ر") ("K" . "ٰ")
-         ("x" . "ذ") ("X" . "‌")
-         ("b" . "د") ("B" . "ٔ")
-         ("m" . "پ") ("M" . "ء")
-         ("w" . "و") ("W" . "<")
-         ("v" . ".") ("V" . ">")
-         ("z" . "/") ("Z" . "؟"))
+(-each evil-persian-programmer-dvorak-to-farsi-standard-layout-alist
   (-lambda ((k . v))
     (define-key evil-persian-insert-state-map (kbd k) (lambda ()
                                             (interactive)
@@ -114,7 +118,20 @@
       (evil-persian-insert-state arg)
     (funcall f arg)))
 
+(defun evil-persian--ascii-to-persian (char)
+  (string-to-char (alist-get (char-to-string char)
+                             evil-persian-programmer-dvorak-to-farsi-standard-layout-alist
+                             (char-to-string char)
+                             nil
+                             #'string-equal)))
+
+(defun evil-persian--replace-char-hack-enable (f beg end &optional type char)
+  (funcall f beg end type (if evil-persian-mode
+                              (evil-persian--ascii-to-persian char)
+                            char)))
+
 (advice-add 'evil-insert-state :around #'evil-persian--insert-hack-enable)
+(advice-add 'evil-replace :around #'evil-persian--replace-char-hack-enable)
 
 (provide 'evil-persian)
 
