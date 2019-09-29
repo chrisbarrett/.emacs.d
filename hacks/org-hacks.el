@@ -4,6 +4,9 @@
 
 (require 'el-patch)
 
+(cl-eval-when (compile)
+  (require 'org))
+
 (defvar org-hacks--bullet (concat "⦿"))
 
 (el-patch-feature org)
