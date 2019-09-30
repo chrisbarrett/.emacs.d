@@ -273,6 +273,147 @@ direct children of this heading."
         (if (looking-at "^[ \t]*$")
             (outline-next-visible-heading 1))))))
 
+(with-eval-after-load 'org-capture
+  (with-no-warnings
+    (el-patch-defun org-capture-finalize (&optional stay-with-capture)
+      "Finalize the capture process.
+With prefix argument STAY-WITH-CAPTURE, jump to the location of the
+captured item after finalizing."
+      (interactive "P")
+      (when (org-capture-get :jump-to-captured)
+        (setq stay-with-capture t))
+      (unless (and org-capture-mode
+                   (buffer-base-buffer (current-buffer)))
+        (error "This does not seem to be a capture buffer for Org mode"))
+
+      (run-hooks 'org-capture-prepare-finalize-hook)
+
+      ;; Did we start the clock in this capture buffer?
+      (when (and org-capture-clock-was-started
+                 org-clock-marker
+                 (eq (marker-buffer org-clock-marker) (buffer-base-buffer))
+                 (>= org-clock-marker (point-min))
+                 (< org-clock-marker (point-max)))
+        ;; Looks like the clock we started is still running.
+        (if org-capture-clock-keep
+            ;; User may have completed clocked heading from the template.
+            ;; Refresh clock mode line.
+            (org-clock-update-mode-line t)
+          ;; Clock out.  Possibly resume interrupted clock.
+          (let (org-log-note-clock-out) (org-clock-out))
+          (when (and (org-capture-get :clock-resume 'local)
+                     (markerp (org-capture-get :interrupted-clock 'local))
+                     (buffer-live-p (marker-buffer
+                                     (org-capture-get :interrupted-clock 'local))))
+            (let ((clock-in-task (org-capture-get :interrupted-clock 'local)))
+              (org-with-point-at clock-in-task (org-clock-in)))
+            (message "Interrupted clock has been resumed"))))
+
+      (let ((beg (point-min))
+            (end (point-max))
+            (abort-note nil))
+        ;; Store the size of the capture buffer
+        (org-capture-put :captured-entry-size (- (point-max) (point-min)))
+        (widen)
+        ;; Store the insertion point in the target buffer
+        (org-capture-put :insertion-point (point))
+
+        (if org-note-abort
+            (let ((m1 (org-capture-get :begin-marker 'local))
+                  (m2 (org-capture-get :end-marker 'local)))
+              (if (and m1 m2 (= m1 beg) (= m2 end))
+                  (progn
+                    (setq
+                     ;; PATCH: Fix cleanup action deleting start of next heading.
+                     (el-patch-remove m2
+                                      (if (cdr (assq 'heading org-blank-before-new-entry))
+                                          m2 (1+ m2)))
+                     m2 (if (< (point-max) m2) (point-max) m2))
+                    (setq abort-note 'clean)
+                    (kill-region m1 m2))
+                (setq abort-note 'dirty)))
+
+          ;; Postprocessing:  Update Statistics cookies, do the sorting
+          (when (derived-mode-p 'org-mode)
+            (save-excursion
+              (when (ignore-errors (org-back-to-heading))
+                (org-update-parent-todo-statistics)
+                (org-update-checkbox-count)))
+            ;; FIXME Here we should do the sorting
+            ;; If we have added a table line, maybe recompute?
+            (when (and (eq (org-capture-get :type 'local) 'table-line)
+                       (org-at-table-p))
+              (if (org-table-get-stored-formulas)
+                  (org-table-recalculate 'all) ;; FIXME: Should we iterate???
+                (org-table-align))))
+          ;; Store this place as the last one where we stored something
+          ;; Do the marking in the base buffer, so that it makes sense after
+          ;; the indirect buffer has been killed.
+          (org-capture-store-last-position)
+
+          ;; Run the hook
+          (run-hooks 'org-capture-before-finalize-hook))
+
+        (when (org-capture-get :decrypted)
+          (save-excursion
+            (goto-char (org-capture-get :decrypted))
+            (org-encrypt-entry)))
+
+        ;; Kill the indirect buffer
+        (save-buffer)
+        (let ((return-wconf (org-capture-get :return-to-wconf 'local))
+              (new-buffer (org-capture-get :new-buffer 'local))
+              (kill-buffer (org-capture-get :kill-buffer 'local))
+              (base-buffer (buffer-base-buffer (current-buffer))))
+
+          ;; Kill the indirect buffer
+          (kill-buffer (current-buffer))
+
+          ;; Narrow back the target buffer to its previous state
+          (with-current-buffer (org-capture-get :buffer)
+            (let ((reg (org-capture-get :initial-target-region))
+                  (pos (org-capture-get :initial-target-position))
+                  (ipt (org-capture-get :insertion-point))
+                  (size (org-capture-get :captured-entry-size)))
+              (if (not reg)
+                  (widen)
+                (cond ((< ipt (car reg))
+                       ;; insertion point is before the narrowed region
+                       (narrow-to-region (+ size (car reg)) (+ size (cdr reg))))
+                      ((> ipt (cdr reg))
+                       ;; insertion point is after the narrowed region
+                       (narrow-to-region (car reg) (cdr reg)))
+                      (t
+                       ;; insertion point is within the narrowed region
+                       (narrow-to-region (car reg) (+ size (cdr reg)))))
+                ;; now place back the point at its original position
+                (if (< ipt (car reg))
+                    (goto-char (+ size pos))
+                  (goto-char (if (< ipt pos) (+ size pos) pos))))))
+
+          ;; Kill the target buffer if that is desired
+          (when (and base-buffer new-buffer kill-buffer)
+            (with-current-buffer base-buffer (save-buffer))
+            (kill-buffer base-buffer))
+
+          ;; Restore the window configuration before capture
+          (set-window-configuration return-wconf))
+
+        (run-hooks 'org-capture-after-finalize-hook)
+        ;; Special cases
+        (cond
+         (abort-note
+          (cl-case abort-note
+            (clean
+             (message "Capture process aborted and target buffer cleaned up"))
+            (dirty
+             (error "Capture process aborted, but target buffer could not be \
+cleaned up correctly"))))
+         (stay-with-capture
+          (org-capture-goto-last-stored)))
+        ;; Return if we did store something
+        (not abort-note)))))
+
 (provide 'org-hacks)
 
 ;;; org-hacks.el ends here
