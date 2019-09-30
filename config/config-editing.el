@@ -118,7 +118,9 @@ Interactively, reverse the characters in the current region."
 
 (use-package default-text-scale
   :commands (default-text-scale-increase default-text-scale-decrease default-text-scale-reset)
-  :straight t)
+  :straight t
+  :custom
+  ((default-text-scale-amount 30)))
 
 
 ;; Teach Emacs to respect editorconfig files.
