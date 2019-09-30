@@ -467,11 +467,9 @@
   :defer t
   :commands (org-archive-subtree)
   :preface
-  (progn
-
-    (defun config-org--apply-inherited-tags (&rest _)
-      "Apply inherited tags when archiving."
-      (org-set-tags (org-get-tags))))
+  (defun config-org--apply-inherited-tags (&rest _)
+    "Apply inherited tags when archiving."
+    (org-set-tags (org-get-tags)))
 
   :config
   (advice-add 'org-archive-subtree :before #'config-org--apply-inherited-tags))
