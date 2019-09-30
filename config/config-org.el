@@ -12,20 +12,7 @@
 (require 'f)
 (require 'general)
 (require 'major-mode-hydra)
-
-(use-package org-funcs
-  :demand t
-  :hook ((org-clock-in-prepare . org-funcs-on-clock-on)
-         (org-clock-out . org-funcs-on-clock-out))
-  :general
-  ("<f12>" #'org-funcs-punch-in-or-out)
-  (:states 'normal :keymaps 'org-mode-map
-   "C-c p" #'org-funcs-toggle-priority
-   "C-c RET" #'org-funcs-ctrl-c-ret
-   "C-c C-k" #'org-funcs-ctrl-c-ctrl-k)
-  (:states 'motion :keymaps 'org-agenda-mode-map
-   "C-c p" #'org-funcs-agenda-toggle-priority))
-
+(require 'org-funcs)
 (require 'paths)
 (require 's)
 
@@ -283,6 +270,19 @@
    :clock-in t)))
 
 
+
+;; `org-funcs' provides supporting commands we want to bind.
+(use-package org-funcs
+  :hook ((org-clock-in-prepare . org-funcs-on-clock-on)
+         (org-clock-out . org-funcs-on-clock-out))
+  :general
+  ("<f12>" #'org-funcs-punch-in-or-out)
+  (:states 'normal :keymaps 'org-mode-map
+   "C-c p" #'org-funcs-toggle-priority
+   "C-c RET" #'org-funcs-ctrl-c-ret
+   "C-c C-k" #'org-funcs-ctrl-c-ctrl-k)
+  (:states 'motion :keymaps 'org-agenda-mode-map
+   "C-c p" #'org-funcs-agenda-toggle-priority))
 
 ;; Configure the main `org' package.
 (use-package org
