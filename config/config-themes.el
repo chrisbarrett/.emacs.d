@@ -296,6 +296,14 @@
 
     (config-themes-toggle parameters-default-theme)))
 
+;; Delete posframes after changing themes.
+
+(defun config-themes--after-enable-theme (&rest _)
+  (when (fboundp 'posframe-delete-all)
+    (posframe-delete-all)))
+
+(advice-add 'enable-theme :after #'config-themes--after-enable-theme)
+
 (provide 'config-themes)
 
 ;;; config-themes.el ends here
