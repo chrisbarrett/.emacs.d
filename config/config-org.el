@@ -449,6 +449,10 @@
     (defun config-org--draw-separator (&rest _)
       (page-break-lines--update-display-tables)))
 
+  :init
+  (with-eval-after-load 'org
+    (require 'org-agenda))
+
   :config
   (progn
     (add-hook 'org-finalize-agenda-hook 'org-agenda-to-appt)
