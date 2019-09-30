@@ -44,6 +44,13 @@
 (defun org-funcs-agenda-dwim ()
   "Show the appropriate org agenda view."
   (interactive)
+  (dolist (entry org-agenda-files)
+    (cond ((file-regular-p entry)
+           (find-file-noselect entry))
+          ((file-directory-p entry)
+           (dolist (file (f-files entry (lambda (it)
+                                          (string-match-p org-agenda-file-regexp it))))
+             (find-file-noselect file)))))
   (if (org-funcs-work-context-p)
       (org-agenda nil "wa")
     (org-agenda nil "pa")))
