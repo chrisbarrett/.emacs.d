@@ -8,19 +8,17 @@
 
 ;;; Code:
 
+(require 'dash-functional)
 (require 'f)
-(require 'paths)
 (require 'ht)
+(require 'paths)
+(require 'thingatpt)
 
-(eval-when-compile
+(cl-eval-when (compile)
   (require 'org)
   (require 'org-agenda)
   (require 'org-clock)
   (require 'org-capture))
-
-(autoload 'calendar-day-of-week "calendar")
-(autoload 'outline-next-heading "outline")
-(autoload 'thing-at-point-url-at-point "thingatpt")
 
 
 ;; Clocking related stuff
