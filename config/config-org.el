@@ -463,8 +463,6 @@
 
 ;; `org-archive' implements heading archival functionality.
 (use-package org-archive
-  :after org
-  :defer t
   :commands (org-archive-subtree)
   :preface
   (defun config-org--apply-inherited-tags (&rest _)
@@ -476,7 +474,6 @@
 
 ;; `org-src' implements src code blocks.
 (use-package org-src
-  :after org
   :defer t
   :preface
   (progn
