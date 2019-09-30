@@ -3,7 +3,9 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'use-package)
+  (require 'use-package))
+
+(cl-eval-when (compile)
   (require 'lsp-mode))
 
 (require 'general)
