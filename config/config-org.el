@@ -304,7 +304,6 @@
 
   :preface
   (progn
-
     (defun config-org-set-org-agenda-files ()
       ;; Populate org-agenda-files
       (cl-labels ((org-file-p (f) (f-ext? f "org")))

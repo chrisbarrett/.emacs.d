@@ -20,6 +20,9 @@
   (require 'org-clock)
   (require 'org-capture))
 
+(defvar org-agenda-files nil)
+(defvar org-capture-templates nil)
+
 
 ;; Clocking related stuff
 ;;
