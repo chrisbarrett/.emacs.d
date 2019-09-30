@@ -111,6 +111,7 @@
                    "HACK"
                    "FIXME"
                    "KLUDGE"
+                   "PATCH"
                    "NOTE")))
     (add-hook 'text-mode-hook #'config-themes--enable-hl-todo-unless-org-buffer)))
 
