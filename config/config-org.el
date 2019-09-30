@@ -3,8 +3,11 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'evil nil t)
   (require 'use-package))
+
+(cl-eval-when (compile)
+  (require 'evil)
+  (require 'org))
 
 (require 'f)
 (require 'general)
@@ -25,13 +28,6 @@
 
 (require 'paths)
 (require 's)
-
-(autoload 'org-heading-components "org")
-
-;; Silence byte-compiler.
-
-(eval-when-compile
-  (defvar org-done-keywords))
 
 
 
@@ -308,8 +304,6 @@
 
   :preface
   (progn
-    (autoload 'org-todo "org")
-    (autoload 'org-up-heading-safe "org")
 
     (defun config-org-set-org-agenda-files ()
       ;; Populate org-agenda-files
@@ -451,9 +445,6 @@
    "C-b" #'evil-scroll-page-up)
   :preface
   (progn
-    (autoload 'org-get-deadline-time "org")
-    (autoload 'org-goto-sibling "org")
-    (autoload 'outline-next-heading "outline")
     (autoload 'page-break-lines--update-display-tables "page-break-lines")
 
     (defun config-org--draw-separator (&rest _)
@@ -477,8 +468,6 @@
   :commands (org-archive-subtree)
   :preface
   (progn
-    (autoload 'org-set-tags "org")
-    (autoload 'org-get-tags "org")
 
     (defun config-org--apply-inherited-tags (&rest _)
       "Apply inherited tags when archiving."
