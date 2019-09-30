@@ -252,7 +252,7 @@
    "t" "Todo" '(file "inbox.org") "* TODO %?")
 
   '("n" "Note" entry
-    (file+datetree org-default-notes-file)
+    (file+olp+datetree org-default-notes-file)
     "* %?"
     :tree-type week)
 
@@ -262,7 +262,7 @@
 
   (org-funcs-capture-template
    "z" "Journal log"
-   '(file+datetree org-default-notes-file)
+   '(file+olp-datetree org-default-notes-file)
    "* %?"
    :tree-type 'week
    :clock-keep nil
