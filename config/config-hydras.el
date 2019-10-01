@@ -70,7 +70,7 @@
 (use-package hydra-posframe
   :unless (getenv "TERM_PROGRAM")
   :straight (:host github :repo "Ladicle/hydra-posframe")
-  :hook (after-init . hydra-posframe-enable)
+  :hook (after-init . hydra-posframe-mode)
   :config
   (progn
     (set-face-attribute 'hydra-posframe-face nil :inherit 'ivy-posframe)
@@ -89,7 +89,7 @@
   (declare (indent defun))
   `(pretty-hydra-define ,name (:pre (setq hydra-hint-display-type 'lv)
                                :post (when (featurep 'hydra-posframe)
-                                       (hydra-posframe-enable))
+                                       (hydra-posframe-mode +1))
                                ,@body)
      ,heads-plist))
 
