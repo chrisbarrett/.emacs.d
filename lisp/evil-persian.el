@@ -63,7 +63,7 @@
 (evil-define-state persian-insert
   "Insert state, where keys are remapped to Persian characters"
   :tag " <I>[ف] "
-  :cursor (bar . 2)
+  :cursor hbar
   :message "-- INSERT (PERSIAN) --"
   :entry-hook (evil-start-track-last-insertion)
   :exit-hook (evil-cleanup-insert-state evil-stop-track-last-insertion)
