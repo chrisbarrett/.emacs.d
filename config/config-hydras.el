@@ -262,6 +262,7 @@
     ("n" org-funcs-goto-notes "notes"))
    ""
    (("g" org-funcs-goto-headline "headline...")
+    ("G" org-capture-goto-last-stored "last captured item")
     ("t" org-funcs-todo-list "todo list")
     ("v" org-tags-view "tags"))))
 
