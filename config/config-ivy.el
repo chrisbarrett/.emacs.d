@@ -39,6 +39,9 @@
 
   :preface
   (progn
+    (defun config-ivy--ignore-errors (f &rest args)
+      (ignore-errors
+        (apply f args)))
 
     (defun config-ivy-help ()
       (interactive)
@@ -95,6 +98,8 @@
     (define-key ivy-minibuffer-map (kbd "<escape>") 'minibuffer-keyboard-quit)
     (define-key ivy-minibuffer-map (kbd "<f1>") #'config-ivy-help)
     (define-key ivy-minibuffer-map (kbd "C-c C-e") #'config-ivy-occur-then-wgrep)
+
+    (advice-add 'ivy--queue-exhibit :around #'config-ivy--ignore-errors)
 
     ;; Increase the maximum number of candidates that will be sorted
     ;; using `flx'. The default is 200, which means `flx' is almost
