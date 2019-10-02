@@ -254,6 +254,8 @@
                 (hydra-posframe-border-face ((t (:inherit posframe-border))))
                 (doom-modeline-project-dir ((t (:inherit font-lock-string-face :weight normal :bold t))))
                 (markdown-list-face ((t :inherit markdown-blockquote-face)))
+                (treemacs-git-unmodified-face ((t :inherit default)))
+                (treemacs-git-renamed-face ((t :inherit font-lock-doc-face)))
                 (lsp-ui-sideline-symbol ((t :height 0.99)))
                 (lsp-ui-sideline-symbol-info ((t :foreground "grey" :slant italic :height 0.99 :weight light)))
                 (lsp-ui-sideline-current-symbol ((t (:inherit lsp-face-highlight-read :height 0.99)))))
@@ -270,6 +272,7 @@
                    `((doom-modeline-project-parent-dir ((t (:foreground ,base5 :bold t))))
                      (org-scheduled ((t (:foreground ,base4))))
                      (org-scheduled-today ((t (:foreground ,fg))))
+                     (treemacs-git-ignored-face ((t :foreground "#787878")))
                      (parenthesis ((t (:foreground "#787878" :weight light))))
                      (outline-1 ((t (:weight bold :foreground ,blue))))
                      ;; HACK: This doesn't seem to get set properly in the face definition.
