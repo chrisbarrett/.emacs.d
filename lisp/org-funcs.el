@@ -198,10 +198,13 @@ Return the position of the headline."
                                                          (ht-from-plist keywords))))))
 
 (defun org-funcs-todo-list ()
-  "Show the todo list."
+  "Show the todo list for the current context."
   (interactive)
   (org-agenda prefix-arg "t")
-  (org-agenda-filter-apply '("-someday") 'tag))
+  (let ((tags (if (org-funcs-work-context-p)
+                  '("-someday" "+@work")
+                '("-someday" "-@work"))))
+    (org-agenda-filter-apply tags 'tag)))
 
 
 
