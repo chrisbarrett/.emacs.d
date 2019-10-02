@@ -67,6 +67,12 @@ Return the position of the headline."
 (defvar org-funcs--punching-in-p nil)
 (defvar org-funcs--punching-out-p nil)
 
+(defun org-funcs-work-file-buffer ()
+  (find-file-noselect (f-join org-directory "work.org")))
+
+(defun org-funcs-personal-file-buffer ()
+  (find-file-noselect (f-join org-directory "work.org")))
+
 (defun org-funcs-buffer-for-context (&optional choose-interactively-p)
   (let* ((work-file (f-join org-directory "work.org"))
          (personal-file (f-join org-directory "personal.org")))
@@ -74,10 +80,9 @@ Return the position of the headline."
      ((member (buffer-file-name) (list work-file personal-file))
       (current-buffer))
      (choose-interactively-p
-      (let ((choice (pcase (read-char-choice "Choose context: [w]ork [p]ersonal" '(?w ?p))
-                      (?w work-file)
-                      (?p personal-file))))
-        (find-file-noselect choice))))))
+      (pcase (read-char-choice "Choose context: [w]ork [p]ersonal" '(?w ?p))
+        (?w (org-funcs-work-file-buffer))
+        (?p (org-funcs-personal-file-buffer)))))))
 
 (defun org-funcs-punch-in (buffer)
   "Punch in with the default date tree in the given BUFFER."
