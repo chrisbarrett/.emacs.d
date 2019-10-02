@@ -314,11 +314,6 @@
           (dolist (file (cons paths-org-gcal-directory toplevel-files))
             (add-to-list 'org-agenda-files file)))))
 
-    ;; KLUDGE: Pre-declare dynamic variables used by orgmode.
-    (defvar org-state)
-    (defvar org-log-states)
-    (defvar org-log-done)
-
     (defun config-org--exit-minibuffer (&rest _)
       "Exit minibuffer before adding notes."
       (when (minibufferp (window-buffer (selected-window)))
