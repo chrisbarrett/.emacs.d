@@ -253,7 +253,7 @@
     ("c" org-clock/body "clock...")
     ("k" org-capture "capture...")
     ("l" org-store-link "store link...")
-    ("s" helm-org-rifle-org-directory "search..."))
+    ("s" org-search-view "search..."))
 
    "Goto"
    (("i" org-funcs-goto-inbox "inbox")
@@ -272,8 +272,6 @@
    :title (hydra-title-with-octicon "repo" "Project"))
   ("Actions"
    (("!" projectile-run-async-shell-command-in-root "shell command...")
-    ("SPC" helm-projectile "helm...")
-    ("c" helm-taskrunner "task...")
     ("u" projectile-run-project "run...")
     ("t" config-projectile-test-project "test..."))
 

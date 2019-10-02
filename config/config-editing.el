@@ -428,12 +428,6 @@ Interactively, reverse the characters in the current region."
   :straight (:host github :repo "emacs-taskrunner/emacs-taskrunner")
   :defer t)
 
-;; `helm-taskrunner' is a helm frontend to `taskrunner'.
-
-(use-package helm-taskrunner
-  :straight (:host github :repo "emacs-taskrunner/helm-taskrunner")
-  :commands (helm-taskrunner))
-
 (provide 'config-editing)
 
 ;;; config-editing.el ends here
