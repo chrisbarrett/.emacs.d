@@ -5,6 +5,9 @@
 (eval-when-compile
   (require 'use-package))
 
+(cl-eval-when (compile)
+  (require 'org))
+
 ;; ivy is a package that provides incremental completion, similar to helm or
 ;; ido, but actively maintained.
 
@@ -36,8 +39,6 @@
 
   :preface
   (progn
-    ;; KLUDGE: Declare dynamic var.
-    (defvar org-startup-folded)
 
     (defun config-ivy-help ()
       (interactive)
