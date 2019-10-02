@@ -86,7 +86,7 @@ Return the position of the headline."
 
 (defun org-funcs-punch-in (buffer)
   "Punch in with the default date tree in the given BUFFER."
-  (interactive (list (org-funcs-buffer-for-context t)))
+  (interactive (list (org-funcs-work-file-buffer)))
   (let ((org-funcs--punching-in-p t))
     (with-current-buffer buffer
       (save-excursion
