@@ -96,7 +96,8 @@ Return the position of the headline."
   (let ((org-funcs--punching-out-p t))
     (when (org-clock-is-active)
       (org-clock-out))
-    (org-agenda-remove-restriction-lock)))
+    (org-agenda-remove-restriction-lock)
+    (message "Punched out.")))
 
 (defun org-funcs-punch-in-or-out ()
   "Punch in or out of the current clock."
