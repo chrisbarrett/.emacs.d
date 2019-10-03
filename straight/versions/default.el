@@ -104,7 +104,6 @@
  ("info-plus" . "4a6b93c170169594e1e8ea60cd799a1a88a969da")
  ("intero" . "bab8e85b1aea9b03dfe05048bcdc0395e05e9b20")
  ("iter2" . "fc1fcea5379bc7728a25dd81546886213e3db6fa")
- ("ivy-filthy-rich" . "f58fbd609590a51acc7230644f9735b74d61c7ef")
  ("ivy-posframe" . "aadadf1359fdd3f2cc83b4980503a50c2c0c0319")
  ("json-mode" . "0e819e519ae17a2686e0881c4ca51fa873fa9b83")
  ("json-reformat" . "8eb6668ed447988aea06467ba8f42e1f2178246f")

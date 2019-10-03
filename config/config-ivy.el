@@ -86,6 +86,7 @@
   :config
   (progn
     (setq ivy-use-virtual-buffers t)
+    (setq ivy-virtual-abbreviate 'abbreviate)
     (setq ivy-count-format "(%d/%d) ")
     (setq ivy-re-builders-alist '((t . ivy--regex-plus)))
     (setq ivy-magic-slash-non-match-action nil)
@@ -122,12 +123,6 @@
                 ivy-posframe-style 'frame-center
                 ivy-posframe-hide-minibuffer t
                 ivy-posframe-parameters '((alpha 100 100))))
-
-;; `ivy-filthy-rich' shows extra information in ivy buffers.
-
-(use-package ivy-filthy-rich
-  :straight (:host github :repo "casouri/ivy-filthy-rich")
-  :hook (ivy-mode . ivy-filthy-rich-mode))
 
 ;; flx is used as the fuzzy-matching indexer backend for ivy.
 
