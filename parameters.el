@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 
-(defvar parameters-default-theme 'doom-one
+(defvar parameters-default-theme 'doom-solarized-light
   "The theme to use when Emacs first starts up.")
 
 (defvar parameters-default-text-height 100
