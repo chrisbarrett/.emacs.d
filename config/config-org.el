@@ -175,20 +175,26 @@
 (defconst config-org--agenda-clockreport-defaults
   '(:link t :compact t :maxlevel 4 :fileskip0 t :step week))
 
-(defun config-org--agenda-for-context (tag)
+(cl-defun config-org--agenda-for-context (tag &key show-catchups-p)
   `(,(concat (substring tag 1 2) "a")
     ,(format "Agenda for context: %s" tag)
-    ((agenda ""
-             ((org-agenda-overriding-header "Today")
-              (org-agenda-use-time-grid t)))
-     (tags-todo "TODO=\"TODO\"|+PRIORITY=\"A\""
-                ((org-agenda-overriding-header "Next Actions")
-                 (org-agenda-skip-function #'org-funcs-skip-items-already-in-agenda)))
-     (todo "WAITING"
-           ((org-agenda-overriding-header "Delegated")
-            (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp)))
-     (stuck ""
-            ((org-agenda-overriding-header "Stuck Projects"))))
+    ,(-non-nil
+      `((agenda ""
+                ((org-agenda-overriding-header "Today")
+                 (org-agenda-use-time-grid t)))
+        (tags-todo "-catchups&TODO=\"TODO\"|+PRIORITY=\"A\""
+                   ((org-agenda-overriding-header "Next Actions")
+                    (org-agenda-skip-function #'org-funcs-skip-items-already-in-agenda)))
+
+        ,(when show-catchups-p
+           `(tags-todo "+catchups&-PRIORITY=\"A\""
+                       ((org-agenda-overriding-header "People & Catchup Topics"))))
+
+        (tags-todo "+TODO=\"WAITING\""
+                   ((org-agenda-overriding-header "Delegated")
+                    (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp)))
+        (stuck ""
+               ((org-agenda-overriding-header "Stuck Projects")))))
     ((org-agenda-tag-filter-preset '(,(format "+%s" tag) "-@someday" "-ignore"))
      (org-agenda-clockreport-parameter-plist ',(append config-org--agenda-clockreport-defaults (list :tags tag)))
      (org-agenda-span 'day)
@@ -247,7 +253,7 @@
                (config-org--agenda-for-context "@personal")
                (config-org--plan-for-context "@personal")
                (config-org--review-for-context "@personal")
-               (config-org--agenda-for-context "@work")
+               (config-org--agenda-for-context "@work" :show-catchups-p t)
                (config-org--plan-for-context "@work")
                (config-org--review-for-context "@work")))
 
