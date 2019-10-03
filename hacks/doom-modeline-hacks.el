@@ -13,10 +13,12 @@
     "Set the modeline format. Does nothing if the modeline KEY doesn't exist.
   If DEFAULT is non-nil, set the default mode-line for all buffers."
     (when-let ((modeline (doom-modeline key)))
-      (setf (if default
-                (default-value (el-patch-swap 'mode-line-format 'header-line-format))
-              (buffer-local-value (el-patch-swap 'mode-line-format 'header-line-format) (current-buffer)))
-            (list "%e" modeline)))))
+      (el-patch-wrap 2
+        (unless (frame-parent)
+          (setf (if default
+                    (default-value (el-patch-swap 'mode-line-format 'header-line-format))
+                  (buffer-local-value (el-patch-swap 'mode-line-format 'header-line-format) (current-buffer)))
+                (list "%e" modeline)))))))
 
 (provide 'doom-modeline-hacks)
 
