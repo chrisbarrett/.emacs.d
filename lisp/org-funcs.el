@@ -185,12 +185,32 @@ Return the position of the headline."
 (defun org-funcs-high-priority-p ()
   (equal ?A (nth 3 (org-heading-components))))
 
+(defun org-funcs--parent-scheduled-in-future-p ()
+  (save-restriction
+    (widen)
+    (save-excursion
+      (let ((found)
+            (now (current-time)))
+        (while (and (not found) (org-up-heading-safe))
+          (when-let* ((scheduled (org-get-scheduled-time (point) t)))
+            (when (time-less-p now scheduled)
+              (setq found t))))
+        found))))
+
 (defun org-funcs-skip-items-already-in-agenda ()
-  (or
-   (org-funcs-skip-item-if-timestamp)
-   (if (and (org-funcs-high-priority-p) (org-funcs--current-headline-is-todo))
-       nil
-     (org-funcs-agenda-skip-all-siblings-but-first))))
+  (cond
+   ;; Don't show things that will naturally show in the agenda.
+   ((or (org-funcs--scheduled-or-deadline-p) (org-funcs--parent-scheduled-in-future-p))
+    (or (outline-next-heading)
+        (goto-char (point-max))))
+
+   ((and (org-funcs-high-priority-p) (org-funcs--current-headline-is-todo))
+    ;; Show these items.
+    )
+
+   (t
+    ;; Take the first TODO at this level.
+    (org-funcs-agenda-skip-all-siblings-but-first))))
 
 
 
