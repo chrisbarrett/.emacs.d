@@ -189,24 +189,6 @@ Return the position of the headline."
        nil
      (org-funcs-agenda-skip-all-siblings-but-first))))
 
-(cl-defun org-funcs-capture-template (key label form template &rest keywords)
-  (let ((defaults '(:clock-keep t
-                    :prepend t
-                    :immediate-finish nil
-                    :jump-to-captured nil)))
-    (cl-list* key label 'entry form template (ht->plist (ht-merge
-                                                         (ht-from-plist defaults)
-                                                         (ht-from-plist keywords))))))
-
-(defun org-funcs-todo-list ()
-  "Show the todo list for the current context."
-  (interactive)
-  (org-agenda prefix-arg "t")
-  (let ((tags (if (org-funcs-work-context-p)
-                  '("-someday" "+@work")
-                '("-someday" "-@work"))))
-    (org-agenda-filter-apply tags 'tag)))
-
 
 
 (defun org-funcs-goto-inbox ()
@@ -251,6 +233,15 @@ Return the position of the headline."
       (goto-char (point-min))
       (org-overview)
       (org-forward-heading-same-level 1)))))
+
+(defun org-funcs-todo-list ()
+  "Show the todo list for the current context."
+  (interactive)
+  (org-agenda prefix-arg "t")
+  (let ((tags (if (org-funcs-work-context-p)
+                  '("-someday" "+@work")
+                '("-someday" "-@work"))))
+    (org-agenda-filter-apply tags 'tag)))
 
 
 
@@ -319,6 +310,14 @@ Return the position of the headline."
   (let ((ht (ht-merge (ht-from-alist org-capture-templates) (ht-from-alist templates))))
     (setq org-capture-templates (-sort (-on 'string-lessp 'car) (ht->alist ht)))))
 
+(cl-defun org-funcs-capture-template (key label form template &rest keywords)
+  (let ((defaults '(:clock-keep t
+                    :prepend t
+                    :immediate-finish nil
+                    :jump-to-captured nil)))
+    (cl-list* key label 'entry form template (ht->plist (ht-merge
+                                                         (ht-from-plist defaults)
+                                                         (ht-from-plist keywords))))))
 
 ;; Priorities
 
