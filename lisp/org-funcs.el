@@ -53,7 +53,8 @@
              (find-file-noselect file)))))
   (if (org-funcs-work-context-p)
       (org-agenda nil "wa")
-    (org-agenda nil "pa")))
+    (org-agenda nil "pa"))
+  (get-buffer org-agenda-buffer-name))
 
 (defun org-funcs--ensure-default-datetree-entry (buffer)
   "Create the default heading for clocking in BUFFER.

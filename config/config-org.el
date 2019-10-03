@@ -280,6 +280,8 @@
 (use-package org-funcs
   :hook ((org-clock-in-prepare . org-funcs-on-clock-on)
          (org-clock-out . org-funcs-on-clock-out))
+  :init
+  (setq initial-buffer-choice #'org-funcs-agenda-dwim)
   :general
   ("<f12>" #'org-funcs-punch-in-or-out)
   (:states 'normal :keymaps 'org-mode-map
