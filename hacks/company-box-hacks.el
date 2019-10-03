@@ -4,9 +4,11 @@
 
 (require 'el-patch)
 
+(cl-eval-when (compile)
+  (require 'company-box))
+
 (el-patch-feature company-box)
 
-
 ;; Fix background colour on theme change.
 
 (with-eval-after-load 'company-box
@@ -23,6 +25,26 @@
       (make-frame-visible (company-box--get-frame)))
     (company-box--update-scrollbar (company-box--get-frame) t)))
 
+
+;; Make sure we don't show a header line in company-box.
+
+(with-eval-after-load 'company-box
+  (el-patch-defun company-box--render-buffer (string)
+    (let ((selection company-selection))
+      (with-current-buffer (company-box--get-buffer)
+        (erase-buffer)
+        (insert string "\n")
+        (setq mode-line-format nil
+              (el-patch-add header-line-format nil)
+              display-line-numbers nil
+              truncate-lines t
+              cursor-in-non-selected-windows nil)
+        (setq-local scroll-step 1)
+        (setq-local scroll-conservatively 10000)
+        (setq-local scroll-margin  0)
+        (setq-local scroll-preserve-screen-position t)
+        (add-hook 'window-configuration-change-hook 'company-box--prevent-changes t t)
+        (company-box--update-line selection)))))
 
 ;; Fix the foreground and background colours of documentation popup frames.
 
