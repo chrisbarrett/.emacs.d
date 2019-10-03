@@ -212,7 +212,8 @@
 
 (use-package hide-mode-line
   :straight t
-  :hook (doom-modeline-mode . global-hide-mode-line-mode))
+  :hook (doom-modeline-mode . global-hide-mode-line-mode)
+  :custom ((hide-mode-line-excluded-modes nil)))
 
 ;; doom-themes provides the main doom theme sets.
 
