@@ -239,51 +239,55 @@
         (font-lock-fontify-buffer)))
 
     (defun config-themes-override-themes (theme)
-      (set-face-attribute 'default nil :family parameters-default-font-family)
-      (set-face-attribute 'default nil :height parameters-default-text-height)
-      (set-face-attribute 'font-lock-keyword-face nil :weight 'light)
-      (set-face-attribute 'font-lock-string-face nil :weight 'light)
+      (let ((fg (face-attribute 'default :foreground))
+            (bg (face-attribute 'default :background))
+            (blue (pcase theme
+                    ('doom-solarized-light "#268bd2")
+                    ('doom-one "#51afef"))))
 
-      (apply 'custom-theme-set-faces theme
-             (append
+        (set-face-attribute 'default nil :family parameters-default-font-family)
+        (set-face-attribute 'default nil :height parameters-default-text-height)
+        (set-face-attribute 'font-lock-keyword-face nil :weight 'light)
+        (set-face-attribute 'font-lock-string-face nil :weight 'light)
 
-              ;; Common settings
+        (apply 'custom-theme-set-faces theme
+               (append
 
-              `((font-lock-comment-face ((t (:weight bold))))
-                (ivy-posframe-border ((t (:inherit posframe-border))))
-                (hydra-posframe-border-face ((t (:inherit posframe-border))))
-                (doom-modeline-project-dir ((t (:inherit font-lock-string-face :weight normal :bold t))))
-                (markdown-list-face ((t :inherit markdown-blockquote-face)))
-                (treemacs-git-unmodified-face ((t :inherit default)))
-                (treemacs-git-renamed-face ((t :inherit font-lock-doc-face)))
-                (lsp-ui-sideline-symbol ((t :height 0.99)))
-                (lsp-ui-sideline-symbol-info ((t :foreground "grey" :slant italic :height 0.99 :weight light)))
-                (lsp-ui-sideline-current-symbol ((t (:inherit lsp-face-highlight-read :height 0.99)))))
+                ;; Common settings
 
-              ;; Theme-specific settings.
+                `((font-lock-comment-face ((t (:weight bold))))
+                  (org-agenda-clocking ((t (:bold nil :foreground ,fg :background ,(doom-blend blue bg 0.2)))))
+                  (ivy-posframe-border ((t (:inherit posframe-border))))
+                  (hydra-posframe-border-face ((t (:inherit posframe-border))))
+                  (doom-modeline-project-dir ((t (:inherit font-lock-string-face :weight normal :bold t))))
+                  (markdown-list-face ((t :inherit markdown-blockquote-face)))
+                  (treemacs-git-unmodified-face ((t :inherit default)))
+                  (treemacs-git-renamed-face ((t :inherit font-lock-doc-face)))
+                  (outline-1 ((t (:weight bold :foreground ,blue))))
+                  (lsp-ui-sideline-symbol ((t :height 0.99)))
+                  (lsp-ui-sideline-symbol-info ((t :foreground "grey" :slant italic :height 0.99 :weight light)))
+                  (lsp-ui-sideline-current-symbol ((t (:inherit lsp-face-highlight-read :height 0.99)))))
 
-              (pcase theme
-                ('doom-one
-                 (let ((fg "#bbc2cf")
-                       (base3 "#23272e")
-                       (base4 "#9ca0a4")
-                       (base5 "#5B6268")
-                       (blue "#51afef"))
-                   `((doom-modeline-project-parent-dir ((t (:foreground ,base5 :bold t))))
-                     (org-scheduled ((t (:foreground ,base4))))
-                     (org-scheduled-today ((t (:foreground ,fg))))
-                     (treemacs-git-ignored-face ((t :foreground "#787878")))
-                     (parenthesis ((t (:foreground "#787878" :weight light))))
-                     (outline-1 ((t (:weight bold :foreground ,blue))))
-                     ;; HACK: This doesn't seem to get set properly in the face definition.
-                     (org-block-end-line ((t :foreground ,base5 :background ,base3))))))
+                ;; Theme-specific settings.
 
-                ('doom-solarized-light
-                 (let ((base6 "#96A7A9")
-                       (blue "#268bd2"))
-                   `((doom-modeline-project-parent-dir ((t (:foreground ,base6 :bold t))))
-                     (parenthesis ((t (:foreground "#9c9c9c" :weight light))))
-                     (outline-1 ((t (:weight bold :foreground ,blue))))))))))))
+                (pcase theme
+                  ('doom-one
+                   (let ((base3 "#23272e")
+                         (base4 "#9ca0a4")
+                         (base5 "#5B6268"))
+                     `((doom-modeline-project-parent-dir ((t (:foreground ,base5 :bold t))))
+                       (org-scheduled ((t (:foreground ,base4))))
+                       (org-scheduled-today ((t (:foreground ,fg))))
+                       (treemacs-git-ignored-face ((t :foreground "#787878")))
+                       (parenthesis ((t (:foreground "#787878" :weight light))))
+
+                       ;; HACK: This doesn't seem to get set properly in the face definition.
+                       (org-block-end-line ((t :foreground ,base5 :background ,base3))))))
+
+                  ('doom-solarized-light
+                   (let ((base6 "#96A7A9"))
+                     `((doom-modeline-project-parent-dir ((t (:foreground ,base6 :bold t))))
+                       (parenthesis ((t (:foreground "#9c9c9c" :weight light)))))))))))))
 
   :config
   (progn
