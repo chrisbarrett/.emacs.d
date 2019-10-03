@@ -360,6 +360,17 @@ Return the position of the headline."
 
 
 
+(defun org-funcs-refile-dwim ()
+  "Run the correct refile command for the current buffer."
+  (interactive)
+  (call-interactively (cond
+                       ((bound-and-true-p org-agenda-mode)
+                        #'org-agenda-refile)
+                       ((bound-and-true-p org-capture-mode)
+                        #'org-capture-refile)
+                       (t
+                        #'org-refile))))
+
 (defun org-funcs-refile-verify-function ()
   (let ((keyword (nth 2 (org-heading-components))))
     (not (member keyword org-done-keywords))))

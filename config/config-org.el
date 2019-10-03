@@ -21,7 +21,7 @@
 (major-mode-hydra-define org-mode nil
   ("Tree"
    (("a" org-archive-subtree "archive")
-    ("r" org-refile "refile")
+    ("r" org-funcs-refile-dwim "refile")
     ("t" org-show-todo-tree "todo tree"))
 
    "Misc"
