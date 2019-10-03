@@ -27,6 +27,11 @@
    "Misc"
    (("e" org-babel/body "babel commands"))))
 
+(major-mode-hydra-define org-agenda-mode nil
+  ("Tree"
+   (("a" org-agenda-archive "archive")
+    ("r" org-funcs-refile-dwim "refile"))))
+
 ;; Load ox backends.
 
 (use-package ox-gfm
