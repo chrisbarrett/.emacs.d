@@ -156,10 +156,13 @@ Return the position of the headline."
 (defun org-funcs-exclude-tasks-on-hold (tag)
   (and (equal tag "hold") (concat "-" tag)))
 
+(defun org-funcs--scheduled-or-deadline-p ()
+  (or (org-get-scheduled-time (point))
+      (org-get-deadline-time (point))))
+
 (defun org-funcs-skip-item-if-timestamp ()
   "Skip the item if it has a scheduled or deadline timestamp."
-  (when (or (org-get-scheduled-time (point))
-            (org-get-deadline-time (point)))
+  (when (org-funcs--scheduled-or-deadline-p)
     (or (outline-next-heading)
         (goto-char (point-max)))))
 
