@@ -521,15 +521,16 @@
   :straight t
   :hook (org-mode . org-bullets-mode))
 
-;; Automatically enter insert state when inserting new headings.
+;; Automatically enter insert state when inserting new headings or using
+;; org-capture.
 (with-eval-after-load 'evil
 
   (eval-and-compile
     (defun config-org--evil-insert-state (&rest _)
-      "Enter evil insert state when creating new headings."
       (when (called-interactively-p nil)
         (evil-insert-state))))
 
+  (advice-add 'org-capture :after #'config-org--evil-insert-state)
   (advice-add 'org-insert-heading :after #'config-org--evil-insert-state)
   (advice-add 'org-insert-heading-respect-content :after #'config-org--evil-insert-state)
   (advice-add 'org-insert-todo-heading-respect-content :after #'config-org--evil-insert-state)
