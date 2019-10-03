@@ -174,8 +174,7 @@ Return the position of the headline."
 (defun org-funcs--current-headline-is-todo ()
   (string= "TODO" (org-get-todo-state)))
 
-(defun org-funcs-agenda-skip-all-siblings-but-first ()
-  "Skip all but the first non-done entry."
+(defun org-funcs--first-todo-at-this-level-p ()
   (let (should-skip-entry)
     (unless (org-funcs--current-headline-is-todo)
       (setq should-skip-entry t))
@@ -183,8 +182,7 @@ Return the position of the headline."
       (while (and (not should-skip-entry) (org-goto-sibling t))
         (when (org-funcs--current-headline-is-todo)
           (setq should-skip-entry t))))
-    (when should-skip-entry
-      (org-funcs--skip-heading-safe))))
+    should-skip-entry))
 
 (defun org-funcs-high-priority-p ()
   (equal ?A (nth 3 (org-heading-components))))
@@ -211,9 +209,8 @@ Return the position of the headline."
     ;; Show these items.
     )
 
-   (t
-    ;; Look for the first unscheduled TODO.
-    (org-funcs-agenda-skip-all-siblings-but-first))))
+   ((org-funcs--first-todo-at-this-level-p)
+    (org-funcs--skip-heading-safe))))
 
 
 
