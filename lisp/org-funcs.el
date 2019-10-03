@@ -160,9 +160,14 @@ Return the position of the headline."
   (or (org-get-scheduled-time (point))
       (org-get-deadline-time (point))))
 
+(defun org-funcs--skip-heading-safe ()
+  (or (outline-next-heading)
+      (goto-char (point-max))))
+
 (defun org-funcs-skip-item-if-timestamp ()
   "Skip the item if it has a scheduled or deadline timestamp."
   (when (org-funcs--scheduled-or-deadline-p)
+    (org-funcs--skip-heading-safe)
     (or (outline-next-heading)
         (goto-char (point-max)))))
 
@@ -179,8 +184,7 @@ Return the position of the headline."
         (when (org-funcs--current-headline-is-todo)
           (setq should-skip-entry t))))
     (when should-skip-entry
-      (or (outline-next-heading)
-          (goto-char (point-max))))))
+      (org-funcs--skip-heading-safe))))
 
 (defun org-funcs-high-priority-p ()
   (equal ?A (nth 3 (org-heading-components))))
@@ -201,8 +205,7 @@ Return the position of the headline."
   (cond
    ;; Don't show things that will naturally show in the agenda.
    ((or (org-funcs--scheduled-or-deadline-p) (org-funcs--parent-scheduled-in-future-p))
-    (or (outline-next-heading)
-        (goto-char (point-max))))
+    (org-funcs--skip-heading-safe))
 
    ((and (org-funcs-high-priority-p) (org-funcs--current-headline-is-todo))
     ;; Show these items.
