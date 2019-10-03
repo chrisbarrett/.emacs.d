@@ -45,6 +45,7 @@
  ("emacs-doom-themes" . "1159463956223ae53df421bcd796e94610759c42")
  ("emacs-emojify" . "782ac307f37239e90c56810323db4263a6469219")
  ("emacs-hcl-mode" . "0f2c5ec7e7bcf77c8548e8cac8721ea935ca1b5e")
+ ("emacs-hide-mode-line" . "88888825b5b27b300683e662fa3be88d954b1cea")
  ("emacs-htmlize" . "8db0aa6aab77475a732b7363f0d57bd3933c18fd")
  ("emacs-memoize" . "8c1e5569550e783dd7814735e22c935416c4462d")
  ("emacs-noflet" . "7ae84dc3257637af7334101456dafe1759c6b68a")

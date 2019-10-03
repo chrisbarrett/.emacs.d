@@ -334,7 +334,8 @@
   (""
    (("t" config-themes-toggle "theme")
     ("i" toggle-input-method "input method")
-    ("c" hide/show-comments-toggle "comments"))))
+    ("c" hide/show-comments-toggle "comments")
+    ("m" global-hide-mode-line-mode "mode-line"))))
 
 (pretty-hydra-define yasnippet
   (:hint nil
