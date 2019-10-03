@@ -208,6 +208,12 @@
   :custom ((doom-modeline-buffer-encoding nil)
            (doom-modeline-enable-word-count t)))
 
+;; `hide-mode-line' provides a mode that hides the modeline.
+
+(use-package hide-mode-line
+  :straight t
+  :hook (doom-modeline-mode . global-hide-mode-line-mode))
+
 ;; doom-themes provides the main doom theme sets.
 
 (use-package doom-themes

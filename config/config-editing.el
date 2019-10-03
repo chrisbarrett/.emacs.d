@@ -428,12 +428,6 @@ Interactively, reverse the characters in the current region."
   :straight (:host github :repo "emacs-taskrunner/emacs-taskrunner")
   :defer t)
 
-;; `hide-mode-line' provides a mode that hides the modeline.
-
-(use-package hide-mode-line
-  :straight t
-  :commands (hide-mode-line-mode global-hide-mode-line-mode))
-
 (provide 'config-editing)
 
 ;;; config-editing.el ends here
