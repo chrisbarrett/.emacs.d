@@ -212,7 +212,7 @@ Return the position of the headline."
     )
 
    (t
-    ;; Take the first TODO at this level.
+    ;; Look for the first unscheduled TODO.
     (org-funcs-agenda-skip-all-siblings-but-first))))
 
 
