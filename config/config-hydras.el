@@ -68,7 +68,6 @@
   (advice-add #'pretty-hydra--get-heads :filter-return #'config-hydras--add-quit-bindings))
 
 (use-package hydra-posframe
-  :unless (getenv "TERM_PROGRAM")
   :straight (:host github :repo "Ladicle/hydra-posframe")
   :hook (after-init . hydra-posframe-mode)
   :config
