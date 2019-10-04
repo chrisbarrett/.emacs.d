@@ -208,6 +208,11 @@
   :custom ((doom-modeline-major-mode-icon nil)
            (doom-modeline-buffer-encoding nil)
            (doom-modeline-enable-word-count t))
+  :preface
+  (defun config-themes--update-all-modelines ()
+    "Ensure we update the header line in addition to the mode-line."
+    (force-mode-line-update t))
+
   :config
   (progn
     (defsubst config-themes--display-clock-segment-p ()
@@ -218,6 +223,9 @@
               (frame-list)))
 
     (setq org-clock-clocked-in-display nil)
+    (add-hook 'org-clock-out-hook #'config-themes--update-all-modelines)
+    (add-hook 'org-clock-in-hook #'config-themes--update-all-modelines)
+    (add-hook 'org-clock-cancel-hook #'config-themes--update-all-modelines)
 
     (doom-modeline-def-segment org-clock
       (when (and (fboundp 'org-clocking-p) (org-clocking-p))
@@ -244,7 +252,8 @@ By default, this shows the information specified by `global-mode-string'."
       '(bar workspace-name window-number modals matches buffer-info remote-host buffer-position parrot selection-info)
       '(objed-state misc-info persp-name fancy-battery grip irc mu4e github debug lsp minor-modes input-method indent-info buffer-encoding
                     ;; major-mode
-                    process vcs checker
+                    process vcs
+                    checker
                     org-clock
                     time))))
 
