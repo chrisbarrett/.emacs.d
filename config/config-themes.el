@@ -295,14 +295,51 @@ By default, this shows the information specified by `global-mode-string'."
         (font-lock-fontify-buffer)))
 
     (defun config-themes-override-themes (theme)
-      (let* ((fg (face-attribute 'default :foreground))
-             (bg (face-attribute 'default :background))
-             (bg-alt (pcase theme
-                       ('doom-solarized-light (doom-darken bg 0.05))
-                       ('doom-one "#21242b")))
-             (blue (pcase theme
-                     ('doom-solarized-light "#268bd2")
-                     ('doom-one "#51afef"))))
+      (let* ((bg         (pcase theme
+                           ('doom-solarized-light "#FDF6E3")
+                           ('doom-one "#282c34")))
+             (bg-alt     (pcase theme
+                           ('doom-solarized-light "#FFFBEA")
+                           ('doom-one "#21242b")))
+             (base0      (pcase theme
+                           ('doom-solarized-light "#FFFBF0")
+                           ('doom-one "#1B2229")))
+             (base1      (pcase theme
+                           ('doom-solarized-light "#FCF8ED")
+                           ('doom-one "#1c1f24")))
+             (base2      (pcase theme
+                           ('doom-solarized-light "#FCF7E8")
+                           ('doom-one "#202328")))
+             (base3      (pcase theme
+                           ('doom-solarized-light "#F2E6CE")
+                           ('doom-one "#23272e")))
+             (base4      (pcase theme
+                           ('doom-solarized-light "#E1DBCD")
+                           ('doom-one "#3f444a")))
+             (base5      (pcase theme
+                           ('doom-solarized-light "#D6D6D6")
+                           ('doom-one "#5B6268")))
+             (base6      (pcase theme
+                           ('doom-solarized-light "#96A7A9")
+                           ('doom-one "#73797e")))
+             (base7      (pcase theme
+                           ('doom-solarized-light "#788484")
+                           ('doom-one "#9ca0a4")))
+             (base8      (pcase theme
+                           ('doom-solarized-light "#626C6C")
+                           ('doom-one "#DFDFDF")))
+             (fg         (pcase theme
+                           ('doom-solarized-light "#556b72")
+                           ('doom-one "#bbc2cf")))
+             (fg-alt     (pcase theme
+                           ('doom-solarized-light "#7B8787")
+                           ('doom-one "#5B6268")))
+             (bg-alt-l   (pcase theme
+                           ('doom-solarized-light (doom-darken bg 0.05))
+                           ('doom-one bg-alt)))
+             (blue       (pcase theme
+                           ('doom-solarized-light "#268bd2")
+                           ('doom-one "#51afef"))))
 
         (set-face-attribute 'default nil :family parameters-default-font-family)
         (set-face-attribute 'default nil :height parameters-default-text-height)
@@ -317,7 +354,7 @@ By default, this shows the information specified by `global-mode-string'."
                 `((font-lock-comment-face ((t (:weight bold))))
                   (org-agenda-clocking ((t (:bold nil :foreground ,fg :background ,(doom-blend blue bg 0.2)))))
                   (ivy-posframe-border ((t (:inherit posframe-border))))
-                  (hydra-posframe-face ((t (:background ,bg-alt))))
+                  (hydra-posframe-face ((t (:background ,bg-alt-l))))
                   (hydra-posframe-border-face ((t (:inherit posframe-border))))
                   (doom-modeline-project-dir ((t (:inherit font-lock-string-face :weight normal :bold t))))
                   (markdown-list-face ((t :inherit markdown-blockquote-face)))
@@ -332,22 +369,24 @@ By default, this shows the information specified by `global-mode-string'."
 
                 (pcase theme
                   ('doom-one
-                   (let ((base3 "#23272e")
-                         (base4 "#9ca0a4")
-                         (base5 "#5B6268"))
-                     `((doom-modeline-project-parent-dir ((t (:foreground ,base5 :bold t))))
-                       (org-scheduled ((t (:foreground ,base4))))
-                       (org-scheduled-today ((t (:foreground ,fg))))
-                       (treemacs-git-ignored-face ((t :foreground "#787878")))
-                       (parenthesis ((t (:foreground "#787878" :weight light))))
+                   `((doom-modeline-project-parent-dir ((t (:foreground ,base5 :bold t))))
+                     (org-scheduled ((t (:foreground ,base4))))
+                     (org-scheduled-today ((t (:foreground ,fg))))
+                     (treemacs-git-ignored-face ((t :foreground "#787878")))
+                     (parenthesis ((t (:foreground "#787878" :weight light))))
 
-                       ;; HACK: This doesn't seem to get set properly in the face definition.
-                       (org-block-end-line ((t :foreground ,base5 :background ,base3))))))
+                     ;; we need to set ivy colours to dark manually.
+                     (ivy-minibuffer-match-face-1 ((t (:foreground ,bg :background ,base7 :weight bold))))
+                     (ivy-minibuffer-match-face-2 ((t (:foreground ,fg :background ,base6 :weight bold))))
+                     (ivy-minibuffer-match-face-3 ((t (:foreground ,fg :background ,base4 :weight bold))))
+                     (ivy-minibuffer-match-face-4 ((t (:foreground ,bg :background ,base8))))
+
+                     ;; HACK: This doesn't seem to get set properly in the face definition.
+                     (org-block-end-line ((t :foreground ,base5 :background ,base3)))))
 
                   ('doom-solarized-light
-                   (let ((base6 "#96A7A9"))
-                     `((doom-modeline-project-parent-dir ((t (:foreground ,base6 :bold t))))
-                       (parenthesis ((t (:foreground "#9c9c9c" :weight light)))))))))))))
+                   `((doom-modeline-project-parent-dir ((t (:foreground ,base6 :bold t))))
+                     (parenthesis ((t (:foreground "#9c9c9c" :weight light))))))))))))
 
   :config
   (progn
