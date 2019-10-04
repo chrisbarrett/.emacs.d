@@ -205,8 +205,29 @@
 (use-package doom-modeline
   :straight t
   :hook (after-init . doom-modeline-mode)
-  :custom ((doom-modeline-buffer-encoding nil)
-           (doom-modeline-enable-word-count t)))
+  :custom ((doom-modeline-major-mode-icon nil)
+           (doom-modeline-buffer-encoding nil)
+           (doom-modeline-enable-word-count t))
+  :config
+  (progn
+    (doom-modeline-def-segment clock
+      "Mode line construct for miscellaneous information.
+By default, this shows the information specified by `global-mode-string'."
+      (when (and (doom-modeline--active)
+                 (equal 1 (length (window-list)))
+                 (frame-parameter (selected-frame) 'fullscreen))
+        (let ((time-string (string-join (-map (-compose #'string-trim #'format-time-string)
+                                              '("%a"
+                                                "%e"
+                                                "%b %R")) " ")))
+          (concat (doom-modeline-spc) time-string (doom-modeline-spc)))))
+
+    ;; override default modeline
+    (doom-modeline-def-modeline 'main
+      '(bar workspace-name window-number modals matches buffer-info remote-host buffer-position parrot selection-info)
+      '(objed-state misc-info persp-name fancy-battery grip irc mu4e github debug lsp minor-modes input-method indent-info buffer-encoding
+                    ;; major-mode
+                    process vcs checker clock))))
 
 ;; `hide-mode-line' provides a mode that hides the modeline.
 
