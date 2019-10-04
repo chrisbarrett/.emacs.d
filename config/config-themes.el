@@ -295,11 +295,14 @@ By default, this shows the information specified by `global-mode-string'."
         (font-lock-fontify-buffer)))
 
     (defun config-themes-override-themes (theme)
-      (let ((fg (face-attribute 'default :foreground))
-            (bg (face-attribute 'default :background))
-            (blue (pcase theme
-                    ('doom-solarized-light "#268bd2")
-                    ('doom-one "#51afef"))))
+      (let* ((fg (face-attribute 'default :foreground))
+             (bg (face-attribute 'default :background))
+             (bg-alt (pcase theme
+                       ('doom-solarized-light (doom-darken bg 0.05))
+                       ('doom-one "#21242b")))
+             (blue (pcase theme
+                     ('doom-solarized-light "#268bd2")
+                     ('doom-one "#51afef"))))
 
         (set-face-attribute 'default nil :family parameters-default-font-family)
         (set-face-attribute 'default nil :height parameters-default-text-height)
@@ -314,6 +317,7 @@ By default, this shows the information specified by `global-mode-string'."
                 `((font-lock-comment-face ((t (:weight bold))))
                   (org-agenda-clocking ((t (:bold nil :foreground ,fg :background ,(doom-blend blue bg 0.2)))))
                   (ivy-posframe-border ((t (:inherit posframe-border))))
+                  (hydra-posframe-face ((t (:background ,bg-alt))))
                   (hydra-posframe-border-face ((t (:inherit posframe-border))))
                   (doom-modeline-project-dir ((t (:inherit font-lock-string-face :weight normal :bold t))))
                   (markdown-list-face ((t :inherit markdown-blockquote-face)))
