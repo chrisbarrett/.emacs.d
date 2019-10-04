@@ -214,8 +214,9 @@
       "Mode line construct for miscellaneous information.
 By default, this shows the information specified by `global-mode-string'."
       (when (and (doom-modeline--active)
-                 (equal 1 (length (window-list)))
-                 (frame-parameter (selected-frame) 'fullscreen))
+                 (--find (and (frame-parameter it 'fullscreen)
+                              (equal 1 (length (window-list it 'never))))
+                         (frame-list)))
         (let ((time-string (string-join (-map (-compose #'string-trim #'format-time-string)
                                               '("%a"
                                                 "%e"
