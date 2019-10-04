@@ -215,7 +215,7 @@
 
   :config
   (progn
-    (defsubst config-themes--display-clock-segment-p ()
+    (defun config-themes--display-clock-segment-p ()
       (--find (and (frame-parameter it 'fullscreen)
                    (or (equal 1 (length (window-list it 'never)))
                        (and (window-at-side-p (selected-window) 'right)
