@@ -441,7 +441,7 @@
     ("v" prodigy "services..."))
 
    "Shells"
-   (("t" cb-eshell-at-dir "terminal (eshell)")
+   (("t" vterm-toggle "terminal")
     ("n" nix-repl-show "nix-repl"))))
 
 (pretty-hydra-define profiler
