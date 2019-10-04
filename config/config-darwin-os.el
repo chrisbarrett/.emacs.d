@@ -23,6 +23,7 @@
 (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
 (add-to-list 'default-frame-alist '(ns-appearance . nil))
 
+(setq ns-use-native-fullscreen nil)
 (setq parameters-default-text-height 180)
 
 ;; Graphical applications in macOS inherit their process environment from
