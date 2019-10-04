@@ -232,11 +232,12 @@
 By default, this shows the information specified by `global-mode-string'."
       (when (and (doom-modeline--active) (config-themes--display-clock-segment-p))
         (concat
-         (doom-modeline-spc)
-         (string-join (-map (-compose #'string-trim #'format-time-string)
-                            '("%a" "%e" "%b %R")) " ")
+         (propertize (concat (doom-modeline-spc)
+                             (string-join (-map (-compose #'string-trim #'format-time-string)
+                                                '("%a" "%e" "%b %R")) " ")
 
-         (doom-modeline-spc))))
+                             (doom-modeline-spc))
+                     'face 'region))))
 
     ;; override default modeline
     (doom-modeline-def-modeline 'main
