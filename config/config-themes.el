@@ -210,25 +210,42 @@
            (doom-modeline-enable-word-count t))
   :config
   (progn
-    (doom-modeline-def-segment clock
+    (defsubst config-themes--display-clock-segment-p ()
+      (--find (and (frame-parameter it 'fullscreen)
+                   (or (equal 1 (length (window-list it 'never)))
+                       (and (window-at-side-p (selected-window) 'right)
+                            (window-at-side-p (selected-window) 'top))))
+              (frame-list)))
+
+    (setq org-clock-clocked-in-display nil)
+
+    (doom-modeline-def-segment org-clock
+      (when (and (fboundp 'org-clocking-p) (org-clocking-p))
+        (concat
+         (doom-modeline-spc)
+         (propertize (concat (org-clock-get-clock-string)
+                             (doom-modeline-spc))
+                     'face 'org-agenda-clocking))))
+
+    (doom-modeline-def-segment time
       "Mode line construct for miscellaneous information.
 By default, this shows the information specified by `global-mode-string'."
-      (when (and (doom-modeline--active)
-                 (--find (and (frame-parameter it 'fullscreen)
-                              (equal 1 (length (window-list it 'never))))
-                         (frame-list)))
-        (let ((time-string (string-join (-map (-compose #'string-trim #'format-time-string)
-                                              '("%a"
-                                                "%e"
-                                                "%b %R")) " ")))
-          (concat (doom-modeline-spc) time-string (doom-modeline-spc)))))
+      (when (and (doom-modeline--active) (config-themes--display-clock-segment-p))
+        (concat
+         (doom-modeline-spc)
+         (string-join (-map (-compose #'string-trim #'format-time-string)
+                            '("%a" "%e" "%b %R")) " ")
+
+         (doom-modeline-spc))))
 
     ;; override default modeline
     (doom-modeline-def-modeline 'main
       '(bar workspace-name window-number modals matches buffer-info remote-host buffer-position parrot selection-info)
       '(objed-state misc-info persp-name fancy-battery grip irc mu4e github debug lsp minor-modes input-method indent-info buffer-encoding
                     ;; major-mode
-                    process vcs checker clock))))
+                    process vcs checker
+                    org-clock
+                    time))))
 
 ;; `hide-mode-line' provides a mode that hides the modeline.
 
