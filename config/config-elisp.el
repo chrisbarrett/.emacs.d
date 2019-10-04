@@ -161,6 +161,12 @@
                  (slot            . 1)
                  (window-width    . 0.5))))
 
+;; rainbow mode shows the colour for hex strings.
+
+(use-package rainbow-mode
+  :straight t
+  :hook (emacs-lisp-mode . rainbow-mode))
+
 (provide 'config-elisp)
 
 ;;; config-elisp.el ends here
