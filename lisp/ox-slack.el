@@ -19,6 +19,9 @@
      "*" text "*"
      "\n\n" (when (org-string-nw-p contents) contents))))
 
+(defun ox-slack--passthrough (_ contents _info)
+  (format "%s" contents))
+
 (defun ox-slack--italic (_italic contents _info)
   (format "_%s_" contents))
 
@@ -75,6 +78,8 @@ channel."
                      (src-block . ox-slack--fixed-width-block)
                      (strike-through . ox-slack--strike-through)
                      (timestamp . ox-slack--timestamp)
+                     (subscript . ox-slack--passthrough)
+                     (superscript . ox-slack--passthrough)
                      (underline . ox-slack--italic))
   :menu-entry
   '(?s "Export to Slack Markup"
