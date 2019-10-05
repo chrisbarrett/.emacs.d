@@ -86,6 +86,7 @@
 (use-package git-auto-commit-mode
   :straight t
   :commands (git-auto-commit-mode)
+  :hook (pass-mode . git-auto-commit-mode)
   :init
   (add-to-list 'safe-local-variable-values '(gac-automatically-push-p . t))
   :preface
