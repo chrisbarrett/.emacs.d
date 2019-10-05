@@ -116,9 +116,7 @@
                `(,(rx bos "*Password-Store*" eos)
                  (display-buffer-reuse-window
                   display-buffer-fullframe)
-                 (reusable-frames . visible)))
-  :config
-  (require 'pass-hacks))
+                 (reusable-frames . visible))))
 
 (provide 'config-langs)
 
