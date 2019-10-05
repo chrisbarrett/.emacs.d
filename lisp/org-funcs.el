@@ -60,10 +60,14 @@
   "Create the default heading for clocking in BUFFER.
 
 Return the position of the headline."
-  (save-excursion
-    (org-with-point-at (org-find-exact-headline-in-buffer "Notes" buffer)
-      (org-datetree-find-iso-week-create (calendar-current-date))
-      (point))))
+  (with-current-buffer buffer
+    (save-restriction
+      (widen)
+      (save-excursion
+        (org-with-point-at (point-min)
+          (org-datetree-find-iso-week-create (calendar-current-date))
+          (delete-blank-lines)
+          (point))))))
 
 (defvar org-funcs--punching-in-p nil)
 (defvar org-funcs--punching-out-p nil)
@@ -85,11 +89,8 @@ Return the position of the headline."
   (let ((org-funcs--punching-in-p t))
     (with-current-buffer buffer
       (save-excursion
-        (if-let* ((pos (org-funcs--ensure-default-datetree-entry buffer)))
-            (progn
-              (goto-char pos)
-              (org-clock-in '(16)))
-          (error "Notes headline does not exist"))))))
+        (goto-char (org-funcs--ensure-default-datetree-entry buffer))
+        (org-clock-in '(16))))))
 
 (defun org-funcs-punch-out ()
   "Stop the clock."
