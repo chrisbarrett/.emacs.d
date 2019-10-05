@@ -7,6 +7,9 @@
 
 (use-package vterm
   :straight t
+  :general
+  (:keymaps 'vterm-mode-map :states 'normal "P" 'vterm-yank)
+  (:keymaps 'vterm-mode-map :states '(normal insert) "s-v" 'vterm-yank)
   :preface
   (progn
     (defun config-terminal--build-vterm (package &rest _)
