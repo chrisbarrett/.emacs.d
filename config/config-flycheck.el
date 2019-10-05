@@ -98,7 +98,9 @@
     (setq flycheck-global-modes
           '(not idris-repl-mode
                 dir-locals-mode
+                text-mode
                 org-mode
+                org-agenda-mode
                 indium-repl-mode
                 vterm-mode
                 ;; restclient buffers
