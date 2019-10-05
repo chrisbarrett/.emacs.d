@@ -100,6 +100,7 @@
                 dir-locals-mode
                 org-mode
                 indium-repl-mode
+                vterm-mode
                 ;; restclient buffers
                 js-mode))
 
