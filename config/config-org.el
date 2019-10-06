@@ -298,13 +298,10 @@
    "C-c c" #'org-columns
    "M-n" #'org-metadown
    "M-p" #'org-metaup
-   "RET" #'org-return
-
-   ;; Emacs mac-port has some dead keys, so rebind these essential org commands.
-   "C-c ." #'org-time-stamp-inactive
-   "C-c >" #'org-time-stamp
-   )
-
+   "RET" #'org-return)
+  (:states '(normal motion insert emacs) :keymaps 'org-mode-map
+   "C-c C-." #'org-time-stamp-inactive
+   "C-c ." #'org-time-stamp)
   :preface
   (progn
     (defun config-org-set-org-agenda-files ()
