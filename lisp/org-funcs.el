@@ -208,7 +208,7 @@ Return the position of the headline."
 
    ((and (org-funcs-high-priority-p) (org-funcs--current-headline-is-todo))
     ;; Show these items.
-    )
+    (point))
 
    ((org-funcs--first-todo-at-this-level-p)
     (org-funcs--skip-heading-safe))))
