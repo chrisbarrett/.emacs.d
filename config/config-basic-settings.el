@@ -501,12 +501,11 @@
   :config
   (progn
     (setq display-time-world-list '(("Pacific/Auckland" "NZT")
-                                    ("UTC" "UTC")
-                                    ("Europe/Berlin" "Euro Central")
                                     ("America/Los_Angeles" "Pacific Time")
-                                    ("America/New_York" "Eastern Time")
-                                    ("America/Denver" "Mountain Time")
-                                    ("Australia/Sydney" "Sydney")))
+                                    ("Europe/Istanbul" "Turkey")
+                                    ("Asia/Beirut" "Lebanon")
+                                    ("Europe/Berlin" "Euro Central")
+                                    ("UTC" "UTC")))
 
     (add-hook 'world-time-table-mode-hook 'hl-line-mode)))
 
