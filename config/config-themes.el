@@ -215,7 +215,7 @@
 
   :config
   (progn
-    (defun config-themes--display-clock-segment-p ()
+    (defun config-themes--right-top-window-p ()
       (--find (and (frame-parameter it 'fullscreen)
                    (or (equal 1 (length (window-list it 'never)))
                        (and (window-at-side-p (selected-window) 'right)
@@ -228,7 +228,7 @@
     (add-hook 'org-clock-cancel-hook #'config-themes--update-all-modelines)
 
     (doom-modeline-def-segment org-clock
-      (when (and (fboundp 'org-clocking-p) (org-clocking-p))
+      (when (and (fboundp 'org-clocking-p) (org-clocking-p) (config-themes--right-top-window-p))
         (concat
          (doom-modeline-spc)
          (propertize (concat (org-clock-get-clock-string)
@@ -238,7 +238,7 @@
     (doom-modeline-def-segment time
       "Mode line construct for miscellaneous information.
 By default, this shows the information specified by `global-mode-string'."
-      (when (and (doom-modeline--active) (config-themes--display-clock-segment-p))
+      (when (config-themes--right-top-window-p)
         (concat
          (propertize (concat (doom-modeline-spc)
                              (string-join (-map (-compose #'string-trim #'format-time-string)
