@@ -22,8 +22,11 @@
   ("Tree"
    (("a" org-archive-subtree "archive")
     ("r" org-funcs-refile-dwim "refile")
-    ("t" org-show-todo-tree "todo tree"))
-
+    ("x" org-cut-subtree "cut")
+    ("c" org-copy-subtree "copy")
+    ("p" org-paste-subtree "paste"))
+   "View"
+   (("t" org-show-todo-tree "todo tree"))
    "Misc"
    (("e" org-babel/body "babel commands"))))
 
