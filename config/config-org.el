@@ -252,14 +252,16 @@
      (org-agenda-archives-mode nil)
      (org-agenda-ignore-drawer-properties '(effort appt)))))
 
-(general-setq org-agenda-custom-commands
-              (list
-               (config-org--agenda-for-context "@personal")
-               (config-org--plan-for-context "@personal")
-               (config-org--review-for-context "@personal")
-               (config-org--agenda-for-context "@work" :show-catchups-p t)
-               (config-org--plan-for-context "@work")
-               (config-org--review-for-context "@work")))
+(org-funcs-update-agenda-custom-commands
+ (list
+  '("p" . "@personal context")
+  (config-org--agenda-for-context "@personal")
+  (config-org--plan-for-context "@personal")
+  (config-org--review-for-context "@personal")
+  '("w" . "@work context")
+  (config-org--agenda-for-context "@work" :show-catchups-p t)
+  (config-org--plan-for-context "@work")
+  (config-org--review-for-context "@work")))
 
 (org-funcs-update-capture-templates
  (list

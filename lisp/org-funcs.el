@@ -22,6 +22,7 @@
 
 (defvar org-agenda-files nil)
 (defvar org-capture-templates nil)
+(defvar org-agenda-custom-commands nil)
 
 
 ;; Clocking related stuff
@@ -342,6 +343,11 @@ Return the position of the headline."
     (cl-list* key label 'entry form template (ht->plist (ht-merge
                                                          (ht-from-plist defaults)
                                                          (ht-from-plist keywords))))))
+
+(defun org-funcs-update-agenda-custom-commands (templates)
+  (let ((ht (ht-merge (ht-from-alist org-agenda-custom-commands) (ht-from-alist templates))))
+    (setq org-agenda-custom-commands (-sort (-on 'string-lessp 'car) (ht->alist ht)))))
+
 
 ;; Priorities
 
