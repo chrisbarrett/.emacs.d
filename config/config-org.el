@@ -259,17 +259,7 @@
                (config-org--review-for-context "@personal")
                (config-org--agenda-for-context "@work" :show-catchups-p t)
                (config-org--plan-for-context "@work")
-               (config-org--review-for-context "@work")
-               `("ws"
-                 "Support Issues"
-                 ((agenda ""
-                          ((org-agenda-overriding-header "Support Issues")
-                           (org-agenda-start-day "-14d")
-                           (org-agenda-span 14)))
-                  (tags-todo "+support"
-                             ((org-agenda-overriding-header "Support Actions"))))
-                 ((org-agenda-tag-filter-preset '("+support" "-@someday" "-ignore"))
-                  (org-agenda-show-all-dates nil)))))
+               (config-org--review-for-context "@work")))
 
 (org-funcs-update-capture-templates
  (list
