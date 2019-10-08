@@ -364,7 +364,13 @@ By default, this shows the information specified by `global-mode-string'."
                   (outline-1 ((t (:weight bold :foreground ,blue))))
                   (lsp-ui-sideline-symbol ((t :height 0.99)))
                   (lsp-ui-sideline-symbol-info ((t :foreground "grey" :slant italic :height 0.99 :weight light)))
-                  (lsp-ui-sideline-current-symbol ((t (:inherit lsp-face-highlight-read :height 0.99)))))
+                  (lsp-ui-sideline-current-symbol ((t (:inherit lsp-face-highlight-read :height 0.99))))
+
+                  ;; we need to set ivy colours to dark manually.
+                  (ivy-minibuffer-match-face-1 ((t (:foreground ,bg :background ,base7 :weight bold))))
+                  (ivy-minibuffer-match-face-2 ((t (:foreground ,bg :background ,base6 :weight bold))))
+                  (ivy-minibuffer-match-face-3 ((t (:foreground ,fg :background ,base4 :weight bold))))
+                  (ivy-minibuffer-match-face-4 ((t (:foreground ,bg :background ,base8)))))
 
                 ;; Theme-specific settings.
 
@@ -375,13 +381,6 @@ By default, this shows the information specified by `global-mode-string'."
                      (org-scheduled-today ((t (:foreground ,fg))))
                      (treemacs-git-ignored-face ((t :foreground "#787878")))
                      (parenthesis ((t (:foreground "#787878" :weight light))))
-
-                     ;; we need to set ivy colours to dark manually.
-                     (ivy-minibuffer-match-face-1 ((t (:foreground ,bg :background ,base7 :weight bold))))
-                     (ivy-minibuffer-match-face-2 ((t (:foreground ,fg :background ,base6 :weight bold))))
-                     (ivy-minibuffer-match-face-3 ((t (:foreground ,fg :background ,base4 :weight bold))))
-                     (ivy-minibuffer-match-face-4 ((t (:foreground ,bg :background ,base8))))
-
                      ;; HACK: This doesn't seem to get set properly in the face definition.
                      (org-block-end-line ((t :foreground ,base5 :background ,base3)))))
 
