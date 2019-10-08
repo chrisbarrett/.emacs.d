@@ -233,6 +233,7 @@
     ,(format "Review for context: %s" tag)
     ((agenda ""
              ((org-agenda-overriding-header "Review agenda this week")
+              (org-agenda-use-time-grid nil)
               (org-agenda-show-log t)
               (org-agenda-start-day "-mon")))
      (todo "TODO"
