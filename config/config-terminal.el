@@ -14,8 +14,7 @@
   (progn
     (defun config-terminal--build-vterm (package &rest _)
       (when (member package '("vterm"))
-        (let* ((root (straight--build-dir "vterm"))
-               (module-build-dir (f-join root "build")))
+        (let* ((module-build-dir (straight--build-dir "vterm" "build")))
           (mkdir module-build-dir t)
           (let ((default-directory module-build-dir))
             (compilation-start "cmake .. && make")))))
