@@ -117,7 +117,7 @@
 
 (use-package ivy-posframe
   :straight t
-  :hook (ivy-mode . ivy-posframe-enable)
+  :hook (after-init . ivy-posframe-mode)
   :config
   (general-setq ivy-posframe-border-width 20
                 ivy-posframe-style 'frame-center
