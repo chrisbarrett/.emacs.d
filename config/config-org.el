@@ -228,14 +228,14 @@
      (org-agenda-archives-mode nil)
      (org-agenda-ignore-drawer-properties '(effort appt)))))
 
-(defun config-org--review-for-context (tag)
+(cl-defun config-org--review-for-context (tag &key (start-day "-mon"))
   `(,(concat (substring tag 1 2) "r")
     ,(format "Review for context: %s" tag)
     ((agenda ""
              ((org-agenda-overriding-header "Review agenda this week")
               (org-agenda-use-time-grid nil)
               (org-agenda-show-log t)
-              (org-agenda-start-day "-mon")))
+              (org-agenda-start-day ,start-day)))
      (todo "TODO"
            ((org-agenda-overriding-header "Review Next Actions. Are these the next thing to do?")
             (org-agenda-skip-function #'org-funcs-skip-items-already-in-agenda)))
@@ -257,7 +257,7 @@
   '("p" . "@personal context")
   (config-org--agenda-for-context "@personal")
   (config-org--plan-for-context "@personal")
-  (config-org--review-for-context "@personal")
+  (config-org--review-for-context "@personal" :start-day "-7d")
   '("w" . "@work context")
   (config-org--agenda-for-context "@work" :show-catchups-p t)
   (config-org--plan-for-context "@work")
