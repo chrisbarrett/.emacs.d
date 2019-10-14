@@ -100,6 +100,8 @@ Return the position of the headline."
     (when (org-clock-is-active)
       (org-clock-out))
     (org-agenda-remove-restriction-lock)
+    (with-current-buffer (org-funcs-work-file-buffer)
+      (save-buffer))
     (message "Punched out.")))
 
 (defun org-funcs-punch-in-or-out ()
