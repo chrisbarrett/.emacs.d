@@ -165,7 +165,13 @@
 
 (use-package rainbow-mode
   :straight t
-  :hook (emacs-lisp-mode . rainbow-mode))
+  :hook (emacs-lisp-mode . rainbow-mode)
+  :preface
+  (defun config-elisp--on-rainbow-mode (&rest arg)
+    (when (and arg (bound-and-true-p bug-reference-prog-mode))
+      (bug-reference-prog-mode -1)))
+  :config
+  (advice-add 'rainbow-mode :after #'config-elisp--on-rainbow-mode))
 
 (provide 'config-elisp)
 
