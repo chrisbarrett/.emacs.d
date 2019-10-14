@@ -362,6 +362,7 @@ By default, this shows the information specified by `global-mode-string'."
                   (hydra-posframe-face ((t (:background ,bg-alt-l))))
                   (hydra-posframe-border-face ((t (:inherit posframe-border))))
                   (doom-modeline-project-dir ((t (:inherit font-lock-string-face :weight normal :bold t))))
+                  (org-funcs-agenda-note ((t (:inherit font-lock-string-face :italic t))))
                   (markdown-list-face ((t :inherit markdown-blockquote-face)))
                   (treemacs-git-unmodified-face ((t :inherit default)))
                   (treemacs-git-renamed-face ((t :inherit font-lock-doc-face)))

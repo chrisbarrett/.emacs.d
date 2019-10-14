@@ -277,7 +277,8 @@
 ;; `org-funcs' provides supporting commands we want to bind.
 (use-package org-funcs
   :hook ((org-clock-in-prepare . org-funcs-on-clock-on)
-         (org-clock-out . org-funcs-on-clock-out))
+         (org-clock-out . org-funcs-on-clock-out)
+         (org-agenda-finalize . org-funcs-propertize-note-lines-in-agenda))
   :init
   (setq initial-buffer-choice #'org-funcs-agenda-dwim)
   :general

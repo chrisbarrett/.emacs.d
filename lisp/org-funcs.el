@@ -349,6 +349,32 @@ Return the position of the headline."
     (setq org-agenda-custom-commands (-sort (-on 'string-lessp 'car) (ht->alist ht)))))
 
 
+(defface org-funcs-agenda-note
+  '((t :inherit default))
+  "Face for note lines in org-agenda."
+  :group 'org-funcs)
+
+(defun org-funcs-propertize-note-lines-in-agenda ()
+  (save-excursion
+    (save-match-data
+      (goto-char (point-min))
+      (while (search-forward-regexp (rx
+                                     (group
+                                      ;; Category
+                                      "notes:" (+ space)
+                                      ;; Timestamp
+                                      (and (+ digit) ":" (+ digit))
+                                      (+ ".")
+                                      (? (and (+ digit) ":" (+ digit)))
+                                      ;; Note leader
+                                      space
+                                      "Note:" (+ nonl)))
+                                    nil t)
+        (put-text-property (match-beginning 1)
+                           (match-end 1)
+                           'face 'org-funcs-agenda-note)))))
+
+
 ;; Priorities
 
 (defun org-funcs-toggle-priority ()
