@@ -361,15 +361,11 @@ Return the position of the headline."
     (save-match-data
       (goto-char (point-min))
       (while (search-forward-regexp (rx
+                                     bol
+                                     (= 2 space)
                                      (group
                                       ;; Category
                                       "notes:" (+ space)
-                                      ;; Timestamp
-                                      (and (+ digit) ":" (+ digit))
-                                      (+ ".")
-                                      (? (and (+ digit) ":" (+ digit)))
-                                      ;; Note leader
-                                      space
                                       (+ nonl)))
                                     nil t)
         (put-text-property (match-beginning 1)
