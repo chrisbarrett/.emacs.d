@@ -368,7 +368,7 @@ Return the position of the headline."
                                       (? (and (+ digit) ":" (+ digit)))
                                       ;; Note leader
                                       space
-                                      "Note:" (+ nonl)))
+                                      (+ nonl)))
                                     nil t)
         (put-text-property (match-beginning 1)
                            (match-end 1)
