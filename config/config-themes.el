@@ -337,6 +337,9 @@ By default, this shows the information specified by `global-mode-string'."
              (bg-alt-l   (pcase theme
                            ('doom-solarized-light (doom-darken bg 0.05))
                            ('doom-one bg-alt)))
+             (orange     (pcase theme
+                           ('doom-solarized-light "#cb4b16")
+                           ('doom-one "#da8548")))
              (blue       (pcase theme
                            ('doom-solarized-light "#268bd2")
                            ('doom-one "#51afef"))))
@@ -352,6 +355,7 @@ By default, this shows the information specified by `global-mode-string'."
                 ;; Common settings
 
                 `((font-lock-comment-face ((t (:weight bold))))
+                  (org-agenda-current-time ((t :foreground ,orange)))
                   (vterm-color-black ((t (:foreground ,bg :background ,base5))))
                   (org-agenda-clocking ((t (:bold nil :foreground ,fg :background ,(doom-blend blue bg 0.2)))))
                   (ivy-posframe-border ((t (:inherit posframe-border))))
