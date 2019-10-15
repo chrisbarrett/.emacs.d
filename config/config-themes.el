@@ -247,6 +247,9 @@ By default, this shows the information specified by `global-mode-string'."
                   (propertize (concat (doom-modeline-spc) time (doom-modeline-spc) battery)
                               'face 'region)))))
 
+    ;; KLUDGE: Prevent the battery status from showing up in weird places.
+    (defalias #'doom-modeline-segment--fancy-battery #'ignore)
+
     ;; override default modeline
     (doom-modeline-def-modeline 'main
       '(bar workspace-name window-number modals matches buffer-info remote-host buffer-position parrot selection-info)
