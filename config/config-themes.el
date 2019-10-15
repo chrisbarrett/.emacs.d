@@ -235,6 +235,15 @@
                              (doom-modeline-spc))
                      'face 'org-agenda-clocking))))
 
+    (doom-modeline-def-segment fancy-battery
+      "Display battery status."
+      (when (and (doom-modeline--active)
+                 (bound-and-true-p fancy-battery-mode)
+                 (config-themes--right-top-window-p))
+
+        (let ((str (or doom-modeline--battery-status (doom-modeline-update-battery-status))))
+          (propertize str 'face 'region))))
+
     (doom-modeline-def-segment time
       "Mode line construct for miscellaneous information.
 By default, this shows the information specified by `global-mode-string'."
@@ -250,12 +259,20 @@ By default, this shows the information specified by `global-mode-string'."
     ;; override default modeline
     (doom-modeline-def-modeline 'main
       '(bar workspace-name window-number modals matches buffer-info remote-host buffer-position parrot selection-info)
-      '(objed-state misc-info persp-name fancy-battery grip irc mu4e github debug lsp minor-modes input-method indent-info buffer-encoding
+      '(objed-state misc-info persp-name grip irc mu4e github debug lsp minor-modes input-method indent-info buffer-encoding
                     ;; major-mode
                     process vcs
                     checker
                     org-clock
-                    time))))
+                    time
+                    fancy-battery))))
+
+;; `fancy-battery' adds a mode for showing a battery indicator in the modeline.
+
+(use-package fancy-battery
+  :straight t
+  :custom ((fancy-battery-show-percentage nil))
+  :hook (after-init . fancy-battery-mode))
 
 ;; `hide-mode-line' provides a mode that hides the modeline.
 
