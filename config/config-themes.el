@@ -229,11 +229,12 @@
 
     (doom-modeline-def-segment org-clock
       (when (and (fboundp 'org-clocking-p) (org-clocking-p) (config-themes--right-top-window-p))
-        (concat
-         (doom-modeline-spc)
-         (propertize (concat (org-clock-get-clock-string)
-                             (doom-modeline-spc))
-                     'face 'org-agenda-clocking))))
+        (propertize (concat (org-clock-get-clock-string)
+                            (doom-modeline-spc))
+                    'face 'org-agenda-clocking)))
+
+    (doom-modeline-def-segment space
+      (doom-modeline-spc))
 
     (doom-modeline-def-segment system
       "Mode line construct for miscellaneous information.
@@ -243,9 +244,8 @@ By default, this shows the information specified by `global-mode-string'."
                                        '("%a" "%e" "%b %R")) " "))
               (battery (when (bound-and-true-p fancy-battery-mode)
                          (or doom-modeline--battery-status (doom-modeline-update-battery-status)))))
-          (concat (doom-modeline-spc)
-                  (propertize (concat (doom-modeline-spc) time (doom-modeline-spc) battery)
-                              'face 'region)))))
+          (propertize (concat (doom-modeline-spc) time (doom-modeline-spc) battery)
+                      'face 'region))))
 
     ;; KLUDGE: Prevent the battery status from showing up in weird places.
     (defalias #'doom-modeline-segment--fancy-battery #'ignore)
@@ -257,6 +257,7 @@ By default, this shows the information specified by `global-mode-string'."
                     ;; major-mode
                     process vcs
                     checker
+                    space
                     org-clock
                     system))))
 
