@@ -235,26 +235,17 @@
                              (doom-modeline-spc))
                      'face 'org-agenda-clocking))))
 
-    (doom-modeline-def-segment fancy-battery
-      "Display battery status."
-      (when (and (doom-modeline--active)
-                 (bound-and-true-p fancy-battery-mode)
-                 (config-themes--right-top-window-p))
-
-        (let ((str (or doom-modeline--battery-status (doom-modeline-update-battery-status))))
-          (propertize str 'face 'region))))
-
-    (doom-modeline-def-segment time
+    (doom-modeline-def-segment system
       "Mode line construct for miscellaneous information.
 By default, this shows the information specified by `global-mode-string'."
       (when (config-themes--right-top-window-p)
-        (concat
-         (propertize (concat (doom-modeline-spc)
-                             (string-join (-map (-compose #'string-trim #'format-time-string)
-                                                '("%a" "%e" "%b %R")) " ")
-
-                             (doom-modeline-spc))
-                     'face 'region))))
+        (let ((time (string-join (-map (-compose #'string-trim #'format-time-string)
+                                       '("%a" "%e" "%b %R")) " "))
+              (battery (when (bound-and-true-p fancy-battery-mode)
+                         (or doom-modeline--battery-status (doom-modeline-update-battery-status)))))
+          (concat (doom-modeline-spc)
+                  (propertize (concat (doom-modeline-spc) time (doom-modeline-spc) battery)
+                              'face 'region)))))
 
     ;; override default modeline
     (doom-modeline-def-modeline 'main
@@ -264,8 +255,7 @@ By default, this shows the information specified by `global-mode-string'."
                     process vcs
                     checker
                     org-clock
-                    time
-                    fancy-battery))))
+                    system))))
 
 ;; `fancy-battery' adds a mode for showing a battery indicator in the modeline.
 
