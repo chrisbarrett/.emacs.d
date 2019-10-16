@@ -191,7 +191,8 @@
 
         ,(when show-catchups-p
            `(tags-todo "+catchups&-PRIORITY=\"A\""
-                       ((org-agenda-overriding-header "People & Catchup Topics"))))
+                       ((org-agenda-overriding-header "People & Catchup Topics")
+                        (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp))))
 
         (tags-todo "+TODO=\"WAITING\""
                    ((org-agenda-overriding-header "Delegated")
