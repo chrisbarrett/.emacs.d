@@ -171,9 +171,7 @@ Return the position of the headline."
 (defun org-funcs-skip-item-if-timestamp ()
   "Skip the item if it has a scheduled or deadline timestamp."
   (when (org-funcs--scheduled-or-deadline-p)
-    (org-funcs--skip-heading-safe)
-    (or (outline-next-heading)
-        (goto-char (point-max)))))
+    (org-funcs--skip-heading-safe)))
 
 (defun org-funcs--current-headline-is-todo ()
   (string= "TODO" (org-get-todo-state)))
