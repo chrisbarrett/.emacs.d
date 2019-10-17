@@ -145,6 +145,8 @@
 
     (evil-set-initial-state 'org-agenda-mode 'motion)
 
+    (evil-set-initial-state 'vterm-mode 'emacs)
+
     ;; Add ex commands for controlling spellcheck.
 
     (evil-ex-define-cmd "nospell" #'config-evil-flyspell-off)
