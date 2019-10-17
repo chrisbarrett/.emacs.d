@@ -165,7 +165,7 @@
  ("smartparens" . "12856838cf9b0e6a635a6ceb14a22fdc03b04728")
  ("spinner" . "2daa167bec1c7566d662d48613a94453536b524a")
  ("straight.el" . "b0d455f4364c6d3a91f3ae7bde6b31c1212c04e7")
- ("swiper" . "79333e9edfee38ec3b367c33711a68bdf7783259")
+ ("swiper" . "be231a50c6e9561df1bde4e5c68ca199e9a92c49")
  ("tablist" . "8079801527da1f596bc942162026328d7bdf6ad9")
  ("tiny" . "fd8a6b0b0c564d8242259e20e557ee6041f40908")
  ("toml-mode.el" . "f6c61817b00f9c4a3cab1bae9c309e0fc45cdd06")

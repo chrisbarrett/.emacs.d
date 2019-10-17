@@ -147,6 +147,8 @@
             "C-h" #'counsel-up-directory)
   :config
   (progn
+    (put 'counsel-find-symbol 'no-counsel-M-x t)
+
     (setq counsel-yank-pop-separator (concat "\n" (make-vector 120 ?─) "\n"))
     (setf (alist-get 'counsel-yank-pop ivy-height-alist) 20)
     (counsel-mode +1)))

@@ -442,7 +442,10 @@
 
    "Shells"
    (("t" vterm-toggle "terminal")
-    ("n" nix-repl-show "nix-repl"))))
+    ("n" nix-repl-show "nix-repl"))
+
+   "Other"
+   (("g" counsel-google "google search..."))))
 
 (pretty-hydra-define profiler
   (:hint nil
