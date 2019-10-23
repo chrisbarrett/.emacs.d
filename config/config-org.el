@@ -204,7 +204,8 @@
      (org-agenda-span 'day)
      (org-agenda-show-future-repeats nil)
      (org-agenda-archives-mode nil)
-     (org-agenda-ignore-drawer-properties '(effort appt)))))
+     (org-agenda-ignore-drawer-properties '(effort appt))
+     (org-agenda-files (org-funcs-files-for-context ,tag)))))
 
 (defun config-org--plan-for-context (tag)
   `(,(concat (substring tag 1 2) "p")
@@ -227,7 +228,8 @@
      (org-agenda-span 'week)
      (org-agenda-show-future-repeats nil)
      (org-agenda-archives-mode nil)
-     (org-agenda-ignore-drawer-properties '(effort appt)))))
+     (org-agenda-ignore-drawer-properties '(effort appt))
+     (org-agenda-files (org-funcs-files-for-context ,tag)))))
 
 (cl-defun config-org--review-for-context (tag &key (start-day "-mon"))
   `(,(concat (substring tag 1 2) "r")
@@ -251,7 +253,8 @@
      (org-agenda-log-mode-items '(closed))
      (org-agenda-show-future-repeats nil)
      (org-agenda-archives-mode nil)
-     (org-agenda-ignore-drawer-properties '(effort appt)))))
+     (org-agenda-ignore-drawer-properties '(effort appt))
+     (org-agenda-files (org-funcs-files-for-context ,tag)))))
 
 (org-funcs-update-agenda-custom-commands
  (list

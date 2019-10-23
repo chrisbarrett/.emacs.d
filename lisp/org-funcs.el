@@ -157,6 +157,14 @@ Return the position of the headline."
 
 ;; Agenda utils
 
+(defun org-funcs-files-for-context (tag)
+  (append (seq-map (lambda (it) (expand-file-name it org-directory))
+                   '("archive.org" "inbox.org" "gcal"))
+          (seq-filter (lambda (it)
+                        (s-contains-p (string-remove-prefix "@" tag)
+                                      it))
+                      org-agenda-files)))
+
 (defun org-funcs-exclude-tasks-on-hold (tag)
   (and (equal tag "hold") (concat "-" tag)))
 
