@@ -158,7 +158,7 @@
  ;; agenda
  org-stuck-projects '("" nil nil "")
  org-agenda-auto-exclude-function #'org-funcs-exclude-tasks-on-hold
- org-agenda-hide-tags-regexp (rx (or "noexport" "@someday" "project"))
+ org-agenda-hide-tags-regexp (rx (or "noexport" "@someday"))
  org-agenda-include-diary nil
  org-agenda-insert-diary-extract-time t
  org-agenda-search-view-always-boolean t
@@ -253,8 +253,9 @@
      (tags-todo "+LEVEL=1+TODO=\"TODO\""
                 ((org-agenda-overriding-header "Review unscheduled actions. Any of these need to be prioritised?")
                  (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp)))
-     (tags "+project-archived"
-           ((org-agenda-overriding-header "Review projects. Are these all healthy?"))))
+     (todo "TODO"
+           ((org-agenda-overriding-header "Review projects. Are these all healthy?")
+            (org-agenda-skip-function #'org-project-skip-non-projects))))
     ((org-agenda-tag-filter-preset '(,(format "+%s" tag) "-@someday" "-ignore"))
      (org-agenda-clockreport-parameter-plist ',(append config-org--agenda-clockreport-defaults (list :tags tag)))
      (org-agenda-start-with-clockreport-mode t)
