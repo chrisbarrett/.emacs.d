@@ -70,6 +70,10 @@
 
 (use-package hydra :straight t)
 
+;; We want to install org as quickly as possible to avoid the builtin one being
+;; accidentally loaded first.
+(use-package org :straight t :defer t)
+
 (use-package major-mode-hydra
   :straight t
   :demand t

@@ -2,6 +2,8 @@
 ;;; Commentary:
 ;;; Code:
 
+;; Assume we've already installed a recent version via straight in init.el.
+
 (eval-when-compile
   (require 'use-package))
 
@@ -297,7 +299,6 @@
 ;; Configure the main `org' package.
 (use-package org
   :defer t
-  :straight (:type built-in)
   :general
   ("C-c a" #'org-agenda
    "C-c s" #'org-search-view
@@ -362,6 +363,10 @@
 
     (defun config-org--before-agenda (&rest _)
       (config-org-set-org-agenda-files))
+
+    ;; KLUDGE: Declare removed dynamic variable in case I revert to builtin org
+    ;; version.
+    (defvar org-log-states)
 
     (defun config-org--children-done-parent-done (_n-done n-todo)
       "Mark the parent task as done when all children are completed."

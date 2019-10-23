@@ -130,7 +130,7 @@
  ("nvm.el" . "e93e5216e311c665c593ac68c5456d624120ea42")
  ("ob-restclient.el" . "53376667eeddb1388fd6c6976f3222e7c8adcd46")
  ("omnisharp-emacs" . "c1dab2beae4b1e67f20f3e90cddeba81bd236fe5")
- ("org" . "built-in")
+ ("org" . "28bb1c81fad9caf4d7867d4f17451c5b21df33bb")
  ("org-bullets" . "c19b13be00df8d8dc596e4f1aef4a094b08ac801")
  ("org-gcal.el" . "19ebbc647d8f4098cdda986aff2fea66e6da13ef")
  ("ox-gfm" . "99f93011b069e02b37c9660b8fcb45dab086a07f")
