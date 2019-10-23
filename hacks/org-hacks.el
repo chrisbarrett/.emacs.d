@@ -29,8 +29,8 @@
     (el-patch-defun org-agenda-fontify-priorities ()
       "Make highest priority lines bold, and lowest italic."
       (interactive)
-      (mapc (lambda (o) (if (eq (overlay-get o 'org-type) 'org-priority)
-                       (delete-overlay o)))
+      (mapc (lambda (o) (when (eq (overlay-get o 'org-type) 'org-priority)
+                     (delete-overlay o)))
             (overlays-in (point-min) (point-max)))
       (save-excursion
         (let (b e p ov h l)
@@ -102,7 +102,7 @@ direct children of this heading."
          ((equal find-done '(4))  (org-archive-all-done))
          ((equal find-done '(16)) (org-archive-all-old))
          (t
-          ;; Save all relevant TODO keyword-relatex variables
+          ;; Save all relevant TODO keyword-related variables.
           (let* ((tr-org-todo-keywords-1 org-todo-keywords-1)
                  (tr-org-todo-kwd-alist org-todo-kwd-alist)
                  (tr-org-done-keywords org-done-keywords)
@@ -115,10 +115,11 @@ direct children of this heading."
                  (file (abbreviate-file-name
                         (or (buffer-file-name (buffer-base-buffer))
                             (error "No file associated to buffer"))))
-                 (location (org-get-local-archive-location))
-                 (afile (or (org-extract-archive-file location)
-                            (error "Invalid `org-archive-location'")))
-                 (heading (org-extract-archive-heading location))
+                 (location (org-archive--compute-location
+                            (or (org-entry-get nil "ARCHIVE" 'inherit)
+                                org-archive-location)))
+                 (afile (car location))
+                 (heading (cdr location))
                  (infile-p (equal file (abbreviate-file-name (or afile ""))))
                  (newfile-p (and (org-string-nw-p afile)
                                  (not (file-exists-p afile))))
@@ -142,9 +143,15 @@ direct children of this heading."
               (org-back-to-heading t)
               ;; Get context information that will be lost by moving the
               ;; tree.  See `org-archive-save-context-info'.
-              (let* ((all-tags (org-get-tags-at))
-                     (local-tags (org-get-tags))
-                     (inherited-tags (org-delete-all local-tags all-tags))
+              (let* ((all-tags (org-get-tags))
+                     (local-tags
+                      (cl-remove-if (lambda (tag)
+                                      (get-text-property 0 'inherited tag))
+                                    all-tags))
+                     (inherited-tags
+                      (cl-remove-if-not (lambda (tag)
+                                          (get-text-property 0 'inherited tag))
+                                        all-tags))
                      (context
                       `((category . ,(org-get-category nil 'force-refresh))
                         (file . ,file)
@@ -186,12 +193,12 @@ direct children of this heading."
                            org-odd-levels-only
                          tr-org-odd-levels-only)))
                   (goto-char (point-min))
-                  (outline-show-all)
+                  (org-show-all '(headings blocks))
                   (if (and heading (not (and datetree-date (not datetree-subheading-p))))
                       (progn
                         (if (re-search-forward
                              (concat "^" (regexp-quote heading)
-                                     "[ \t]*\\(:[[:alnum:]_@#%:]+:\\)?[ \t]*\\($\\|\r\\)")
+                                     "\\([ \t]+:\\(" org-tag-re ":\\)+\\)?[ \t]*$")
                              nil t)
                             (goto-char (match-end 0))
                           ;; Heading not found, just insert it at the end
@@ -216,8 +223,7 @@ direct children of this heading."
                     (if org-archive-reversed-order
                         (progn
                           (goto-char (point-min))
-                          (unless (org-at-heading-p) (outline-next-heading))
-                          (insert "\n") (backward-char 1))
+                          (unless (org-at-heading-p) (outline-next-heading)))
                       (goto-char (point-max))
                       ;; Subtree narrowing can let the buffer end on
                       ;; a headline.  `org-paste-subtree' then deletes it.
@@ -232,7 +238,7 @@ direct children of this heading."
                        (or (and (eq org-archive-subtree-add-inherited-tags 'infile)
                                 infile-p)
                            (eq org-archive-subtree-add-inherited-tags t))
-                       (org-set-tags-to all-tags))
+                       (org-set-tags all-tags))
                   ;; Mark the entry as done
                   (when (and org-archive-mark-done
                              (let ((case-fold-search nil))
@@ -265,6 +271,12 @@ direct children of this heading."
             (when (featurep 'org-inlinetask)
               (org-inlinetask-remove-END-maybe))
             (setq org-markers-to-move nil)
+            (when org-provide-todo-statistics
+              (save-excursion
+                ;; Go to parent, even if no children exist.
+                (org-up-heading-safe)
+                ;; Update cookie of parent.
+                (org-update-statistics-cookies nil)))
             (message "Subtree archived %s"
                      (if (eq this-buffer buffer)
                          (concat "under heading: " heading)
