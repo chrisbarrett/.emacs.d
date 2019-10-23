@@ -190,7 +190,7 @@
                     (org-agenda-skip-function #'org-funcs-skip-items-already-in-agenda)))
 
         ,(when show-catchups-p
-           `(tags-todo "+catchups&-PRIORITY=\"A\""
+           `(tags-todo "+catchups&-PRIORITY=\"A\"-TODO=\"WAITING\""
                        ((org-agenda-overriding-header "People & Catchup Topics")
                         (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp))))
 
