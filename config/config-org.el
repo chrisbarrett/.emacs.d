@@ -18,6 +18,9 @@
 (require 'paths)
 (require 's)
 
+(autoload 'org-project-skip-non-stuck-projects "org-project")
+(autoload 'org-project-skip-non-projects "org-project")
+
 
 
 (major-mode-hydra-define org-mode nil
@@ -153,7 +156,7 @@
  org-clock-report-include-clocking-task t
 
  ;; agenda
- org-stuck-projects '("+project-ignore-@someday-archived" ("TODO") nil "")
+ org-stuck-projects '("" nil nil "")
  org-agenda-auto-exclude-function #'org-funcs-exclude-tasks-on-hold
  org-agenda-hide-tags-regexp (rx (or "noexport" "@someday" "project"))
  org-agenda-include-diary nil
@@ -196,11 +199,13 @@
                        ((org-agenda-overriding-header "People & Catchup Topics")
                         (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp))))
 
-        (tags-todo "+TODO=\"WAITING\""
-                   ((org-agenda-overriding-header "Delegated")
-                    (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp)))
-        (stuck ""
-               ((org-agenda-overriding-header "Stuck Projects")))))
+        (todo "WAITING"
+              ((org-agenda-overriding-header "Delegated")
+               (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp)))
+        (todo "TODO"
+              ((org-agenda-overriding-header "Stuck Projects")
+               (org-agenda-skip-function #'org-project-skip-non-stuck-projects)))))
+
     ((org-agenda-tag-filter-preset '(,(format "+%s" tag) "-@someday" "-ignore"))
      (org-agenda-clockreport-parameter-plist ',(append config-org--agenda-clockreport-defaults (list :tags tag)))
      (org-agenda-span 'day)
@@ -223,8 +228,9 @@
      (tags-todo "+LEVEL=1+TODO=\"TODO\""
                 ((org-agenda-overriding-header "Review unscheduled actions. Any of these need to be prioritised?")
                  (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp)))
-     (tags "+project-archived"
-           ((org-agenda-overriding-header "Review projects. Are these all healthy?"))))
+     (todo "TODO"
+           ((org-agenda-overriding-header "Review projects. Are these all healthy?")
+            (org-agenda-skip-function #'org-project-skip-non-projects))))
     ((org-agenda-tag-filter-preset '(,(format "+%s" tag) "-@someday" "-ignore"))
      (org-agenda-clockreport-parameter-plist ',(append config-org--agenda-clockreport-defaults (list :tags tag)))
      (org-agenda-span 'week)
