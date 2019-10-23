@@ -162,7 +162,7 @@
  org-agenda-skip-deadline-if-done t
  org-agenda-skip-deadline-prewarning-if-scheduled t
  org-agenda-skip-scheduled-if-done t
- org-agenda-span 'week
+ org-agenda-span 'day
  org-agenda-start-on-weekday nil
  org-agenda-window-setup 'only-window
  org-agenda-dim-blocked-tasks 'invisible
