@@ -445,7 +445,13 @@
    "gr" #'org-agenda-redo
    "M-RET" #'org-agenda-show-and-scroll-up
    "C-f" #'evil-scroll-page-down
-   "C-b" #'evil-scroll-page-up)
+   "C-b" #'evil-scroll-page-up
+
+   ;; Restore bindings for search buffers
+   "+" #'org-agenda-manipulate-query-add
+   "`" #'org-agenda-manipulate-query-add-re
+   "-" #'org-agenda-manipulate-query-subtract
+   "_" #'org-agenda-manipulate-query-subtract-re)
   :preface
   (progn
     (autoload 'page-break-lines--update-display-tables "page-break-lines")
