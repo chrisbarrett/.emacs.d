@@ -73,20 +73,20 @@ Return the position of the headline."
 (defvar org-funcs--punching-in-p nil)
 (defvar org-funcs--punching-out-p nil)
 
-(defun org-funcs-work-file-buffer ()
-  (find-file-noselect (f-join org-directory "work.org")))
+(defun org-funcs-work-clocking-buffer ()
+  (find-file-noselect (f-join org-directory "work_notes.org")))
 
-(defun org-funcs-personal-file-buffer ()
-  (find-file-noselect (f-join org-directory "work.org")))
+(defun org-funcs-personal-clocking-buffer ()
+  (find-file-noselect (f-join org-directory "personal_notes.org")))
 
 (defun org-funcs-buffer-for-context ()
   (--find (equal (current-buffer) it)
-          (list (org-funcs-personal-file-buffer)
-                (org-funcs-work-file-buffer))))
+          (list (org-funcs-personal-clocking-buffer)
+                (org-funcs-work-clocking-buffer))))
 
 (defun org-funcs-punch-in (buffer)
   "Punch in with the default date tree in the given BUFFER."
-  (interactive (list (org-funcs-work-file-buffer)))
+  (interactive (list (org-funcs-work-clocking-buffer)))
   (let ((org-funcs--punching-in-p t))
     (with-current-buffer buffer
       (save-excursion
@@ -100,7 +100,7 @@ Return the position of the headline."
     (when (org-clock-is-active)
       (org-clock-out))
     (org-agenda-remove-restriction-lock)
-    (with-current-buffer (org-funcs-work-file-buffer)
+    (with-current-buffer (org-funcs-work-clocking-buffer)
       (save-buffer))
     (message "Punched out.")))
 
