@@ -377,6 +377,7 @@ By default, this shows the information specified by `global-mode-string'."
                   (markdown-list-face ((t :inherit markdown-blockquote-face)))
                   (treemacs-git-unmodified-face ((t :inherit default)))
                   (treemacs-git-renamed-face ((t :inherit font-lock-doc-face)))
+                  (org-drawer ((t :inherit org-special-keyword)))
                   (outline-1 ((t (:weight bold :foreground ,blue))))
                   (lsp-ui-sideline-symbol ((t :height 0.99)))
                   (lsp-ui-sideline-symbol-info ((t :foreground "grey" :slant italic :height 0.99 :weight light)))
