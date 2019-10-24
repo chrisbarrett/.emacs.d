@@ -40,6 +40,7 @@
   (progn
     (setq page-break-lines-modes
           '(prog-mode
+            ibuffer-mode
             text-mode
             compilation-mode
             help-mode

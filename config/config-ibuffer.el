@@ -7,8 +7,6 @@
 
 (require 'general)
 
-(autoload 'page-break-lines-mode "page-break-lines")
-
 
 
 ;; ibuffer provides an interactive buffer list.
@@ -41,8 +39,7 @@
                    "*Flycheck error messages*"
                    "*Help*"))))
 
-    (add-hook 'ibuffer-mode-hook #'hl-line-mode)
-    (add-hook 'ibuffer-mode-hook #'page-break-lines-mode)))
+    (add-hook 'ibuffer-mode-hook #'hl-line-mode)))
 
 ;; ibuf-ext adds a few extra features to ibuffer.
 
@@ -65,7 +62,12 @@
     (add-to-list 'ibuffer-filter-groups '("System" (predicate . (-contains? '("*Messages*" "*scratch*") (buffer-name)))))
     (add-to-list 'ibuffer-filter-groups '("Shells" (mode . eshell-mode)))
     (unless (eq ibuffer-sorting-mode 'alphabetic)
-      (ibuffer-do-sort-by-alphabetic)))
+      (ibuffer-do-sort-by-alphabetic))
+
+    ;; All this buffer modification will have messed up the separator
+    ;; fontification, so force the display table to update now.
+    (when (bound-and-true-p page-break-lines-mode)
+      (page-break-lines--update-display-tables)))
   :init
   (add-hook 'ibuffer-hook #'config-ibuffer--setup-buffer)
   :config
