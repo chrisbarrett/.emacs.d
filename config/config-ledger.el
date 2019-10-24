@@ -56,7 +56,6 @@
     (general-setq
      ledger-report-use-header-line nil
      ledger-post-account-alignment-column 2
-     ledger-post-use-completion-engine :ido
      ledger-fontify-xact-state-overrides nil)
 
     ;; Faces and font-locking
