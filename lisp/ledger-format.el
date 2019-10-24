@@ -9,18 +9,17 @@
 (defvar ledger-post-amount-alignment-column 52)
 
 (defun ledger-format--align-price-assertion ()
-  (let ((line (buffer-substring (line-beginning-position) (line-end-position))))
-    (when (s-matches? (rx "=" (* space) (not (any digit)))
-                      line)
-      (unwind-protect
-          (progn
-            (goto-char (line-beginning-position))
-            (search-forward "=")
-            (goto-char (match-beginning 0))
-            (indent-to (1+ ledger-post-amount-alignment-column))
-            (skip-chars-forward " =")
-            (just-one-space))
-        (goto-char (line-end-position))))))
+  (when (s-matches? (rx (+ space) "=" (* space) (not (any digit)))
+                    (buffer-substring (line-beginning-position) (line-end-position)))
+    (unwind-protect
+        (progn
+          (goto-char (line-beginning-position))
+          (search-forward "=")
+          (goto-char (match-beginning 0))
+          (indent-to (1+ ledger-post-amount-alignment-column))
+          (skip-chars-forward " =")
+          (just-one-space))
+      (goto-char (line-end-position)))))
 
 ;;;###autoload
 (defun ledger-format-buffer ()
@@ -29,7 +28,7 @@
   (let ((pos (point)))
     (ledger-mode-clean-buffer)
     (goto-char (point-min))
-    (while (search-forward "=" nil t)
+    (while (search-forward-regexp (rx (>= 2 space) "=") nil t)
       (ledger-format--align-price-assertion))
     (goto-char pos)))
 
