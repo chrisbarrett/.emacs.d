@@ -380,6 +380,7 @@ By default, this shows the information specified by `global-mode-string'."
                   (treemacs-git-renamed-face ((t :inherit font-lock-doc-face)))
                   (org-drawer ((t :inherit org-special-keyword)))
                   (outline-1 ((t (:weight bold :foreground ,blue))))
+                  (ledger-occur-xact-face ((t :inherit region)))
                   (lsp-ui-sideline-symbol ((t :height 0.99)))
                   (lsp-ui-sideline-symbol-info ((t :foreground "grey" :slant italic :height 0.99 :weight light)))
                   (lsp-ui-sideline-current-symbol ((t (:inherit lsp-face-highlight-read :height 0.99))))
