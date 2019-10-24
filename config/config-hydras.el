@@ -17,6 +17,7 @@
 (autoload 'evil-window-rotate-downwards "evil")
 (autoload 'generate-password/body "generate-password")
 (autoload 'ivy-switch-buffer "ivy")
+(autoload 'ledger-report "ledger-mode" nil t)
 (autoload 'neotree-toggle "neotree")
 (autoload 'org-clock/body "org-hydras")
 (autoload 'org-narrow-to-subtree "org")
@@ -445,7 +446,8 @@
     ("n" nix-repl-show "nix-repl"))
 
    "Other"
-   (("g" counsel-google "google search..."))))
+   (("l" ledger-report "ledger report...")
+    ("g" counsel-google "google search..."))))
 
 (pretty-hydra-define profiler
   (:hint nil
