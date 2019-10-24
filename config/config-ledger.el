@@ -53,17 +53,10 @@
   :config
   (progn
     (general-setq
-     ledger-accounts-file (expand-file-name "accounts.ledger" paths-ledger-directory)
      ledger-report-use-header-line nil
      ledger-post-account-alignment-column 2
      ledger-post-use-completion-engine :ido
-     ledger-fontify-xact-state-overrides nil
-     ledger-reports
-     `(("budget" "ledger --depth 3 bal -p 'this month' ^Budget")
-       ("assets & liabilities" "ledger bal --real '^Assets' '^Liabilities' --depth 2")
-       ("balance" "ledger --depth 2 bal --real Assets Expenses Liablities Income")
-       ("reg this week" "ledger reg --real checking -p 'this week'")
-       ("reg this month" "ledger reg --real checking -p 'this month'")))
+     ledger-fontify-xact-state-overrides nil)
 
     ;; Faces and font-locking
 

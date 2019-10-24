@@ -179,6 +179,11 @@
   (when (file-directory-p paths-org-lisp-directory)
     (load (expand-file-name "init.el" paths-org-lisp-directory) t)))
 
+;; Load files in ledger directory
+
+(when (file-directory-p paths-ledger-lisp-directory)
+  (load (expand-file-name "init.el" paths-ledger-lisp-directory) t))
+
 
 ;;; Print overall startup time.
 

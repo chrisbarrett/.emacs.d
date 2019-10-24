@@ -13,6 +13,7 @@
 (autoload 'hostname (concat user-emacs-directory "lisp/hostname"))
 
 (defconst paths-ledger-directory "~/Dropbox/ledger")
+(defconst paths-ledger-lisp-directory "~/Dropbox/ledger/lisp")
 
 (defvar paths-org-directory "~/Dropbox/org")
 
