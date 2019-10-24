@@ -39,6 +39,7 @@
 
     (defconst exec-path-from-shell-variables
       '("PATH"
+        "LEDGER_FILE"
         "MANPATH"
         "NIX_REMOTE"
         "NIX_USER_PROFILE_DIR"
