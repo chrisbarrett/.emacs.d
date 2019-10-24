@@ -42,6 +42,7 @@
           '(prog-mode
             ibuffer-mode
             text-mode
+            ledger-report-mode
             compilation-mode
             help-mode
             org-agenda-mode))
