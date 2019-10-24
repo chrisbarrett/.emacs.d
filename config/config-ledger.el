@@ -14,8 +14,6 @@
 (autoload 'ledger-report "ledger")
 (autoload 'org-read-date "org")
 
-(general-setq ledger-master-file (file-truename "~/org/accounts.ledger"))
-
 (major-mode-hydra-define ledger-mode nil
   ("Actions"
    (("r" #'ledger-report "report"))))
@@ -55,6 +53,7 @@
   :config
   (progn
     (general-setq
+     ledger-accounts-file (expand-file-name "accounts.ledger" paths-ledger-directory)
      ledger-report-use-header-line nil
      ledger-post-account-alignment-column 2
      ledger-post-use-completion-engine :ido
