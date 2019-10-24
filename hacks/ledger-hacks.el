@@ -40,7 +40,10 @@ arguments returned by `ledger-report--compute-extra-args'."
           (insert report))
         (when (ledger-report--cmd-needs-links-p cmd)
           (save-excursion
-            (ledger-report--add-links)))))))
+            (ledger-report--add-links))))
+
+      (el-patch-add
+        (page-break-lines--update-display-tables)))))
 
 (provide 'ledger-hacks)
 
