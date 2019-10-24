@@ -10,6 +10,9 @@
 (require 'org-funcs)
 (require 'window-cmds)
 
+(cl-eval-when (compile)
+  (require 'hydra-posframe))
+
 (autoload 'counsel-find-file "config-ivy")
 (autoload 'counsel-recentf "config-ivy")
 (autoload 'evil-window-next "evil")
@@ -85,7 +88,6 @@
   (require 'pretty-hydra))
 
 (defmacro pretty-hydra-define-at-bottom (name body heads-plist)
-  "Show this hydra at the bottom of the screen so it doesn't obscure code."
   (declare (indent defun))
   `(pretty-hydra-define ,name (:pre (when (featurep 'hydra-posframe)
                                       (setq hydra-posframe-poshandler #'posframe-poshandler-frame-bottom-left-corner))
