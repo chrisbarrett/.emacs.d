@@ -59,12 +59,11 @@
      ledger-post-use-completion-engine :ido
      ledger-fontify-xact-state-overrides nil
      ledger-reports
-     `(("assets & liabilities" "ledger -f %(ledger-file) bal '^Assets' '^Liabilities' '^Holdings' --depth 2")
-       ("balance" "ledger -f %(ledger-file) --depth 3 bal not ^Equity")
-       ("reg this week" "ledger -f %(ledger-file) reg checking -p 'this week'")
-       ("reg this month" "ledger -f %(ledger-file) reg checking -p 'this month'")
-       ("reg since payday" "ledger -f %(ledger-file) reg checking -b %(last-payday)")
-       ("reg previous pay period" "ledger -f %(ledger-file) reg checking -p %(prev-pay-period)")))
+     `(("budget" "ledger --depth 3 bal -p 'this month' ^Budget")
+       ("assets & liabilities" "ledger bal --real '^Assets' '^Liabilities' --depth 2")
+       ("balance" "ledger --depth 2 bal --real Assets Expenses Liablities Income")
+       ("reg this week" "ledger reg --real checking -p 'this week'")
+       ("reg this month" "ledger reg --real checking -p 'this month'")))
 
     ;; Faces and font-locking
 
