@@ -47,6 +47,7 @@
   :general (:keymaps 'ledger-report-mode-map "C-c C-c" #'config-ledger-report-from-report-buffer)
   :general
   (:keymaps 'ledger-mode-map
+   :states '(normal insert motion)
    "C-c C-c" #'ledger-report
    "M-RET" #'ledger-toggle-current-transaction
    "C-c C-." #'config-ledger-insert-timestamp)
