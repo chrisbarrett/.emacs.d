@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: income
-# key: i
-# condition: (yas-funcs-bolp)
-# --
-Income:${1:ACCOUNT}                              \$ -${2:AMOUNT}

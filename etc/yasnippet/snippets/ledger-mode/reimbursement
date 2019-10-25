@@ -1,5 +1,0 @@
-# key: re
-# name: reimbursement
-# --
-Assets:Reimbursements:${1:NAME}           \$ ${2:VALUE}
-Assets:${3:Checking}

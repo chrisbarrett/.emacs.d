@@ -227,6 +227,32 @@ previous match and abort if no progress is made."
       (ledger-post-align-postings (point-min) (point-max)))
     (buffer-string)))
 
+(defun yas-funcs-ledger-format-allocation-posting ()
+  (let ((credit (shell-command-to-string "ledger bal --invert -p 'last month' '^Budget:Next Month' --format '%(amount)'"))
+        (debit (shell-command-to-string "ledger bal -p 'last month' '^Budget:Next Month' --format '%(amount)'")))
+    (with-temp-buffer
+      (insert (format-time-string "%Y/%m/01 * Allocate\n"))
+      (insert (format "  [Next Month]   %s\n" debit))
+      (insert (format "  [Unbudgeted]   %s = %s\n" credit credit))
+      (ledger-post-align-postings (point-min) (point-max))
+      (buffer-string))))
+
+(defun yas-funcs-ledger-format-budget-posting-from-latest ()
+  (save-excursion
+    (cond
+     ((search-backward-regexp (rx bol (+ digit) "/" (+ digit) "/" (+ digit) (+ space) (? (and "*" (+ space)))  "Budget")
+                              nil t)
+      (forward-line 1)
+      (let ((start (line-beginning-position))
+            (end
+             (search-forward-regexp (rx bol (not (any space "*#"))))))
+
+        (concat
+         (format-time-string "%Y/%m/01 * Budget\n")
+         (s-trim-right (buffer-substring-no-properties start end)))))
+     (t
+      (user-error "No budget posting in current buffer")))))
+
 (provide 'yas-funcs)
 
 ;;; yas-funcs.el ends here

@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: repayment
-# key: rep
-# --
-Assets:${1:Checking}                     \$ ${2:VALUE}
-Assets:Reimbursements:${3:NAME}

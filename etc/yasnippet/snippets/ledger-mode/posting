@@ -1,5 +1,5 @@
 # key: t
-# name: transaction
+# name: posting
 # condition: (yas-funcs-bolp)
 # --
 `(format-time-string "%Y/%m/%d")` * Rebudget
