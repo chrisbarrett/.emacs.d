@@ -18,24 +18,6 @@
   ("Actions"
    (("r" #'ledger-report "report"))))
 
-
-;; Utility functions
-
-(defun config-ledger-insert-timestamp (date)
-  "Insert DATE at point."
-  (interactive (list (org-read-date)))
-  (insert (s-replace "-" "/" date))
-  (just-one-space)
-  (evil-insert-state))
-
-(defun config-ledger-report-from-report-buffer ()
-  "Run a new report within the ledger report buffer."
-  (interactive)
-  (let ((buf (--first (with-current-buffer it
-                        (derived-mode-p 'ledger-mode))
-                      (buffer-list))))
-    (pop-to-buffer buf)
-    (call-interactively #'ledger-report)))
 
 
 ;; Package setup
