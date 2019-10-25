@@ -205,6 +205,28 @@ previous match and abort if no progress is made."
                 (yas-funcs--java-ctor-parse-param-string param-string))))
     (s-join "\n" lines)))
 
+
+
+(cl-eval-when (compile)
+  (require 'ledger-mode))
+
+(defun yas-funcs-ledger-virtual-account-aliases ()
+  (->> (f-read-text ledger-accounts-file)
+       (s-lines)
+       (--keep (-when-let ((_ account) (s-match (rx bol (+ space) "alias" (+ space) (group (+ nonl)))
+                                                it))
+                 (s-trim account)))
+       (-uniq)
+       (-sort #'string-lessp)))
+
+(defun yas-funcs-ledger-format-virtual-transaction ()
+  (with-temp-buffer
+    (let ((account (completing-read "Account: " (yas-funcs-ledger-virtual-account-aliases) nil t))
+          (amount (read-number "Value: ")))
+      (insert (format "  [%s]    $ %s" account amount))
+      (ledger-post-align-postings (point-min) (point-max)))
+    (buffer-string)))
+
 (provide 'yas-funcs)
 
 ;;; yas-funcs.el ends here
