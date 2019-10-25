@@ -20,6 +20,7 @@
 (autoload 'evil-window-rotate-downwards "evil")
 (autoload 'generate-password/body "generate-password")
 (autoload 'ivy-switch-buffer "ivy")
+(autoload 'ledger-import "ledger-import")
 (autoload 'ledger-report "ledger-mode" nil t)
 (autoload 'neotree-toggle "neotree")
 (autoload 'org-clock/body "org-hydras")
@@ -256,7 +257,9 @@
     ("b" (find-file (f-join paths-ledger-directory "budget.ledger")) "budget")
     ("i" (find-file (f-join paths-ledger-directory "lisp" "init.el")) "lisp init file")
     ("j" (find-file (f-join paths-ledger-directory "journal.ledger")) "journal")
-    ("m" (find-file (f-join paths-ledger-directory "master.ledger")) "master file"))))
+    ("m" (find-file (f-join paths-ledger-directory "master.ledger")) "master file"))
+   "Actions"
+   (("c" #'ledger-import "import CSV..."))))
 
 (pretty-hydra-define org
   (:hint nil
