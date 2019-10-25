@@ -2,5 +2,5 @@
 # name: transaction
 # expand-env: ((yas-indent-line (quote fixed)))
 # --
-`(s-replace "-" "/" (org-read-date ))` ${2:(${3:REF}) }${4:PAYEE}
+`(format-time-string "%Y/%m/%d")` * ${1:PAYEE}
   $0
