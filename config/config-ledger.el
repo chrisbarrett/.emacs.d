@@ -16,8 +16,12 @@
 
 (major-mode-hydra-define ledger-mode nil
   ("Actions"
-   (("r" #'ledger-report "report"))))
+   (("r" #'ledger-report "report..."))))
 
+(major-mode-hydra-define ledger-report-mode nil
+  ("Actions"
+   (("e" #'ledger-report-edit-report "edit...")
+    ("r" #'ledger-report "report..."))))
 
 
 ;; Package setup
