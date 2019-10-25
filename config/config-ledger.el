@@ -43,14 +43,16 @@
 (use-package ledger-mode
   :straight t
   :mode ("\\.ledger$" . ledger-mode)
-  :general (:states 'normal :keymaps 'ledger-report-mode-map "q" #'kill-buffer-and-window)
-  :general (:keymaps 'ledger-report-mode-map "C-c C-c" #'config-ledger-report-from-report-buffer)
   :general
-  (:keymaps 'ledger-mode-map
-   :states '(normal insert motion)
+
+  (:keymaps 'ledger-report-mode-map
    "C-c C-c" #'ledger-report
-   "M-RET" #'ledger-toggle-current-transaction
-   "C-c C-." #'config-ledger-insert-timestamp)
+   "q"       #'kill-buffer-and-window)
+
+  (:keymaps 'ledger-mode-map
+   "C-c C-c" #'ledger-report
+   "M-RET" #'ledger-toggle-current-transaction)
+
   :config
   (progn
     (general-setq
