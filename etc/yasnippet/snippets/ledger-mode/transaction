@@ -1,6 +1,7 @@
 # key: t
 # name: transaction
-# expand-env: ((yas-indent-line (quote fixed)))
+# condition: (yas-funcs-bolp)
 # --
-`(format-time-string "%Y/%m/%d")` * ${1:PAYEE}
+`(format-time-string "%Y/%m/%d")` * Rebudget
   $0
+  [Unbudgeted]
