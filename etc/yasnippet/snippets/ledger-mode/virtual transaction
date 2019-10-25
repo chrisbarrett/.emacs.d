@@ -1,0 +1,5 @@
+# key: v
+# name: virtual transaction
+# condition: (yas-funcs-bolp)
+# --
+[${1:account}]   \$ ${2:amount}
