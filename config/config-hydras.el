@@ -247,6 +247,17 @@
    "Actions"
    (("w" #'widen "widen"))))
 
+(pretty-hydra-define ledger
+  (:hint nil
+   :color teal
+   :title (hydra-title-with-mode-icon 'ledger-mode "Ledger"))
+  ("Goto"
+   (("a" (find-file (f-join paths-ledger-directory "accounts.ledger")) "accounts")
+    ("b" (find-file (f-join paths-ledger-directory "budget.ledger")) "budget")
+    ("i" (find-file (f-join paths-ledger-directory "lisp" "init.el")) "lisp init file")
+    ("j" (find-file (f-join paths-ledger-directory "journal.ledger")) "journal")
+    ("m" (find-file (f-join paths-ledger-directory "master.ledger")) "master file"))))
+
 (pretty-hydra-define org
   (:hint nil
    :color teal
@@ -526,18 +537,19 @@
    :color teal
    :title (hydra-title-with-fileicon "emacs" "Overview"))
   ("Menus"
-   (("," parens/body "parens...")
+   (("$" ledger/body "ledger...")
+    ("." lsp-debugger/body "debugger...")
+    ("," parens/body "parens...")
     ("a" applications/body "applications...")
     ("b" buffers/body "buffers...")
     ("c" comments/body "comments...")
     ("e" errors/body "errors...")
     ("f" files/body "files...")
     ("g" git-and-files/body "git and goto...")
-    ("h" help/body "help...")
-    ("k" kill/body "kill...")
-    ("." lsp-debugger/body "debugger..."))
+    ("h" help/body "help..."))
    ""
-   (("l" language-server/body  "language server...")
+   (("k" kill/body "kill...")
+    ("l" language-server/body  "language server...")
     ("n" narrowing/body "narrowing...")
     ("o" org/body "org...")
     ("p" project/body "project...")
