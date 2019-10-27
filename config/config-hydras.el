@@ -464,7 +464,9 @@
     ("n" nix-repl-show "nix-repl"))
 
    "Other"
-   (("l" ledger-report "ledger report...")
+   (("l" (with-current-buffer (find-file-noselect (f-join paths-ledger-directory "master.ledger"))
+           (call-interactively #'ledger-report))
+     "ledger report...")
     ("g" counsel-google "google search..."))))
 
 (pretty-hydra-define profiler
