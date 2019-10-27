@@ -32,8 +32,8 @@
     ("dc" dired-do-copy "copy")
     ("dD" dired-do-delete "delete")
     ("dh" dired-do-hardlink "hardlink")
-    ("ds" dired-do-search "symlink (relative)")
-    ("dS" dired-do-search "symlink (absolute)")
+    ("ds" dired-do-relsymlink "symlink (relative)")
+    ("dS" dired-do-symlink "symlink (absolute)")
     ("dq" dired-do-search "search inside"))))
 
 (use-package dired
