@@ -26,7 +26,8 @@
   "Reformat the buffer."
   (interactive "*")
   (let ((pos (point)))
-    (ledger-mode-clean-buffer)
+    (ignore-errors
+      (ledger-mode-clean-buffer))
     (goto-char (point-min))
     (while (search-forward-regexp (rx (>= 2 space) "=") nil t)
       (ledger-format--align-price-assertion))
