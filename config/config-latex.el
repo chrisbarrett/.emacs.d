@@ -60,10 +60,8 @@
 
 (defvar config-latex--command "LaTeX")
 
-(use-package tex
-  :straight (auctex :host github :repo "raxod502/auctex"
-                    :branch "fork/1"
-                    :files (:defaults (:exclude "doc/*.texi")))
+(use-package tex-site
+  :straight (auctex)
   :defer t
   :preface
   (defvar-local TeX-syntactic-comments t)
