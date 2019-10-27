@@ -464,8 +464,10 @@
                             ("\\all" ?∀)
                             ("\\rtack" ?⊢)))))
   :config
-  (add-hook 'input-method-activate-hook #'config-basic-settings--set-tex-method-vars))
-
+  (progn
+    (activate-input-method "TeX")
+    (set-input-method "TeX")
+    (add-hook 'input-method-activate-hook #'config-basic-settings--set-tex-method-vars)))
 
 (use-package hippie-exp
   :general ("M-/" 'hippie-expand
