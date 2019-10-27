@@ -267,7 +267,8 @@ By default, this shows the information specified by `global-mode-string'."
 
 (use-package fancy-battery
   :straight t
-  :custom ((fancy-battery-show-percentage nil))
+  :custom ((fancy-battery-show-percentage nil)
+           (fancy-battery-mode-line nil))
   :hook (after-init . fancy-battery-mode))
 
 ;; `hide-mode-line' provides a mode that hides the modeline.
