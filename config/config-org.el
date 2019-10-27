@@ -126,6 +126,7 @@
  ;; latex
 
  org-latex-compiler "tectonic"
+ org-latex-compilers '("tectonic" "pdflatex" "xelatex" "lualatex")
  org-latex-pdf-process '("tectonic --outdir %o %f")
 
  ;; org-habit
