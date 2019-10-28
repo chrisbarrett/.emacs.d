@@ -89,20 +89,7 @@
   :hook (pass-mode . git-auto-commit-mode)
   :init
   (add-to-list 'safe-local-variable-values '(gac-automatically-push-p . t))
-  :preface
-  (progn
-    (defun config-git--maybe-commit-and-push ()
-      (let ((file (convert-standard-filename (file-name-nondirectory (buffer-file-name)))))
-        (deferred:try
-          (deferred:$
-            (deferred:process "git" "add" (shell-quote-argument file))
-            (deferred:processc it "git" "commit" "-m" (shell-quote-argument (gac--commit-msg (buffer-file-name)))))
-          :catch #'ignore
-          :finally #'gac-push))))
-
-  :custom ((gac-debounce-interval 10))
-  :config
-  (defalias 'gac-after-save-func #'config-git--maybe-commit-and-push))
+  :custom ((gac-debounce-interval 10)))
 
 ;; Git Time Machine lets you interactively step forward and backwards through a
 ;; buffers git versions.
