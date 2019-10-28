@@ -78,7 +78,6 @@
  ("fancy-battery" . "9b88ae77a01aa3edc529840338bcb2db7f445822")
  ("flx" . "46040d0b096a0340d91235561f27a959a61d0fef")
  ("flycheck" . "0eaf67211b83c062e598694d2ba4efb444dc1dc6")
- ("flycheck-ledger" . "0fdb067ebbcc8bc1a3f9d2109e341049516b71da")
  ("flycheck-package" . "d76e04009f2548581fc9e9a84f79f1a3112f1096")
  ("flycheck-posframe" . "13f8c7c7b3b51c9e7e518ae47500755642315a0e")
  ("flycheck-rust" . "a139cd53c5062697e9ed94ad80b803c37d999600")

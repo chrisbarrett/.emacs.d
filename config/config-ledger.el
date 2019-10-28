@@ -66,11 +66,6 @@
   :defer t
   :general (:keymaps 'ledger-mode-map "M-q" #'ledger-format-buffer))
 
-(use-package flycheck-ledger
-  :straight t
-  :defer t
-  :after ledger-mode)
-
 (provide 'config-ledger)
 
 ;;; config-ledger.el ends here
