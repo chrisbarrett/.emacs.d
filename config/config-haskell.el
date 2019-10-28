@@ -49,7 +49,8 @@
 
   :preface
   (defun config-haskell--set-indentation-step ()
-    (with-no-warnings (setq evil-shift-width 4))
+    (when (boundp 'evil-shift-width)
+      (setq evil-shift-width 4))
     (setq tab-width 4))
 
   :config

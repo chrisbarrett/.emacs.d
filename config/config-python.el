@@ -130,7 +130,7 @@
   :hook (anaconda-mode . config-python--enable-company-anaconda)
   :preface
   (defun config-python--enable-company-anaconda ()
-    (with-no-warnings
+    (when (boundp 'company-backends)
       (add-to-list 'company-backends 'company-anaconda))))
 
 (use-package pytest
