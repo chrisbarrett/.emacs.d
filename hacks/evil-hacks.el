@@ -11,7 +11,8 @@
 (use-package link-hint
   :straight t
   :commands (link-hint-open-link-at-point)
-  :functions (link-hint--get-link-at-point))
+  :init
+  (autoload 'link-hint--get-link-at-point "link-hint"))
 
 (cl-eval-when (compile)
   (require 'evil)
