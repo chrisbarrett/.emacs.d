@@ -73,6 +73,7 @@
  ("evil-org-mode" . "b6d652a9163d3430a9e0933a554bdbee5244bbf6")
  ("evil-surround" . "d210e1fc2cf1c2d095471cefa700a0d1703f4ab6")
  ("exec-path-from-shell" . "3cfedb8791397ed50ee66bc0a7cbee5b9d78245c")
+ ("eyebrowse" . "e483d35e905c2e26fac63f33c77b9e764729a364")
  ("f.el" . "8191672377816a1975414cc1f116fd3b94b30bd0")
  ("fancy-battery" . "9b88ae77a01aa3edc529840338bcb2db7f445822")
  ("flx" . "46040d0b096a0340d91235561f27a959a61d0fef")
