@@ -100,6 +100,7 @@
           :catch #'ignore
           :finally #'gac-push))))
 
+  :custom ((gac-debounce-interval 10))
   :config
   (defalias 'gac-after-save-func #'config-git--maybe-commit-and-push))
 
