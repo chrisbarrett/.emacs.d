@@ -38,14 +38,6 @@
 
 (load bootstrap-file nil 'nomessage)
 
-(unless (fboundp 'straight-vc-builtin-get-commit)
-  (defun straight-vc-built-in-get-commit (&rest _)
-    "built-in"))
-
-(with-no-warnings
-  (setq straight-cache-autoloads t)
-  (setq straight-check-for-modifications '(watch-files)))
-
 (require 'straight bootstrap-file t)
 
 
