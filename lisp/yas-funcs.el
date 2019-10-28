@@ -219,10 +219,16 @@ previous match and abort if no progress is made."
        (-uniq)
        (-sort #'string-lessp)))
 
+(defun yas-funcs--ledger-current-account-balance (account)
+  (let* ((account (format "Budget:.*:%s" account))
+         (command (format "ledger bal %s  --invert --format '%%(total)'"
+                          (shell-quote-argument account))))
+    (string-remove-prefix "$ " (string-trim (shell-command-to-string command)))))
+
 (defun yas-funcs-ledger-format-virtual-transaction ()
   (with-temp-buffer
-    (let ((account (completing-read "Account: " (yas-funcs-ledger-virtual-account-aliases) nil t))
-          (amount (read-number "Value: ")))
+    (let* ((account (completing-read "Account: " (yas-funcs-ledger-virtual-account-aliases) nil t))
+           (amount (or (yas-funcs--ledger-current-account-balance account) (read-number "Value: "))))
       (insert (format "  [%s]    $ %s" account amount))
       (ledger-post-align-postings (point-min) (point-max)))
     (buffer-string)))
