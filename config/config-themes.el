@@ -385,6 +385,9 @@ By default, this shows the information specified by `global-mode-string'."
                 ;; Common settings
 
                 `((font-lock-comment-face ((t (:weight bold))))
+                  (eyebrowse-mode-line-inactive ((t :foreground ,base6)))
+                  (eyebrowse-mode-line-delimiters ((t (:foreground ,base6))))
+                  (eyebrowse-mode-line-active ((t (:foreground ,blue :bold t))))
                   (org-agenda-current-time ((t :foreground ,orange)))
                   (ledger-report-negative-amount ((t :foreground ,red)))
                   (vterm-color-black ((t (:foreground ,bg :background ,base5))))
