@@ -418,8 +418,6 @@ By default, this shows the information specified by `global-mode-string'."
                 (pcase theme
                   ('doom-one
                    `((doom-modeline-project-parent-dir ((t (:foreground ,base5 :bold t))))
-                     (org-scheduled ((t (:foreground ,base4))))
-                     (org-scheduled-today ((t (:foreground ,fg))))
                      (treemacs-git-ignored-face ((t :foreground "#787878")))
                      (parenthesis ((t (:foreground "#787878" :weight light))))
                      ;; HACK: This doesn't seem to get set properly in the face definition.
