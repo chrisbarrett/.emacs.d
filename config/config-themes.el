@@ -244,6 +244,12 @@
                  (config-themes--right-top-window-p))
         (or doom-modeline--battery-status (doom-modeline-update-battery-status))))
 
+    (doom-modeline-def-segment eyebrowse
+      "Display eyebrowse workspace information."
+      (let ((indicator (eyebrowse-mode-line-indicator)))
+        (unless (s-blank-p indicator)
+          (concat indicator " "))))
+
     (doom-modeline-def-segment system
       "Mode line construct for miscellaneous information.
 By default, this shows the information specified by `global-mode-string'."
@@ -264,6 +270,7 @@ By default, this shows the information specified by `global-mode-string'."
                     process vcs
                     checker
                     space
+                    eyebrowse
                     org-clock
                     battery
                     system))))
