@@ -643,6 +643,11 @@
     (add-hook 'ediff-keymap-setup-hook #'config-basic-settings--setup-ediff-keybinds)
     (setq ediff-window-setup-function #'ediff-setup-windows-plain)))
 
+(use-package image
+  :defer t
+  :general (:keymaps 'image-mode-map :states '(normal motion)
+            "-" #'image-decrease-size
+            "+" #'image-increase-size))
 
 (provide 'config-basic-settings)
 
