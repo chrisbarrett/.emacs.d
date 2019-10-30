@@ -96,6 +96,8 @@
                                             (interactive)
                                             (insert v)))))
 
+(define-key evil-persian-insert-state-map (kbd "C-w") #'evil-delete-backward-word)
+
 (define-minor-mode evil-persian-mode
   "Minor mode substituting insert state for persian insert state."
   nil nil nil
