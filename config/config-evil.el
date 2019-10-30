@@ -84,6 +84,8 @@
       (kbd "^") #'help-go-back
       (kbd "gh") #'help-follow-symbol)
 
+    (evil-global-set-key 'normal (kbd "go") #'browse-url-at-point)
+
     ;; Initial states and keymaps for builtin Emacs packages.
 
     (evil-set-initial-state 'tabulated-list-mode 'motion)
