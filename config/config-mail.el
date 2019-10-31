@@ -118,6 +118,7 @@
                   mu4e-view-show-addresses t
                   mu4e-maildir (f-expand "~/Maildir")
                   mu4e-headers-date-format "%d-%m-%y %k:%M"
+                  mu4e-completing-read-function #'completing-read
                   sendmail-program "msmtp"
                   message-send-mail-function #'message-send-mail-with-sendmail
 
