@@ -385,6 +385,7 @@ By default, this shows the information specified by `global-mode-string'."
                 ;; Common settings
 
                 `((font-lock-comment-face ((t (:weight bold))))
+                  (mu4e-highlight-face ((t :foreground ,blue :bold t)))
                   (eyebrowse-mode-line-inactive ((t :foreground ,base6)))
                   (eyebrowse-mode-line-delimiters ((t (:foreground ,base6))))
                   (eyebrowse-mode-line-active ((t (:foreground ,blue :bold t))))
