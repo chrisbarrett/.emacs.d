@@ -158,6 +158,14 @@
     ;; View html message in external browser. `a&` in view to activate
     (add-to-list 'mu4e-view-actions '("&viewInExternalBrowser" . config-mail--view-in-external-browser-action) t)
 
+    ;; Make refiling mark messages as read.
+    (setf (alist-get 'refile mu4e-marks)
+          '(:char ("r" . "▶")
+            :prompt "refile"
+            :dyn-target (lambda (target msg) (mu4e-get-refile-folder msg))
+            :action (lambda (docid msg target)
+                      (mu4e~proc-move docid (mu4e~mark-check-target target) "+S-u-N"))))
+
     (add-to-list 'display-buffer-alist
                  `(,(rx bos "*mu4e-main*" eos)
                    (display-buffer-reuse-window
