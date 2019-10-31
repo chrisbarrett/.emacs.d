@@ -180,10 +180,10 @@
 
 (use-package mu4e-alert
   :straight t
-  :disabled t
+  :after mu4e
   :custom
   ((mu4e-alert-interesting-mail-query config-mail-unread-mail-query))
-  :hook (after-init . mu4e-alert-enable-mode-line-display))
+  :config (mu4e-alert-enable-mode-line-display))
 
 ;; `messages-are-flowing' displays newline symbols in the buffer for hard newlines.
 
