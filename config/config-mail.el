@@ -167,7 +167,7 @@
                       (mu4e~proc-move docid (mu4e~mark-check-target target) "+S-u-N"))))
 
     (add-to-list 'display-buffer-alist
-                 `(,(rx bos "*mu4e-main*" eos)
+                 `(,(rx bos " *mu4e-main*" eos)
                    (display-buffer-reuse-window
                     display-buffer-fullframe)
                    (reusable-frames . visible)))))
