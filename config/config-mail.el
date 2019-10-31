@@ -59,15 +59,6 @@
 
 (use-package mu4e
   :commands (mu4e mu4e-compose-new)
-  :hook
-  ((mu4e-compose-mode . #'config-mail--insert-signature-before-quoted-message)
-
-   ;; Use word wrap instead of auto-fill.
-   (mu4e-compose-mode . #'turn-off-auto-fill)
-   (mu4e-compose-mode . (lambda () (setq word-wrap t)))
-
-   ;; Wrap lines when viewing.
-   (mu4e-view-mode-hook . #'visual-line-mode))
   :preface
   (progn
     (defun config-mail--shr-buffer ()
@@ -102,6 +93,15 @@
 
   :config
   (progn
+    (add-hook 'mu4e-compose-mode-hook #'config-mail--insert-signature-before-quoted-message)
+
+    ;; Use word wrap instead of auto-fill.
+    (add-hook 'mu4e-compose-mode-hook #'turn-off-auto-fill)
+    (add-hook 'mu4e-compose-mode-hook (lambda () (setq word-wrap t)))
+
+    ;; Wrap lines when viewing.
+    (add-hook 'mu4e-view-mode-hook #'visual-line-mode)
+
     (general-setq mu4e-context-policy 'pick-first
                   mu4e-compose-format-flowed t
                   message-kill-buffer-on-exit t
