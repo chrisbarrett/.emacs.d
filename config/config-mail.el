@@ -188,6 +188,12 @@
     (advice-add 'mu4e-headers-mark-for-refile :override #'mu4e-headers-mark-for-read-and-archive)
     (advice-add 'mu4e-view-mark-for-refile :override #'mu4e-view-mark-for-read-and-archive)))
 
+;; `mu4e-alert' implements a notification system for new emails
+
+(use-package mu4e-alert
+  :straight t
+  :hook (after-init . mu4e-alert-enable-mode-line-display))
+
 ;; `messages-are-flowing' displays newline symbols in the buffer for hard newlines.
 
 (use-package messages-are-flowing
