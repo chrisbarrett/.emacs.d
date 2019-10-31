@@ -376,6 +376,7 @@ By default, this shows the information specified by `global-mode-string'."
 
         (set-face-attribute 'default nil :family parameters-default-font-family)
         (set-face-attribute 'default nil :height parameters-default-text-height)
+        (set-face-attribute 'variable-pitch nil :height parameters-default-text-height)
         (set-face-attribute 'font-lock-keyword-face nil :weight 'light)
         (set-face-attribute 'font-lock-string-face nil :weight 'light)
 
@@ -385,6 +386,7 @@ By default, this shows the information specified by `global-mode-string'."
                 ;; Common settings
 
                 `((font-lock-comment-face ((t (:weight bold))))
+                  (mu4e-header-highlight-face ((t (:bold nil :foreground ,fg :background ,(doom-blend blue bg 0.2)))))
                   (mu4e-highlight-face ((t :foreground ,blue :bold t)))
                   (eyebrowse-mode-line-inactive ((t :foreground ,base6)))
                   (eyebrowse-mode-line-delimiters ((t (:foreground ,base6))))
