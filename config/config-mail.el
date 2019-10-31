@@ -68,10 +68,6 @@
 
    ;; Wrap lines when viewing.
    (mu4e-view-mode-hook . #'visual-line-mode))
-
-  :general
-  (:states '(normal emacs) :keymaps 'mu4e-main-mode-map "q" #'bury-buffer)
-
   :preface
   (progn
     (defun config-mail--shr-buffer ()
@@ -152,6 +148,8 @@
 
                   ;; Custom rendering of HTML messages
                   mu4e-html2text-command #'config-mail--shr-buffer)
+
+    (global-set-key [remap mu4e-quit] #'bury-buffer)
 
     ;; View html message in eww. `av` in view to activate
     (add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
