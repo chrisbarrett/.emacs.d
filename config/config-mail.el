@@ -32,10 +32,30 @@
   ("Attachments"
    (("a" mail-add-attachment "add"))))
 
+(defconst config-mail-unread-mail-query
+  "flag:unread AND NOT (flag:trashed OR m:/walrus/Archive)")
+
 ;; `mu4e' is an Emacs mail client. I install the lisp along with the 'mu'
 ;; program via Nix.
 
 (add-to-list 'load-path (f-join paths-site-lisp-directory "mu4e"))
+
+(general-setq mu4e-bookmarks `((,config-mail-unread-mail-query
+                                "Unread messages" ?u)
+                               ("d:today..now"
+                                "Today's messages" ?t)
+                               ("d:7d..now AND NOT s:JIRA"
+                                "Last 7 days" ?w)
+                               ("d:30d..now AND NOT s:JIRA"
+                                "Last 30 days" ?m)
+                               ("m:/walrus/Inbox"
+                                "Inbox" ?i)
+                               ("m:/walrus/Notifications"
+                                "Notifications" ?n)
+                               ("m:/walrus/Sent"
+                                "Sent messages" ?s)
+                               ("bitbucket OR github"
+                                "Code & PRs" ?c)))
 
 (use-package mu4e
   :commands (mu4e mu4e-compose-new)
@@ -86,25 +106,7 @@
 
   :config
   (progn
-    (general-setq mu4e-bookmarks
-                  '(("flag:unread AND flag:trashed"
-                     "Unread messages" ?u)
-                    ("d:today..now"
-                     "Today's messages" ?t)
-                    ("d:7d..now AND NOT (s:JIRA OR s:jenkins)"
-                     "Last 7 days" ?w)
-                    ("d:30d..now AND NOT (s:JIRA OR s:jenkins)"
-                     "Last 30 days" ?m)
-                    ("m:/walrus/Inbox"
-                     "Inbox" ?i)
-                    ("m:/walrus/Notifications"
-                     "Notifications" ?n)
-                    ("m:/walrus/Sent"
-                     "Sent messages" ?s)
-                    ("bitbucket OR github"
-                     "Code & PRs" ?c))
-
-                  mu4e-context-policy 'pick-first
+    (general-setq mu4e-context-policy 'pick-first
                   mu4e-compose-format-flowed t
                   message-kill-buffer-on-exit t
                   mu4e-use-fancy-chars t
@@ -172,6 +174,8 @@
 
 (use-package mu4e-alert
   :straight t
+  :custom
+  ((mu4e-alert-interesting-mail-query config-mail-unread-mail-query))
   :hook (after-init . mu4e-alert-enable-mode-line-display))
 
 ;; `messages-are-flowing' displays newline symbols in the buffer for hard newlines.
