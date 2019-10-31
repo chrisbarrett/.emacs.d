@@ -163,27 +163,7 @@
                     display-buffer-fullframe)
                    (reusable-frames . visible)))))
 
-;; `mu4e-refile' adds a refile command to support my mail workflow.
 
-(use-package mu4e-refile
-  :after mu4e
-  :defer t
-  :config
-  (progn
-    ;; Expands to: mu4e-view-mark-for-read-and-archive
-    (mu4e~headers-defun-mark-for read-and-archive)
-
-    ;; Expands to: mu4e-headers-mark-for-read-and-archive
-    (mu4e~view-defun-mark-for read-and-archive)
-
-    ;; Add read+archive mark
-    (add-to-list 'mu4e-marks
-                 '(read-and-archive
-                   :char "r"
-                   :prompt "rArchive"
-                   :show-target file-name-nondirectory
-                   :dyn-target (lambda (target msg) (cb-mu4e-utils--select-target-dir-for-refile msg))
-                   :action cb-mu4e-utils-read-and-archive-action))
 
     (advice-add 'mu4e-headers-mark-for-refile :override #'mu4e-headers-mark-for-read-and-archive)
     (advice-add 'mu4e-view-mark-for-refile :override #'mu4e-view-mark-for-read-and-archive)))
