@@ -172,15 +172,11 @@
                     display-buffer-fullframe)
                    (reusable-frames . visible)))))
 
-
-
-    (advice-add 'mu4e-headers-mark-for-refile :override #'mu4e-headers-mark-for-read-and-archive)
-    (advice-add 'mu4e-view-mark-for-refile :override #'mu4e-view-mark-for-read-and-archive)))
-
 ;; `mu4e-alert' implements a notification system for new emails
 
 (use-package mu4e-alert
   :straight t
+  :disabled t
   :custom
   ((mu4e-alert-interesting-mail-query config-mail-unread-mail-query))
   :hook (after-init . mu4e-alert-enable-mode-line-display))
