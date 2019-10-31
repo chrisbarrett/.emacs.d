@@ -90,6 +90,8 @@
             (when (member mu4e-compose-type '(forward reply))
               (goto-char (point-max))
               (insert "\n")))))))
+  :init
+  (global-set-key [remap compose-mail] #'mu4e-compose-new)
 
   :config
   (progn
