@@ -8,6 +8,8 @@
 
 (autoload 'gfm-mode "markdown-mode")
 
+(defvar ox-slack-postprocess-function #'identity)
+
 (defun ox-slack--markup-headline (headline contents info)
   (let* ((text (org-export-data (org-element-property :title headline) info))
          (todo (org-export-data (org-element-property :todo-keyword headline) info))
@@ -99,7 +101,12 @@ channel."
   (interactive)
   (ox-slack--with-default-export-options
     (org-export-to-buffer 'slack "*Org Slack Export*"
-      async subtreep visible-only body-only ext-plist (lambda () (gfm-mode)))))
+      async subtreep visible-only body-only ext-plist
+      (lambda ()
+        (let ((str (funcall ox-slack-postprocess-function (buffer-substring (line-beginning-position) (line-end-position)))))
+          (erase-buffer)
+          (insert str)
+          (gfm-mode))))))
 
 (defun ox-slack-export-to-clipboard (&optional async subtreep visible-only body-only ext-plist formatter)
   (interactive)
@@ -108,7 +115,7 @@ channel."
       (org-export-to-buffer 'slack "*Org Slack Export*"
         async subtreep visible-only body-only ext-plist
         (lambda ()
-          (kill-new (funcall (or formatter #'identity) (string-trim (buffer-string))))
+          (kill-new (funcall (or formatter ox-slack-postprocess-function) (string-trim (buffer-string))))
           (message "Buffer contents copied to clipboard"))))))
 
 (provide 'ox-slack)
