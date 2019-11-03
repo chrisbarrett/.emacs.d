@@ -96,6 +96,10 @@
 (use-package pdf-tools
   :straight t
   :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
+  :general (:states '(motion normal) :keymaps 'pdf-view-mode-map
+            "n" #'pdf-view-next-page
+            "N" #'pdf-view-previous-page
+            "p" #'pdf-view-previous-page)
   :config
   (progn
     (pdf-tools-install)
