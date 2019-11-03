@@ -103,7 +103,7 @@ channel."
     (org-export-to-buffer 'slack "*Org Slack Export*"
       async subtreep visible-only body-only ext-plist
       (lambda ()
-        (let ((str (funcall ox-slack-postprocess-function (buffer-substring (line-beginning-position) (line-end-position)))))
+        (let ((str (funcall ox-slack-postprocess-function (buffer-string))))
           (erase-buffer)
           (insert str)
           (gfm-mode))))))
