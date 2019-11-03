@@ -234,12 +234,13 @@ previous match and abort if no progress is made."
     (buffer-string)))
 
 (defun yas-funcs-ledger-format-allocation-posting ()
-  (let ((credit (shell-command-to-string "ledger bal --invert -p 'last month' '^Budget:Next Month' --format '%(amount)'"))
-        (debit (shell-command-to-string "ledger bal -p 'last month' '^Budget:Next Month' --format '%(amount)'")))
+  (-let [(_ amount)
+         (s-match (rx (group (+ digit) (? "." (+ digit))) "\n" string-end)
+                  (shell-command-to-string "ledger reg 'Next Month' --sort date --total-data"))]
     (with-temp-buffer
       (insert (format-time-string "%Y/%m/01 * Allocate\n"))
-      (insert (format "  [Next Month]   %s\n" debit))
-      (insert (format "  [Unbudgeted]   %s = %s\n" credit credit))
+      (insert (format "  [Next Month]   $ -%s = $ 0\n" amount))
+      (insert (format "  [Unbudgeted]    $ %s = $ %s\n" amount amount))
       (ledger-post-align-postings (point-min) (point-max))
       (buffer-string))))
 
