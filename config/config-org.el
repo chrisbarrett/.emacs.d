@@ -401,6 +401,10 @@
 
   :config
   (progn
+    ;; Make bullets prettier.
+    (font-lock-add-keywords 'org-mode
+                    '(("^ *\\([-]\\) "
+                       (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
     ;; Configure private capture templates
     (let ((custom-templates-initfile (f-join paths-org-templates-directory "init.el")))
