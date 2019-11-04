@@ -372,7 +372,15 @@ By default, this shows the information specified by `global-mode-string'."
                           ('doom-one "#ff6c6b")))
              (blue       (pcase theme
                            ('doom-solarized-light "#268bd2")
-                           ('doom-one "#51afef"))))
+                           ('doom-one "#51afef")))
+             (dim-fg
+              (pcase theme
+                ('doom-solarized-light base6)
+                ('doom-one base5)))
+             (dim-fg2
+              (pcase theme
+                ('doom-solarized-light "#9c9c9c")
+                ('doom-one "#787878"))))
 
         (set-face-attribute 'default nil :family parameters-default-font-family)
         (set-face-attribute 'default nil :height parameters-default-text-height)
@@ -385,7 +393,9 @@ By default, this shows the information specified by `global-mode-string'."
 
                 ;; Common settings
 
-                `((font-lock-comment-face ((t (:weight bold))))
+                `((doom-modeline-project-parent-dir ((t (:foreground ,dim-fg :bold t))))
+                  (font-lock-comment-face ((t (:weight bold))))
+                  (parenthesis ((t (:foreground ,dim-fg2 :weight light))))
                   (mu4e-header-highlight-face ((t (:bold nil :foreground ,fg :background ,(doom-blend blue bg 0.2)))))
                   (mu4e-highlight-face ((t :foreground ,blue :bold t)))
                   (eyebrowse-mode-line-inactive ((t :foreground ,base6)))
@@ -420,15 +430,9 @@ By default, this shows the information specified by `global-mode-string'."
 
                 (pcase theme
                   ('doom-one
-                   `((doom-modeline-project-parent-dir ((t (:foreground ,base5 :bold t))))
-                     (treemacs-git-ignored-face ((t :foreground "#787878")))
-                     (parenthesis ((t (:foreground "#787878" :weight light))))
+                   `((treemacs-git-ignored-face ((t :foreground "#787878")))
                      ;; HACK: This doesn't seem to get set properly in the face definition.
-                     (org-block-end-line ((t :foreground ,base5 :background ,base3)))))
-
-                  ('doom-solarized-light
-                   `((doom-modeline-project-parent-dir ((t (:foreground ,base6 :bold t))))
-                     (parenthesis ((t (:foreground "#9c9c9c" :weight light))))))))))))
+                     (org-block-end-line ((t :foreground ,base5 :background ,base3)))))))))))
 
   :config
   (progn
