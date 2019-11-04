@@ -77,7 +77,7 @@ Return the position of the headline."
   (find-file-noselect (f-join org-directory "work_notes.org")))
 
 (defun org-funcs-personal-notes-buffer ()
-  (find-file-noselect (f-join org-directory "personal_notes.org")))
+  (find-file-noselect (f-join org-directory "notes.org")))
 
 (defun org-funcs-buffer-for-context ()
   (--find (equal (current-buffer) it)
