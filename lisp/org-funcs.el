@@ -96,7 +96,10 @@ Return the position of the headline."
     (with-current-buffer buffer
       (save-excursion
         (goto-char (org-funcs--ensure-default-datetree-entry buffer))
-        (org-clock-in '(16))))))
+        (org-clock-in '(16))))
+    (when (derived-mode-p 'org-agenda-mode)
+      ;; Swap agenda for context change.
+      (org-funcs-agenda-dwim))))
 
 (defun org-funcs-punch-out ()
   "Stop the clock."
@@ -107,6 +110,9 @@ Return the position of the headline."
     (org-agenda-remove-restriction-lock)
     (with-current-buffer (org-funcs-work-notes-buffer)
       (save-buffer))
+    (when (derived-mode-p 'org-agenda-mode)
+      ;; Swap agenda for context change.
+      (org-funcs-agenda-dwim))
     (message "Punched out.")))
 
 (defun org-funcs-punch-in-or-out ()
