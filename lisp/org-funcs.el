@@ -73,20 +73,25 @@ Return the position of the headline."
 (defvar org-funcs--punching-in-p nil)
 (defvar org-funcs--punching-out-p nil)
 
-(defun org-funcs-work-clocking-buffer ()
+(defun org-funcs-work-notes-buffer ()
   (find-file-noselect (f-join org-directory "work_notes.org")))
 
-(defun org-funcs-personal-clocking-buffer ()
+(defun org-funcs-personal-notes-buffer ()
   (find-file-noselect (f-join org-directory "personal_notes.org")))
 
 (defun org-funcs-buffer-for-context ()
   (--find (equal (current-buffer) it)
-          (list (org-funcs-personal-clocking-buffer)
-                (org-funcs-work-clocking-buffer))))
+          (list (org-funcs-personal-notes-buffer)
+                (org-funcs-work-notes-buffer))))
+
+(defun org-funcs-notes-buffer-for-context ()
+  (if (org-funcs-work-context-p)
+      (org-funcs-work-notes-buffer)
+    (org-funcs-personal-notes-buffer)))
 
 (defun org-funcs-punch-in (buffer)
   "Punch in with the default date tree in the given BUFFER."
-  (interactive (list (org-funcs-work-clocking-buffer)))
+  (interactive (list (org-funcs-work-notes-buffer)))
   (let ((org-funcs--punching-in-p t))
     (with-current-buffer buffer
       (save-excursion
@@ -100,7 +105,7 @@ Return the position of the headline."
     (when (org-clock-is-active)
       (org-clock-out))
     (org-agenda-remove-restriction-lock)
-    (with-current-buffer (org-funcs-work-clocking-buffer)
+    (with-current-buffer (org-funcs-work-notes-buffer)
       (save-buffer))
     (message "Punched out.")))
 
@@ -238,7 +243,7 @@ Return the position of the headline."
   "Switch to the default notes file."
   (interactive)
   (require 'org)
-  (find-file (f-join paths-org-directory org-default-notes-file)))
+  (switch-to-buffer (org-funcs-notes-buffer-for-context)))
 
 (defun org-funcs-goto-work ()
   "Switch to the work file."
