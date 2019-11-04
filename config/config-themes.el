@@ -197,10 +197,21 @@
 (use-package emojify
   :straight t
   :hook (after-init . global-emojify-mode)
+  :preface
+  (defun config-themes-at-org-drawer-p (match beg _end)
+    (and (memq major-mode '(org-mode org-agenda-mode))
+         (save-match-data
+           (save-excursion
+             (save-match-data
+               (goto-char beg)
+               (looking-at (rx ":end:")))))))
   :config
-  (general-setq emojify-emoji-styles '(github unicode)
-                emojify-program-contexts '(comments string)
-                emojify-point-entered-behaviour 'uncover))
+  (progn
+    (add-to-list 'emojify-inhibit-functions #'config-themes-at-org-drawer-p)
+
+    (general-setq emojify-emoji-styles '(github unicode)
+                  emojify-program-contexts '(comments string)
+                  emojify-point-entered-behaviour 'uncover)))
 
 ;; doom-modeline is a custom modeline.
 
