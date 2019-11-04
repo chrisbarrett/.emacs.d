@@ -429,6 +429,8 @@ By default, this shows the information specified by `global-mode-string'."
                   (outline-1 ((t (:weight bold :foreground ,blue))))
                   (org-block-begin-line ((t :foreground ,dim-fg)))
                   (org-block-end-line ((t :foreground ,dim-fg)))
+                  (org-meta-line ((t :foreground ,dim-fg)))
+                  (org-drawer ((t :foreground ,dim-fg)))
                   (ledger-occur-xact-face ((t :inherit region)))
                   (lsp-ui-sideline-symbol ((t :height 0.99)))
                   (lsp-ui-sideline-symbol-info ((t :foreground "grey" :slant italic :height 0.99 :weight light)))
