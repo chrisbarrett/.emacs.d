@@ -423,9 +423,12 @@ By default, this shows the information specified by `global-mode-string'."
                   (org-funcs-agenda-note ((t (:inherit font-lock-string-face :italic t))))
                   (markdown-list-face ((t :inherit markdown-blockquote-face)))
                   (treemacs-git-unmodified-face ((t :inherit default)))
-                  (treemacs-git-renamed-face ((t :inherit font-lock-doc-face)))
+                  (treemacs-git-renamed-face ((t :foreground ,dim-fg2 :inherit font-lock-doc-face)))
+                  (treemacs-git-ignored-face ((t )))
                   (org-drawer ((t :inherit org-special-keyword)))
                   (outline-1 ((t (:weight bold :foreground ,blue))))
+                  (org-block-begin-line ((t :foreground ,dim-fg)))
+                  (org-block-end-line ((t :foreground ,dim-fg)))
                   (ledger-occur-xact-face ((t :inherit region)))
                   (lsp-ui-sideline-symbol ((t :height 0.99)))
                   (lsp-ui-sideline-symbol-info ((t :foreground "grey" :slant italic :height 0.99 :weight light)))
@@ -435,15 +438,7 @@ By default, this shows the information specified by `global-mode-string'."
                   (ivy-minibuffer-match-face-1 ((t (:foreground ,bg :background ,base7 :weight bold))))
                   (ivy-minibuffer-match-face-2 ((t (:foreground ,bg :background ,base6 :weight bold))))
                   (ivy-minibuffer-match-face-3 ((t (:foreground ,fg :background ,base4 :weight bold))))
-                  (ivy-minibuffer-match-face-4 ((t (:foreground ,bg :background ,base8)))))
-
-                ;; Theme-specific settings.
-
-                (pcase theme
-                  ('doom-one
-                   `((treemacs-git-ignored-face ((t :foreground "#787878")))
-                     ;; HACK: This doesn't seem to get set properly in the face definition.
-                     (org-block-end-line ((t :foreground ,base5 :background ,base3)))))))))))
+                  (ivy-minibuffer-match-face-4 ((t (:foreground ,bg :background ,base8))))))))))
 
   :config
   (progn
