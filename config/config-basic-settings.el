@@ -641,7 +641,8 @@
   :config
   (progn
     (add-hook 'ediff-keymap-setup-hook #'config-basic-settings--setup-ediff-keybinds)
-    (setq ediff-window-setup-function #'ediff-setup-windows-plain)))
+    (setq ediff-window-setup-function #'ediff-setup-windows-plain
+          ediff-split-window-function 'split-window-horizontally)))
 
 (use-package image
   :defer t
