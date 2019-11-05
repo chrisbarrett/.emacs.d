@@ -115,7 +115,9 @@ channel."
       (org-export-to-buffer 'slack "*Org Slack Export*"
         async subtreep visible-only body-only ext-plist
         (lambda ()
-          (kill-new (funcall (or formatter ox-slack-postprocess-function) (string-trim (buffer-string))))
+          (let* ((str (funcall ox-slack-postprocess-function (string-trim (buffer-string))))
+                 (postprocessed (funcall (or formatter #'identity) str)))
+            (kill-new postprocessed))
           (message "Buffer contents copied to clipboard"))))))
 
 (provide 'ox-slack)
