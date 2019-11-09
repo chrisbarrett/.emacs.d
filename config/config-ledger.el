@@ -58,6 +58,12 @@
      `((,(rx "$" (* space) "-" (+ digit) (* (any digit ",")) (? "." (+ digit))) . 'ledger-report-negative-amount)
        (,(rx (+ digit) "-" (= 3 alpha) "-" (+ digit)) . 'ledger-font-posting-date-face)))
 
+    (add-to-list 'display-buffer-alist
+                 `(,(rx bos "*Ledger Report*" eos)
+                   (display-buffer-reuse-window display-buffer-in-side-window)
+                   (side . right)
+                   (window-width . 80)))
+
     ;; Fix font lock issue in ledger reports
     (add-hook 'ledger-report-mode-hook 'font-lock-fontify-buffer)))
 
