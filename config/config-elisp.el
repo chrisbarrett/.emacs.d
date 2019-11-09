@@ -70,11 +70,10 @@
   (progn
     (add-to-list 'display-buffer-alist
                  `(,(rx bos "*ielm*" eos)
-                   (display-buffer-reuse-window
-                    display-buffer-at-bottom)
-                   (reusable-frames . visible)
-                   (slot            . 0)
-                   (window-height   . 0.2)))
+                   (display-buffer-reuse-window display-buffer-in-side-window)
+                   (side            . right)
+                   (window-width    . 80)))
+
     (define-key inferior-emacs-lisp-mode-map (kbd "C-c C-z") #'config-elisp-pop-to-elisp-buffer)))
 
 ;; elisp-slime-nav provides a command for navigating to the definitions of
