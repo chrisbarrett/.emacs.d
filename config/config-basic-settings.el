@@ -650,6 +650,12 @@
             "-" #'image-decrease-size
             "+" #'image-increase-size))
 
+(add-to-list 'display-buffer-alist
+             `(,(rx bos "*Help*" eos)
+               (display-buffer-reuse-window display-buffer-in-side-window)
+               (side            . right)
+               (window-width    . 80)))
+
 (provide 'config-basic-settings)
 
 ;;; config-basic-settings.el ends here
