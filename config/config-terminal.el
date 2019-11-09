@@ -14,10 +14,16 @@
   (progn
     (defun config-terminal--build-vterm (package &rest _)
       (when (member package '("vterm"))
-        (let* ((module-build-dir (straight--build-dir "vterm" "build")))
-          (mkdir module-build-dir t)
-          (let ((default-directory module-build-dir))
-            (compilation-start "cmake .. && make")))))
+        (let* ((base-dir (straight--build-dir "vterm"))
+               (build-dir (f-join base-dir "build")))
+          (mkdir build-dir t)
+          (let ((default-directory build-dir))
+            (with-current-buffer (get-buffer-create "*vterm build*")
+              (erase-buffer)
+              (let ((default-directory base-dir))
+                (call-process "cmake" nil t nil base-dir)
+                (call-process "make" nil t)))))))
+
     (add-hook 'straight-use-package-pre-build-functions #'config-terminal--build-vterm))
   :config
   ;; Prevent vterm from handling function keys.
