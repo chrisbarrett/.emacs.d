@@ -548,11 +548,16 @@
 (with-eval-after-load 'evil
 
   (eval-and-compile
+    (defun config-org--evil-insert-state-for-capture (&rest _)
+      (when (and (called-interactively-p nil)
+                 (bound-and-true-p org-capture-mode))
+        (evil-insert-state)))
+
     (defun config-org--evil-insert-state (&rest _)
       (when (called-interactively-p nil)
         (evil-insert-state))))
 
-  (advice-add 'org-capture :after #'config-org--evil-insert-state)
+  (advice-add 'org-capture :after #'config-org--evil-insert-state-for-capture)
   (advice-add 'org-insert-heading :after #'config-org--evil-insert-state)
   (advice-add 'org-insert-heading-respect-content :after #'config-org--evil-insert-state)
   (advice-add 'org-insert-todo-heading-respect-content :after #'config-org--evil-insert-state)
