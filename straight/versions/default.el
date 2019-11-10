@@ -126,6 +126,8 @@
  ("major-mode-hydra.el" . "fd362d2be7ed80889715ed8a30a61780a18ce6ea")
  ("markdown-mode" . "f3c54e34cc5228001af36a5301883325319f21d4")
  ("melpa" . "da5debb55f7b34dcbcea81675bddd872bdb7fd69")
+ ("messages-are-flowing" . "d582a564a63b7b90764ffc5c618bc5300225d0ab")
+ ("mu4e-alert" . "91f0657c5b245a9de57aa38391221fb5d141d9bd")
  ("nix-mode" . "5b5961780f3b1c1b62453d2087f775298980f10d")
  ("no-littering" . "effed6caa63423b366a072fe31e5494389f9281e")
  ("nvm.el" . "e93e5216e311c665c593ac68c5456d624120ea42")
