@@ -9,7 +9,8 @@
 
 (cl-eval-when (compile)
   (require 'evil)
-  (require 'org))
+  (require 'org)
+  (require 'org-edna))
 
 (require 'f)
 (require 'general)
@@ -593,8 +594,20 @@
 (use-package org-edna
   :straight t
   :after org
+  :preface
+  (defun config-org--maybe-edna-edit (fn &rest args)
+    (let* ((element-type (ignore-errors
+                           (org-element-type (org-element-context (org-element-at-point)))))
+           (at-property-drawer-or-heading-p (seq-contains '(property-drawer node-property headline) element-type))
+           (edna-loaded-p (seq-contains org-trigger-hook #'org-edna-trigger-function)))
+      (if (and at-property-drawer-or-heading-p edna-loaded-p)
+          (org-edna-edit)
+        (funcall fn args))))
+
   :config
-  (org-edna-load))
+  (progn
+    (org-edna-load)
+    (advice-add 'org-edit-special :around #'config-org--maybe-edna-edit)))
 
 (provide 'config-org)
 
