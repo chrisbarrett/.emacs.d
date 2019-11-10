@@ -33,7 +33,8 @@
    "View"
    (("t" org-show-todo-tree "todo tree"))
    "Misc"
-   (("e" org-babel/body "babel commands"))))
+   (("b" org-edna-edit "edit blockers & triggers")
+    ("e" org-babel/body "babel commands"))))
 
 (major-mode-hydra-define org-agenda-mode nil
   ("Tree"
