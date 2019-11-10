@@ -133,6 +133,7 @@
  ("omnisharp-emacs" . "e658a18a762438c3e1737612737b05d02a21ca2a")
  ("org" . "58ceff522bec39ca4511024a0ad747e2135919f9")
  ("org-bullets" . "c19b13be00df8d8dc596e4f1aef4a094b08ac801")
+ ("org-edna" . "85ab346e433d8b58f6a8c89b19a49e40cb31625a")
  ("org-gcal.el" . "36e9933b0238acb245e6d8dc89944583482fee1e")
  ("ox-gfm" . "99f93011b069e02b37c9660b8fcb45dab086a07f")
  ("package-lint" . "eb1867b5ad68b3ca762dad33cb1e30eed1cc7252")

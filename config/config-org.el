@@ -588,6 +588,13 @@
   :straight t
   :general (:states 'motion :keymaps 'org-agenda-mode-map "gR" 'org-gcal-fetch))
 
+;; `org-edna' provides todo dependencies, triggers, and more complex repeaters.
+(use-package org-edna
+  :straight t
+  :after org
+  :config
+  (org-edna-load))
+
 (provide 'config-org)
 
 ;;; config-org.el ends here
