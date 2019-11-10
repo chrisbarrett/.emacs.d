@@ -166,7 +166,7 @@
  org-agenda-show-all-dates nil
  org-agenda-show-inherited-tags nil
  org-agenda-skip-deadline-if-done t
- org-agenda-skip-deadline-prewarning-if-scheduled t
+ org-agenda-skip-deadline-prewarning-if-scheduled 'pre-scheduled
  org-agenda-skip-scheduled-if-done t
  org-agenda-span 'day
  org-agenda-start-on-weekday nil
