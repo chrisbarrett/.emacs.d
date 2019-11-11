@@ -8,6 +8,7 @@
 
 ;;; Code:
 
+(require 'dash)
 (require 'dash-functional)
 (require 'f)
 (require 'ht)
@@ -320,18 +321,22 @@ Return the position of the headline."
     (read-string (concat (if default (format "%s (default %s)" prompt default) prompt) ": ")
                  nil nil default)))
 
-(defun org-funcs--find-title-for-html (url)
+(defun org-funcs--retrieve-title (url)
   (with-current-buffer (url-retrieve-synchronously url t)
     (goto-char (point-min))
     (when (search-forward "\n\n" nil t)
       (let ((html (libxml-parse-html-region (point) (point-max))))
-        (-let [(_ _ head . _) html]
-          (cadr (alist-get 'title (-drop 2 head))))))))
+        (-when-let* (((_ _ (_head &as _ _ . header-children) . _) html)
+                     ((&alist 'title (_ title)) header-children))
+          (with-temp-buffer
+            (insert title)
+            (goto-char (point-min))
+            (xml-parse-string)))))))
 
 (defun org-funcs-read-url-for-capture ()
   "Return a URL capture template string for use with `org-capture'."
   (let* ((url (org-funcs-read-url "URL"))
-         (title (read-string "Title: " (org-funcs--find-title-for-html url))))
+         (title (read-string "Title: " (org-funcs--retrieve-title url))))
     (format "* TODO Review [[%s][%s]]" url (or title url))))
 
 (defun org-funcs-update-capture-templates (templates)
