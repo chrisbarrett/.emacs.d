@@ -416,6 +416,7 @@ By default, this shows the information specified by `global-mode-string'."
                   (ledger-report-negative-amount ((t :foreground ,red)))
                   (vterm-color-black ((t (:foreground ,bg :background ,base5))))
                   (org-agenda-clocking ((t (:bold nil :foreground ,fg :background ,(doom-blend blue bg 0.2)))))
+                  (org-agenda-done ((t (:bold nil :inherit org-done))))
                   (ivy-posframe-border ((t (:inherit posframe-border))))
                   (hydra-posframe-face ((t (:background ,bg-alt-l))))
                   (hydra-posframe-border-face ((t (:inherit posframe-border))))
