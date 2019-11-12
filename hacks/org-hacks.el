@@ -470,6 +470,57 @@ This function is called by `org-babel-execute-src-block'."
       nil)) ;; signal that output has already been written to file
   )
 
+;; ...and similarly for PlantUML.
+
+(with-eval-after-load 'ob-plantuml
+  (el-patch-defun org-babel-execute:plantuml (body params)
+    "Execute a block of plantuml code with org-babel.
+This function is called by `org-babel-execute-src-block'."
+    (let* ((out-file (or (cdr (assq :file params))
+                         (error "PlantUML requires a \":file\" header argument")))
+           (cmdline (cdr (assq :cmdline params)))
+           (in-file (org-babel-temp-file "plantuml-"))
+           (el-patch-remove (java (or (cdr (assq :java params)) "")))
+           (full-body (org-babel-plantuml-make-body body params))
+           (cmd (el-patch-splice 3 (if (string= "" org-plantuml-jar-path)
+                                       (error "`org-plantuml-jar-path' is not set")
+                                     (concat (el-patch-remove "java " java " -jar "
+                                                              (shell-quote-argument
+                                                               (expand-file-name org-plantuml-jar-path)))
+                                             (el-patch-add "plantuml ")
+                                             (if (string= (file-name-extension out-file) "png")
+                                                 " -tpng" "")
+                                             (if (string= (file-name-extension out-file) "svg")
+                                                 " -tsvg" "")
+                                             (if (string= (file-name-extension out-file) "eps")
+                                                 " -teps" "")
+                                             (if (string= (file-name-extension out-file) "pdf")
+                                                 " -tpdf" "")
+                                             (if (string= (file-name-extension out-file) "tex")
+                                                 " -tlatex" "")
+                                             (if (string= (file-name-extension out-file) "vdx")
+                                                 " -tvdx" "")
+                                             (if (string= (file-name-extension out-file) "xmi")
+                                                 " -txmi" "")
+                                             (if (string= (file-name-extension out-file) "scxml")
+                                                 " -tscxml" "")
+                                             (if (string= (file-name-extension out-file) "html")
+                                                 " -thtml" "")
+                                             (if (string= (file-name-extension out-file) "txt")
+                                                 " -ttxt" "")
+                                             (if (string= (file-name-extension out-file) "utxt")
+                                                 " -utxt" "")
+                                             " -p " cmdline " < "
+                                             (org-babel-process-file-name in-file)
+                                             " > "
+                                             (org-babel-process-file-name out-file))))))
+      (unless (file-exists-p org-plantuml-jar-path)
+        (error "Could not find plantuml.jar at %s" org-plantuml-jar-path))
+      (with-temp-file in-file (insert full-body))
+      (message "%s" cmd) (org-babel-eval cmd "")
+      nil)) ;; signal that output has already been written to file
+  )
+
 (provide 'org-hacks)
 
 ;;; org-hacks.el ends here
