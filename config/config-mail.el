@@ -95,6 +95,8 @@
 
   :config
   (progn
+    (use-package org-mu4e :demand t)
+
     (add-hook 'mu4e-compose-mode-hook #'config-mail--insert-signature-before-quoted-message)
 
     ;; Use word wrap instead of auto-fill.
