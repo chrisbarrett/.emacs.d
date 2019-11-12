@@ -656,6 +656,11 @@
                (side            . right)
                (window-width    . 80)))
 
+(defun insert-uuid ()
+  "Insert a UUID at point."
+  (interactive "*")
+  (insert (string-trim (shell-command-to-string "uuidgen"))))
+
 (provide 'config-basic-settings)
 
 ;;; config-basic-settings.el ends here
