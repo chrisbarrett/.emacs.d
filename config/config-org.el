@@ -422,6 +422,7 @@
 
     (general-setq org-babel-load-languages
                   '((emacs-lisp . t)
+                    (ditaa . t)
                     (restclient . t)
                     (js . t)
                     (gnuplot . t)

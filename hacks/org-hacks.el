@@ -428,6 +428,48 @@ cleaned up correctly"))))
       ;; Return if we did store something
       (not abort-note))))
 
+;; The ditaa on Nixpkgs is a self-contained script wrapping the java invocation.
+;; Hack the babel execute function so that it calls that instead.
+
+(with-eval-after-load 'ob-ditaa
+  (el-patch-defun org-babel-execute:ditaa (body params)
+    "Execute a block of Ditaa code with org-babel.
+This function is called by `org-babel-execute-src-block'."
+    (let* ((out-file (or (cdr (assq :file params))
+                         (error
+                          "ditaa code block requires :file header argument")))
+           (cmdline (cdr (assq :cmdline params)))
+
+           (el-patch-remove (java (cdr (assq :java params))))
+           (in-file (org-babel-temp-file "ditaa-"))
+           (eps (cdr (assq :eps params)))
+           (eps-file (when eps
+                       (org-babel-process-file-name (concat in-file ".eps"))))
+           (pdf-cmd (when (and (or (string= (file-name-extension out-file) "pdf")
+                                   (cdr (assq :pdf params))))
+                      (concat
+                       "epstopdf"
+                       " " eps-file
+                       " -o=" (org-babel-process-file-name out-file))))
+           (cmd (concat (el-patch-remove org-babel-ditaa-java-cmd
+                                         " " java " " org-ditaa-jar-option " "
+                                         (shell-quote-argument
+                                          (expand-file-name
+                                           (if eps org-ditaa-eps-jar-path org-ditaa-jar-path))))
+                        (el-patch-add "ditaa")
+                        " " cmdline
+                        " " (org-babel-process-file-name in-file)
+                        " " (if pdf-cmd
+                                eps-file
+                              (org-babel-process-file-name out-file)))))
+      (el-patch-remove (unless (file-exists-p org-ditaa-jar-path)
+                         (error "Could not find ditaa.jar at %s" org-ditaa-jar-path)))
+      (with-temp-file in-file (insert body))
+      (message cmd) (shell-command cmd)
+      (when pdf-cmd (message pdf-cmd) (shell-command pdf-cmd))
+      nil)) ;; signal that output has already been written to file
+  )
+
 (provide 'org-hacks)
 
 ;;; org-hacks.el ends here
