@@ -19,8 +19,11 @@
 (require 'paths)
 (require 's)
 
-(autoload 'org-project-skip-non-stuck-projects "org-project")
+(autoload 'hide-header-line-mode "hide-header-line")
+(autoload 'org-indent-mode "org-indent")
+(autoload 'org-present "org-present")
 (autoload 'org-project-skip-non-projects "org-project")
+(autoload 'org-project-skip-non-stuck-projects "org-project")
 
 
 
@@ -32,7 +35,8 @@
     ("c" org-copy-subtree "copy")
     ("p" org-paste-subtree "paste"))
    "View"
-   (("t" org-show-todo-tree "todo tree"))
+   (("P" org-present "present")
+    ("t" org-show-todo-tree "todo tree"))
    "Misc"
    (("b" org-edna-edit "edit blockers & triggers")
     ("e" org-babel/body "babel commands"))))
@@ -610,6 +614,51 @@
   (progn
     (org-edna-load)
     (advice-add 'org-edit-special :around #'config-org--maybe-edna-edit)))
+
+;; `org-present' implements presentations in org-mode.
+(use-package org-present
+  :commands (org-present)
+  :straight t
+  :preface
+  (progn
+    (defun config-org--maybe-next-slide (f &rest args)
+      (if (bound-and-true-p org-present-mode)
+          (org-present-next)
+        (apply f args)))
+
+    (defun config-org--maybe-previous-slide (f &rest args)
+      (if (bound-and-true-p org-present-mode)
+          (org-present-prev)
+        (apply f args)))
+
+    (defun config-org--on-start-presentation ()
+      (org-present-big)
+      (org-display-inline-images)
+      (org-present-hide-cursor)
+      (org-present-read-only)
+      (hide-header-line-mode +1)
+      (message "Starting presentation"))
+
+    (defun config-org--on-end-presentation ()
+      (org-present-small)
+      (unless org-startup-with-inline-images
+        (org-remove-inline-images))
+      (org-present-show-cursor)
+      (org-present-read-write)
+      (hide-header-line-mode -1)
+      (message "Exiting presentation")))
+  :config
+  (progn
+    (setq org-present-text-scale 3)
+
+    ;; KLUDGE: Need to override key bindings properly. This will do in the
+    ;; meantime.
+    (advice-add 'evil-search-next :around #'config-org--maybe-next-slide)
+    (advice-add 'evil-search-previous :around #'config-org--maybe-previous-slide)
+    (advice-add 'evil-paste-after :around #'config-org--maybe-previous-slide)
+
+    (add-hook 'org-present-mode-hook #'config-org--on-start-presentation)
+    (add-hook 'org-present-mode-quit-hook #'config-org--on-end-presentation)))
 
 (provide 'config-org)
 
