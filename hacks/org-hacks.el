@@ -521,6 +521,18 @@ This function is called by `org-babel-execute-src-block'."
       nil)) ;; signal that output has already been written to file
   )
 
+;; KLUDGE: not sure why, but this became necessary in recent orgs.
+
+(defun org-hacks--fix-org-src-block-edit (fn &rest args)
+  (let ((element-type (ignore-errors
+                        (org-element-type (org-element-context (org-element-at-point))))))
+    (if (equal 'src-block element-type)
+        (org-edit-src-code)
+      (funcall fn args))))
+
+(with-eval-after-load 'org
+  (advice-add 'org-edit-special :around #'org-hacks--fix-org-src-block-edit))
+
 (provide 'org-hacks)
 
 ;;; org-hacks.el ends here
