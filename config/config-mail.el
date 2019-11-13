@@ -95,8 +95,6 @@
 
   :config
   (progn
-    (use-package org-mu4e :demand t)
-
     (add-hook 'mu4e-compose-mode-hook #'config-mail--insert-signature-before-quoted-message)
 
     ;; Use word wrap instead of auto-fill.
@@ -177,6 +175,11 @@
                    (display-buffer-reuse-window
                     display-buffer-fullframe)
                    (reusable-frames . visible)))))
+
+;; `org-mu4e' provides org link integration.
+
+(use-package org-mu4e
+  :after (:any org mu4e))
 
 ;; `mu4e-alert' implements a notification system for new emails
 
