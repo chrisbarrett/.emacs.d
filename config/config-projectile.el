@@ -126,8 +126,11 @@
 (use-package counsel-projectile
   :straight t
   :hook (after-init . counsel-projectile-mode)
+  :preface
+  (defun config-projectile--escaped-symbol-at-point ()
+    (regexp-quote (projectile-symbol-or-selection-at-point)))
   :custom
-  ((counsel-projectile-rg-initial-input '(projectile-symbol-or-selection-at-point))
+  ((counsel-projectile-rg-initial-input '(config-projectile--escaped-symbol-at-point))
    (counsel-projectile-switch-project-action #'dired)))
 
 (provide 'config-projectile)
