@@ -289,7 +289,7 @@
    "t" "Todo" '(file "inbox.org") "* TODO %?")
 
   (org-funcs-capture-template
-   "l" "Link" '(file "inbox.org") '(function org-funcs-read-url-for-capture)
+   "l" "Link" '(file "inbox.org") '(function org-funcs-capture-link)
    :immediate-finish t)))
 
 
