@@ -339,6 +339,14 @@ Return the position of the headline."
          (title (read-string "Title: " (org-funcs--retrieve-title url))))
     (format "* TODO Review [[%s][%s]]" url (or title url))))
 
+(defun org-funcs-capture-link ()
+  "Context-sensitive link capture."
+  (if (derived-mode-p 'mu4e-view-mode 'mu4e-headers-mode)
+      (progn
+        (org-store-link nil)
+        "* TODO Review %a (email)")
+    (org-funcs-read-url-for-capture)))
+
 (defun org-funcs-update-capture-templates (templates)
   "Merge TEMPLATES with existing values in `org-capture-templates'."
   (let ((ht (ht-merge (ht-from-alist org-capture-templates) (ht-from-alist templates))))
