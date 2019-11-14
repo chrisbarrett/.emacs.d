@@ -253,11 +253,10 @@
    :color teal
    :title (hydra-title-with-mode-icon 'ledger-mode "Ledger"))
   ("Goto"
-   (("a" (find-file (f-join paths-ledger-directory "accounts.ledger")) "accounts")
+   (("a" (find-file (f-join paths-ledger-directory "accounts.dat")) "accounts")
     ("b" (find-file (f-join paths-ledger-directory "budget.ledger")) "budget")
     ("i" (find-file (f-join paths-ledger-directory "lisp" "init.el")) "lisp init file")
     ("j" (find-file (f-join paths-ledger-directory "journal.ledger")) "journal")
-    ("p" (find-file (f-join paths-ledger-directory "payees.ledger")) "payees")
     ("m" (find-file (f-join paths-ledger-directory "master.ledger")) "master file"))
    "Actions"
    (("c" #'ledger-import "import CSV..."))))
