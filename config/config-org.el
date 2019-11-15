@@ -372,6 +372,14 @@
     (defun config-org--after-refile (&rest _)
       (org-save-all-org-buffers))
 
+    (defun config-org--before-archive (&rest _)
+      ;; Ensure we have a context before archiving.
+      (unless (seq-intersection '("@personal" "@work") (org-get-tags))
+        (let ((tag (pcase-exhaustive (read-char-choice "Set context: [w]ork [p]ersonal " '(?w ?p))
+                     (?w "@work")
+                     (?p "@personal"))))
+          (org-toggle-tag tag 'on))))
+
     (defun config-org--after-archive (&rest _)
       (org-save-all-org-buffers))
 
@@ -398,6 +406,7 @@
     (advice-add 'org-agenda :before #'config-org--before-agenda)
 
     (advice-add 'org-refile :after #'config-org--after-refile)
+    (advice-add 'org-archive-subtree :before #'config-org--before-archive)
     (advice-add 'org-archive-subtree :after #'config-org--after-archive)
 
     (add-hook 'org-mode-hook #'auto-revert-mode)
