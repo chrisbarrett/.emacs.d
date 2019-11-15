@@ -36,12 +36,12 @@
   (when (marker-buffer org-clock-marker)
     (save-excursion
       (with-current-buffer (marker-buffer org-clock-marker)
-        (org-get-tags-at (marker-position org-clock-marker))))))
+        (org-get-tags (marker-position org-clock-marker))))))
 
 (defun org-funcs-work-context-p ()
   (save-excursion
     (let ((tags (seq-map #'substring-no-properties
-                         (append (ignore-errors (org-get-tags-at))
+                         (append (ignore-errors (org-get-tags))
                                  (org-funcs-clocked-task-tags)))))
       (seq-contains tags "@work"))))
 
