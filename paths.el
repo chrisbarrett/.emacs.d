@@ -61,7 +61,7 @@
   (format "~/gdrive/personal-config/hostfile-%s.el" (hostname)))
 
 (defconst paths-personal-config
-  "~/gdrive/personal-config/personal-config.el")
+  "~/Dropbox/lisp/personal-config.el")
 
 (defconst paths-project-directories
   (seq-filter #'file-directory-p '("~/Documents"
