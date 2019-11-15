@@ -211,13 +211,14 @@ previous match and abort if no progress is made."
   (require 'ledger-mode))
 
 (defun yas-funcs-ledger-virtual-account-aliases ()
-  (->> (f-read-text ledger-accounts-file)
-       (s-lines)
-       (--keep (-when-let ((_ account) (s-match (rx bol (+ space) "alias" (+ space) (group (+ nonl)))
-                                                it))
-                 (s-trim account)))
-       (-uniq)
-       (-sort #'string-lessp)))
+  (let (results)
+    (with-temp-buffer
+      (insert-file-contents ledger-accounts-file)
+      (while (search-forward-regexp (rx bol "account" (+ space)) nil t)
+        (forward-line 1)
+        (when (looking-at (rx bol (+ space) "alias" (+ space) (group (+ nonl))))
+          (push (match-string 1) results))))
+    (sort results #'string-lessp)))
 
 (defun yas-funcs--ledger-current-account-balance (account)
   (let* ((account (format "Budget:.*:%s" account))
