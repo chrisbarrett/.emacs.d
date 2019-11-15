@@ -139,6 +139,9 @@
   :if (equal system-type 'darwin)
   :demand t)
 
+(use-package config-nixos-os
+  :if (f-exists-p "/run/current-system/nixos-version")
+  :demand t)
 
 ;; Load host-specific overrides for vars.
 
