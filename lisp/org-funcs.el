@@ -21,6 +21,8 @@
   (require 'org-clock)
   (require 'org-capture))
 
+(autoload 'xml-parse-string "xml")
+
 (defvar org-agenda-files nil)
 (defvar org-capture-templates nil)
 (defvar org-agenda-custom-commands nil)
