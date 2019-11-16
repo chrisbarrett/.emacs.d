@@ -220,6 +220,7 @@
   :hook (after-init . doom-modeline-mode)
   :custom ((doom-modeline-major-mode-icon nil)
            (doom-modeline-buffer-encoding nil)
+           (doom-modeline-icon t)
            (doom-modeline-enable-word-count t))
   :preface
   (defun config-themes--update-all-modelines ()
