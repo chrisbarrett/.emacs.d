@@ -218,7 +218,7 @@ previous match and abort if no progress is made."
         (forward-line 1)
         (when (looking-at (rx bol (+ space) "alias" (+ space) (group (+ nonl))))
           (push (match-string 1) results))))
-    (sort results #'string-lessp)))
+    (-sort #'string-lessp results)))
 
 (defun yas-funcs--ledger-current-account-balance (account)
   (let* ((account (format "Budget:.*:%s" account))
