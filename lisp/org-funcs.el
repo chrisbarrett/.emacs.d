@@ -331,7 +331,8 @@ Return the position of the headline."
     (goto-char (point-min))
     (when (search-forward "\n\n" nil t)
       (let ((html (libxml-parse-html-region (point) (point-max))))
-        (-when-let* (((_ _ (_head &as _ _ . header-children) . _) html)
+        (-when-let* (((_ _ head) html)
+                     ((_ _ . header-children) head)
                      ((&alist 'title (_ title)) header-children))
           (with-temp-buffer
             (insert title)
