@@ -319,9 +319,12 @@ Return the position of the headline."
            (cons (current-kill 0 t) kill-ring)))
 
 (defun org-funcs-read-url (prompt)
-  (let ((default (or (thing-at-point-url-at-point) (org-funcs--last-url-kill))))
-    (read-string (concat (if default (format "%s (default %s)" prompt default) prompt) ": ")
-                 nil nil default)))
+  (let* ((default (or (thing-at-point-url-at-point) (org-funcs--last-url-kill)))
+         (input (read-string (concat (if default (format "%s (default %s)" prompt default) prompt) ": ")
+                             nil nil default)))
+    (if (string-match-p (rx "http" (? "s") "://") input)
+        input
+      (org-funcs-read-url prompt))))
 
 (defun org-funcs--retrieve-title (url)
   (with-current-buffer (url-retrieve-synchronously url t)
