@@ -244,7 +244,8 @@
   ("Narrow to..."
    (("f" #'narrow-to-defun "function")
     ("r" #'narrow-to-region "region")
-    ("s" #'org-narrow-to-subtree "org subtree"))
+    ("s" #'org-narrow-to-subtree "org subtree")
+    ("S" #'org-tree-to-indirect-buffer))
    "Actions"
    (("w" #'widen "widen"))))
 
