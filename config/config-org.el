@@ -82,7 +82,7 @@
  org-footnote-auto-adjust t
  org-hide-emphasis-markers t
  org-hierarchical-todo-statistics nil
- org-indirect-buffer-display 'current-window
+ org-indirect-buffer-display 'other-window
  org-insert-heading-respect-content t
  org-outline-path-complete-in-steps nil
  org-pretty-entities nil
