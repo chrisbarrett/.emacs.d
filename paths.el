@@ -10,8 +10,6 @@
 (require 'subr-x)
 (require 'seq)
 
-(autoload 'hostname (concat user-emacs-directory "lisp/hostname"))
-
 (defconst paths-ledger-directory "~/Dropbox/ledger")
 (defconst paths-ledger-lisp-directory "~/Dropbox/ledger/lisp")
 
@@ -58,7 +56,7 @@
               "~/.nix-profile/share/emacs/site-lisp")))
 
 (defconst paths-hostfile
-  (format "~/gdrive/personal-config/hostfile-%s.el" (hostname)))
+  (format "~/.config/hostfile.el"))
 
 (defconst paths-personal-config
   "~/Dropbox/lisp/personal-config.el")
