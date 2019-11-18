@@ -575,6 +575,7 @@
       (when (called-interactively-p nil)
         (evil-insert-state))))
 
+  (add-hook 'org-log-buffer-setup-hook #'evil-insert-state)
   (advice-add 'org-capture :after #'config-org--evil-insert-state-for-capture)
   (advice-add 'org-insert-heading :after #'config-org--evil-insert-state)
   (advice-add 'org-insert-heading-respect-content :after #'config-org--evil-insert-state)
