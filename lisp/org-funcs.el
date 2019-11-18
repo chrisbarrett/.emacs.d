@@ -271,7 +271,8 @@ Return the position of the headline."
     (cond
      (pos
       (goto-char pos)
-      (org-narrow-to-subtree)
+      (let ((org-indirect-buffer-display 'current-window))
+        (org-tree-to-indirect-buffer))
       (outline-hide-subtree)
       (org-show-entry)
       (org-show-children)
