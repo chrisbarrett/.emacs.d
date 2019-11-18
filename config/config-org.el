@@ -598,7 +598,20 @@
 
 ;; `org-id' provides support for linking to org headings via UUIDs.
 (use-package org-id
-  :after org)
+  :after org
+  :preface
+  (defun config-org--prompt-for-creating-id (f &rest args)
+    (cond ((and (derived-mode-p 'org-mode) (org-at-heading-p))
+           (let ((id (org-id-get-create))
+                 (heading (org-link-display-format (substring-no-properties (org-get-heading t t t t)))))
+             (org-id-store-link)
+             (push (list (concat "id:" id) heading heading) org-stored-links)
+             (message "Stored: %s" heading)))
+          (t
+           (apply f args))))
+  :init
+  (advice-add 'org-store-link :around #'config-org--prompt-for-creating-id)
+  (setf (cdr (alist-get "id" org-link-parameters nil nil #'equal)) (list :follow #'org-id-open :store #'org-id-store-link)))
 
 ;; `org-gcal' pulls down Google Calendar events into org files.
 (use-package org-gcal
