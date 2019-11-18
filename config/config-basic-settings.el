@@ -636,10 +636,19 @@
               (ediff-get-region-contents ediff-current-difference 'B ediff-control-buffer))))
         (ediff-copy-diff ediff-current-difference nil 'C nil str)))
 
+    (defun config-basic-settings--ediff-org-reveal-around-difference (&rest _)
+      (dolist (buf (list ediff-buffer-A ediff-buffer-B ediff-buffer-C))
+        (ediff-with-current-buffer buf
+          (when (derived-mode-p 'org-mode)
+            (org-reveal t)))))
+
     (defun config-basic-settings--setup-ediff-keybinds ()
       (define-key ediff-mode-map (kbd "B") #'ediff-copy-both-to-C)))
   :config
   (progn
+    (advice-add 'ediff-next-difference :after #'config-basic-settings--ediff-org-reveal-around-difference)
+    (advice-add 'ediff-previous-difference :after #'config-basic-settings--ediff-org-reveal-around-difference)
+
     (add-hook 'ediff-keymap-setup-hook #'config-basic-settings--setup-ediff-keybinds)
     (setq ediff-window-setup-function #'ediff-setup-windows-plain
           ediff-split-window-function 'split-window-horizontally)))
