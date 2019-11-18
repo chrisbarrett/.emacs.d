@@ -335,7 +335,7 @@
       (cl-labels ((org-file-p (f) (f-ext? f "org")))
         (let ((toplevel-files (f-files paths-org-directory #'org-file-p))
               (special-files (--map (f-join paths-org-directory it)
-                                    '("init.org" "archive.org"))))
+                                    '("init.org" "archive.org" "beorg-themes.org" "budget.org"))))
           (setq org-refile-targets `((,(seq-difference toplevel-files special-files) . (:maxlevel . 4))))
           (dolist (file (cons paths-org-gcal-directory toplevel-files))
             (add-to-list 'org-agenda-files file)))))
