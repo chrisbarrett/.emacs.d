@@ -16,6 +16,7 @@
 
 (autoload 'mail-add-attachment "sendmail")
 (autoload 'mu4e-view-open-attachment "mu4e-view")
+(autoload 'mu4e-message-at-point "mu4e-message")
 
 (defun config-mail--view-in-external-browser-action (msg)
   "View the current message MSG in the browser."
