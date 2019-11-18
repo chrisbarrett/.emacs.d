@@ -338,7 +338,7 @@ Return the position of the headline."
           (with-temp-buffer
             (insert title)
             (goto-char (point-min))
-            (s-replace-regexp (rx (any "\r\n\t")) "" (xml-parse-string))))))))
+            (s-trim (s-replace-regexp (rx (any "\r\n\t")) "" (xml-parse-string)))))))))
 
 (defun org-funcs-read-url-for-capture ()
   "Return a URL capture template string for use with `org-capture'."
