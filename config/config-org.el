@@ -558,6 +558,7 @@
 ;; `org-bullets' displays orgmode bullets using pretty utf-8 characters.
 (use-package org-bullets
   :straight t
+  :custom ((org-bullets-bullet-list '("○")))
   :hook (org-mode . org-bullets-mode))
 
 ;; Automatically enter insert state when inserting new headings or using
