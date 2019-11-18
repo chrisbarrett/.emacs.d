@@ -10,6 +10,7 @@
 (require 'paths)
 
 (autoload 'ansi-color-apply-on-region "ansi-color")
+(autoload 'org-reveal "org")
 (autoload 'thing-at-point-looking-at "thingatpt")
 
 
