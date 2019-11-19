@@ -616,7 +616,8 @@
            (apply f args))))
   :init
   (advice-add 'org-store-link :around #'config-org--prompt-for-creating-id)
-  (setf (cdr (alist-get "id" org-link-parameters nil nil #'equal)) (list :follow #'org-id-open :store #'org-id-store-link)))
+  :config
+  (org-link-set-parameters "id" :store #'org-id-store-link))
 
 ;; `org-gcal' pulls down Google Calendar events into org files.
 (use-package org-gcal
