@@ -184,7 +184,7 @@
                                (search category-keep))
  org-agenda-inhibit-startup nil
  org-agenda-tags-column -100
- org-agenda-text-search-extra-files '(agenda-archives)
+ org-agenda-text-search-extra-files (list (f-join org-directory "archive.org"))
  org-agenda-use-time-grid nil)
 
 (defconst config-org--agenda-clockreport-defaults
@@ -334,10 +334,13 @@
       ;; Populate org-agenda-files
       (cl-labels ((org-file-p (f) (f-ext? f "org")))
         (let ((toplevel-files (f-files paths-org-directory #'org-file-p))
+              (gcal-files (f-files paths-org-gcal-directory (lambda (it)
+                                                              (and (org-file-p it)
+                                                                   (not (equal (f-filename it) "archive.org"))))))
               (special-files (--map (f-join paths-org-directory it)
                                     '("init.org" "archive.org" "beorg-themes.org" "budget.org"))))
           (setq org-refile-targets `((,(seq-difference toplevel-files special-files) . (:maxlevel . 4))))
-          (dolist (file (cons paths-org-gcal-directory toplevel-files))
+          (dolist (file (append gcal-files toplevel-files))
             (add-to-list 'org-agenda-files file)))))
 
     (defun config-org--exit-minibuffer (&rest _)
