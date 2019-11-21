@@ -426,7 +426,11 @@
                       (,(rx bol (* space) (group "#+begin_src") symbol-end)
                        (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "λ"))))
                       (,(rx bol (* space) (group "#+end_src") symbol-end)
-                       (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "⋱"))))))
+                       (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "⋱"))))
+                      (,(rx bol (* space) (group "#+begin_quote") symbol-end)
+                       (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "“"))))
+                      (,(rx bol (* space) (group "#+end_quote") symbol-end)
+                       (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "”"))))))
 
     ;; Configure private capture templates
     (let ((custom-templates-initfile (f-join paths-org-templates-directory "init.el")))
