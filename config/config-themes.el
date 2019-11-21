@@ -54,8 +54,7 @@
 
 (use-package paren-face
   :straight t
-  :demand t
-  :commands (global-paren-face-mode)
+  :hook (after-init . global-paren-face-mode)
   :config
   (progn
     (set-face-attribute 'parenthesis nil
@@ -89,9 +88,7 @@
                       (,(rx (any ":")) 0 'parenthesis)
                       ;; Generic type parameters
                       (,(rx (group "[") symbol-start) 1 'parenthesis)
-                      (,(rx symbol-end (group (+ "]"))) 1 'parenthesis)))
-
-    (global-paren-face-mode +1)))
+                      (,(rx symbol-end (group (+ "]"))) 1 'parenthesis)))))
 
 ;; hl-todo applies a separate face for todo keywords so they can be highlighted.
 
