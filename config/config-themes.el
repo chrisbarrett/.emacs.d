@@ -71,8 +71,8 @@
 
     (setq paren-face-regexp (rx (any "{}();,")))
 
-    (font-lock-add-keywords 'js-mode
-                    `((,(rx (any ":")) 0 'parenthesis)))
+    (font-lock-add-keywords 'js-mode `((,(rx (any ":")) 0 'parenthesis)))
+    (font-lock-add-keywords 'typescript-mode `((,(rx (any ":")) 0 'parenthesis)))
 
     (font-lock-add-keywords 'rust-mode
                     `(;; Type assertions
