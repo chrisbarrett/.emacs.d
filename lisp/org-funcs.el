@@ -248,6 +248,14 @@ Return the position of the headline."
   (interactive)
   (find-file (f-join paths-org-directory "personal.org")))
 
+(defun org-funcs-goto-recurring ()
+  "Switch to the recurring events file."
+  (interactive)
+  (let ((filename (if (org-funcs-work-context-p)
+                      "work_recurring.org"
+                    "personal_recurring.org")))
+    (find-file (f-join paths-org-directory filename))))
+
 (defun org-funcs-goto-notes ()
   "Switch to the default notes file."
   (interactive)

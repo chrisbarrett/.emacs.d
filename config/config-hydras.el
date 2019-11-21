@@ -277,7 +277,8 @@
    (("i" org-funcs-goto-inbox "inbox")
     ("p" org-funcs-goto-personal "personal")
     ("w" org-funcs-goto-work "work")
-    ("n" org-funcs-goto-notes "notes"))
+    ("n" org-funcs-goto-notes "notes")
+    ("r" org-funcs-goto-recurring "recurring"))
    ""
    (("g" org-funcs-goto-headline "headline...")
     ("G" org-capture-goto-last-stored "last captured item")
