@@ -609,15 +609,19 @@
 (use-package org-id
   :after org
   :preface
-  (defun config-org--prompt-for-creating-id (f &rest args)
-    (cond ((and (called-interactively-p nil) (derived-mode-p 'org-mode) (org-at-heading-p))
-           (let ((id (org-id-get-create))
-                 (heading (org-link-display-format (substring-no-properties (org-get-heading t t t t)))))
-             (org-id-store-link)
-             (push (list (concat "id:" id) heading heading) org-stored-links)
-             (message "Stored: %s" heading)))
-          (t
-           (apply f args))))
+  (progn
+    (autoload 'org-id-get-create "org-id")
+    (autoload 'org-id-store-link "org-id")
+
+    (defun config-org--prompt-for-creating-id (f &rest args)
+      (cond ((and (called-interactively-p nil) (derived-mode-p 'org-mode) (org-at-heading-p))
+             (let ((id (org-id-get-create))
+                   (heading (org-link-display-format (substring-no-properties (org-get-heading t t t t)))))
+               (org-id-store-link)
+               (push (list (concat "id:" id) heading heading) org-stored-links)
+               (message "Stored: %s" heading)))
+            (t
+             (apply f args)))))
   :init
   (advice-add 'org-store-link :around #'config-org--prompt-for-creating-id)
   :config
