@@ -610,7 +610,7 @@
   :after org
   :preface
   (defun config-org--prompt-for-creating-id (f &rest args)
-    (cond ((and (derived-mode-p 'org-mode) (org-at-heading-p))
+    (cond ((and (called-interactively-p nil) (derived-mode-p 'org-mode) (org-at-heading-p))
            (let ((id (org-id-get-create))
                  (heading (org-link-display-format (substring-no-properties (org-get-heading t t t t)))))
              (org-id-store-link)
