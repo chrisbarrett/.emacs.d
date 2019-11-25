@@ -505,7 +505,11 @@
     (autoload 'page-break-lines--update-display-tables "page-break-lines")
 
     (defun config-org--draw-separator (&rest _)
-      (page-break-lines--update-display-tables)))
+      (page-break-lines--update-display-tables))
+
+    (defun config-org--on-show-item-from-agenda ()
+      (org-overview)
+      (org-show-children)))
 
   :init
   (with-eval-after-load 'org
@@ -514,6 +518,7 @@
   :config
   (progn
     (add-hook 'org-finalize-agenda-hook 'org-agenda-to-appt)
+    (add-hook 'org-agenda-after-show-hook #'config-org--on-show-item-from-agenda)
 
     ;; Ensure the separator line is rendered whenever the org agenda view
     ;; changes. This is needed for page-break-lines to render the separator
