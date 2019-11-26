@@ -12,7 +12,9 @@
   :straight t
   :commands (link-hint-open-link-at-point)
   :init
-  (autoload 'link-hint--get-link-at-point "link-hint"))
+  (autoload 'link-hint--get-link-at-point "link-hint")
+  :config
+  (put 'link-hint-org-link :vars '(org-mode org-agenda-mode)))
 
 (cl-eval-when (compile)
   (require 'evil)
