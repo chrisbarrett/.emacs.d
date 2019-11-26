@@ -619,8 +619,17 @@
     (autoload 'org-id-get-create "org-id")
     (autoload 'org-id-store-link "org-id")
 
+    ;; Transparently create ID properties when storing links to org headings. As
+    ;; a corner case, avoid doing this as part of the capture process.
+
+    (defvar config-org--capturing-p nil)
+
+    (defun config-org--on-capture (f &rest args)
+      (let ((config-org--capturing-p t))
+        (apply f args)))
+
     (defun config-org--prompt-for-creating-id (f &rest args)
-      (cond ((and (called-interactively-p nil) (derived-mode-p 'org-mode) (org-at-heading-p))
+      (cond ((and (not config-org--capturing-p) (derived-mode-p 'org-mode) (org-at-heading-p))
              (let ((id (org-id-get-create))
                    (heading (org-link-display-format (substring-no-properties (org-get-heading t t t t)))))
                (org-id-store-link)
@@ -629,7 +638,9 @@
             (t
              (apply f args)))))
   :init
-  (advice-add 'org-store-link :around #'config-org--prompt-for-creating-id)
+  (progn
+    (advice-add 'org-capture :around #'config-org--on-capture)
+    (advice-add 'org-store-link :around #'config-org--prompt-for-creating-id))
   :config
   (org-link-set-parameters "id" :store #'org-id-store-link))
 
