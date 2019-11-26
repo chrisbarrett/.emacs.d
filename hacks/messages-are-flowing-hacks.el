@@ -4,7 +4,7 @@
 
 (require 'el-patch)
 
-(el-patch-feature 'messages-are-flowing)
+(el-patch-feature messages-are-flowing)
 
 (with-eval-after-load 'messages-are-flowing
   (el-patch-defun messages-are-flowing-use-and-mark-hard-newlines ()
