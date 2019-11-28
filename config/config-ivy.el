@@ -30,7 +30,7 @@
 
   ;; Browse read-expression histroy with ivy
   (:keymaps 'read-expression-map
-   "C-r" #'counsel-expression-history)
+   "C-r" #'counsel-minibuffer-history)
 
   :init
   (progn
