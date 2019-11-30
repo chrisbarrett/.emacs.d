@@ -27,12 +27,12 @@
 
 
 
-(major-mode-hydra-define org-mode nil
+(major-mode-hydra-define+ org-mode nil
   ("Tree"
    (("a" org-archive-subtree "archive")
     ("r" org-funcs-refile-dwim "refile")
     ("x" org-cut-subtree "cut")
-    ("c" org-copy-subtree "copy")
+    ("y" org-copy-subtree "copy")
     ("p" org-paste-subtree "paste"))
    "View"
    (("P" org-present "present")
@@ -41,7 +41,7 @@
    (("b" org-edna-edit "edit blockers & triggers")
     ("e" org-babel/body "babel commands"))))
 
-(major-mode-hydra-define org-agenda-mode nil
+(major-mode-hydra-define+ org-agenda-mode nil
   ("Tree"
    (("a" org-agenda-archive "archive")
     ("r" org-funcs-refile-dwim "refile"))))
