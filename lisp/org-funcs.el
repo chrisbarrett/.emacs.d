@@ -335,24 +335,37 @@ Return the position of the headline."
         input
       (org-funcs-read-url prompt))))
 
-(defun org-funcs--retrieve-title (url)
+(defun org-funcs--retrieve-html (url)
   (with-current-buffer (url-retrieve-synchronously url t)
     (goto-char (point-min))
-    (when (search-forward "\n\n" nil t)
-      (let ((html (libxml-parse-html-region (point) (point-max))))
-        (-when-let* (((_ _ head) html)
-                     ((_ _ . header-children) head)
-                     ((&alist 'title (_ title)) header-children))
-          (with-temp-buffer
-            (insert title)
-            (goto-char (point-min))
-            (s-trim (s-replace-regexp (rx (any "\r\n\t")) "" (xml-parse-string)))))))))
+    ;; Remove DOS EOL chars
+    (while (search-forward "\r\n" nil t)
+      (replace-match "\n"))
+
+    (goto-char (point-min))
+    (search-forward "\n\n" nil t)
+    (libxml-parse-html-region (point) (point-max))))
+
+(defun org-funcs--unencode-entities-in-string (str)
+  (or (ignore-errors
+        (with-temp-buffer
+          (insert str)
+          (goto-char (point-min))
+          (xml-parse-string)))
+      str))
+
+(defun org-funcs--extract-title (html)
+  (cadr (alist-get 'title (cdr (alist-get 'head (cdr html))))))
 
 (defun org-funcs-read-url-for-capture ()
   "Return a URL capture template string for use with `org-capture'."
   (let* ((url (org-funcs-read-url "URL"))
-         (title (read-string "Title: " (org-funcs--retrieve-title url))))
-    (format "* TODO Review [[%s][%s]]" url (or title url))))
+         (guess (-some->> (org-funcs--retrieve-html url)
+                          (org-funcs--extract-title)
+                          (s-replace-regexp (rx (any "\r\n\t")) "")
+                          (s-trim)))
+         (title (read-string "Title: " guess)))
+    (format "* TODO Review [[%s][%s]]" url (org-link-escape (or title url)))))
 
 (defun org-funcs-capture-link ()
   "Context-sensitive link capture."
