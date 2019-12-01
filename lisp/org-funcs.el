@@ -360,12 +360,17 @@ Return the position of the headline."
 (defun org-funcs-read-url-for-capture ()
   "Return a URL capture template string for use with `org-capture'."
   (let* ((url (org-funcs-read-url "URL"))
+         (verb (pcase (url-host (url-generic-parse-url url))
+                 ((or "www.youtube.com" "www.vimeo.com")
+                  "Watch")
+                 (_
+                  "Review")))
          (guess (-some->> (org-funcs--retrieve-html url)
                           (org-funcs--extract-title)
                           (s-replace-regexp (rx (any "\r\n\t")) "")
                           (s-trim)))
          (title (read-string "Title: " guess)))
-    (format "* TODO Review [[%s][%s]]" url (org-link-escape (or title url)))))
+    (format "* TODO %s [[%s][%s]]" verb url (org-link-escape (or title url)))))
 
 (defun org-funcs-capture-link ()
   "Context-sensitive link capture."
