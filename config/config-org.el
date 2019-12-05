@@ -215,7 +215,7 @@
                (org-agenda-skip-function #'org-project-skip-non-stuck-projects)))))
 
     ((org-agenda-tag-filter-preset '(,(format "+%s" tag) "-@someday" "-ignore"))
-     (org-agenda-start-with-log-mode '(closed clock))
+     (org-agenda-start-with-log-mode '(closed clock state))
      (org-agenda-clockreport-parameter-plist ',(append config-org--agenda-clockreport-defaults (list :tags tag)))
      (org-agenda-span 'day)
      (org-agenda-show-future-repeats nil)
@@ -268,7 +268,7 @@
     ((org-agenda-tag-filter-preset '(,(format "+%s" tag) "-@someday" "-ignore"))
      (org-agenda-clockreport-parameter-plist ',(append config-org--agenda-clockreport-defaults (list :tags tag)))
      (org-agenda-start-with-clockreport-mode t)
-     (org-agenda-log-mode-items '(closed))
+     (org-agenda-log-mode-items '(closed state))
      (org-agenda-show-future-repeats nil)
      (org-agenda-archives-mode nil)
      (org-agenda-ignore-drawer-properties '(effort appt))
