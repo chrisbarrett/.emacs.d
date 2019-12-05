@@ -36,6 +36,7 @@
     ("p" org-paste-subtree "paste"))
    "View"
    (("P" org-present "present")
+    ("n" org-num-mode "heading numbers")
     ("t" org-show-todo-tree "todo tree"))
    "Misc"
    (("b" org-edna-edit "edit blockers & triggers")
