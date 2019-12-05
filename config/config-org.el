@@ -356,11 +356,9 @@
                         (buffer-substring (line-beginning-position) (line-end-position)))
         (goto-char (line-end-position))))
 
-    (defun config-org--set-bidi-env ()
-      (setq bidi-paragraph-direction nil))
-
     (defun config-org--set-local-vars-and-hooks ()
       (org-indent-mode +1)
+      (setq bidi-paragraph-direction nil))
 
     (defun config-org--after-refile (&rest _)
       (org-save-all-org-buffers))
@@ -404,7 +402,6 @@
 
     (add-hook 'org-mode-hook #'auto-revert-mode)
     (add-hook 'org-mode-hook #'config-org--set-local-vars-and-hooks)
-    (add-hook 'org-mode-hook #'config-org--set-bidi-env)
     (add-hook 'org-after-todo-statistics-hook #'config-org--children-done-parent-done))
 
   :config
