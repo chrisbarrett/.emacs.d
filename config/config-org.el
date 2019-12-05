@@ -142,7 +142,7 @@
  org-habit-preceding-days 7
  org-habit-following-days 5
 
- org-tags-exclude-from-inheritance '("crypt" "project")
+ org-tags-exclude-from-inheritance '("crypt")
  org-crypt-disable-auto-save 'encypt
 
  org-attach-directory (f-join paths-org-directory "data")
