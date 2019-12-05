@@ -356,23 +356,11 @@
                         (buffer-substring (line-beginning-position) (line-end-position)))
         (goto-char (line-end-position))))
 
-    (defun config-org--mark-next-parent-tasks-todo ()
-      "Visit each parent task and change state to TODO."
-      (when-let* ((mystate (or (bound-and-true-p org-state)
-                               (nth 2 (org-heading-components)))))
-        (save-excursion
-          (while (org-up-heading-safe)
-            (when (-contains? '("WAITING" "MAYBE")
-                              (nth 2 (org-heading-components)))
-              (org-todo "TODO"))))))
-
     (defun config-org--set-bidi-env ()
       (setq bidi-paragraph-direction nil))
 
     (defun config-org--set-local-vars-and-hooks ()
       (org-indent-mode +1)
-      (add-hook 'org-after-todo-state-change-hook #'config-org--mark-next-parent-tasks-todo nil t)
-      (add-hook 'org-clock-in-hook #'config-org--mark-next-parent-tasks-todo nil t))
 
     (defun config-org--after-refile (&rest _)
       (org-save-all-org-buffers))
