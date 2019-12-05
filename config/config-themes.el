@@ -424,6 +424,7 @@ By default, this shows the information specified by `global-mode-string'."
                   (org-agenda-done ((t (:bold nil :inherit org-done))))
                   (org-block-begin-line ((t :foreground ,dim-fg)))
                   (org-block-end-line ((t :foreground ,dim-fg)))
+                  (org-upcoming-deadline ((t :foreground ,orange)))
                   (org-drawer ((t :foreground ,dim-fg)))
                   (org-drawer ((t :inherit org-special-keyword)))
                   (org-funcs-agenda-note ((t (:inherit font-lock-string-face :italic t))))
