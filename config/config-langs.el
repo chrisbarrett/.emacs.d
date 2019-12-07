@@ -115,6 +115,12 @@
   :commands (pass)
   :general
   (:states '(normal) :keymaps 'pass-view-mode-map "q" #'kill-this-buffer)
+  (:states '(normal) :keymaps 'pass-mode-map
+   "u" #'pass-copy-username
+   "U" #'pass-copy-url
+   "J" #'pass-goto-entry
+   "y" #'pass-copy-password
+   "f" #'pass-copy-field)
   :init
   (add-to-list 'display-buffer-alist
                `(,(rx bos "*Password-Store*" eos)
