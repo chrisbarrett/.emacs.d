@@ -140,7 +140,7 @@
   :demand t)
 
 (use-package config-nixos-os
-  :if (f-exists-p "/run/current-system/nixos-version")
+  :if (equal system-type 'gnu/linux)
   :demand t)
 
 ;; Load host-specific overrides for vars.
