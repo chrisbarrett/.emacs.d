@@ -384,10 +384,6 @@ By default, this shows the information specified by `global-mode-string'."
                            ('doom-one "#51afef")))
              (dim-fg
               (pcase theme
-                ('doom-solarized-light base6)
-                ('doom-one base5)))
-             (dim-fg2
-              (pcase theme
                 ('doom-solarized-light "#9c9c9c")
                 ('doom-one "#787878"))))
 
@@ -403,7 +399,7 @@ By default, this shows the information specified by `global-mode-string'."
                 ;; Common settings
 
                 `((doom-modeline-project-dir ((t (:inherit font-lock-string-face :weight normal :bold t))))
-                  (doom-modeline-project-parent-dir ((t (:foreground ,dim-fg :bold t))))
+                  (doom-modeline-project-parent-dir ((t (:inherit shadow :bold t))))
                   (eyebrowse-mode-line-active ((t (:foreground ,blue :bold t))))
                   (eyebrowse-mode-line-delimiters ((t (:foreground ,base6))))
                   (eyebrowse-mode-line-inactive ((t :foreground ,base6)))
@@ -422,17 +418,17 @@ By default, this shows the information specified by `global-mode-string'."
                   (org-agenda-clocking ((t (:bold nil :foreground ,fg :background ,(doom-blend blue bg 0.2)))))
                   (org-agenda-current-time ((t :foreground ,orange)))
                   (org-agenda-done ((t (:bold nil :inherit org-done))))
-                  (org-block-begin-line ((t :foreground ,dim-fg)))
-                  (org-block-end-line ((t :foreground ,dim-fg)))
+                  (org-block-begin-line ((t :inherit shadow)))
+                  (org-block-end-line ((t :inherit shadow)))
                   (org-upcoming-deadline ((t :foreground ,orange)))
-                  (org-drawer ((t :foreground ,dim-fg)))
+                  (org-drawer ((t :inherit shadow)))
                   (org-drawer ((t :inherit org-special-keyword)))
                   (org-funcs-agenda-note ((t (:inherit font-lock-string-face :italic t))))
-                  (org-meta-line ((t :foreground ,dim-fg)))
+                  (org-meta-line ((t :inherit shadow)))
                   (outline-1 ((t (:weight bold :foreground ,blue))))
-                  (parenthesis ((t (:foreground ,dim-fg2 :weight light))))
+                  (parenthesis ((t (:foreground ,dim-fg :weight light))))
                   (treemacs-git-ignored-face ((t )))
-                  (treemacs-git-renamed-face ((t :foreground ,dim-fg2 :inherit font-lock-doc-face)))
+                  (treemacs-git-renamed-face ((t :foreground ,dim-fg :inherit font-lock-doc-face)))
                   (treemacs-git-unmodified-face ((t :inherit default)))
                   (vterm-color-black ((t (:foreground ,bg :background ,base5))))
 
