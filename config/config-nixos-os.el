@@ -16,6 +16,8 @@
   :config
   (exec-path-from-shell-initialize))
 
+(set-fontset-font t 'arabic "amiri")
+
 (provide 'config-nixos-os)
 
 ;;; config-nixos-os.el ends here
