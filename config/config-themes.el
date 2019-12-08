@@ -436,8 +436,18 @@ By default, this shows the information specified by `global-mode-string'."
                   (ivy-minibuffer-match-face-1 ((t (:foreground ,bg :background ,base7 :weight bold))))
                   (ivy-minibuffer-match-face-2 ((t (:foreground ,bg :background ,base6 :weight bold))))
                   (ivy-minibuffer-match-face-3 ((t (:foreground ,fg :background ,base4 :weight bold))))
-                  (ivy-minibuffer-match-face-4 ((t (:foreground ,bg :background ,base8))))))))))
+                  (ivy-minibuffer-match-face-4 ((t (:foreground ,bg :background ,base8)))))))
 
+        ;; KLUDGE: Emacs 27 changes the default behaviour of faces so they don't
+        ;; extend to the end of the line unless the `:extend' attribute is set.
+        ;; Update some common faces to use this.
+        (when (>= emacs-major-version 27)
+          (cl-loop for f in (face-list)
+                   for face = (symbol-name f)
+                   when (and (string-match (rx (or "region" "magit" "ediff" "diff" "highlight" "selection")) face)
+                             (ignore-errors
+                               (face-attribute f :extend t)))
+                   do (set-face-attribute f nil :extend t))))))
   :config
   (progn
     (doom-themes-treemacs-config)
