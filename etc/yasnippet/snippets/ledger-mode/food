@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: food
+# key: f
+# condition: (yas-funcs-bolp)
+# --
+2019/12/08 * Rebudget
+  [Food for Week]                          $ 200.00
+  [Food for Month]
