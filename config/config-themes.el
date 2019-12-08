@@ -442,12 +442,11 @@ By default, this shows the information specified by `global-mode-string'."
         ;; extend to the end of the line unless the `:extend' attribute is set.
         ;; Update some common faces to use this.
         (when (>= emacs-major-version 27)
-          (cl-loop for f in (face-list)
-                   for face = (symbol-name f)
-                   when (and (string-match (rx (or "region" "magit" "ediff" "diff" "highlight" "selection")) face)
-                             (ignore-errors
-                               (face-attribute f :extend t)))
-                   do (set-face-attribute f nil :extend t))))))
+          (dolist (face (face-list))
+            (when (or (memq face '(org-quote org-block))
+                      (string-match-p (rx (or "region" "magit" "ediff" "diff" "highlight" "selection"))
+                                      (symbol-name face)))
+              (set-face-attribute face nil :extend t)))))))
   :config
   (progn
     (doom-themes-treemacs-config)
