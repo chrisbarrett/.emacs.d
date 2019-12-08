@@ -11,10 +11,10 @@
 
 (autoload 'dumb-jump-go "dumb-jump")
 (autoload 'dumb-jump-go-other-window "dumb-jump")
+(autoload 'find-library-name "find-func")
+(autoload 'hostname "hostname")
 (autoload 'lsp-ui-peek-find-definitions "lsp-methods")
 (autoload 'projectile-find-file "config-projectile")
-
-(autoload 'find-library-name "find-func")
 
 (defun jump-cmds--jump-to-file (file &optional pos)
   (xref-push-marker-stack)
