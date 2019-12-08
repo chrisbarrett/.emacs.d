@@ -7,6 +7,7 @@
 
 (use-package vterm
   :straight t
+  :custom (vterm-install t)
   :general
   (:keymaps 'vterm-mode-map :states 'normal "P" 'vterm-yank)
   (:keymaps 'vterm-mode-map :states '(normal insert) "s-v" 'vterm-yank)
