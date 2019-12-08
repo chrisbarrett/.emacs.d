@@ -671,6 +671,18 @@
   (interactive "*")
   (insert (string-trim (shell-command-to-string "uuidgen"))))
 
+(use-package webjump
+  :commands (webjump)
+  :custom (webjump-sites
+           '(("DuckDuckGo" . [simple-query "duckduckgo.com" "duckduckgo.com/?q=" ""])
+             ("Google Calendar" . "calendar.google.com")
+             ("GMail" . "mail.google.com")
+             ("Emacs Subreddit" . "reddit.com/r/emacs")
+             ("NixOS Options" . [simple-query "nixos.org" "nixos.org/nixos/options.html#" ""])
+             ("NixOS Packages" . [simple-query "nixos.org" "nixos.org/nixos/packages.html?query=" ""])
+             ("Wikipedia" . [simple-query "en.wikipedia.org" "en.wikipedia.org/wiki/" ""]))))
+
+
 (provide 'config-basic-settings)
 
 ;;; config-basic-settings.el ends here
