@@ -15,6 +15,8 @@
 
 (defvar paths-org-directory "~/Dropbox/org")
 
+(defconst paths-nix-directory "~/.config/nixpkgs")
+
 (defconst paths-org-lisp-directory
   (expand-file-name "lisp" paths-org-directory))
 

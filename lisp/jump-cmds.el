@@ -36,13 +36,13 @@
 (defun jump-to-nix-config ()
   "Open a nix config file."
   (interactive)
-  (let ((default-directory "~/nix"))
+  (let ((default-directory paths-nix-directory))
     (projectile-find-file)))
 
 (defun jump-to-nix-system-config ()
   "Open the nix system config file."
   (interactive)
-  (jump-cmds--jump-to-file (format "~/nix/%s.nix" (hostname))))
+  (jump-cmds--jump-to-file (format (f-join paths-nix-directory (concat (hostname) ".nix")))))
 
 (defun jump-to-personal-config ()
   "Open the personal configuration file."
