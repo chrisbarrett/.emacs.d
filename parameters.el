@@ -1,5 +1,9 @@
 ;;; parameters.el --- Shared configuration variables.  -*- lexical-binding: t; -*-
 ;;; Commentary:
+
+;; These settings are applied before themes are loaded. They can be overridden
+;; in ~/.config/hostfile.el.
+
 ;;; Code:
 
 (defvar parameters-default-theme
