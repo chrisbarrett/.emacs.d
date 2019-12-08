@@ -468,8 +468,7 @@
    "Other"
    (("l" (with-current-buffer (find-file-noselect (f-join paths-ledger-directory "master.ledger"))
            (call-interactively #'ledger-report))
-     "ledger report...")
-    ("g" counsel-google "google search..."))))
+     "ledger report..."))))
 
 (pretty-hydra-define profiler
   (:hint nil
@@ -555,7 +554,8 @@
     ("e" errors/body "errors...")
     ("f" files/body "files...")
     ("g" git-and-files/body "git and goto...")
-    ("h" help/body "help..."))
+    ("h" help/body "help...")
+    ("j" webjump "website..."))
    ""
    (("k" kill/body "kill...")
     ("l" language-server/body  "language server...")
