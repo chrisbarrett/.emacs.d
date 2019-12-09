@@ -611,7 +611,8 @@
     (defvar config-org--capturing-p nil)
 
     (defun config-org--on-capture (f &rest args)
-      (let ((config-org--capturing-p t))
+      (let ((config-org--capturing-p t)
+            (org-link-parameters (--remove (equal "id" (car it)) org-link-parameters)))
         (apply f args)))
 
     (defun config-org--prompt-for-creating-id (f &rest args)
