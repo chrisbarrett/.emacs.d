@@ -639,9 +639,10 @@
 
     (defun config-basic-settings--ediff-org-reveal-around-difference (&rest _)
       (dolist (buf (list ediff-buffer-A ediff-buffer-B ediff-buffer-C))
-        (ediff-with-current-buffer buf
-          (when (derived-mode-p 'org-mode)
-            (org-reveal t)))))
+        (when (and buf (buffer-live-p buf))
+          (with-current-buffer buf
+            (when (derived-mode-p 'org-mode)
+              (org-reveal t))))))
 
     (defun config-basic-settings--setup-ediff-keybinds ()
       (define-key ediff-mode-map (kbd "B") #'ediff-copy-both-to-C)))
