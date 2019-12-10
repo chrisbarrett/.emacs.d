@@ -174,6 +174,8 @@ Return the position of the headline."
 (defun org-funcs-files-for-context (tag)
   (append (seq-map (lambda (it) (expand-file-name it org-directory))
                    '("archive.org" "inbox.org" "gcal"))
+          (when (equal tag "@personal")
+            (list (expand-file-name "notes.org" org-directory)))
           (seq-filter (lambda (it)
                         (s-contains-p (string-remove-prefix "@" tag)
                                       it))
