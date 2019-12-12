@@ -109,6 +109,7 @@
                   mu4e-compose-context-policy 'ask-if-none
                   mu4e-compose-format-flowed t
                   message-kill-buffer-on-exit t
+                  mu4e-view-use-gnus t
                   mu4e-use-fancy-chars t
                   mu4e-headers-include-related nil
                   mu4e-headers-attach-mark '("a" . "A")
