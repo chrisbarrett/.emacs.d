@@ -19,6 +19,9 @@
 (defvar parameters-default-font-family "Iosevka"
   "The font family to use for the default face.")
 
+(defvar parameters-variable-pitch-text-height 90
+  "The default text height for variable-pitch. Bump this value for HIDPI screens.")
+
 (provide 'parameters)
 
 ;;; parameters.el ends here
