@@ -373,6 +373,9 @@ By default, this shows the information specified by `global-mode-string'."
              (bg-alt-l   (pcase theme
                            ('doom-solarized-light (doom-darken bg 0.05))
                            ('doom-one bg-alt)))
+             (green      (pcase theme
+                           ('doom-solarized-light "#859900")
+                           ('doom-one "#98be65")))
              (orange     (pcase theme
                            ('doom-solarized-light "#cb4b16")
                            ('doom-one "#da8548")))
@@ -414,6 +417,7 @@ By default, this shows the information specified by `global-mode-string'."
                   (lsp-ui-sideline-symbol-info ((t :foreground "grey" :slant italic :height 0.99 :weight light)))
                   (markdown-list-face ((t :inherit markdown-blockquote-face)))
                   (mu4e-header-highlight-face ((t (:bold nil :foreground ,fg :background ,(doom-blend blue bg 0.2)))))
+                  (mu4e-replied-face ((t :foreground ,green)))
                   (mu4e-highlight-face ((t :foreground ,blue :bold t)))
                   (org-agenda-clocking ((t (:bold nil :foreground ,fg :background ,(doom-blend blue bg 0.2)))))
                   (org-agenda-current-time ((t :foreground ,orange)))
