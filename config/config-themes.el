@@ -418,6 +418,7 @@ By default, this shows the information specified by `global-mode-string'."
                   (markdown-list-face ((t :inherit markdown-blockquote-face)))
                   (mu4e-header-highlight-face ((t (:bold nil :foreground ,fg :background ,(doom-blend blue bg 0.2)))))
                   (mu4e-replied-face ((t :foreground ,green)))
+                  (mu4e-unread-face ((t :foreground ,blue :bold t)))
                   (mu4e-highlight-face ((t :foreground ,blue :bold t)))
                   (org-agenda-clocking ((t (:bold nil :foreground ,fg :background ,(doom-blend blue bg 0.2)))))
                   (org-agenda-current-time ((t :foreground ,orange)))
