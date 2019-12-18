@@ -496,7 +496,9 @@
 
     (defun config-org--on-show-item-from-agenda ()
       (org-overview)
-      (org-show-children)))
+      (org-reveal)
+      (org-show-subtree)
+      (org-display-outline-path)))
 
   :init
   (with-eval-after-load 'org
