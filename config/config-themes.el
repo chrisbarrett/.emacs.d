@@ -402,7 +402,7 @@ By default, this shows the information specified by `global-mode-string'."
                 ;; Common settings
 
                 `((doom-modeline-project-dir ((t (:inherit font-lock-string-face :weight normal :bold t))))
-                  (doom-modeline-project-parent-dir ((t (:inherit shadow :bold t))))
+                  (doom-modeline-project-parent-dir ((t (:foreground ,dim-fg :bold t))))
                   (eyebrowse-mode-line-active ((t (:foreground ,blue :bold t))))
                   (eyebrowse-mode-line-delimiters ((t (:foreground ,base6))))
                   (eyebrowse-mode-line-inactive ((t :foreground ,base6)))
