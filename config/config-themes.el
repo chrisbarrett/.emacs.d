@@ -435,7 +435,12 @@ By default, this shows the information specified by `global-mode-string'."
         ;; Update some common faces to use this.
         (when (>= emacs-major-version 27)
           (dolist (face (face-list))
-            (when (or (memq face '(org-quote org-block markdown-code-face mu4e-header-highlight-face org-agenda-clocking))
+            (when (or (memq face '(org-quote
+                                   org-block
+                                   markdown-code-face
+                                   mu4e-header-highlight-face
+                                   org-agenda-clocking
+                                   ledger-font-xact-highlight-face))
                       (string-match-p (rx (or "region" "magit" "ediff" "diff" "highlight" "selection"))
                                       (symbol-name face)))
               (set-face-attribute face nil :extend t)))))))
