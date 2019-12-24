@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: local function
+# key: lf
+# --
+local function ${1:fname}(${2:args})
+  $0
+end
