@@ -37,6 +37,7 @@
    "View"
    (("P" org-present "present")
     ("n" org-num-mode "heading numbers")
+    ("o" org-tree-to-indirect-buffer "tree to indirect buf")
     ("t" org-show-todo-tree "todo tree"))
    "Misc"
    (("b" org-edna-edit "edit blockers & triggers")
