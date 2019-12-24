@@ -18,6 +18,16 @@
     (autoload 'evil-visual-update-x-selection "evil-states")
     (general-setq evil-want-keybinding nil)
 
+    (defun config-evil-execute-Q-macro (count)
+      "Execute the macro bound to the Q register.
+
+COUNT is the number of repetitions."
+      (interactive (list
+                    (if current-prefix-arg
+                        (if (numberp current-prefix-arg) current-prefix-arg 0)
+                      1)))
+      (evil-execute-macro count (evil-get-register ?Q t)))
+
     (defun config-evil-flyspell-on ()
       "Enable flyspell."
       (interactive)
@@ -85,6 +95,8 @@
       (kbd "gh") #'help-follow-symbol)
 
     (evil-global-set-key 'normal (kbd "go") #'browse-url-at-point)
+
+    (evil-global-set-key 'normal (kbd "Q") #'config-evil-execute-Q-macro)
 
     ;; Initial states and keymaps for builtin Emacs packages.
 
