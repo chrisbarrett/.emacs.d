@@ -318,6 +318,12 @@ By default, this shows the information specified by `global-mode-string'."
 
   :preface
   (progn
+    (defun config-themes-dark ()
+      (config-themes-toggle 'doom-one))
+
+    (defun config-themes-light ()
+      (config-themes-toggle 'doom-solarized-light))
+
     (defun config-themes-toggle (&optional theme)
       (interactive)
       (let* ((current-theme (car custom-enabled-themes))
