@@ -9,7 +9,8 @@
   :straight t
   :init
   (defconst exec-path-from-shell-variables
-    '("LEDGER_FILE"
+    '("PATH"
+      "LEDGER_FILE"
       "GPG_TTY"
       "SSH_AUTH_SOCK"
       "SSH_KEY_PATH"))
