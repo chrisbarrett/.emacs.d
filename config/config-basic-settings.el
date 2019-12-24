@@ -678,6 +678,7 @@
            '(("DuckDuckGo" . [simple-query "duckduckgo.com" "duckduckgo.com/?q=" ""])
              ("Google Calendar" . "calendar.google.com")
              ("GMail" . "mail.google.com")
+             ("home-manager options" . "https://rycee.gitlab.io/home-manager/options.html")
              ("Emacs Subreddit" . "reddit.com/r/emacs")
              ("NixOS Options" . [simple-query "nixos.org" "nixos.org/nixos/options.html#" ""])
              ("NixOS Packages" . [simple-query "nixos.org" "nixos.org/nixos/packages.html?query=" ""])
