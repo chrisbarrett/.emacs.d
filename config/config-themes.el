@@ -274,7 +274,7 @@ By default, this shows the information specified by `global-mode-string'."
     ;; override default modeline
     (doom-modeline-def-modeline 'main
       '(bar workspace-name window-number modals matches buffer-info remote-host buffer-position parrot selection-info)
-      '(objed-state misc-info persp-name grip irc mu4e github debug lsp minor-modes input-method indent-info buffer-encoding
+      '(objed-state misc-info persp-name grip irc github debug lsp minor-modes input-method indent-info buffer-encoding
                     ;; major-mode
                     process vcs
                     checker
