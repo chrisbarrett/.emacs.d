@@ -247,12 +247,6 @@
     (doom-modeline-def-segment space
       (doom-modeline-spc))
 
-    (doom-modeline-def-segment battery
-      "Display battery status."
-      (when (and (bound-and-true-p display-battery-mode)
-                 (config-themes--right-top-window-p))
-        (or doom-modeline--battery-status (doom-modeline-update-battery-status))))
-
     (doom-modeline-def-segment eyebrowse
       "Display eyebrowse workspace information."
       (let ((indicator (eyebrowse-mode-line-indicator)))
@@ -268,9 +262,6 @@ By default, this shows the information specified by `global-mode-string'."
           (propertize (concat (doom-modeline-spc) time (doom-modeline-spc))
                       'face `(:background ,(face-background 'region))))))
 
-    ;; KLUDGE: Prevent the battery status from showing up in weird places.
-    (defalias #'doom-modeline-segment--fancy-battery #'ignore)
-
     ;; override default modeline
     (doom-modeline-def-modeline 'main
       '(bar workspace-name window-number modals matches buffer-info remote-host buffer-position parrot selection-info)
@@ -281,17 +272,7 @@ By default, this shows the information specified by `global-mode-string'."
                     space
                     eyebrowse
                     org-clock
-                    battery
                     system))))
-
-;; `fancy-battery' adds a mode for showing a battery indicator in the modeline.
-
-(use-package fancy-battery
-  :straight t
-  :custom ((fancy-battery-show-percentage nil)
-           (fancy-battery-mode-line nil))
-  :hook ((after-init . fancy-battery-mode)
-         (after-init . display-battery-mode)))
 
 ;; `hide-mode-line' provides a mode that hides the modeline.
 
