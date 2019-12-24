@@ -189,6 +189,7 @@ Interactively, reverse the characters in the current region."
                   idris-repl-mode
                   inf-ruby-mode
                   java-mode
+                  lua-mode
                   makefile-gmake-mode
                   makefile-mode
                   nix-mode
