@@ -414,7 +414,7 @@ By default, this shows the information specified by `global-mode-string'."
                   (org-block-end-line ((t :inherit shadow)))
                   (org-upcoming-deadline ((t :foreground ,orange)))
                   (org-drawer ((t :inherit shadow)))
-                  (org-drawer ((t :inherit org-special-keyword)))
+                  (org-formula ((t :inherit shadow)))
                   (org-funcs-agenda-note ((t (:inherit font-lock-string-face :italic t))))
                   (org-meta-line ((t :inherit shadow)))
                   (outline-1 ((t (:weight bold :foreground ,blue))))
