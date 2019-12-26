@@ -305,6 +305,22 @@ By default, this shows the information specified by `global-mode-string'."
     (defun config-themes-light ()
       (config-themes-toggle 'doom-solarized-light))
 
+    (defun config-themes-set-extends-attrs ()
+      ;; KLUDGE: Emacs 27 changes the default behaviour of faces so they don't
+      ;; extend to the end of the line unless the `:extend' attribute is set.
+      ;; Update some common faces to use this.
+      (when (>= emacs-major-version 27)
+        (dolist (face (face-list))
+          (when (or (memq face '(org-quote
+                                 org-block
+                                 markdown-code-face
+                                 mu4e-header-highlight-face
+                                 org-agenda-clocking
+                                 ledger-font-xact-highlight-face))
+                    (string-match-p (rx (or "region" "magit" "ediff" "diff" "highlight" "selection"))
+                                    (symbol-name face)))
+            (set-face-attribute face nil :extend t)))))
+
     (defun config-themes-toggle (&optional theme)
       (interactive)
       (let* ((current-theme (car custom-enabled-themes))
@@ -312,7 +328,8 @@ By default, this shows the information specified by `global-mode-string'."
                                       'doom-solarized-light
                                     'doom-one))))
         (enable-theme new-theme)
-        (config-themes-override-themes new-theme))
+        (config-themes-override-themes new-theme)
+        (config-themes-set-extends-attrs))
       ;; HACK: Make sure bullets are re-fontified.
       (when (bound-and-true-p org-bullets-mode)
         (font-lock-fontify-buffer)))
@@ -428,22 +445,7 @@ By default, this shows the information specified by `global-mode-string'."
                   (ivy-minibuffer-match-face-1 ((t (:foreground ,bg :background ,base7 :weight bold))))
                   (ivy-minibuffer-match-face-2 ((t (:foreground ,bg :background ,base6 :weight bold))))
                   (ivy-minibuffer-match-face-3 ((t (:foreground ,fg :background ,base4 :weight bold))))
-                  (ivy-minibuffer-match-face-4 ((t (:foreground ,bg :background ,base8)))))))
-
-        ;; KLUDGE: Emacs 27 changes the default behaviour of faces so they don't
-        ;; extend to the end of the line unless the `:extend' attribute is set.
-        ;; Update some common faces to use this.
-        (when (>= emacs-major-version 27)
-          (dolist (face (face-list))
-            (when (or (memq face '(org-quote
-                                   org-block
-                                   markdown-code-face
-                                   mu4e-header-highlight-face
-                                   org-agenda-clocking
-                                   ledger-font-xact-highlight-face))
-                      (string-match-p (rx (or "region" "magit" "ediff" "diff" "highlight" "selection"))
-                                      (symbol-name face)))
-              (set-face-attribute face nil :extend t)))))))
+                  (ivy-minibuffer-match-face-4 ((t (:foreground ,bg :background ,base8))))))))))
   :config
   (progn
     (doom-themes-treemacs-config)
@@ -452,7 +454,8 @@ By default, this shows the information specified by `global-mode-string'."
     ;; Customise themes.
 
     (dolist (theme '(doom-one doom-solarized-light))
-      (load-theme theme t t))
+      (load-theme theme t t)
+      (config-themes-override-themes theme))
 
     ;; Enable theme.
 
