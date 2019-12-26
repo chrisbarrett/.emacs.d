@@ -314,8 +314,6 @@ By default, this shows the information specified by `global-mode-string'."
           (when (or (memq face '(org-quote
                                  org-block
                                  markdown-code-face
-                                 mu4e-header-highlight-face
-                                 org-agenda-clocking
                                  ledger-font-xact-highlight-face))
                     (string-match-p (rx (or "region" "magit" "ediff" "diff" "highlight" "selection"))
                                     (symbol-name face)))
@@ -420,15 +418,15 @@ By default, this shows the information specified by `global-mode-string'."
                   (lsp-ui-sideline-symbol ((t :height 0.99)))
                   (lsp-ui-sideline-symbol-info ((t :foreground "grey" :slant italic :height 0.99 :weight light)))
                   (markdown-list-face ((t :inherit markdown-blockquote-face)))
-                  (mu4e-header-highlight-face ((t (:bold nil :foreground ,fg :background ,(doom-blend blue bg 0.2)))))
+                  (mu4e-header-highlight-face ((t (:bold nil :foreground ,fg :extend t :background ,(doom-blend blue bg 0.2)))))
                   (mu4e-replied-face ((t :foreground ,green)))
                   (mu4e-unread-face ((t :foreground ,blue :bold t)))
                   (mu4e-highlight-face ((t :foreground ,blue :bold t)))
-                  (org-agenda-clocking ((t (:bold nil :foreground ,fg :background ,(doom-blend blue bg 0.2)))))
+                  (org-agenda-clocking ((t (:bold nil :extend t :foreground ,fg :background ,(doom-blend blue bg 0.2)))))
                   (org-agenda-current-time ((t :foreground ,orange)))
                   (org-agenda-done ((t (:bold nil :inherit org-done))))
-                  (org-block-begin-line ((t :inherit shadow)))
-                  (org-block-end-line ((t :inherit shadow)))
+                  (org-block-begin-line ((t :extend t :inherit shadow)))
+                  (org-block-end-line ((t :extend t :inherit shadow)))
                   (org-upcoming-deadline ((t :foreground ,orange)))
                   (org-drawer ((t :inherit shadow)))
                   (org-formula ((t :inherit shadow)))
