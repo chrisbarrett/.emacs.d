@@ -277,6 +277,7 @@
    (("i" org-funcs-goto-inbox "inbox")
     ("p" org-funcs-goto-personal "personal")
     ("w" org-funcs-goto-work "work")
+    ("f" org-funcs-goto-flat "flat")
     ("n" org-funcs-goto-notes "notes")
     ("r" org-funcs-goto-recurring "recurring"))
    ""

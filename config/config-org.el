@@ -277,6 +277,8 @@
 
 (org-funcs-update-agenda-custom-commands
  (list
+  '("f" . "@flat context")
+  (config-org--agenda-for-context "@flat")
   '("p" . "@personal context")
   (config-org--agenda-for-context "@personal")
   (config-org--plan-for-context "@personal")

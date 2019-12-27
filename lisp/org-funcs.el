@@ -38,12 +38,15 @@
       (with-current-buffer (marker-buffer org-clock-marker)
         (org-get-tags (marker-position org-clock-marker))))))
 
-(defun org-funcs-work-context-p ()
+(defun org-funcs-tags-contain-p (tag)
   (save-excursion
     (let ((tags (seq-map #'substring-no-properties
                          (append (ignore-errors (org-get-tags))
                                  (org-funcs-clocked-task-tags)))))
-      (seq-contains tags "@work"))))
+      (seq-contains tags tag))))
+
+(defun org-funcs-work-context-p ()
+  (org-funcs-tags-contain-p "@work"))
 
 (defun org-funcs-agenda-dwim ()
   "Show the appropriate org agenda view."
@@ -55,9 +58,13 @@
            (dolist (file (f-files entry (lambda (it)
                                           (string-match-p org-agenda-file-regexp it))))
              (find-file-noselect file)))))
-  (if (org-funcs-work-context-p)
-      (org-agenda nil "wa")
-    (org-agenda nil "pa"))
+  (cond
+   ((org-funcs-tags-contain-p "@work")
+    (org-agenda nil "wa"))
+   ((org-funcs-tags-contain-p "@flat")
+    (org-agenda nil "fa"))
+   (t
+    (org-agenda nil "pa")))
   (get-buffer org-agenda-buffer-name))
 
 (defun org-funcs--ensure-default-datetree-entry (buffer)
@@ -244,6 +251,11 @@ Return the position of the headline."
   "Switch to the inbox file."
   (interactive)
   (find-file (f-join paths-org-directory "inbox.org")))
+
+(defun org-funcs-goto-flat ()
+  "Switch to the flat file."
+  (interactive)
+  (find-file (f-join paths-org-directory "flat.org")))
 
 (defun org-funcs-goto-personal ()
   "Switch to the personal notes file."
