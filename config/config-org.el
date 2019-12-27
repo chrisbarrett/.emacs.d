@@ -705,6 +705,18 @@
     (add-hook 'org-present-mode-hook #'config-org--on-start-presentation)
     (add-hook 'org-present-mode-quit-hook #'config-org--on-end-presentation)))
 
+;; `org-protocol' provides a URL scheme and code triggering for Emacs.
+
+(use-package org-protocol
+  :after server
+  :defer t
+  :config
+  (org-funcs-update-capture-templates
+   (list
+    (org-funcs-capture-template "!" "org-protocol link" '(file "inbox.org")
+                                "%(org-funcs-read-url-for-capture \"%:link\" \"%:description\")\n%:initial"
+                                :immediate-finish t))))
+
 (provide 'config-org)
 
 ;;; config-org.el ends here

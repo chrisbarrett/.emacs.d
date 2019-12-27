@@ -371,19 +371,24 @@ Return the position of the headline."
 (defun org-funcs--extract-title (html)
   (cadr (alist-get 'title (cdr (alist-get 'head (cdr html))))))
 
-(defun org-funcs-read-url-for-capture ()
-  "Return a URL capture template string for use with `org-capture'."
-  (let* ((url (org-funcs-read-url "URL"))
-         (verb (pcase (url-host (url-generic-parse-url url))
-                 ((or "www.youtube.com" "www.vimeo.com")
-                  "Watch")
-                 (_
-                  "Review")))
-         (guess (-some->> (org-funcs--retrieve-html url)
-                          (org-funcs--extract-title)
-                          (s-replace-regexp (rx (any "\r\n\t")) "")
-                          (s-trim)))
-         (title (read-string "Title: " guess)))
+(defun org-funcs-read-url-for-capture (&optional url title)
+  "Return a URL capture template string for use with `org-capture'.
+
+URL and TITLE are added to the template."
+  (interactive
+   (let* ((url (org-funcs-read-url "URL"))
+          (guess (-some->> (org-funcs--retrieve-html url)
+                           (org-funcs--extract-title)
+                           (s-replace-regexp (rx (any "\r\n\t")) "")
+                           (s-trim)))
+          (title (read-string "Title: " guess)))
+     (list url title)))
+
+  (let ((verb (pcase (url-host (url-generic-parse-url url))
+                ((or "www.youtube.com" "www.vimeo.com")
+                 "Watch")
+                (_
+                 "Review"))))
     (format "* TODO %s [[%s][%s]]" verb url (org-link-escape (or title url)))))
 
 (defun org-funcs-capture-link ()
@@ -392,7 +397,7 @@ Return the position of the headline."
       (progn
         (org-store-link nil)
         "* TODO Review %a (email)")
-    (org-funcs-read-url-for-capture)))
+    (call-interactively #'org-funcs-read-url-for-capture)))
 
 (defun org-funcs-update-capture-templates (templates)
   "Merge TEMPLATES with existing values in `org-capture-templates'."
