@@ -107,7 +107,7 @@ is already local to the agenda."
   (message "%s WAITING and SCHEDULED NEXT Tasks" (if org-project-hide-scheduled-and-waiting-next-tasks "Hide" "Show")))
 
 (defun org-project-skip-stuck-projects ()
-  "Skip trees that are not stuck projects."
+  "Skip trees that are stuck projects."
   (save-restriction
     (widen)
     (let ((next-headline (save-excursion (or (outline-next-heading) (point-max)))))
