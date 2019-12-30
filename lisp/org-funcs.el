@@ -21,6 +21,8 @@
   (require 'org-clock)
   (require 'org-capture))
 
+(autoload 'org-project-p "org-project")
+(autoload 'org-project-skip-stuck-projects "org-project")
 (autoload 'xml-parse-string "xml")
 
 (defvar org-agenda-files nil)
@@ -241,6 +243,9 @@ Return the position of the headline."
    ((and (org-funcs-high-priority-p) (org-funcs--current-headline-is-todo))
     ;; Show these items.
     nil)
+
+   ((org-project-p)
+    (org-project-skip-stuck-projects))
 
    ((org-funcs--first-todo-at-this-level-p)
     (org-funcs--skip-heading-safe))))
