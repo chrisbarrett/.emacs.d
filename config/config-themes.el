@@ -314,6 +314,7 @@ By default, this shows the information specified by `global-mode-string'."
           (when (or (memq face '(org-quote
                                  org-block
                                  markdown-code-face
+                                 hl-line
                                  ledger-font-xact-highlight-face))
                     (string-match-p (rx (or "region" "magit" "ediff" "diff" "highlight" "selection"))
                                     (symbol-name face)))
