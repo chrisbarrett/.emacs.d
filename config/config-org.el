@@ -717,7 +717,7 @@
   (org-funcs-update-capture-templates
    (list
     (org-funcs-capture-template " L" "org-protocol Link" '(file "inbox.org")
-                                "%(org-funcs-read-url-for-capture \"%:link\" \"%:description\")\n%:initial"
+                                "%(org-funcs-read-url-for-capture \"%:link\" \"%:description\" t)\n%:initial"
                                 :immediate-finish t))))
 
 (provide 'config-org)

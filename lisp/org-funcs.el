@@ -8,6 +8,7 @@
 
 ;;; Code:
 
+(require 'alert)
 (require 'dash)
 (require 'dash-functional)
 (require 'f)
@@ -376,10 +377,12 @@ Return the position of the headline."
 (defun org-funcs--extract-title (html)
   (cadr (alist-get 'title (cdr (alist-get 'head (cdr html))))))
 
-(defun org-funcs-read-url-for-capture (&optional url title)
+(defun org-funcs-read-url-for-capture (&optional url title notify-p)
   "Return a URL capture template string for use with `org-capture'.
 
-URL and TITLE are added to the template."
+URL and TITLE are added to the template.
+
+If NOTIFY-P is set, a desktop notification is displayed."
   (interactive
    (let* ((url (org-funcs-read-url "URL"))
           (guess (-some->> (org-funcs--retrieve-html url)
@@ -387,14 +390,17 @@ URL and TITLE are added to the template."
                            (s-replace-regexp (rx (any "\r\n\t")) "")
                            (s-trim)))
           (title (read-string "Title: " guess)))
-     (list url title)))
+     (list url title nil)))
 
   (let ((verb (pcase (url-host (url-generic-parse-url url))
                 ((or "www.youtube.com" "www.vimeo.com")
                  "Watch")
                 (_
                  "Review"))))
-    (format "* TODO %s [[%s][%s]]" verb url (org-link-escape (or title url)))))
+    (prog1
+        (format "* TODO %s [[%s][%s]]" verb url (org-link-escape (or title url)))
+      (when notify-p
+        (alert title :title "Link Captured")))))
 
 (defun org-funcs-capture-link ()
   "Context-sensitive link capture."
