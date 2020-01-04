@@ -684,6 +684,13 @@
              ("NixOS Packages" . [simple-query "nixos.org" "nixos.org/nixos/packages.html?query=" ""])
              ("Wikipedia" . [simple-query "en.wikipedia.org" "en.wikipedia.org/wiki/" ""]))))
 
+;; `alert' provides an Emacs interface for displaying desktop notifications.
+
+(use-package alert
+  :straight t
+  :commands (alert)
+  :config
+  (setq alert-default-style (if (executable-find "notify-send") 'libnotify 'message)))
 
 (provide 'config-basic-settings)
 
