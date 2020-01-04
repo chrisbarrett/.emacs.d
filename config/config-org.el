@@ -712,8 +712,7 @@
 ;; `org-protocol' provides a URL scheme and code triggering for Emacs.
 
 (use-package org-protocol
-  :after server
-  :defer t
+  :after (:all server org)
   :config
   (org-funcs-update-capture-templates
    (list
