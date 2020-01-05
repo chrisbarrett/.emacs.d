@@ -60,6 +60,7 @@
      treemacs-fringe-indicator-mode nil
 
      treemacs-recenter-after-file-follow nil
+     treemacs-wrap-around nil
      treemacs-follow-after-init t
      treemacs-silent-filewatch t
      treemacs-silent-refresh t
