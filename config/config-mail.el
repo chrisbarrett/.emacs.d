@@ -151,7 +151,8 @@
                   message-citation-line-format "On %a, %b %d %Y, %f wrote:\n"
 
                   ;; Update every 2 minutes.
-                  mu4e-update-interval (* 60 5)
+                  mu4e-update-interval (when (equal system-type 'darwin)
+                                         (* 60 5))
 
                   ;; Ensure I'm never prompted for the buffer coding system when sending mail.
                   sendmail-coding-system 'utf-8
