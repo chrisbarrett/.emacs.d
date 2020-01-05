@@ -186,15 +186,6 @@
 (use-package org-mu4e
   :after (:any org mu4e))
 
-;; `mu4e-alert' implements a notification system for new emails
-
-(use-package mu4e-alert
-  :straight t
-  :hook ((after-init . mu4e-alert-enable-notifications))
-  :custom
-  ((mu4e-alert-interesting-mail-query config-mail-unread-mail-query)
-   (mu4e-alert-email-notification-types '(count))))
-
 ;; `messages-are-flowing' displays newline symbols in the buffer for hard newlines.
 
 (use-package messages-are-flowing
