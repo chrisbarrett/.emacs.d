@@ -192,6 +192,14 @@
 (defconst config-org--agenda-clockreport-defaults
   '(:link t :compact t :maxlevel 4 :fileskip0 t :step week))
 
+(defun config-org--agenda-tag-filter-preset (tag-or-tags)
+  (list (s-join "|" (--map (format "+%s" it) (-list tag-or-tags)))
+        "-@someday"
+        "-ignore"))
+
+(defun config-org--agenda-files-for-tags (tag-or-tags)
+  (-distinct (-mapcat #'org-funcs-files-for-context (-list tag-or-tags))))
+
 (cl-defun config-org--agenda-for-context (tag &key show-catchups-p)
   `(,(concat (substring tag 1 2) "a")
     ,(format "Agenda for context: %s" tag)
@@ -215,14 +223,14 @@
               ((org-agenda-overriding-header "Stuck Projects")
                (org-agenda-skip-function #'org-project-skip-non-stuck-projects)))))
 
-    ((org-agenda-tag-filter-preset '(,(format "+%s" tag) "-@someday" "-ignore"))
+    ((org-agenda-tag-filter-preset ',(config-org--agenda-tag-filter-preset tag))
      (org-agenda-start-with-log-mode '(closed clock state))
      (org-agenda-clockreport-parameter-plist ',(append config-org--agenda-clockreport-defaults (list :tags tag)))
      (org-agenda-span 'day)
      (org-agenda-show-future-repeats nil)
      (org-agenda-archives-mode nil)
      (org-agenda-ignore-drawer-properties '(effort appt))
-     (org-agenda-files (org-funcs-files-for-context ,tag)))))
+     (org-agenda-files ',(config-org--agenda-files-for-tags tag)))))
 
 (defun config-org--plan-for-context (tag-or-tags)
   (let ((tags (-list tag-or-tags)))
@@ -243,13 +251,13 @@
        (todo "TODO"
              ((org-agenda-overriding-header "Review projects. Are these all healthy?")
               (org-agenda-skip-function #'org-project-skip-non-projects))))
-      ((org-agenda-tag-filter-preset '(,@(s-join "|" tags) "-@someday" "-ignore"))
+      ((org-agenda-tag-filter-preset ',(config-org--agenda-tag-filter-preset tags))
        (org-agenda-clockreport-parameter-plist ',(append config-org--agenda-clockreport-defaults (list :tags tags)))
        (org-agenda-span 'week)
        (org-agenda-show-future-repeats nil)
        (org-agenda-archives-mode nil)
        (org-agenda-ignore-drawer-properties '(effort appt))
-       (org-agenda-files (apply #'-union (-map #'org-funcs-files-for-context ',tags)))))))
+       (org-agenda-files ',(config-org--agenda-files-for-tags tags))))))
 
 (cl-defun config-org--review-for-context (tag-or-tags &key (start-day "-mon"))
   (let ((tags (-list tag-or-tags)))
@@ -270,14 +278,14 @@
        (todo "TODO"
              ((org-agenda-overriding-header "Review projects. Are these all healthy?")
               (org-agenda-skip-function #'org-project-skip-non-projects))))
-      ((org-agenda-tag-filter-preset '(,@(s-join "|" tags) "-@someday" "-ignore"))
+      ((org-agenda-tag-filter-preset ',(config-org--agenda-tag-filter-preset tags))
        (org-agenda-clockreport-parameter-plist ',(append config-org--agenda-clockreport-defaults (list :tags tags)))
        (org-agenda-start-with-clockreport-mode t)
        (org-agenda-log-mode-items '(closed state))
        (org-agenda-show-future-repeats nil)
        (org-agenda-archives-mode nil)
        (org-agenda-ignore-drawer-properties '(effort appt))
-       (org-agenda-files (apply #'-union (-map #'org-funcs-files-for-context ',tags)))))))
+       (org-agenda-files ',(config-org--agenda-files-for-tags tags))))))
 
 (org-funcs-update-agenda-custom-commands
  (list
