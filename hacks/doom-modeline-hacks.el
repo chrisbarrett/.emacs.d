@@ -11,7 +11,7 @@
 (with-eval-after-load 'doom-modeline-core
   (el-patch-defun doom-modeline-set-modeline (key &optional default)
     "Set the modeline format. Does nothing if the modeline KEY doesn't exist.
-  If DEFAULT is non-nil, set the default mode-line for all buffers."
+If DEFAULT is non-nil, set the default mode-line for all buffers."
     (when-let ((modeline (doom-modeline key)))
       (el-patch-wrap 2
         (unless (frame-parent)
