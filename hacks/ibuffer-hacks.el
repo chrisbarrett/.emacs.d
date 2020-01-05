@@ -89,7 +89,7 @@
                        strname
                        (propertize strname 'mouse-face 'highlight 'keymap hmap)))
                     strname)))))
-           (add-text-properties opos (point) `(ibuffer-title-header t))
+           (add-text-properties opos (point) '(ibuffer-title-header t))
            (insert "\n")
            ;; Add the underlines
 
@@ -141,7 +141,7 @@
                                                  align)
                         summary))))))
              (point))
-           `(ibuffer-summary t)))))
+           '(ibuffer-summary t)))))
 
   )
 
