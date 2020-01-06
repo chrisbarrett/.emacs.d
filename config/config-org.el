@@ -50,6 +50,12 @@
 
 ;; Load ox backends.
 
+(use-package ox-odt
+  :after org
+  :defer t
+  :custom
+  ((org-odt-data-dir (f-join user-emacs-directory "straight" "repos" "org" "etc"))))
+
 (use-package ox-gfm
   :straight t
   :after org)
