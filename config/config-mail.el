@@ -131,8 +131,8 @@
                   ;; All my mailservers use IMAP. Use mbsync to synchronise mail between the
                   ;; server and my local machine.
                   ;;
-                  ;; I use systemd to run mu on Linux, so I just have to handle
-                  ;; fetching manually on Darwin.
+                  ;; I use systemd to run mbsync and indexing on Linux, so I
+                  ;; just have to handle fetching manually on Darwin.
                   mu4e-get-mail-command (if (equal system-type 'darwin) "mbsync -V -q -a" "true")
 
                   mu4e-change-filenames-when-moving t
