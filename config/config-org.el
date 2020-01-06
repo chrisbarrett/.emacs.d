@@ -418,15 +418,10 @@
     (defconst config-org--agenda-clockreport-defaults
       '(:link t :compact t :maxlevel 4 :fileskip0 t :step week))
 
-    (defun config-org--agenda-tag-filter-preset (tag-or-tags)
-      (list (s-join "|" (--map (format "+%s" it) (-list tag-or-tags)))
-            "-@someday"
-            "-ignore"))
-
     (defun config-org--agenda-files-for-tags (tag-or-tags)
       (-distinct (-mapcat #'org-funcs-files-for-context (-list tag-or-tags))))
 
-    (cl-defun config-org--agenda-for-context (tag &key show-catchups-p)
+    (cl-defun config-org--agenda-for-context (tag &key show-catchups-p filter-preset)
       `(,(concat (substring tag 1 2) "a")
         ,(format "Agenda for context: %s" tag)
         ,(-non-nil
@@ -449,7 +444,7 @@
                   ((org-agenda-overriding-header "Stuck Projects")
                    (org-agenda-skip-function #'org-project-skip-non-stuck-projects)))))
 
-        ((org-agenda-tag-filter-preset ',(config-org--agenda-tag-filter-preset tag))
+        ((org-agenda-tag-filter-preset ',filter-preset)
          (org-agenda-start-with-log-mode '(closed clock state))
          (org-agenda-clockreport-parameter-plist ',(append config-org--agenda-clockreport-defaults (list :tags tag)))
          (org-agenda-span 'day)
@@ -458,7 +453,7 @@
          (org-agenda-ignore-drawer-properties '(effort appt))
          (org-agenda-files ',(config-org--agenda-files-for-tags tag)))))
 
-    (defun config-org--plan-for-context (tag-or-tags)
+    (cl-defun config-org--plan-for-context (tag-or-tags &key filter-preset)
       (let ((tags (-list tag-or-tags)))
         (cl-assert tags t "At least one tag must be supplied")
         `(,(concat (substring (car tags) 1 2) "p")
@@ -477,7 +472,7 @@
            (todo "TODO"
                  ((org-agenda-overriding-header "Review projects. Are these all healthy?")
                   (org-agenda-skip-function #'org-project-skip-non-projects))))
-          ((org-agenda-tag-filter-preset ',(config-org--agenda-tag-filter-preset tags))
+          ((org-agenda-tag-filter ',filter-preset)
            (org-agenda-clockreport-parameter-plist ',(append config-org--agenda-clockreport-defaults (list :tags tags)))
            (org-agenda-span 'week)
            (org-agenda-show-future-repeats nil)
@@ -485,7 +480,7 @@
            (org-agenda-ignore-drawer-properties '(effort appt))
            (org-agenda-files ',(config-org--agenda-files-for-tags tags))))))
 
-    (cl-defun config-org--review-for-context (tag-or-tags &key (start-day "-mon"))
+    (cl-defun config-org--review-for-context (tag-or-tags &key filter-preset (start-day "-mon"))
       (let ((tags (-list tag-or-tags)))
         (cl-assert tags t "At least one tag must be supplied")
         `(,(concat (substring (car tags) 1 2) "r")
@@ -504,7 +499,7 @@
            (todo "TODO"
                  ((org-agenda-overriding-header "Review projects. Are these all healthy?")
                   (org-agenda-skip-function #'org-project-skip-non-projects))))
-          ((org-agenda-tag-filter-preset ',(config-org--agenda-tag-filter-preset tags))
+          ((org-agenda-tag-filter-preset ',filter-preset)
            (org-agenda-clockreport-parameter-plist ',(append config-org--agenda-clockreport-defaults (list :tags tags)))
            (org-agenda-start-with-clockreport-mode t)
            (org-agenda-log-mode-items '(closed state))
@@ -534,15 +529,22 @@
     (org-funcs-update-agenda-custom-commands
      (list
       '("f" . "@flat context")
-      (config-org--agenda-for-context "@flat")
+      (config-org--agenda-for-context "@flat"
+                            :filter-preset '("+@flat" "-@someday"))
       '("p" . "@personal context")
-      (config-org--agenda-for-context "@personal")
-      (config-org--plan-for-context '("@personal" "@flat"))
+      (config-org--agenda-for-context "@personal"
+                            :filter-preset '("-@work" "-@someday"))
+      (config-org--plan-for-context '("@personal" "@flat")
+                          :filter-preset '("-@work"))
+
       (config-org--review-for-context '("@personal" "@flat") :start-day "-7d")
+
       '("w" . "@work context")
-      (config-org--agenda-for-context "@work" :show-catchups-p t)
-      (config-org--plan-for-context "@work")
-      (config-org--review-for-context "@work")))
+      (config-org--agenda-for-context "@work"
+                            :filter-preset '("+@work" "-@someday")
+                            :show-catchups-p t)
+      (config-org--plan-for-context "@work" :filter-preset '("+@work"))
+      (config-org--review-for-context "@work" :filter-preset '("+@work" "-@someday"))))
 
     ;; Ensure the separator line is rendered whenever the org agenda view
     ;; changes. This is needed for page-break-lines to render the separator
