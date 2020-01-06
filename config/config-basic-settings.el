@@ -194,6 +194,9 @@
 
  ;; Do not query the user to accept insecure connections. Just disconnect them.
  nsm-noninteractive t
+
+ ;; Prefer more recent lisp to outdated ELC files
+ load-prefer-newer t
  )
 
 ;; Make <escape> issue a keyboard-quit in as many situations as possible.
