@@ -1,8 +1,15 @@
 ;;; config-org.el --- Configuration for org-mode -*- lexical-binding: t; -*-
+
 ;;; Commentary:
+
+;; Emacs ships with a (generally outdated) version of org. This makes trying to
+;; install another version difficult.
+;;
+;; I use a custom Emacs build that strips out the built-in org. This ensures I
+;; load the specific version installed below by straight.el.
+
 ;;; Code:
 
-;; Assume we've already installed a recent version via straight in init.el.
 
 (eval-when-compile
   (require 'use-package))
@@ -335,6 +342,7 @@
 
 ;; Configure the main `org' package.
 (use-package org
+  :straight t
   :defer t
   :general
   ("C-c a" #'org-agenda
