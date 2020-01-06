@@ -202,126 +202,6 @@
  org-agenda-text-search-extra-files (list (f-join org-directory "archive.org"))
  org-agenda-use-time-grid nil)
 
-(defconst config-org--agenda-clockreport-defaults
-  '(:link t :compact t :maxlevel 4 :fileskip0 t :step week))
-
-(defun config-org--agenda-tag-filter-preset (tag-or-tags)
-  (list (s-join "|" (--map (format "+%s" it) (-list tag-or-tags)))
-        "-@someday"
-        "-ignore"))
-
-(defun config-org--agenda-files-for-tags (tag-or-tags)
-  (-distinct (-mapcat #'org-funcs-files-for-context (-list tag-or-tags))))
-
-(cl-defun config-org--agenda-for-context (tag &key show-catchups-p)
-  `(,(concat (substring tag 1 2) "a")
-    ,(format "Agenda for context: %s" tag)
-    ,(-non-nil
-      `((agenda ""
-                ((org-agenda-overriding-header "Today")
-                 (org-agenda-use-time-grid t)))
-        (tags-todo "-catchups&TODO=\"TODO\"|+PRIORITY=\"A\""
-                   ((org-agenda-overriding-header "Next Actions")
-                    (org-agenda-skip-function #'org-funcs-skip-items-already-in-agenda)))
-
-        ,(when show-catchups-p
-           `(tags-todo "+catchups&-PRIORITY=\"A\"-TODO=\"WAITING\""
-                       ((org-agenda-overriding-header "People & Catchup Topics")
-                        (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp))))
-
-        (todo "WAITING"
-              ((org-agenda-overriding-header "Delegated")
-               (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp)))
-        (todo "TODO"
-              ((org-agenda-overriding-header "Stuck Projects")
-               (org-agenda-skip-function #'org-project-skip-non-stuck-projects)))))
-
-    ((org-agenda-tag-filter-preset ',(config-org--agenda-tag-filter-preset tag))
-     (org-agenda-start-with-log-mode '(closed clock state))
-     (org-agenda-clockreport-parameter-plist ',(append config-org--agenda-clockreport-defaults (list :tags tag)))
-     (org-agenda-span 'day)
-     (org-agenda-show-future-repeats nil)
-     (org-agenda-archives-mode nil)
-     (org-agenda-ignore-drawer-properties '(effort appt))
-     (org-agenda-files ',(config-org--agenda-files-for-tags tag)))))
-
-(defun config-org--plan-for-context (tag-or-tags)
-  (let ((tags (-list tag-or-tags)))
-    (cl-assert tags t "At least one tag must be supplied")
-    `(,(concat (substring (car tags) 1 2) "p")
-      ,(format "Plan for context: %s" (s-join ", " tags))
-      ((agenda ""
-               ((org-agenda-overriding-header "Review agenda this week")
-                (org-agenda-use-time-grid t)))
-       (todo "WAITING"
-             ((org-agenda-overriding-header "Review Delegated Actions. Should I follow up today or course correct?")))
-       (todo "TODO"
-             ((org-agenda-overriding-header "Review Next Actions. Are these the next thing to do?")
-              (org-agenda-skip-function #'org-funcs-skip-items-already-in-agenda)))
-       (tags-todo "+LEVEL=1+TODO=\"TODO\""
-                  ((org-agenda-overriding-header "Review unscheduled actions. Any of these need to be prioritised?")
-                   (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp)))
-       (todo "TODO"
-             ((org-agenda-overriding-header "Review projects. Are these all healthy?")
-              (org-agenda-skip-function #'org-project-skip-non-projects))))
-      ((org-agenda-tag-filter-preset ',(config-org--agenda-tag-filter-preset tags))
-       (org-agenda-clockreport-parameter-plist ',(append config-org--agenda-clockreport-defaults (list :tags tags)))
-       (org-agenda-span 'week)
-       (org-agenda-show-future-repeats nil)
-       (org-agenda-archives-mode nil)
-       (org-agenda-ignore-drawer-properties '(effort appt))
-       (org-agenda-files ',(config-org--agenda-files-for-tags tags))))))
-
-(cl-defun config-org--review-for-context (tag-or-tags &key (start-day "-mon"))
-  (let ((tags (-list tag-or-tags)))
-    (cl-assert tags t "At least one tag must be supplied")
-    `(,(concat (substring (car tags) 1 2) "r")
-      ,(format "Review for context: %s" (s-join ", " tags))
-      ((agenda ""
-               ((org-agenda-overriding-header "Review agenda this week")
-                (org-agenda-use-time-grid nil)
-                (org-agenda-show-log t)
-                (org-agenda-start-day ,start-day)))
-       (todo "TODO"
-             ((org-agenda-overriding-header "Review Next Actions. Are these the next thing to do?")
-              (org-agenda-skip-function #'org-funcs-skip-items-already-in-agenda)))
-       (tags-todo "+LEVEL=1+TODO=\"TODO\""
-                  ((org-agenda-overriding-header "Review unscheduled actions. Any of these need to be prioritised?")
-                   (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp)))
-       (todo "TODO"
-             ((org-agenda-overriding-header "Review projects. Are these all healthy?")
-              (org-agenda-skip-function #'org-project-skip-non-projects))))
-      ((org-agenda-tag-filter-preset ',(config-org--agenda-tag-filter-preset tags))
-       (org-agenda-clockreport-parameter-plist ',(append config-org--agenda-clockreport-defaults (list :tags tags)))
-       (org-agenda-start-with-clockreport-mode t)
-       (org-agenda-log-mode-items '(closed state))
-       (org-agenda-show-future-repeats nil)
-       (org-agenda-archives-mode nil)
-       (org-agenda-ignore-drawer-properties '(effort appt))
-       (org-agenda-files ',(config-org--agenda-files-for-tags tags))))))
-
-(org-funcs-update-agenda-custom-commands
- (list
-  '("f" . "@flat context")
-  (config-org--agenda-for-context "@flat")
-  '("p" . "@personal context")
-  (config-org--agenda-for-context "@personal")
-  (config-org--plan-for-context '("@personal" "@flat"))
-  (config-org--review-for-context '("@personal" "@flat") :start-day "-7d")
-  '("w" . "@work context")
-  (config-org--agenda-for-context "@work" :show-catchups-p t)
-  (config-org--plan-for-context "@work")
-  (config-org--review-for-context "@work")))
-
-(org-funcs-update-capture-templates
- (list
-  (org-funcs-capture-template
-   "t" "Todo" '(file "inbox.org") "* TODO %?")
-
-  (org-funcs-capture-template
-   "l" "Link" '(file "inbox.org") '(function org-funcs-capture-link)
-   :immediate-finish t)))
-
 
 
 ;; `org-funcs' provides supporting commands we want to bind.
@@ -477,6 +357,21 @@
     (advice-add 'org-add-log-note :before #'config-org--exit-minibuffer)
     (advice-add 'org-toggle-heading :after #'config-org--toggle-heading-goto-eol)))
 
+;; `org-capture' provides functionality for quickly inserting templated content
+;; into org files.
+(use-package org-capture
+  :defer t
+  :after org
+  :config
+  (org-funcs-update-capture-templates
+   (list
+    (org-funcs-capture-template
+     "t" "Todo" '(file "inbox.org") "* TODO %?")
+
+    (org-funcs-capture-template
+     "l" "Link" '(file "inbox.org") '(function org-funcs-capture-link)
+     :immediate-finish t))))
+
 ;; `org-hydras' provides a few org-specific hydras.
 (use-package org-hydras
   :commands (org-babel/body))
@@ -520,6 +415,104 @@
   (progn
     (autoload 'page-break-lines--update-display-tables "page-break-lines")
 
+    (defconst config-org--agenda-clockreport-defaults
+      '(:link t :compact t :maxlevel 4 :fileskip0 t :step week))
+
+    (defun config-org--agenda-tag-filter-preset (tag-or-tags)
+      (list (s-join "|" (--map (format "+%s" it) (-list tag-or-tags)))
+            "-@someday"
+            "-ignore"))
+
+    (defun config-org--agenda-files-for-tags (tag-or-tags)
+      (-distinct (-mapcat #'org-funcs-files-for-context (-list tag-or-tags))))
+
+    (cl-defun config-org--agenda-for-context (tag &key show-catchups-p)
+      `(,(concat (substring tag 1 2) "a")
+        ,(format "Agenda for context: %s" tag)
+        ,(-non-nil
+          `((agenda ""
+                    ((org-agenda-overriding-header "Today")
+                     (org-agenda-use-time-grid t)))
+            (tags-todo "-catchups&TODO=\"TODO\"|+PRIORITY=\"A\""
+                       ((org-agenda-overriding-header "Next Actions")
+                        (org-agenda-skip-function #'org-funcs-skip-items-already-in-agenda)))
+
+            ,(when show-catchups-p
+               `(tags-todo "+catchups&-PRIORITY=\"A\"-TODO=\"WAITING\""
+                           ((org-agenda-overriding-header "People & Catchup Topics")
+                            (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp))))
+
+            (todo "WAITING"
+                  ((org-agenda-overriding-header "Delegated")
+                   (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp)))
+            (todo "TODO"
+                  ((org-agenda-overriding-header "Stuck Projects")
+                   (org-agenda-skip-function #'org-project-skip-non-stuck-projects)))))
+
+        ((org-agenda-tag-filter-preset ',(config-org--agenda-tag-filter-preset tag))
+         (org-agenda-start-with-log-mode '(closed clock state))
+         (org-agenda-clockreport-parameter-plist ',(append config-org--agenda-clockreport-defaults (list :tags tag)))
+         (org-agenda-span 'day)
+         (org-agenda-show-future-repeats nil)
+         (org-agenda-archives-mode nil)
+         (org-agenda-ignore-drawer-properties '(effort appt))
+         (org-agenda-files ',(config-org--agenda-files-for-tags tag)))))
+
+    (defun config-org--plan-for-context (tag-or-tags)
+      (let ((tags (-list tag-or-tags)))
+        (cl-assert tags t "At least one tag must be supplied")
+        `(,(concat (substring (car tags) 1 2) "p")
+          ,(format "Plan for context: %s" (s-join ", " tags))
+          ((agenda ""
+                   ((org-agenda-overriding-header "Review agenda this week")
+                    (org-agenda-use-time-grid t)))
+           (todo "WAITING"
+                 ((org-agenda-overriding-header "Review Delegated Actions. Should I follow up today or course correct?")))
+           (todo "TODO"
+                 ((org-agenda-overriding-header "Review Next Actions. Are these the next thing to do?")
+                  (org-agenda-skip-function #'org-funcs-skip-items-already-in-agenda)))
+           (tags-todo "+LEVEL=1+TODO=\"TODO\""
+                      ((org-agenda-overriding-header "Review unscheduled actions. Any of these need to be prioritised?")
+                       (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp)))
+           (todo "TODO"
+                 ((org-agenda-overriding-header "Review projects. Are these all healthy?")
+                  (org-agenda-skip-function #'org-project-skip-non-projects))))
+          ((org-agenda-tag-filter-preset ',(config-org--agenda-tag-filter-preset tags))
+           (org-agenda-clockreport-parameter-plist ',(append config-org--agenda-clockreport-defaults (list :tags tags)))
+           (org-agenda-span 'week)
+           (org-agenda-show-future-repeats nil)
+           (org-agenda-archives-mode nil)
+           (org-agenda-ignore-drawer-properties '(effort appt))
+           (org-agenda-files ',(config-org--agenda-files-for-tags tags))))))
+
+    (cl-defun config-org--review-for-context (tag-or-tags &key (start-day "-mon"))
+      (let ((tags (-list tag-or-tags)))
+        (cl-assert tags t "At least one tag must be supplied")
+        `(,(concat (substring (car tags) 1 2) "r")
+          ,(format "Review for context: %s" (s-join ", " tags))
+          ((agenda ""
+                   ((org-agenda-overriding-header "Review agenda this week")
+                    (org-agenda-use-time-grid nil)
+                    (org-agenda-show-log t)
+                    (org-agenda-start-day ,start-day)))
+           (todo "TODO"
+                 ((org-agenda-overriding-header "Review Next Actions. Are these the next thing to do?")
+                  (org-agenda-skip-function #'org-funcs-skip-items-already-in-agenda)))
+           (tags-todo "+LEVEL=1+TODO=\"TODO\""
+                      ((org-agenda-overriding-header "Review unscheduled actions. Any of these need to be prioritised?")
+                       (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp)))
+           (todo "TODO"
+                 ((org-agenda-overriding-header "Review projects. Are these all healthy?")
+                  (org-agenda-skip-function #'org-project-skip-non-projects))))
+          ((org-agenda-tag-filter-preset ',(config-org--agenda-tag-filter-preset tags))
+           (org-agenda-clockreport-parameter-plist ',(append config-org--agenda-clockreport-defaults (list :tags tags)))
+           (org-agenda-start-with-clockreport-mode t)
+           (org-agenda-log-mode-items '(closed state))
+           (org-agenda-show-future-repeats nil)
+           (org-agenda-archives-mode nil)
+           (org-agenda-ignore-drawer-properties '(effort appt))
+           (org-agenda-files ',(config-org--agenda-files-for-tags tags))))))
+
     (defun config-org--draw-separator (&rest _)
       (page-break-lines--update-display-tables))
 
@@ -537,6 +530,19 @@
   (progn
     (add-hook 'org-finalize-agenda-hook 'org-agenda-to-appt)
     (add-hook 'org-agenda-after-show-hook #'config-org--on-show-item-from-agenda)
+
+    (org-funcs-update-agenda-custom-commands
+     (list
+      '("f" . "@flat context")
+      (config-org--agenda-for-context "@flat")
+      '("p" . "@personal context")
+      (config-org--agenda-for-context "@personal")
+      (config-org--plan-for-context '("@personal" "@flat"))
+      (config-org--review-for-context '("@personal" "@flat") :start-day "-7d")
+      '("w" . "@work context")
+      (config-org--agenda-for-context "@work" :show-catchups-p t)
+      (config-org--plan-for-context "@work")
+      (config-org--review-for-context "@work")))
 
     ;; Ensure the separator line is rendered whenever the org agenda view
     ;; changes. This is needed for page-break-lines to render the separator
