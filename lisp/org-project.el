@@ -75,7 +75,7 @@ Callers of this function already widen the buffer view."
                  (has-next ))
             (save-excursion
               (forward-line 1)
-              (while (and (not has-next) (< (point) subtree-end) (re-search-forward "^\\*+ NEXT " subtree-end t))
+              (while (and (not has-next) (< (point) subtree-end))
                 (unless (member "WAITING" (org-get-tags))
                   (setq has-next t))))
             (if has-next
@@ -93,7 +93,7 @@ Callers of this function already widen the buffer view."
                  (has-next ))
             (save-excursion
               (forward-line 1)
-              (while (and (not has-next) (< (point) subtree-end) (re-search-forward "^\\*+ NEXT " subtree-end t))
+              (while (and (not has-next) (< (point) subtree-end))
                 (unless (member "WAITING" (org-get-tags))
                   (setq has-next t))))
             (if has-next
