@@ -56,7 +56,7 @@
       (string-match-p (rx ".test." (or "js" "ts") eos) file))
 
     (defun config-projectile--file-is-child-of-test-dir-p (file)
-      (seq-contains (f-split file) "test"))
+      (seq-contains-p (f-split file) "test"))
 
     (defun config-projectile--test-file-p (&optional has-test-prefix-or-suffix)
       (or has-test-prefix-or-suffix

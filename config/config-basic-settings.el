@@ -321,7 +321,7 @@
          (tags-file? (when filename (equal "TAGS" (file-name-nondirectory filename)))))
     (when (and (config-basic-settings--large-file? size)
                (not tags-file?)
-               (not (seq-contains '("gz" "zip" "tar" "jar" "pdf") (file-name-extension filename)))
+               (not (seq-contains-p '("gz" "zip" "tar" "jar" "pdf") (file-name-extension filename)))
                (y-or-n-p (format "`%s' is a large file.  Open in fundamental mode? " (file-name-nondirectory filename))))
       (setq buffer-read-only t)
       (buffer-disable-undo)

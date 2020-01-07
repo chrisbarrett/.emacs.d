@@ -46,7 +46,7 @@
     (let ((tags (seq-map #'substring-no-properties
                          (append (ignore-errors (org-get-tags))
                                  (org-funcs-clocked-task-tags)))))
-      (seq-contains tags tag))))
+      (seq-contains-p tags tag))))
 
 (defun org-funcs-work-context-p ()
   (org-funcs-tags-contain-p "@work"))

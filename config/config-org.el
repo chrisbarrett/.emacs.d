@@ -683,8 +683,8 @@
   (defun config-org--maybe-edna-edit (fn &rest args)
     (let* ((element-type (ignore-errors
                            (org-element-type (org-element-context (org-element-at-point)))))
-           (at-property-drawer-or-heading-p (seq-contains '(property-drawer node-property headline) element-type))
-           (edna-loaded-p (seq-contains org-trigger-hook #'org-edna-trigger-function)))
+           (at-property-drawer-or-heading-p (seq-contains-p '(property-drawer node-property headline) element-type))
+           (edna-loaded-p (seq-contains-p org-trigger-hook #'org-edna-trigger-function)))
       (if (and at-property-drawer-or-heading-p edna-loaded-p)
           (org-edna-edit)
         (funcall fn args))))

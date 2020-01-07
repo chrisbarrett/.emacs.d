@@ -23,7 +23,7 @@
                  (tags-loop-operate
                   `(let ((continue-p ,tags-loop-operate))
                      (save-buffer)
-                     (unless (seq-contains (list ,@existing-buffers) (current-buffer))
+                     (unless (seq-contains-p (list ,@existing-buffers) (current-buffer))
                        (kill-buffer))
                      (setq config-etags-in-query-replace-session-p (not (null continue-p)))
                      continue-p)))
