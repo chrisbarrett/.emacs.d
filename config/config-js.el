@@ -68,14 +68,6 @@
          (org-mode . config-js-maybe-use-nvm)
          (typescript-mode . config-js-maybe-use-nvm)))
 
-(use-package prettier
-  :straight (:host github :repo "jscheid/prettier.el")
-  :when (file-directory-p "~/.config/nvm")
-  :hook ((after-init . global-prettier-mode)
-         (prettier-mode . turn-off-aggressive-indent-mode))
-  :config
-  (setq prettier-el-home (f-slash (f-join paths-etc-directory "prettier.js"))))
-
 (provide 'config-js)
 
 ;;; config-js.el ends here
