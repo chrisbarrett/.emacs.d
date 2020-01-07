@@ -13,12 +13,9 @@
 
 
 
-;; `js' is the Emacs built-in javascript mode. However, we actually want to use
-;; the newer version that supports JSX, copied from Emacs master.
-
+;; `js' is the Emacs built-in javascript mode.
 (use-package js
   :mode ("\\.jsx?\\'" . js-mode)
-  :load-path paths-lisp-directory
   :custom ((js-indent-level 2)
            (js-switch-indent-offset 2)
            (js-js-tmpdir (f-join paths-cache-directory "js")))
