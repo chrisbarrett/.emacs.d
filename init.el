@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 
-(when (version< emacs-version "26")
+(when (version< emacs-version "27")
   (error "This version of Emacs is not supported"))
 
 (require 'subr-x)
