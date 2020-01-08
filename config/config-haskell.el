@@ -93,20 +93,19 @@
 (use-package haskell-pragmas
   :commands (haskell-pragmas-insert))
 
-(use-package intero
+(use-package dante
   :straight t
-  :defer t
-  :after haskell-mode
-  :general
-  (:states '(normal insert emacs) :keymaps 'intero-mode-map
-   "M-." #'intero-goto-definition
-   "M-," #'pop-tag-mark)
-  :config
-  (progn
-    (intero-global-mode +1)
+  :preface
+  (defun config-haskell--configure-dante ()
+    (setq-local flymake-no-changes-timeout nil)
+    (setq-local flymake-start-syntax-check-on-newline nil)
+    (setq-local flycheck-check-syntax-automatically '(save mode-enabled)))
 
-    (with-eval-after-load 'flycheck
-      (flycheck-add-next-checker 'intero 'haskell-hlint))))
+  :hook ((haskell-mode . flycheck-mode)
+         (haskell-mode . dante-mode))
+  :commands (dante-mode)
+  :config
+  (add-hook 'dante-mode-hook #'config-haskell--configure-dante))
 
 (use-package hindent
   :straight t
