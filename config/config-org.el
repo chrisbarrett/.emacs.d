@@ -421,6 +421,9 @@
     (defun config-org--agenda-files-for-tags (tag-or-tags)
       (-distinct (-mapcat #'org-funcs-files-for-context (-list tag-or-tags))))
 
+    (defun config-org--standard-filter-preset (tags)
+      (seq-uniq (append tags '("-ignore"))))
+
     (cl-defun config-org--agenda-for-context (tag &key show-catchups-p filter-preset)
       `(,(concat (substring tag 1 2) "a")
         ,(format "Agenda for context: %s" tag)
@@ -444,7 +447,7 @@
                   ((org-agenda-overriding-header "Stuck Projects")
                    (org-agenda-skip-function #'org-project-skip-non-stuck-projects)))))
 
-        ((org-agenda-tag-filter-preset ',filter-preset)
+        ((org-agenda-tag-filter-preset ',(config-org--standard-filter-preset filter-preset))
          (org-agenda-start-with-log-mode '(closed clock state))
          (org-agenda-clockreport-parameter-plist ',(append config-org--agenda-clockreport-defaults (list :tags tag)))
          (org-agenda-span 'day)
@@ -472,7 +475,7 @@
            (todo "TODO"
                  ((org-agenda-overriding-header "Review projects. Are these all healthy?")
                   (org-agenda-skip-function #'org-project-skip-non-projects))))
-          ((org-agenda-tag-filter ',filter-preset)
+          ((org-agenda-tag-filter ',(config-org--standard-filter-preset filter-preset))
            (org-agenda-clockreport-parameter-plist ',(append config-org--agenda-clockreport-defaults (list :tags tags)))
            (org-agenda-span 'week)
            (org-agenda-show-future-repeats nil)
@@ -499,7 +502,7 @@
            (todo "TODO"
                  ((org-agenda-overriding-header "Review projects. Are these all healthy?")
                   (org-agenda-skip-function #'org-project-skip-non-projects))))
-          ((org-agenda-tag-filter-preset ',filter-preset)
+          ((org-agenda-tag-filter-preset ',(config-org--standard-filter-preset filter-preset))
            (org-agenda-clockreport-parameter-plist ',(append config-org--agenda-clockreport-defaults (list :tags tags)))
            (org-agenda-start-with-clockreport-mode t)
            (org-agenda-log-mode-items '(closed state))
