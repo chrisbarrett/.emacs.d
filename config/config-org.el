@@ -193,7 +193,7 @@
  org-agenda-start-on-weekday nil
  org-agenda-window-setup 'only-window
  org-agenda-dim-blocked-tasks 'invisible
- org-agenda-sorting-strategy '((agenda time-up priority-down category-keep)
+ org-agenda-sorting-strategy '((agenda time-up priority-down todo-state-up)
                                (todo priority-down category-keep scheduled-up)
                                (tags priority-down category-keep)
                                (search category-keep))
