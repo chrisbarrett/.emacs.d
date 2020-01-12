@@ -12,8 +12,6 @@
    (("i" haskell-imports-insert-qualified "import")
     ("u" haskell-imports-insert-unqualified "import (unqualified)")
     ("p" haskell-pragmas-insert "language pragma"))
-   "Intero"
-   (("t" intero-targets "set targets"))
    "Format"
    (("f" hindent-reformat-buffer "buffer")
     ("." hindent-reformat-decl-or-fill "decl at pt"))))
