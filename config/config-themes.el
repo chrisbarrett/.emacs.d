@@ -388,6 +388,11 @@ By default, this shows the information specified by `global-mode-string'."
              (blue       (pcase theme
                            ('doom-solarized-light "#268bd2")
                            ('doom-one "#51afef")))
+             (dim-bg
+              (pcase theme
+                ('doom-solarized-light base3)
+                ('doom-one base7)))
+
              (dim-fg
               (pcase theme
                 ('doom-solarized-light "#9c9c9c")
@@ -436,6 +441,7 @@ By default, this shows the information specified by `global-mode-string'."
                   (org-meta-line ((t :inherit shadow)))
                   (outline-1 ((t (:weight bold :foreground ,blue))))
                   (parenthesis ((t (:foreground ,dim-fg :weight light))))
+                  (secondary-selection ((t (:background ,dim-bg))))
                   (treemacs-git-ignored-face ((t )))
                   (treemacs-git-renamed-face ((t :foreground ,dim-fg :inherit font-lock-doc-face)))
                   (treemacs-git-unmodified-face ((t :inherit default)))
