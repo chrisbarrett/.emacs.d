@@ -483,7 +483,7 @@
            (org-agenda-ignore-drawer-properties '(effort appt))
            (org-agenda-files ',(config-org--agenda-files-for-tags tags))))))
 
-    (cl-defun config-org--review-for-context (tag-or-tags &key filter-preset (start-day "-mon"))
+    (cl-defun config-org--review-for-context (tag-or-tags &key filter-preset)
       (let ((tags (-list tag-or-tags)))
         (cl-assert tags t "At least one tag must be supplied")
         `(,(concat (substring (car tags) 1 2) "r")
@@ -491,8 +491,7 @@
           ((agenda ""
                    ((org-agenda-overriding-header "Review agenda this week")
                     (org-agenda-use-time-grid nil)
-                    (org-agenda-show-log t)
-                    (org-agenda-start-day ,start-day)))
+                    (org-agenda-show-log t)))
            (todo "TODO"
                  ((org-agenda-overriding-header "Review Next Actions. Are these the next thing to do?")
                   (org-agenda-skip-function #'org-funcs-skip-items-already-in-agenda)))
@@ -504,6 +503,8 @@
                   (org-agenda-skip-function #'org-project-skip-non-projects))))
           ((org-agenda-tag-filter-preset ',(config-org--standard-filter-preset filter-preset))
            (org-agenda-clockreport-parameter-plist ',(append config-org--agenda-clockreport-defaults (list :tags tags)))
+           (org-agenda-span 'week)
+           (org-agenda-start-day "-7d")
            (org-agenda-start-with-clockreport-mode t)
            (org-agenda-log-mode-items '(closed state))
            (org-agenda-show-future-repeats nil)
@@ -540,7 +541,7 @@
       (config-org--plan-for-context '("@personal" "@flat")
                           :filter-preset '("-@work"))
 
-      (config-org--review-for-context '("@personal" "@flat") :start-day "-7d")
+      (config-org--review-for-context '("@personal" "@flat"))
 
       '("w" . "@work context")
       (config-org--agenda-for-context "@work"
