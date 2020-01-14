@@ -63,6 +63,9 @@
       (let ((shr-use-fonts nil))
         (shr-render-region (point-min) (point-max))))
 
+    (defun config-mail--message-from-me-p (msg)
+      (equal (mu4e-get-sent-folder msg) (mu4e-message-field msg :maildir)))
+
     (defun config-mail--insert-signature-before-quoted-message ()
       (unless (member mu4e-compose-type '(edit resend))
         (save-excursion
@@ -168,9 +171,13 @@
     (setf (alist-get 'refile mu4e-marks)
           '(:char ("r" . "▶")
             :prompt "refile"
-            :dyn-target (lambda (target msg) (mu4e-get-refile-folder msg))
+            :dyn-target (lambda (target msg)
+                          (if (config-mail--message-from-me-p msg)
+                              (mu4e-get-sent-folder msg)
+                            (mu4e-get-refile-folder msg)))
             :action (lambda (docid msg target)
-                      (mu4e~proc-move docid (mu4e~mark-check-target target) "+S-u-N"))))
+                      (unless (config-mail--message-from-me-p msg)
+                        (mu4e~proc-move docid (mu4e~mark-check-target target) "+S-u-N")))))
 
     (add-to-list 'display-buffer-alist
                  `(,(rx bos " *mu4e-main*" eos)
