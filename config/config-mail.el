@@ -33,15 +33,12 @@
   ("Attachments"
    (("a" mail-add-attachment "add"))))
 
-(defconst config-mail-unread-mail-query
-  "flag:unread AND NOT (flag:trashed OR m:/walrus/Archive)")
-
 ;; `mu4e' is an Emacs mail client. I install the lisp along with the 'mu'
 ;; program via Nix.
 
 (add-to-list 'load-path (f-join paths-site-lisp-directory "mu4e"))
 
-(general-setq mu4e-bookmarks `((,config-mail-unread-mail-query
+(general-setq mu4e-bookmarks '(("flag:unread AND NOT (flag:trashed OR m:/walrus/Archive)"
                                 "Unread messages" ?u)
                                ("d:today..now"
                                 "Today's messages" ?t)
