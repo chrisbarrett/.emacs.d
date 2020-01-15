@@ -87,7 +87,8 @@
   (defun config-haskell--configure-dante ()
     (setq-local flymake-no-changes-timeout nil)
     (setq-local flymake-start-syntax-check-on-newline nil)
-    (setq-local flycheck-check-syntax-automatically '(save mode-enabled)))
+    (setq-local flycheck-check-syntax-automatically '(save mode-enabled))
+    (setq-local evil-lookup-func (lambda () (call-interactively #' dante-info))))
 
   :hook ((haskell-mode . flycheck-mode)
          (haskell-mode . dante-mode))
