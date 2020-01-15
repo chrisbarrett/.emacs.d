@@ -94,7 +94,6 @@
  ("helpful" . "982dd49c9c7e63fa94b56824f50dea4186081f8e")
  ("hide-comnt" . "d1e94f5152f20b2dc7b0d42898c1db37e5be57a6")
  ("highlight-thing.el" . "561d08a26f78f18d405d4f371f1c813db094e2f3")
- ("hindent" . "1583be4a8a01b765841f7306284528ae713abb7b")
  ("historian.el" . "64f4ef8cd4e417dfa090138a2d4ea1e72fd4456a")
  ("hl-todo" . "5d2ea49f83a7e6953f9d71de94dee478d08f9543")
  ("ht.el" . "66c5f9131242697fabaede5566d87ecda4c14b1f")

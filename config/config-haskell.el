@@ -11,10 +11,7 @@
   ("Insert"
    (("i" haskell-imports-insert-qualified "import")
     ("u" haskell-imports-insert-unqualified "import (unqualified)")
-    ("p" haskell-pragmas-insert "language pragma"))
-   "Format"
-   (("f" hindent-reformat-buffer "buffer")
-    ("." hindent-reformat-decl-or-fill "decl at pt"))))
+    ("p" haskell-pragmas-insert "language pragma"))))
 
 (use-package haskell-mode
   :straight t
@@ -98,13 +95,6 @@
    "C-c C-SPC" #'dante-eval-block)
   :config
   (add-hook 'dante-mode-hook #'config-haskell--configure-dante))
-
-(use-package hindent
-  :straight t
-  :defer t
-  :hook (haskell-mode . hindent-mode)
-  :config
-  (setq hindent-reformat-buffer-on-save t))
 
 (use-package stack-hoogle
   :commands (stack-hoogle-info-at-pt)
