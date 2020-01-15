@@ -28,8 +28,8 @@
   (("runghc" . haskell-mode)
    ("runhaskell" . haskell-mode))
 
-  :hook (haskell-mode . interactive-haskell-mode)
-  :hook (haskell-mode . haskell-doc-mode)
+  :hook ((haskell-mode . interactive-haskell-mode)
+         (haskell-mode . haskell-doc-mode))
 
   :general (:states 'normal :keymaps 'haskell-presentation-mode-map "q" #'quit-window)
   :general (:keymaps haskell-cabal-mode-map "C-c C-c" #'haskell-compile)
