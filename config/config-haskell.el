@@ -72,23 +72,7 @@
      haskell-indentation-where-post-offset 2
      haskell-indentation-left-offset 4)
 
-    (add-hook 'haskell-mode-hook #'config-haskell--set-indentation-step)
-
-    (add-to-list 'display-buffer-alist
-                 `(,(rx bos "*intero:")
-                   (display-buffer-reuse-window
-                    display-buffer-at-bottom)
-                   (reusable-frames . visible)
-                   (slot            . 1)
-                   (window-width    . 0.5)))
-
-    (add-to-list 'display-buffer-alist
-                 `(,(rx bos "*stack hoogle*" eos)
-                   (display-buffer-reuse-window
-                    display-buffer-at-bottom)
-                   (reusable-frames . visible)
-                   (slot            . 1)
-                   (window-height   . 0.5)))))
+    (add-hook 'haskell-mode-hook #'config-haskell--set-indentation-step)))
 
 (use-package haskell-imports
   :commands (haskell-imports-insert-unqualified
