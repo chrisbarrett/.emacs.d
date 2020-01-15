@@ -11,7 +11,9 @@
   ("Insert"
    (("i" haskell-imports-insert-qualified "import")
     ("u" haskell-imports-insert-unqualified "import (unqualified)")
-    ("p" haskell-pragmas-insert "language pragma"))))
+    ("p" haskell-pragmas-insert "language pragma"))
+   "Format"
+   (("r" ormolu-format-buffer "format buffer"))))
 
 (use-package haskell-mode
   :straight t
@@ -95,6 +97,18 @@
    "C-c C-SPC" #'dante-eval-block)
   :config
   (add-hook 'dante-mode-hook #'config-haskell--configure-dante))
+
+(use-package reformatter
+  :after (haskell)
+  ;; FIXME: ormolu seems to be broken on nixpkgs right now.
+  :disabled t
+  :straight t
+  :hook (haskell-mode . ormolu-format-on-save-mode)
+  :config
+  (with-no-warnings
+    (reformatter-define ormolu-format
+      :program "nix-shell"
+      :args '("-I" "." "--command" "ormolu /dev/stdin"))))
 
 (provide 'config-haskell)
 
