@@ -112,15 +112,18 @@
 
 (use-package reformatter
   :after (haskell)
-  ;; FIXME: ormolu seems to be broken on nixpkgs right now.
-  :disabled t
   :straight t
   :hook (haskell-mode . ormolu-format-on-save-mode)
   :config
-  (with-no-warnings
-    (reformatter-define ormolu-format
-                        :program "nix-shell"
-                        :args '("-I" "." "--command" "ormolu /dev/stdin"))))
+
+  ;; FIXME: ormolu seems to be broken on nixpkgs right now.
+  ;; (reformatter-define ormolu-format
+  ;;   :program "nix-shell"
+  ;;   :args '("-I" "." "--command" "ormolu /dev/stdin"))
+
+  (reformatter-define ormolu-format
+    :program "ormolu"
+    :args '("/dev/stdin")))
 
 (provide 'config-haskell)
 
