@@ -93,6 +93,9 @@
   :hook ((haskell-mode . flycheck-mode)
          (haskell-mode . dante-mode))
   :commands (dante-mode)
+  :general
+  (:states '(insert normal) :keymaps 'dante-mode-map
+   "C-c C-SPC" #'dante-eval-block)
   :config
   (add-hook 'dante-mode-hook #'config-haskell--configure-dante))
 
