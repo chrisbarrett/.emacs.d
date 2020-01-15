@@ -96,11 +96,6 @@
   :config
   (add-hook 'dante-mode-hook #'config-haskell--configure-dante))
 
-(use-package stack-hoogle
-  :commands (stack-hoogle-info-at-pt)
-  :general (:keymaps 'haskell-mode-map "C-c C-h" #'stack-hoogle)
-  :general (:states 'normal :keymaps 'haskell-mode-map "K" #'stack-hoogle-info-at-pt))
-
 (provide 'config-haskell)
 
 ;;; config-haskell.el ends here
