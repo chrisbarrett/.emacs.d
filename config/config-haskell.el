@@ -41,10 +41,16 @@
    "q" #'quit-window)
 
   :preface
-  (defun config-haskell--set-indentation-step ()
-    (when (boundp 'evil-shift-width)
-      (setq evil-shift-width 4))
-    (setq tab-width 4))
+  (progn
+    (defun config-haskell--wrap-commands-with-nix-shell (argv)
+      (if (locate-dominating-file default-directory "shell.nix")
+          (list "nix-shell" "-I" "." "--command" (string-join (-list argv) " "))
+        argv))
+
+    (defun config-haskell--set-indentation-step ()
+      (when (boundp 'evil-shift-width)
+        (setq evil-shift-width 4))
+      (setq tab-width 4)))
 
   :init
   (progn
@@ -54,9 +60,9 @@
   :config
   (progn
     (general-setq
-     haskell-compile-cabal-build-command "stack build --ghc-options -ferror-spans"
      haskell-completing-read-function #'completing-read
      haskell-interactive-popup-errors nil
+     haskell-process-wrapper-function #'config-haskell--wrap-commands-with-nix-shell
 
      ;; Use 4 space indentation style.
 
