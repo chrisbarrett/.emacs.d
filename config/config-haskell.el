@@ -31,14 +31,15 @@
   :hook ((haskell-mode . interactive-haskell-mode)
          (haskell-mode . haskell-doc-mode))
 
-  :general (:states 'normal :keymaps 'haskell-presentation-mode-map "q" #'quit-window)
-  :general (:keymaps haskell-cabal-mode-map "C-c C-c" #'haskell-compile)
+  :general
+  (:states 'normal :keymaps 'haskell-presentation-mode-map "q" #'quit-window)
+  (:keymaps 'haskell-cabal-mode-map "C-c C-c" #'haskell-compile)
+  (:states 'motion :keymaps 'haskell-debug-mode-map
+   "n" #'haskell-debug/next
+   "N" #'haskell-debug/previous
+   "p" #'haskell-debug/previous
+   "q" #'quit-window)
 
-  :general (:states 'motion :keymaps 'haskell-debug-mode-map
-            "n" #'haskell-debug/next
-            "N" #'haskell-debug/previous
-            "p" #'haskell-debug/previous
-            "q" #'quit-window)
 
   :init
   (progn
