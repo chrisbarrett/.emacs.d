@@ -25,6 +25,7 @@
 (autoload 'neotree-toggle "neotree")
 (autoload 'org-clock/body "org-hydras")
 (autoload 'org-narrow-to-subtree "org")
+(autoload 'org-capture-goto-last-stored "org-capture")
 (autoload 'profiler-report "profiler")
 (autoload 'profiler-stop "profiler")
 
