@@ -372,7 +372,7 @@ By default, this shows the information specified by `global-mode-string'."
              (dim-bg
               (pcase theme
                 ('doom-solarized-light base3)
-                ('doom-one base7)))
+                ('doom-one base4)))
 
              (dim-fg
               (pcase theme
