@@ -5,8 +5,17 @@
 (require 'dash)
 (require 's)
 
+(cl-eval-when (compile)
+  (require 'haskell-mode))
+
+(defvar-local haskell-pragmas--pragmas nil)
+
+
 (defun haskell-pragmas-language-pragmas ()
-  (s-split "\n" (s-trim (shell-command-to-string "stack ghc -- --supported-languages"))))
+  (unless haskell-pragmas--pragmas
+    (let ((program-and-args (funcall haskell-process-wrapper-function '("ghc" "--supported-languages"))))
+      (setq haskell-pragmas--pragmas (-reject #'s-blank-p (apply #'process-lines program-and-args)))))
+  haskell-pragmas--pragmas)
 
 (defun haskell-pragmas-in-buffer-string (s ps)
   (--filter (s-matches? (rx-to-string `(and "{-# LANGUAGE" (+ space) (* nonl) ,it)) s)
