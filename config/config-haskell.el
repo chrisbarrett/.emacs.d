@@ -15,6 +15,8 @@
    "Format"
    (("r" ormolu-format-buffer "format buffer"))))
 
+;; `haskell-mode' is the main package implementing haskell language support.
+
 (use-package haskell-mode
   :straight t
   :mode
@@ -73,12 +75,19 @@
 
     (add-hook 'haskell-mode-hook #'config-haskell--set-indentation-step)))
 
+;; `haskell-imports' provides helper commands for inserting import statements.
+
 (use-package haskell-imports
   :commands (haskell-imports-insert-unqualified
              haskell-imports-insert-qualified))
 
+;; `haskell-pragmas' provides helper commands for inserting language extension
+;; pragmas.
+
 (use-package haskell-pragmas
   :commands (haskell-pragmas-insert))
+
+;; `dante' extends haskell-mode to provide extra IDE-like functionality.
 
 (use-package dante
   :straight t
@@ -98,6 +107,9 @@
   :config
   (add-hook 'dante-mode-hook #'config-haskell--configure-dante))
 
+;; `reformatter' provides a way to declare formatting commands. Use it to
+;; declare a binding to the ormolu Haskell src formatter.
+
 (use-package reformatter
   :after (haskell)
   ;; FIXME: ormolu seems to be broken on nixpkgs right now.
@@ -107,8 +119,8 @@
   :config
   (with-no-warnings
     (reformatter-define ormolu-format
-      :program "nix-shell"
-      :args '("-I" "." "--command" "ormolu /dev/stdin"))))
+                        :program "nix-shell"
+                        :args '("-I" "." "--command" "ormolu /dev/stdin"))))
 
 (provide 'config-haskell)
 
