@@ -40,17 +40,16 @@
    "p" #'haskell-debug/previous
    "q" #'quit-window)
 
-
-  :init
-  (progn
-    (add-to-list 'completion-ignored-extensions ".hi")
-    (add-to-list 'completion-ignored-extensions ".gm"))
-
   :preface
   (defun config-haskell--set-indentation-step ()
     (when (boundp 'evil-shift-width)
       (setq evil-shift-width 4))
     (setq tab-width 4))
+
+  :init
+  (progn
+    (add-to-list 'completion-ignored-extensions ".hi")
+    (add-to-list 'completion-ignored-extensions ".gm"))
 
   :config
   (progn
