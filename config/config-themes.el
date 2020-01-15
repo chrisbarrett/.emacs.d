@@ -7,27 +7,8 @@
 
 (require 'parameters)
 
-;; menu-bar, tool-bar and scroll-bar are builtin features that aren't very
-;; useful in a keyboard-driven interface.
-
 (use-package menu-bar
-  :if (bound-and-true-p menu-bar-mode)
-  :general ("C-c e e" #'toggle-debug-on-error)
-  :config
-  (when (fboundp 'menu-bar-mode)
-    (menu-bar-mode -1)))
-
-(use-package tool-bar
-  :if (bound-and-true-p tool-bar-mode)
-  :config
-  (when (fboundp 'tool-bar-mode)
-    (tool-bar-mode -1)))
-
-(use-package scroll-bar
-  :if (bound-and-true-p scroll-bar-mode)
-  :config
-  (when (fboundp 'scroll-bar-mode)
-    (scroll-bar-mode -1)))
+  :general ("C-c e e" #'toggle-debug-on-error))
 
 ;; page-break-lines shows a horizontal separator in buffers instead of a
 ;; page-break control character (^L).

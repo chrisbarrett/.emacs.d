@@ -7,18 +7,16 @@
 
 (require 'subr-x)
 
-(defconst emacs-start-time (current-time))
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            "Restore defalut values after init"
+            (setq gc-cons-threshold 8000000)
+            (setq gc-cons-percentage 0.7)
 
-;; Allow overriding user-emacs-directory with envvar.
-(setq user-emacs-directory (or (when-let* ((dir (getenv "USER_EMACS_DIRECTORY")))
-                                 (if (string-suffix-p "/" dir) dir (concat dir "/")))
-                               user-emacs-directory))
-
-(setenv "INSIDE_EMACS" "true")
-
-;; Make sure package.el doesn't get a chance to load anything.
-
-(setq package-enable-at-startup nil)
+            (add-function :after after-focus-change-function
+              (lambda ()
+                (unless (frame-focus-state)
+                  (garbage-collect))))))
 
 
 ;; Bootstrap straight.el package manager.
