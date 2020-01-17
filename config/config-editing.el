@@ -196,6 +196,7 @@ Interactively, reverse the characters in the current region."
                   python-mode
                   restclient-mode
                   rust-mode
+                  scala-mode
                   sql-mode
                   stylus-mode
                   terraform-mode
