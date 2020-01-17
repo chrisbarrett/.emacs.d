@@ -13,8 +13,14 @@
 (use-package sbt-mode
   :straight t
   :commands (sbt-start sbt-command)
+  :preface
+  (defun config-scala--set-up-mode ()
+    (add-hook 'before-save-hook #'lsp-format-buffer nil t))
+
   :config
   (progn
+    (add-hook 'scala-mode-hook #'config-scala--set-up-mode)
+
     ;; Disable new shell features which break tab completion.
     ;; See: https://github.com/hvesalai/emacs-sbt-mode/issues/152
     (setq sbt:program-options '("-Dsbt.supershell=false"))

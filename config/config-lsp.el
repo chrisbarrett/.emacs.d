@@ -22,6 +22,7 @@
          (js-mode . lsp)
          (python . lsp)
          (rust-mode . lsp)
+         (scala-mode . lsp)
          (sh-mode . lsp)
          (typescript-mode . lsp))
 
