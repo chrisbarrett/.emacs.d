@@ -42,16 +42,10 @@
    "q" #'quit-window)
 
   :preface
-  (progn
-    (defun config-haskell--wrap-commands-with-nix-shell (argv)
-      (if (locate-dominating-file default-directory "shell.nix")
-          (list "nix-shell" "-I" "." "--command" (string-join (-list argv) " "))
-        argv))
-
-    (defun config-haskell--set-indentation-step ()
-      (when (boundp 'evil-shift-width)
-        (setq evil-shift-width 4))
-      (setq tab-width 4)))
+  (defun config-haskell--wrap-commands-with-nix-shell (argv)
+    (if (locate-dominating-file default-directory "shell.nix")
+        (list "nix-shell" "-I" "." "--command" (string-join (-list argv) " "))
+      argv))
 
   :init
   (progn
@@ -59,21 +53,9 @@
     (add-to-list 'completion-ignored-extensions ".gm"))
 
   :config
-  (progn
-    (general-setq
-     haskell-completing-read-function #'completing-read
-     haskell-interactive-popup-errors nil
-     haskell-process-wrapper-function #'config-haskell--wrap-commands-with-nix-shell
-
-     ;; Use 4 space indentation style.
-
-     haskell-indentation-layout-offset 4
-     haskell-indentation-starter-offset 2
-     haskell-indentation-where-pre-offset 2
-     haskell-indentation-where-post-offset 2
-     haskell-indentation-left-offset 4)
-
-    (add-hook 'haskell-mode-hook #'config-haskell--set-indentation-step)))
+  (general-setq haskell-completing-read-function #'completing-read
+                haskell-interactive-popup-errors nil
+                haskell-process-wrapper-function #'config-haskell--wrap-commands-with-nix-shell))
 
 ;; `haskell-imports' provides helper commands for inserting import statements.
 
