@@ -185,6 +185,7 @@ Interactively, reverse the characters in the current region."
                   fstar-mode
                   graphviz-dot-mode
                   haskell-mode
+                  haskell-cabal-mode
                   idris-mode
                   idris-repl-mode
                   inf-ruby-mode
