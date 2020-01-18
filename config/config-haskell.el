@@ -91,18 +91,17 @@
 
 ;; `reformatter' provides a way to declare formatting commands. Use it to
 ;; declare a binding to the ormolu Haskell src formatter.
-
+;;
+;; There is an existing ormolu package, but it invokes with nix-shell. Instead,
+;; I want to use the ormolu executable on the path. This will either be:
+;;
+;; 1. the project's ormolu, as injected by direnv
+;; 2. the fallback installation in my nix user-profile.
 (use-package reformatter
   :after (haskell)
   :straight t
   :hook (haskell-mode . ormolu-format-on-save-mode)
   :config
-
-  ;; FIXME: ormolu seems to be broken on nixpkgs right now.
-  ;; (reformatter-define ormolu-format
-  ;;   :program "nix-shell"
-  ;;   :args '("-I" "." "--command" "ormolu /dev/stdin"))
-
   (reformatter-define ormolu-format
     :program "ormolu"
     :args '("/dev/stdin")))
