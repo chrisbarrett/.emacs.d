@@ -8,22 +8,24 @@
 (cl-eval-when (compile)
   (require 'haskell-mode))
 
-(defvar-local haskell-pragmas--pragmas nil)
+(autoload 'projectile-project-root "projectile")
 
+(defvar haskell-pragmas--pragmas nil)
 
-(defun haskell-pragmas-language-pragmas ()
+(defun haskell-pragmas--language-pragmas ()
   (unless haskell-pragmas--pragmas
     (let ((program-and-args (funcall haskell-process-wrapper-function '("ghc" "--supported-languages"))))
       (setq haskell-pragmas--pragmas (-reject #'s-blank-p (apply #'process-lines program-and-args)))))
   haskell-pragmas--pragmas)
 
-(defun haskell-pragmas-in-buffer-string (s ps)
+(defun haskell-pragmas--in-buffer-string (s ps)
   (--filter (s-matches? (rx-to-string `(and "{-# LANGUAGE" (+ space) (* nonl) ,it)) s)
             ps))
 
 (defun haskell-pragmas--available-language-pragmas ()
-  (let ((ps (haskell-pragmas-language-pragmas)))
-    (-difference ps (haskell-pragmas-in-buffer-string (buffer-string) ps))))
+  (let* ((default-directory (projectile-project-root))
+         (ps (haskell-pragmas--language-pragmas)))
+    (-difference ps (haskell-pragmas--in-buffer-string (buffer-string) ps))))
 
 (defun haskell-pragmas--goto-buffer-start ()
   (goto-char (point-min))
