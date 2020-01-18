@@ -82,7 +82,8 @@
   :commands (dante-mode)
   :general
   (:states '(insert normal) :keymaps 'dante-mode-map
-   "C-c C-SPC" #'dante-eval-block)
+   "C-c C-SPC" #'dante-eval-block
+   "M-." #'xref-find-definitions)
   :config
   (progn
     (add-hook 'dante-mode-hook #'config-haskell--configure-dante)
