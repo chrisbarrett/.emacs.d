@@ -419,7 +419,8 @@
       '(:link t :compact t :maxlevel 4 :fileskip0 t :step week))
 
     (defun config-org--agenda-files-for-tags (tag-or-tags)
-      (-distinct (-mapcat #'org-funcs-files-for-context (-list tag-or-tags))))
+      (--remove (equal (f-filename it) "inbox.org")
+                (-distinct (-mapcat #'org-funcs-files-for-context (-list tag-or-tags)))))
 
     (defun config-org--standard-filter-preset (tags)
       (seq-uniq (append tags '("-ignore"))))
