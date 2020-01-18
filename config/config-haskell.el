@@ -11,9 +11,7 @@
   ("Insert"
    (("i" haskell-imports-insert-qualified "import")
     ("u" haskell-imports-insert-unqualified "import (unqualified)")
-    ("p" haskell-pragmas-insert "language pragma"))
-   "Format"
-   (("r" ormolu-format-buffer "format buffer"))))
+    ("p" haskell-pragmas-insert "language pragma"))))
 
 ;; `haskell-mode' is the main package implementing haskell language support.
 
