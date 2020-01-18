@@ -85,7 +85,11 @@
   (:states '(insert normal) :keymaps 'dante-mode-map
    "C-c C-SPC" #'dante-eval-block)
   :config
-  (add-hook 'dante-mode-hook #'config-haskell--configure-dante))
+  (progn
+    (add-hook 'dante-mode-hook #'config-haskell--configure-dante)
+
+    (with-eval-after-load 'flycheck
+      (flycheck-add-next-checker 'haskell-dante '(warning . haskell-hlint)))))
 
 ;; `reformatter' provides a way to declare formatting commands. Use it to
 ;; declare a binding to the ormolu Haskell src formatter.
