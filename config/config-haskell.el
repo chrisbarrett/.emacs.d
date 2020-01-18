@@ -27,8 +27,7 @@
   (("runghc" . haskell-mode)
    ("runhaskell" . haskell-mode))
 
-  :hook ((haskell-mode . interactive-haskell-mode)
-         (haskell-mode . haskell-doc-mode))
+  :hook (haskell-mode . interactive-haskell-mode)
 
   :general
   (:states 'normal :keymaps 'haskell-presentation-mode-map "q" #'quit-window)
@@ -87,6 +86,7 @@
   :config
   (progn
     (add-hook 'dante-mode-hook #'config-haskell--configure-dante)
+    (general-setq dante-tap-type-time 0.1)
 
     (with-eval-after-load 'flycheck
       (flycheck-add-next-checker 'haskell-dante '(warning . haskell-hlint)))))
