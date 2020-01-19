@@ -107,7 +107,6 @@
 
     (general-setq mu4e-context-policy 'pick-first
                   mu4e-compose-context-policy 'ask-if-none
-                  mu4e-compose-format-flowed t
                   message-kill-buffer-on-exit t
                   mu4e-view-use-gnus t
                   mu4e-use-fancy-chars t
@@ -127,6 +126,10 @@
                   mu4e-completing-read-function #'completing-read
                   sendmail-program "msmtp"
                   message-send-mail-function #'message-send-mail-with-sendmail
+
+                  ;; Send email with long lines and format=flowed.
+                  mu4e-compose-format-flowed t
+                  fill-flowed-encode-column 998
 
                   ;; All my mailservers use IMAP. Use mbsync to synchronise mail between the
                   ;; server and my local machine.
