@@ -87,7 +87,16 @@
   :config
   (progn
     (add-hook 'dante-mode-hook #'config-haskell--configure-dante)
-    (general-setq dante-tap-type-time 0.1)
+    (general-setq
+     dante-tap-type-time 0.1
+     dante-load-flags
+     '("+c"
+       "-Wall"
+       "-fdefer-typed-holes"
+       "-fdiagnostics-color=never"
+       "-fno-diagnostics-show-caret"
+       "-Wwarn=missing-home-modules"
+       "-ferror-spans"))
 
     (with-eval-after-load 'flycheck
       (flycheck-add-next-checker 'haskell-dante '(warning . haskell-hlint)))))
