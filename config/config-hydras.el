@@ -257,6 +257,7 @@
   ("Goto"
    (("a" (find-file (f-join paths-ledger-directory "accounts.dat")) "accounts")
     ("b" (find-file (f-join paths-ledger-directory "budget.ledger")) "budget")
+    ("f" (find-file (f-join paths-ledger-directory "flat.ledger")) "flat")
     ("i" (find-file (f-join paths-ledger-directory "lisp" "init.el")) "lisp init file")
     ("j" (find-file (f-join paths-ledger-directory "journal.ledger")) "journal")
     ("m" (find-file (f-join paths-ledger-directory "master.ledger")) "master file"))
