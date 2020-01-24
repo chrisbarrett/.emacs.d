@@ -21,6 +21,9 @@
   "Add WORD at point to the Ispell dictionary."
   (interactive (list (thing-at-point 'word)))
   (evil-ispell--add-to-dict word)
+  (when flyspell-mode
+    (when-let* ((word-start (car (bounds-of-thing-at-point 'word))))
+      (flyspell-unhighlight-at word-start)))
   (message "%s added to dictionary" (s-upcase word)))
 
 (defun evil-ispell-correct-word (arg)
@@ -37,6 +40,9 @@ With a number ARG, select the nth replacement."
   (interactive (list (thing-at-point 'word)))
   (when word
     (ispell-add-per-file-word-list word)
+    (when flyspell-mode
+      (when-let* ((word-start (car (bounds-of-thing-at-point 'word))))
+        (flyspell-unhighlight-at word-start)))
     (message "%s added to local word list" (s-upcase word))))
 
 (defun evil-ispell--error-backward-search-start-pos (pos)
