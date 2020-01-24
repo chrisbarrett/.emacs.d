@@ -338,6 +338,7 @@
 
     (general-setq org-babel-load-languages
                   '((emacs-lisp . t)
+                    (calc . t)
                     (plantuml . t)
                     (ditaa . t)
                     (restclient . t)
