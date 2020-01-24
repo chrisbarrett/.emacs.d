@@ -273,7 +273,7 @@ COUNT is the number of repetitions."
             "zu" #'flyspell-auto-correct-word
             "zU" #'evil-ispell-correct-word
             "zg" #'evil-ispell-mark-word-as-good
-            "zG" #'evil-ispell-mark-word-locally-good
+            "zG" #'evil-ispell-mark-word-as-locally-good
             "zn" #'evil-ispell-next-spelling-error
             "zp" #'evil-ispell-previous-spelling-error))
 
