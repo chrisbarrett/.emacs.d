@@ -243,7 +243,8 @@
   (progn
     (defun config-org-set-org-agenda-files ()
       ;; Populate org-agenda-files
-      (cl-labels ((org-file-p (f) (f-ext? f "org")))
+      (cl-labels ((org-file-p (f) (and (f-ext? f "org")
+                                       (not (s-contains-p "conflicted copy" (f-filename f))))))
         (let ((toplevel-files (f-files paths-org-directory #'org-file-p))
               (gcal-files (f-files paths-org-gcal-directory (lambda (it)
                                                               (and (org-file-p it)
