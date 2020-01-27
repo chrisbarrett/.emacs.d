@@ -270,7 +270,7 @@ COUNT is the number of repetitions."
   :after evil
   :defer t
   :general (:states 'normal
-            "zu" #'flyspell-auto-correct-word
+            "z SPC" #'flyspell-auto-correct-word
             "zU" #'evil-ispell-correct-word
             "zg" #'evil-ispell-mark-word-as-good
             "zG" #'evil-ispell-mark-word-as-locally-good
