@@ -275,10 +275,11 @@
 
     (defun config-org--before-archive (&rest _)
       ;; Ensure we have a context before archiving.
-      (unless (seq-intersection '("@personal" "@work") (org-get-tags))
-        (let ((tag (pcase-exhaustive (read-char-choice "Set context: [w]ork [p]ersonal " '(?w ?p))
+      (unless (seq-intersection '("@personal" "@work" "@flat") (org-get-tags))
+        (let ((tag (pcase-exhaustive (read-char-choice "Set context: [w]ork  [p]ersonal  [f]lat" '(?w ?p ?f))
                      (?w "@work")
-                     (?p "@personal"))))
+                     (?p "@personal")
+                     (?f "@flat"))))
           (org-toggle-tag tag 'on))))
 
     (defun config-org--after-archive (&rest _)
