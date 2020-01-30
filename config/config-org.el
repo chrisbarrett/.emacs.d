@@ -757,6 +757,11 @@
                                 "%(org-funcs-read-url-for-capture \"%:link\" \"%:description\" t)\n%:initial"
                                 :immediate-finish t))))
 
+;; `om' provides a functional API for parsing and manipulating org files.
+(use-package om
+  :straight (:host github :repo "ndwarshuis/om.el")
+  :defer t)
+
 (provide 'config-org)
 
 ;;; config-org.el ends here
