@@ -748,7 +748,6 @@
     (add-hook 'org-present-mode-quit-hook #'config-org--on-end-presentation)))
 
 ;; `org-protocol' provides a URL scheme and code triggering for Emacs.
-
 (use-package org-protocol
   :after (:all server org)
   :config
