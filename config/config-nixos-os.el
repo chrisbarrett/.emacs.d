@@ -12,6 +12,7 @@
     '("PATH"
       "LEDGER_FILE"
       "GPG_TTY"
+      "PASSWORD_STORE_DIR"
       "SSH_AUTH_SOCK"
       "SSH_KEY_PATH"))
   :config
