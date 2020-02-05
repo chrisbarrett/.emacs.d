@@ -294,42 +294,6 @@
 
 (add-hook 'after-change-major-mode-hook #'config-basic-settings--hide-dos-eol)
 
-
-;; Offer to open large files in fundamental mode.
-
-(defvar config-basic-settings--large-file-size (* 1024 1024)
-  "Size in bytes above which a file is considered 'large'.")
-
-(defconst config-basic-settings--large-file-modes-list
-  '(archive-mode
-    doc-view-mode
-    doc-view-mode-maybe
-    ebrowse-tree-mode
-    git-commit-mode
-    image-mode
-    pdf-view-mode
-    tar-mode)
-  "A list of modes that should not prompt for literal file editing.")
-
-(defun config-basic-settings--large-file? (size)
-  (unless (memq major-mode config-basic-settings--large-file-modes-list)
-    (and size (> size config-basic-settings--large-file-size))))
-
-(defun config-basic-settings--prompt-to-open-large-files-in-fundamental-mode ()
-  (let* ((filename (buffer-file-name))
-         (size (nth 7 (file-attributes filename)))
-         (tags-file? (when filename (equal "TAGS" (file-name-nondirectory filename)))))
-    (when (and (config-basic-settings--large-file? size)
-               (not tags-file?)
-               (not (seq-contains-p '("gz" "zip" "tar" "jar" "pdf") (file-name-extension filename)))
-               (y-or-n-p (format "`%s' is a large file.  Open in fundamental mode? " (file-name-nondirectory filename))))
-      (setq buffer-read-only t)
-      (buffer-disable-undo)
-      (fundamental-mode))))
-
-(add-hook 'find-file-hook #'config-basic-settings--prompt-to-open-large-files-in-fundamental-mode)
-
-
 ;; Clean up completions buffers
 
 (defun config-basic-settings--cleanup-completions-buffer ()
