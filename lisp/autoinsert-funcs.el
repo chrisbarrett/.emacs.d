@@ -66,33 +66,11 @@ $0
     "\n"))
 
 
-;;; HTML
-
-(defun autoinsert-funcs-html-template-string ()
-  (yas-expand-snippet (string-trim
-                       "
-<!DOCTYPE html>
-<html lang=\"en\">
-  <head>
-    <meta charset=\"utf-8\" />
-    <title>$0</title>
-  </head>
-  <body>
-  </body>
-</html>
-
-")))
-
-(defconst autoinsert-funcs-html-form
-  '((html-mode . "HTML") . autoinsert-funcs-html-template-string))
-
-
 
 (defconst autoinsert-funcs-forms
   (list autoinsert-funcs-sh-form
         autoinsert-funcs-hs-src-form
-        autoinsert-funcs-hs-test-form
-        autoinsert-funcs-html-form))
+        autoinsert-funcs-hs-test-form))
 
 (provide 'autoinsert-funcs)
 
