@@ -358,11 +358,23 @@ Interactively, reverse the characters in the current region."
   :config
   (setq auto-insert-query nil))
 
-(use-package autoinsert-funcs
+(use-package autoinsert-files
   :after autoinsert
+  :preface
+  (progn
+    ;; Use yasnippet's `snippet-mode' for autoinsert templates
+    (autoload 'snippet-mode "yasnippet")
+
+    (defun config-editing--maybe-snippet-mode ()
+      (require 'autoinsert)
+      (when (f-descendant-of-p (buffer-file-name) auto-insert-directory)
+        (snippet-mode))))
+
+  :init
+  (add-hook 'find-file-hook #'config-editing--maybe-snippet-mode)
   :config
-  (dolist (form autoinsert-funcs-forms)
-    (push form auto-insert-alist)))
+  (advice-add 'auto-insert :before (lambda (&rest _)
+                                     (autoinsert-files-populate-templates))))
 
 ;; deadgrep provides a polished frontend for `ripgrep'.
 
