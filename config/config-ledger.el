@@ -37,7 +37,28 @@
 
   (:keymaps 'ledger-mode-map
    "C-c C-c" #'ledger-report
-   "M-RET" #'ledger-toggle-current-transaction)
+   "M-RET" #'ledger-toggle-current-transaction
+   "C-c C-." #'config-ledger-set-xact-timestamp)
+
+  :preface
+  (defun config-ledger-set-xact-timestamp ()
+    (interactive)
+    (when-let* ((ctx (ledger-xact-context))
+                (value (ledger-context-field-value ctx 'date))
+                (start (ledger-context-field-position ctx 'date))
+                (end (ledger-context-field-end-position ctx 'date))
+                (updated (ledger-read-date "Transaction date: ")))
+      (if (string= value updated)
+          (user-error "Date unchanged")
+        (save-excursion
+          (goto-char start)
+          (delete-region start end)
+          (insert updated))
+        (message "Date changed: %s -> %s" value updated))))
+  :init
+  (with-eval-after-load 'volatile-highlights
+    (vhl/define-extension 'ledger 'config-ledger-set-xact-timestamp)
+    (vhl/install-extension 'ledger))
 
   :config
   (progn
