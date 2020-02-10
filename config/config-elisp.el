@@ -68,6 +68,8 @@
       (user-error "No Emacs Lisp buffers")))
   :config
   (progn
+    (add-hook 'inferior-emacs-lisp-mode-hook #'hs-minor-mode)
+
     (add-to-list 'display-buffer-alist
                  `(,(rx bos "*ielm*" eos)
                    (display-buffer-reuse-window display-buffer-in-side-window)
