@@ -179,6 +179,15 @@
   :config
   (advice-add 'rainbow-mode :after #'config-elisp--on-rainbow-mode))
 
+;; pp provides pretty-printing of lisp forms
+
+(use-package pp
+  :defer t
+  :general
+  (:keymaps '(emacs-lisp-mode-map ielm-map) :states '(motion normal insert)
+   "C-<return>" 'pp-eval-last-sexp
+   "C-c <return>" 'pp-macroexpand-last-sexp))
+
 (provide 'config-elisp)
 
 ;;; config-elisp.el ends here
