@@ -58,6 +58,8 @@
     (when-let* ((gls (executable-find "gls")))
       (setq insert-directory-program gls))))
 
+(server-start)
+
 (provide 'config-darwin-os)
 
 ;;; config-darwin-os.el ends here
