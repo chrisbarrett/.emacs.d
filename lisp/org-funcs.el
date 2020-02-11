@@ -347,13 +347,14 @@ Return the position of the headline."
   (--first (s-matches? (rx bos (or "http" "https" "www")) it)
            (cons (current-kill 0 t) kill-ring)))
 
-(defun org-funcs-read-url (prompt)
-  (let* ((default (or (thing-at-point-url-at-point) (org-funcs--last-url-kill)))
+(defun org-funcs-read-url (&optional prompt default)
+  (let* ((default (or default (thing-at-point-url-at-point) (org-funcs--last-url-kill)))
+         (prompt (or prompt "URL"))
          (input (read-string (concat (if default (format "%s (default %s)" prompt default) prompt) ": ")
                              nil nil default)))
     (if (string-match-p (rx "http" (? "s") "://") input)
         input
-      (org-funcs-read-url prompt))))
+      (org-funcs-read-url prompt default))))
 
 (defun org-funcs--retrieve-html (url)
   (with-current-buffer (url-retrieve-synchronously url t)
@@ -384,11 +385,11 @@ URL and TITLE are added to the template.
 
 If NOTIFY-P is set, a desktop notification is displayed."
   (interactive
-   (let* ((url (org-funcs-read-url "URL"))
+   (let* ((url (org-funcs-read-url))
           (guess (-some->> (org-funcs--retrieve-html url)
-                           (org-funcs--extract-title)
-                           (s-replace-regexp (rx (any "\r\n\t")) "")
-                           (s-trim)))
+                   (org-funcs--extract-title)
+                   (s-replace-regexp (rx (any "\r\n\t")) "")
+                   (s-trim)))
           (title (read-string "Title: " guess)))
      (list url title nil)))
 
