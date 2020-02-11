@@ -17,7 +17,7 @@
   (-let* (((&plist :keys :description :type :target :template :params :options) spec)
           (make-template (list 'function
                                (lambda ()
-                                 (apply #'interpolate template (funcall params))))))
+                                 (apply #'interpolate template (when params (funcall params)))))))
     (append (list keys description type target make-template)
             options)))
 
@@ -37,7 +37,7 @@
       (unless (or (functionp params) (listp params))
         (error "Error in %s: params must be a function or plist" path))
 
-      ;; Normalise params to be a function.
+      ;; Normalise params to be a function if present.
       (when (not (functionp params))
         (plist-put result :params (lambda () (eval params)))))
 
