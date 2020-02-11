@@ -1,4 +1,4 @@
-;;; org-template-file.el --- Declarative file templates  -*- lexical-binding: t; -*-
+;;; org-templates.el --- Declarative file templates  -*- lexical-binding: t; -*-
 ;;; Commentary:
 ;;; Code:
 
@@ -10,7 +10,7 @@
 (require 'om)
 (require 'seq)
 
-(defun org-template-file--to-capture-template (spec)
+(defun org-templates--to-capture-template (spec)
   (-let* (((&plist :keys :description :type :target :template :params :options) spec)
           (make-template (list 'function
                                (lambda ()
@@ -18,7 +18,7 @@
     (append (list keys description type target make-template)
             options)))
 
-(defun org-template-file--src-block-plist (src-node)
+(defun org-templates--src-block-plist (path src-node)
   (let (result)
     (om-match-do '(:any) (lambda (it)
                            (setq result (read (om-get-property :value it))))
@@ -43,7 +43,7 @@
 
     result))
 
-(defun org-template-file--parse (str)
+(defun org-templates--parse (path str)
   (-let* ((parsed (with-temp-buffer
                     (insert str)
                     (goto-char (point-min))
@@ -54,14 +54,15 @@
                                            (car parsed))
                           (cdr parsed)))
           (template-string (string-trim-left (string-join (seq-map #'om-to-trimmed-string template) "\n"))))
-    `(:template ,template-string ,@(org-template-file--src-block-plist arg-src-block))))
 
-(defun org-template-file-from-string (str)
-  (org-template-file--to-capture-template (org-template-file--parse str)))
+    `(:template ,template-string ,@(org-templates--src-block-plist arg-src-block))))
 
-(defun org-template-file (path)
-  (org-template-file-from-string (f-read-text path)))
+(defun org-templates-from-string (str)
+  (org-templates--to-capture-template (org-templates--parse "<string>" str)))
 
-(provide 'org-template-file)
+(defun org-templates-from-file (path)
+  (org-templates--to-capture-template (org-templates--parse path (f-read-text path))))
 
-;;; org-template-file.el ends here
+(provide 'org-templates)
+
+;;; org-templates.el ends here
