@@ -246,13 +246,10 @@
       (cl-labels ((org-file-p (f) (and (f-ext? f "org")
                                        (not (s-contains-p "conflicted copy" (f-filename f))))))
         (let ((toplevel-files (f-files paths-org-directory #'org-file-p))
-              (gcal-files (f-files paths-org-gcal-directory (lambda (it)
-                                                              (and (org-file-p it)
-                                                                   (not (equal (f-filename it) "archive.org"))))))
               (special-files (--map (f-join paths-org-directory it)
                                     '("init.org" "archive.org" "beorg-themes.org" "budget.org"))))
           (setq org-refile-targets `((,(seq-difference toplevel-files special-files) . (:maxlevel . 4))))
-          (dolist (file (append gcal-files toplevel-files))
+          (dolist (file toplevel-files)
             (add-to-list 'org-agenda-files file)))))
 
     (defun config-org--exit-minibuffer (&rest _)
@@ -677,11 +674,6 @@
     (advice-add 'org-store-link :around #'config-org--prompt-for-creating-id))
   :config
   (org-link-set-parameters "id" :store #'org-id-store-link))
-
-;; `org-gcal' pulls down Google Calendar events into org files.
-(use-package org-gcal
-  :straight t
-  :general (:states 'motion :keymaps 'org-agenda-mode-map "gR" 'org-gcal-fetch))
 
 ;; `org-edna' provides todo dependencies, triggers, and more complex repeaters.
 (use-package org-edna

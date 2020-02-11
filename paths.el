@@ -23,9 +23,6 @@
 (defconst paths-org-templates-directory
   (expand-file-name "templates" paths-org-directory))
 
-(defconst paths-org-gcal-directory
-  (expand-file-name "gcal" paths-org-directory))
-
 
 
 (defconst paths-assets-directory

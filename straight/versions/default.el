@@ -131,7 +131,6 @@
  ("org" . "2fbbc233686b5de9a02160ee9157b50be1596dea")
  ("org-bullets" . "c19b13be00df8d8dc596e4f1aef4a094b08ac801")
  ("org-edna" . "85ab346e433d8b58f6a8c89b19a49e40cb31625a")
- ("org-gcal.el" . "6821e349673e9ba8d7ae7b84789f931889273dc0")
  ("org-present" . "d13acd70eff6a1608bc991920232146a0de76b21")
  ("ox-gfm" . "99f93011b069e02b37c9660b8fcb45dab086a07f")
  ("package-lint" . "3b26941686700a7500ca4c68650e9235c823a410")
