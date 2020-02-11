@@ -1,7 +1,9 @@
 ;;; org-templates.el --- Declarative org capture templates.  -*- lexical-binding: t; -*-
 ;;; Commentary:
 
-;; Provide a declarative syntax for declaring org-capture templates using files. Each template file should begin with a src block
+;; Provide a declarative syntax for declaring org-capture templates using files.
+;; Each template file should begin with at least one emacs-lisp src block,
+;; describing the metadata for the template.
 
 ;;; Code:
 
@@ -54,12 +56,18 @@
              initial-src-blocks)))
 
 ;;;###autoload
-(defun org-templates-from-buffer (buf)
-  (with-current-buffer buf
+(defun org-templates-from-buffer (buffer)
+  "Return a list of capture templates described by an org template.
+
+BUFFER is the buffer containing the org template to parse."
+  (with-current-buffer buffer
     (seq-map #'org-templates--to-capture-template (org-templates--parse (buffer-name) (om-parse-this-buffer)))))
 
 ;;;###autoload
 (defun org-templates-from-file (path)
+  "Return a list of capture templates described by an org template.
+
+PATH is the path to an org template file to parse."
   (with-temp-buffer
     (insert-file-contents-literally path)
     (seq-map #'org-templates--to-capture-template (org-templates--parse path (om-parse-this-buffer)))))
