@@ -1,10 +1,11 @@
-;;; org-templates.el --- Declarative file templates  -*- lexical-binding: t; -*-
+;;; org-templates.el --- Declarative org capture templates.  -*- lexical-binding: t; -*-
 ;;; Commentary:
+
+;; Provide a declarative syntax for declaring org-capture templates using files. Each template file should begin with a src block
+
 ;;; Code:
 
 (require 'dash)
-(require 'dash-functional)
-(require 'f)
 (require 'ht)
 (require 'interpolate)
 (require 'om)
@@ -19,23 +20,20 @@
             options)))
 
 (defun org-templates--src-block-plist (path src-node)
-  (let (result)
-    (om-match-do '(:any) (lambda (it)
-                           (setq result (read (om-get-property :value it))))
-                 src-node)
+  (let ((result (read (om-get-property :value src-node))))
 
     (let ((required '(:keys :description :target)))
       (when-let* ((missing (seq-difference required (ht-keys (ht-from-plist result)))))
-        (error "Template missing required key(s): %s" missing)))
+        (error "Error in %s: missing required key(s) %s" path missing)))
 
     (if-let* ((type (plist-get result :type)))
         (unless (symbolp type)
-          (error ":type must be a symbol"))
+          (error "Error in %s: type must be a symbol but got value %s" path type))
       (plist-put result :type 'entry))
 
     (when-let* ((params (plist-get result :params)))
       (unless (or (functionp params) (listp params))
-        (error ":params must be a function or plist"))
+        (error "Error in %s: params must be a function or plist" path))
 
       ;; Normalise params to be a function.
       (when (not (functionp params))
@@ -43,25 +41,28 @@
 
     result))
 
-(defun org-templates--parse (path str)
-  (-let* ((parsed (with-temp-buffer
-                    (insert str)
-                    (goto-char (point-min))
-                    (om-get-children (om-parse-this-buffer))))
-          (match-arg-src-block '(:and src-block (:language "emacs-lisp")))
-          (arg-src-block (om-match (list :first match-arg-src-block) (car parsed)))
-          (template (cons (om-match-delete `(:many ,match-arg-src-block)
+(defun org-templates--parse (path nodes)
+  (-let* ((parsed (om-get-children nodes))
+          (match-src-block '(:and src-block (:language "emacs-lisp")))
+          (initial-src-blocks (om-match (list :many match-src-block) (car parsed)))
+          (template (cons (om-match-delete `(:many ,match-src-block)
                                            (car parsed))
                           (cdr parsed)))
-          (template-string (string-trim-left (string-join (seq-map #'om-to-trimmed-string template) "\n"))))
+          (template-string (substring-no-properties (string-trim-left (string-join (seq-map #'om-to-trimmed-string template) "\n")))))
+    (seq-map (lambda (src-block)
+               `(:template ,template-string ,@(org-templates--src-block-plist path src-block)))
+             initial-src-blocks)))
 
-    `(:template ,template-string ,@(org-templates--src-block-plist arg-src-block))))
+;;;###autoload
+(defun org-templates-from-buffer (buf)
+  (with-current-buffer buf
+    (seq-map #'org-templates--to-capture-template (org-templates--parse (buffer-name) (om-parse-this-buffer)))))
 
-(defun org-templates-from-string (str)
-  (org-templates--to-capture-template (org-templates--parse "<string>" str)))
-
+;;;###autoload
 (defun org-templates-from-file (path)
-  (org-templates--to-capture-template (org-templates--parse path (f-read-text path))))
+  (with-temp-buffer
+    (insert-file-contents-literally path)
+    (seq-map #'org-templates--to-capture-template (org-templates--parse path (om-parse-this-buffer)))))
 
 (provide 'org-templates)
 
