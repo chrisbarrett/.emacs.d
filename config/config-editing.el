@@ -131,7 +131,7 @@ Interactively, reverse the characters in the current region."
   (editorconfig-mode 1))
 
 
-;; Configure conf-mode for use with more kinds of config files.
+;; Configure `conf-mode' for use with more kinds of config files.
 
 (use-package conf-mode
   :mode
@@ -140,13 +140,13 @@ Interactively, reverse the characters in the current region."
    ("\\.kll\\'" . conf-mode)))
 
 
-;; Align provides useful functions for aligning text.
+;; `align' provides useful functions for aligning text.
 
 (use-package align
   :general ("C-x a a" #'align-regexp))
 
 
-;; Hexl is Emacs' built-in hex editor.
+;; `hexl' is Emacs' built-in hex editor.
 
 (use-package hexl
   :defer t
@@ -171,7 +171,7 @@ Interactively, reverse the characters in the current region."
      "Address"
      (("g" hexl-goto-address "goto")))))
 
-;; aggressive-indent automatically reindents code during editing.
+;; `aggressive-indent' automatically reindents code during editing.
 
 (use-package aggressive-indent
   :straight t
@@ -216,7 +216,7 @@ Interactively, reverse the characters in the current region."
     (global-aggressive-indent-mode +1)))
 
 
-;; volatile-highlights shows highlights in the buffer when regions change.
+;; `volatile-highlights' shows highlights in the buffer when regions change.
 
 (use-package volatile-highlights
   :straight t
@@ -246,14 +246,14 @@ Interactively, reverse the characters in the current region."
     (volatile-highlights-mode)))
 
 
-;; tiny provides a template syntax for creating sequences of text.
+;; `tiny' provides a template syntax for creating sequences of text.
 
 (use-package tiny
   :straight t
   :general ("C-:" #'tiny-expand))
 
 
-;; ws-butler cleans up trailing whitespace as you edit.
+;; `ws-butler' cleans up trailing whitespace as you edit.
 
 (use-package ws-butler
   :straight t
@@ -264,21 +264,21 @@ Interactively, reverse the characters in the current region."
   (ws-butler-global-mode))
 
 
-;; unfill provides a command that is the opposite of fill-paragraph.
+;; `unfill' provides a command that is the opposite of fill-paragraph.
 
 (use-package unfill
   :straight t
   :commands (unfill-region unfill-paragraph unfill-toggle))
 
 
-;; hide-comnt provides a command for hiding comments.
+;; `hide-comnt' provides a command for hiding comments.
 
 (use-package hide-comnt
   :straight t
   :commands (hide/show-comments-toggle))
 
 
-;; highlight-thing highlights the symbol at point.
+;; `highlight-thing' highlights the symbol at point.
 
 (use-package highlight-thing
   :straight t
@@ -316,7 +316,7 @@ Interactively, reverse the characters in the current region."
                 #'config-editing--should-highlight-p)))
 
 
-;; auto-highlight-symbol highlights the symbol at point after a short time.
+;; `auto-highlight-symbol' highlights the symbol at point after a short time.
 
 (use-package auto-highlight-symbol
   :straight t
@@ -335,7 +335,7 @@ Interactively, reverse the characters in the current region."
     (setq ahs-idle-timer 0)))
 
 
-;; dump-jump provides a good fallback for navigating to definitions in the
+;; `dump-jump' provides a good fallback for navigating to definitions in the
 ;; absence of tags tables or semantic analysis.
 
 (use-package dumb-jump
@@ -349,7 +349,7 @@ Interactively, reverse the characters in the current region."
     (add-to-list 'dumb-jump-language-file-exts '(:language "javascript" :ext "ts" :agtype "js" :rgtype "ts"))))
 
 
-;; autoinsert provides file templates.
+;; `autoinsert' provides file templates.
 
 (use-package autoinsert
   :preface
@@ -376,7 +376,7 @@ Interactively, reverse the characters in the current region."
   (advice-add 'auto-insert :before (lambda (&rest _)
                                      (autoinsert-files-populate-templates))))
 
-;; deadgrep provides a polished frontend for `ripgrep'.
+;; `deadgrep' provides a polished frontend for `ripgrep'.
 
 (use-package deadgrep
   :straight t
