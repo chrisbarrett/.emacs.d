@@ -7,6 +7,7 @@
 
 (require 'dash)
 (require 'general)
+(require 'f)
 (require 'major-mode-hydra)
 
 ;; Auto-indent on RET
