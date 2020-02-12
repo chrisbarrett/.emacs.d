@@ -541,6 +541,19 @@
     ("u" dap-step-out "step out" :exit nil)
     ("R" dap-restart-frame "restart frame" :exit nil))))
 
+(pretty-hydra-define-at-bottom annotate
+  (:hint nil
+   :color teal
+   :title (hydra-title-with-octicon "comment" "Annotate"))
+  ("Actions"
+   (("c" annotate-annotate "create annotation...")
+    ("n" annotate-next-annotation "next" :exit nil)
+    ("p" annotate-previous-annotation "prev" :exit nil)
+    ("N" annotate-previous-annotation "prev" :exit nil))
+   "Views"
+   (("l" annotate-show-annotation-summary "list...")
+    ("<tab>" annotate-mode "toggle mode"))))
+
 
 
 (pretty-hydra-define main-dispatcher
@@ -566,6 +579,7 @@
     ("o" org/body "org...")
     ("p" project/body "project...")
     ("t" toggles/body "toggles...")
+    ("v" annotate/body "annotate...")
     ("w" windows/body "windows...")
     ("y" yasnippet/body "snippets...")
     ("z" font-scale/body "font scale..."))

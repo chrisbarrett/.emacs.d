@@ -446,6 +446,17 @@ Interactively, reverse the characters in the current region."
   :straight (:host github :repo "emacs-taskrunner/emacs-taskrunner")
   :defer t)
 
+;; `annotate' provides an interface for adding annotations to files without
+;; modifying them.
+
+(use-package annotate
+  :straight t
+  :commands (annotate-annotate)
+  :demand t
+  :custom
+  ((annotate-blacklist-major-mode '(org-agenda-mode org-mode special-mode))
+   (annotate-use-messages nil)))
+
 (provide 'config-editing)
 
 ;;; config-editing.el ends here
