@@ -40,6 +40,9 @@
     (autoload 'thing-at-point-looking-at "thingatpt")
     (autoload 'evil-join "evil-commands")
 
+    (defun config-rust--set-up-buffer ()
+      (setq-local rust-format-on-save (executable-find "rustfmt")))
+
     (defun config-rust-join-line ()
       "Join lines, deleting intermediate spaces for chained function calls."
       (interactive)
@@ -49,9 +52,7 @@
 
   :config
   (progn
-    ;; Format automatically if rustfmt is installed.
-    (setq rust-format-on-save (executable-find "rustfmt"))
-
+    (add-hook 'rust-mode-hook #'config-rust--set-up-buffer)
     ;; Enable backtraces in rust programs run from Emacs.
     (setenv "RUST_BACKTRACE" "1")))
 
