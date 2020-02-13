@@ -64,21 +64,6 @@
   (with-eval-after-load 'rust-mode
     (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
 
-(use-package racer
-  :straight t
-  :defer t
-  :commands (racer-find-definition racer-describe)
-  :general
-  (:states 'normal :keymaps 'rust-mode-map
-   "K" #'racer-describe
-   "M-." #'racer-find-definition)
-  :hook ((rust-mode . racer-mode)
-         (racer-mode-hook . eldoc-mode))
-  :config
-  ;; Teach compile.el about sources installed via rustup.
-  (let ((base (file-name-directory racer-rust-src-path)))
-    (add-to-list 'compilation-search-path base t)))
-
 (use-package toml-mode
   :straight t
   :mode (("\\.toml\\'" . toml-mode)
