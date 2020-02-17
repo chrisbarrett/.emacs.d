@@ -55,10 +55,6 @@
           (delete-region start end)
           (insert updated))
         (message "Date changed: %s -> %s" value updated))))
-  :init
-  (with-eval-after-load 'volatile-highlights
-    (vhl/define-extension 'ledger 'config-ledger-set-xact-timestamp)
-    (vhl/install-extension 'ledger))
 
   :config
   (progn
