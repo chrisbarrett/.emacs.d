@@ -416,14 +416,15 @@ If NOTIFY-P is set, a desktop notification is displayed."
   (let ((ht (ht-merge (ht-from-alist org-capture-templates) (ht-from-alist templates))))
     (setq org-capture-templates (-sort (-on 'string-lessp 'car) (ht->alist ht)))))
 
+(defun org-funcs-capture-template-apply-defaults (template)
+  (-let ((defaults '(:clock-keep t :prepend t :immediate-finish nil :jump-to-captured nil))
+         ((positional-args keywords) (-split-with (-not #'keywordp) template)))
+    (append positional-args (ht->plist (ht-merge
+                                        (ht-from-plist defaults)
+                                        (ht-from-plist keywords))))))
+
 (cl-defun org-funcs-capture-template (key label form template &rest keywords)
-  (let ((defaults '(:clock-keep t
-                    :prepend t
-                    :immediate-finish nil
-                    :jump-to-captured nil)))
-    (cl-list* key label 'entry form template (ht->plist (ht-merge
-                                                         (ht-from-plist defaults)
-                                                         (ht-from-plist keywords))))))
+  (org-funcs-capture-template-apply-defaults (append (list key label 'entry form template) keywords)))
 
 (defun org-funcs-update-agenda-custom-commands (templates)
   (let ((ht (ht-merge (ht-from-alist org-agenda-custom-commands) (ht-from-alist templates))))
