@@ -86,6 +86,11 @@
   :config
   (add-hook 'yaml-mode-hook #'config-langs--disable-autofill))
 
+(use-package highlight-indent-guides
+  :straight t
+  :hook ((python-mode . highlight-indent-guides-mode)
+         (yaml-mode . highlight-indent-guides-mode)))
+
 (use-package lua-mode
   :straight t
   :mode ("\\.lua\\'" . lua-mode)
