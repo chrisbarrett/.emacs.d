@@ -10,21 +10,11 @@
   :defer t
   :config
   (general-setq lsp-eldoc-render-all nil
-                lsp-prefer-flymake nil
                 lsp-session-file (f-join paths-cache-directory "lsp-session-v1")
                 lsp-restart 'auto-restart
                 lsp-enable-on-type-formatting nil)
 
-  :hook ((c-mode-common . lsp)
-         (dockerfile-mode . lsp)
-         (go . lsp)
-         (groovy . lsp)
-         (js-mode . lsp)
-         (python . lsp)
-         (rust-mode . lsp)
-         (scala-mode . lsp)
-         (sh-mode . lsp)
-         (typescript-mode . lsp))
+  :hook (prog-mode . lsp-deferred)
 
   :preface
   (defun config-lsp--setup-buffer ()
@@ -37,7 +27,7 @@
   :config
   (progn
     ;; HACK: Load this early so that patches work correcly.
-    (when (and lsp-auto-configure lsp-auto-require-clients)
+    (when lsp-auto-configure
       (require 'lsp-clients))
 
     (add-hook 'lsp-after-open-hook #'config-lsp--setup-buffer)
@@ -119,6 +109,11 @@
     (define-key lsp-ui-mode-map [remap evil-lookup] #'lsp-describe-thing-at-point)
     (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
     (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)))
+
+(use-package lsp-treemacs
+  :straight t
+  :after (:all treemacs lsp-mode)
+  :config (lsp-treemacs-sync-mode))
 
 (provide 'config-lsp)
 

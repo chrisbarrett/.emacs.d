@@ -16,7 +16,7 @@
     (el-patch-wrap 1
       (ignore-errors
         (and flycheck-mode
-             lsp-ui-flycheck-live-reporting
+             lsp-flycheck-live-reporting
              (flycheck-buffer))))))
 
 (with-eval-after-load 'lsp-mode
