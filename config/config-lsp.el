@@ -19,6 +19,8 @@
   :preface
   (defun config-lsp--setup-buffer ()
     (setq-local evil-lookup-func #'lsp-describe-thing-at-point)
+    (setq-local company-minimum-prefix-length 1)
+    (setq-local company-idle-delay 0.0)
 
     ;; Use server highlighting.
     (when (gethash "documentHighlightProvider" (lsp--server-capabilities))
@@ -32,7 +34,7 @@
 
     (add-hook 'lsp-after-open-hook #'config-lsp--setup-buffer)
 
-    (define-key lsp-mode-map (kbd "C-c SPC") #'lsp-execute-code-action)))
+    (define-key lsp-mode-map (kbd "S-<return>") #'lsp-execute-code-action)))
 
 (use-package dap-mode
   :straight t
