@@ -5,13 +5,8 @@
 (eval-when-compile
   (require 'use-package))
 
-(cl-eval-when (compile)
-  (require 'lsp-mode))
-
 (require 'general)
 (require 'paths)
-
-
 
 ;; `js' is the Emacs built-in javascript mode.
 (use-package js
