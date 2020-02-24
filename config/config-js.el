@@ -57,9 +57,12 @@
   :functions (nvm-use-for-buffer)
   :preface
   (defun config-js-maybe-use-nvm ()
-    (when (locate-dominating-file default-directory ".nvmrc")
-      (nvm-use-for-buffer)
-      t))
+    ;; If there's a shell.nix, assume we're using Lorri to manage which Node+NPM
+    ;; programs are used.
+    (unless (locate-dominating-file default-directory "shell.nix")
+      (when (locate-dominating-file default-directory ".nvmrc")
+        (nvm-use-for-buffer)
+        t)))
   :hook ((js-mode . config-js-maybe-use-nvm)
          (org-mode . config-js-maybe-use-nvm)
          (typescript-mode . config-js-maybe-use-nvm)))
