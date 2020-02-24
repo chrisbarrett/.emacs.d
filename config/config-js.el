@@ -20,10 +20,7 @@
            (js-switch-indent-offset 2)
            (js-js-tmpdir (f-join paths-cache-directory "js")))
   :config
-  (progn
-    (setq js--prettify-symbols-alist '(("function" . ?ƒ)))
-    (with-eval-after-load 'lsp-mode
-      (add-to-list 'lsp-language-id-configuration '(js-mode . "javascript")))))
+  (setq js--prettify-symbols-alist '(("function" . ?ƒ))))
 
 (use-package css-mode
   :defer t
