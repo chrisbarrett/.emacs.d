@@ -8,7 +8,7 @@
 (require 'general)
 (require 'paths)
 
-;; `js' is the Emacs built-in javascript mode.
+;; `js' is the Emacs built-in JavaScript mode.
 (use-package js
   :mode ("\\.jsx?\\'" . js-mode)
   :custom ((js-indent-level 2)
@@ -17,6 +17,7 @@
   :config
   (setq js--prettify-symbols-alist '(("function" . ?ƒ))))
 
+;; `css-mode' is the built-in CSS mode.
 (use-package css-mode
   :defer t
   :custom
