@@ -17,6 +17,9 @@
 (setq gc-cons-threshold (* 512 1024 1024))
 (setq gc-cons-percentage 0.7)
 
+;; Crank up the max size of subprocess output to read.
+(setq read-process-output-max (* 1024 1024))
+
 ;; disable some window chrome that doesn't make sense in a keyboard-driven UI.
 
 (setq menu-bar-mode nil)
