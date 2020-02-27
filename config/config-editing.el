@@ -89,11 +89,16 @@ Optional arg JUSTIFY will justify comments and strings."
       (let ((progress (make-progress-reporter "Filling comment")))
         (fill-comment-paragraph justify)
         (progress-reporter-done progress)))
+
      ((region-active-p)
-      (indent-region (region-beginning) (region-end)))
+      (if (bound-and-true-p lsp-mode)
+          (lsp-format-region (region-beginning) (region-end))
+        (indent-region (region-beginning) (region-end))))
      (t
       (let ((progress (make-progress-reporter "Indenting buffer")))
-        (config-editing-indent-buffer)
+        (if (bound-and-true-p lsp-mode)
+            (lsp-format-buffer)
+          (config-editing-indent-buffer))
         (progress-reporter-done progress))))))
 
 (define-key prog-mode-map (kbd "M-q") #'config-indent-dwim)
