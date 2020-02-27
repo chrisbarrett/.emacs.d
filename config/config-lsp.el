@@ -8,11 +8,14 @@
 (use-package lsp-mode
   :straight t
   :defer t
-  :config
-  (general-setq lsp-eldoc-render-all nil
-                lsp-session-file (f-join paths-cache-directory "lsp-session-v1")
-                lsp-restart 'auto-restart
-                lsp-enable-on-type-formatting nil)
+  :custom
+  ((lsp-auto-execute-action nil)
+   (lsp-before-save-edits t)
+   (lsp-eldoc-render-all nil)
+   (lsp-enable-on-type-formatting nil)
+   (lsp-enable-semantic-highlighting t)
+   (lsp-restart 'auto-restart)
+   (lsp-session-file (f-join paths-cache-directory "lsp-session-v1")))
 
   :hook (prog-mode . lsp-deferred)
 
