@@ -1,7 +1,7 @@
 # key: py
-# name: src ipython
+# name: src python
 # condition: (yas-funcs-bolp)
 # --
-#+begin_src ipython
+#+begin_src python
 $0
 #+end_src
