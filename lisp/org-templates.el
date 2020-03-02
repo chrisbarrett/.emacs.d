@@ -69,7 +69,7 @@ BUFFER is the buffer containing the org template to parse."
 
 PATH is the path to an org template file to parse."
   (with-temp-buffer
-    (insert-file-contents-literally path)
+    (insert-file-contents path)
     (seq-map #'org-templates--to-capture-template (org-templates--parse path (om-parse-this-buffer)))))
 
 (provide 'org-templates)
