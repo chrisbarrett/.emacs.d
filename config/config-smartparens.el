@@ -38,6 +38,16 @@
       (when (eq action 'insert)
         (thing-at-point-looking-at (rx "[" (* (any "/" space))))))
 
+    (defun config-smartparens--format-org-checkitem (_id action _context)
+      (when (and (equal action 'insert)
+                 (org-at-item-p))
+        (atomic-change-group
+          (just-one-space)
+          (search-backward "[" (line-beginning-position))
+          (just-one-space)
+          (search-forward "]" (line-end-position))
+          (just-one-space))))
+
     (defun config-smartparens--in-src-block-p (_id action _context)
       (when (eq action 'insert)
         (org-in-src-block-p)))
@@ -306,7 +316,7 @@
                      :post-handlers '(config-smartparens-add-space-after-sexp-insertion)))
 
     (sp-with-modes 'org-mode
-      (sp-local-pair "[" "]" :post-handlers '(("|" "SPC")))
+      (sp-local-pair "[" "]" :post-handlers '(config-smartparens--format-org-checkitem))
       (sp-local-pair "*" "*" :actions '(insert wrap) :unless '(sp-point-after-word-p sp-point-at-bol-p config-smartparens--in-src-block-p) :wrap "C-*" :skip-match 'config-smartparens--org-skip-asterisk)
       (sp-local-pair "_" "_" :unless '(sp-point-after-word-p config-smartparens--in-src-block-p) :wrap "C-_")
       (sp-local-pair "/" "/" :unless '(sp-point-after-word-p config-smartparens--point-in-square-brackets-p config-smartparens--in-src-block-p) :post-handlers '(("[d1]" "SPC")))
