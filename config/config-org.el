@@ -135,6 +135,7 @@
  ;; org-babel
 
  org-confirm-babel-evaluate nil
+ org-babel-js-function-wrapper "console.log(require('util').inspect(function(){\n%s\n}()));"
 
  ;; org-export
 
