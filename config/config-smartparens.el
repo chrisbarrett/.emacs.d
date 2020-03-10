@@ -34,6 +34,14 @@
     (defun config-smartparens--this-command-is-eval-expression (&rest _)
       (equal this-command 'eval-expression))
 
+    (defun config-smartparens--point-in-square-brackets-p (_id action _context)
+      (when (eq action 'insert)
+        (thing-at-point-looking-at (rx "[" (* (any "/" space))))))
+
+    (defun config-smartparens--in-src-block-p (_id action _context)
+      (when (eq action 'insert)
+        (org-in-src-block-p)))
+
     (defun config-smartparens--org-skip-asterisk (_ mb me)
       (or (and (= (line-beginning-position) mb)
                (eq 32 (char-after (1+ mb))))
@@ -299,12 +307,12 @@
 
     (sp-with-modes 'org-mode
       (sp-local-pair "[" "]" :post-handlers '(("|" "SPC")))
-      (sp-local-pair "*" "*" :actions '(insert wrap) :unless '(sp-point-after-word-p sp-point-at-bol-p) :wrap "C-*" :skip-match 'config-smartparens--org-skip-asterisk)
-      (sp-local-pair "_" "_" :unless '(sp-point-after-word-p) :wrap "C-_")
-      (sp-local-pair "/" "/" :unless '(sp-point-after-word-p) :post-handlers '(("[d1]" "SPC")))
-      (sp-local-pair "~" "~" :unless '(sp-point-after-word-p) :post-handlers '(("[d1]" "SPC")))
-      (sp-local-pair "=" "=" :unless '(sp-point-after-word-p) :post-handlers '(("[d1]" "SPC")))
-      (sp-local-pair "«" "»"))
+      (sp-local-pair "*" "*" :actions '(insert wrap) :unless '(sp-point-after-word-p sp-point-at-bol-p config-smartparens--in-src-block-p) :wrap "C-*" :skip-match 'config-smartparens--org-skip-asterisk)
+      (sp-local-pair "_" "_" :unless '(sp-point-after-word-p config-smartparens--in-src-block-p) :wrap "C-_")
+      (sp-local-pair "/" "/" :unless '(sp-point-after-word-p config-smartparens--point-in-square-brackets-p config-smartparens--in-src-block-p) :post-handlers '(("[d1]" "SPC")))
+      (sp-local-pair "~" "~" :unless '(sp-point-after-word-p config-smartparens--in-src-block-p) :post-handlers '(("[d1]" "SPC")))
+      (sp-local-pair "=" "=" :unless '(sp-point-after-word-p config-smartparens--in-src-block-p) :post-handlers '(("[d1]" "SPC")))
+      (sp-local-pair "«" "»" :unless '(config-smartparens--in-src-block-p)))
 
     ;; Delete enclosing whitespace if necessary.
 
