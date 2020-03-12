@@ -10,6 +10,7 @@
   :defer t
   :custom
   ((lsp-auto-execute-action nil)
+   (lsp-diagnostic-package :flycheck)
    (lsp-before-save-edits t)
    (lsp-eldoc-render-all nil)
    (lsp-enable-on-type-formatting nil)
