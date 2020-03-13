@@ -32,6 +32,17 @@ Expected to be set as a dir-local variable."
 
 (add-hook 'lsp-mode-hacks-error-filter-functions #'config-js--filter-flycheck-errors)
 
+(defun js-sort-imports-by-path (beg end)
+  "Sort Common JS imports between BEG and END."
+  (interactive "r")
+  (sort-regexp-fields nil
+                      "^.*$"
+                      (rx (or (and "require" (* space) "(" )
+                              (and "import" (*? nonl) "from"))
+                          (* space)(any "\"'") (* nonl))
+                      beg
+                      end))
+
 ;; `js' is the Emacs built-in JavaScript mode.
 (use-package js
   :mode ("\\.jsx?\\'" . js-mode)
