@@ -7,7 +7,7 @@
 (require 'el-patch)
 (require 'f)
 
-(el-patch-feature 'files)
+(el-patch-feature files)
 
 (defconst files-hacks--archive-file-extensions '("gz" "tgz" "zip"))
 
