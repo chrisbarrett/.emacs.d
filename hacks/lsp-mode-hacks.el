@@ -19,6 +19,22 @@
              lsp-flycheck-live-reporting
              (flycheck-buffer))))))
 
+(defvar lsp-mode-hacks-error-filter-functions nil
+  "A list of functions applied to each error.
+
+Each function takes a single argument, which is a `flycheck-error' object.
+
+If any function in this list returns nil, the error is not displayed.")
+
+(defun lsp-mode-hacks--filter-flycheck-errors (errs)
+  (seq-filter (-partial 'run-hook-with-args-until-failure 'lsp-mode-hacks-error-filter-functions) errs))
+
+(defun lsp-mode-hacks--set-up-checker ()
+  (when (featurep 'flycheck)
+    (setf (flycheck-checker-get 'lsp 'error-filter) #'lsp-mode-hacks--filter-flycheck-errors)))
+
+(add-hook 'lsp-mode-hook #'lsp-mode-hacks--set-up-checker)
+
 (with-eval-after-load 'lsp-mode
   (el-patch-defun lsp--on-diagnostics (workspace params)
     "Callback for textDocument/publishDiagnostics.

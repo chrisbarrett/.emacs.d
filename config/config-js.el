@@ -7,6 +7,30 @@
 
 (require 'general)
 (require 'paths)
+(require 'lsp-mode-hacks)
+
+(defgroup config-js nil
+  "JS configuration"
+  :group 'languages
+  :prefix "config-js-")
+
+(defcustom config-js-ignored-error-ids nil
+  "A list of error codes from the language server to ignore.
+
+Needed because the typescript language server lacks a nice way to
+disable code actions selectively.
+
+Expected to be set as a dir-local variable."
+  :group 'config-js
+  :safe (lambda (xs) (-all-p 'cl-plusp xs))
+  :type '(list numberp))
+
+(defun config-js--filter-flycheck-errors (err)
+  (if (derived-mode-p 'js-mode)
+      (not (memq (flycheck-error-id err) config-js-ignored-error-ids))
+    t))
+
+(add-hook 'lsp-mode-hacks-error-filter-functions #'config-js--filter-flycheck-errors)
 
 ;; `js' is the Emacs built-in JavaScript mode.
 (use-package js
