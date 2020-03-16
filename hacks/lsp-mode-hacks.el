@@ -30,8 +30,9 @@ If any function in this list returns nil, the error is not displayed.")
   (seq-filter (-partial 'run-hook-with-args-until-failure 'lsp-mode-hacks-error-filter-functions) errs))
 
 (defun lsp-mode-hacks--set-up-checker ()
-  (when (featurep 'flycheck)
-    (setf (flycheck-checker-get 'lsp 'error-filter) #'lsp-mode-hacks--filter-flycheck-errors)))
+  ;; KLUDGE: there's a generalise setter, but using this errors unless flycheck
+  ;; has been loaded.
+  (setf (get 'lsp 'flycheck-error-filter) #'lsp-mode-hacks--filter-flycheck-errors))
 
 (add-hook 'lsp-mode-hook #'lsp-mode-hacks--set-up-checker)
 
