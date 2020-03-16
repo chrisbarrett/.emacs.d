@@ -28,7 +28,12 @@
 
     ;; Use server highlighting.
     (when (gethash "documentHighlightProvider" (lsp--server-capabilities))
-      (highlight-thing-mode -1)))
+      (highlight-thing-mode -1))
+
+    ;; KLUDGE: lsp-eslint has a variable, `lsp-eslint-auto-fix-on-save', for
+    ;; enabling format on save. But it's not currently used. :'(
+    (when (derived-mode-p 'js-mode)
+      (add-hook 'before-save-hook #'lsp-eslint-apply-all-fixes nil t)))
 
   :config
   (progn
