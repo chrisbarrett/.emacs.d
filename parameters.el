@@ -16,7 +16,7 @@
 (defvar parameters-default-text-height 100
   "The default text height. Bump this value for HIDPI screens.")
 
-(defvar parameters-default-font-family "Iosevka"
+(defvar parameters-default-font-family "Ubuntu Mono"
   "The font family to use for the default face.")
 
 (defvar parameters-variable-pitch-text-height 90
