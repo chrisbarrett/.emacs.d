@@ -5,6 +5,9 @@
 # Packaging
 .cask
 
+# Per-machine configuration
+host.el
+
 # Internal
 elpa
 .cache

@@ -52,7 +52,7 @@
               "~/.nix-profile/share/emacs/site-lisp")))
 
 (defconst paths-hostfile
-  (format "~/.config/hostfile.el"))
+  (f-join user-emacs-directory "host.el"))
 
 (defconst paths-personal-config
   "~/Dropbox/lisp/personal-config.el")
