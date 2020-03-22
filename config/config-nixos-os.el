@@ -5,6 +5,8 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'server)
+
 (use-package exec-path-from-shell
   :straight t
   :init
@@ -19,6 +21,9 @@
   (exec-path-from-shell-initialize))
 
 (set-fontset-font t 'arabic "amiri")
+
+(unless (server-running-p)
+  (server-start))
 
 (provide 'config-nixos-os)
 
