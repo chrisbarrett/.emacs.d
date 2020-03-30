@@ -118,6 +118,7 @@
 (use-package ivy-posframe
   :straight t
   :hook (after-init . ivy-posframe-mode)
+  :unless (equal system-type 'darwin)
   :config
   (general-setq ivy-posframe-border-width 20
                 ivy-posframe-style 'frame-center

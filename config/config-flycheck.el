@@ -143,6 +143,7 @@
   :after flycheck
   :straight t
   :commands (flycheck-posframe-mode)
+  :unless (equal system-type 'darwin)
   :preface
   (defun config-flycheck--maybe-enable-posframe ()
     (unless (bound-and-true-p lsp-ui-mode)

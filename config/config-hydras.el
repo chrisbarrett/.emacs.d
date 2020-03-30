@@ -75,6 +75,7 @@
 
 (use-package hydra-posframe
   :straight (:host github :repo "Ladicle/hydra-posframe")
+  :unless (equal system-type 'darwin)
   :hook (after-init . hydra-posframe-mode)
   :config
   (progn
