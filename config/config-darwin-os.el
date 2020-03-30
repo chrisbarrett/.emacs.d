@@ -26,6 +26,10 @@
 (setq ns-use-native-fullscreen nil)
 (setq parameters-default-text-height 180)
 
+;; KLUDGE: Support symlinked nix store on Catalina.
+
+(setenv "NIX_IGNORE_SYMLINK_STORE" "1")
+
 ;; Graphical applications in macOS inherit their process environment from
 ;; launchd, not from a shell process which loads a profile.
 
