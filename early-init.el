@@ -20,6 +20,11 @@
 ;; Crank up the max size of subprocess output to read.
 (setq read-process-output-max (* 1024 1024))
 
+;; Enable pixel-wise frame resizing so tiling window managers do the right
+;; thing.
+
+(setq frame-resize-pixelwise t)
+
 ;; disable some window chrome that doesn't make sense in a keyboard-driven UI.
 
 (setq menu-bar-mode nil)
