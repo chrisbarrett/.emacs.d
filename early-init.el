@@ -25,12 +25,16 @@
 
 (setq frame-resize-pixelwise t)
 
-;; disable some window chrome that doesn't make sense in a keyboard-driven UI.
+;; Disable some window chrome that doesn't make sense in a keyboard-driven UI.
 
 (setq menu-bar-mode nil)
 (setq tool-bar-mode nil)
 (setq scroll-bar-mode nil)
 (modify-all-frames-parameters '((vertical-scroll-bars)))
+
+;; Set default frame title for use by window manager.
+
+(setq-default frame-title-format "Emacs")
 
 (provide 'early-init)
 
