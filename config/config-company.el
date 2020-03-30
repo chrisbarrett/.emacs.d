@@ -39,6 +39,7 @@
 (use-package company-box
   :straight t
   :defer t
+  :unless (equal system-type 'darwin)
   :general
   (:keymaps '(company-box-mode-map company-active-map company-search-map company-filter-map)
    "C-n" #'company-box--next-line
