@@ -20,9 +20,6 @@
 (global-set-key (kbd "s-q") 'delete-frame)
 (global-set-key (kbd "s-n") 'make-frame)
 
-(add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
-(add-to-list 'default-frame-alist '(ns-appearance . nil))
-
 (setq ns-use-native-fullscreen nil)
 (setq parameters-default-text-height 180)
 

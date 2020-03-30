@@ -30,11 +30,9 @@
 (setq menu-bar-mode nil)
 (setq tool-bar-mode nil)
 (setq scroll-bar-mode nil)
-(modify-all-frames-parameters '((vertical-scroll-bars)))
 
-;; Set default frame title for use by window manager.
-
-(setq-default frame-title-format "Emacs")
+(modify-all-frames-parameters '((vertical-scroll-bars)
+                                (name . "Emacs")))
 
 (provide 'early-init)
 
