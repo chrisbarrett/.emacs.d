@@ -36,6 +36,9 @@
 ;; `mu4e' is an Emacs mail client. I install the lisp along with the 'mu'
 ;; program via Nix.
 
+;; I use systemd/launchd to run mbsync and indexing, so mu4e doesn't trigger
+;; fetching itself.
+
 (add-to-list 'load-path (f-join paths-site-lisp-directory "mu4e"))
 
 (general-setq mu4e-bookmarks '(("flag:unread AND NOT (flag:trashed OR m:/walrus/Archive)"
@@ -130,13 +133,6 @@
                   ;; Send email with long lines and format=flowed.
                   mu4e-compose-format-flowed t
                   fill-flowed-encode-column 998
-
-                  ;; All my mailservers use IMAP. Use mbsync to synchronise mail between the
-                  ;; server and my local machine.
-                  ;;
-                  ;; I use systemd to run mbsync and indexing on Linux, so I
-                  ;; just have to handle fetching manually on Darwin.
-                  mu4e-get-mail-command (if (equal system-type 'darwin) "mbsync -V -q -a" "true")
 
                   mu4e-change-filenames-when-moving t
 
