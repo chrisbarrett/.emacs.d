@@ -22,6 +22,7 @@
 
 (setq ns-use-native-fullscreen nil)
 (setq parameters-default-text-height 180)
+(setq parameters-variable-pitch-text-height 160)
 
 ;; KLUDGE: Support symlinked nix store on Catalina.
 
