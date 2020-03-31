@@ -32,8 +32,6 @@
 
 (use-package exec-path-from-shell
   :straight t
-  :preface
-  (declare-function exec-path-from-shell-initialize "config-darwin-os")
   :init
   (progn
     (defvar exec-path-from-shell-arguments '("-l"))
