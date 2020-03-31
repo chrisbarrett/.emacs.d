@@ -8,7 +8,17 @@
 
 (autoload 'gfm-mode "markdown-mode")
 
-(defvar ox-slack-postprocess-function #'identity)
+(defgroup ox-slack nil
+  "Export backend for Slack markup."
+  :group 'languages
+  :prefix "ox-slack-")
+
+
+(defcustom ox-slack-postprocess-function #'identity
+  "Function for transforming the output of the exported org tree.
+
+Useful for replacing references to people with username, etc."
+  :type 'function)
 
 (defun ox-slack--markup-headline (headline contents info)
   (let* ((text (org-export-data (org-element-property :title headline) info))
