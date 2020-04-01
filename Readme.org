@@ -1,0 +1,35 @@
+#+TITLE: Emacs Config
+
+My personal Emacs configuration. It's a chonker.
+
+* Installation
+Nix is used to build an Emacs with 3rd-party packages pre-installed.
+
+#+begin_src sh
+  nix-build
+  ./result/bin/emacs
+#+end_src
+
+The derivation can be imported into a NixOS or home-manager configuration using
+the usual mechanisms. Doing this would allow you to add this Emacs to your Nix
+profile for normal use.
+
+#+begin_src nix
+  { pkgs, ... }:
+  {
+    nixpkgs.overlays = [
+      (self: super:
+      {
+        emacsCustom = builtins.fetchTarball rec {
+          rev = "master";
+          url = "https://github.com/chrisbarrett/.emacs.d/archive/${rev}.tar.gz";
+        };
+      })
+    ];
+
+    home.packages = [
+      # Installs to ~/.nix-profile/bin/{emacs,emacsclient}
+      pkgs.emacsCustom
+    ];
+  }
+#+end_src
