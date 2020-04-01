@@ -153,6 +153,7 @@
 ;; helpful is a more feature-rich alternative to the Emacs Lisp help buffer.
 
 (use-package helpful
+  :commands (helpful-command helpful-key helpful-variable helpful-callable)
   :general
   (:keymaps '(emacs-lisp-mode-map helpful-mode-map) :states '(motion normal)
    "K" 'helpful-at-point)
