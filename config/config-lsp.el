@@ -85,7 +85,6 @@
                 company-lsp-async t))
 
 (use-package lsp-ui
-  :defer t
   :after lsp-mode
   :preface
   (progn
