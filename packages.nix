@@ -45,6 +45,7 @@
       evil
       evil-args
       evil-collection
+      evil-iedit-state
       evil-magit
       evil-matchit
       evil-nerd-commenter
