@@ -36,19 +36,6 @@
     (setq company-require-match nil)
     (add-hook 'company-mode-hook #'config-company--set-company-vars)))
 
-(use-package company-box
-  :straight t
-  :defer t
-  :unless (equal system-type 'darwin)
-  :general
-  (:keymaps '(company-box-mode-map company-active-map company-search-map company-filter-map)
-   "C-n" #'company-box--next-line
-   "C-p" #'company-box--prev-line)
-  :hook (company-mode . company-box-mode)
-  :config
-  (general-setq company-box-icons-alist 'company-box-icons-all-the-icons
-                company-box-enable-icon t))
-
 (use-package company-dabbrev
   :after company
   :defer t

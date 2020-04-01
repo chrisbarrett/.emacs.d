@@ -10,9 +10,6 @@
 (require 'org-funcs)
 (require 'window-cmds)
 
-(cl-eval-when (compile)
-  (require 'hydra-posframe))
-
 (autoload 'counsel-find-file "config-ivy")
 (autoload 'counsel-recentf "config-ivy")
 (autoload 'evil-window-next "evil")
@@ -73,31 +70,12 @@
   :config
   (advice-add #'pretty-hydra--get-heads :filter-return #'config-hydras--add-quit-bindings))
 
-(use-package hydra-posframe
-  :straight (:host github :repo "Ladicle/hydra-posframe")
-  :unless (equal system-type 'darwin)
-  :hook (after-init . hydra-posframe-mode)
-  :config
-  (progn
-    (set-face-attribute 'hydra-posframe-face nil :inherit 'ivy-posframe)
-    (setq hydra-posframe-parameters '((alpha 100 100))
-          hydra-posframe-border-width 20)))
-
 
 ;; Hydra definitions
 
 (eval-when-compile
   (require 'all-the-icons)
   (require 'pretty-hydra))
-
-(defmacro pretty-hydra-define-at-bottom (name body heads-plist)
-  (declare (indent defun))
-  `(pretty-hydra-define ,name (:pre (when (featurep 'hydra-posframe)
-                                      (setq hydra-posframe-poshandler #'posframe-poshandler-frame-bottom-left-corner))
-                               :post (when (featurep 'hydra-posframe)
-                                       (setq hydra-posframe-poshandler #'posframe-poshandler-frame-center))
-                               ,@body)
-     ,heads-plist))
 
 (pretty-hydra-define comments
   (:hint nil
@@ -111,7 +89,7 @@
    "With Copy"
    (("y" evil-funcs/copy-and-comment-lines "copy"))))
 
-(pretty-hydra-define-at-bottom font-scale
+(pretty-hydra-define font-scale
   (:hint nil
    :color amaranth
    :title (hydra-title-with-faicon "search-plus" "Font Scale"))
@@ -186,7 +164,7 @@
     ("t" treemacs "file tree")
     ("v" reload-file "reload"))))
 
-(pretty-hydra-define-at-bottom errors
+(pretty-hydra-define errors
   (:hint nil
    :color teal
    :title (hydra-title-with-mat-icon "error_outline" "Errors"))
@@ -314,7 +292,7 @@
    (("/" counsel-projectile-rg "search...")
     ("r" projectile-replace "replace..."))))
 
-(pretty-hydra-define-at-bottom parens
+(pretty-hydra-define parens
   (:hint nil
    :color teal
    :title (hydra-title-with-mat-icon "code" "Smartparens"))
@@ -434,7 +412,7 @@
     ("d" magit-blame-removal "rev removed")
     ("r" magit-blame-reverse "last rev where exists"))))
 
-(pretty-hydra-define-at-bottom git-hunks
+(pretty-hydra-define git-hunks
   (:foreign-keys run
    :hint nil
    :color red
@@ -514,7 +492,7 @@
     ("i" lsp-ui-peek-find-implementation "implementation")
     ("r" lsp-ui-peek-find-references "references"))))
 
-(pretty-hydra-define-at-bottom lsp-debugger
+(pretty-hydra-define lsp-debugger
   (:hint nil
    :color teal
    :title (hydra-title-with-faicon "bug" "LSP Debugger"))
@@ -542,7 +520,7 @@
     ("u" dap-step-out "step out" :exit nil)
     ("R" dap-restart-frame "restart frame" :exit nil))))
 
-(pretty-hydra-define-at-bottom annotate
+(pretty-hydra-define annotate
   (:hint nil
    :color teal
    :title (hydra-title-with-octicon "comment" "Annotate"))

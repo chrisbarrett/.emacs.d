@@ -137,25 +137,6 @@
     (setq checkdoc-force-docstrings-flag nil)
     (setq checkdoc-arguments-in-order-flag nil)))
 
-;; flycheck-posframe shows flycheck errors in a child frame.
-
-(use-package flycheck-posframe
-  :after flycheck
-  :straight t
-  :commands (flycheck-posframe-mode)
-  :unless (equal system-type 'darwin)
-  :preface
-  (defun config-flycheck--maybe-enable-posframe ()
-    (unless (bound-and-true-p lsp-ui-mode)
-      (flycheck-posframe-mode +1)))
-
-  :hook (flycheck-mode . config-flycheck--maybe-enable-posframe)
-  :config
-  (progn
-    (set-face-attribute 'flycheck-posframe-background-face nil :inherit 'ivy-posframe :background nil)
-    (setq flycheck-posframe-override-parameters '((alpha 100 100)))
-    (flycheck-posframe-configure-pretty-defaults)))
-
 (provide 'config-flycheck)
 
 ;;; config-flycheck.el ends here
