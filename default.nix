@@ -7,6 +7,8 @@ in
 { pkgs ? import <nixpkgs> { overlays = [ emacs-overlay ]; } }:
 
 let
+  # Build a custom Emacs version. It has a few fixes to make it work better with
+  # yabai in macOS.
   emacs = pkgs.emacsGit.overrideAttrs (old: {
     patches = old.patches ++ [
       ./patches/emacs/0001-optional-org-gnus.patch
