@@ -10,7 +10,6 @@
 (require 'thingatpt)
 
 (use-package smartparens
-  :straight t
   :hook ((prog-mode . smartparens-strict-mode)
          (eshell-mode . smartparens-strict-mode)
          (text-mode . smartparens-strict-mode))

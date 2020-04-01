@@ -27,7 +27,6 @@
 ;; Package setup
 
 (use-package ledger-mode
-  :straight t
   :mode ("\\.ledger$" . ledger-mode)
   :general
 
@@ -90,7 +89,6 @@
   :general (:keymaps 'ledger-mode-map "M-q" #'ledger-format-buffer))
 
 (use-package flycheck-ledger
-  :straight t
   :after (:and flycheck ledger-mode))
 
 (provide 'config-ledger)

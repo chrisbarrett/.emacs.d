@@ -32,7 +32,6 @@
 ;; launchd, not from a shell process which loads a profile.
 
 (use-package exec-path-from-shell
-  :straight t
   :init
   (progn
     (defvar exec-path-from-shell-arguments '("-l"))

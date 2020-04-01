@@ -6,12 +6,10 @@
   (require 'use-package))
 
 (use-package scala-mode
-  :straight t
   :mode ("\\.\\(scala\\|sbt\\)\\'" . scala-mode)
   :interpreter ("scala" . scala-mode))
 
 (use-package sbt-mode
-  :straight t
   :commands (sbt-start sbt-command)
   :preface
   (defun config-scala--set-up-mode ()

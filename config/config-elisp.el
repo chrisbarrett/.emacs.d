@@ -82,7 +82,6 @@
 ;; things in elisp in a uniform way.
 
 (use-package elisp-slime-nav
-  :straight t
   :hook (emacs-lisp-mode . turn-on-elisp-slime-nav-mode)
   :general
   (:keymaps 'emacs-lisp-mode-map :states 'normal
@@ -99,7 +98,6 @@
 ;; easier to read.
 
 (use-package nameless
-  :straight t
   :defines (nameless-current-name)
   :commands nameless-mode
   :hook (emacs-lisp-mode . nameless-mode)
@@ -155,7 +153,6 @@
 ;; helpful is a more feature-rich alternative to the Emacs Lisp help buffer.
 
 (use-package helpful
-  :straight t
   :general
   (:keymaps '(emacs-lisp-mode-map helpful-mode-map) :states '(motion normal)
    "K" 'helpful-at-point)
@@ -172,7 +169,6 @@
 ;; rainbow mode shows the colour for hex strings.
 
 (use-package rainbow-mode
-  :straight t
   :hook (emacs-lisp-mode . rainbow-mode)
   :preface
   (defun config-elisp--on-rainbow-mode (&rest arg)

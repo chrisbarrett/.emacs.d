@@ -8,7 +8,6 @@
 (require 'server)
 
 (use-package exec-path-from-shell
-  :straight t
   :init
   (defconst exec-path-from-shell-variables
     '("PATH"

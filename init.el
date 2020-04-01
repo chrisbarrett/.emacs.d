@@ -19,57 +19,22 @@
                   (garbage-collect))))))
 
 
-;; Bootstrap straight.el package manager.
-
-(eval-and-compile
-  (defvar straight-recipes-gnu-elpa-use-mirror t)
-  (defvar bootstrap-version 5)
-  (defvar bootstrap-file (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory)))
-
-(unless (file-exists-p bootstrap-file)
-  (with-current-buffer
-      (url-retrieve-synchronously
-       "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-       'silent 'inhibit-cookies)
-    (goto-char (point-max))
-    (eval-print-last-sexp)))
-
-(load bootstrap-file nil 'nomessage)
-
-(require 'straight bootstrap-file t)
-
-
-;; Install some basic packages
+;; Load some core packages
 
 (with-no-warnings
   (setq use-package-verbose t))
 
-(straight-use-package 'bind-map)
-(straight-use-package 'use-package)
-
 (eval-when-compile
   (require 'use-package))
 
-(use-package dash :straight t)
-(use-package dash-functional :straight t)
-(use-package f :straight t)
-(use-package s :straight t)
-(use-package noflet :straight t)
-(use-package memoize :straight t)
-(use-package general :straight t :demand t)
-(use-package el-patch :straight t)
-
-(use-package hydra :straight t)
+(require 'general)
 
 (use-package major-mode-hydra
-  :straight t
   :demand t
   :general (:states '(normal motion) "," #'major-mode-hydra)
   :preface
   (progn
-    (use-package all-the-icons
-      :straight t
-      :functions (all-the-icons-icon-for-mode))
+    (autoload 'all-the-icons-icon-for-mode "all-the-icons")
 
     (defun init--major-mode-hydra-title-generator (mode)
       (let* ((icon (all-the-icons-icon-for-mode mode :v-adjust -0.15))
@@ -96,7 +61,6 @@
 ;; loaded very early in the startup process.
 
 (use-package no-littering
-  :straight t
   :demand t
   :init
   (progn

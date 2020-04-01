@@ -8,7 +8,6 @@
 (require 'general)
 
 (use-package evil
-  :straight t
   :hook (after-init . evil-mode)
   :defer t
   :functions (evil-delete-backward-char-and-join)
@@ -173,7 +172,6 @@ COUNT is the number of repetitions."
                 :around #'config-evil--sp-delete-and-join-compat)))
 
 (use-package undo-tree
-  :straight t
   :general
   ("C-x t" 'undo-tree-visualize)
   (:states 'normal :keymaps 'org-mode-map
@@ -181,7 +179,6 @@ COUNT is the number of repetitions."
    "u" 'undo-tree-undo))
 
 (use-package evil-surround
-  :straight t
   :commands (global-evil-surround-mode)
   :defer t
   :after evil
@@ -221,12 +218,10 @@ COUNT is the number of repetitions."
   :after evil)
 
 (use-package evil-collection
-  :straight t
   :defer t
   :hook (after-init . evil-collection-init))
 
 (use-package evil-args
-  :straight t
   :defer t
   :after evil
   :general (:keymaps
@@ -235,13 +230,11 @@ COUNT is the number of repetitions."
             'evil-outer-text-objects-map "a" #'evil-outer-arg))
 
 (use-package evil-matchit
-  :straight t
   :defer t
   :after evil
   :hook (after-init . global-evil-matchit-mode))
 
 (use-package evil-numbers
-  :straight t
   :after evil
   :defer t
   :general (:states 'normal
@@ -249,7 +242,6 @@ COUNT is the number of repetitions."
             "-" #'evil-numbers/dec-at-pt))
 
 (use-package evil-nerd-commenter
-  :straight t
   :defer t
   :after evil
   :general (:states
@@ -285,7 +277,6 @@ COUNT is the number of repetitions."
 ;; compatability.
 
 (use-package evil-iedit-state
-  :straight t
   :commands (evil-iedit-state/iedit-mode))
 
 

@@ -27,7 +27,6 @@
     ("x" cargo-process-run "run"))))
 
 (use-package rust-mode
-  :straight t
   :mode ("\\.rs\\'" . rust-mode)
 
   :general (:keymaps 'rust-mode-map "TAB" #'company-indent-or-complete-common)
@@ -57,7 +56,6 @@
     (setenv "RUST_BACKTRACE" "1")))
 
 (use-package flycheck-rust
-  :straight t
   :after flycheck
   :defer t
   :init
@@ -65,13 +63,11 @@
     (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
 
 (use-package toml-mode
-  :straight t
   :mode (("\\.toml\\'" . toml-mode)
          ("\\.Cargo\\.lock\\'" . toml-mode)
          ("\\.cargo/config\\'" . toml-mode)))
 
 (use-package cargo
-  :straight t
   :after rust-mode
   :defer t
   :config

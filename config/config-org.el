@@ -5,8 +5,8 @@
 ;; Emacs ships with a (generally outdated) version of org. This makes trying to
 ;; install another version difficult.
 ;;
-;; I use a custom Emacs build that strips out the built-in org. This ensures I
-;; load the specific version installed below by straight.el.
+;; I use a custom Emacs build that strips out the built-in org and replaces it
+;; with a more recent version.
 
 ;;; Code:
 
@@ -60,11 +60,12 @@
 (use-package ox-odt
   :after org
   :defer t
-  :custom
-  ((org-odt-data-dir (f-join user-emacs-directory "straight" "repos" "org" "etc"))))
+  ;; FIXME
+  ;; :custom
+  ;; ((org-odt-data-dir (f-join user-emacs-directory "straight" "repos" "org" "etc")))
+  )
 
 (use-package ox-gfm
-  :straight t
   :after org)
 
 (use-package ox-slack
@@ -77,7 +78,6 @@
   (add-to-list 'org-latex-packages-alist '("AUTO" "babel" nil)))
 
 (use-package ob-restclient
-  :straight t
   :defer t)
 
 ;; General variables
@@ -223,8 +223,8 @@
 
 ;; Configure the main `org' package.
 (use-package org
-  :straight t
   :defer t
+  :commands (org-mode)
   :general
   ("C-c a" #'org-agenda
    "C-c s" #'org-search-view
@@ -585,7 +585,6 @@
 
 ;; `evil-org' provides better compatability with org-mode.
 (use-package evil-org
-  :straight t
   :hook (org-mode . evil-org-mode)
   :general
   (:states 'normal :keymaps 'evil-org-mode-map "t" #'org-todo)
@@ -596,7 +595,6 @@
 
 ;; `org-bullets' displays orgmode bullets using pretty utf-8 characters.
 (use-package org-bullets
-  :straight t
   :custom ((org-bullets-bullet-list '("○")))
   :hook (org-mode . org-bullets-mode))
 
@@ -634,7 +632,6 @@
 
 ;; `htmlize' is required for HTML exports.
 (use-package htmlize
-  :straight t
   :defer t)
 
 ;; `org-id' provides support for linking to org headings via UUIDs.
@@ -673,7 +670,6 @@
 
 ;; `org-edna' provides todo dependencies, triggers, and more complex repeaters.
 (use-package org-edna
-  :straight t
   :after org
   :preface
   (defun config-org--maybe-edna-edit (fn &rest args)
@@ -693,7 +689,6 @@
 ;; `org-present' implements presentations in org-mode.
 (use-package org-present
   :commands (org-present)
-  :straight t
   :preface
   (progn
     (defun config-org--maybe-next-slide (f &rest args)
@@ -747,7 +742,6 @@
 
 ;; `om' provides a functional API for parsing and manipulating org files.
 (use-package om
-  :straight (:host github :repo "ndwarshuis/om.el")
   :defer t)
 
 (provide 'config-org)

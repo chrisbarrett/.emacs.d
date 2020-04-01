@@ -16,7 +16,6 @@
 ;; `haskell-mode' is the main package implementing haskell language support.
 
 (use-package haskell-mode
-  :straight t
   :mode
   (("\\.[gh]s\\'" . haskell-mode)
    ("\\.l[gh]s\\'" . literate-haskell-mode)
@@ -69,7 +68,6 @@
 ;; `dante' extends haskell-mode to provide extra IDE-like functionality.
 
 (use-package dante
-  :straight t
   :preface
   (defun config-haskell--configure-dante ()
     (setq-local flymake-no-changes-timeout nil)
@@ -111,7 +109,6 @@
 ;; 2. the fallback installation in my nix user-profile.
 (use-package reformatter
   :after (haskell)
-  :straight t
   :hook (haskell-mode . ormolu-format-on-save-mode)
   :config
   (reformatter-define ormolu-format

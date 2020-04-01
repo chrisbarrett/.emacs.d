@@ -14,7 +14,6 @@
 ;; page-break control character (^L).
 
 (use-package page-break-lines
-  :straight t
   :commands (global-page-break-lines-mode)
   :demand t
   :config
@@ -34,7 +33,6 @@
 ;; de-emphasised.
 
 (use-package paren-face
-  :straight t
   :hook (after-init . global-paren-face-mode)
   :config
   (progn
@@ -74,7 +72,6 @@
 ;; hl-todo applies a separate face for todo keywords so they can be highlighted.
 
 (use-package hl-todo
-  :straight t
   :hook (prog-mode . hl-todo-mode)
 
   :preface
@@ -98,7 +95,6 @@
 ;; all-the-icons provides a set of icons that can be rendered by Emacs.
 
 (use-package all-the-icons
-  :straight t
   :defer t
   :init
   (defvar all-the-icons-scale-factor 1.0)
@@ -118,7 +114,6 @@
 ;; hydra provides keyboard-driven UI elements.
 
 (use-package hydra
-  :straight t
   :preface
   (defun config-themes--set-up-hydra-buffer (&rest _)
     (when-let* ((buf (get-buffer " *LV*")))
@@ -133,7 +128,6 @@
 ;; which-key displays available key bindings under the current prefix.
 
 (use-package which-key
-  :straight t
   :defer t
   :hook (after-init . which-key-mode)
   :config
@@ -173,7 +167,6 @@
 ;; emojify adds support for rendering emojis.
 
 (use-package emojify
-  :straight t
   :hook (after-init . global-emojify-mode)
   :preface
   (defun config-themes-at-org-drawer-p (match beg _end)
@@ -194,7 +187,6 @@
 ;; doom-modeline is a custom modeline.
 
 (use-package doom-modeline
-  :straight t
   :hook (after-init . doom-modeline-mode)
   :custom ((doom-modeline-major-mode-icon nil)
            (doom-modeline-buffer-encoding nil)
@@ -228,12 +220,6 @@
     (doom-modeline-def-segment space
       (doom-modeline-spc))
 
-    (doom-modeline-def-segment eyebrowse
-      "Display eyebrowse workspace information."
-      (let ((indicator (eyebrowse-mode-line-indicator)))
-        (unless (s-blank-p indicator)
-          (concat indicator " "))))
-
     (doom-modeline-def-segment system
       "Mode line construct for miscellaneous information.
 By default, this shows the information specified by `global-mode-string'."
@@ -251,27 +237,23 @@ By default, this shows the information specified by `global-mode-string'."
                     process vcs
                     checker
                     space
-                    eyebrowse
                     org-clock
                     system))))
 
 ;; `hide-mode-line' provides a mode that hides the modeline.
 
 (use-package hide-mode-line
-  :straight t
   :hook (doom-modeline-mode . global-hide-mode-line-mode)
   :custom ((hide-mode-line-excluded-modes nil)))
 
 ;; doom-themes provides the main doom theme sets.
 
 (use-package doom-themes
-  :straight t
   :defer t
   :hook (after-init . (lambda () (require 'doom-themes)))
   :init
   (general-setq doom-themes-enable-bold t
-                doom-themes-enable-italic t
-                doom-treemacs-enable-variable-pitch nil)
+                doom-themes-enable-italic t)
   :init
   (defface posframe-border
     '((t ()))
@@ -393,9 +375,6 @@ By default, this shows the information specified by `global-mode-string'."
                 `((doom-modeline-project-dir ((t (:inherit font-lock-string-face :weight normal :bold t))))
                   (doom-modeline-project-parent-dir ((t (:foreground ,dim-fg :bold t))))
                   (doom-modeline-evil-insert-state ((t (:foreground ,orange :bold t))))
-                  (eyebrowse-mode-line-active ((t (:foreground ,blue :bold t))))
-                  (eyebrowse-mode-line-delimiters ((t (:foreground ,base6))))
-                  (eyebrowse-mode-line-inactive ((t :foreground ,base6)))
                   (font-lock-comment-face ((t (:weight bold))))
                   (hydra-posframe-border-face ((t (:inherit posframe-border))))
                   (hydra-posframe-face ((t (:background ,bg-alt-l))))
@@ -423,9 +402,6 @@ By default, this shows the information specified by `global-mode-string'."
                   (outline-1 ((t (:weight bold :foreground ,blue))))
                   (parenthesis ((t (:foreground ,dim-fg :weight light))))
                   (secondary-selection ((t (:background ,dim-bg))))
-                  (treemacs-git-ignored-face ((t )))
-                  (treemacs-git-renamed-face ((t :foreground ,dim-fg :inherit font-lock-doc-face)))
-                  (treemacs-git-unmodified-face ((t :inherit default)))
                   (vterm-color-black ((t (:foreground ,bg :background ,base5))))
 
                   ;; we need to set ivy colours to dark manually.
@@ -435,7 +411,7 @@ By default, this shows the information specified by `global-mode-string'."
                   (ivy-minibuffer-match-face-4 ((t (:foreground ,bg :background ,base8))))))))))
   :config
   (progn
-    (doom-themes-treemacs-config)
+    (require 'doom-themes-ext-org)
     (doom-themes-org-config)
 
     ;; Customise themes.

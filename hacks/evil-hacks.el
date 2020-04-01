@@ -6,10 +6,8 @@
   (require 'use-package))
 
 (require 'el-patch)
-(require 'straight)
 
 (use-package link-hint
-  :straight t
   :commands (link-hint-open-link-at-point)
   :init
   (autoload 'link-hint--get-link-at-point "link-hint")

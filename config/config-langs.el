@@ -12,15 +12,12 @@
 
 
 
-(use-package apiwrap
-  :straight t)
+(use-package apiwrap)
 
 (use-package poporg
-  :straight t
   :commands (poporg-dwim))
 
 (use-package csv-mode
-  :straight t
   :mode ("\\.csv\\'" . csv-mode)
   :preface
   (defun config-langs--suppress-final-newline ()
@@ -55,27 +52,22 @@
         ("ax" lsp-java-add-unimplemented-methods "add method stubs"))))))
 
 (use-package groovy-mode
-  :straight t
   :mode ("\\.g\\(?:ant\\|roovy\\|radle\\)\\'" . groovy-mode)
   :interpreter ("groovy" . groovy-mode))
 
 (use-package graphviz-dot-mode
-  :straight t
   :mode (("\\.dot\\'" . graphviz-dot-mode)
          (("\\.gv\\'" . graphviz-dot-mode)))
   :general (:keymaps 'graphviz-dot-mode-map "M-q" #'graphviz-dot-indent-graph)
   :init (general-unbind :keymaps 'graphviz-dot-mode-map "{" "}"))
 
 (use-package protobuf-mode
-  :straight t
   :mode ("\\.proto\\'" . protobuf-mode))
 
 (use-package terraform-mode
-  :straight t
   :mode ("\\.tf\\(vars\\)?\\'" . terraform-mode))
 
 (use-package yaml-mode
-  :straight t
   :mode ("\\.\\(e?ya?\\|ra\\)ml\\'" . yaml-mode)
   :general
   (:states '(normal insert) :keymaps 'yaml-mode-map
@@ -87,19 +79,16 @@
   (add-hook 'yaml-mode-hook #'config-langs--disable-autofill))
 
 (use-package highlight-indent-guides
-  :straight t
   :hook ((python-mode . highlight-indent-guides-mode)
          (yaml-mode . highlight-indent-guides-mode)))
 
 (use-package lua-mode
-  :straight t
   :mode ("\\.lua\\'" . lua-mode)
   :interpreter ("lua" . lua-mode)
   :config
   (general-setq lua-indent-level 2))
 
 (use-package pdf-tools
-  :straight t
   :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
   :general (:states '(motion normal) :keymaps 'pdf-view-mode-map
             "n" #'pdf-view-next-page
@@ -112,11 +101,9 @@
                   pdf-annot-activate-created-annotations t)))
 
 (use-package graphql-mode
-  :straight t
   :mode ("\\.graphql\\'" . graphql-mode))
 
 (use-package pass
-  :straight (:host github :repo "NicolasPetton/pass")
   :commands (pass)
   :general
   (:states '(normal) :keymaps 'pass-view-mode-map "q" #'kill-this-buffer)

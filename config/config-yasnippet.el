@@ -16,7 +16,6 @@
 
 
 (use-package yasnippet
-  :straight t
   :hook ((prog-mode . (lambda () (require 'yasnippet)))
          (text-mode . (lambda () (require 'yasnippet))))
 

@@ -12,7 +12,6 @@
 ;; ido, but actively maintained.
 
 (use-package ivy
-  :straight t
   :commands (ivy-occur ivy-help ivy-mode)
   :general
   ("C-c C-r" #'ivy-resume
@@ -116,19 +115,16 @@
 ;; flx is used as the fuzzy-matching indexer backend for ivy.
 
 (use-package flx
-  :straight t
   :after ivy)
 
 ;; swiper is a buffer search interface using ivy.
 
 (use-package swiper
-  :straight t
   :general (:states 'normal "/" 'swiper))
 
 ;; counsel provides replacements for core Emacs commands using ivy.
 
 (use-package counsel
-  :straight t
   :commands (counsel-mode counsel-describe-face)
   :general ("M-x" #'counsel-M-x "C-x C-f" #'counsel-find-file)
   :general (:keymaps 'counsel-find-file-map
@@ -145,7 +141,6 @@
 ;; historian remembers your choices in completion menus.
 
 (use-package historian
-  :straight t
   :commands (historian-mode)
   :after ivy
   :config (historian-mode +1))
@@ -153,7 +148,6 @@
 ;; ivy-historian uses Historian to sort Ivy candidates by frecency+flx.
 
 (use-package ivy-historian
-  :straight t
   :commands (ivy-historian-mode)
   :after (:and ivy historian)
   :config

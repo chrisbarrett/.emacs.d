@@ -192,7 +192,6 @@
 ;; `messages-are-flowing' displays newline symbols in the buffer for hard newlines.
 
 (use-package messages-are-flowing
-  :straight t
   :hook (message-mode . messages-are-flowing-use-and-mark-hard-newlines))
 
 (provide 'config-mail)

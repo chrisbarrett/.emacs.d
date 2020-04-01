@@ -60,7 +60,6 @@ Expected to be set as a dir-local variable."
 
 ;; `emmet-mode' provides support for expandable HTML/JSX snippets.
 (use-package emmet-mode
-  :straight t
   :general (:states '(normal insert)
             :keymaps '(js-mode-map typescript-mode-map)
             "C-M-n" 'emmet-next-edit-point
@@ -76,13 +75,11 @@ Expected to be set as a dir-local variable."
 ;; `typescript-mode' adds support for editing typescript files.
 (use-package typescript-mode
   :mode ("\\.tsx?\\'" . typescript-mode)
-  :straight t
   :custom ((typescript-indent-level 2)))
 
 ;; `nvm' teaches Emacs to update the exec-path according to the current nvm
 ;; profile.
 (use-package nvm
-  :straight t
   :when (file-directory-p "~/.config/nvm")
   :custom ((nvm-dir "~/.config/nvm"))
   :functions (nvm-use-for-buffer)

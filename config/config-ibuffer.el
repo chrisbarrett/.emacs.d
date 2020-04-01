@@ -51,7 +51,6 @@
 ;; ibuffer-projectile teaches ibuffer how to group files by projectile project.
 
 (use-package ibuffer-projectile
-  :straight t
   :commands (ibuffer-projectile-set-filter-groups)
   :functions (ibuffer-do-sort-by-alphabetic)
   :preface

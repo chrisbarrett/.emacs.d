@@ -5,7 +5,6 @@
 (eval-when-compile
   (require 'use-package))
 
-(require 'straight)
 (require 'f)
 (require 'subr-x)
 (require 'seq)

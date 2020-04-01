@@ -13,7 +13,6 @@
 ;; git.
 
 (use-package magit
-  :straight t
   :commands (magit-status magit-blame magit-branch-and-checkout)
   :general (:keymaps 'transient-base-map "<escape>" #'transient-quit-one
             :states 'normal :keymaps 'magit-refs-mode-map "." #'magit-branch-and-checkout)
@@ -61,9 +60,7 @@
     (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
     (setq magit-log-section-commit-count 0)))
 
-(use-package forge
-  :after magit
-  :straight (:host github :repo "magit/forge"))
+(use-package forge :after magit)
 
 ;; This package automatically prepends JIRA ticket numbers to commit messages if
 ;; the current git branch looks like it relates to a JIRA ticket.
@@ -74,17 +71,13 @@
 ;; evil-magit reconfigures magit keybindings to better support evil.
 
 (use-package evil-magit
-  :straight t
   :after (:and magit evil-common)
   :config (evil-magit-init))
-
-(use-package deferred :straight t)
 
 ;; git-auto-commit-mode provides a mode that automatically commits changes after
 ;; saving a buffer.
 
 (use-package git-auto-commit-mode
-  :straight t
   :commands (git-auto-commit-mode)
   :hook (pass-mode . git-auto-commit-mode)
   :init
@@ -95,14 +88,12 @@
 ;; buffers git versions.
 
 (use-package git-timemachine
-  :straight (:host gitlab :repo "pidu/git-timemachine")
   :defer t)
 
 ;; git-gutter shows git hunk status in buffers.
 
 (use-package git-gutter
   :disabled t
-  :straight t
   :hook ((markdown-mode . git-gutter-mode)
          (prog-mode . git-gutter-mode)
          (conf-mode . git-gutter-mode))
@@ -118,7 +109,6 @@
 (use-package git-gutter-fringe
   :disabled t
   :after git-gutter
-  :straight t
   :init
   ;; places the git gutter outside the margins.
   (setq-default fringes-outside-margins t)

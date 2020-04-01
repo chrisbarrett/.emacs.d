@@ -6,7 +6,6 @@
   (require 'use-package))
 
 (use-package lsp-mode
-  :straight t
   :defer t
   :custom
   ((lsp-auto-execute-action nil)
@@ -46,7 +45,6 @@
     (define-key lsp-mode-map (kbd "S-<return>") #'lsp-execute-code-action)))
 
 (use-package dap-mode
-  :straight t
   :hook ((lsp-mode . dap-mode)
          (lsp-mode . dap-ui-mode))
   :init
@@ -61,7 +59,6 @@
   (general-setq dap-breakpoints-file (expand-file-name "breakpoints" config-lsp--dap-cache-dir)))
 
 (use-package lsp-java
-  :straight t
   :defer t
   :preface
   (defun config-lsp--java-mode-setup ()
@@ -77,14 +74,12 @@
 
 (use-package company-lsp
   :after (:all company lsp-mode)
-  :straight t
   :defer t
   :config
   (general-setq company-lsp-cache-candidates t
                 company-lsp-async t))
 
 (use-package lsp-ui
-  :straight t
   :defer t
   :after lsp-mode
   :preface
@@ -115,11 +110,6 @@
     (define-key lsp-ui-mode-map [remap evil-lookup] #'lsp-describe-thing-at-point)
     (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
     (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)))
-
-(use-package lsp-treemacs
-  :straight t
-  :after (:all treemacs lsp-mode)
-  :config (lsp-treemacs-sync-mode))
 
 (provide 'config-lsp)
 

@@ -12,7 +12,6 @@
 
 
 (use-package flycheck
-  :straight t
   :hook ((after-init . global-flycheck-mode)
          (prog-mode . flycheck-mode-on-safe))
 
@@ -119,7 +118,6 @@
 ;; flycheck-package is a linter for Elisp package conventions.
 
 (use-package flycheck-package
-  :straight t
   :after flycheck
   :defer t
   :config

@@ -1,0 +1,14 @@
+diff --git a/om-macs.el b/om-macs.el
+index de336a5..424e9c0 100644
+--- a/om-macs.el
++++ b/om-macs.el
+@@ -32,6 +32,9 @@
+ (require 'dash)
+ (require 's)
+ 
++(eval-when-compile
++  (require 'cl-lib))
++
+ ;;; ANAPHORIC FUNCTIONS
+ 
+ (defun om--defun-partition-body (body)

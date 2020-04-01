@@ -124,7 +124,6 @@ Interactively, reverse the characters in the current region."
 
 (use-package default-text-scale
   :commands (default-text-scale-increase default-text-scale-decrease default-text-scale-reset)
-  :straight t
   :custom
   ((default-text-scale-amount 30)))
 
@@ -132,7 +131,6 @@ Interactively, reverse the characters in the current region."
 ;; Teach Emacs to respect editorconfig files.
 
 (use-package editorconfig
-  :straight t
   :config
   (editorconfig-mode 1))
 
@@ -180,7 +178,6 @@ Interactively, reverse the characters in the current region."
 ;; `aggressive-indent' automatically reindents code during editing.
 
 (use-package aggressive-indent
-  :straight t
   :commands (global-aggressive-indent-mode)
   :hook (prog-mode . (lambda () (require 'aggressive-indent)))
   :init
@@ -225,7 +222,6 @@ Interactively, reverse the characters in the current region."
 ;; `volatile-highlights' shows highlights in the buffer when regions change.
 
 (use-package volatile-highlights
-  :straight t
   :hook ((prog-mode . (lambda () (require 'volatile-highlights)))
          (text-mode . (lambda () (require 'volatile-highlights))))
 
@@ -255,14 +251,12 @@ Interactively, reverse the characters in the current region."
 ;; `tiny' provides a template syntax for creating sequences of text.
 
 (use-package tiny
-  :straight t
   :general ("C-:" #'tiny-expand))
 
 
 ;; `ws-butler' cleans up trailing whitespace as you edit.
 
 (use-package ws-butler
-  :straight t
   :commands (ws-butler-global-mode)
   :hook ((prog-mode . (lambda () (require 'ws-butler)))
          (text-mode . (lambda () (require 'ws-butler))))
@@ -273,21 +267,18 @@ Interactively, reverse the characters in the current region."
 ;; `unfill' provides a command that is the opposite of fill-paragraph.
 
 (use-package unfill
-  :straight t
   :commands (unfill-region unfill-paragraph unfill-toggle))
 
 
 ;; `hide-comnt' provides a command for hiding comments.
 
 (use-package hide-comnt
-  :straight t
   :commands (hide/show-comments-toggle))
 
 
 ;; `highlight-thing' highlights the symbol at point.
 
 (use-package highlight-thing
-  :straight t
   :hook (prog-mode . highlight-thing-mode)
   :preface
   (progn
@@ -325,7 +316,6 @@ Interactively, reverse the characters in the current region."
 ;; `auto-highlight-symbol' highlights the symbol at point after a short time.
 
 (use-package auto-highlight-symbol
-  :straight t
   :hook (prog-mode . auto-highlight-symbol-mode)
   :preface
   ;; HACK: Prevent the default keymap from getting created
@@ -345,7 +335,6 @@ Interactively, reverse the characters in the current region."
 ;; absence of tags tables or semantic analysis.
 
 (use-package dumb-jump
-  :straight t
   :general (:states 'normal :keymaps 'prog-mode-map "M-." #'jump-to-definition)
   :config
   (progn
@@ -385,7 +374,6 @@ Interactively, reverse the characters in the current region."
 ;; `deadgrep' provides a polished frontend for `ripgrep'.
 
 (use-package deadgrep
-  :straight t
   :commands (deadgrep)
   :general (:keymaps 'deadgrep-mode-map "C-c C-w" #'deadgrep-edit-mode)
   :init
@@ -426,7 +414,6 @@ Interactively, reverse the characters in the current region."
 ;; `wgrep' provides a mode for editing files directly from grep buffers.
 
 (use-package wgrep
-  :straight t
   :defer t)
 
 ;; `flyspell' provides spellchecking.
@@ -441,21 +428,12 @@ Interactively, reverse the characters in the current region."
 ;; `rotate' provides handy commands for manipulating the window layout.
 
 (use-package rotate
-  :straight t
   :commands (rotate-layout))
-
-;; `taskrunner' provides a consistent way to run project build commands (e.g.
-;; from makefiles, npm scripts, etc.)
-
-(use-package taskrunner
-  :straight (:host github :repo "emacs-taskrunner/emacs-taskrunner")
-  :defer t)
 
 ;; `annotate' provides an interface for adding annotations to files without
 ;; modifying them.
 
 (use-package annotate
-  :straight t
   :commands (annotate-annotate)
   :demand t
   :custom

@@ -6,7 +6,6 @@
   (require 'use-package))
 
 (use-package company
-  :straight t
   :defer t
   :hook (after-init . global-company-mode)
 
@@ -30,6 +29,7 @@
 
   :config
   (progn
+    (require 'company-tng)
     (with-eval-after-load 'evil
       (evil-define-key 'insert company-mode-map (kbd "S-<return>") #'company-complete))
     (setq company-idle-delay 0.3)

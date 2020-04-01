@@ -10,7 +10,6 @@
 
 
 (use-package nix-mode
-  :straight t
   :mode (("\\.nix\\'" . nix-mode)
          ("\\.nix.in\\'" . nix-mode))
   :config

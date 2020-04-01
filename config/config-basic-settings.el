@@ -354,7 +354,6 @@
                            "build"
                            "dist"
                            "flow-typed/npm"
-                           "straight/repos"
                            "target"
                            "vendor"
                            )
@@ -464,7 +463,6 @@
   :hook (prog-mode . goto-address-prog-mode))
 
 (use-package world-time-mode
-  :straight t
   :commands (world-time-list)
   :general
   (:states 'normal :keymaps 'world-time-table-mode-map "q" 'quit-window)
@@ -509,7 +507,6 @@
 
 
 (use-package async
-  :straight t
   :preface
   (progn
     (autoload 'async-bytecomp-package-mode "async-bytecomp")
@@ -574,14 +571,12 @@
 
 (use-package info+
   :after info
-  :straight (:host github :repo "emacsmirror/info-plus")
   :defer t
   :config
   (general-setq Info-fontify-angle-bracketed-flag nil))
 
 
 (use-package direnv
-  :straight t
   :config
   (progn
     (general-setq direnv-always-show-summary nil)
@@ -654,7 +649,6 @@
 ;; `alert' provides an Emacs interface for displaying desktop notifications.
 
 (use-package alert
-  :straight t
   :commands (alert)
   :config
   (setq alert-default-style (if (executable-find "notify-send") 'libnotify 'message)))

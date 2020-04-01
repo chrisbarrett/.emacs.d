@@ -13,7 +13,6 @@
     ("o" restclient-http-send-current-stay-in-window "this window"))))
 
 (use-package restclient
-  :straight t
   :commands (restclient-mode
              restclient-http-send-current
              restclient-http-send-current-stay-in-window)

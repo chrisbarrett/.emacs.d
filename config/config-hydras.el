@@ -57,10 +57,9 @@
             " " title
             "\n")))
 
-(use-package all-the-icons :straight t)
+(use-package all-the-icons)
 
 (use-package pretty-hydra
-  :straight t
   :demand t
   :preface
   (defun config-hydras--add-quit-bindings (result)
@@ -161,7 +160,6 @@
 
    "Other"
    (("e" sudo-edit "edit with sudo...")
-    ("t" treemacs "file tree")
     ("v" reload-file "reload"))))
 
 (pretty-hydra-define errors
@@ -440,7 +438,6 @@
 
    "Emacs"
    (("r" profiler/body "profiler...")
-    ("s" straight/body "lisp package manager...")
     ("v" prodigy "services..."))
 
    "Shells"
@@ -460,28 +457,6 @@
    (("p" profiler-start "start...")
     ("s" profiler-stop "stop")
     ("r" profiler-report "report"))))
-
-(pretty-hydra-define straight
-  (:hint nil
-   :color teal
-   :title (hydra-title-with-octicon "package" "Straight Package Manager"))
-  ("Global"
-   (("c" straight-prune-build "clean")
-    ("n" straight-normalize-all "normalise")
-    ("r" straight-rebuild-all "rebuild")
-    ("P" straight-push-all "push")
-    ("U" straight-pull-all "pull"))
-
-   "Lockfile"
-   (("f" straight-freeze-versions "freeze")
-    ("T" straight-thaw-versions "thaw"))
-
-   "Package"
-   (("pc" straight-check-package "check...")
-    ("pn" straight-normalize-package "normalise...")
-    ("pp" straight-push-package "push...")
-    ("pr" straight-rebuild-package "rebuild...")
-    ("pu" straight-pull-package "pull..."))))
 
 (pretty-hydra-define language-server
   (:hint nil
@@ -588,7 +563,6 @@
 ;; Use general to globally bind the main dispatcher.
 
 (use-package general
-  :straight t
   :config
   (progn
     (general-setq general-override-states

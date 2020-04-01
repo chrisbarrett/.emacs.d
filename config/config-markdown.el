@@ -34,7 +34,6 @@
 
 
 (use-package markdown-mode
-  :straight t
   :mode (("\\.md\\'" . gfm-mode)
          ("\\.markdown\\'" . markdown-mode))
 
@@ -71,7 +70,6 @@
     (advice-add 'markdown-insert-header-dwim :after #'config-markdown--evil-insert-state)))
 
 (use-package edit-indirect
-  :straight t
   :defer t
   :after markdown-mode)
 

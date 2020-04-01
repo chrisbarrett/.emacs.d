@@ -11,7 +11,6 @@
 ;; csharp-mode provides the major-mode for the C# language.
 
 (use-package csharp-mode
-  :straight t
   :mode ("\\.cs\\'" . csharp-mode)
   :preface
   (defun config-csharp--find-solution ()
@@ -29,7 +28,6 @@
 ;; Omnisharp provides IDE-like features for C#.
 
 (use-package omnisharp
-  :straight t
   :defer t
   :preface
   (defun config-csharp--set-up-omnisharp-buffer ()

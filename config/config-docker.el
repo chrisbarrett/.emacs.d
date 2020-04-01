@@ -8,13 +8,11 @@
 ;; dockerfile-mode provides a major mode for docker files.
 
 (use-package dockerfile-mode
-  :straight t
   :mode ("Dockerfile\\'" . dockerfile-mode))
 
 ;; docker provides an Emacs interface for working with docker.
 
 (use-package docker
-  :straight t
   :commands (docker)
   :general
   (:states '(motion) :keymaps 'docker-container-mode-map

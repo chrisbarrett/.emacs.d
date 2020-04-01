@@ -42,7 +42,9 @@
 ;; first time we visit a tex file, then re-open it after the tex modes have been
 ;; redefined.
 
-(autoload 'TeX-load-hack (expand-file-name "straight/build/auctex/tex-site.el" user-emacs-directory))
+;; FIXME
+
+;; (autoload 'TeX-load-hack (expand-file-name "straight/build/auctex/tex-site.el" user-emacs-directory))
 
 (defmemoize config-latex--load-auctex-once ()
   (TeX-load-hack)
@@ -61,7 +63,6 @@
 (defvar config-latex--command "LaTeX")
 
 (use-package tex-site
-  :straight (auctex)
   :defer t
   :preface
   (defvar-local TeX-syntactic-comments t)
@@ -137,12 +138,10 @@
   :after tex)
 
 (use-package company-auctex
-  :straight t
   :defer t
   :hook (tex-mode . company-auctex-init))
 
 (use-package latex-preview-pane
-  :straight t
   :defer t
   :commands (latex-preview-pane-mode))
 

@@ -25,14 +25,12 @@
           "~/.nvm/"
           "~/.ghc/"
           "~/.stack/"
-          "~/.emacs.d/straight/"
           "~/.rustup/"
           "~/tmp/")))
 
 ;; Projectile provides commands for working with projects.
 
 (use-package projectile
-  :straight t
   :hook (after-init . projectile-mode)
   :preface
   (progn
@@ -105,7 +103,6 @@
       "node_modules"
       "flow-typed/npm"
       "vendor"
-      "straight/repos"
       "target")))
 
   :config
@@ -124,7 +121,6 @@
 ;; counsel-projectile provides ivy wrappers for projectile commands.
 
 (use-package counsel-projectile
-  :straight t
   :hook (after-init . counsel-projectile-mode)
   :preface
   (defun config-projectile--escaped-symbol-at-point ()

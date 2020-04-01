@@ -71,7 +71,6 @@
     (general-setq dired-auto-revert-buffer t)))
 
 (use-package dired+
-  :straight (:host github :repo "emacsmirror/dired-plus")
   :defer t
   :hook (dired-mode . dired-hide-details-mode)
   :general

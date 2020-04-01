@@ -96,7 +96,6 @@
                    (window-height   . 0.2)))))
 
 (use-package anaconda-mode
-  :straight t
   :hook ((python-mode . anaconda-mode)
          (python-mode . anaconda-eldoc-mode))
 
@@ -125,7 +124,6 @@
     (advice-add 'anaconda-mode-find-definitions :before #'config-python--push-mark)))
 
 (use-package company-anaconda
-  :straight t
   :defer t
   :hook (anaconda-mode . config-python--enable-company-anaconda)
   :preface
@@ -134,20 +132,17 @@
       (add-to-list 'company-backends 'company-anaconda))))
 
 (use-package pytest
-  :straight t
   :defer t
   :after python
   :config
   (add-to-list 'pytest-project-root-files "setup.cfg"))
 
 (use-package pip-requirements
-  :straight t
   :mode (("\\.pip\\'" . pip-requirements-mode)
          ("requirements.+\\.txt\\'" . pip-requirements-mode)
          ("requirements\\.in\\'" . pip-requirements-mode)))
 
 (use-package pyvenv
-  :straight t
   :commands (pyvenv-activate pyvenv-deactivate pyvenv-workon)
   :hook (python-mode . config-python-pyvenv-activate-if-found)
   :preface
@@ -204,7 +199,6 @@ Return the first non-nil result of evalutating PRED."
 ;; pip install isort
 
 (use-package py-isort
-  :straight t
   :hook (python-mode . python-sort-imports-mode)
   :preface
   (progn
@@ -224,7 +218,6 @@ Return the first non-nil result of evalutating PRED."
 ;; pip install yapf
 
 (use-package py-yapf
-  :straight t
   :defer t
   :after python
   :hook (python-mode . python-auto-format-mode)
