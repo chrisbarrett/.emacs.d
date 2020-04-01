@@ -2,7 +2,12 @@
 ;;; Commentary:
 ;;; Code:
 
+(require 'general)
+(require 'f)
+(require 'paths)
+
 (eval-when-compile
+  (require 'company)
   (require 'use-package))
 
 (use-package lsp-mode
@@ -92,7 +97,7 @@
 
     (defun config-lsp--configure-ui ()
       (lsp-ui-sideline-mode +1)
-      (lsp-ui-flycheck-enable t)))
+      (lsp-flycheck-enable t)))
   :init
   (progn
     (require 'lsp-ui-flycheck)
