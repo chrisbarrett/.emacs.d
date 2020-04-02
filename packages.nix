@@ -169,7 +169,14 @@
 
   # Apply any patches needed here.
   overrides = self: super: rec {
-    counsel = withPatches super.counsel [./patches/counsel.patch];
-    pass = withPatches super.pass [./patches/pass.patch];
+
+    counsel =
+      withPatches super.counsel [./patches/counsel.patch];
+
+    messages-are-flowing =
+      withPatches super.messages-are-flowing [./patches/messages-are-flowing.patch];
+
+    pass =
+      withPatches super.pass [./patches/pass.patch];
   };
 }

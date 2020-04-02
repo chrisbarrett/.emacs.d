@@ -1,0 +1,13 @@
+diff --git a/messages-are-flowing.el b/messages-are-flowing.el
+index 4cbf8b7..bfc57fa 100644
+--- a/messages-are-flowing.el
++++ b/messages-are-flowing.el
+@@ -57,7 +57,7 @@ The main use of this is to send \"flowed\" email messages, where
+ line breaks within paragraphs are adjusted by the recipient's
+ device, such that messages remain readable on narrow displays."
+   (interactive)
+-  (use-hard-newlines)
++  (use-hard-newlines +1 t)
+   (add-hook 'after-change-functions 'messages-are-flowing--mark-hard-newlines nil t))
+ 
+ (defun messages-are-flowing--mark-hard-newlines (beg end &rest _ignore)
