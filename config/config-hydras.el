@@ -460,12 +460,18 @@
 
 (pretty-hydra-define language-server
   (:hint nil
-   :color teal
+   :color pink
    :title (hydra-title-with-octicon "code" "Language Server"))
-  ("Peek"
-   (("d" lsp-ui-peek-find-definitions "definitions")
-    ("i" lsp-ui-peek-find-implementation "implementation")
-    ("r" lsp-ui-peek-find-references "references"))))
+  ("Navigate"
+   (("n" lsp-ui-find-next-reference "next ref")
+    ("N" lsp-ui-find-prev-reference "prev ref")
+    ("p" lsp-ui-find-prev-reference "prev ref"))
+   "Actions"
+   (("R" lsp-rename "rename symbol" :exit t))
+   "Peek"
+   (("d" lsp-ui-peek-find-definitions "definitions" :exit t)
+    ("i" lsp-ui-peek-find-implementation "implementation" :exit t)
+    ("r" lsp-ui-peek-find-references "references" :exit t))))
 
 (pretty-hydra-define lsp-debugger
   (:hint nil
