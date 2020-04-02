@@ -28,7 +28,7 @@
   (defun config-lsp--setup-buffer ()
     (setq-local evil-lookup-func #'lsp-describe-thing-at-point)
     (setq-local company-minimum-prefix-length 1)
-    (setq-local company-idle-delay 0.0)
+    (setq-local company-idle-delay 0.05)
 
     ;; Use server highlighting.
     (when (gethash "documentHighlightProvider" (lsp--server-capabilities))
