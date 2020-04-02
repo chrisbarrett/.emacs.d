@@ -16,6 +16,7 @@ let
       ./patches/emacs/0003-no-frame-refocus.patch
       ./patches/emacs/0004-no-titlebar.patch
       ./patches/emacs/0005-dont-warn-on-archives.patch
+      ./patches/emacs/0006-prettier-ibuffer.patch
     ];
     postPatch = ''
       rm -rf .git
