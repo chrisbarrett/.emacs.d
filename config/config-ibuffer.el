@@ -39,7 +39,45 @@
                    "*Flycheck error messages*"
                    "*Help*"))))
 
-    (add-hook 'ibuffer-mode-hook #'hl-line-mode)))
+    (add-hook 'ibuffer-mode-hook #'hl-line-mode)
+
+    ;; Show icon instead of mode name.
+
+    (with-eval-after-load 'ibuffer
+      (define-ibuffer-column mode
+        (:inline t)
+        (with-current-buffer (current-buffer)
+          (let ((icon (all-the-icons-icon-for-buffer)))
+            (if (stringp icon)
+                icon
+              " ")))))
+
+    ;; Dim directory part of file path.
+
+    (with-eval-after-load 'ibuffer
+      (require 'dired+)
+      (define-ibuffer-column filename-and-process
+        (:name "Filename/Process")
+        (let ((proc (get-buffer-process buffer))
+              (filename (ibuffer-make-column-filename buffer mark)))
+          (if proc
+              (concat (propertize (format "(%s %s)" proc (process-status proc))
+                                  'font-lock-face 'italic)
+                      (if (> (length filename) 0)
+                          (format " %s" filename)
+                        ""))
+            (propertize (f-abbrev filename) 'face 'diredp-symlink)))))
+
+    ;; Show buffer name in a consistent way.
+
+    (with-eval-after-load 'ibuffer
+      (define-ibuffer-column name
+        (:inline t)
+        (let ((string (buffer-name)))
+          (if (not (seq-position string ?\n))
+              string
+            (replace-regexp-in-string
+             "\n" (propertize "^J" 'font-lock-face 'escape-glyph) string)))))))
 
 ;; ibuf-ext adds a few extra features to ibuffer.
 
