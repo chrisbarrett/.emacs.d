@@ -1,0 +1,24 @@
+diff --git a/lisp/files.el b/lisp/files.el
+index 55a0958..8177b79 100644
+--- a/lisp/files.el
++++ b/lisp/files.el
+@@ -2130,6 +2130,11 @@ think it does, because \"free\" is pretty hard to define in practice."
+               ((memq choice '(?l ?L)) 'raw)
+               (t 'abort))))))
+ 
++(defvar files--archive-file-extensions '("gz" "tgz" "zip"))
++
++(defun files--archive-file-p (filename)
++  (seq-contains-p files--archive-file-extensions (file-name-extension filename)))
++
+ (defun abort-if-file-too-large (size op-type filename &optional offer-raw)
+   "If file SIZE larger than `large-file-warning-threshold', allow user to abort.
+ OP-TYPE specifies the file operation being performed (for message
+@@ -2141,6 +2146,7 @@ it returns nil or exits non-locally."
+ 	             (> size large-file-warning-threshold)
+                      ;; No point in warning if we can't read it.
+                      (file-readable-p filename)
++                     (not (files--archive-file-p filename))
+                      (files--ask-user-about-large-file
+                       size op-type filename offer-raw))))
+     (when (eq choice 'abort)
