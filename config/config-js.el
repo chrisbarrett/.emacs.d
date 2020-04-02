@@ -7,7 +7,6 @@
 
 (require 'general)
 (require 'paths)
-(require 'lsp-mode-hacks)
 
 (defgroup config-js nil
   "JS configuration"

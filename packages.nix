@@ -176,6 +176,9 @@
     ledger-mode =
       withPatches super.ledger-mode [./patches/ledger-report.patch];
 
+    lsp-mode =
+      withPatches super.lsp-mode [./patches/lsp-mode.patch];
+
     messages-are-flowing =
       withPatches super.messages-are-flowing [./patches/messages-are-flowing.patch];
 
