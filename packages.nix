@@ -163,7 +163,7 @@
         rev = "5b3d6f2b326187cdd75b4590ba3a922b1288d726";
         sha256 = "158nc5k8fxdm9s97737z4syls41i2dmmlb28l7k85wgdhpyngszh";
         buildInputs = [ dash s org ];
-        patches = [./patches/om/0001-eval-when-compile.patch];
+        patches = [./patches/om.patch];
       };
     };
   in
