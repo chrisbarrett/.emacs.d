@@ -173,6 +173,9 @@
     counsel =
       withPatches super.counsel [./patches/counsel.patch];
 
+    doom-modeline =
+      withPatches super.doom-modeline [./patches/doom-modeline-core.patch];
+
     evil =
       withPatches super.evil [./patches/evil-commands.patch];
 
