@@ -1,0 +1,20 @@
+diff --git a/pass.el b/pass.el
+index b353899..03dc683 100644
+--- a/pass.el
++++ b/pass.el
+@@ -151,11 +151,10 @@ Similar to `save-excursion' but only restore the point."
+ (defun pass-quit ()
+   "Kill the buffer quitting the window."
+   (interactive)
+-  (when (y-or-n-p "Kill all pass entry buffers? ")
+-    (dolist (buf (buffer-list))
+-      (with-current-buffer buf
+-        (when (eq major-mode 'pass-view-mode)
+-          (kill-buffer buf)))))
++  (dolist (buf (buffer-list))
++    (with-current-buffer buf
++      (when (eq major-mode 'pass-view-mode)
++        (kill-buffer buf))))
+   (quit-window t))
+ 
+ (defun pass-next-entry ()

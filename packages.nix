@@ -170,5 +170,6 @@
   # Apply any patches needed here.
   overrides = self: super: rec {
     counsel = withPatches super.counsel [./patches/counsel.patch];
+    pass = withPatches super.pass [./patches/pass.patch];
   };
 }
