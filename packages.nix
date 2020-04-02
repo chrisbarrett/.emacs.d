@@ -22,7 +22,6 @@
       company-lsp
       counsel
       counsel-projectile
-      csharp-mode
       csv-mode
       dante
       dap-mode
@@ -98,7 +97,6 @@
       noflet
       nvm
       ob-restclient
-      omnisharp
       org
       org-bullets
       org-edna
