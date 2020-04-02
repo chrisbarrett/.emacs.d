@@ -172,6 +172,7 @@ COUNT is the number of repetitions."
                 :around #'config-evil--sp-delete-and-join-compat)))
 
 (use-package undo-tree
+  :hook (org-mode . undo-tree-mode)
   :general
   ("C-x t" 'undo-tree-visualize)
   (:states 'normal :keymaps 'org-mode-map
