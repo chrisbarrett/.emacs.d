@@ -171,6 +171,11 @@ COUNT is the number of repetitions."
     (advice-add #'evil-delete-backward-char-and-join
                 :around #'config-evil--sp-delete-and-join-compat)))
 
+(use-package link-hint
+  :after evil
+  :config
+  (put 'link-hint-org-link :vars '(org-mode org-agenda-mode)))
+
 (use-package undo-tree
   :hook (org-mode . undo-tree-mode)
   :general

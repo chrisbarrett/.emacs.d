@@ -173,6 +173,9 @@
     counsel =
       withPatches super.counsel [./patches/counsel.patch];
 
+    evil =
+      withPatches super.evil [./patches/evil-commands.patch];
+
     ledger-mode =
       withPatches super.ledger-mode [./patches/ledger-report.patch];
 
