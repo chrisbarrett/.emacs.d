@@ -1,4 +1,4 @@
-{ pkgs, github, emacsmirror }:
+{ pkgs, github, emacsmirror, withPatches }:
 {
   # Set the packages to bake in to emacs. The versions of packages are
   # determined by `emacs-overlay`, but can be overridden in the `overrides`
@@ -171,5 +171,6 @@
 
   # Apply any patches needed here.
   overrides = self: super: rec {
+    counsel = withPatches super.counsel [./patches/counsel.patch];
   };
 }

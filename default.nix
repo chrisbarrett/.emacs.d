@@ -36,6 +36,9 @@ let
           inherit sha256 repo rev owner;
         };
       };
+
+    withPatches = pkg: patches:
+      pkg.overrideAttrs (attrs: { inherit patches; });
   };
 
   builder = pkgs.emacsPackagesNgGen emacs;
