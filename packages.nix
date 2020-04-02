@@ -185,6 +185,9 @@
     lsp-mode =
       withPatches super.lsp-mode [./patches/lsp-mode.patch];
 
+    org-edna =
+      withPatches super.org-edna [./patches/org-edna.patch];
+
     messages-are-flowing =
       withPatches super.messages-are-flowing [./patches/messages-are-flowing.patch];
 
