@@ -30,7 +30,7 @@ Expected to be set as a dir-local variable."
       (not (memq (flycheck-error-id err) config-js-ignored-error-ids))
     t))
 
-(add-hook 'lsp-mode-hacks-error-filter-functions #'config-js--filter-flycheck-errors)
+(add-hook 'config-lsp-error-filter-functions #'config-js--filter-flycheck-errors)
 
 (defun js-sort-imports-by-path (beg end)
   "Sort Common JS imports between BEG and END."

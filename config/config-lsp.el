@@ -25,26 +25,40 @@
   :hook (prog-mode . lsp-deferred)
 
   :preface
-  (defun config-lsp--setup-buffer ()
-    (setq-local evil-lookup-func #'lsp-describe-thing-at-point)
-    (setq-local company-minimum-prefix-length 1)
-    (setq-local company-idle-delay 0.05)
+  (progn
+    (defvar config-lsp-error-filter-functions nil
+      "A list of functions applied to each error.
 
-    ;; Use server highlighting.
-    (when (gethash "documentHighlightProvider" (lsp--server-capabilities))
-      (highlight-thing-mode -1))
+Each function takes a single argument, which is a `flycheck-error' object.
 
-    ;; KLUDGE: lsp-eslint has a variable, `lsp-eslint-auto-fix-on-save', for
-    ;; enabling format on save. But it's not currently used. :'(
-    (when (derived-mode-p 'js-mode)
-      (add-hook 'before-save-hook #'lsp-eslint-apply-all-fixes nil t)))
+If any function in this list returns nil, the error is not displayed.")
+
+    (defun config-lsp--filter-flycheck-errors (errs)
+      (seq-filter (-partial 'run-hook-with-args-until-failure 'config-lsp-error-filter-functions) errs))
+
+    (defun config-lsp--setup-buffer ()
+      (setq-local evil-lookup-func #'lsp-describe-thing-at-point)
+      (setq-local company-minimum-prefix-length 1)
+      (setq-local company-idle-delay 0.05)
+
+      ;; Use server highlighting.
+      (when (gethash "documentHighlightProvider" (lsp--server-capabilities))
+        (highlight-thing-mode -1))
+
+      ;; KLUDGE: lsp-eslint has a variable, `lsp-eslint-auto-fix-on-save', for
+      ;; enabling format on save. But it's not currently used. :'(
+      (when (derived-mode-p 'js-mode)
+        (add-hook 'before-save-hook #'lsp-eslint-apply-all-fixes nil t))
+
+      ;; Provide a hook for filtering out boring error messages.
+
+      ;; KLUDGE: there's a generalised setter, but using this errors unless flycheck
+      ;; has been loaded.
+      (setf (get 'lsp 'flycheck-error-filter) #'config-lsp--filter-flycheck-errors)))
 
   :config
   (progn
-    ;; HACK: Load this early so that patches work correcly.
-    (when lsp-auto-configure
-      (require 'lsp-clients))
-
+    (add-hook 'lsp-mode-hook #'config-lsp--set-up-checker)
     (add-hook 'lsp-after-open-hook #'config-lsp--setup-buffer)
 
     (define-key lsp-mode-map (kbd "S-<return>") #'lsp-execute-code-action)))

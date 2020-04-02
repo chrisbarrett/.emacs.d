@@ -9,32 +9,6 @@
   (require 'lsp-ui-flycheck))
 
 (el-patch-feature lsp-mode)
-(el-patch-feature lsp-ui-flycheck)
-
-(with-eval-after-load 'lsp-ui-flycheck
-  (el-patch-defun lsp-ui-flycheck--report nil
-    (el-patch-wrap 1
-      (ignore-errors
-        (and flycheck-mode
-             lsp-flycheck-live-reporting
-             (flycheck-buffer))))))
-
-(defvar lsp-mode-hacks-error-filter-functions nil
-  "A list of functions applied to each error.
-
-Each function takes a single argument, which is a `flycheck-error' object.
-
-If any function in this list returns nil, the error is not displayed.")
-
-(defun lsp-mode-hacks--filter-flycheck-errors (errs)
-  (seq-filter (-partial 'run-hook-with-args-until-failure 'lsp-mode-hacks-error-filter-functions) errs))
-
-(defun lsp-mode-hacks--set-up-checker ()
-  ;; KLUDGE: there's a generalise setter, but using this errors unless flycheck
-  ;; has been loaded.
-  (setf (get 'lsp 'flycheck-error-filter) #'lsp-mode-hacks--filter-flycheck-errors))
-
-(add-hook 'lsp-mode-hook #'lsp-mode-hacks--set-up-checker)
 
 (with-eval-after-load 'lsp-mode
   (el-patch-defun lsp--on-diagnostics (workspace params)
