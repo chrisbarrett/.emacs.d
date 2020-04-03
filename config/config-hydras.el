@@ -522,6 +522,7 @@
    :title (hydra-title-with-fileicon "emacs" "Overview"))
   ("Menus"
    (("$" ledger/body "ledger...")
+    ("@" counsel-bookmark "bookmark...")
     ("." lsp-debugger/body "debugger...")
     ("," parens/body "parens...")
     ("a" applications/body "applications...")
