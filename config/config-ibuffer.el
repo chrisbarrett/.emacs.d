@@ -27,7 +27,7 @@
      ibuffer-expert t
      ibuffer-show-empty-filter-groups nil
 
-     ibuffer-formats '((mark modified " " (mode 1 1) " " (name 25 25 :left :elide) " " filename-and-process))
+     ibuffer-formats '((mark modified " " (mode 1 1) " " (name 35 35 :left :elide) " " filename-and-process))
 
      ibuffer-never-show-predicates
      (list (rx (or "*Messages*"
