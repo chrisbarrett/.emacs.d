@@ -10,6 +10,8 @@ let
   # Build a custom Emacs version. It has a few fixes to make it work better with
   # yabai in macOS.
   emacs = pkgs.emacsGit.overrideAttrs (old: {
+    withCsrc = true;
+
     patches = old.patches ++ [
       ./patches/emacs/0001-optional-org-gnus.patch
       ./patches/emacs/0002-fix-window-role.patch
@@ -18,6 +20,7 @@ let
       ./patches/emacs/0005-dont-warn-on-archives.patch
       ./patches/emacs/0006-prettier-ibuffer.patch
     ];
+
     postPatch = ''
       ${old.postPatch}
 
