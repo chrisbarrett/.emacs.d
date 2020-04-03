@@ -105,6 +105,8 @@
  org-refile-target-verify-function #'org-funcs-refile-verify-function
  org-refile-use-outline-path 'file
 
+ org-bookmark-names-plist nil
+
  org-return-follows-link t
  org-reverse-note-order nil
  org-startup-indented t
