@@ -88,11 +88,15 @@ position in the file."
     ht))
 
 (defun jump-cmds--config-files ()
-  (f-files paths-config-directory
-           (lambda (f)
-             (and (f-ext-p f "el")
-                  (not (string-prefix-p "flycheck_" (f-base f)))))
-           t))
+  (append
+   (f-files user-emacs-directory
+            (lambda (f)
+              (f-ext-p f "nix")))
+   (f-files paths-config-directory
+            (lambda (f)
+              (and (f-ext-p f "el")
+                   (not (string-prefix-p "flycheck_" (f-base f)))))
+            t)))
 
 (defun jump-cmds--read-use-package-ref (files)
   (-let* ((matches (jump-cmds--package-references files))
@@ -117,7 +121,11 @@ POS is the buffer position to go to."
 ;; Define a command for jumping to a config file.
 
 (defun jump-cmds--config-file-shortname (file-path)
-  (string-remove-prefix "config-" (f-no-ext (f-filename file-path))))
+  (pcase (f-ext file-path)
+    ("el"
+     (string-remove-prefix "config-" (f-no-ext (f-filename file-path))))
+    (_
+     (f-filename file-path))))
 
 (defun jump-cmds--read-config-file (files)
   (-let* ((lookup (--map (cons (jump-cmds--config-file-shortname it) it) files))
