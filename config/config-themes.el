@@ -403,6 +403,7 @@ By default, this shows the information specified by `global-mode-string'."
                   (parenthesis ((t (:foreground ,dim-fg :weight light))))
                   (secondary-selection ((t (:background ,dim-bg))))
                   (vterm-color-black ((t (:foreground ,bg :background ,base5))))
+                  (woman-italic ((t (:foreground ,fg :slant italic))))
 
                   ;; we need to set ivy colours to dark manually.
                   (ivy-minibuffer-match-face-1 ((t (:foreground ,bg :background ,base7 :weight bold))))
