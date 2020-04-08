@@ -28,6 +28,7 @@
       dash
       dash-functional
       deadgrep
+      default-text-scale
       deferred
       direnv
       docker
