@@ -4,9 +4,11 @@
 
 (require 'general)
 (require 'f)
+(require 'dash-functional)
 (require 'paths)
 
 (eval-when-compile
+  (require 'evil)
   (require 'company)
   (require 'use-package))
 
@@ -26,6 +28,9 @@
 
   :preface
   (progn
+    (autoload 'lsp-describe-thing-at-point "lsp-mode")
+    (autoload 'lsp-eslint-apply-all-fixes "lsp-eslint")
+
     (defvar config-lsp-error-filter-functions nil
       "A list of functions applied to each error.
 
@@ -58,7 +63,6 @@ If any function in this list returns nil, the error is not displayed.")
 
   :config
   (progn
-    (add-hook 'lsp-mode-hook #'config-lsp--set-up-checker)
     (add-hook 'lsp-after-open-hook #'config-lsp--setup-buffer)
 
     (define-key lsp-mode-map (kbd "S-<return>") #'lsp-execute-code-action)))
