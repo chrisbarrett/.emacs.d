@@ -68,8 +68,7 @@ If any function in this list returns nil, the error is not displayed.")
     (define-key lsp-mode-map (kbd "S-<return>") #'lsp-execute-code-action)))
 
 (use-package dap-mode
-  :hook ((lsp-mode . dap-mode)
-         (lsp-mode . dap-ui-mode))
+  :hook ((lsp-mode . dap-mode))
   :init
   (use-package dap-node :hook (js-mode . dap-node-setup))
   :preface
@@ -80,6 +79,9 @@ If any function in this list returns nil, the error is not displayed.")
     (general-setq dap-utils-extension-path (expand-file-name "extensions" config-lsp--dap-cache-dir)))
   :config
   (general-setq dap-breakpoints-file (expand-file-name "breakpoints" config-lsp--dap-cache-dir)))
+
+(use-package dap-ui
+  :hook ((lsp-mode . dap-ui-mode)))
 
 (use-package lsp-java
   :defer t
