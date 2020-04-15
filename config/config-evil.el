@@ -250,6 +250,7 @@ COUNT is the number of repetitions."
 (use-package evil-nerd-commenter
   :defer t
   :after evil
+  :commands (evilnc-comment-or-uncomment-lines)
   :general (:states
             'normal
             ";" #'evilnc-comment-operator
