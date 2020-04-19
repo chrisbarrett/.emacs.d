@@ -61,13 +61,15 @@
 
     (defun config-projectile--substitute-test-with-impl (&optional existing)
       (or existing
-          (when-let* ((file (buffer-file-name)))
-            (js-test-commands-locate-impl-file file))))
+          (when (derived-mode-p 'js-mode 'typescript-mode)
+            (when-let* ((file (buffer-file-name)))
+              (js-test-commands-locate-impl-file file)))))
 
     (defun config-projectile--substitute-impl-with-test (&optional existing)
       (or existing
-          (when-let* ((file (buffer-file-name)))
-            (js-test-commands-locate-test-file file))))
+          (when (derived-mode-p 'js-mode 'typescript-mode)
+            (when-let* ((file (buffer-file-name)))
+              (js-test-commands-locate-test-file file)))))
 
     (defun config-projectile-test-project (arg)
       (interactive "P")
