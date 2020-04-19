@@ -7,27 +7,20 @@ in
 { pkgs ? import <nixpkgs> { overlays = [ emacs-overlay ]; } }:
 
 let
-  # Declare extra programs my Emacs config expects to be installed to function
-  # properly.
-  requiredPrograms = with pkgs; [
-    (aspellWithDicts (ps: [ps.en]))
-    autoconf
-    clang
-    cmake
-    htmlTidy
-    multimarkdown
-    shellcheck
-    sqlite
-    tectonic
-    texinfo
-  ];
+  # Additional programs to be injected into Emacs' environment.
 
-  # Language servers
+  requiredPrograms = pkgs.symlinkJoin {
+    name = "emacs-required-programs";
+    paths = with pkgs; [
+      (pkgs.callPackage ./language-servers {})
 
-  emmyLuaJar = pkgs.fetchurl rec {
-    name = "emmy-lua.jar";
-    url = "https://ci.appveyor.com/api/buildjobs/sq7l4h55stcyt4hy/artifacts/EmmyLua-LS%2Fbuild%2Flibs%2FEmmyLua-LS-all.jar";
-    sha256 = "0pxnbrfb6n3y6a82c41f2ldnpb2r0b18z5d6c0azril5zfwjrk6l";
+      (aspellWithDicts (ps: [ps.en]))
+      htmlTidy
+      multimarkdown
+      ripgrep
+      shellcheck
+      tectonic
+    ];
   };
 
   # Build a custom Emacs version. It has a few fixes to make it work better with
@@ -76,10 +69,11 @@ in
 pkgs.symlinkJoin {
   name = "emacs-wrapped";
   buildInputs = [pkgs.makeWrapper];
-  paths = [emacsWithPackages] ++ requiredPrograms;
+  paths = [emacsWithPackages];
   postBuild = ''
     wrapProgram "$out/bin/emacs" \
-      --set NIX_EMACS_EMMY_LUA_JAR "${emmyLuaJar}" \
+      --prefix PATH ":" "${requiredPrograms}/bin" \
+      --set NIX_EMACS_EMMY_LUA_JAR "${requiredPrograms}/lib/emmy-lua.jar" \
       --set JAVA_HOME "${pkgs.jdk}"
   '';
 
