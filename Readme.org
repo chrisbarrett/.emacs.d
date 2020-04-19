@@ -3,7 +3,7 @@
 My personal Emacs configuration. It's a chonker.
 
 * Installation
-Nix is used to build an Emacs with 3rd-party packages pre-installed.
+Nix is used to build an Emacs along with 3rd-party Lisp packages and required programs.
 
 #+begin_src sh
   nix-build
