@@ -7,6 +7,21 @@ in
 { pkgs ? import <nixpkgs> { overlays = [ emacs-overlay ]; } }:
 
 let
+  # Declare extra programs my Emacs config expects to be installed to function
+  # properly.
+  requiredPrograms = with pkgs; [
+    (aspellWithDicts (ps: [ps.en]))
+    autoconf
+    clang
+    cmake
+    htmlTidy
+    multimarkdown
+    shellcheck
+    sqlite
+    tectonic
+    texinfo
+  ];
+
   # Build a custom Emacs version. It has a few fixes to make it work better with
   # yabai in macOS.
   emacs = pkgs.emacsGit.overrideAttrs (old: {
@@ -47,5 +62,10 @@ let
   };
 
   builder = pkgs.emacsPackagesNgGen emacs;
+
+  emacsWithPackages = (builder.overrideScope' packages.overrides).emacsWithPackages packages.packages;
 in
-(builder.overrideScope' packages.overrides).emacsWithPackages packages.packages
+pkgs.symlinkJoin {
+  name = "emacs-wrapped";
+  paths = [emacsWithPackages] ++ requiredPrograms;
+}
