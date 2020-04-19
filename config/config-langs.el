@@ -3,7 +3,11 @@
 ;;; Code:
 
 (eval-when-compile
+  (require 'general)
   (require 'use-package))
+
+(cl-eval-when (compile)
+  (require 'company-lsp nil t))
 
 (require 'major-mode-hydra)
 
@@ -87,6 +91,15 @@
   :interpreter ("lua" . lua-mode)
   :config
   (general-setq lua-indent-level 2))
+
+(use-package lsp-lua-emmy
+  :after lua-mode
+  :custom
+  ((lsp-lua-emmy-jar-path (getenv "NIX_EMACS_EMMY_LUA_JAR"))
+   (lsp-lua-emmy-java (expand-file-name "bin/java" (getenv "JAVA_HOME"))))
+  :config
+  (with-eval-after-load 'company-lsp
+    (add-to-list 'company-lsp-filter-candidates '(lsp-emmy-lua . t))))
 
 (use-package pdf-tools
   :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)

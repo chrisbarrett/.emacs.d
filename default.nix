@@ -22,6 +22,14 @@ let
     texinfo
   ];
 
+  # Language servers
+
+  emmyLuaJar = pkgs.fetchurl rec {
+    name = "emmy-lua.jar";
+    url = "https://ci.appveyor.com/api/buildjobs/sq7l4h55stcyt4hy/artifacts/EmmyLua-LS%2Fbuild%2Flibs%2FEmmyLua-LS-all.jar";
+    sha256 = "0pxnbrfb6n3y6a82c41f2ldnpb2r0b18z5d6c0azril5zfwjrk6l";
+  };
+
   # Build a custom Emacs version. It has a few fixes to make it work better with
   # yabai in macOS.
   emacs = pkgs.emacsGit.overrideAttrs (old: {
@@ -67,5 +75,12 @@ let
 in
 pkgs.symlinkJoin {
   name = "emacs-wrapped";
+  buildInputs = [pkgs.makeWrapper];
   paths = [emacsWithPackages] ++ requiredPrograms;
+  postBuild = ''
+    wrapProgram "$out/bin/emacs" \
+      --set NIX_EMACS_EMMY_LUA_JAR "${emmyLuaJar}" \
+      --set JAVA_HOME "${pkgs.jdk}"
+  '';
+
 }

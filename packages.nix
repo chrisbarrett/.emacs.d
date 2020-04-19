@@ -156,6 +156,13 @@
         rev = "4a6b93c170169594e1e8ea60cd799a1a88a969da";
         sha256 = "1xzmx7m1qbl3b1x6yq1db1a108xqaa64ljfv1hdw763zmy4kc6m0";
       };
+      lsp-lua-emmy = github {
+        name = "lsp-lua-emmy";
+        owner = "phenix3443";
+        rev = "ab53fb2a8b8942804eb75bab5624fd19f1d360bf";
+        sha256 = "0rbizis73n1w5ig07fj1han74chbc1zpbp5bn37rj0gz608aqka8";
+        buildInputs = [ lsp-mode ];
+      };
       om = github {
         name = "om.el";
         owner = "ndwarshuis";
