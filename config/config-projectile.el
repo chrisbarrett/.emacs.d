@@ -40,15 +40,12 @@
     (autoload 'projectile-register-project-type "projectile")
     (autoload 'projectile-test-file-p "projectile")
     (autoload 'projectile-test-project "projectile")
-    (autoload 'projectile-unixy-system-p "projectile")
 
-    (defun config-projectile--find-files-with-string-using-rg (fn string directory)
-      (if (and (projectile-unixy-system-p) (executable-find "rg"))
-          (let* ((search-term (shell-quote-argument string))
-                 (cmd (concat "rg --fixed-strings --color=never --no-heading --files-with-matches -- " search-term)))
+    (defun config-projectile--find-files-with-string-using-rg (string directory)
+      (let* ((search-term (shell-quote-argument string))
+             (cmd (concat "rg --fixed-strings --color=never --no-heading --files-with-matches -- " search-term)))
 
-            (projectile-files-from-cmd cmd directory))
-        (funcall fn string directory)))
+        (projectile-files-from-cmd cmd directory)))
 
     (defun config-projectile--file-has-test-suffix-p (file)
       (string-match-p (rx ".test." (or "js" "ts") eos) file))
@@ -115,8 +112,8 @@
     (advice-add #'projectile-find-matching-file :filter-return #'config-projectile--substitute-test-with-impl)
     (advice-add #'projectile-find-matching-test :filter-return #'config-projectile--substitute-impl-with-test)
 
-    ;; Teach projectile to prefer rg for finding files containing strings
-    (advice-add 'projectile-files-with-string :around #'config-projectile--find-files-with-string-using-rg)))
+    ;; Teach projectile to use rg for finding files containing strings
+    (advice-add 'projectile-files-with-string :override #'config-projectile--find-files-with-string-using-rg)))
 
 ;; counsel-projectile provides ivy wrappers for projectile commands.
 
