@@ -372,7 +372,8 @@ By default, this shows the information specified by `global-mode-string'."
 
                 ;; Common settings
 
-                `((doom-modeline-project-dir ((t (:inherit font-lock-string-face :weight normal :bold t))))
+                `((diredp-omit-file-name ((t ((:inherit diredp-ignored-file-name)))))
+                  (doom-modeline-project-dir ((t (:inherit font-lock-string-face :weight normal :bold t))))
                   (doom-modeline-project-parent-dir ((t (:foreground ,dim-fg :bold t))))
                   (doom-modeline-evil-insert-state ((t (:foreground ,orange :bold t))))
                   (font-lock-comment-face ((t (:weight bold))))
