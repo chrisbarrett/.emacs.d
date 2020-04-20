@@ -12,7 +12,7 @@ let
   requiredPrograms = pkgs.symlinkJoin {
     name = "emacs-required-programs";
     paths = with pkgs; [
-      (pkgs.callPackage ./language-servers {})
+      (callPackage ./language-servers {})
 
       (aspellWithDicts (ps: [ps.en]))
       htmlTidy
