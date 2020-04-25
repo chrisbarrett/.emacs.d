@@ -12,8 +12,6 @@ let
   requiredPrograms = pkgs.symlinkJoin {
     name = "emacs-required-programs";
     paths = with pkgs; [
-      (callPackage ./language-servers {})
-
       (aspellWithDicts (ps: [ps.en]))
       htmlTidy
       multimarkdown
@@ -22,6 +20,8 @@ let
       tectonic
     ];
   };
+
+  languageServers =  pkgs.callPackage ./language-servers {};
 
   # Build a custom Emacs version. It has a few fixes to make it work better with
   # yabai in macOS.
@@ -72,8 +72,9 @@ pkgs.symlinkJoin {
   paths = [emacsWithPackages];
   postBuild = ''
     wrapProgram "$out/bin/emacs" \
+      --prefix PATH ":" "${languageServers}/bin" \
       --prefix PATH ":" "${requiredPrograms}/bin" \
-      --set NIX_EMACS_EMMY_LUA_JAR "${requiredPrograms}/lib/emmy-lua.jar" \
+      --set NIX_EMACS_EMMY_LUA_JAR "${languageServers}/lib/emmy-lua.jar" \
       --set JAVA_HOME "${pkgs.jdk}"
   '';
 
