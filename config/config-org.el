@@ -125,9 +125,7 @@
  org-src-window-setup 'current-window
 
  ;; I customise priorities so that headlines are either 'prioritised' an show a
- ;; bullet cookie or 'cleared', which indicates no special priority.
- ;;
- ;; org-hacks.el patches the interactive commands to enforce this.
+ ;; cookie or 'cleared', which indicates no special priority.
  org-priority-start-cycle-with-default t
  org-highest-priority ?A
  org-lowest-priority ?B
