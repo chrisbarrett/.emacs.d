@@ -72,11 +72,13 @@ pkgs.symlinkJoin {
   paths = [emacsWithPackages];
   postBuild = ''
     for program in "$out/Applications/Emacs.app/Contents/MacOS/Emacs" "$out/bin/emacs"; do
-      wrapProgram $program \
-        --set NIX_EMACS_PATH_EXTRAS "${languageServers}/bin:${requiredPrograms}/bin" \
-        --prefix PATH ":" "${languageServers}/bin:${requiredPrograms}/bin" \
-        --set NIX_EMACS_EMMY_LUA_JAR "${languageServers}/lib/emmy-lua.jar" \
-        --set JAVA_HOME "${pkgs.jdk}"
+      if [ -f "$program" ]; then
+        wrapProgram "$program" \
+          --set NIX_EMACS_PATH_EXTRAS "${languageServers}/bin:${requiredPrograms}/bin" \
+          --prefix PATH ":" "${languageServers}/bin:${requiredPrograms}/bin" \
+          --set NIX_EMACS_EMMY_LUA_JAR "${languageServers}/lib/emmy-lua.jar" \
+          --set JAVA_HOME "${pkgs.jdk}"
+      fi
     done
   '';
 
