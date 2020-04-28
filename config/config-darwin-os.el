@@ -28,6 +28,13 @@
 
 (setenv "NIX_IGNORE_SYMLINK_STORE" "1")
 
+;; KLUDGE: MacOS treats PATH in a crazy way, so override it here.
+
+(dolist (dir (append (split-string (getenv "NIX_EMACS_PATH_EXTRAS") ":"))
+             '("~/.local/bin"
+               "~/.nix-profile/bin"))
+  (push (f-slash dir) exec-path))
+
 ;; Graphical applications in macOS inherit their process environment from
 ;; launchd, not from a shell process which loads a profile.
 
@@ -37,8 +44,7 @@
     (defvar exec-path-from-shell-arguments '("-l"))
 
     (defconst exec-path-from-shell-variables
-      '("PATH"
-        "LEDGER_FILE"
+      '("LEDGER_FILE"
         "MANPATH"
         "NIX_REMOTE"
         "NIX_USER_PROFILE_DIR"
