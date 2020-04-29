@@ -14,8 +14,6 @@ let
     paths = with pkgs; [
       (aspellWithDicts (ps: [ps.en]))
       htmlTidy
-      nodejs
-      mu
       multimarkdown
       ripgrep
       shellcheck
@@ -77,6 +75,8 @@ pkgs.symlinkJoin {
       if [ -f "$program" ]; then
         wrapProgram "$program" \
           --set NIX_EMACS_PATH_EXTRAS "${languageServers}/bin:${requiredPrograms}/bin" \
+          --set NIX_EMACS_LSP_ESLINT_NODE_PATH "${pkgs.nodejs}/bin/node" \
+          --set NIX_EMACS_MU_BINARY "${pkgs.mu}/bin/mu" \
           --prefix PATH ":" "${languageServers}/bin:${requiredPrograms}/bin" \
           --set NIX_EMACS_EMMY_LUA_JAR "${languageServers}/lib/emmy-lua.jar" \
           --set JAVA_HOME "${pkgs.jdk}"

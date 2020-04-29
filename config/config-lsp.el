@@ -22,7 +22,8 @@
    (lsp-enable-on-type-formatting nil)
    (lsp-enable-semantic-highlighting t)
    (lsp-restart 'auto-restart)
-   (lsp-session-file (f-join paths-cache-directory "lsp-session-v1")))
+   (lsp-session-file (f-join paths-cache-directory "lsp-session-v1"))
+   (lsp-eslint-node-path (getenv "NIX_EMACS_LSP_ESLINT_NODE_PATH")))
 
   :hook (prog-mode . lsp-deferred)
 

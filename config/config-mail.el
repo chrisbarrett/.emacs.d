@@ -60,6 +60,7 @@
 
 (use-package mu4e
   :commands (mu4e mu4e-compose-new)
+  :custom ((mu4e-mu-binary (getenv "NIX_EMACS_MU_BINARY")))
   :preface
   (progn
     (defun config-mail--shr-buffer ()
