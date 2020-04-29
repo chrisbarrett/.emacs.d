@@ -30,10 +30,13 @@
 
 ;; KLUDGE: MacOS treats PATH in a crazy way, so override it here.
 
-(dolist (dir (append (split-string (getenv "NIX_EMACS_PATH_EXTRAS") ":"))
-             '("~/.local/bin"
-               "~/.nix-profile/bin"))
-  (push (f-slash dir) exec-path))
+(dolist (dir (append '("~/.local/bin"
+                       "~/.nix-profile/bin")
+                     (split-string (getenv "NIX_EMACS_PATH_EXTRAS") ":")))
+  (push dir exec-path)
+  (setq exec-path (seq-uniq exec-path)))
+
+(setenv "PATH" (string-join exec-path ":"))
 
 ;; Graphical applications in macOS inherit their process environment from
 ;; launchd, not from a shell process which loads a profile.
