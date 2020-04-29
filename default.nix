@@ -14,6 +14,7 @@ let
     paths = with pkgs; [
       (aspellWithDicts (ps: [ps.en]))
       htmlTidy
+      nodejs
       mu
       multimarkdown
       ripgrep
