@@ -29,6 +29,10 @@
 
   :preface
   (progn
+    (defun config-lsp--ad-ignore-errors (f &rest args)
+      (ignore-errors
+        (apply f args)))
+
     (autoload 'lsp-describe-thing-at-point "lsp-mode")
     (autoload 'lsp-eslint-apply-all-fixes "lsp-eslint")
 
@@ -65,6 +69,7 @@ If any function in this list returns nil, the error is not displayed.")
   :config
   (progn
     (add-hook 'lsp-after-open-hook #'config-lsp--setup-buffer)
+    (advice-add 'lsp--document-highlight-callback :around #'config-lsp--ad-ignore-errors)
 
     (define-key lsp-mode-map (kbd "S-<return>") #'lsp-execute-code-action)))
 
