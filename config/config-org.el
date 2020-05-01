@@ -366,7 +366,27 @@
 
     (org-funcs-capture-template
      "l" "Link" '(file "inbox.org") '(function org-funcs-capture-link)
-     :immediate-finish t))))
+     :immediate-finish t)))
+
+  (defun org-capture-get-template ()
+    "Get the template from a file or a function if necessary."
+    (let ((txt (org-capture-get :template)) file)
+      (cond
+       ((and (listp txt) (eq (car txt) 'file))
+        (if (file-exists-p
+             (setq file (expand-file-name (nth 1 txt) org-directory)))
+            (setq txt (org-file-contents file))
+          (setq txt (format "* Template file %s not found" (nth 1 txt)))))
+       ((and (listp txt) (eq (car txt) 'function))
+        (if (or (functionp (nth 1 txt))
+                (and (symbolp (nth 1 txt))
+                     (fboundp (nth 1 txt))))
+            (setq txt (funcall (nth 1 txt)))
+          (setq txt (format "* Template function %s not found" (nth 1 txt)))))
+       ((not txt) (setq txt ""))
+       ((stringp txt))
+       (t (setq txt "* Invalid capture template")))
+      (org-capture-put :template txt))))
 
 ;; `org-hydras' provides a few org-specific hydras.
 (use-package org-hydras
