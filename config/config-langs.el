@@ -107,11 +107,14 @@
             "n" #'pdf-view-next-page
             "N" #'pdf-view-previous-page
             "p" #'pdf-view-previous-page)
+  :custom
+  ((pdf-view-display-size 'fit-page)
+   (pdf-annot-activate-created-annotations t))
   :config
   (progn
     (pdf-tools-install)
-    (general-setq pdf-view-display-size 'fit-page
-                  pdf-annot-activate-created-annotations t)))
+    (require 'pdf-annot)
+    (require 'pdf-occur)))
 
 (use-package graphql-mode
   :mode ("\\.graphql\\'" . graphql-mode))
