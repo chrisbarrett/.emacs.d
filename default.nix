@@ -15,6 +15,7 @@ let
       (aspellWithDicts (ps: [ps.en]))
       htmlTidy
       multimarkdown
+      nodejs
       ripgrep
       shellcheck
       tectonic
