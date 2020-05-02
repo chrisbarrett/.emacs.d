@@ -6,11 +6,14 @@
 
 ;;; Code:
 
+(require 'f)
+
 (defvar parameters-default-theme
-  (let ((hour (string-to-number (format-time-string "%H"))))
-    (if (<= 7 hour 20)
-        'doom-solarized-light
-      'doom-one))
+  (if (equal (ignore-errors
+               (string-trim (f-read-text "~/.cache/theme")))
+             "light")
+      'doom-solarized-light
+    'doom-one)
   "The theme to use when Emacs first starts up.")
 
 (defvar parameters-default-text-height 100
