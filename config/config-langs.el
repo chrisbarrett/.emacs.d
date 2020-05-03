@@ -110,11 +110,13 @@
   :custom
   ((pdf-view-display-size 'fit-page)
    (pdf-annot-activate-created-annotations t))
+  :init
+  (use-package pdf-occur
+    :commands (pdf-occur-global-minor-mode))
   :config
   (progn
     (pdf-tools-install)
-    (require 'pdf-annot)
-    (require 'pdf-occur)))
+    (require 'pdf-annot)))
 
 (use-package graphql-mode
   :mode ("\\.graphql\\'" . graphql-mode))
