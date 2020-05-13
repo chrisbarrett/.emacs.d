@@ -1,43 +1,13 @@
 diff --git a/counsel.el b/counsel.el
-index db561ab..6c7eb33 100644
+index 2ad5fbf..56e4eda 100644
 --- a/counsel.el
 +++ b/counsel.el
-@@ -2262,20 +2262,24 @@ https://www.freedesktop.org/wiki/Specifications/desktop-bookmark-spec/."
- When `counsel-recentf-include-xdg-list' is non-nil, also include
- the files in said list, sorting the combined list by file access
- time."
--  (if (and counsel-recentf-include-xdg-list
--           (version< "25" emacs-version))
--      (delete-dups
--       (sort (append (mapcar #'substring-no-properties recentf-list)
--                     (counsel--recentf-get-xdg-recent-files))
--             (lambda (file1 file2)
--               (cond ((file-remote-p file1)
--                      nil)
--                     ((file-remote-p file2)
--                      t)
--                     (t
--                      (> (time-to-seconds (file-attribute-access-time (file-attributes file1)))
--                         (time-to-seconds (file-attribute-access-time (file-attributes file2)))))))))
+@@ -2360,7 +2360,7 @@ time."
+                                     (file-attributes file2))
+                                    (file-attribute-access-time
+                                     (file-attributes file1))))))))
 -    (mapcar #'substring-no-properties recentf-list)))
-+  (let ((results
-+         (if (and counsel-recentf-include-xdg-list
-+                  (version< "25" emacs-version))
-+             (delete-dups
-+              (sort (append (mapcar #'substring-no-properties recentf-list)
-+                            (counsel--recentf-get-xdg-recent-files))
-+                    (lambda (file1 file2)
-+                      (cond ((file-remote-p file1)
-+                             nil)
-+                            ((file-remote-p file2)
-+                             t)
-+                            (t
-+                             (> (time-to-seconds (file-attribute-access-time (file-attributes file1)))
-+                                (time-to-seconds (file-attribute-access-time (file-attributes file2)))))))))
-+           (mapcar #'substring-no-properties recentf-list))))
-+    (delete-dups (mapcar (lambda (it)
-+                           (abbreviate-file-name (file-truename it)))
-+                         results))))
++    (delete-dups (mapcar #'substring-no-properties recentf-list))))
  
- (defun counsel--strip-prefix (prefix str)
-   "Strip PREFIX from STR."
+ (defalias 'counsel--xml-parse-region
+   (if (cond ((fboundp 'libxml-available-p)

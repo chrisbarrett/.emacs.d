@@ -1,5 +1,6 @@
 let
-  overlayRev = "84591bc733bef95d69bb07895ac7f8d34cd6b8a3";
+  # 2020-05-13
+  overlayRev = "01ccf8565e3ef7236113758f547eb0f1f634e7cc";
   emacs-overlay = import (builtins.fetchTarball {
     url = "https://github.com/nix-community/emacs-overlay/archive/${overlayRev}.tar.gz";
   });
