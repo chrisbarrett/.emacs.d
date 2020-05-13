@@ -111,8 +111,11 @@
   ((pdf-view-display-size 'fit-page)
    (pdf-annot-activate-created-annotations t))
   :init
-  (use-package pdf-occur
-    :commands (pdf-occur-global-minor-mode))
+  (progn
+    (use-package pdf-history
+      :commands (pdf-history-minor-mode))
+    (use-package pdf-occur
+      :commands (pdf-occur-global-minor-mode)))
   :config
   (progn
     (pdf-tools-install)
