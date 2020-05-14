@@ -3,8 +3,10 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'use-package))
+  (require 'use-package)
+  (require 'flycheck))
 
+(require 'dash)
 (require 'general)
 (require 'paths)
 
