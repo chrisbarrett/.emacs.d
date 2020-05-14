@@ -51,7 +51,7 @@
                                 "Last 30 days" ?m)
                                ("m:/walrus/Inbox"
                                 "Inbox" ?i)
-                               ("m:/walrus/Notifications"
+                               ("m:/walrus/Notifications AND d:14d..now"
                                 "Notifications" ?n)
                                ("m:/walrus/Sent"
                                 "Sent messages" ?s)
