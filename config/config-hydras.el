@@ -467,7 +467,8 @@
     ("N" lsp-ui-find-prev-reference "prev ref")
     ("p" lsp-ui-find-prev-reference "prev ref"))
    "Actions"
-   (("R" lsp-rename "rename symbol" :exit t))
+   (("R" lsp-rename "rename symbol" :exit t)
+    ("f" (lambda () (interactive) (lsp-format-buffer) (save-buffer)) "format buffer" :exit t))
    "Peek"
    (("d" lsp-ui-peek-find-definitions "definitions" :exit t)
     ("i" lsp-ui-peek-find-implementation "implementation" :exit t)
