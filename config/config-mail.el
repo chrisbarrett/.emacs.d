@@ -41,26 +41,74 @@
 
 (add-to-list 'load-path (f-join paths-site-lisp-directory "mu4e"))
 
-(general-setq mu4e-bookmarks '(("flag:unread AND NOT (flag:trashed OR m:/walrus/Archive)"
-                                "Unread messages" ?u)
-                               ("d:today..now"
-                                "Today's messages" ?t)
-                               ("d:7d..now AND NOT s:JIRA"
-                                "Last 7 days" ?w)
-                               ("d:30d..now AND NOT s:JIRA"
-                                "Last 30 days" ?m)
-                               ("m:/walrus/Inbox"
-                                "Inbox" ?i)
-                               ("m:/walrus/Notifications AND d:14d..now"
-                                "Notifications" ?n)
-                               ("m:/walrus/Sent"
-                                "Sent messages" ?s)
-                               ("bitbucket OR github"
-                                "Code & PRs" ?c)))
-
 (use-package mu4e
   :commands (mu4e mu4e-compose-new)
-  :custom ((mu4e-mu-binary (getenv "NIX_EMACS_MU_BINARY")))
+  :custom
+  ((mu4e-mu-binary (getenv "NIX_EMACS_MU_BINARY"))
+
+   (mu4e-bookmarks '(("flag:unread AND NOT (flag:trashed OR m:/walrus/Archive)"
+                      "Unread messages" ?u)
+                     ("d:today..now"
+                      "Today's messages" ?t)
+                     ("d:7d..now AND NOT s:JIRA"
+                      "Last 7 days" ?w)
+                     ("d:30d..now AND NOT s:JIRA"
+                      "Last 30 days" ?m)
+                     ("m:/walrus/Inbox"
+                      "Inbox" ?i)
+                     ("m:/walrus/Notifications AND d:14d..now"
+                      "Notifications" ?n)
+                     ("m:/walrus/Sent"
+                      "Sent messages" ?s)
+                     ("bitbucket OR github"
+                      "Code & PRs" ?c)))
+
+   (mu4e-attachment-dir (f-expand "~/Downloads"))
+   (mu4e-context-policy 'pick-first)
+   (mu4e-compose-context-policy 'ask-if-none)
+   (message-kill-buffer-on-exit t)
+   (mu4e-view-use-gnus t)
+   (mu4e-use-fancy-chars t)
+   (mu4e-headers-include-related nil)
+   (mu4e-headers-attach-mark '("a" . "A"))
+   (mu4e-headers-unread-mark '("u" . "●"))
+   (mu4e-headers-seen-mark '(" " . " "))
+   (mu4e-hide-index-messages t)
+   (mu4e-headers-skip-duplicates t)
+   (mu4e-index-lazy-check t)
+   (mu4e-confirm-quit t)
+   (mu4e-view-prefer-html t)
+   (mu4e-view-show-images t)
+   (mu4e-view-show-addresses t)
+   (mu4e-maildir (f-expand "~/Maildir"))
+   (mu4e-headers-date-format "%d-%m-%y %k:%M")
+   (mu4e-completing-read-function #'completing-read)
+   (sendmail-program "msmtp")
+   (message-send-mail-function #'message-send-mail-with-sendmail)
+
+   (mu4e-change-filenames-when-moving t)
+   (smtpmail-queue-mail nil)
+   (smtpmail-queue-dir (concat mu4e-maildir "/queue/cur"))
+
+   ;; Put quoted messages after signature.
+   (message-forward-before-signature nil)
+
+   ;; Use standard citation style.
+   (message-citation-line-function #'message-insert-formatted-citation-line)
+   (message-citation-line-format "On %a, %b %d %Y, %f wrote:\n")
+
+   ;; Update every 30 seconds.
+   (mu4e-update-interval 30)
+
+   ;; Ensure I'm never prompted for the buffer coding system when sending mail.
+   (sendmail-coding-system 'utf-8)
+
+   ;; Send email with long lines and format=flowed.
+   (mu4e-compose-format-flowed t)
+   (fill-flowed-encode-column 998)
+
+   ;; Custom rendering of HTML messages
+   (mu4e-html2text-command #'config-mail--shr-buffer))
   :preface
   (progn
     (defun config-mail--shr-buffer ()
@@ -109,55 +157,6 @@
     ;; Wrap lines when viewing.
     (add-hook 'mu4e-view-mode-hook #'visual-line-mode)
 
-    (general-setq mu4e-context-policy 'pick-first
-                  mu4e-compose-context-policy 'ask-if-none
-                  message-kill-buffer-on-exit t
-                  mu4e-view-use-gnus t
-                  mu4e-use-fancy-chars t
-                  mu4e-headers-include-related nil
-                  mu4e-headers-attach-mark '("a" . "A")
-                  mu4e-headers-unread-mark '("u" . "●")
-                  mu4e-headers-seen-mark '(" " . " ")
-                  mu4e-hide-index-messages t
-                  mu4e-headers-skip-duplicates t
-                  mu4e-index-lazy-check t
-                  mu4e-confirm-quit t
-                  mu4e-view-prefer-html t
-                  mu4e-view-show-images t
-                  mu4e-view-show-addresses t
-                  mu4e-maildir (f-expand "~/Maildir")
-                  mu4e-headers-date-format "%d-%m-%y %k:%M"
-                  mu4e-completing-read-function #'completing-read
-                  sendmail-program "msmtp"
-                  message-send-mail-function #'message-send-mail-with-sendmail
-
-                  ;; Send email with long lines and format=flowed.
-                  mu4e-compose-format-flowed t
-                  fill-flowed-encode-column 998
-
-                  mu4e-change-filenames-when-moving t
-
-                  smtpmail-queue-mail nil
-                  smtpmail-queue-dir (concat mu4e-maildir "/queue/cur")
-
-                  ;; Save attachments to Downloads dir.
-                  mu4e-attachment-dir (f-expand "~/Downloads")
-
-                  ;; Put quoted messages after signature.
-                  message-forward-before-signature nil
-
-                  ;; Use standard citation style.
-                  message-citation-line-function #'message-insert-formatted-citation-line
-                  message-citation-line-format "On %a, %b %d %Y, %f wrote:\n"
-
-                  ;; Update every 5 minutes.
-                  mu4e-update-interval (* 60 5)
-
-                  ;; Ensure I'm never prompted for the buffer coding system when sending mail.
-                  sendmail-coding-system 'utf-8
-
-                  ;; Custom rendering of HTML messages
-                  mu4e-html2text-command #'config-mail--shr-buffer)
 
     (global-set-key [remap mu4e-quit] #'bury-buffer)
 
