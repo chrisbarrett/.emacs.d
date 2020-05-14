@@ -16,18 +16,10 @@
 
 (autoload 'mail-add-attachment "sendmail")
 (autoload 'mu4e-view-open-attachment "mu4e-view")
-(autoload 'mu4e-message-at-point "mu4e-message")
-
-(defun config-mail--view-in-external-browser-action (msg)
-  "View the current message MSG in the browser."
-  (interactive (list mu4e~view-msg))
-  (let ((browse-url-browser-function #'browse-url-default-browser))
-    (mu4e-action-view-in-browser msg)))
 
 (major-mode-hydra-define mu4e-view-mode nil
   ("View"
-   (("a" mu4e-view-open-attachment "open attachment")
-    ("o" config-mail--view-in-external-browser-action "open in browser"))))
+   (("a" mu4e-view-open-attachment "open attachment"))))
 
 (major-mode-hydra-define mu4e-compose-mode nil
   ("Attachments"
