@@ -118,8 +118,12 @@
       :commands (pdf-occur-global-minor-mode)))
   :config
   (progn
-    (pdf-tools-install)
-    (require 'pdf-annot)))
+    (require 'pdf-sync)
+    (require 'pdf-links)
+    (require 'pdf-outline)
+    (require 'pdf-history)
+    (require 'pdf-annot)
+    (pdf-tools-install)))
 
 (use-package graphql-mode
   :mode ("\\.graphql\\'" . graphql-mode))
