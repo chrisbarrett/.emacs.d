@@ -110,6 +110,7 @@
       pdf-tools
       pip-requirements
       poporg
+      prettier-js
       pretty-hydra
       projectile
       protobuf-mode

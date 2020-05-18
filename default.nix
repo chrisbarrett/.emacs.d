@@ -5,7 +5,7 @@ let
     url = "https://github.com/nix-community/emacs-overlay/archive/${overlayRev}.tar.gz";
   });
 in
-{ pkgs ? import <nixpkgs> { overlays = [ emacs-overlay ]; } }:
+{ pkgs ? import <nixpkgs> { overlays = [ emacs-overlay (import ./overlays) ];} }:
 
 let
   # Additional programs to be injected into Emacs' environment.
@@ -79,6 +79,7 @@ pkgs.symlinkJoin {
           --set NIX_EMACS_PATH_EXTRAS "${languageServers}/bin:${requiredPrograms}/bin" \
           --set NIX_EMACS_LSP_ESLINT_NODE_PATH "${pkgs.nodejs}/bin/node" \
           --set NIX_EMACS_MU_BINARY "${pkgs.mu}/bin/mu" \
+          --set NIX_PRETTIER_BINARY "${pkgs.prettier}/bin/prettier" \
           --prefix PATH ":" "${languageServers}/bin:${requiredPrograms}/bin" \
           --set NIX_EMACS_EMMY_LUA_JAR "${languageServers}/lib/emmy-lua.jar" \
           --set JAVA_HOME "${pkgs.jdk}"
