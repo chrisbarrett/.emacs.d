@@ -4,6 +4,7 @@ PACKAGE_ARRAY='[
   "bash-language-server",
   "dockerfile-language-server-nodejs",
   "eslint",
+  "flow-bin",
   "typescript",
   "typescript-language-server",
   "vscode-css-languageserver-bin",
