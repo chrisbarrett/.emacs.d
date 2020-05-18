@@ -71,6 +71,7 @@
 
 (use-package edit-indirect
   :defer t
+  :general ("C-c r" 'edit-indirect-region)
   :after markdown-mode)
 
 (provide 'config-markdown)
