@@ -80,6 +80,7 @@
       ibuffer-projectile
       ivy
       ivy-historian
+      json-mode
       latex-preview-pane
       ledger-mode
       link-hint

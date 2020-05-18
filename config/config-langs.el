@@ -82,6 +82,9 @@
   :config
   (add-hook 'yaml-mode-hook #'config-langs--disable-autofill))
 
+(use-package json-mode
+  :mode ("\\.json\\'" . json-mode))
+
 (use-package highlight-indent-guides
   :hook ((python-mode . highlight-indent-guides-mode)
          (yaml-mode . highlight-indent-guides-mode)))
