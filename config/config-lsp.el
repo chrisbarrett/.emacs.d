@@ -33,6 +33,11 @@
       (ignore-errors
         (apply f args)))
 
+    (defun config-lsp--ad-ignore-message-warnings (f &rest args)
+      (let ((message (car args)))
+        (unless (string-prefix-p "Unknown" message)
+          (apply f args))))
+
     (autoload 'lsp-describe-thing-at-point "lsp-mode")
     (autoload 'lsp-eslint-apply-all-fixes "lsp-eslint")
 
@@ -70,6 +75,8 @@ If any function in this list returns nil, the error is not displayed.")
   (progn
     (add-hook 'lsp-after-open-hook #'config-lsp--setup-buffer)
     (advice-add 'lsp--document-highlight-callback :around #'config-lsp--ad-ignore-errors)
+
+    (advice-add 'lsp-warn :around #'config-lsp--ad-ignore-message-warnings)
 
     (define-key lsp-mode-map (kbd "S-<return>") #'lsp-execute-code-action)))
 
