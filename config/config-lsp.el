@@ -25,7 +25,7 @@
    (lsp-session-file (f-join paths-cache-directory "lsp-session-v1"))
    (lsp-eslint-node-path (getenv "NIX_EMACS_LSP_ESLINT_NODE_PATH")))
 
-  :hook (prog-mode . lsp-deferred)
+  :hook (prog-mode . lsp)
 
   :preface
   (progn
