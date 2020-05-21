@@ -158,6 +158,13 @@
         rev = "4a6b93c170169594e1e8ea60cd799a1a88a969da";
         sha256 = "1xzmx7m1qbl3b1x6yq1db1a108xqaa64ljfv1hdw763zmy4kc6m0";
       };
+      literate-calc-mode = github {
+        name = "literate-calc-mode.el";
+        owner = "sulami";
+        rev = "933898ef62804d7bbdae3e499b78fc1cc143a9a7";
+        sha256 = "0f77xb3fa2xig7s18l9cqlg3dy8lzv944azb0g3ry4z05dvbgdwk";
+        buildInputs = [ s ];
+      };
       lsp-lua-emmy = github {
         name = "lsp-lua-emmy";
         owner = "phenix3443";
