@@ -160,9 +160,11 @@
       };
       literate-calc-mode = github {
         name = "literate-calc-mode.el";
-        owner = "sulami";
-        rev = "933898ef62804d7bbdae3e499b78fc1cc143a9a7";
-        sha256 = "0f77xb3fa2xig7s18l9cqlg3dy8lzv944azb0g3ry4z05dvbgdwk";
+        # TODO: switch back to upstream once PR is merged.
+        # https://github.com/sulami/literate-calc-mode.el/pull/6
+        owner = "chrisbarrett";
+        rev = "7da2bbae1f1a3896c0eb2f818a14fb52cdd95811";
+        sha256 = "146yyk78apr2zq7gibpvqg31dj5sqn4q35f06bbx2zxr7b48cnar";
         buildInputs = [ s ];
       };
       lsp-lua-emmy = github {
