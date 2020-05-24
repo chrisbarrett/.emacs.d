@@ -450,7 +450,16 @@ Interactively, reverse the characters in the current region."
   (defun config-editing--maybe-literate-calc-minor-mode ()
     (unless (and (buffer-file-name)
                  (string-match-p "archive.org\\'" (buffer-file-name)))
-      (literate-calc-minor-mode))))
+      (literate-calc-minor-mode)))
+  :config
+  (progn
+    ;; TODO: remove once this PR is merged
+    ;; https://github.com/sulami/literate-calc-mode.el/pull/6
+    (defun ad-wrap-with-save-match-data (fn &rest args)
+      (save-match-data
+        (apply fn args)))
+
+    (advice-add 'literate-calc--process-line :around #'ad-wrap-with-save-match-data)))
 
 (provide 'config-editing)
 
