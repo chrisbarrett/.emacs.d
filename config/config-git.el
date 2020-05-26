@@ -47,16 +47,6 @@
   :config
   (progn
     (setq magit-repository-directories (--map (cons it 1) paths-project-directories))
-
-    (setq magit-blame-styles
-          '((margin
-             (margin-format    . (" %s%f" " %C %a" " %H"))
-             (margin-width     . 42)
-             (margin-face      . magit-blame-margin)
-             (margin-body-face . (magit-blame-dimmed)))
-            (headings
-             (heading-format   . "%-20a %C %s\n"))))
-
     (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
     (setq magit-log-section-commit-count 0)))
 
