@@ -78,7 +78,7 @@
 ;; buffers git versions.
 
 (use-package git-timemachine
-  :defer t)
+  :commands (git-timemachine))
 
 ;; git-gutter shows git hunk status in buffers.
 
