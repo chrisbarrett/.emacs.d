@@ -397,19 +397,6 @@
    "Actions"
    (("Y" git-timemachine-kill-revision "copy sha"))))
 
-(pretty-hydra-define git-blame
-  (:foreign-keys run
-   :pre (unless (bound-and-true-p magit-blame-mode)
-          (call-interactively 'magit-blame))
-   :post
-   (when (bound-and-true-p magit-blame-mode)
-     (magit-blame-quit))
-   :title (hydra-title-with-aicon "git" "Git Blame"))
-  ("Display"
-   (("b" magit-blame "rev added")
-    ("d" magit-blame-removal "rev removed")
-    ("r" magit-blame-reverse "last rev where exists"))))
-
 (pretty-hydra-define git-hunks
   (:foreign-keys run
    :hint nil
