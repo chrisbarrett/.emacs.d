@@ -450,7 +450,13 @@ Interactively, reverse the characters in the current region."
   (defun config-editing--maybe-literate-calc-minor-mode ()
     (unless (and (buffer-file-name)
                  (string-match-p "archive.org\\'" (buffer-file-name)))
-      (literate-calc-minor-mode))))
+      (literate-calc-minor-mode)))
+  :config
+  ;; Don't run flyspell on tokens in literate-calc-mode expressions.
+  (defun config-editing--ad-flyspell-compat (f &rest args)
+    (and (apply f args)
+         (let ((line (buffer-substring (line-beginning-position) (line-end-position))))
+           (not (string-match-p literate-calc--expression line))))))
 
 (provide 'config-editing)
 
