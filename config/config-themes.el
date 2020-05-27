@@ -439,6 +439,24 @@ By default, this shows the information specified by `global-mode-string'."
 
 (advice-add 'enable-theme :after #'config-themes--after-enable-theme)
 
+;; customise transient so that it looks right when using a header line.
+
+(use-package transient
+  :defer t
+  :custom
+  ((transient-mode-line-format nil))
+  :preface
+  (defun config-git--ad-transient-header-line-fixes (&rest _)
+    (with-selected-window transient--window
+      (save-excursion
+        (goto-char (point-min))
+        (insert (propertize "__" 'face 'transient-separator
+                            'display '(space :height (1))))
+        (insert (propertize "\n" 'face 'transient-separator 'line-height t)))
+      (setq header-line-format nil)))
+  :config
+  (advice-add 'transient--show :after #'config-git--ad-transient-header-line-fixes))
+
 (provide 'config-themes)
 
 ;;; config-themes.el ends here
