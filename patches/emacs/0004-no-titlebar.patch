@@ -3,7 +3,7 @@ index 1953138954..6b851cf0b5 100644
 --- a/src/nsterm.m
 +++ b/src/nsterm.m
 @@ -473,11 +473,9 @@ - (NSColor *)colorUsingDefaultColorSpace
- 
+
  /* These flags will be OR'd or XOR'd with the NSWindow's styleMask
     property depending on what we're doing.  */
 -#define FRAME_DECORATED_FLAGS (NSWindowStyleMaskTitled              \
@@ -12,13 +12,13 @@ index 1953138954..6b851cf0b5 100644
                                 | NSWindowStyleMaskMiniaturizable    \
                                 | NSWindowStyleMaskClosable)
 -#define FRAME_UNDECORATED_FLAGS NSWindowStyleMaskBorderless
- 
+
  /* TODO: Get rid of need for these forward declarations.  */
  static void ns_condemn_scroll_bars (struct frame *f);
 @@ -1985,28 +1983,13 @@ Hide the window (X11 semantics)
      {
        block_input ();
- 
+
 -      if (NILP (new_value))
 -        {
 -          FRAME_UNDECORATED (f) = false;
@@ -40,7 +40,7 @@ index 1953138954..6b851cf0b5 100644
        /* At this point it seems we don't have an active NSResponder,
           so some key presses (TAB) are swallowed by the system.  */
        [window makeFirstResponder: view];
- 
+
 +      FRAME_UNDECORATED (f) = true;
 +      [window setStyleMask: (window.styleMask | FRAME_UNDECORATED_FLAGS)];
 +
@@ -48,7 +48,7 @@ index 1953138954..6b851cf0b5 100644
      }
  }
 @@ -7544,9 +7527,7 @@ - (instancetype) initFrameFromEmacs: (struct frame *)f
- 
+
    win = [[EmacsWindow alloc]
              initWithContentRect: r
 -                      styleMask: (FRAME_UNDECORATED (f)
@@ -57,16 +57,16 @@ index 1953138954..6b851cf0b5 100644
 +                      styleMask: FRAME_UNDECORATED_FLAGS
                          backing: NSBackingStoreBuffered
                            defer: YES];
- 
+
 @@ -7582,11 +7563,6 @@ - (instancetype) initFrameFromEmacs: (struct frame *)f
                     NILP (tem) ? "Emacs" : SSDATA (tem)];
    [win setTitle: name];
- 
+
 -  /* toolbar support */
 -  if (! FRAME_UNDECORATED (f))
 -    [self createToolbar: f];
 -
 -
    [win setAppearance];
- 
+
  #if defined (NS_IMPL_COCOA) && MAC_OS_X_VERSION_MAX_ALLOWED >= 101000

@@ -25,10 +25,18 @@ let
 
   languageServers =  pkgs.callPackage ./language-servers {};
 
-  # Build a custom Emacs version. It has a few fixes to make it work better with
-  # yabai in macOS.
+  # Build a custom Emacs version. It's pinned to a specific version and has a
+  # few fixes to make it work better with yabai in macOS.
   emacs = pkgs.emacsGit.overrideAttrs (old: {
     withCsrc = true;
+    version = "20200418.0";
+
+    src = pkgs.fetchFromGitHub {
+      owner = "emacs-mirror";
+      repo = "emacs";
+      rev = "13210712a06a53031cfb82ec5dc0ab5f8e720668";
+      sha256 = "128ijgcp4yf4s4pcixddf9kizmyqrj6w0mpcjv8rgxdfwpiildaa";
+    };
 
     patches = old.patches ++ [
       ./patches/emacs/0001-optional-org-gnus.patch
