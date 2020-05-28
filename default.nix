@@ -27,18 +27,21 @@ let
 
   # Build a custom Emacs version. It's pinned to a specific version and has a
   # few fixes to make it work better with yabai in macOS.
-  emacs = pkgs.emacsGit.overrideAttrs (old: {
+  emacs = pkgs.emacsGit.overrideAttrs (old: rec {
+    name = "emacs-git-${version}";
+    version = "20200329.0";
     withCsrc = true;
-    version = "20200418.0";
 
     src = pkgs.fetchFromGitHub {
       owner = "emacs-mirror";
       repo = "emacs";
-      rev = "13210712a06a53031cfb82ec5dc0ab5f8e720668";
-      sha256 = "128ijgcp4yf4s4pcixddf9kizmyqrj6w0mpcjv8rgxdfwpiildaa";
+      rev = "3273e2ace788a58bef77cef936021d151815ea94";
+      sha256 = "04scsvfq5id3992apwawh7w54zfivgn60bkl6j6ph7viwk6pw0vk";
     };
 
-    patches = old.patches ++ [
+    patches = [
+      ./patches/emacs/tramp-detect-wrapped-gvfsd.patch
+      ./patches/emacs/clean-env.patch
       ./patches/emacs/0001-optional-org-gnus.patch
       ./patches/emacs/0002-fix-window-role.patch
       ./patches/emacs/0003-no-frame-refocus.patch
