@@ -131,6 +131,8 @@ Interactively, reverse the characters in the current region."
 ;; Teach Emacs to respect editorconfig files.
 
 (use-package editorconfig
+  :preface
+  (autoload 'editorconfig-core-get-properties-hash "editorconfig-core")
   :config
   (editorconfig-mode 1))
 
