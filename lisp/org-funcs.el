@@ -378,6 +378,13 @@ Return the position of the headline."
 (defun org-funcs--extract-title (html)
   (cadr (alist-get 'title (cdr (alist-get 'head (cdr html))))))
 
+(defconst org-funcs--domain-to-verb-alist
+  '(("audible.com" . "Listen to")
+    ("goodreads.com" . "Read")
+    ("netflix.com" . "Watch")
+    ("vimeo.com" . "Watch")
+    ("youtube.com" . "Watch")))
+
 (defun org-funcs-read-url-for-capture (&optional url title notify-p)
   "Return a URL capture template string for use with `org-capture'.
 
@@ -393,11 +400,8 @@ If NOTIFY-P is set, a desktop notification is displayed."
           (title (read-string "Title: " guess)))
      (list url title nil)))
 
-  (let ((verb (pcase (url-host (url-generic-parse-url url))
-                ((or "www.youtube.com" "www.vimeo.com")
-                 "Watch")
-                (_
-                 "Review"))))
+  (let* ((domain (string-remove-prefix "www." (url-host (url-generic-parse-url url))))
+         (verb (alist-get domain org-funcs--domain-to-verb-alist "Review" nil #'equal)))
     (prog1
         (format "* TODO %s [[%s][%s]]" verb url (org-link-escape (or title url)))
       (when notify-p
