@@ -375,8 +375,23 @@ Return the position of the headline."
           (xml-parse-string)))
       str))
 
+(defun org-funcs--guess-title-from-url-fragment (url)
+  (-some->> (url-generic-parse-url url)
+    (url-filename)
+    (f-filename)
+    (url-unhex-string)
+    (s-replace "+" " " )))
+
 (defun org-funcs--extract-title (html)
   (cadr (alist-get 'title (cdr (alist-get 'head (cdr html))))))
+
+(defun org-funcs--guess-or-retrieve-title (url)
+  (if (string-match-p (rx ".atlassian.net/wiki/") url)
+      (org-funcs--guess-title-from-url-fragment url)
+    (-some->> (org-funcs--retrieve-html url)
+      (org-funcs--extract-title)
+      (s-replace-regexp (rx (any "\r\n\t")) "")
+      (s-trim))))
 
 (defconst org-funcs--domain-to-verb-alist
   '(("audible.com" . "Listen to")
@@ -393,10 +408,7 @@ URL and TITLE are added to the template.
 If NOTIFY-P is set, a desktop notification is displayed."
   (interactive
    (let* ((url (org-funcs-read-url))
-          (guess (-some->> (org-funcs--retrieve-html url)
-                   (org-funcs--extract-title)
-                   (s-replace-regexp (rx (any "\r\n\t")) "")
-                   (s-trim)))
+          (guess (org-funcs--guess-or-retrieve-title url))
           (title (read-string "Title: " guess)))
      (list url title nil)))
 
