@@ -373,7 +373,9 @@
    ""
    (("h" git-hunks/body "navigate hunks")
     ("l" magit-log-buffer-file "log buffer")
-    ("t" git-time-machine/body "time machine"))
+    ("t" git-time-machine/body "time machine")
+    ("w" magit-worktree-status "worktree status")
+    ("W" magit-worktree "worktree..."))
 
    "Symbol Definition"
    (("g" jump-to-definition "symbol/type")
