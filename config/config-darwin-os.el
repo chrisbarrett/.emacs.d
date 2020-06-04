@@ -38,6 +38,14 @@
 
 (setenv "PATH" (string-join exec-path ":"))
 
+;; Set Emacs theme according to system theme
+
+(let ((system-theme (string-trim (shell-command-to-string "defaults read -g AppleInterfaceStyle"))))
+  (if (equal "Dark" system-theme)
+      (setq parameters-default-theme 'doom-one)
+    (setq parameters-default-theme 'doom-solarized-light)))
+
+
 ;; Graphical applications in macOS inherit their process environment from
 ;; launchd, not from a shell process which loads a profile.
 
