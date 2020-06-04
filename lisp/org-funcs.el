@@ -385,7 +385,7 @@ Return the position of the headline."
 (defun org-funcs--extract-title (html)
   (cadr (alist-get 'title (cdr (alist-get 'head (cdr html))))))
 
-(defun org-funcs--guess-or-retrieve-title (url)
+(defun org-funcs-guess-or-retrieve-title (url)
   (if (string-match-p (rx ".atlassian.net/wiki/") url)
       (org-funcs--guess-title-from-url-fragment url)
     (-some->> (org-funcs--retrieve-html url)
@@ -408,7 +408,7 @@ URL and TITLE are added to the template.
 If NOTIFY-P is set, a desktop notification is displayed."
   (interactive
    (let* ((url (org-funcs-read-url))
-          (guess (org-funcs--guess-or-retrieve-title url))
+          (guess (org-funcs-guess-or-retrieve-title url))
           (title (read-string "Title: " guess)))
      (list url title nil)))
 
