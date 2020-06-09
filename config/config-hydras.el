@@ -141,6 +141,7 @@
    :title (hydra-title-with-faicon "hdd-o" "File Commands"))
   ("Find"
    (("f" counsel-find-file "find file...")
+    ("l" find-file-literally "find file... (literally)")
     ("o" find-file-other-window "find file... (other window)")
     ("p" find-file-at-point "at pt...")
     ("h" hexl-find-file "as hex...")
