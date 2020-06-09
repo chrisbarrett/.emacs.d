@@ -74,6 +74,16 @@
   (add-to-list 'safe-local-variable-values '(gac-automatically-push-p . t))
   :custom ((gac-debounce-interval 10)))
 
+;; git-commit-mode is used when editing git commit messages.
+
+(use-package git-commit-mode
+  :defer t
+  :preface
+  (defun config-git--configure-git-commit-mode ()
+    (setq-local fill-column 72))
+  :init
+  (add-hook 'git-commit-mode-hook #'config-git--configure-git-commit-mode))
+
 ;; Git Time Machine lets you interactively step forward and backwards through a
 ;; buffers git versions.
 
