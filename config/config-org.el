@@ -554,9 +554,9 @@
                             :filter-preset '("+@flat" "-@someday"))
       '("p" . "@personal context")
       (config-org--agenda-for-context "@personal"
-                            :filter-preset '("-@work" "-@someday"))
+                            :filter-preset '("-@someday"))
       (config-org--plan-for-context '("@personal" "@flat")
-                          :filter-preset '("-@work"))
+                          :filter-preset '("-@someday"))
 
       (config-org--review-for-context '("@personal" "@flat"))
 
@@ -564,7 +564,7 @@
       (config-org--agenda-for-context "@work"
                             :filter-preset '("+@work" "-@someday")
                             :show-catchups-p t)
-      (config-org--plan-for-context "@work" :filter-preset '("+@work"))
+      (config-org--plan-for-context "@work" :filter-preset '("+@work" "-@someday"))
       (config-org--review-for-context "@work" :filter-preset '("+@work" "-@someday"))))
 
     ;; Ensure the separator line is rendered whenever the org agenda view
