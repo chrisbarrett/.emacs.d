@@ -96,12 +96,6 @@ Expected to be set as a dir-local variable."
          (org-mode . config-js-maybe-use-nvm)
          (typescript-mode . config-js-maybe-use-nvm)))
 
-;; `prettier-js' adds on-save formatting with prettier.
-(use-package prettier-js
-  :custom ((prettier-js-command (getenv "NIX_PRETTIER_BINARY")))
-  :hook ((typescript-mode . prettier-js-mode)
-         (js-mode . prettier-js-mode)))
-
 (provide 'config-js)
 
 ;;; config-js.el ends here

@@ -18,6 +18,7 @@ let
       (aspellWithDicts (ps: [ps.en]))
       htmlTidy
       multimarkdown
+      nixfmt
       nodejs
       ripgrep
       shellcheck
@@ -84,6 +85,9 @@ let
   customPathEntries = strings.concatStringsSep ":" [
     "${languageServers}/bin"
     "${requiredPrograms}/bin"
+    # Packaged by node2nix, cannot be symlink-joined into requiredPrograms or it
+    # will clobber other entries.
+    "${pkgs.prettier}/bin"
   ];
 in
 pkgs.symlinkJoin {
@@ -98,7 +102,6 @@ pkgs.symlinkJoin {
           --set NIX_EMACS_PATH_EXTRAS "${customPathEntries}" \
           --set NIX_EMACS_LSP_ESLINT_NODE_PATH "${pkgs.nodejs}/bin/node" \
           --set NIX_EMACS_MU_BINARY "${pkgs.mu}/bin/mu" \
-          --set NIX_PRETTIER_BINARY "${pkgs.prettier}/bin/prettier" \
           --set NIX_EMACS_EMMY_LUA_JAR "${languageServers}/lib/emmy-lua.jar" \
           --set JAVA_HOME "${pkgs.jdk}"
       fi

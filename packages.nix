@@ -59,6 +59,7 @@
       flycheck-ledger
       flycheck-rust
       forge
+      format-all
       general
       ghub
       git-auto-commit-mode
@@ -110,7 +111,6 @@
       pdf-tools
       pip-requirements
       poporg
-      prettier-js
       pretty-hydra
       projectile
       protobuf-mode

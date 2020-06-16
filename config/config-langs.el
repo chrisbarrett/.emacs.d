@@ -148,6 +148,10 @@
                   display-buffer-fullframe)
                  (reusable-frames . visible))))
 
+;; `format-all' applies formatting commands on save, based on major-mode.
+(use-package format-all
+  :hook (prog-mode . format-all-mode))
+
 (provide 'config-langs)
 
 ;;; config-langs.el ends here
