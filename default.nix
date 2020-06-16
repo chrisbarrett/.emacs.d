@@ -8,6 +8,8 @@ in
 { pkgs ? import <nixpkgs> { overlays = [ emacs-overlay (import ./overlays) ];} }:
 
 let
+  inherit (pkgs.lib) strings;
+
   # Additional programs to be injected into Emacs' environment.
 
   requiredPrograms = pkgs.symlinkJoin {
@@ -78,6 +80,11 @@ let
   builder = pkgs.emacsPackagesNgGen emacs;
 
   emacsWithPackages = (builder.overrideScope' packages.overrides).emacsWithPackages packages.packages;
+
+  customPathEntries = strings.concatStringsSep ":" [
+    "${languageServers}/bin"
+    "${requiredPrograms}/bin"
+  ];
 in
 pkgs.symlinkJoin {
   name = "emacs-wrapped";
@@ -87,11 +94,11 @@ pkgs.symlinkJoin {
     for program in "$out/Applications/Emacs.app/Contents/MacOS/Emacs" "$out/bin/emacs"; do
       if [ -f "$program" ]; then
         wrapProgram "$program" \
-          --set NIX_EMACS_PATH_EXTRAS "${languageServers}/bin:${requiredPrograms}/bin" \
+          --prefix PATH ":" "${customPathEntries}" \
+          --set NIX_EMACS_PATH_EXTRAS "${customPathEntries}" \
           --set NIX_EMACS_LSP_ESLINT_NODE_PATH "${pkgs.nodejs}/bin/node" \
           --set NIX_EMACS_MU_BINARY "${pkgs.mu}/bin/mu" \
           --set NIX_PRETTIER_BINARY "${pkgs.prettier}/bin/prettier" \
-          --prefix PATH ":" "${languageServers}/bin:${requiredPrograms}/bin" \
           --set NIX_EMACS_EMMY_LUA_JAR "${languageServers}/lib/emmy-lua.jar" \
           --set JAVA_HOME "${pkgs.jdk}"
       fi
