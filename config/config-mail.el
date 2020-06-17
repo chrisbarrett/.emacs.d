@@ -103,6 +103,8 @@
    (mu4e-html2text-command #'config-mail--shr-buffer))
   :preface
   (progn
+    (defvar shr-use-fonts)
+
     (defun config-mail--shr-buffer ()
       (let ((shr-use-fonts nil))
         (shr-render-region (point-min) (point-max))))
