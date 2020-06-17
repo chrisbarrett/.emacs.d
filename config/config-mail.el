@@ -72,15 +72,12 @@
    (mu4e-view-prefer-html t)
    (mu4e-view-show-images t)
    (mu4e-view-show-addresses t)
-   (mu4e-maildir (f-expand "~/Maildir"))
    (mu4e-headers-date-format "%d-%m-%y %k:%M")
    (mu4e-completing-read-function #'completing-read)
    (sendmail-program "msmtp")
    (message-send-mail-function #'message-send-mail-with-sendmail)
 
    (mu4e-change-filenames-when-moving t)
-   (smtpmail-queue-mail nil)
-   (smtpmail-queue-dir (concat mu4e-maildir "/queue/cur"))
 
    ;; Put quoted messages after signature.
    (message-forward-before-signature nil)
