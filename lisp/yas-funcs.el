@@ -79,7 +79,10 @@ Fall back to the file name sans extension."
     ((guard (s-contains? "{" text))
      "")
     (s
-     (s-downcase (s-dashed-words s)))))
+     (-if-let* ((match-binding (rx (* space) "*" (+ space) "as" (+ space) (group (+ (not (any space))))))
+                ((_ name) (s-match match-binding text)))
+         (yas-funcs-js-module-name-for-binding name)
+       (s-downcase (s-dashed-words s))))))
 
 (defun yas-funcs-js-ctor-body (argstring)
   (when argstring
