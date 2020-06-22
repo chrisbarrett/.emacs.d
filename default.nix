@@ -2,10 +2,11 @@ let
   # 2020-05-28
   overlayRev = "33cba474ab79ce131240e5e3fff5f98a2723400f";
   emacs-overlay = import (builtins.fetchTarball {
-    url = "https://github.com/nix-community/emacs-overlay/archive/${overlayRev}.tar.gz";
+    url =
+      "https://github.com/nix-community/emacs-overlay/archive/${overlayRev}.tar.gz";
   });
-in
-{ pkgs ? import <nixpkgs> { overlays = [ emacs-overlay (import ./overlays) ];} }:
+in { pkgs ?
+  import <nixpkgs> { overlays = [ emacs-overlay (import ./overlays) ]; } }:
 
 let
   inherit (pkgs.lib) strings;
@@ -15,7 +16,7 @@ let
   requiredPrograms = pkgs.symlinkJoin {
     name = "emacs-required-programs";
     paths = with pkgs; [
-      (aspellWithDicts (ps: [ps.en]))
+      (aspellWithDicts (ps: [ ps.en ]))
       htmlTidy
       multimarkdown
       nixfmt
@@ -26,7 +27,7 @@ let
     ];
   };
 
-  languageServers =  pkgs.callPackage ./language-servers {};
+  languageServers = pkgs.callPackage ./language-servers { };
 
   # Build a custom Emacs version. It's pinned to a specific version and has a
   # few fixes to make it work better with yabai in macOS.
@@ -63,24 +64,23 @@ let
 
   packages = pkgs.callPackage ./packages.nix rec {
 
-    emacsmirror = args:
-      github (args // { owner = "emacsmirror"; });
+    emacsmirror = args: github (args // { owner = "emacsmirror"; });
 
-    github = { name, repo ? name, rev, owner, sha256, buildInputs ? [], patches ? [] }:
+    github = { name, repo ? name, rev, owner, sha256, buildInputs ? [ ]
+      , patches ? [ ] }:
       pkgs.callPackage ./builder.nix {
         inherit emacs name buildInputs patches;
-        src = pkgs.fetchFromGitHub {
-          inherit sha256 repo rev owner;
-        };
+        src = pkgs.fetchFromGitHub { inherit sha256 repo rev owner; };
       };
 
-    withPatches = pkg: patches:
-      pkg.overrideAttrs (attrs: { inherit patches; });
+    withPatches = pkg: patches: pkg.overrideAttrs (attrs: { inherit patches; });
   };
 
   builder = pkgs.emacsPackagesNgGen emacs;
 
-  emacsWithPackages = (builder.overrideScope' packages.overrides).emacsWithPackages packages.packages;
+  emacsWithPackages =
+    (builder.overrideScope' packages.overrides).emacsWithPackages
+    packages.packages;
 
   customPathEntries = strings.concatStringsSep ":" [
     "${languageServers}/bin"
@@ -89,11 +89,10 @@ let
     # will clobber other entries.
     "${pkgs.prettier}/bin"
   ];
-in
-pkgs.symlinkJoin {
+in pkgs.symlinkJoin {
   name = "emacs-wrapped";
-  buildInputs = [pkgs.makeWrapper];
-  paths = [emacsWithPackages];
+  buildInputs = [ pkgs.makeWrapper ];
+  paths = [ emacsWithPackages ];
   postBuild = ''
     for program in "$out/Applications/Emacs.app/Contents/MacOS/Emacs" "$out/bin/emacs"; do
       if [ -f "$program" ]; then
