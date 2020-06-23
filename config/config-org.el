@@ -692,20 +692,31 @@
 (use-package org-edna
   :after org
   :preface
-  (defun config-org--maybe-edna-edit (fn &rest args)
-    (let* ((element-type (ignore-errors
-                           (org-element-type (org-element-context (org-element-at-point)))))
-           (at-property-drawer-or-heading-p (seq-contains-p '(property-drawer node-property headline) element-type))
-           (edna-loaded-p (seq-contains-p org-trigger-hook #'org-edna-trigger-function)))
-      (if (and at-property-drawer-or-heading-p edna-loaded-p)
-          (org-edna-edit)
-        (funcall fn args))))
+  (progn
+    (defun config-org--maybe-edna-edit (fn &rest args)
+      (let* ((element-type (ignore-errors
+                             (org-element-type (org-element-context (org-element-at-point)))))
+             (at-property-drawer-or-heading-p (seq-contains-p '(property-drawer node-property headline) element-type))
+             (edna-loaded-p (seq-contains-p org-trigger-hook #'org-edna-trigger-function)))
+        (if (and at-property-drawer-or-heading-p edna-loaded-p)
+            (org-edna-edit)
+          (funcall fn args))))
 
+    (defun config-org--revert-to-todo-if-edna-trigger-present ()
+      (when-let ((trigger (org-entry-get (point) "TRIGGER")))
+        (when (string-match-p (rx (or "scheduled!" "deadline!")) trigger)
+          (let ((original-hook org-after-todo-state-change-hook))
+            (remove-hook 'org-after-todo-state-change-hook #'config-org--revert-to-todo-if-edna-trigger-present)
+            (unwind-protect (org-todo "TODO")
+              (setq org-after-todo-state-change-hook original-hook)))))))
   :config
   (progn
     (org-edna-load)
     (advice-add 'org-edit-special :around #'config-org--maybe-edna-edit)
 
+    ;; Ensure events with custom triggers don't get stuck in DONE because they don't have a
+
+    (add-hook 'org-after-todo-state-change-hook #'config-org--revert-to-todo-if-edna-trigger-present)
 
     ;; Override org-enda-edit-finish so it doesn't break.
 
