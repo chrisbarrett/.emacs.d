@@ -704,7 +704,30 @@
   :config
   (progn
     (org-edna-load)
-    (advice-add 'org-edit-special :around #'config-org--maybe-edna-edit)))
+    (advice-add 'org-edit-special :around #'config-org--maybe-edna-edit)
+
+
+    ;; Override org-enda-edit-finish so it doesn't break.
+
+    (defun org-edna-edit-finish ()
+      "Finish an Edna property edit."
+      (interactive)
+      ;; Remove properties from the values
+      (let ((blocker (ignore-errors (substring-no-properties (org-edna-edit-blocker-section-text))))
+            (trigger (ignore-errors (substring-no-properties (org-edna-edit-trigger-section-text))))
+            (pos-marker org-edna-edit-original-marker)
+            (wc org-window-configuration)
+            (sel-win org-selected-window))
+        (set-window-configuration wc)
+        (select-window sel-win)
+        (goto-char pos-marker)
+        (when blocker
+          (unless (string-empty-p blocker)
+            (org-entry-put nil "BLOCKER" blocker)))
+        (when blocker
+          (unless (string-empty-p trigger)
+            (org-entry-put nil "TRIGGER" trigger)))
+        (kill-buffer org-edna-edit-buffer-name)))))
 
 ;; `org-present' implements presentations in org-mode.
 (use-package org-present
