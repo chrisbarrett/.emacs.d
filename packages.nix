@@ -198,7 +198,13 @@
 
     lsp-mode = withPatches super.lsp-mode [ ./patches/lsp-mode.patch ];
 
-    org-edna = withPatches super.org-edna [ ./patches/org-edna.patch ];
+    org-edna = withPatches (github {
+      name = "org-edna";
+      owner = "akirak";
+      rev = "8824dc5d9f9fa3859fa24d539ee27a893eaa77ab";
+      sha256 = "1gk0v572gwid9y32wwd80m496sqj2765ny2xbi01zsr84xxbvb59";
+      buildInputs = [ super.org ];
+    }) [ ./patches/org-edna.patch ];
 
     messages-are-flowing = withPatches super.messages-are-flowing
       [ ./patches/messages-are-flowing.patch ];
