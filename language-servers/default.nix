@@ -1,6 +1,7 @@
 { pkgs, ... }:
 let
   node = pkgs.callPackage ./node { };
+  groovyLspJar = pkgs.callPackage ./groovyLsp.nix { };
 
   emmyLuaJar = pkgs.fetchurl rec {
     name = "emmy-lua.jar";
@@ -24,5 +25,6 @@ in pkgs.symlinkJoin {
   postBuild = ''
     mkdir -p $out/lib
     cp ${emmyLuaJar} $out/lib/emmy-lua.jar
+    cp ${groovyLspJar} $out/lib/groovy-language-server-all.jar
   '';
 }
