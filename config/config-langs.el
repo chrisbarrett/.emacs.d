@@ -56,7 +56,8 @@
         ("ax" lsp-java-add-unimplemented-methods "add method stubs"))))))
 
 (use-package groovy-mode
-  :mode ("\\.g\\(?:ant\\|roovy\\|radle\\)\\'" . groovy-mode)
+  :mode (("\\.g\\(?:ant\\|roovy\\|radle\\)\\'" . groovy-mode)
+         ("Jenkinsfile\\'" . groovy-mode))
   :interpreter ("groovy" . groovy-mode))
 
 (use-package graphviz-dot-mode
