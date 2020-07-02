@@ -243,8 +243,8 @@ previous match and abort if no progress is made."
                   (shell-command-to-string "ledger reg 'Next Month' --sort date --total-data"))]
     (with-temp-buffer
       (insert (format-time-string "%Y/%m/01 * Allocate\n"))
-      (insert (format "  [Next Month]   $ -%s = $ 0\n" amount))
-      (insert (format "  [Unbudgeted]    $ %s = $ %s\n" amount amount))
+      (insert (format "  [Equity:Budget]  $ -%s = $ 0\n" amount))
+      (insert (format "  [Unbudgeted]     $ %s  = $ %s\n" amount amount))
       (ledger-post-align-postings (point-min) (point-max))
       (buffer-string))))
 
