@@ -46,7 +46,7 @@ Expected to be set as a dir-local variable."
 
 ;; `js' is the Emacs built-in JavaScript mode.
 (use-package js
-  :mode ("\\.jsx?\\'" . js-mode)
+  :mode ("\\.[cm]?jsx?\\'" . js-mode)
   :custom ((js-indent-level 2)
            (js-switch-indent-offset 2)
            (js-js-tmpdir (f-join paths-cache-directory "js")))
