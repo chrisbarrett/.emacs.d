@@ -25,6 +25,11 @@
     (autoload 'magit-find-file-other-window "magit-files")
     (autoload 'magit-popup-import-file-args "magit-popup")
 
+    (defun config-git--reveal-org-buffer ()
+      (when (derived-mode-p 'org-mode)
+        (message "yo")
+        (org-reveal t)))
+
     (defun config-git-find-file (&optional arg)
       (interactive "P")
       (if arg
@@ -46,6 +51,7 @@
           (user-error "Buffer isn't visiting a file"))))))
   :config
   (progn
+    (add-hook 'magit-blame-mode-hook #'config-git--reveal-org-buffer)
     (setq magit-repository-directories (--map (cons it 1) paths-project-directories))
     (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
     (setq magit-log-section-commit-count 0)))
