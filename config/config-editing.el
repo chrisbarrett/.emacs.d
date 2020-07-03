@@ -181,6 +181,7 @@ Interactively, reverse the characters in the current region."
 
 (use-package aggressive-indent
   :commands (global-aggressive-indent-mode)
+  :disabled t
   :hook (prog-mode . (lambda () (require 'aggressive-indent)))
   :init
   (general-setq aggressive-indent-excluded-modes
