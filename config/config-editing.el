@@ -5,6 +5,7 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'advice-ignore-errors)
 (require 'dash)
 (require 'general)
 (require 'f)
@@ -218,6 +219,7 @@ Interactively, reverse the characters in the current region."
 
   :config
   (progn
+    (advice-add 'aggressive-indent--indent-if-changed :around #'advice-ignore-errors)
     (add-hook 'diff-auto-refine-mode-hook #'turn-off-aggressive-indent-mode)
     (global-aggressive-indent-mode +1)))
 

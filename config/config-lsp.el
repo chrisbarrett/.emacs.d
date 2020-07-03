@@ -2,9 +2,10 @@
 ;;; Commentary:
 ;;; Code:
 
-(require 'general)
-(require 'f)
+(require 'advice-ignore-errors)
 (require 'dash-functional)
+(require 'f)
+(require 'general)
 (require 'paths)
 
 (eval-when-compile
@@ -30,10 +31,6 @@
 
   :preface
   (progn
-    (defun config-lsp--ad-ignore-errors (f &rest args)
-      (ignore-errors
-        (apply f args)))
-
     (defun config-lsp--ad-ignore-message-warnings (f &rest args)
       (let ((message (car args)))
         (unless (string-prefix-p "Unknown" message)
@@ -75,7 +72,7 @@ If any function in this list returns nil, the error is not displayed.")
   :config
   (progn
     (add-hook 'lsp-after-open-hook #'config-lsp--setup-buffer)
-    (advice-add 'lsp--document-highlight-callback :around #'config-lsp--ad-ignore-errors)
+    (advice-add 'lsp--document-highlight-callback :around #'advice-ignore-errors)
 
     (advice-add 'lsp-warn :around #'config-lsp--ad-ignore-message-warnings)
 

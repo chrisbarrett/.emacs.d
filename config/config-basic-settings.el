@@ -5,6 +5,7 @@
 (eval-when-compile
   (require 'use-package))
 
+(require 'advice-ignore-errors)
 (require 'general)
 (require 'no-littering)
 (require 'paths)
@@ -480,18 +481,14 @@
 
 (use-package hideshow
   :defer t
-  :preface
-  (defun config-basic-settings--ignore-errors (f &rest args)
-    (ignore-errors
-      (apply f args)))
   :config
-  (dolist (cmd '(hs-minor-mode
-                 hs-show-all
-                 hs-hide-all
-                 hs-toggle-hiding
-                 hs-show-block
-                 hs-hide-block))
-    (advice-add cmd :around #'config-basic-settings--ignore-errors)))
+  (progn
+    (advice-add 'hs-hide-all :around #'advice-ignore-errors)
+    (advice-add 'hs-hide-block :around 'advice-ignore-errors)
+    (advice-add 'hs-minor-mode :around #'advice-ignore-errors)
+    (advice-add 'hs-show-all :around #'advice-ignore-errors)
+    (advice-add 'hs-show-block :around #'advice-ignore-errors)
+    (advice-add 'hs-toggle-hiding :around #'advice-ignore-errors)))
 
 
 (use-package archive-mode
