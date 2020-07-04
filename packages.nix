@@ -19,7 +19,6 @@
         company
         company-anaconda
         company-auctex
-        company-lsp
         counsel
         counsel-projectile
         csv-mode

@@ -108,13 +108,6 @@ If any function in this list returns nil, the error is not displayed.")
                   lsp-java-workspace-dir (f-join cache-dir "workspace/")
                   lsp-java-workspace-cache-dir (f-join cache-dir "workspace" ".cache/"))))
 
-(use-package company-lsp
-  :after (:all company lsp-mode)
-  :defer t
-  :config
-  (general-setq company-lsp-cache-candidates t
-                company-lsp-async t))
-
 (use-package lsp-ui
   :after lsp-mode
   :preface
