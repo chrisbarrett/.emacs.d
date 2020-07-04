@@ -196,8 +196,6 @@
     ledger-mode =
       withPatches super.ledger-mode [ ./patches/ledger-report.patch ];
 
-    lsp-mode = withPatches super.lsp-mode [ ./patches/lsp-mode.patch ];
-
     org-edna = withPatches (github {
       name = "org-edna";
       owner = "akirak";
