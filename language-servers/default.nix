@@ -3,7 +3,7 @@ let
   node = pkgs.callPackage ./node { };
   groovyLspJar = pkgs.callPackage ./groovyLsp.nix { };
 
-  emmyLuaJar = pkgs.fetchurl rec {
+  emmyLuaJar = pkgs.fetchurl {
     name = "emmy-lua.jar";
     url =
       "https://ci.appveyor.com/api/buildjobs/sq7l4h55stcyt4hy/artifacts/EmmyLua-LS%2Fbuild%2Flibs%2FEmmyLua-LS-all.jar";
