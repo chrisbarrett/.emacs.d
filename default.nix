@@ -23,6 +23,7 @@ let
       nodejs
       ripgrep
       shellcheck
+      sqlite
       tectonic
     ];
   };
