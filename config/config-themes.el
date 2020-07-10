@@ -299,7 +299,7 @@ By default, this shows the information specified by `global-mode-string'."
         (config-themes-set-extends-attrs))
       ;; HACK: Make sure bullets are re-fontified.
       (when (bound-and-true-p org-bullets-mode)
-        (font-lock-fontify-buffer)))
+        (font-lock-ensure)))
 
     (defun config-themes-override-themes (theme)
       (let* ((bg         (pcase theme
