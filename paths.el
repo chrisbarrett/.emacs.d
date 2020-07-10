@@ -25,7 +25,10 @@
   (concat user-emacs-directory "assets"))
 
 (defconst paths-cache-directory
-  (concat user-emacs-directory "var"))
+  (expand-file-name "~/.cache/emacs"))
+
+(unless (file-directory-p paths-cache-directory)
+  (mkdir paths-cache-directory t))
 
 (defconst paths-etc-directory
   (concat user-emacs-directory "etc"))
