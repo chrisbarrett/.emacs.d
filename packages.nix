@@ -103,6 +103,7 @@
         org-bullets
         org-edna
         org-present
+        org-roam
         ox-gfm
         page-break-lines
         paren-face
