@@ -254,15 +254,16 @@
     ("s" org-search-view "search..."))
 
    "Roam"
-   (("SPC" org-roam "Roam backlinks")
-    ("RET" org-roam-find-file "roam file...")
-    ("I" org-roam-find-index "Go to Index"))
+   (("<tab>" org-roam "Roam backlinks")
+    ("f" org-roam-find-file "roam file...")
+    ("I" org-roam-find-index "Go to Index")
+    ("SPC" org-roam-dailies-today "Dailies: today")
+    ("d" org-roam-dailies-date "Dialies: date..."))
 
    "Goto"
    (("i" org-funcs-goto-inbox "inbox")
     ("p" org-funcs-goto-personal "personal")
     ("w" org-funcs-goto-work "work")
-    ("f" org-funcs-goto-flat "flat")
     ("n" org-funcs-goto-notes "notes")
     ("r" org-funcs-goto-recurring "recurring"))
    ""
