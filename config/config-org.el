@@ -88,7 +88,7 @@
 (general-setq
  org-imenu-depth 4
  org-M-RET-may-split-line nil
- org-blank-before-new-entry '((heading . nil) (plain-list-item . nil))
+ org-blank-before-new-entry '((heading . t) (plain-list-item . nil))
  org-catch-invisible-edits 'smart
  org-checkbox-hierarchical-statistics t
  org-confirm-elisp-link-function nil
