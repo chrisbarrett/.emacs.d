@@ -17,6 +17,7 @@ let
     name = "emacs-required-programs";
     paths = with pkgs; [
       (aspellWithDicts (ps: [ ps.en ]))
+      graphviz
       htmlTidy
       multimarkdown
       nixfmt
