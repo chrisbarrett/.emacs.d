@@ -2,17 +2,17 @@
 # name: letter
 # key: letter
 # --
-#+TITLE: ${1:Untitled Letter}
-#+LATEX_CLASS: koma-letter
-#+LCO: CBLetter CBAddress UScommercial9
-#+DATE: `(format-time-string "%B %-d, %Y")`
+#+title: ${1:Untitled Letter}
+#+latex_class: koma-letter
+#+lco: CBLetter CBAddress UScommercial9
+#+date: `(format-time-string "%B %-d, %Y")`
 
-#+TO_ADDRESS: ${2:Name}\\\\
-#+TO_ADDRESS: ${3:Street}\\\\
-#+TO_ADDRESS: ${4:Town}
+#+to_address: ${2:Name}\\\\
+#+to_address: ${3:Street}\\\\
+#+to_address: ${4:Town}
 
-#+OPENING: ${5:To whom it may concern},
+#+opening: ${5:To whom it may concern},
 
 $0
 
-#+CLOSING: Sincerely,
+#+closing: Sincerely,

@@ -2,11 +2,11 @@
 # name: presentation
 # key: presentation
 # --
-#+TITLE: ${1:Untitled Presentation}
-#+AUTHOR: `user-full-name`
-#+OPTIONS: toc:nil reveal_mathjax:t
+#+title: ${1:Untitled Presentation}
+#+author: `user-full-name`
+#+options: toc:nil reveal_mathjax:t
 
-#+REVEAL_TRANS: `(cb-org:reveal-read-transition)`
-#+REVEAL_THEME: `(cb-org:reveal-read-theme)`
+#+reveal_trans: `(cb-org:reveal-read-transition)`
+#+reveal_theme: `(cb-org:reveal-read-theme)`
 
 $0

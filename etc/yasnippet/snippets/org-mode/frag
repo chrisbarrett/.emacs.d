@@ -2,4 +2,4 @@
 # name: frag
 # key: frag
 # --
-#+ATTR_REVEAL: :frag `(cb-org:reveal-read-frag-style)`
+#+attr_reveal: :frag `(cb-org:reveal-read-frag-style)`

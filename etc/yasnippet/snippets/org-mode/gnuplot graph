@@ -2,8 +2,8 @@
 # name: gnuplot graph
 # key: plot
 # --
-#+TBLNAME: ${1:tblname}
-#+PLOT: title:"${2:$1}" ind:1
+#+tblname: ${1:tblname}
+#+plot: title:"${2:$1}" ind:1
 | ${3:X} | ${4:Y} |
 |---+---|
 | $0  |   |
