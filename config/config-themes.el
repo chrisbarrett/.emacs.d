@@ -168,8 +168,18 @@
 
 (use-package emojify
   :hook (after-init . global-emojify-mode)
+  :custom
+  ((emojify-emoji-styles '(github unicode))
+   (emojify-program-contexts '(comments string))
+   (emojify-point-entered-behaviour 'uncover)
+   (emojify-user-emojis
+    '((":check:" . (("emoji" . ":white_check_mark:")
+                    ("name" . "White Heavy Check Mark")
+                    ("unicode" . "✅")
+                    ("image" . "2705.png")
+                    ("style" . "github"))))))
   :preface
-  (defun config-themes-at-org-drawer-p (match beg _end)
+  (defun config-themes-at-org-drawer-p (_match beg _end)
     (and (memq major-mode '(org-mode org-agenda-mode))
          (save-match-data
            (save-excursion
@@ -177,12 +187,7 @@
                (goto-char beg)
                (looking-at (rx ":end:")))))))
   :config
-  (progn
-    (add-to-list 'emojify-inhibit-functions #'config-themes-at-org-drawer-p)
-
-    (general-setq emojify-emoji-styles '(github unicode)
-                  emojify-program-contexts '(comments string)
-                  emojify-point-entered-behaviour 'uncover)))
+  (add-to-list 'emojify-inhibit-functions #'config-themes-at-org-drawer-p))
 
 ;; doom-modeline is a custom modeline.
 
