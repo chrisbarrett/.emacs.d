@@ -798,6 +798,16 @@
 (use-package om
   :defer t)
 
+;; `org-roam' provides a specialised orgmode workflow and backlinks.
+(use-package org-roam
+  :hook (after-init . org-roam-mode)
+  :general
+  (:states '(insert normal) :keymap 'org-mode-map
+   "C-c i" 'org-roam-insert
+   "C-c I" 'org-roam-insert-immediate)
+  :custom
+  ((org-roam-directory (f-join paths-org-directory "roam"))))
+
 (provide 'config-org)
 
 ;;; config-org.el ends here

@@ -253,6 +253,11 @@
     ("l" org-store-link "store link...")
     ("s" org-search-view "search..."))
 
+   "Roam"
+   (("SPC" org-roam "Roam backlinks")
+    ("RET" org-roam-find-file "roam file...")
+    ("I" org-roam-find-index "Go to Index"))
+
    "Goto"
    (("i" org-funcs-goto-inbox "inbox")
     ("p" org-funcs-goto-personal "personal")
