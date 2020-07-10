@@ -80,6 +80,7 @@ If any function in this list returns nil, the error is not displayed.")
 
 (use-package dap-mode
   :hook ((lsp-mode . dap-mode))
+  :disabled t
   :init
   (use-package dap-node :hook (js-mode . dap-node-setup))
   :preface
@@ -92,7 +93,7 @@ If any function in this list returns nil, the error is not displayed.")
   (general-setq dap-breakpoints-file (expand-file-name "breakpoints" config-lsp--dap-cache-dir)))
 
 (use-package dap-ui
-  :hook ((lsp-mode . dap-ui-mode)))
+  :hook ((dap-mode . dap-ui-mode)))
 
 (use-package lsp-java
   :defer t
