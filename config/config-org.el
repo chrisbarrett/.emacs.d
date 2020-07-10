@@ -806,7 +806,8 @@
    "C-c i" 'org-roam-insert
    "C-c I" 'org-roam-insert-immediate)
   :custom
-  ((org-roam-directory (f-join paths-org-directory "roam"))))
+  ((org-roam-directory (f-join paths-org-directory "roam"))
+   (org-roam-db-location (f-join paths-cache-directory "org-roam.db"))))
 
 (provide 'config-org)
 
