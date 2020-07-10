@@ -180,12 +180,10 @@
                     ("style" . "github"))))))
   :preface
   (defun config-themes-at-org-drawer-p (_match beg _end)
-    (and (memq major-mode '(org-mode org-agenda-mode))
-         (save-match-data
-           (save-excursion
-             (save-match-data
-               (goto-char beg)
-               (looking-at (rx ":end:")))))))
+    (when (memq major-mode '(org-mode org-agenda-mode))
+      (save-excursion
+        (goto-char (line-beginning-position))
+        (or (org-at-drawer-p) (org-at-property-p)))))
   :config
   (add-to-list 'emojify-inhibit-functions #'config-themes-at-org-drawer-p))
 
