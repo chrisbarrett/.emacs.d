@@ -22,6 +22,7 @@
 (require 'f)
 (require 'general)
 (require 'major-mode-hydra)
+(require 'memoize)
 (require 'org-funcs)
 (require 'paths)
 (require 's)
@@ -203,6 +204,54 @@
  org-agenda-text-search-extra-files (list (f-join org-directory "archive.org"))
  org-agenda-use-time-grid nil)
 
+;; Use rg to search for candidates for org-agenda-files
+
+(let ((memoize-default-timeout 60))
+  (defmemoize config-org--org-files-with-todos (dir)
+    (with-temp-buffer
+      (let ((default-directory dir))
+        (call-process "rg" nil t nil
+                      "TODO|CANCELLED|WAITING|DONE"
+                      "--files-with-matches"
+                      "--type" "org"
+                      "--case-sensitive"
+                      "--max-depth" "1")
+        (let ((results (split-string (buffer-substring (point-min) (point-max)) "\n" t)))
+          (seq-map (lambda (it) (f-join dir it))
+                   results))))))
+
+(defun config-org--find-org-files-with-todos ()
+  (let* ((dirs (list org-directory
+                     (bound-and-true-p org-roam-directory)))
+         (files (seq-mapcat #'config-org--org-files-with-todos (seq-filter #'identity dirs))))
+    (seq-filter (lambda (file)
+                  ;; ignore dropbox conflict files
+                  (not (s-contains-p "conflicted copy" (f-filename file))))
+                files)))
+
+(defun config-org-update-agenda-files ()
+  (when (derived-mode-p 'org-mode)
+    (setq org-agenda-files (config-org--find-org-files-with-todos))))
+
+(add-hook 'org-roam-mode-hook #'config-org-update-agenda-files)
+
+;; Update agenda files as we create new org buffers.
+
+(defun config-org--buffer-has-todo-keywords ()
+  (and (derived-mode-p 'org-mode)
+       (save-excursion
+         (goto-char (point-min))
+         (search-forward-regexp org-todo-regexp nil t))))
+
+(defun config-org-maybe-add-to-agenda-files ()
+  (when (and (derived-mode-p 'org-mode)
+             (config-org--buffer-has-todo-keywords)
+             (buffer-file-name))
+    (add-to-list 'org-agenda-files (buffer-file-name))))
+
+(add-hook 'after-save-hook #'config-org-maybe-add-to-agenda-files)
+(add-hook 'org-capture-after-finalize-hook #'config-org-maybe-add-to-agenda-files)
+
 
 
 ;; `org-funcs' provides supporting commands we want to bind.
@@ -242,17 +291,6 @@
    "C-c ." #'org-time-stamp)
   :preface
   (progn
-    (defun config-org-set-org-agenda-files ()
-      ;; Populate org-agenda-files
-      (cl-labels ((org-file-p (f) (and (f-ext? f "org")
-                                       (not (s-contains-p "conflicted copy" (f-filename f))))))
-        (let ((toplevel-files (f-files paths-org-directory #'org-file-p))
-              (special-files (--map (f-join paths-org-directory it)
-                                    '("init.org" "archive.org" "beorg-themes.org" "budget.org"))))
-          (setq org-refile-targets `((,(seq-difference toplevel-files special-files) . (:maxlevel . 4))))
-          (dolist (file toplevel-files)
-            (add-to-list 'org-agenda-files file)))))
-
     (defun config-org--exit-minibuffer (&rest _)
       "Exit minibuffer before adding notes."
       (when (minibufferp (window-buffer (selected-window)))
@@ -284,7 +322,7 @@
       (org-save-all-org-buffers))
 
     (defun config-org--before-agenda (&rest _)
-      (config-org-set-org-agenda-files))
+      (config-org-update-agenda-files))
 
     ;; KLUDGE: Declare removed dynamic variable in case I revert to builtin org
     ;; version.
@@ -302,7 +340,6 @@
 
   :init
   (progn
-    (config-org-set-org-agenda-files)
     (advice-add 'org-agenda :before #'config-org--before-agenda)
 
     (advice-add 'org-refile :after #'config-org--after-refile)
@@ -434,10 +471,6 @@
     (defconst config-org--agenda-clockreport-defaults
       '(:link t :compact t :maxlevel 4 :fileskip0 t :step week))
 
-    (defun config-org--agenda-files-for-tags (tag-or-tags)
-      (--remove (equal (f-filename it) "inbox.org")
-                (-distinct (-mapcat #'org-funcs-files-for-context (-list tag-or-tags)))))
-
     (defun config-org--standard-filter-preset (tags)
       (seq-uniq (append tags '("-ignore"))))
 
@@ -470,8 +503,7 @@
          (org-agenda-span 'day)
          (org-agenda-show-future-repeats nil)
          (org-agenda-archives-mode nil)
-         (org-agenda-ignore-drawer-properties '(effort appt))
-         (org-agenda-files ',(config-org--agenda-files-for-tags tag)))))
+         (org-agenda-ignore-drawer-properties '(effort appt)))))
 
     (cl-defun config-org--plan-for-context (tag-or-tags &key filter-preset)
       (let ((tags (-list tag-or-tags)))
@@ -497,8 +529,7 @@
            (org-agenda-span 'week)
            (org-agenda-show-future-repeats nil)
            (org-agenda-archives-mode nil)
-           (org-agenda-ignore-drawer-properties '(effort appt))
-           (org-agenda-files ',(config-org--agenda-files-for-tags tags))))))
+           (org-agenda-ignore-drawer-properties '(effort appt))))))
 
     (cl-defun config-org--review-for-context (tag-or-tags &key filter-preset)
       (let ((tags (-list tag-or-tags)))
@@ -526,8 +557,7 @@
            (org-agenda-log-mode-items '(closed state))
            (org-agenda-show-future-repeats nil)
            (org-agenda-archives-mode nil)
-           (org-agenda-ignore-drawer-properties '(effort appt))
-           (org-agenda-files ',(config-org--agenda-files-for-tags tags))))))
+           (org-agenda-ignore-drawer-properties '(effort appt))))))
 
     (defun config-org--draw-separator (&rest _)
       (page-break-lines--update-display-tables))
