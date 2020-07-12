@@ -258,6 +258,7 @@
     ("f" org-roam-find-file "roam file...")
     ("I" org-roam-find-index "Go to Index")
     ("SPC" org-roam-dailies-today "Dailies: today")
+    ("y" org-roam-dailies-yesterday "Dailies: yesterday")
     ("d" org-roam-dailies-date "Dialies: date..."))
 
    "Goto"
