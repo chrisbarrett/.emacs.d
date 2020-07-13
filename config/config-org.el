@@ -206,19 +206,21 @@
 
 ;; Use rg to search for candidates for org-agenda-files
 
-(let ((memoize-default-timeout 60))
-  (defmemoize config-org--org-files-with-todos (dir)
-    (with-temp-buffer
-      (let ((default-directory dir))
-        (call-process "rg" nil t nil
-                      "TODO|CANCELLED|WAITING|DONE"
-                      "--files-with-matches"
-                      "--type" "org"
-                      "--case-sensitive"
-                      "--max-depth" "1")
-        (let ((results (split-string (buffer-substring (point-min) (point-max)) "\n" t)))
-          (seq-map (lambda (it) (f-join dir it))
-                   results))))))
+(defun config-org--org-files-with-todos (dir)
+  (with-temp-buffer
+    (let ((default-directory dir))
+      (call-process "rg" nil t nil
+                    "TODO|CANCELLED|WAITING|DONE"
+                    "--files-with-matches"
+                    "--type" "org"
+                    "--case-sensitive"
+                    "--max-depth" "1")
+      (let ((results (split-string (buffer-substring (point-min) (point-max)) "\n" t)))
+        (seq-map (lambda (it) (f-join dir it))
+                 results)))))
+
+(ignore-errors
+  (memoize #'config-org--org-files-with-todos 60))
 
 (defun config-org--find-org-files-with-todos ()
   (let* ((dirs (list org-directory
