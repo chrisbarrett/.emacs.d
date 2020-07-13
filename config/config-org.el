@@ -195,10 +195,10 @@
  org-agenda-start-on-weekday nil
  org-agenda-window-setup 'only-window
  org-agenda-dim-blocked-tasks 'invisible
- org-agenda-sorting-strategy '((agenda time-up priority-down todo-state-up)
-                               (todo priority-down category-keep scheduled-up)
-                               (tags priority-down category-keep)
-                               (search category-keep))
+ org-agenda-sorting-strategy '((agenda time-up priority-down todo-state-up category-up)
+                               (todo priority-down scheduled-up category-up)
+                               (tags priority-down category-up)
+                               (search category-up))
  org-agenda-inhibit-startup nil
  org-agenda-tags-column -100
  org-agenda-text-search-extra-files (list (f-join org-directory "archive.org"))
