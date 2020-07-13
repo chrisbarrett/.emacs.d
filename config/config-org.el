@@ -250,7 +250,6 @@
              (buffer-file-name))
     (add-to-list 'org-agenda-files (buffer-file-name))))
 
-(add-hook 'after-save-hook #'config-org-maybe-add-to-agenda-files)
 (add-hook 'org-capture-after-finalize-hook #'config-org-maybe-add-to-agenda-files)
 
 
@@ -305,6 +304,7 @@
 
     (defun config-org--set-local-vars-and-hooks ()
       (org-indent-mode +1)
+      (add-hook 'after-save-hook #'config-org-maybe-add-to-agenda-files nil t)
       (setq bidi-paragraph-direction nil))
 
     (defun config-org--after-refile (&rest _)
