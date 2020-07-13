@@ -239,9 +239,10 @@
 
 (defun config-org--buffer-has-todo-keywords ()
   (and (derived-mode-p 'org-mode)
-       (save-excursion
-         (goto-char (point-min))
-         (search-forward-regexp org-todo-regexp nil t))))
+       (save-match-data
+         (save-excursion
+           (goto-char (point-min))
+           (search-forward-regexp org-todo-regexp nil t)))))
 
 (defun config-org-maybe-add-to-agenda-files ()
   (when (and (derived-mode-p 'org-mode)
