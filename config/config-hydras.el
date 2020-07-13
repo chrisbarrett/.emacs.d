@@ -257,16 +257,13 @@
    (("<tab>" org-roam "Roam backlinks")
     ("f" org-roam-find-file "roam file...")
     ("I" org-roam-find-index "Go to Index")
-    ("SPC" org-roam-dailies-today "Dailies: today")
+    ("n" org-roam-dailies-today "Dailies: today")
     ("y" org-roam-dailies-yesterday "Dailies: yesterday")
     ("d" org-roam-dailies-date "Dialies: date..."))
 
    "Goto"
    (("i" org-funcs-goto-inbox "inbox")
-    ("p" org-funcs-goto-personal "personal")
-    ("w" org-funcs-goto-work "work")
-    ("n" org-funcs-goto-notes "notes")
-    ("r" org-funcs-goto-recurring "recurring"))
+    ("w" org-funcs-goto-work "work"))
    ""
    (("g" org-funcs-goto-headline "headline...")
     ("G" org-capture-goto-last-stored "last captured item")

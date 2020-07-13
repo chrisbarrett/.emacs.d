@@ -97,11 +97,6 @@ Return the position of the headline."
           (list (org-funcs-personal-notes-buffer)
                 (org-funcs-work-notes-buffer))))
 
-(defun org-funcs-notes-buffer-for-context ()
-  (if (org-funcs-work-context-p)
-      (org-funcs-work-notes-buffer)
-    (org-funcs-personal-notes-buffer)))
-
 (defun org-funcs-punch-in (buffer)
   "Punch in with the default date tree in the given BUFFER."
   (interactive (list (org-funcs-work-notes-buffer)))
@@ -247,25 +242,6 @@ Return the position of the headline."
   "Switch to the inbox file."
   (interactive)
   (find-file (f-join paths-org-directory "inbox.org")))
-
-(defun org-funcs-goto-personal ()
-  "Switch to the personal notes file."
-  (interactive)
-  (find-file (f-join paths-org-directory "personal.org")))
-
-(defun org-funcs-goto-recurring ()
-  "Switch to the recurring events file."
-  (interactive)
-  (let ((filename (if (org-funcs-work-context-p)
-                      "work_recurring.org"
-                    "personal_recurring.org")))
-    (find-file (f-join paths-org-directory filename))))
-
-(defun org-funcs-goto-notes ()
-  "Switch to the default notes file."
-  (interactive)
-  (require 'org)
-  (switch-to-buffer (org-funcs-notes-buffer-for-context)))
 
 (defun org-funcs-get-roam-file-by-title (title)
   (cl-labels ((extract-title (record) (plist-get (cdr record) :title))
