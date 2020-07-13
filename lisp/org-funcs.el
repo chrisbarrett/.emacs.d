@@ -248,11 +248,6 @@ Return the position of the headline."
   (interactive)
   (find-file (f-join paths-org-directory "inbox.org")))
 
-(defun org-funcs-goto-flat ()
-  "Switch to the flat file."
-  (interactive)
-  (find-file (f-join paths-org-directory "flat.org")))
-
 (defun org-funcs-goto-personal ()
   "Switch to the personal notes file."
   (interactive)
@@ -272,10 +267,20 @@ Return the position of the headline."
   (require 'org)
   (switch-to-buffer (org-funcs-notes-buffer-for-context)))
 
+(defun org-funcs-get-roam-file-by-title (title)
+  (cl-labels ((extract-title (record) (plist-get (cdr record) :title))
+              (extract-file (record) (plist-get (cdr record) :path)))
+    (if-let* ((entries (org-roam--get-title-path-completions))
+              (hit (seq-find (lambda (it) (equal title (extract-title it))) entries)))
+        (extract-file hit)
+      (error "No roam files with the given title"))))
+
+(defvar org-funcs-work-file-title nil)
+
 (defun org-funcs-goto-work ()
   "Switch to the work file."
   (interactive)
-  (find-file (f-join paths-org-directory "work.org")))
+  (find-file (org-funcs-get-roam-file-by-title org-funcs-work-file-title)))
 
 (defun org-funcs-goto-headline ()
   "Prompt for a headline to jump to."
