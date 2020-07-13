@@ -394,6 +394,14 @@
     (advice-add 'org-add-log-note :before #'config-org--exit-minibuffer)
     (advice-add 'org-toggle-heading :after #'config-org--toggle-heading-goto-eol)))
 
+;; `org-attach' provides file attachment functionality.
+(use-package org-attach
+  :defer t
+  :after org
+  :config
+  (require 'org-attach-git))
+
+
 ;; `org-capture' provides functionality for quickly inserting templated content
 ;; into org files.
 (use-package org-capture

@@ -18,6 +18,7 @@ let
     paths = with pkgs; [
       (aspellWithDicts (ps: [ ps.en ]))
       graphviz
+      gitAndTools.git-annex
       htmlTidy
       multimarkdown
       nixfmt
