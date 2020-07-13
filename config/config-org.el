@@ -586,9 +586,9 @@
                             :filter-preset '("+@flat" "-@someday"))
       '("p" . "@personal context")
       (config-org--agenda-for-context "@personal"
-                            :filter-preset '("-@someday"))
+                            :filter-preset '("-@someday" "-@work"))
       (config-org--plan-for-context '("@personal" "@flat")
-                          :filter-preset '("-@someday"))
+                          :filter-preset '("-@someday" "-@work"))
 
       (config-org--review-for-context '("@personal" "@flat"))
 
