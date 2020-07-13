@@ -162,7 +162,7 @@
  org-crypt-disable-auto-save 'encypt
 
  org-attach-directory (f-join paths-org-directory "data")
- org-archive-location "archive.org::datetree/"
+ org-archive-location (concat (f-join org-directory "archive.org") "::datetree/")
  org-archive-subtree-add-inherited-tags t
 
  ;; appt
