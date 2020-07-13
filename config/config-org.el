@@ -840,6 +840,11 @@
   ((org-roam-directory (f-join paths-org-directory "roam"))
    (org-roam-db-location (f-join paths-cache-directory "org-roam.db"))))
 
+;; `org-format-headings' provides some commands to clean up the whitespace
+;; around org headings.
+(use-package org-format-headings
+  :commands (org-format-all-headings org-format-heading))
+
 (provide 'config-org)
 
 ;;; config-org.el ends here
