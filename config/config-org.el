@@ -230,8 +230,7 @@
                 files)))
 
 (defun config-org-update-agenda-files ()
-  (when (derived-mode-p 'org-mode)
-    (setq org-agenda-files (config-org--find-org-files-with-todos))))
+  (setq org-agenda-files (config-org--find-org-files-with-todos)))
 
 (add-hook 'org-roam-mode-hook #'config-org-update-agenda-files)
 
