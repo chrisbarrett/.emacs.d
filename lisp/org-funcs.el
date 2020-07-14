@@ -404,7 +404,7 @@ If NOTIFY-P is set, a desktop notification is displayed."
     (setq org-capture-templates (-sort (-on 'string-lessp 'car) (ht->alist ht)))))
 
 (defun org-funcs-capture-template-apply-defaults (template)
-  (-let ((defaults '(:clock-keep t :prepend t :immediate-finish nil :jump-to-captured nil))
+  (-let ((defaults '(:clock-keep t :prepend t :immediate-finish nil :jump-to-captured nil :empty-lines 1))
          ((positional-args keywords) (-split-with (-not #'keywordp) template)))
     (append positional-args (ht->plist (ht-merge
                                         (ht-from-plist defaults)
