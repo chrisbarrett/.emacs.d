@@ -846,6 +846,7 @@
   :general
   (:states '(insert normal) :keymap 'org-mode-map
    "C-c i" 'org-roam-insert
+   "C-c C-i" 'org-roam-insert
    "C-c I" 'org-roam-insert-immediate)
   :custom
   ((org-roam-directory (f-join paths-org-directory "roam"))
