@@ -402,6 +402,16 @@
   (require 'org-attach-git))
 
 
+(defun config-org--append-to-dailies-today ()
+  (find-file (f-join org-roam-directory (format-time-string "%Y-%m-%d.org")))
+  (goto-char (point-max)))
+
+(defun config-org--format-todo-for-capture ()
+  (let ((tags (when (org-funcs-work-context-p)
+                ":@work:")))
+    (concat "* TODO %?           " tags)))
+
+
 ;; `org-capture' provides functionality for quickly inserting templated content
 ;; into org files.
 (use-package org-capture
@@ -411,10 +421,12 @@
   (org-funcs-update-capture-templates
    (list
     (org-funcs-capture-template
-     "t" "Todo" '(file "inbox.org") "* TODO %?")
+     "t" "Todo" '(function config-org--append-to-dailies-today) '(function config-org--format-todo-for-capture)
+     :prepend nil)
 
     (org-funcs-capture-template
-     "l" "Link" '(file "inbox.org") '(function org-funcs-capture-link)
+     "l" "Link" '(function config-org--append-to-dailies-today) '(function org-funcs-capture-link)
+     :prepend nil
      :immediate-finish t)))
 
   (defun org-capture-get-template ()
