@@ -371,6 +371,20 @@ Return the position of the headline."
     ("vimeo.com" . "Watch")
     ("youtube.com" . "Watch")))
 
+(defun org-funcs--parse-github-repo-from-url (url)
+  (cadr (s-match (rx "github.com/" (group (+? nonl) "/" (+ (not (any "/?")))))
+                 url)))
+
+(defvar org-funcs-work-repos nil)
+
+(defun org-funcs--work-related-url-p (url)
+  (let ((host (url-host (url-generic-parse-url url))))
+    (or
+     (string-match-p (rx (or "atlassian.com"))
+                     host)
+     (when-let* ((repo (org-funcs--parse-github-repo-from-url url)))
+       (seq-contains-p org-funcs-work-repos repo)))))
+
 (defun org-funcs-read-url-for-capture (&optional url title notify-p)
   "Return a URL capture template string for use with `org-capture'.
 
@@ -384,9 +398,15 @@ If NOTIFY-P is set, a desktop notification is displayed."
      (list url title nil)))
 
   (let* ((domain (string-remove-prefix "www." (url-host (url-generic-parse-url url))))
-         (verb (alist-get domain org-funcs--domain-to-verb-alist "Review" nil #'equal)))
+         (verb (alist-get domain org-funcs--domain-to-verb-alist "Review" nil #'equal))
+         (tags (when (org-funcs--work-related-url-p url)
+                 ":@work:")))
     (prog1
-        (format "* TODO %s [[%s][%s]]" verb url (org-link-escape (or title url)))
+        (format "* TODO %s [[%s][%s]]     %s"
+                verb
+                url
+                (org-link-escape (or title url))
+                tags)
       (when notify-p
         (alert title :title "Link Captured")))))
 
