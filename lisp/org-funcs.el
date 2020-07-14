@@ -405,8 +405,7 @@ If NOTIFY-P is set, a desktop notification is displayed."
 
   (let* ((domain (string-remove-prefix "www." (url-host (url-generic-parse-url url))))
          (verb (alist-get domain org-funcs--domain-to-verb-alist "Review" nil #'equal))
-         (tags (when (org-funcs--work-related-url-p url)
-                 ":@work:")))
+         (tags (if (org-funcs--work-related-url-p url) ":@work:" "")))
     (prog1
         (format "* TODO %s [[%s][%s]]     %s"
                 verb
@@ -429,8 +428,7 @@ If NOTIFY-P is set, a desktop notification is displayed."
   (goto-char (point-max)))
 
 (defun org-funcs-capture-todo ()
-  (let ((tags (when (org-funcs-work-context-p)
-                ":@work:")))
+  (let ((tags (if (org-funcs-work-context-p) ":@work:" "")))
     (concat "* TODO %?           " tags)))
 
 (defun org-funcs-update-capture-templates (templates)
