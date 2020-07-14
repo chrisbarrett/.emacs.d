@@ -18,6 +18,7 @@
 
 (cl-eval-when (compile)
   (require 'org)
+  (require 'org-roam)
   (require 'org-agenda)
   (require 'org-clock)
   (require 'org-capture))
@@ -422,6 +423,15 @@ If NOTIFY-P is set, a desktop notification is displayed."
         (org-store-link nil)
         "* TODO Review %a (email)")
     (call-interactively #'org-funcs-read-url-for-capture)))
+
+(defun org-funcs-dailies-file ()
+  (find-file (f-join org-roam-directory (format-time-string "%Y-%m-%d.org")))
+  (goto-char (point-max)))
+
+(defun org-funcs-capture-todo ()
+  (let ((tags (when (org-funcs-work-context-p)
+                ":@work:")))
+    (concat "* TODO %?           " tags)))
 
 (defun org-funcs-update-capture-templates (templates)
   "Merge TEMPLATES with existing values in `org-capture-templates'."
