@@ -357,12 +357,17 @@ Return the position of the headline."
   (cadr (alist-get 'title (cdr (alist-get 'head (cdr html))))))
 
 (defun org-funcs-guess-or-retrieve-title (url)
-  (if (string-match-p (rx ".atlassian.net/wiki/") url)
-      (org-funcs--guess-title-from-url-fragment url)
+  (cond
+   ((string-match-p (rx ".atlassian.net/wiki/") url)
+    (org-funcs--guess-title-from-url-fragment url))
+   ((string-match-p (rx "github.com/" (+? nonl) "/pull/" (+ digit) eol) url)
+    (cadr (s-match (rx "github.com/" (group (+? nonl) "/pull/" (+ digit) eol))
+                   url)))
+   (t
     (-some->> (org-funcs--retrieve-html url)
       (org-funcs--extract-title)
       (s-replace-regexp (rx (any "\r\n\t")) "")
-      (s-trim))))
+      (s-trim)))))
 
 (defconst org-funcs--domain-to-verb-alist
   '(("audible.com" . "Listen to")
