@@ -56,6 +56,7 @@
         flx
         flycheck
         flycheck-ledger
+        flycheck-package
         flycheck-rust
         forge
         format-all
