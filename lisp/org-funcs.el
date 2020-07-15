@@ -1,4 +1,4 @@
-;;; org-funcs.el --- <enter description here>  -*- lexical-binding: t; -*-
+;;; org-funcs.el --- Extra functions to support my orgmode configuration.  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Chris Barrett
 
