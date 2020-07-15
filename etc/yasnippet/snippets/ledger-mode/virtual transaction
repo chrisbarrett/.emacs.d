@@ -2,4 +2,4 @@
 # name: virtual transaction
 # condition: (yas-funcs-bolp)
 # --
-`(yas-funcs-ledger-format-virtual-transaction)`
+`(yas-funcs-ledger-format-posting)`

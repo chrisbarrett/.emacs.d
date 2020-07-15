@@ -229,11 +229,11 @@ previous match and abort if no progress is made."
                           (shell-quote-argument account))))
     (string-remove-prefix "$ " (string-trim (shell-command-to-string command)))))
 
-(defun yas-funcs-ledger-format-virtual-transaction ()
+(defun yas-funcs-ledger-format-posting ()
   (with-temp-buffer
     (let* ((account (completing-read "Account: " (yas-funcs-ledger-virtual-account-aliases) nil t))
            (amount (or (yas-funcs--ledger-current-account-balance account) (read-number "Value: "))))
-      (insert (format "  [%s]    $ %s" account amount))
+      (insert (format "  %s    $ %s" account amount))
       (ledger-post-align-postings (point-min) (point-max)))
     (buffer-string)))
 
@@ -243,8 +243,8 @@ previous match and abort if no progress is made."
                   (shell-command-to-string "ledger reg 'Next Month' --sort date --total-data"))]
     (with-temp-buffer
       (insert (format-time-string "%Y/%m/01 * Allocate\n"))
-      (insert (format "  [Equity:Budget]  $ -%s = $ 0\n" amount))
-      (insert (format "  [Unbudgeted]     $ %s  = $ %s\n" amount amount))
+      (insert (format "  Next Month    $ -%s = $ 0\n" amount))
+      (insert (format "  Unbudgeted     $ %s  = $ %s\n" amount amount))
       (ledger-post-align-postings (point-min) (point-max))
       (buffer-string))))
 
