@@ -32,12 +32,28 @@ let
 
   languageServers = pkgs.callPackage ./language-servers { };
 
-  # Build a custom Emacs version. It's pinned to a specific version and has a
-  # few fixes to make it work better with yabai in macOS.
-  emacs = pkgs.emacsGit.overrideAttrs (old: rec {
+  emacsWithCustomisations = emacs:
+    emacs.overrideAttrs (old: {
+      withCsrc = true;
+      patches = old.patches ++ [
+        ./patches/emacs/tramp-detect-wrapped-gvfsd.patch
+        ./patches/emacs/clean-env.patch
+        ./patches/emacs/0001-optional-org-gnus.patch
+        ./patches/emacs/0005-dont-warn-on-archives.patch
+        ./patches/emacs/0006-prettier-ibuffer.patch
+      ];
+
+      postPatch = ''
+        ${old.postPatch}
+
+        # Delete the built-in orgmode.
+        rm -r test/lisp/org lisp/org etc/org etc/ORG-NEWS doc/misc/org.texi
+      '';
+    });
+
+  emacsMac = pkgs.emacsGit.overrideAttrs (old: rec {
     name = "emacs-git-${version}";
     version = "20200329.0";
-    withCsrc = true;
 
     src = pkgs.fetchFromGitHub {
       owner = "emacs-mirror";
@@ -47,23 +63,14 @@ let
     };
 
     patches = [
-      ./patches/emacs/tramp-detect-wrapped-gvfsd.patch
-      ./patches/emacs/clean-env.patch
-      ./patches/emacs/0001-optional-org-gnus.patch
       ./patches/emacs/0002-fix-window-role.patch
       ./patches/emacs/0003-no-frame-refocus.patch
       ./patches/emacs/0004-no-titlebar.patch
-      ./patches/emacs/0005-dont-warn-on-archives.patch
-      ./patches/emacs/0006-prettier-ibuffer.patch
     ];
-
-    postPatch = ''
-      ${old.postPatch}
-
-      # Delete the built-in orgmode.
-      rm -r test/lisp/org lisp/org etc/org etc/ORG-NEWS doc/misc/org.texi
-    '';
   });
+
+  emacs = emacsWithCustomisations
+    (if pkgs.stdenv.isDarwin then emacsMac else pkgs.emacsGcc);
 
   packages = pkgs.callPackage ./packages.nix rec {
 
