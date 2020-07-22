@@ -34,10 +34,7 @@ let
 
   emacsWithCustomisations = emacs:
     emacs.overrideAttrs (old: {
-      withCsrc = true;
       patches = old.patches ++ [
-        ./patches/emacs/tramp-detect-wrapped-gvfsd.patch
-        ./patches/emacs/clean-env.patch
         ./patches/emacs/0001-optional-org-gnus.patch
         ./patches/emacs/0005-dont-warn-on-archives.patch
         ./patches/emacs/0006-prettier-ibuffer.patch
@@ -48,6 +45,12 @@ let
 
         # Delete the built-in orgmode.
         rm -r test/lisp/org lisp/org etc/org etc/ORG-NEWS doc/misc/org.texi
+      '';
+
+      postInstall = ''
+        ${old.postInstall}
+
+        cp -r $src/src $out/share/emacs/src
       '';
     });
 
@@ -63,6 +66,8 @@ let
     };
 
     patches = [
+      ./patches/emacs/tramp-detect-wrapped-gvfsd.patch
+      ./patches/emacs/clean-env.patch
       ./patches/emacs/0002-fix-window-role.patch
       ./patches/emacs/0003-no-frame-refocus.patch
       ./patches/emacs/0004-no-titlebar.patch
@@ -108,6 +113,7 @@ in pkgs.symlinkJoin {
       if [ -f "$program" ]; then
         wrapProgram "$program" \
           --prefix PATH ":" "${customPathEntries}" \
+          --set NIX_EMACS_SRC_DIR "${emacs}/share/emacs/src/" \
           --set NIX_EMACS_PATH_EXTRAS "${customPathEntries}" \
           --set NIX_EMACS_LSP_ESLINT_NODE_PATH "${pkgs.nodejs}/bin/node" \
           --set NIX_EMACS_MU_BINARY "${pkgs.mu}/bin/mu" \
@@ -117,5 +123,4 @@ in pkgs.symlinkJoin {
       fi
     done
   '';
-
 }
