@@ -202,7 +202,7 @@
                                (todo priority-down category-up scheduled-up)
                                (tags priority-down category-up)
                                (search category-up))
- org-agenda-inhibit-startup nil
+ org-agenda-inhibit-startup t
  org-agenda-tags-column -100
  org-agenda-text-search-extra-files (list (f-join org-directory "archive.org"))
  org-agenda-use-time-grid nil)
