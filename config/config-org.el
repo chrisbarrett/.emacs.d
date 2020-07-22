@@ -223,7 +223,7 @@
                  results)))))
 
 (ignore-errors
-  (memoize #'config-org--org-files-with-todos 60))
+  (memoize #'config-org--org-files-with-todos "1 minute"))
 
 (defun config-org--find-org-files-with-todos ()
   (let* ((dirs (list org-directory
