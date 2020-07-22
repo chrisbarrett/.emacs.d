@@ -277,10 +277,7 @@ By default, this shows the information specified by `global-mode-string'."
       ;; Update some common faces to use this.
       (when (>= emacs-major-version 27)
         (dolist (face (face-list))
-          (when (or (memq face '(org-quote
-                                 org-block
-                                 markdown-code-face
-                                 hl-line
+          (when (or (memq face '(hl-line
                                  ledger-font-xact-highlight-face))
                     (string-match-p (rx (or "region" "magit" "ediff" "diff" "highlight" "selection"))
                                     (symbol-name face)))
@@ -391,6 +388,7 @@ By default, this shows the information specified by `global-mode-string'."
                   (lsp-ui-sideline-symbol ((t :height 0.99)))
                   (lsp-ui-sideline-symbol-info ((t :foreground "grey" :slant italic :height 0.99 :weight light)))
                   (markdown-list-face ((t :inherit markdown-blockquote-face)))
+                  (markdown-code-face ((t :extend t :background ,base3)))
                   (mu4e-header-highlight-face ((t (:bold nil :foreground ,fg :extend t :background ,(doom-blend blue bg 0.2)))))
                   (mu4e-replied-face ((t :foreground ,green)))
                   (mu4e-unread-face ((t :foreground ,blue :bold t)))
@@ -405,6 +403,8 @@ By default, this shows the information specified by `global-mode-string'."
                   (org-formula ((t :inherit shadow)))
                   (org-funcs-agenda-note ((t (:inherit font-lock-string-face :italic t))))
                   (org-meta-line ((t :inherit shadow)))
+                  (org-block ((t :extend t :background ,base3)))
+                  (org-quote ((t :italic t :extend t)))
                   (org-roam-link ((t :inherit org-link :foreground ,orange)))
                   (org-roam-link-current ((t :inherit org-link :foreground ,orange :bold t)))
                   (outline-1 ((t (:weight bold :foreground ,blue))))
