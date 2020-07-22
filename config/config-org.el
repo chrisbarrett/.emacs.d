@@ -113,6 +113,7 @@
  org-return-follows-link t
  org-reverse-note-order nil
  org-startup-indented t
+ org-startup-shrink-all-tables t
  org-startup-with-inline-images t
  org-adapt-indentation nil
 
