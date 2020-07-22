@@ -38,6 +38,11 @@
 (global-set-key (kbd "<f2>") #'next-multiframe-window)
 (global-set-key (kbd "S-<f2>") #'previous-multiframe-window)
 
+;; Set source directory.
+
+(use-package find-func
+  :custom
+  ((find-function-C-source-directory (getenv "NIX_EMACS_SRC_DIR"))))
 
 ;;; Define some convenience aliases
 
