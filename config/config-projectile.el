@@ -122,11 +122,19 @@
 (use-package counsel-projectile
   :hook (after-init . counsel-projectile-mode)
   :preface
-  (defun config-projectile--escaped-symbol-at-point ()
-    (regexp-quote (projectile-symbol-or-selection-at-point)))
+  (progn
+    (defun config-projectile--extra-opts-on-prefix-args (&optional options)
+      (list (if current-prefix-arg
+                (read-string "Rg args: " options)
+              options)))
+
+    (defun config-projectile--escaped-symbol-at-point ()
+      (regexp-quote (projectile-symbol-or-selection-at-point))))
   :custom
   ((counsel-projectile-rg-initial-input '(config-projectile--escaped-symbol-at-point))
-   (counsel-projectile-switch-project-action #'dired)))
+   (counsel-projectile-switch-project-action #'dired))
+  :config
+  (advice-add #'counsel-projectile-rg :filter-args #'config-projectile--extra-opts-on-prefix-args))
 
 (provide 'config-projectile)
 
