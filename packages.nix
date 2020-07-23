@@ -146,8 +146,8 @@
       extraPackages = {
         dired-plus = emacsmirror {
           name = "dired-plus";
-          rev = "b51974b84b861592c3519117f3f51ee557ca01ba";
-          sha256 = "0s59yd0axnja1zxc8snx013flf0f76n546i5ix5p0ngcbbhmm5kb";
+          rev = "db4d82a6b1995a3aa31bd7f2dcaf9b83335d5576";
+          sha256 = "10rfjf6gn5cx1kxq97xq7p24rnkw0hnzj32x4hny7bc6s3635d3x";
         };
         hide-comnt = emacsmirror {
           name = "hide-comnt";
