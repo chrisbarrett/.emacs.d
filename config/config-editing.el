@@ -414,7 +414,10 @@ Interactively, reverse the characters in the current region."
        (let ((deadgrep--search-type 'regexp))
          (deadgrep (replace-regexp-in-string (rx (+ space)) ".*?" ivy-text))))))
   :init
-  (general-define-key :keymaps 'counsel-ag-map "C-c C-e" #'deadgrep-from-ivy))
+  (general-define-key :keymaps 'counsel-ag-map "C-c C-e" #'deadgrep-from-ivy)
+
+  :config
+  (setq-default deadgrep--search-type 'regexp))
 
 ;; `wgrep' provides a mode for editing files directly from grep buffers.
 
