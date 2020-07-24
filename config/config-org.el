@@ -103,7 +103,7 @@
  org-outline-path-complete-in-steps nil
  org-pretty-entities nil
 
- org-refile-targets '((org-roam--list-all-files . (:maxlevel . 5)))
+ org-refile-targets '((org-funcs-refile-candidates . (:maxlevel . 3)))
  org-refile-allow-creating-parent-nodes 'confirm
  org-refile-target-verify-function #'org-funcs-refile-verify-function
  org-refile-use-outline-path 'file

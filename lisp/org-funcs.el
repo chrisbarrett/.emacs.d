@@ -525,6 +525,18 @@ If NOTIFY-P is set, a desktop notification is displayed."
                        (t
                         #'org-refile))))
 
+(defconst org-funcs--refile-ignored-filename-regexp
+  (rx (or "archive"
+          "dailies"
+          "templates"
+          "conflicted copy")))
+
+(defun config-org--org-refile-candidates ()
+  (f-entries org-directory
+             (lambda (it)
+               (not (string-match-p org-funcs--refile-ignored-filename-regexp it)))
+             t))
+
 (defun org-funcs-refile-verify-function ()
   (let ((keyword (nth 2 (org-heading-components))))
     (not (member keyword org-done-keywords))))
