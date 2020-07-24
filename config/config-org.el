@@ -238,8 +238,11 @@
   (memoize #'config-org--org-files-with-todos "1 minute"))
 
 (defun config-org--find-org-files-with-todos ()
-  (let* ((dirs (list org-directory
-                     (bound-and-true-p org-roam-directory)))
+  (let* ((dirs (-flatten (list org-directory
+                               (when (bound-and-true-p org-roam-directory)
+                                 (list org-roam-directory
+                                       (f-join org-roam-directory "dailies")
+                                       (f-join org-roam-directory "projects"))))))
          (files (seq-mapcat #'config-org--org-files-with-todos (seq-filter #'identity dirs))))
     (seq-filter (lambda (file)
                   ;; ignore dropbox conflict files
