@@ -17,6 +17,7 @@
 (cl-eval-when (compile)
   (require 'evil)
   (require 'org)
+  (require 'company)
   (require 'org-edna))
 
 (require 'f)
@@ -852,6 +853,12 @@
   :custom
   ((org-roam-directory (f-join paths-org-directory "roam"))
    (org-roam-db-location (f-join paths-cache-directory "org-roam.db"))))
+
+;; `company-org-roam' provides a company backend for org-roam topics.
+(use-package company-org-roam
+  :after (:all org-roam company)
+  :config
+  (push 'company-org-roam company-backends))
 
 ;; `org-format-headings' provides some commands to clean up the whitespace
 ;; around org headings.

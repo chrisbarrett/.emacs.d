@@ -19,6 +19,7 @@
         company
         company-anaconda
         company-auctex
+        company-org-roam
         counsel
         counsel-projectile
         csv-mode
