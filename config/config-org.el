@@ -141,6 +141,17 @@
  org-confirm-babel-evaluate nil
  org-babel-js-function-wrapper "console.log(require('util').inspect(function(){\n%s\n}()));"
 
+ org-babel-load-languages '((emacs-lisp . t)
+                            (calc . t)
+                            (plantuml . t)
+                            (ditaa . t)
+                            (restclient . t)
+                            (js . t)
+                            (gnuplot . t)
+                            (python . t)
+                            (shell . t)
+                            (sql . t))
+
  ;; org-export
 
  org-export-backends '(ascii html latex odt slack gfm koma-letter)
@@ -372,18 +383,6 @@
 
     (with-eval-after-load 'evil
       (evil-define-key 'normal org-mode-map (kbd "TAB") #'org-cycle))
-
-    (general-setq org-babel-load-languages
-                  '((emacs-lisp . t)
-                    (calc . t)
-                    (plantuml . t)
-                    (ditaa . t)
-                    (restclient . t)
-                    (js . t)
-                    (gnuplot . t)
-                    (python . t)
-                    (shell . t)
-                    (sql . t)))
 
     (setf (cdr (assoc 'file org-link-frame-setup)) #'find-file-other-window)
 
