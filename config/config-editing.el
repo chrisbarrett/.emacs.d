@@ -431,7 +431,14 @@ Interactively, reverse the characters in the current region."
   ((org-mode . flyspell-mode))
   :custom
   ((flyspell-issue-welcome-flag nil)
-   (flyspell-default-dictionary "en_GB")))
+   (flyspell-default-dictionary "en_GB"))
+  :preface
+  (defun config-editing--ad-flyspell-vefiy-org (result)
+    (and result
+         (not (seq-contains-p (face-at-point nil t)
+                              'org-link))))
+  :config
+  (advice-add #'org-mode-flyspell-verify :filter-return #'config-editing--ad-flyspell-vefiy-org))
 
 ;; `rotate' provides handy commands for manipulating the window layout.
 
