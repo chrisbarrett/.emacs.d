@@ -508,17 +508,6 @@
   (advice-add 'archive-mode :after #'config-basic-settings--run-archive-mode-hook))
 
 
-(use-package async
-  :preface
-  (progn
-    (autoload 'async-bytecomp-package-mode "async-bytecomp")
-    (autoload 'dired-async-mode "dired-async.el" nil t))
-  :config
-  (progn
-    (async-bytecomp-package-mode +1)
-    (dired-async-mode +1)))
-
-
 (use-package shr
   :defer t
   :config
