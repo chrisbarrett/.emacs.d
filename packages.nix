@@ -16,6 +16,7 @@
         auctex
         auto-highlight-symbol
         cargo
+        clojure-mode
         company
         company-anaconda
         company-auctex

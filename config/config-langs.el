@@ -52,6 +52,9 @@
         ("af" lsp-java-create-field "add field")
         ("ax" lsp-java-add-unimplemented-methods "add method stubs"))))))
 
+(use-package clojure-mode
+  :mode ("\\.clj[sd]?\\'" . clojure-mode))
+
 (use-package groovy-mode
   :mode (("\\.g\\(?:ant\\|roovy\\|radle\\)\\'" . groovy-mode)
          ("Jenkinsfile\\'" . groovy-mode))
