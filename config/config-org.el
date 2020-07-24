@@ -745,14 +745,18 @@
   :after org
   :preface
   (progn
+    (defun config-org--at-edna-edit-context-p ()
+      (save-excursion
+        (let* ((element-type (ignore-errors
+                               (org-element-type (org-element-context (org-element-at-point)))))
+               (at-property-drawer-or-heading-p (seq-contains-p '(property-drawer node-property headline) element-type))
+               (edna-loaded-p (seq-contains-p org-trigger-hook #'org-edna-trigger-function)))
+          (and at-property-drawer-or-heading-p edna-loaded-p))))
+
     (defun config-org--maybe-edna-edit (fn &rest args)
-      (let* ((element-type (ignore-errors
-                             (org-element-type (org-element-context (org-element-at-point)))))
-             (at-property-drawer-or-heading-p (seq-contains-p '(property-drawer node-property headline) element-type))
-             (edna-loaded-p (seq-contains-p org-trigger-hook #'org-edna-trigger-function)))
-        (if (and at-property-drawer-or-heading-p edna-loaded-p)
-            (org-edna-edit)
-          (funcall fn args))))
+      (if (config-org--at-edna-edit-context-p)
+          (org-edna-edit)
+        (apply fn args)))
 
     (defun config-org--revert-to-todo-if-edna-trigger-present ()
       (when-let ((trigger (org-entry-get (point) "TRIGGER")))
