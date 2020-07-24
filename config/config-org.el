@@ -385,6 +385,11 @@
                       (,(rx bol (* space) (group "#+end_quote") symbol-end)
                        (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "”"))))))
 
+    ;; KLUDGE: org-babel only loads langs correctly through the custom variable
+    ;; setter. It basically does the below.
+    (dolist (lang (mapcar #'car org-babel-load-languages))
+      (require (intern (format "ob-%s" lang))))
+
     (with-eval-after-load 'evil
       (evil-define-key 'normal org-mode-map (kbd "TAB") #'org-cycle))
 
