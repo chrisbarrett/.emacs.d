@@ -21,12 +21,37 @@
 
 ;;; Code:
 
-(defun schema (x)
-  x)
+(define-error 'validation-error "Value failed validation against schema")
 
-(defun schema-validate (a b)
-  b)
+(defun schema-compile (form)
+  (pcase form
+    ((or (pred numberp) (pred stringp))
+     `(lambda (value)
+        (if (equal ,form value)
+            (list :value value)
+          (list :errors t))))
+    (`(or ,l ,r)
+     (let ((l-comp (schema-compile l))
+           (r-comp (schema-compile r)))
+       `(lambda (value)
+          (let ((attempt (funcall ,l-comp value)))
+            (if (plist-member attempt :value)
+                attempt
+              (let ((attempt2 (funcall ,r-comp value)))
+                (if (plist-member attempt2 :value)
+                    attempt2
+                  (list :errors t))))))))
+    (_
+     (error "Malformed schema term: %s" form))))
 
+(defmacro schema (form)
+  (schema-compile form))
+
+(defun schema-validate (s x)
+  (let ((result (funcall s x)))
+    (if (plist-member result :errors)
+        (signal 'validation-error (list :schema s :value x))
+      (plist-get result :value))))
 
 (provide 'schema)
 
