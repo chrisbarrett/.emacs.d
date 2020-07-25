@@ -21,26 +21,45 @@
 
 ;;; Code:
 
+(require 'seq)
+
 (define-error 'validation-error "Value failed validation against schema")
+
+(defun schema--check-equal (a b)
+  (if (equal a b)
+      (list :value a)
+    (list :errors t)))
+
+(defun schema--check-apply-predicate (f x)
+  (if (funcall f x)
+      (list :value x)
+    (list :errors t)))
 
 (defun schema-compile (form)
   (pcase form
     ((or (pred numberp) (pred stringp))
      `(lambda (value)
-        (if (equal ,form value)
-            (list :value value)
-          (list :errors t))))
-    (`(or ,l ,r)
-     (let ((l-comp (schema-compile l))
-           (r-comp (schema-compile r)))
+        (schema--check-equal ,form value)))
+
+    ((pred functionp)
+     `(lambda (value)
+        (schema--check-apply-predicate ',form value)))
+
+    (`(or)
+     (error "`or' must have at least one term"))
+    (`(or . ,forms)
+     (let ((preds (seq-map #'schema-compile forms)))
        `(lambda (value)
-          (let ((attempt (funcall ,l-comp value)))
-            (if (plist-member attempt :value)
-                attempt
-              (let ((attempt2 (funcall ,r-comp value)))
-                (if (plist-member attempt2 :value)
-                    attempt2
-                  (list :errors t))))))))
+          (or
+           (seq-reduce (lambda (result pred)
+                         (if result
+                             result
+                           (let ((attempt (funcall pred value)))
+                             (when (plist-member attempt :value)
+                               attempt))))
+                       ',preds
+                       nil)
+           (list :errors t)))))
     (_
      (error "Malformed schema term: %s" form))))
 

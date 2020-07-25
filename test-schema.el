@@ -25,7 +25,16 @@
     (it "fails for different literal"
       (expect-fail (schema "foo") "bar")))
 
+  (describe "inline predicate functions"
+    (it "numbers pass numberp"
+      (expect-pass (schema numberp) 1))
+    (it "strings fail numberp"
+      (expect-fail (schema numberp) "foo")))
+
   (describe "alternatives"
+    (it "passes when matching case"
+      (expect-pass (schema (or 0)) 0))
+
     (it "passes when matching left"
       (expect-pass (schema (or 0 1)) 0))
 
@@ -35,5 +44,10 @@
     (it "passes when matching both"
       (expect-pass (schema (or 0 0)) 0))
 
+    (it "passes when final term matches"
+      (expect-pass (schema (or 0 1 2)) 2))
+
     (it "fails when matching neither"
-      (expect-fail (schema (or 0 1)) 2))))
+      (expect-fail (schema (or 0 1)) 2))
+    )
+  )
