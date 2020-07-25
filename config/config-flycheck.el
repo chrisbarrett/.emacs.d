@@ -115,16 +115,20 @@
                    (window-height   . 0.2)))))
 
 
+
+(defun config-flycheck--elisp-package-flycheck-predicate ()
+  (not (or (bound-and-true-p no-byte-compile)
+           (bound-and-true-p org-src-mode))))
+
 ;; flycheck-package is a linter for Elisp package conventions.
 
 (use-package flycheck-package
-  :after flycheck
-  :defer t
+  :after (:all flycheck elisp-mode)
   :config
   (progn
     (flycheck-package-setup)
-    (with-eval-after-load 'flycheck
-      (setf (flycheck-checker-get 'emacs-lisp-package 'predicate) #'buffer-file-name))))
+    (setf (flycheck-checker-get 'emacs-lisp-package 'predicate)
+          #'config-flycheck--elisp-package-flycheck-predicate)))
 
 ;; Checkdoc is used by flycheck for linting docstrings in elisp.
 
@@ -133,6 +137,9 @@
   :custom
   ((checkdoc-force-docstrings-flag nil)
    (checkdoc-arguments-in-order-flag nil))
+  :config
+  (setf (flycheck-checker-get 'emacs-lisp-checkdoc 'predicate)
+        #'config-flycheck--elisp-package-flycheck-predicate))
 
 (provide 'config-flycheck)
 
