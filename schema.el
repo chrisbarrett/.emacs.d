@@ -36,6 +36,7 @@
                                    :value value
                                    :info info)))
 
+
 (defun schema--check-equal (a b)
   (if (equal a b)
       (list :value a)
@@ -45,6 +46,29 @@
   (if (funcall f x)
       (list :value x)
     (list :errors t)))
+
+(defun schema--check-alternatives (predicates value)
+  (or (seq-reduce (lambda (result pred)
+                    (if result
+                        result
+                      (let ((attempt (funcall pred value)))
+                        (when (plist-member attempt :value)
+                          attempt))))
+                  predicates
+                  nil)
+      (list :errors t)))
+
+(defun schema--check-refinements (predicates value)
+  (or
+   (seq-reduce (lambda (continue pred)
+                 (when continue
+                   (let ((result (funcall pred value)))
+                     (when (plist-member result :value)
+                       result))))
+               predicates
+               t)
+   (list :errors t)))
+
 
 (defun schema-compile (form)
   (pcase form
@@ -61,31 +85,14 @@
     (`(and . ,forms)
      (let ((preds (seq-map #'schema-compile forms)))
        `(lambda (value)
-          (or
-           (seq-reduce (lambda (continue pred)
-                         (when continue
-                           (let ((result (funcall pred value)))
-                             (when (plist-member result :value)
-                               result))))
-                       ',preds
-                       t)
-           (list :errors t)))))
+          (schema--check-refinements ',preds value))))
 
     (`(or)
      (schema--raise-compilation-error form "`or' must have at least one term"))
     (`(or . ,forms)
      (let ((preds (seq-map #'schema-compile forms)))
        `(lambda (value)
-          (or
-           (seq-reduce (lambda (result pred)
-                         (if result
-                             result
-                           (let ((attempt (funcall pred value)))
-                             (when (plist-member attempt :value)
-                               attempt))))
-                       ',preds
-                       nil)
-           (list :errors t)))))
+          (schema--check-alternatives ',preds value))))
     (_
      (schema--raise-compilation-error form "unrecognised syntax"))))
 
