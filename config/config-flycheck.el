@@ -129,11 +129,10 @@
 ;; Checkdoc is used by flycheck for linting docstrings in elisp.
 
 (use-package checkdoc
-  :defer t
-  :init
-  (progn
-    (setq checkdoc-force-docstrings-flag nil)
-    (setq checkdoc-arguments-in-order-flag nil)))
+  :after flycheck
+  :custom
+  ((checkdoc-force-docstrings-flag nil)
+   (checkdoc-arguments-in-order-flag nil))
 
 (provide 'config-flycheck)
 
