@@ -70,6 +70,7 @@
    (list :errors t)))
 
 
+;;;###autoload
 (defun schema-compile (form)
   (pcase form
     ((or (pred numberp) (pred stringp))
@@ -96,9 +97,11 @@
     (_
      (schema--raise-compilation-error form "unrecognised syntax"))))
 
+;;;###autoload
 (defmacro schema (form)
   (schema-compile form))
 
+;;;###autoload
 (defun schema-validate (s value)
   (let ((result (funcall s value)))
     (if (plist-member result :errors)
