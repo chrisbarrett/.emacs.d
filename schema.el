@@ -23,7 +23,18 @@
 
 (require 'seq)
 
-(define-error 'validation-error "Value failed validation against schema")
+(define-error 'schema-compilation-error "Malformed schema form")
+
+(define-error 'schema-validation-error "Value failed validation against schema")
+
+(defsubst schema--raise-compilation-error (form reason)
+  (signal 'schema-compilation-error (list :form form
+                                    :reason reason)))
+
+(defsubst schema--raise-validation-error (form value info)
+  (signal 'schema-validation-error (list :form form
+                                   :value value
+                                   :info info)))
 
 (defun schema--check-equal (a b)
   (if (equal a b)
@@ -45,8 +56,23 @@
      `(lambda (value)
         (schema--check-apply-predicate ',form value)))
 
+    (`(and)
+     (schema--raise-compilation-error form "`and' must have at least one term"))
+    (`(and . ,forms)
+     (let ((preds (seq-map #'schema-compile forms)))
+       `(lambda (value)
+          (or
+           (seq-reduce (lambda (continue pred)
+                         (when continue
+                           (let ((result (funcall pred value)))
+                             (when (plist-member result :value)
+                               result))))
+                       ',preds
+                       t)
+           (list :errors t)))))
+
     (`(or)
-     (error "`or' must have at least one term"))
+     (schema--raise-compilation-error form "`or' must have at least one term"))
     (`(or . ,forms)
      (let ((preds (seq-map #'schema-compile forms)))
        `(lambda (value)
@@ -61,15 +87,15 @@
                        nil)
            (list :errors t)))))
     (_
-     (error "Malformed schema term: %s" form))))
+     (schema--raise-compilation-error form "unrecognised syntax"))))
 
 (defmacro schema (form)
   (schema-compile form))
 
-(defun schema-validate (s x)
-  (let ((result (funcall s x)))
+(defun schema-validate (s value)
+  (let ((result (funcall s value)))
     (if (plist-member result :errors)
-        (signal 'validation-error (list :schema s :value x))
+        (schema--raise-validation-error s value (plist-get result :errors))
       (plist-get result :value))))
 
 (provide 'schema)

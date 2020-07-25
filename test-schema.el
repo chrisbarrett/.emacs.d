@@ -5,7 +5,10 @@
   (expect (schema-validate s a) :to-equal a))
 
 (defun expect-fail (s a)
-  (expect (schema-validate s a) :to-throw 'validation-error))
+  (expect (schema-validate s a) :to-throw 'schema-validation-error))
+
+(defun expect-compile-fail (s)
+  (expect (schema-compile s) :to-throw 'schema-compilation-error))
 
 
 (describe "validating"
@@ -31,8 +34,11 @@
     (it "strings fail numberp"
       (expect-fail (schema numberp) "foo")))
 
-  (describe "alternatives"
-    (it "passes when matching case"
+  (describe "alternatives (or)"
+    (it "rejects nullary or"
+      (expect-compile-fail '(or)))
+
+    (it "passes trivial singleton"
       (expect-pass (schema (or 0)) 0))
 
     (it "passes when matching left"
@@ -48,6 +54,22 @@
       (expect-pass (schema (or 0 1 2)) 2))
 
     (it "fails when matching neither"
-      (expect-fail (schema (or 0 1)) 2))
-    )
+      (expect-fail (schema (or 0 1)) 2)))
+
+  (describe "refinements (and)"
+    (it "rejects nullary and"
+      (expect-compile-fail '(and)))
+
+    (it "passes trivial singleton"
+      (expect-pass (schema (and 0)) 0))
+
+    (it "passes when matching both"
+      (expect-pass (schema (and 0 0)) 0))
+
+    (it "fails when matching only left"
+      (expect-fail (schema (and 0 1)) 0))
+
+    (it "fails when matching only right"
+      (expect-fail (schema (and 0 1)) 1)))
+
   )
