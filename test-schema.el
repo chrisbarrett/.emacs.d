@@ -46,6 +46,31 @@
             :to-equal
             (schema-validation-failure))))
 
+(describe "validator output traverse*"
+  (it "succeeds on empty input"
+    (expect (schema-validation-traverse* (schema _) nil)
+            :to-equal (schema-validation-success t)))
+
+  (it "fails if any fail"
+    (expect (schema-validation-traverse* (schema stringp) (list (schema-validation-failure)))
+            :to-equal (schema-validation-failure))
+    (expect (schema-validation-traverse* (schema stringp) (list (schema-validation-failure)
+                                                          (schema-validation-failure)))
+            :to-equal (schema-validation-failure))
+    (expect (schema-validation-traverse* (schema stringp) (list (schema-validation-success 1)
+                                                          (schema-validation-failure)))
+            :to-equal (schema-validation-failure)))
+
+  (it "succeeds if all succeed"
+    (expect (schema-validation-traverse* (schema _) (list (schema-validation-success 1)))
+            :to-equal (schema-validation-success t))
+    (expect (schema-validation-traverse*
+             (schema _)
+             (list (schema-validation-success 1)
+                   (schema-validation-success 2)
+                   (schema-validation-success 3)))
+            :to-equal (schema-validation-success t))))
+
 (describe "monadic join on validator output"
   (it "succeeds if both are successful"
     (expect (schema-validation-join (schema-validation-success (schema-validation-success t)))

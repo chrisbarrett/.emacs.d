@@ -128,6 +128,32 @@ If LEFT fails, return LEFT. Otherwise return RIGHT."
       right
     left))
 
+(defun schema-validation-traverse* (validator validated-values)
+  "Apply a validation function to a sequence of previously validated results.
+
+----------------------------------------
+Notionally, this is a function of type:
+
+  (a -> Result b) -> [Result a] -> Result _
+----------------------------------------
+
+VALIDATOR is a function returning a validation result for
+each element in the sequence.
+
+VALIDATED-VALUES is a sequence of validation results.
+
+The result is either failure, or a success with a meaningless
+payload."
+  (let ((unit (schema-validation-success t)))
+    (schema-validation-ap
+     (seq-reduce (lambda (acc value)
+                   (if (schema-validation-success-p acc)
+                       (funcall validator value)
+                     (schema-validation-failure)))
+                 validated-values
+                 unit)
+     unit)))
+
 
 ;; Schema primitives
 
@@ -316,12 +342,8 @@ error if validations fails."
 
 (schema-define-pattern seq (value-type)
   `(and sequencep
-        (lambda (sequence)
-          (seq-reduce (lambda (acc value)
-                        (when (and acc (schema-validation-success-p acc))
-                          (funcall (schema ,value-type) value)))
-                      sequence
-                      (schema-validation-success t)))))
+        (lambda (it)
+          (schema-validation-traverse* (schema ,value-type) it))))
 
 (schema-define-pattern list (value-type)
   `(and listp (seq ,value-type)))
@@ -333,19 +355,14 @@ error if validations fails."
   `(list (cons ,key-type ,value-type)))
 
 (schema-define-pattern plist (key-type value-type)
-  `(lambda (value)
-     (when (and (listp value) (cl-evenp (length value)))
-       (let* ((pairs (seq-partition value 2))
-              (validated
-               (seq-reduce (lambda (acc x)
-                             (when (and acc (schema-validation-success-p acc))
-                               (let* ((key (car x))
-                                      (value (cadr x))
-                                      (pair (cons key value)))
-                                 (funcall (schema (cons ,key-type ,value-type)) pair))))
-                           pairs
-                           (schema-validation-success t))))
-         (schema-validation-ap validated (schema-validation-success value))))))
+  `(and listp
+        (lambda (it) (cl-evenp (length it)))
+        (lambda (value)
+          (let ((pairs (seq-partition value 2)))
+            (schema-validation-traverse*
+             (pcase-lambda (`(,key ,value))
+               (funcall (schema (cons ,key-type ,value-type)) (cons key value)))
+             pairs)))))
 
 (provide 'schema)
 
