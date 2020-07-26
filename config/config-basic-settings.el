@@ -403,9 +403,11 @@
     (defvar compilation-filter-start)
 
     (defun config-basic-settings--colorize-compilation-buffer ()
-      (unless (derived-mode-p 'rg-mode)
-        (let ((inhibit-read-only t))
-          (ansi-color-apply-on-region compilation-filter-start (point)))))
+      (let ((inhibit-read-only t))
+        (ansi-color-apply-on-region (save-excursion
+                                      (goto-char compilation-filter-start)
+                                      (line-beginning-position))
+                                    (point))))
 
     (defface compilation-base-face nil
       "Base face for compilation highlights"
