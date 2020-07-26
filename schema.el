@@ -102,17 +102,22 @@ nested validation result."
 
 ;; Schema primitives
 
-(defun schema--check-equal (a b)
+(defun schema--equal (a b)
   (if (equal a b)
       (schema-validation-success a)
     (schema-validation-failure)))
 
-(defun schema--check-apply-predicate (f x)
-  (if (funcall f x)
-      (schema-validation-success x)
-    (schema-validation-failure)))
+(defun schema--funcall (f x)
+  (let ((result (funcall f x)))
+    (cond
+     ((schema-validation-result-p result)
+      result)
+     (result
+      (schema-validation-success x))
+     (t
+      (schema-validation-failure)))))
 
-(defun schema--check-alternatives (predicates value)
+(defun schema--or (predicates value)
   (or (seq-reduce (lambda (result pred)
                     (if result
                         result
@@ -123,7 +128,7 @@ nested validation result."
                   nil)
       (schema-validation-failure)))
 
-(defun schema--check-refinements (predicates value)
+(defun schema--and (predicates value)
   (or
    (seq-reduce (lambda (continue pred)
                  (when continue
@@ -134,7 +139,7 @@ nested validation result."
                t)
    (schema-validation-failure)))
 
-(defun schema--check-not (pred value)
+(defun schema--not (pred value)
   (let ((result (funcall pred value)))
     (if (schema-validation-failure-p result)
         (schema-validation-success value)
@@ -147,32 +152,32 @@ nested validation result."
   (pcase form
     ((or (pred numberp) (pred stringp) (pred keywordp) `(quote ,(pred symbolp)))
      `(lambda (value)
-        (schema--check-equal ,form value)))
+        (schema--equal ,form value)))
 
     (`(and)
      (schema--raise-compilation-error form "`and' must have at least one term"))
     (`(and . ,forms)
      (let ((preds (seq-map #'schema-compile forms)))
        `(lambda (value)
-          (schema--check-refinements ',preds value))))
+          (schema--and ',preds value))))
 
     (`(or)
      (schema--raise-compilation-error form "`or' must have at least one term"))
     (`(or . ,forms)
      (let ((preds (seq-map #'schema-compile forms)))
        `(lambda (value)
-          (schema--check-alternatives ',preds value))))
+          (schema--or ',preds value))))
 
     ((or `(not) `(not ,_ , _ . ,_))
      (schema--raise-compilation-error form "`not' must have at single term"))
     (`(not ,form)
      (let ((pred (schema-compile form)))
        `(lambda (value)
-          (schema--check-not ',pred value))))
+          (schema--not ',pred value))))
 
     ((pred functionp)
      `(lambda (value)
-        (schema--check-apply-predicate ',form value)))
+        (schema--funcall ',form value)))
 
     (_
      (schema--raise-compilation-error form "unrecognised syntax"))))
