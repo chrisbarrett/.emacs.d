@@ -176,6 +176,36 @@ nested validation result."
     (_
      (schema--raise-compilation-error form "unrecognised syntax"))))
 
+(defconst schema--default-docstring
+  "VALUE is any Lisp value that will be checked against the schema.
+
+Returns a schema validation result object, which should not be
+interacted with directly. Instead, either:
+
+- pass this function to `schema-validate', which returns the
+  result on success or signals an error.
+
+- call this validation function and use
+  `schema-validation-get-result' on the return value, which
+  returns the value on success or `nil' on failure.")
+
+
+;;;###autoload
+(defmacro schema-define (name schema &optional docstring)
+  "Define NAME as a schema validation function.
+
+SCHEMA is a schema DSL form.
+
+DOCSTRING, if given, will prepended to the generated function's
+docstring."
+  (declare (indent defun) (doc-string 3))
+  (let ((doc (concat docstring
+                     (when docstring "\n\n")
+                     schema--default-docstring)))
+
+    `(cl-eval-when (compile load eval)
+       (defalias ',name ,(schema-compile schema) ,doc))))
+
 ;;;###autoload
 (defmacro schema (form)
   (schema-compile form))

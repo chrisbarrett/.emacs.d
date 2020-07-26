@@ -128,5 +128,20 @@
       (expect-fail (schema (not 0)) 0))
     (it "double-negation"
       (expect-fail (schema (not (not 0))) 1)
-      (expect-pass (schema (not (not 0))) 0)))
-  )
+      (expect-pass (schema (not (not 0))) 0))))
+
+(describe "defining schemas"
+  (schema-define test-schema-1
+    numberp
+    "Example schema.")
+
+  (it "can be called directly"
+    (expect (test-schema-1 1) :to-equal (schema-validation-success 1))
+    (expect (test-schema-1 "foo") :to-equal (schema-validation-failure)))
+
+  (schema-define test-schema-2
+    test-schema-1)
+
+  (it "can refer to other schemas"
+    (expect (test-schema-2 1) :to-equal (schema-validation-success 1))
+    (expect (test-schema-2 "foo") :to-equal (schema-validation-failure))))
