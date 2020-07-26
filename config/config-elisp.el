@@ -246,6 +246,19 @@
    "C-<return>" 'pp-eval-last-sexp
    "C-c <return>" 'pp-macroexpand-last-sexp))
 
+(use-package buttercup
+  :after elisp-mode
+  :preface
+  (defun config-elisp--ad-buttercup-handle-ansi-codes (&rest _)
+    (with-current-buffer "*Buttercup*"
+      (let ((inhibit-read-only t))
+        (ansi-color-apply-on-region (point-min) (point-max)))))
+
+  :config
+  (advice-add #'buttercup-reporter-batch--print-summary :after
+              #'config-elisp--ad-buttercup-handle-ansi-codes))
+
+
 (provide 'config-elisp)
 
 ;;; config-elisp.el ends here
