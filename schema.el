@@ -325,16 +325,16 @@ BODY is expected to return a validation function."
        (schema-compile (progn ,@body)))))
 
 ;;;###autoload
-(defmacro schema (&rest schema-args)
+(defmacro schema (&rest form)
   "Write a schema which can be used to validate data.
 
 FORM is an expression in the validation DSL.
 
 \(fn FORM)"
-  (cl-assert (equal 1 (length schema-args))
+  (cl-assert (equal 1 (length form))
              nil
-             (format "`schema' expects a single argument but got: %s" (cons 'schema schema-args)))
-  (schema-compile (car schema-args)))
+             (format "`schema' expects a single argument but got: %s" (cons 'schema form)))
+  (schema-compile (car form)))
 
 
 ;;;###autoload
