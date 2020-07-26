@@ -28,6 +28,20 @@
     (it "fails for different literal"
       (expect-fail (schema "foo") "bar")))
 
+  (describe "keyword literals"
+    (it "passes for eq literal"
+      (expect-pass (schema :foo) :foo))
+    (it "fails for different literal"
+      (expect-fail (schema :foo) :bar)))
+
+  (describe "symbol literals"
+    (it "passes for eq literal"
+      (expect-pass (schema 'foo) 'foo))
+    (it "fails for different literal"
+      (expect-fail (schema 'foo) 'bar))
+    (it "fails for unquoted literal (interpreted as a function)"
+      (expect-fail (schema not) 'not)))
+
   (describe "inline predicate functions"
     (it "numbers pass numberp"
       (expect-pass (schema numberp) 1))

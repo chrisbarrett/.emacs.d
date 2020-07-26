@@ -104,7 +104,7 @@
 ;;;###autoload
 (defun schema-compile (form)
   (pcase form
-    ((or (pred numberp) (pred stringp))
+    ((or (pred numberp) (pred stringp) (pred keywordp) `(quote ,(pred symbolp)))
      `(lambda (value)
         (schema--check-equal ,form value)))
 
