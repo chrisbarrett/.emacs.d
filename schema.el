@@ -173,7 +173,7 @@ nested validation result."
        `(lambda (value)
           (schema--or ',preds value))))
 
-    ((or `(not) `(not ,_ , _ . ,_))
+    ((and `(not . ,forms) (guard (/= 1 (length forms))))
      (schema--raise-compilation-error form "`not' must have at single term"))
     (`(not ,form)
      (let ((pred (schema-compile form)))
