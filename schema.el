@@ -196,16 +196,9 @@ nested validation result."
        `(lambda (value)
           (schema--funcall ',pred value))))
 
-    ;; Function symbol
-    ((and (pred functionp)
-          (pred symbolp))
-     `(lambda (value)
-        (schema--funcall ',form value)))
-    ;; Lambda or closure
     ((pred functionp)
      `(lambda (value)
-        (schema--funcall ,form value)))
-
+        (schema--funcall ',form value)))
     (_
      (schema--raise-compilation-error form "unrecognised syntax"))))
 
