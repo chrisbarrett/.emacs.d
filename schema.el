@@ -24,18 +24,19 @@
 (require 'cl-lib)
 (require 'seq)
 
-(define-error 'schema-compilation-error "Malformed schema form")
+(eval-and-compile
+  (define-error 'schema-compilation-error "Malformed schema form")
 
-(define-error 'schema-validation-error "Value failed validation against schema")
+  (define-error 'schema-validation-error "Value failed validation against schema")
 
-(defsubst schema--raise-compilation-error (form reason)
-  (signal 'schema-compilation-error (list :form form
-                                    :reason reason)))
+  (defsubst schema--raise-compilation-error (form reason)
+    (signal 'schema-compilation-error (list :form form
+                                      :reason reason)))
 
-(defsubst schema--raise-validation-error (form value info)
-  (signal 'schema-validation-error (list :form form
-                                   :value value
-                                   :info info)))
+  (defsubst schema--raise-validation-error (form value info)
+    (signal 'schema-validation-error (list :form form
+                                     :value value
+                                     :info info))))
 
 
 ;; Validator output representation
@@ -153,59 +154,59 @@ nested validation result."
       (schema-validation-failure))))
 
 
+;; Compiler
 
-(defun schema--custom-pattern-ident (name)
-  (intern (format "schema---%s-validator" name)))
+(eval-and-compile
+  (defun schema--custom-pattern-ident (name)
+    (intern (format "schema---%s-validator" name)))
 
-
-;;;###autoload
-(defun schema-compile (form)
-  (pcase form
-    ('_
-     `(lambda (value)
-        (schema-validation-success value)))
-
-    ((or (pred numberp) (pred stringp) (pred keywordp) `(quote ,(pred symbolp)))
-     `(lambda (value)
-        (schema--equal ,form value)))
-
-    (`(and)
-     (schema--raise-compilation-error form "`and' must have at least one term"))
-    (`(and . ,forms)
-     (let ((preds (seq-map #'schema-compile forms)))
+  (defun schema-compile (form)
+    (pcase form
+      ('_
        `(lambda (value)
-          (schema--and ',preds value))))
+          (schema-validation-success value)))
 
-    (`(or)
-     (schema--raise-compilation-error form "`or' must have at least one term"))
-    (`(or . ,forms)
-     (let ((preds (seq-map #'schema-compile forms)))
+      ((or (pred numberp) (pred stringp) (pred keywordp) `(quote ,(pred symbolp)))
        `(lambda (value)
-          (schema--or ',preds value))))
+          (schema--equal ,form value)))
 
-    ((and `(not . ,forms) (guard (/= 1 (length forms))))
-     (schema--raise-compilation-error form (format "`not' must have at single term, but had %s terms"
-                                             (length forms))))
-    (`(not ,form)
-     (let ((pred (schema-compile form)))
+      (`(and)
+       (schema--raise-compilation-error form "`and' must have at least one term"))
+      (`(and . ,forms)
+       (let ((preds (seq-map #'schema-compile forms)))
+         `(lambda (value)
+            (schema--and ',preds value))))
+
+      (`(or)
+       (schema--raise-compilation-error form "`or' must have at least one term"))
+      (`(or . ,forms)
+       (let ((preds (seq-map #'schema-compile forms)))
+         `(lambda (value)
+            (schema--or ',preds value))))
+
+      ((and `(not . ,forms) (guard (/= 1 (length forms))))
+       (schema--raise-compilation-error form (format "`not' must have at single term, but had %s terms"
+                                               (length forms))))
+      (`(not ,form)
+       (let ((pred (schema-compile form)))
+         `(lambda (value)
+            (schema--not ',pred value))))
+
+      ((and `(,sym . ,args)
+            (guard (and (symbolp sym)
+                        (fboundp (schema--custom-pattern-ident sym)))))
+       (let ((pred (apply (schema--custom-pattern-ident sym)
+                          args)))
+
+         `(lambda (value)
+            (schema--funcall ',pred value))))
+
+      ((pred functionp)
        `(lambda (value)
-          (schema--not ',pred value))))
+          (schema--funcall ',form value)))
 
-    ((and `(,sym . ,args)
-          (guard (and (symbolp sym)
-                      (fboundp (schema--custom-pattern-ident sym)))))
-     (let ((pred (apply (schema--custom-pattern-ident sym)
-                        args)))
-
-       `(lambda (value)
-          (schema--funcall ',pred value))))
-
-    ((pred functionp)
-     `(lambda (value)
-        (schema--funcall ',form value)))
-
-    (_
-     (schema--raise-compilation-error form "unrecognised syntax"))))
+      (_
+       (schema--raise-compilation-error form "unrecognised syntax")))))
 
 (defconst schema--default-docstring
   "VALUE is any Lisp value that will be checked against the schema.
@@ -219,7 +220,6 @@ interacted with directly. Instead, either:
 - call this validation function and use
   `schema-validation-get-result' on the return value, which
   returns the value on success or `nil' on failure.")
-
 
 ;;;###autoload
 (defmacro schema-define (name schema &optional docstring)
@@ -255,6 +255,7 @@ BODY is expected to return a validation function."
 ;;;###autoload
 (defmacro schema (form)
   (schema-compile form))
+
 
 ;;;###autoload
 (defun schema-validate (validator value)
