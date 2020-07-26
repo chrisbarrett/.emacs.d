@@ -1,4 +1,4 @@
-# key: ds
+# key: cd
 # name: defstruct
 # condition: (yas-funcs-bolp)
 # --

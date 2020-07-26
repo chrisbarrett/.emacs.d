@@ -60,6 +60,9 @@ Fall back to the file name sans extension."
       nameless-current-name
     (f-base (or (buffer-file-name) (buffer-name)))))
 
+(defun yas-funcs-buttercup-file-p ()
+  (string-match-p "^test-" (file-name-nondirectory (buffer-file-name))))
+
 
 ;;; JS
 
