@@ -134,15 +134,17 @@ nested validation result."
       (schema-validation-failure)))
 
 (defun schema--and (predicates value)
-  (or
-   (seq-reduce (lambda (continue pred)
-                 (when continue
-                   (let ((result (funcall pred value)))
-                     (when (schema-validation-success-p result)
-                       result))))
-               predicates
-               t)
-   (schema-validation-failure)))
+  (let ((all-satisfied-p
+         (seq-reduce (lambda (continue pred)
+                       (when continue
+                         (let ((result (funcall pred value)))
+                           (when (schema-validation-success-p result)
+                             result))))
+                     predicates
+                     t)))
+    (if all-satisfied-p
+        (schema-validation-success value)
+      (schema-validation-failure))))
 
 (defun schema--not (pred value)
   (let ((result (funcall pred value)))
