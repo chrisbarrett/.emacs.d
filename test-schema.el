@@ -177,7 +177,32 @@
       (expect-fail (schema (not 0)) 0))
     (it "double-negation"
       (expect-fail (schema (not (not 0))) 1)
-      (expect-pass (schema (not (not 0))) 0))))
+      (expect-pass (schema (not (not 0))) 0)))
+
+  (describe "positional sequence validators"
+    (it "empty seq"
+      (expect-pass (schema []) nil)
+      (expect-pass (schema []) [])
+      (expect-pass (schema []) ""))
+    (it "singleton seq"
+      (expect-pass (schema [symbolp]) '(a))
+      (expect-pass (schema [symbolp]) [a])
+      (expect-pass (schema [characterp]) "a")
+      (expect-fail (schema [symbolp]) '("a"))
+      (expect-fail (schema [symbolp]) ["a"]))
+    (it "different lengths"
+      (expect-fail (schema []) "a")
+      (expect-fail (schema [symbolp symbolp]) ["a"]))
+    (it "mixed types"
+      (expect-pass (schema [symbolp symbolp]) '(a a))
+      (expect-fail (schema [symbolp]) '(a a))
+      (expect-pass (schema [symbolp _ symbolp]) '(a 1 a))
+      (expect-pass (schema [stringp integerp]) '("hello" 1))
+      (expect-fail (schema [integerp stringp]) '("hello" 1)))
+
+    (it "complicated nesting"
+      (expect-pass (schema [(or stringp cl-plusp) symbolp]) '(1 a))
+      (expect-pass (schema [(and numberp (lambda (it) (< it 5)))]) '(1)))))
 
 (describe "defining schemas"
   (before-all

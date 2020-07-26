@@ -202,6 +202,24 @@ payload."
         (schema-validation-success value)
       (schema-validation-failure))))
 
+(defun schema--positional (validators values)
+  (cond
+   ((not (sequencep values))
+    (schema-validation-failure))
+   ((equal (length validators) (length values))
+    (let ((results
+           (seq-map-indexed (lambda (value index)
+                              (let ((validator (seq-elt validators index)))
+                                (funcall validator value)))
+                            values)))
+
+      (schema-validation-ap
+       (schema-validation-traverse* #'identity results)
+       (schema-validation-success values))))
+   (t
+    (schema-validation-failure))))
+
+
 
 ;; Compiler
 
@@ -253,6 +271,11 @@ payload."
       ((pred functionp)
        `(lambda (value)
           (schema--funcall ',form value)))
+
+      ((pred vectorp)
+       (let ((validators (seq-map #'schema-compile form)))
+         `(lambda (value)
+            (schema--positional ',validators value))))
 
       (_
        (schema--raise-compilation-error form "Bad form passed to `schema'")))))
