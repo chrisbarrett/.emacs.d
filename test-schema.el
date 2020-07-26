@@ -14,7 +14,7 @@
 
 (describe "functor on validator output"
   (it "preserves failed value"
-    (expect (schema-validation-map (lambda (value) (* 2)) (schema-validation-failure))
+    (expect (schema-validation-map (lambda (value) (* 2 value)) (schema-validation-failure))
             :to-equal (schema-validation-failure)))
 
   (it "succeeds if successful value"
