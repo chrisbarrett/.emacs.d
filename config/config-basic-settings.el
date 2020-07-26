@@ -559,6 +559,11 @@
     (setq ispell-dictionary-alist (ispell-find-aspell-dictionaries))
     (setq ispell-silently-savep t)))
 
+(use-package info
+  :general
+  (:states 'normal :keymaps 'Info-mode-map
+   "C-n" 'Info-forward-node
+   "C-p" 'Info-backward-node))
 
 (use-package info+
   :after info
