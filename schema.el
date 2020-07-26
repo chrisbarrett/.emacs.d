@@ -21,6 +21,7 @@
 
 ;;; Code:
 
+(require 'cl-lib)
 (require 'seq)
 
 (define-error 'schema-compilation-error "Malformed schema form")
@@ -47,19 +48,23 @@
 
 (defun schema-validation-result-p (value)
   (ignore-errors
-    (or (schema-validation-success-p value)
-        (schema-validation-failure-p value))))
+    (or (plist-member value :schema-validation-result)
+        (plist-member value :schema-validation-error))))
 
 (defun schema-validation-success-p (validated)
+  (cl-assert (schema-validation-result-p validated) t)
   (plist-member validated :schema-validation-result))
 
 (defun schema-validation-failure-p (validated)
+  (cl-assert (schema-validation-result-p validated) t)
   (not (schema-validation-success-p validated)))
 
 (defun schema-validation-get-result (validated)
+  (cl-assert (schema-validation-result-p validated) t)
   (plist-get validated :schema-validation-result))
 
 (defun schema-validation-get-error (validated)
+  (cl-assert (schema-validation-result-p validated) t)
   (plist-get validated :schema-validation-error))
 
 
