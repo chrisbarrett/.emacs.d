@@ -58,6 +58,12 @@
 
 (describe "validating"
 
+  (describe "wildcard (_)"
+    (it "passes anything"
+      (expect-pass (schema _) t)
+      (expect-pass (schema _) nil)
+      (expect-pass (schema _) '(1 2 3))))
+
   (describe "number literals"
     (it "passes for eq literal"
       (expect-pass (schema 0) 0)

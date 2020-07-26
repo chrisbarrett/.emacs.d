@@ -161,6 +161,10 @@ nested validation result."
 ;;;###autoload
 (defun schema-compile (form)
   (pcase form
+    ('_
+     `(lambda (value)
+        (schema-validation-success value)))
+
     ((or (pred numberp) (pred stringp) (pred keywordp) `(quote ,(pred symbolp)))
      `(lambda (value)
         (schema--equal ,form value)))
