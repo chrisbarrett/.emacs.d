@@ -154,6 +154,10 @@ nested validation result."
 
 
 
+(defun schema--custom-pattern-ident (name)
+  (intern (format "schema---%s-validator" name)))
+
+
 ;;;###autoload
 (defun schema-compile (form)
   (pcase form
@@ -183,9 +187,24 @@ nested validation result."
        `(lambda (value)
           (schema--not ',pred value))))
 
-    ((pred functionp)
+    ((and `(,sym . ,args)
+          (guard (and (symbolp sym)
+                      (fboundp (schema--custom-pattern-ident sym)))))
+     (let ((pred (apply (schema--custom-pattern-ident sym)
+                        args)))
+
+       `(lambda (value)
+          (schema--funcall ',pred value))))
+
+    ;; Function symbol
+    ((and (pred functionp)
+          (pred symbolp))
      `(lambda (value)
         (schema--funcall ',form value)))
+    ;; Lambda or closure
+    ((pred functionp)
+     `(lambda (value)
+        (schema--funcall ,form value)))
 
     (_
      (schema--raise-compilation-error form "unrecognised syntax"))))
@@ -219,6 +238,21 @@ docstring."
 
     `(cl-eval-when (compile load eval)
        (defalias ',name ,(schema-compile schema) ,doc))))
+
+(defconst schema--default-pattern-docstring
+  "Returns a validation function where the parameters in ARGLIST are bound.")
+
+;;;###autoload
+(defmacro schema-define-pattern (name arglist &rest body)
+  "Define NAME as pattern for use in the schema validation language.
+
+ARGLIST is the list of arguments expected by the pattern.
+
+BODY is expected to return a validation function."
+  (declare (indent defun) (doc-string 3))
+  `(cl-eval-when (compile load eval)
+     (defun ,(schema--custom-pattern-ident name) ,arglist
+       (schema-compile (progn ,@body)))))
 
 ;;;###autoload
 (defmacro schema (form)
