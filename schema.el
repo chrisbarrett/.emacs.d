@@ -74,7 +74,11 @@
 (defun schema-validation-map (f validated)
   "Apply a function to the value inside a validation result.
 
-Notionally, this is a function of type `(a -> b) -> Result a -> Result b'.
+----------------------------------------
+Notionally, this is a function of type:
+
+  (a -> b) -> Result a -> Result b
+----------------------------------------
 
 F is a function `(a -> b)'.
 
@@ -89,7 +93,11 @@ Returns a validated output with a payload of type `b'."
 (defun schema-validation-join (validated)
   "Collapse a nested validation result into a single result.
 
-Notionally, this is a function of type `Result (Result a) -> Result a'.
+----------------------------------------
+Notionally, this is a function of type:
+
+  Result (Result a) -> Result a
+----------------------------------------
 
 VALIDATED is the output of a validator where the payload is a
 nested validation result."
@@ -107,7 +115,11 @@ nested validation result."
 (defun schema-validation-ap (left right)
   "Apply another validator function if the first succeeded.
 
-Notionally, this is a function of type `Result a -> Result b -> Result b'.
+----------------------------------------
+Notionally, this is a function of type:
+
+  Result a -> Result b -> Result b
+----------------------------------------
 
 LEFT and RIGHT are the output of validators.
 
