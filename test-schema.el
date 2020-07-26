@@ -146,4 +146,23 @@
 
   (it "can refer to other schemas"
     (expect (test-schema-2 1) :to-equal (schema-validation-success 1))
-    (expect (test-schema-2 "foo") :to-equal (schema-validation-failure))))
+    (expect (test-schema-2 "foo") :to-equal (schema-validation-failure)))
+
+  (schema-define test-schema-foo-bar-baz
+    (or "foo" "bar" "baz"))
+
+  (schema-define test-complex
+    (or test-schema-foo-bar-baz
+        (and keywordp (not :baz))
+        'baz
+        (and numberp (lambda (it) (< it 5)))))
+
+  (it "handles complex schemas"
+    (expect (test-complex "foo") :to-equal (schema-validation-success "foo"))
+    (expect (test-complex :foo) :to-equal (schema-validation-success :foo))
+    (expect (test-complex 4) :to-equal (schema-validation-success 4))
+    (expect (test-complex "invalid") :to-equal (schema-validation-failure))
+    (expect (test-complex 5) :to-equal (schema-validation-failure))
+    (expect (test-complex 'baz) :to-equal (schema-validation-success 'baz))
+    (expect (test-complex :baz) :to-equal (schema-validation-failure))
+    (expect (test-complex nil) :to-equal (schema-validation-failure))))
