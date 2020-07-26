@@ -174,7 +174,8 @@ nested validation result."
           (schema--or ',preds value))))
 
     ((and `(not . ,forms) (guard (/= 1 (length forms))))
-     (schema--raise-compilation-error form "`not' must have at single term"))
+     (schema--raise-compilation-error form (format "`not' must have at single term, but had %s terms"
+                                             (length forms))))
     (`(not ,form)
      (let ((pred (schema-compile form)))
        `(lambda (value)
