@@ -70,6 +70,13 @@
    (list :errors t)))
 
 
+(defun schema--check-not (pred value)
+  (let ((result (funcall pred value)))
+    (if (plist-member result :errors)
+        (list :value value)
+      (list :errors t))))
+
+
 ;;;###autoload
 (defun schema-compile (form)
   (pcase form
@@ -90,6 +97,13 @@
      (let ((preds (seq-map #'schema-compile forms)))
        `(lambda (value)
           (schema--check-alternatives ',preds value))))
+
+    ((or `(not) `(not ,_ , _ . ,_))
+     (schema--raise-compilation-error form "`not' must have at single term"))
+    (`(not ,form)
+     (let ((pred (schema-compile form)))
+       `(lambda (value)
+          (schema--check-not ',pred value))))
 
     ((pred functionp)
      `(lambda (value)

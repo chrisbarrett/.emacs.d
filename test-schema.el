@@ -62,4 +62,14 @@
     (it "fails when matching only right"
       (expect-fail (schema (and 0 1)) 1)))
 
+  (describe "negation (not)"
+    (it "accepts only one argument"
+      (expect-compile-fail '(not))
+      (expect-compile-fail '(not 1 1)))
+    (it "single negation"
+      (expect-pass (schema (not 0)) 1)
+      (expect-fail (schema (not 0)) 0))
+    (it "double-negation"
+      (expect-fail (schema (not (not 0))) 1)
+      (expect-pass (schema (not (not 0))) 0)))
   )
