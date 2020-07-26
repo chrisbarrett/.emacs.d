@@ -15,6 +15,7 @@
         async
         auctex
         auto-highlight-symbol
+        buttercup
         cargo
         clojure-mode
         company
