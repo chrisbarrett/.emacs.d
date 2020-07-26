@@ -211,10 +211,19 @@ docstring."
   (schema-compile form))
 
 ;;;###autoload
-(defun schema-validate (s value)
-  (let ((result (funcall s value)))
+(defun schema-validate (validator value)
+  "Run a schema validator function on a value.
+
+VALIDATOR is either a compiled schema defined by `schema-define',
+or a schema DSL literal expressed with `schema'.
+
+VALUE is any Lisp object.
+
+Returns the output of the validator on success, or signals an
+error if validations fails."
+  (let ((result (funcall validator value)))
     (if (schema-validation-failure-p result)
-        (schema--raise-validation-error s value (schema-validation-get-error result))
+        (schema--raise-validation-error validator value (schema-validation-get-error result))
       (schema-validation-get-result result))))
 
 (provide 'schema)
