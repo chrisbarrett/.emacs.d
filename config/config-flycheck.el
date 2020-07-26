@@ -118,7 +118,8 @@
 
 (defun config-flycheck--elisp-package-flycheck-predicate ()
   (not (or (bound-and-true-p no-byte-compile)
-           (bound-and-true-p org-src-mode))))
+           (bound-and-true-p org-src-mode)
+           (string-match-p "^test-" (file-name-nondirectory (buffer-file-name))))))
 
 ;; flycheck-package is a linter for Elisp package conventions.
 
