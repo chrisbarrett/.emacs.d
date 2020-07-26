@@ -380,12 +380,9 @@ error if validations fails."
 (schema-define-pattern plist (key-type value-type)
   `(and listp
         (lambda (it) (cl-evenp (length it)))
-        (lambda (value)
-          (let ((pairs (seq-partition value 2)))
-            (schema-validation-traverse*
-             (pcase-lambda (`(,key ,value))
-               (funcall (schema (cons ,key-type ,value-type)) (cons key value)))
-             pairs)))))
+        (lambda (values)
+          (let ((pairs (seq-partition values 2)))
+            (schema-validation-traverse* (schema [,key-type ,value-type]) pairs)))))
 
 (provide 'schema)
 
