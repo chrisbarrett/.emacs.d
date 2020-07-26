@@ -46,8 +46,9 @@
   (list :schema-validation-error reason))
 
 (defun schema-validation-result-p (value)
-  (or (schema-validation-success-p value)
-      (schema-validation-failure-p value)))
+  (ignore-errors
+    (or (schema-validation-success-p value)
+        (schema-validation-failure-p value))))
 
 (defun schema-validation-success-p (validated)
   (plist-member validated :schema-validation-result))
