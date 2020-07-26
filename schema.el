@@ -37,45 +37,69 @@
                                    :info info)))
 
 
+;; Validator output representation
+
+(defun schema-validation-success (value)
+  (list :schema-validation-result value))
+
+(defun schema-validation-failure (&optional reason)
+  (list :schema-validation-error reason))
+
+(defun schema-validation-success-p (result)
+  (plist-member result :schema-validation-result))
+
+(defun schema-validation-failure-p (result)
+  (not (schema-validation-success-p result)))
+
+(defun schema-validation-get-result (result)
+  (plist-get result :schema-validation-result))
+
+(defun schema-validation-get-error (result)
+  (plist-get result :schema-validation-error))
+
+
+
+;; Schema primitives
+
 (defun schema--check-equal (a b)
   (if (equal a b)
-      (list :value a)
-    (list :errors t)))
+      (schema-validation-success a)
+    (schema-validation-failure)))
 
 (defun schema--check-apply-predicate (f x)
   (if (funcall f x)
-      (list :value x)
-    (list :errors t)))
+      (schema-validation-success x)
+    (schema-validation-failure)))
 
 (defun schema--check-alternatives (predicates value)
   (or (seq-reduce (lambda (result pred)
                     (if result
                         result
                       (let ((attempt (funcall pred value)))
-                        (when (plist-member attempt :value)
+                        (when (schema-validation-success-p attempt)
                           attempt))))
                   predicates
                   nil)
-      (list :errors t)))
+      (schema-validation-failure)))
 
 (defun schema--check-refinements (predicates value)
   (or
    (seq-reduce (lambda (continue pred)
                  (when continue
                    (let ((result (funcall pred value)))
-                     (when (plist-member result :value)
+                     (when (schema-validation-success-p result)
                        result))))
                predicates
                t)
-   (list :errors t)))
-
+   (schema-validation-failure)))
 
 (defun schema--check-not (pred value)
   (let ((result (funcall pred value)))
-    (if (plist-member result :errors)
-        (list :value value)
-      (list :errors t))))
+    (if (schema-validation-failure-p result)
+        (schema-validation-success value)
+      (schema-validation-failure))))
 
+
 
 ;;;###autoload
 (defun schema-compile (form)
@@ -119,9 +143,9 @@
 ;;;###autoload
 (defun schema-validate (s value)
   (let ((result (funcall s value)))
-    (if (plist-member result :errors)
-        (schema--raise-validation-error s value (plist-get result :errors))
-      (plist-get result :value))))
+    (if (schema-validation-failure-p result)
+        (schema--raise-validation-error s value (schema-validation-get-error result))
+      (schema-validation-get-result result))))
 
 (provide 'schema)
 
