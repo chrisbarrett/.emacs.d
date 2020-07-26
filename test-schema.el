@@ -32,6 +32,20 @@
               (schema-validation-map (lambda (value) (* 3 value))
                                (schema-validation-map (lambda (value) (* 2 value)) input))))))
 
+(describe "validator output ap"
+  (it "returns right if both succeed"
+    (expect (schema-validation-ap (schema-validation-success 1) (schema-validation-success 2))
+            :to-equal
+            (schema-validation-success 2)))
+  (it "fails if left fails"
+    (expect (schema-validation-ap (schema-validation-failure) (schema-validation-success 2))
+            :to-equal
+            (schema-validation-failure)))
+  (it "fails if right fails"
+    (expect (schema-validation-ap (schema-validation-success 1) (schema-validation-failure))
+            :to-equal
+            (schema-validation-failure))))
+
 (describe "monadic join on validator output"
   (it "succeeds if both are successful"
     (expect (schema-validation-join (schema-validation-success (schema-validation-success t)))

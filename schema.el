@@ -309,8 +309,10 @@ error if validations fails."
 
 (schema-define-pattern cons (car-type cdr-type)
   `(and consp
-        (lambda (it) (funcall (schema ,car-type) (car it)))
-        (lambda (it) (funcall (schema ,cdr-type) (cdr it)))))
+        (lambda (it)
+          (schema-validation-ap
+           (funcall (schema ,car-type) (car it))
+           (funcall (schema ,cdr-type) (cdr it))))))
 
 (schema-define-pattern seq (value-type)
   `(and sequencep
