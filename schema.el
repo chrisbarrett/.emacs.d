@@ -77,10 +77,6 @@
      `(lambda (value)
         (schema--check-equal ,form value)))
 
-    ((pred functionp)
-     `(lambda (value)
-        (schema--check-apply-predicate ',form value)))
-
     (`(and)
      (schema--raise-compilation-error form "`and' must have at least one term"))
     (`(and . ,forms)
@@ -94,6 +90,11 @@
      (let ((preds (seq-map #'schema-compile forms)))
        `(lambda (value)
           (schema--check-alternatives ',preds value))))
+
+    ((pred functionp)
+     `(lambda (value)
+        (schema--check-apply-predicate ',form value)))
+
     (_
      (schema--raise-compilation-error form "unrecognised syntax"))))
 
