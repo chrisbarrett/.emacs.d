@@ -62,6 +62,42 @@
   (plist-get validated :schema-validation-error))
 
 
+;; Validation result utilities
+
+(defun schema-validation-map (f validated)
+  "Apply a function to the value inside a validation result.
+
+Notionally, this is a function of type `(a -> b) -> Result a -> Result b'.
+
+F is a function `(a -> b)'.
+
+VALIDATED is the output of a validator, where the payload is of
+type `a'.
+
+Returns a validated output with a payload of type `b'."
+  (if (schema-validation-success-p validated)
+      (schema-validation-success (funcall f (schema-validation-get-result validated)))
+    validated))
+
+(defun schema-validation-join (validated)
+  "Collapse a nested validation result into a single result.
+
+Notionally, this is a function of type `Result (Result a) -> Result a'.
+
+VALIDATED is the output of a validator where the payload is a
+nested validation result."
+  (cond ((schema-validation-failure-p validated)
+         validated)
+        ((schema-validation-success-p validated)
+         (schema-validation-get-result validated))))
+
+(defun schema-validation-resolve (value)
+  "Ensure that VALUE represents a schema validation result."
+  (if (schema-validation-result-p value)
+      value
+    (schema-validation-success value)))
+
+
 
 ;; Schema primitives
 

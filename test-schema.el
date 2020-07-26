@@ -10,6 +10,49 @@
 (defun expect-compile-fail (s)
   (expect (schema-compile s) :to-throw 'schema-compilation-error))
 
+(describe "functor on validator output"
+  (it "preserves failed value"
+    (expect (schema-validation-map (lambda (value) (* 2)) (schema-validation-failure))
+            :to-equal (schema-validation-failure)))
+
+  (it "succeeds if successful value"
+    (expect (schema-validation-map (lambda (value) (* 2 value)) (schema-validation-success 2))
+            :to-equal (schema-validation-success 4)))
+
+  (it "law: identity"
+    (let ((input (schema-validation-success t)))
+      (expect (schema-validation-map #'identity input) :to-equal input)))
+
+  (it "law: composition"
+    (let ((input (schema-validation-success 3)))
+      (expect (schema-validation-map (lambda (value) (* 3 (* 2 value))) input)
+              :to-equal
+              (schema-validation-map (lambda (value) (* 3 value))
+                               (schema-validation-map (lambda (value) (* 2 value)) input))))))
+
+(describe "monadic join on validator output"
+  (it "succeeds if both are successful"
+    (expect (schema-validation-join (schema-validation-success (schema-validation-success t)))
+            :to-equal (schema-validation-success t)))
+
+  (it "fails if inner error"
+    (expect (schema-validation-join (schema-validation-success (schema-validation-failure)))
+            :to-equal (schema-validation-failure)))
+
+  (it "fails if outer failure"
+    (expect (schema-validation-join (schema-validation-failure))
+            :to-equal (schema-validation-failure)))
+
+  (it "law: associativity"
+    (let ((r (schema-validation-success (schema-validation-success (schema-validation-success t)))))
+      (expect (schema-validation-join (schema-validation-map #'schema-validation-join r))
+              :to-equal
+              (schema-validation-join (schema-validation-join r)))))
+  (it "law: applicativity"
+    (let ((r (schema-validation-success (schema-validation-success t))))
+      (expect (schema-validation-join (schema-validation-map #'schema-validation-success r))
+              :to-equal
+              (schema-validation-join (schema-validation-success r))))))
 
 (describe "validating"
 
