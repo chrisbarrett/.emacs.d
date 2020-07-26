@@ -247,13 +247,30 @@
    "C-c <return>" 'pp-macroexpand-last-sexp))
 
 (use-package buttercup
-  :after elisp-mode
+  :commands (buttercup-minor-mode)
+  :preface
+  (defun config-elisp--maybe-buttercup-minor-mode ()
+    (when (and (buffer-file-name)
+               (string-match-p "^test-" (file-name-nondirectory (buffer-file-name))))
+      (buttercup-minor-mode +1)))
+  :hook (emacs-lisp-mode . config-elisp--maybe-buttercup-minor-mode)
+
+  ;; KLUDGE: buttercup defines a minor mode, but without an associated keymap.
+  ;; Define one.
+  :preface
+  (progn
+    (defvar buttercup-minor-mode-map (make-sparse-keymap))
+    (add-to-list 'minor-mode-map-alist (cons 'buttercup-minor-mode buttercup-minor-mode-map)))
+
+  :general
+  (:states '(normal insert) :keymaps 'buttercup-minor-mode-map
+   "C-c C-c" #'buttercup-run-at-point)
+
   :preface
   (defun config-elisp--ad-buttercup-handle-ansi-codes (&rest _)
     (with-current-buffer "*Buttercup*"
       (let ((inhibit-read-only t))
         (ansi-color-apply-on-region (point-min) (point-max)))))
-
   :config
   (advice-add #'buttercup-reporter-batch--print-summary :after
               #'config-elisp--ad-buttercup-handle-ansi-codes))
