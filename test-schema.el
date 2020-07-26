@@ -96,12 +96,12 @@
       (expect-compile-fail '(or)))
     (it "passes trivial singleton"
       (expect-pass (schema (or 0)) 0))
+    (it "passes tautologies"
+      (expect-pass (schema (or 0 0)) 0))
     (it "passes when matching left"
       (expect-pass (schema (or 0 1)) 0))
     (it "passes when matching right"
       (expect-pass (schema (or 0 1)) 1))
-    (it "passes when matching both"
-      (expect-pass (schema (or 0 0)) 0))
     (it "passes when final term matches"
       (expect-pass (schema (or 0 1 2)) 2))
     (it "fails when matching neither"
@@ -112,6 +112,8 @@
       (expect-compile-fail '(and)))
     (it "passes trivial singleton"
       (expect-pass (schema (and 0)) 0))
+    (it "fails contradictions"
+      (expect-fail (schema (and 0 1)) 0))
     (it "passes when matching both"
       (expect-pass (schema (and 0 0)) 0))
     (it "fails when matching only left"
