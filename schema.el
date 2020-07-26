@@ -45,17 +45,21 @@
 (defun schema-validation-failure (&optional reason)
   (list :schema-validation-error reason))
 
-(defun schema-validation-success-p (result)
-  (plist-member result :schema-validation-result))
+(defun schema-validation-result-p (value)
+  (or (schema-validation-success-p value)
+      (schema-validation-failure-p value)))
 
-(defun schema-validation-failure-p (result)
-  (not (schema-validation-success-p result)))
+(defun schema-validation-success-p (validated)
+  (plist-member validated :schema-validation-result))
 
-(defun schema-validation-get-result (result)
-  (plist-get result :schema-validation-result))
+(defun schema-validation-failure-p (validated)
+  (not (schema-validation-success-p validated)))
 
-(defun schema-validation-get-error (result)
-  (plist-get result :schema-validation-error))
+(defun schema-validation-get-result (validated)
+  (plist-get validated :schema-validation-result))
+
+(defun schema-validation-get-error (validated)
+  (plist-get validated :schema-validation-error))
 
 
 
