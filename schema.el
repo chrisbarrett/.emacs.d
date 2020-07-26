@@ -104,6 +104,17 @@ nested validation result."
       value
     (schema-validation-success value)))
 
+(defun schema-validation-ap (left right)
+  "Apply another validator function if the first succeeded.
+
+Notionally, this is a function of type `Result a -> Result b -> Result b'.
+
+LEFT and RIGHT are the output of validators.
+
+If LEFT fails, return LEFT. Otherwise return RIGHT."
+  (if (schema-validation-success-p left)
+      right
+    left))
 
 
 ;; Schema primitives
@@ -280,6 +291,47 @@ error if validations fails."
     (if (schema-validation-failure-p result)
         (schema--raise-validation-error validator value (schema-validation-get-error result))
       (schema-validation-get-result result))))
+
+
+;; Provided validators
+
+(schema-define-pattern cons (car-type cdr-type)
+  `(and consp
+        (lambda (it) (funcall (schema ,car-type) (car it)))
+        (lambda (it) (funcall (schema ,cdr-type) (cdr it)))))
+
+(schema-define-pattern seq (value-type)
+  `(and sequencep
+        (lambda (sequence)
+          (seq-reduce (lambda (acc value)
+                        (when (and acc (schema-validation-success-p acc))
+                          (funcall (schema ,value-type) value)))
+                      sequence
+                      (schema-validation-success t)))))
+
+(schema-define-pattern list (value-type)
+  `(and listp (seq ,value-type)))
+
+(schema-define-pattern vector (value-type)
+  `(and vectorp (seq ,value-type)))
+
+(schema-define-pattern alist (key-type value-type)
+  `(list (cons ,key-type ,value-type)))
+
+(schema-define-pattern plist (key-type value-type)
+  `(lambda (value)
+     (when (and (listp value) (cl-evenp (length value)))
+       (let* ((pairs (seq-partition value 2))
+              (validated
+               (seq-reduce (lambda (acc x)
+                             (when (and acc (schema-validation-success-p acc))
+                               (let* ((key (car x))
+                                      (value (cadr x))
+                                      (pair (cons key value)))
+                                 (funcall (schema (cons ,key-type ,value-type)) pair))))
+                           pairs
+                           (schema-validation-success t))))
+         (schema-validation-ap validated (schema-validation-success value))))))
 
 (provide 'schema)
 

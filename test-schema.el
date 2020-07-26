@@ -146,6 +146,7 @@
              (schema-define test-schema-1
                numberp
                "Example schema.")
+
              (schema-define test-schema-2
                test-schema-1)
 
@@ -175,3 +176,62 @@
     (expect (test-complex 'baz) :to-equal (schema-validation-success 'baz))
     (expect (test-complex :baz) :to-equal (schema-validation-failure))
     (expect (test-complex nil) :to-equal (schema-validation-failure))))
+
+(describe "builtins"
+  (it "cons"
+    (expect-pass (schema (cons _ _))
+                 '("foo" . "bar"))
+    (expect-pass (schema (cons numberp listp))
+                 '(1 . ("bar"))))
+  (it "seq"
+    (expect-pass (schema (seq _)) '())
+    (expect-pass (schema (seq _)) [])
+
+    (expect-pass (schema (seq _)) '(a :b "c"))
+    (expect-pass (schema (seq _)) [a :b "c"])
+    (expect-pass (schema (seq 'a)) '(a a a a))
+    (expect-pass (schema (seq 'a)) [a a a a])
+    (expect-pass (schema (seq characterp)) "hello")
+
+    (expect-fail (schema (seq _)) 1)
+
+    (expect-fail (schema (seq 'a)) '(a a b))
+    (expect-fail (schema (seq 'a)) [a a b])
+
+    (expect-fail (schema (seq stringp)) '(a))
+    (expect-fail (schema (seq stringp)) '("a" b))
+    (expect-fail (schema (seq stringp)) [a]))
+
+  (it "list"
+    (expect-pass (schema (list _)) '())
+    (expect-pass (schema (list _)) '(a :b "c"))
+    (expect-pass (schema (list 'a)) '(a))
+
+    (expect-fail (schema (list _)) [])
+    (expect-fail (schema (list 'a)) [a])
+    (expect-fail (schema (list characterp)) "hello"))
+
+  (it "vector"
+    (expect-pass (schema (vector _)) [])
+    (expect-pass (schema (vector 'a)) [a])
+
+    (expect-fail (schema (vector _)) '())
+    (expect-fail (schema (vector _)) '(a :b "c"))
+    (expect-fail (schema (vector 'a)) '(a)))
+
+  (it "alist"
+    (expect-pass (schema (alist _ _)) nil)
+    (expect-pass (schema (alist 'a _)) '((a) (a . b)))
+    (expect-pass (schema (alist _ _)) '((a) (:b) ("c")))
+
+    (expect-fail (schema (alist a _)) [(a) (a)])
+    (expect-fail (schema (alist symbolp _)) '((a) (:b) ("c"))))
+
+  (it "plist"
+    (expect-pass (schema (plist _ _)) nil)
+    (expect-fail (schema (plist _ _)) '(a))
+
+    (expect-pass (schema (plist _ _)) '(a b))
+    (expect-pass (schema (plist 'a _)) '(a :b a :c))
+    (expect-pass (schema (plist symbolp keywordp)) '(a :b a :c))
+    (expect-fail (schema (plist symbolp symbolp)) [a b c d])))
