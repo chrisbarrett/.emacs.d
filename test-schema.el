@@ -135,29 +135,30 @@
       (expect-pass (schema (not (not 0))) 0))))
 
 (describe "defining schemas"
-  (schema-define test-schema-1
-    numberp
-    "Example schema.")
+  (before-all
+    (eval '(progn
+             (schema-define test-schema-1
+               numberp
+               "Example schema.")
+             (schema-define test-schema-2
+               test-schema-1)
+
+             (schema-define test-schema-foo-bar-baz
+               (or "foo" "bar" "baz"))
+
+             (schema-define test-complex
+               (or test-schema-foo-bar-baz
+                   (and keywordp (not :baz))
+                   'baz
+                   (and numberp (lambda (it) (< it 5))))))))
 
   (it "can be called directly"
     (expect (test-schema-1 1) :to-equal (schema-validation-success 1))
     (expect (test-schema-1 "foo") :to-equal (schema-validation-failure)))
 
-  (schema-define test-schema-2
-    test-schema-1)
-
   (it "can refer to other schemas"
     (expect (test-schema-2 1) :to-equal (schema-validation-success 1))
     (expect (test-schema-2 "foo") :to-equal (schema-validation-failure)))
-
-  (schema-define test-schema-foo-bar-baz
-    (or "foo" "bar" "baz"))
-
-  (schema-define test-complex
-    (or test-schema-foo-bar-baz
-        (and keywordp (not :baz))
-        'baz
-        (and numberp (lambda (it) (< it 5)))))
 
   (it "handles complex schemas"
     (expect (test-complex "foo") :to-equal (schema-validation-success "foo"))
