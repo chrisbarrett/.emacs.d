@@ -30,8 +30,8 @@
   (define-error 'schema-validation-error "Value failed validation against schema")
 
   (defsubst schema--raise-compilation-error (form reason)
-    (signal 'schema-compilation-error (list :form form
-                                      :reason reason)))
+    (signal 'schema-compilation-error (list :reason reason
+                                      :form form)))
 
   (defsubst schema--raise-validation-error (form value info)
     (signal 'schema-validation-error (list :form form
@@ -206,7 +206,7 @@ nested validation result."
           (schema--funcall ',form value)))
 
       (_
-       (schema--raise-compilation-error form "unrecognised syntax")))))
+       (schema--raise-compilation-error form "Bad form passed to `schema'")))))
 
 (defconst schema--default-docstring
   "VALUE is any Lisp value that will be checked against the schema.
