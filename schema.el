@@ -230,7 +230,7 @@ docstring."
                      (when docstring "\n\n")
                      schema--default-docstring)))
 
-    `(cl-eval-when (compile load eval)
+    `(eval-when-compile
        (defalias ',name ,(schema-compile schema) ,doc))))
 
 (defconst schema--default-pattern-docstring
@@ -244,7 +244,7 @@ ARGLIST is the list of arguments expected by the pattern.
 
 BODY is expected to return a validation function."
   (declare (indent defun) (doc-string 3))
-  `(cl-eval-when (compile load eval)
+  `(eval-when-compile
      (defun ,(schema--custom-pattern-ident name) ,arglist
        (schema-compile (progn ,@body)))))
 
