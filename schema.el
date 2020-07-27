@@ -228,6 +228,12 @@ payload."
     (intern (format "schema---%s-validator" name)))
 
   (defun schema-compile (form)
+    "Compile a schema into a validator function.
+
+FORM is a schema DSL form. See the documentation for `schema' for
+an overview.
+
+Returns a function that can be used with `schema-validate'."
     (pcase form
       ('_
        `(lambda (value)
@@ -324,17 +330,24 @@ BODY is expected to return a validation function."
      (defun ,(schema--custom-pattern-ident name) ,arglist
        (schema-compile (progn ,@body)))))
 
+
+(eval-when-compile
+  (defconst schema--schema-docstring
+    (with-temp-buffer
+      (insert-file-contents (expand-file-name "schema-docstring.txt"
+                                              load-file-name))
+      (goto-char (point-min))
+      (forward-line 1)
+      (buffer-substring (line-beginning-position) (point-max)))))
+
 ;;;###autoload
-(defmacro schema (&rest form)
-  "Write a schema which can be used to validate data.
+(eval `(defmacro schema (&rest form)
+         ,(concat schema--schema-docstring "\n\n\(fn FORM)")
 
-FORM is an expression in the validation DSL.
-
-\(fn FORM)"
-  (cl-assert (equal 1 (length form))
-             nil
-             (format "`schema' expects a single argument but got: %s" (cons 'schema form)))
-  (schema-compile (car form)))
+         (cl-assert (equal 1 (length form))
+                    nil
+                    (format "`schema' expects a single argument but got: %s" (cons 'schema form)))
+         (schema-compile (car form))))
 
 
 ;;;###autoload

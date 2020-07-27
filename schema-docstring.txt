@@ -1,0 +1,115 @@
+;;; -*- eval: (help-make-xrefs (current-buffer)); fill-column: 65; -*-
+Build a schema which can be used to validate data.
+
+FORM is an expression in the schema validation language, which is
+described below.
+
+Returns a validation function, which can be used with
+`schema-validate' to validate data.
+
+    (schema-validate (schema :hello) :hello)  ; => :hello
+    (schema-validate (schema :hello) :hola)  ; => ***error***
+
+It can be convenient to give schemas names for clarity and reuse.
+Schemas bound with `schema-define' can be referred to by name
+within the language.
+
+    (schema-define foobarbaz (or :foo :bar :baz))
+
+    (schema-validate (schema foobarbaz) :foo)  ; => :foo
+
+
+SCHEMA LANGUAGE
+
+Literals
+
+    Strings, numbers, keywords and quoted symbols stand for themselves.
+
+    - (schema "foo")   matches "foo" but not "bar"
+    - (schema 'foo)    matches 'foo
+    - (schema :hi)     etc
+    - (schema 0)       etc
+
+    Note that symbols must be quoted, or they are interpreted as
+    validation functions to be run.
+
+
+Wildcard
+
+    The underscore `_' matches anything.
+
+    - (schema _) matches :foo, 0, etc.
+
+
+Predicate functions
+
+    Symbols are interpreted to be unary functions which either
+    return `t', `nil' or a validation result. It is therefore
+    possible to compose schemas using standard predicate
+    functions or other schemas.
+
+    - (schema stringp)          matches "foo" but not :foo
+
+    - (progn
+         (schema-define foo "foo")
+         (schema foo))          matches "foo"
+
+
+    Lambda functions can also be used.
+
+    - (schema (lambda (n) (< 0 n)))  matches numbers above zero.
+
+
+Logical operators: and, or not
+
+    These operators do what you'd expect and allow you to build
+    more complicated schemas.
+
+    - (schema (not stringp))          matches anything but strings
+
+    - (schema (or stringp numberp))   matches strings or numbers
+
+    - (schema (and stringp
+                   (lambda (s)
+                      (< 5 (length s)))))
+
+                                      matches strings longer than
+                                      5 chars.
+
+
+Positional matching: [SCHEMAS...]
+
+    Match a sequence and validate its values positionally. This
+    works with boths lists and vectors.
+
+    - (schema [numberp stringp])
+
+         matches:
+
+         - '(0 "")
+         - [0 "foo"]
+
+         but not:
+
+         - ["" 0]     - different order
+         - [0 "" ""]  - different number of elements
+
+
+Complex Patterns
+
+    Some patterns look like function calls. Examples include
+    patterns for validating the contents of sequence types.
+
+    - (schema (seq numberp))       matches lists or vectors
+                                   containing only numbers.
+
+    - (schema (list _))            matches any list, regardless
+                                   of the type of its values.
+
+    - (schema (alist symbolp stringp))
+                                   matches association-lists
+                                   where the keys are symbols and
+                                   values are strings.
+
+    New patterns can be added using `schema-define-pattern'. See
+    the patterns that come with the library for examples.
