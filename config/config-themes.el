@@ -405,6 +405,7 @@ By default, this shows the information specified by `global-mode-string'."
                   (org-meta-line ((t :inherit shadow)))
                   (org-block ((t :extend t :background ,base3)))
                   (org-quote ((t :italic t :extend t)))
+                  (org-tag ((t :foreground ,base7 :weight normal)))
                   (org-link ((t :inherit link :underline nil)))
                   (org-roam-link ((t :inherit org-link)))
                   (org-roam-link-current ((t :inherit org-link :bold t)))
