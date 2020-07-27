@@ -410,6 +410,7 @@ By default, this shows the information specified by `global-mode-string'."
                   (org-roam-link ((t :inherit org-link)))
                   (org-roam-link-current ((t :inherit org-link :bold t)))
                   (outline-1 ((t (:weight bold :foreground ,blue))))
+                  (page-break-lines ((t :height 180 :foreground ,base4 :weight light :slant normal :inherit font-lock-comment-face)))
                   (parenthesis ((t (:foreground ,dim-fg :weight light))))
                   (secondary-selection ((t (:background ,dim-bg))))
                   (vterm-color-black ((t (:foreground ,bg :background ,base5))))
