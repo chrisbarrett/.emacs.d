@@ -531,7 +531,7 @@ If NOTIFY-P is set, a desktop notification is displayed."
           "templates"
           "conflicted copy")))
 
-(defun config-org--org-refile-candidates ()
+(defun org-funcs-refile-candidates ()
   (f-entries org-directory
              (lambda (it)
                (not (string-match-p org-funcs--refile-ignored-filename-regexp it)))
