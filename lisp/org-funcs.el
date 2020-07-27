@@ -532,10 +532,11 @@ If NOTIFY-P is set, a desktop notification is displayed."
           "conflicted copy")))
 
 (defun org-funcs-refile-candidates ()
-  (f-entries org-directory
-             (lambda (it)
-               (not (string-match-p org-funcs--refile-ignored-filename-regexp it)))
-             t))
+  (f-files org-directory
+           (lambda (it)
+             (and (string-match-p "\\.org\\'" it)
+                  (not (string-match-p org-funcs--refile-ignored-filename-regexp it))))
+           t))
 
 (defun org-funcs-refile-verify-function ()
   (let ((keyword (nth 2 (org-heading-components))))
