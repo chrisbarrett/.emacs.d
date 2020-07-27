@@ -76,9 +76,7 @@
 
     (add-to-list 'display-buffer-alist
                  `(,(rx bos "*Ledger Report*" eos)
-                   (display-buffer-reuse-window display-buffer-in-side-window)
-                   (side . right)
-                   (window-width . 80)))
+                   (display-buffer-reuse-window display-buffer-pop-up-window)))
 
     ;; Fix font lock issue in ledger reports
     (add-hook 'ledger-report-mode-hook 'font-lock-fontify-buffer)))
