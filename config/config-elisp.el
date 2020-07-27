@@ -258,9 +258,9 @@
   ;; KLUDGE: buttercup defines a minor mode, but without an associated keymap.
   ;; Define one.
   :preface
-  (progn
-    (defvar buttercup-minor-mode-map (make-sparse-keymap))
-    (add-to-list 'minor-mode-map-alist (cons 'buttercup-minor-mode buttercup-minor-mode-map)))
+  (defvar buttercup-minor-mode-map (make-sparse-keymap))
+  :config
+  (add-to-list 'minor-mode-map-alist (cons 'buttercup-minor-mode buttercup-minor-mode-map))
 
   :general
   (:states '(normal insert) :keymaps 'buttercup-minor-mode-map
