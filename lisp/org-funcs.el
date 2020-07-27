@@ -424,7 +424,7 @@ If NOTIFY-P is set, a desktop notification is displayed."
     (call-interactively #'org-funcs-read-url-for-capture)))
 
 (defun org-funcs-dailies-file ()
-  (find-file (f-join org-roam-directory (format-time-string "%Y-%m-%d.org")))
+  (find-file (f-join org-roam-directory (format-time-string "dailies/%Y-%m-%d.org")))
   (goto-char (point-max)))
 
 (defun org-funcs-capture-todo ()
