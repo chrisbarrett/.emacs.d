@@ -115,6 +115,11 @@
                              nil))
   (eval `(use-package ,feature :demand t)))
 
+;; Support loading files in nursery
+
+(dolist (dir (f-directories paths-nursery-directory))
+  (add-to-list 'load-path dir))
+
 ;; Load files in org lisp directory
 
 (with-eval-after-load 'org
