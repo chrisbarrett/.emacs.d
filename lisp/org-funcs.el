@@ -424,8 +424,16 @@ If NOTIFY-P is set, a desktop notification is displayed."
     (call-interactively #'org-funcs-read-url-for-capture)))
 
 (defun org-funcs-dailies-file ()
-  (find-file (f-join org-roam-directory (format-time-string "dailies/%Y-%m-%d.org")))
-  (goto-char (point-max)))
+  (let* ((template (alist-get "d" org-roam-dailies-capture-templates nil nil #'equal))
+         (file-path-template (plist-get template :file-name)))
+
+    (find-file (f-join org-roam-directory (concat (string-trim (org-roam-capture--fill-template file-path-template))
+                                                  ".org")))
+    (when (string-empty-p (string-trim (buffer-substring (point-min) (point-max))))
+      (let ((content-template (plist-get template :head)))
+        (insert (org-roam-capture--fill-template content-template))))
+
+    (goto-char (point-max))))
 
 (defun org-funcs-capture-todo ()
   (let ((tags (if (org-funcs-work-context-p) ":@work:" "")))
