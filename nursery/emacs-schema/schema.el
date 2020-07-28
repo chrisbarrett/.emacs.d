@@ -137,8 +137,8 @@ Notionally, this is a function of type:
   (a -> Result b) -> [Result a] -> Result _
 ----------------------------------------
 
-VALIDATOR is a function returning a validation result for
-each element in the sequence.
+VALIDATOR is a function returning a validation result for each
+element in the sequence.
 
 VALIDATED-VALUES is a sequence of validation results.
 
@@ -355,8 +355,11 @@ BODY is expected to return a validation function."
 (defun schema-validate (validator value)
   "Run a schema validator function on a value.
 
-VALIDATOR is either a compiled schema defined by `schema-define',
-or a schema DSL literal expressed with `schema'.
+See the documentation for the macro `schema' for usage examples.
+
+VALIDATOR is typically built using the `schema' macro, but it can
+be any function returning either a `schema-validation-success' or
+`schema-validation-failure'.
 
 VALUE is any Lisp object.
 
