@@ -335,7 +335,8 @@ BODY is expected to return a validation function."
   (defconst schema--schema-docstring
     (with-temp-buffer
       (insert-file-contents (expand-file-name "schema-docstring.txt"
-                                              load-file-name))
+                                              (when load-file-name
+                                                (file-name-directory load-file-name))))
       (goto-char (point-min))
       (forward-line 1)
       (buffer-substring (line-beginning-position) (point-max)))))
