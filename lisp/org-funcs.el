@@ -45,8 +45,7 @@
             (find-file-noselect path))
       (save-restriction
         (widen)
-        (when (string-empty-p (string-trim (buffer-substring (point-min) (point-max))))
-
+        (when (= (buffer-size) 0)
           ;; Insert default content for dailies file.
           (let* ((template (alist-get "d" org-roam-dailies-capture-templates nil nil #'equal))
                  (content-template (plist-get template :head)))
