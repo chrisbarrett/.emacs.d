@@ -419,11 +419,11 @@
   (org-funcs-update-capture-templates
    (list
     (org-funcs-capture-template
-     "t" "Todo" '(function org-funcs-dailies-file) '(function org-funcs-capture-todo)
+     "t" "Todo" '(function org-funcs-dailies-file-for-capture) '(function org-funcs-capture-todo)
      :prepend nil)
 
     (org-funcs-capture-template
-     "l" "Link" '(function org-funcs-dailies-file) '(function org-funcs-capture-link)
+     "l" "Link" '(function org-funcs-dailies-file-for-capture) '(function org-funcs-capture-link)
      :prepend nil
      :immediate-finish t))))
 

@@ -423,17 +423,29 @@ If NOTIFY-P is set, a desktop notification is displayed."
         "* TODO Review %a (email)")
     (call-interactively #'org-funcs-read-url-for-capture)))
 
-(defun org-funcs-dailies-file ()
+(defun org-funcs-dailies-file-path ()
   (let* ((template (alist-get "d" org-roam-dailies-capture-templates nil nil #'equal))
-         (file-path-template (plist-get template :file-name)))
+         (file-path-template (plist-get template :file-name))
+         (expanded-path (concat (string-trim (org-roam-capture--fill-template file-path-template))
+                                ".org")))
+    (f-join org-roam-directory expanded-path)))
 
-    (find-file (f-join org-roam-directory (concat (string-trim (org-roam-capture--fill-template file-path-template))
-                                                  ".org")))
-    (when (string-empty-p (string-trim (buffer-substring (point-min) (point-max))))
-      (let ((content-template (plist-get template :head)))
-        (insert (org-roam-capture--fill-template content-template))))
+(defun org-funcs-dailies-buffer-get-create ()
+  (let ((path (org-funcs-dailies-file-path)))
+    (with-current-buffer
+        (or (get-file-buffer path)
+            (find-file-noselect path))
+      (save-restriction
+        (widen)
+        (when (string-empty-p (string-trim (buffer-substring (point-min) (point-max))))
+          (let* ((template (alist-get "d" org-roam-dailies-capture-templates nil nil #'equal))
+                 (content-template (plist-get template :head)))
+            (insert (org-roam-capture--fill-template content-template)))))
+      (current-buffer))))
 
-    (goto-char (point-max))))
+(defun org-funcs-dailies-file-for-capture ()
+  (switch-to-buffer (org-funcs-dailies-buffer-get-create))
+  (goto-char (point-max)))
 
 (defun org-funcs-capture-todo ()
   (let ((tags (if (org-funcs-work-context-p) ":@work:" "")))
