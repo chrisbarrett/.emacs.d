@@ -417,6 +417,10 @@ error if validations fails."
        (plist ,key-type ,value-type)
        (hash ,key-type ,value-type)))
 
+
+(schema-define-pattern optional (type)
+  `(or null ,type))
+
 (provide 'schema)
 
 ;;; schema.el ends here

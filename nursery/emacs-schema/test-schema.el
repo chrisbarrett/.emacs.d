@@ -30,7 +30,7 @@
       (expect (schema-validation-map (lambda (value) (* 3 (* 2 value))) input)
               :to-equal
               (schema-validation-map (lambda (value) (* 3 value))
-                               (schema-validation-map (lambda (value) (* 2 value)) input))))))
+                                     (schema-validation-map (lambda (value) (* 2 value)) input))))))
 
 (describe "validator output ap"
   (it "returns right if both succeed"
@@ -55,10 +55,10 @@
     (expect (schema-validation-traverse* (schema stringp) (list (schema-validation-failure)))
             :to-equal (schema-validation-failure))
     (expect (schema-validation-traverse* (schema stringp) (list (schema-validation-failure)
-                                                          (schema-validation-failure)))
+                                                                (schema-validation-failure)))
             :to-equal (schema-validation-failure))
     (expect (schema-validation-traverse* (schema stringp) (list (schema-validation-success 1)
-                                                          (schema-validation-failure)))
+                                                                (schema-validation-failure)))
             :to-equal (schema-validation-failure)))
 
   (it "succeeds if all succeed"
@@ -318,4 +318,9 @@
     (expect-pass (schema (map 'a 1)) #s(hash-table data (a 1)))
     (expect-pass (schema (map symbolp keywordp)) '(a :a b :b))
     (expect-fail (schema (map symbolp stringp)) '(a :a b :b))
-    (expect-fail (schema (map symbolp keywordp)) [a :a b :b])))
+    (expect-fail (schema (map symbolp keywordp)) [a :a b :b]))
+
+  (it "optional"
+    (expect-pass (schema (optional 1)) nil)
+    (expect-pass (schema (optional 1)) 1)
+    (expect-fail (schema (optional 2)) 1)))
