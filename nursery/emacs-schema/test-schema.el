@@ -208,20 +208,20 @@
   (before-all
     (eval '(progn
              (schema-define test-schema-1
-                            numberp
-                            "Example schema.")
+               numberp
+               "Example schema.")
 
              (schema-define test-schema-2
-                            test-schema-1)
+               test-schema-1)
 
              (schema-define test-schema-foo-bar-baz
-                            (or "foo" "bar" "baz"))
+               (or "foo" "bar" "baz"))
 
              (schema-define test-complex
-                            (or test-schema-foo-bar-baz
-                                (and keywordp (not :baz))
-                                'baz
-                                (and numberp (lambda (it) (< it 5))))))))
+               (or test-schema-foo-bar-baz
+                   (and keywordp (not :baz))
+                   'baz
+                   (and numberp (lambda (it) (< it 5))))))))
 
   (it "can be called directly"
     (expect (test-schema-1 1) :to-equal (schema-validation-success 1))
