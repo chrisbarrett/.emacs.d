@@ -241,7 +241,7 @@
     (expect (test-complex :baz) :to-equal (schema-validation-failure))
     (expect (test-complex nil) :to-equal (schema-validation-failure))))
 
-(describe "builtins"
+(describe "sequence types"
   (it "cons"
     (expect-pass (schema (cons _ _))
                  '("foo" . "bar"))
