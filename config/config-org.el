@@ -191,6 +191,7 @@
  org-clock-in-resume t
  org-clock-out-remove-zero-time-clocks t
  org-clock-persist t
+ org-clock-into-drawer nil
  org-clock-persist-query-resume nil
  org-clock-report-include-clocking-task t
 
