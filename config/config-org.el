@@ -329,11 +329,10 @@
 
     (defun config-org--before-archive (&rest _)
       ;; Ensure we have a context before archiving.
-      (unless (seq-intersection '("@personal" "@work" "@flat") (org-get-tags))
-        (let ((tag (pcase-exhaustive (read-char-choice "Set context: [w]ork  [p]ersonal  [f]lat" '(?w ?p ?f))
+      (unless (seq-intersection '("@personal" "@work") (org-get-tags))
+        (let ((tag (pcase-exhaustive (read-char-choice "Set context: [w]ork  [p]ersonal" '(?w ?p))
                      (?w "@work")
-                     (?p "@personal")
-                     (?f "@flat"))))
+                     (?p "@personal"))))
           (org-toggle-tag tag 'on))))
 
     (defun config-org--after-archive (&rest _)
@@ -579,16 +578,13 @@
 
     (org-funcs-update-agenda-custom-commands
      (list
-      '("f" . "@flat context")
-      (config-org--agenda-for-context "@flat"
-                            :filter-preset '("+@flat" "-@someday"))
       '("p" . "@personal context")
       (config-org--agenda-for-context "@personal"
                             :filter-preset '("-@someday" "-@work"))
-      (config-org--plan-for-context '("@personal" "@flat")
+      (config-org--plan-for-context '("@personal")
                           :filter-preset '("-@someday" "-@work"))
 
-      (config-org--review-for-context '("@personal" "@flat"))
+      (config-org--review-for-context '("@personal"))
 
       '("w" . "@work context")
       (config-org--agenda-for-context "@work"
