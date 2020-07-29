@@ -467,9 +467,6 @@
   (progn
     (autoload 'page-break-lines--update-display-tables "page-break-lines")
 
-    (defconst config-org--agenda-clockreport-defaults
-      '(:link t :compact t :maxlevel 4 :fileskip0 t :step week))
-
     (defun config-org--standard-filter-preset (tags)
       (seq-uniq (append tags '("-ignore"))))
 
@@ -498,7 +495,6 @@
 
         ((org-agenda-tag-filter-preset ',(config-org--standard-filter-preset filter-preset))
          (org-agenda-start-with-log-mode '(closed clock state))
-         (org-agenda-clockreport-parameter-plist ',(append config-org--agenda-clockreport-defaults (list :tags tag)))
          (org-agenda-span 'day)
          (org-agenda-show-future-repeats nil)
          (org-agenda-archives-mode nil)
@@ -524,7 +520,6 @@
                  ((org-agenda-overriding-header "Review projects. Are these all healthy?")
                   (org-agenda-skip-function #'org-project-skip-non-projects))))
           ((org-agenda-tag-filter ',(config-org--standard-filter-preset filter-preset))
-           (org-agenda-clockreport-parameter-plist ',(append config-org--agenda-clockreport-defaults (list :tags tags)))
            (org-agenda-span 'week)
            (org-agenda-show-future-repeats nil)
            (org-agenda-archives-mode nil)
@@ -549,7 +544,6 @@
                  ((org-agenda-overriding-header "Review projects. Are these all healthy?")
                   (org-agenda-skip-function #'org-project-skip-non-projects))))
           ((org-agenda-tag-filter-preset ',(config-org--standard-filter-preset filter-preset))
-           (org-agenda-clockreport-parameter-plist ',(append config-org--agenda-clockreport-defaults (list :tags tags)))
            (org-agenda-span 'week)
            (org-agenda-start-day "-7d")
            (org-agenda-start-with-clockreport-mode t)
