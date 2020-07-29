@@ -188,7 +188,7 @@
   (progn
     (add-to-list 'display-buffer-alist
                  `(,(rx bos "*Backtrace*" eos)
-                   (display-buffer-reuse-window display-buffer-in-side-window)
+                   (display-buffer-reuse-window display-buffer-pop-up-window)
                    (side            . right)
                    (window-width    . 80)))
 
