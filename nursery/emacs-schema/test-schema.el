@@ -359,4 +359,24 @@
     (expect-pass (schema (num :lt 1)) 0)
     (expect-pass (schema (num :lt 1)) 0.5)
     (expect-fail (schema (num :lt 1)) 1)
-    (expect-fail (schema (num :lt 1)) 1.5)))
+    (expect-fail (schema (num :lt 1)) 1.5))
+
+  (it "nat"
+    (expect-fail (schema (nat)) -1)
+    (expect-fail (schema (nat)) -0.5)
+    (expect-pass (schema (nat)) 0)
+    (expect-pass (schema (nat)) 1)
+    (expect-fail (schema (nat)) 1.5)
+    (expect-pass (schema (nat)) 2)
+    (expect-pass (schema (nat)) 2)
+    (expect-pass (schema (nat :max 2)) 1)
+    (expect-pass (schema (nat :max 2)) 2)
+    (expect-fail (schema (nat :max 2)) 3))
+
+  (it "port-number"
+    (expect-fail (schema port-number) -1)
+    (expect-pass (schema port-number) 0)
+    (expect-pass (schema port-number) 1)
+    (expect-fail (schema port-number) 1.5)
+    (expect-pass (schema port-number) 65535)
+    (expect-fail (schema port-number) 65536)))

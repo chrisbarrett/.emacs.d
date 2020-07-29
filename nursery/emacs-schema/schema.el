@@ -442,6 +442,14 @@ error if validations fails."
         (lambda (n)
           (schema--eval-num ',plist n))))
 
+(schema-define-pattern nat (&rest plist)
+  `(and wholenump
+        (lambda (n)
+          (schema--eval-num ',plist n))))
+
+(schema-define port-number
+  (nat :max 65535))
+
 (provide 'schema)
 
 ;;; schema.el ends here
