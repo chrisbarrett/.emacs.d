@@ -31,26 +31,34 @@
 (defvar org-capture-templates nil)
 (defvar org-agenda-custom-commands nil)
 
+(defun org-funcs-dailies-file-path ()
+  (let* ((template (alist-get "d" org-roam-dailies-capture-templates nil nil #'equal))
+         (file-path-template (plist-get template :file-name))
+         (expanded-path (concat (string-trim (org-roam-capture--fill-template file-path-template))
+                                ".org")))
+    (f-join org-roam-directory expanded-path)))
+
+(defun org-funcs-dailies-buffer-get-create ()
+  (let ((path (org-funcs-dailies-file-path)))
+    (with-current-buffer
+        (or (get-file-buffer path)
+            (find-file-noselect path))
+      (save-restriction
+        (widen)
+        (when (string-empty-p (string-trim (buffer-substring (point-min) (point-max))))
+
+          ;; Insert default content for dailies file.
+          (let* ((template (alist-get "d" org-roam-dailies-capture-templates nil nil #'equal))
+                 (content-template (plist-get template :head)))
+            (insert (org-roam-capture--fill-template content-template)))))
+
+      (current-buffer))))
+
+
 
 ;; Clocking related stuff
 ;;
 ;; Stolen from http://doc.norang.ca/org-mode.html#Clocking
-
-(defun org-funcs-clocked-task-tags ()
-  (when (marker-buffer org-clock-marker)
-    (save-excursion
-      (with-current-buffer (marker-buffer org-clock-marker)
-        (org-get-tags (marker-position org-clock-marker))))))
-
-(defun org-funcs-tags-contain-p (tag)
-  (save-excursion
-    (let ((tags (seq-map #'substring-no-properties
-                         (append (ignore-errors (org-get-tags))
-                                 (org-funcs-clocked-task-tags)))))
-      (seq-contains-p tags tag))))
-
-(defun org-funcs-work-context-p ()
-  (org-funcs-tags-contain-p "@work"))
 
 (defun org-funcs-agenda-dwim ()
   "Show the appropriate org agenda view."
@@ -62,67 +70,52 @@
            (dolist (file (f-files entry (lambda (it)
                                           (string-match-p org-agenda-file-regexp it))))
              (find-file-noselect file)))))
-  (cond
-   ((org-funcs-tags-contain-p "@work")
-    (org-agenda nil "wa"))
-   ((org-funcs-tags-contain-p "@flat")
-    (org-agenda nil "fa"))
-   (t
-    (org-agenda nil "pa")))
+  (if (org-clocking-p)
+      (org-agenda nil "wa")
+    (org-agenda nil "pa"))
   (get-buffer org-agenda-buffer-name))
 
-(defun org-funcs--ensure-default-datetree-entry (buffer)
+
+(defvar org-funcs--clocking-heading "Work hours")
+
+(defun org-funcs--ensure-clocking-headline (buffer)
   "Create the default heading for clocking in BUFFER.
 
 Return the position of the headline."
   (with-current-buffer buffer
-    (save-restriction
-      (widen)
-      (save-excursion
-        (org-with-point-at (point-min)
-          (org-datetree-find-iso-week-create (calendar-current-date))
-          (delete-blank-lines)
+    (save-excursion
+      (save-restriction
+        (widen)
+        (if-let* ((marker (org-find-exact-headline-in-buffer org-funcs--clocking-heading)))
+            (marker-position marker)
+          (goto-char (point-max))
+          (delete-horizontal-space)
+          (org-insert-heading nil nil t)
+          (insert org-funcs--clocking-heading)
           (point))))))
-
-(defvar org-funcs--punching-in-p nil)
-(defvar org-funcs--punching-out-p nil)
-
-(defun org-funcs-work-notes-buffer ()
-  (find-file-noselect (f-join org-directory "work_notes.org")))
-
-(defun org-funcs-personal-notes-buffer ()
-  (find-file-noselect (f-join org-directory "notes.org")))
-
-(defun org-funcs-buffer-for-context ()
-  (--find (equal (current-buffer) it)
-          (list (org-funcs-personal-notes-buffer)
-                (org-funcs-work-notes-buffer))))
 
 (defun org-funcs-punch-in (buffer)
   "Punch in with the default date tree in the given BUFFER."
-  (interactive (list (org-funcs-work-notes-buffer)))
-  (let ((org-funcs--punching-in-p t))
-    (with-current-buffer buffer
-      (save-excursion
-        (goto-char (org-funcs--ensure-default-datetree-entry buffer))
-        (org-clock-in '(16))))
-    (when (derived-mode-p 'org-agenda-mode)
-      ;; Swap agenda for context change.
-      (org-funcs-agenda-dwim))))
+  (interactive (list (org-funcs-dailies-buffer-get-create)))
+  (with-current-buffer buffer
+    (org-with-point-at (org-funcs--ensure-clocking-headline buffer)
+      (org-clock-in '(16))))
+  (when (derived-mode-p 'org-agenda-mode)
+    ;; Swap agenda due to context change.
+    (org-funcs-agenda-dwim)))
 
 (defun org-funcs-punch-out ()
   "Stop the clock."
   (interactive)
-  (let ((org-funcs--punching-out-p t))
-    (when (org-clock-is-active)
-      (org-clock-out))
-    (org-agenda-remove-restriction-lock)
-    (with-current-buffer (org-funcs-work-notes-buffer)
-      (save-buffer))
-    (when (derived-mode-p 'org-agenda-mode)
-      ;; Swap agenda for context change.
-      (org-funcs-agenda-dwim))
-    (message "Punched out.")))
+  (when (org-clocking-p)
+    (org-clock-out))
+  (org-agenda-remove-restriction-lock)
+  (with-current-buffer (org-funcs-dailies-buffer-get-create)
+    (save-buffer))
+  (when (derived-mode-p 'org-agenda-mode)
+    ;; Swap agenda for context change.
+    (org-funcs-agenda-dwim))
+  (message "Punched out."))
 
 (defun org-funcs-punch-in-or-out ()
   "Punch in or out of the current clock."
@@ -130,49 +123,6 @@ Return the position of the headline."
   (call-interactively (if (org-clocking-p)
                           #'org-funcs-punch-out
                         #'org-funcs-punch-in)))
-
-(defun org-funcs--at-default-task-p ()
-  (when (equal (current-buffer)
-               (marker-buffer org-clock-default-task))
-    (save-excursion
-      (org-back-to-heading t)
-      (equal (point) (marker-position org-clock-default-task)))))
-
-(defun org-funcs--clocking-on-default-task-p ()
-  (ignore-errors
-    (cl-labels ((org-marker-pos
-                 (marker)
-                 (org-with-point-at marker
-                   (org-back-to-heading t)
-                   (point))))
-      (and (equal (marker-buffer org-clock-marker) (marker-buffer org-clock-default-task))
-           (equal (org-marker-pos org-clock-marker)
-                  (org-marker-pos org-clock-default-task))))))
-
-(defun org-funcs--clock-in-default-task ()
-  (save-excursion
-    (org-with-point-at org-clock-default-task
-      (org-clock-in))))
-
-;; Supporting functions for hooks.
-
-(defun org-funcs-on-clock-on ()
-  (unless org-funcs--punching-in-p
-    (save-excursion
-      (when-let* ((buf (org-funcs-buffer-for-context))
-                  (pos (org-funcs--ensure-default-datetree-entry buf)))
-        (org-clock-out nil 'no-error)
-        (goto-char pos)
-        (org-clock-mark-default-task)))))
-
-(defun org-funcs-on-clock-out ()
-  (unless org-funcs--punching-out-p
-    (save-excursion
-      (cond
-       ((org-funcs--clocking-on-default-task-p)
-        (org-clock-out))
-       ((and (org-funcs-work-context-p) (not (org-funcs--at-default-task-p)))
-        (org-funcs--clock-in-default-task))))))
 
 
 ;; Agenda utils
@@ -257,7 +207,8 @@ Return the position of the headline."
 (defun org-funcs-goto-work ()
   "Switch to the work file."
   (interactive)
-  (find-file (org-funcs-get-roam-file-by-title org-funcs-work-file-title)))
+  (find-file (org-funcs-get-roam-file-by-title org-funcs-work-file-title))
+  (org-show-all))
 
 (defun org-funcs-goto-headline ()
   "Prompt for a headline to jump to."
@@ -286,7 +237,7 @@ Return the position of the headline."
   "Show the todo list for the current context."
   (interactive)
   (org-agenda prefix-arg "t")
-  (let ((tags (if (org-funcs-work-context-p)
+  (let ((tags (if (org-clocking-p)
                   '("-someday" "+@work")
                 '("-someday" "-@work"))))
     (org-agenda-filter-apply tags 'tag)))
@@ -423,32 +374,12 @@ If NOTIFY-P is set, a desktop notification is displayed."
         "* TODO Review %a (email)")
     (call-interactively #'org-funcs-read-url-for-capture)))
 
-(defun org-funcs-dailies-file-path ()
-  (let* ((template (alist-get "d" org-roam-dailies-capture-templates nil nil #'equal))
-         (file-path-template (plist-get template :file-name))
-         (expanded-path (concat (string-trim (org-roam-capture--fill-template file-path-template))
-                                ".org")))
-    (f-join org-roam-directory expanded-path)))
-
-(defun org-funcs-dailies-buffer-get-create ()
-  (let ((path (org-funcs-dailies-file-path)))
-    (with-current-buffer
-        (or (get-file-buffer path)
-            (find-file-noselect path))
-      (save-restriction
-        (widen)
-        (when (string-empty-p (string-trim (buffer-substring (point-min) (point-max))))
-          (let* ((template (alist-get "d" org-roam-dailies-capture-templates nil nil #'equal))
-                 (content-template (plist-get template :head)))
-            (insert (org-roam-capture--fill-template content-template)))))
-      (current-buffer))))
-
 (defun org-funcs-dailies-file-for-capture ()
   (switch-to-buffer (org-funcs-dailies-buffer-get-create))
   (goto-char (point-max)))
 
 (defun org-funcs-capture-todo ()
-  (let ((tags (if (org-funcs-work-context-p) ":@work:" "")))
+  (let ((tags (if (org-clocking-p) ":@work:" "")))
     (concat "* TODO %?           " tags)))
 
 (defun org-funcs-update-capture-templates (templates)
@@ -469,28 +400,6 @@ If NOTIFY-P is set, a desktop notification is displayed."
 (defun org-funcs-update-agenda-custom-commands (templates)
   (let ((ht (ht-merge (ht-from-alist org-agenda-custom-commands) (ht-from-alist templates))))
     (setq org-agenda-custom-commands (-sort (-on 'string-lessp 'car) (ht->alist ht)))))
-
-
-(defface org-funcs-agenda-note
-  '((t :inherit default))
-  "Face for note lines in org-agenda."
-  :group 'org-funcs)
-
-(defun org-funcs-propertize-note-lines-in-agenda ()
-  (save-excursion
-    (save-match-data
-      (goto-char (point-min))
-      (while (search-forward-regexp (rx
-                                     bol
-                                     (= 2 space)
-                                     (group
-                                      ;; Category
-                                      "notes:" (+ space)
-                                      (+ nonl)))
-                                    nil t)
-        (put-text-property (match-beginning 1)
-                           (match-end 1)
-                           'face 'org-funcs-agenda-note)))))
 
 
 ;; Priorities
