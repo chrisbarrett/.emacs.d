@@ -54,6 +54,12 @@
 
       (current-buffer))))
 
+(defun org-funcs-dailies-today ()
+  "Switch to today's notes file.
+
+Slightly faster than the version that ships with org-roam."
+  (interactive)
+  (switch-to-buffer (org-funcs-dailies-buffer-get-create)))
 
 
 ;; Clocking related stuff

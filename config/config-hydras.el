@@ -256,8 +256,8 @@
    "Roam"
    (("<tab>" org-roam "Roam backlinks")
     ("f" org-roam-find-file "roam file...")
-    ("I" org-roam-find-index "Go to Index")
-    ("n" org-roam-dailies-today "Dailies: today")
+    ("I" org-roam-jump-to-index "Go to Index")
+    ("n" org-funcs-dailies-today "Dailies: today")
     ("y" org-roam-dailies-yesterday "Dailies: yesterday")
     ("d" org-roam-dailies-date "Dialies: date..."))
 
