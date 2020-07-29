@@ -286,8 +286,9 @@ Returns a function that can be used with `schema-validate'."
       (_
        (schema--raise-compilation-error form "Bad form passed to `schema'")))))
 
-(defconst schema--default-docstring
-  "VALUE is any Lisp value that will be checked against the schema.
+(eval-and-compile
+  (defconst schema--default-docstring
+    "VALUE is any Lisp value that will be checked against the schema.
 
 Returns a schema validation result object, which should not be
 interacted with directly. Instead, either:
@@ -297,7 +298,7 @@ interacted with directly. Instead, either:
 
 - call this validation function and use
   `schema-validation-get-result' on the return value, which
-  returns the value on success or `nil' on failure.")
+  returns the value on success or `nil' on failure."))
 
 ;;;###autoload
 (defmacro schema-define (name schema &optional docstring)
