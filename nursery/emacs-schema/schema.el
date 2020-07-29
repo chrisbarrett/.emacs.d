@@ -401,6 +401,22 @@ error if validations fails."
           (let ((pairs (seq-partition values 2)))
             (schema-validation-traverse* (schema [,key-type ,value-type]) pairs)))))
 
+(schema-define-pattern hash (key-type value-type)
+  `(and hash-table-p
+        (lambda (hash)
+          (schema-validation-traverse*
+           (schema (cons ,key-type ,value-type))
+           (let (kvps)
+             (maphash (lambda (key value)
+                        (push (cons key value) kvps))
+                      hash)
+             kvps)))))
+
+(schema-define-pattern map (key-type value-type)
+  `(or (alist ,key-type ,value-type)
+       (plist ,key-type ,value-type)
+       (hash ,key-type ,value-type)))
+
 (provide 'schema)
 
 ;;; schema.el ends here

@@ -298,4 +298,24 @@
     (expect-pass (schema (plist _ _)) '(a b))
     (expect-pass (schema (plist 'a _)) '(a :b a :c))
     (expect-pass (schema (plist symbolp keywordp)) '(a :b a :c))
-    (expect-fail (schema (plist symbolp symbolp)) [a b c d])))
+    (expect-fail (schema (plist symbolp symbolp)) [a b c d]))
+
+  (it "hash"
+    (expect-pass (schema (hash _ _)) #s(hash-table))
+    (expect-fail (schema (hash _ _)) nil)
+
+    (expect-pass (schema (hash _ _)) #s(hash-table data (a 1)))
+    (expect-pass (schema (hash 'a _)) #s(hash-table data (a 1)))
+    (expect-pass (schema (hash symbolp keywordp)) #s(hash-table data (a :a b :b)))
+    (expect-fail (schema (hash symbolp stringp)) #s(hash-table data (a :a b :b)))
+    (expect-fail (schema (hash symbolp keywordp)) '(a :a b :b)))
+
+  (it "map"
+    (expect-pass (schema (map _ _)) #s(hash-table))
+    (expect-pass (schema (map _ _)) '(:a a :b b))
+    (expect-pass (schema (map _ _)) '((a . "a") (b . "b")))
+
+    (expect-pass (schema (map 'a 1)) #s(hash-table data (a 1)))
+    (expect-pass (schema (map symbolp keywordp)) '(a :a b :b))
+    (expect-fail (schema (map symbolp stringp)) '(a :a b :b))
+    (expect-fail (schema (map symbolp keywordp)) [a :a b :b])))
