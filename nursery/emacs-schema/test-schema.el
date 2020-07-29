@@ -324,3 +324,39 @@
     (expect-pass (schema (optional 1)) nil)
     (expect-pass (schema (optional 1)) 1)
     (expect-fail (schema (optional 2)) 1)))
+
+(describe "numbers"
+  (it "gt/gte"
+    (expect-fail (schema (num :min 1)) 0)
+    (expect-fail (schema (num :min 1)) 0.5)
+    (expect-pass (schema (num :min 1)) 1)
+    (expect-pass (schema (num :min 1)) 1.5)
+    (expect-pass (schema (num :min 1)) 2)
+    (expect-fail (schema (num :gte 1)) 0)
+    (expect-fail (schema (num :gte 1)) 0.5)
+    (expect-pass (schema (num :gte 1)) 1)
+    (expect-pass (schema (num :gte 1)) 1.5)
+    (expect-pass (schema (num :gte 1)) 2)
+    (expect-fail (schema (num :gt 1)) 0)
+    (expect-fail (schema (num :gt 1)) 1)
+    (expect-pass (schema (num :gt 1)) 1.5)
+    (expect-pass (schema (num :gt 1)) 2)
+    (expect-pass (schema (num :gt 1)) 2.5))
+
+  (it "lt/lte"
+    (expect-pass (schema (num :max 1)) 0)
+    (expect-pass (schema (num :max 1)) 0.5)
+    (expect-pass (schema (num :max 1)) 1)
+    (expect-fail (schema (num :max 1)) 1.5)
+    (expect-fail (schema (num :max 1)) 2)
+
+    (expect-pass (schema (num :lte 1)) 0)
+    (expect-pass (schema (num :lte 1)) 0.5)
+    (expect-pass (schema (num :lte 1)) 1)
+    (expect-fail (schema (num :lte 1)) 1.5)
+    (expect-fail (schema (num :lte 1)) 2)
+
+    (expect-pass (schema (num :lt 1)) 0)
+    (expect-pass (schema (num :lt 1)) 0.5)
+    (expect-fail (schema (num :lt 1)) 1)
+    (expect-fail (schema (num :lt 1)) 1.5)))

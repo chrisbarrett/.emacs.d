@@ -417,9 +417,29 @@ error if validations fails."
        (plist ,key-type ,value-type)
        (hash ,key-type ,value-type)))
 
-
 (schema-define-pattern optional (type)
   `(or null ,type))
+
+(defun schema--eval-num (plist n)
+  (and (if-let* ((incl-min (or (plist-get plist :min)
+                               (plist-get plist :gte))))
+           (<= incl-min n)
+         t)
+       (if-let* ((excl-min (plist-get plist :gt)))
+           (< excl-min n)
+         t)
+       (if-let* ((incl-max (or (plist-get plist :max)
+                               (plist-get plist :lte))))
+           (<= n incl-max)
+         t)
+       (if-let* ((excl-max (plist-get plist :lt)))
+           (< n excl-max)
+         t)))
+
+(schema-define-pattern num (&rest plist)
+  `(and numberp
+        (lambda (n)
+          (schema--eval-num ',plist n))))
 
 (provide 'schema)
 
