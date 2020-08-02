@@ -140,6 +140,8 @@
    "J" #'pass-goto-entry
    "y" #'pass-copy-password
    "f" #'pass-copy-field)
+  :custom
+  ((password-store-password-length 50))
   :init
   (add-to-list 'display-buffer-alist
                `(,(rx bos "*Password-Store*" eos)
