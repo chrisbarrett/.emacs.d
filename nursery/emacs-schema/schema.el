@@ -421,6 +421,30 @@ error if validations fails."
 (schema-define-pattern optional (type)
   `(or null ,type))
 
+(defun schema--syntax-check-num (plist)
+  (cond
+   ((< 1 (length (seq-intersection plist '(:lt :lte :max))))
+    (schema--raise-compilation-error plist "Can provide only one of :max, :lt, :lte"))
+
+   ((< 1 (length (seq-intersection plist '(:gt :gte :min))))
+    (schema--raise-compilation-error plist "Can provide only one of :min, :gt, :gte"))
+
+   (t
+    (let ((lower (or (plist-get plist :min)
+                     (plist-get plist :gte)
+                     (when-let* ((n (plist-get plist :gt)))
+                       (1+ n))
+                     -1.0e+INF))
+
+          (upper (or (plist-get plist :max)
+                     (plist-get plist :lte)
+                     (when-let* ((n (plist-get plist :lt)))
+                       (1- n))
+                     +1.0e+INF)))
+      (unless (<= lower upper)
+        (schema--raise-compilation-error plist "lower bound must be <= upper bound")))
+    plist)))
+
 (defun schema--eval-num (plist n)
   (and (if-let* ((incl-min (or (plist-get plist :min)
                                (plist-get plist :gte))))
@@ -440,7 +464,7 @@ error if validations fails."
 (schema-define-pattern num (&rest plist)
   `(and numberp
         (lambda (n)
-          (schema--eval-num ',plist n))))
+          (schema--eval-num ',(schema--syntax-check-num plist) n))))
 
 (schema-define-pattern nat (&rest plist)
   `(and wholenump

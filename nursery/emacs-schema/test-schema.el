@@ -373,6 +373,20 @@
     (expect-pass (schema (nat :max 2)) 2)
     (expect-fail (schema (nat :max 2)) 3))
 
+  (it "combined upper and lower bounds"
+    (expect-fail (schema (num :min 1 :max 2)) 0)
+    (expect-pass (schema (num :min 1 :max 2)) 1)
+    (expect-fail (schema (num :min 1 :max 2)) 3)
+    (expect-pass (schema (num :gt 0 :lte 1)) 1)
+    (expect-pass (schema (num :gte 1 :lt 2)) 1)
+    (expect-pass (schema (num :gte 0 :lte 0)) 0)
+
+    (expect-compile-fail '(num :min 1 :max 0))
+    (expect-compile-fail '(num :gt 1 :lt 1))
+    (expect-compile-fail '(num :gt 1 :lte 1))
+    (expect-compile-fail '(num :gte 1 :lt 1))
+    (expect-compile-fail '(num :gte 1 :lte 0)))
+
   (it "port-number"
     (expect-fail (schema port-number) -1)
     (expect-pass (schema port-number) 0)
