@@ -71,7 +71,7 @@
   :after org)
 
 (use-package ox-slack
-  :commands (org-slack-export-to-clipboard-as-slack))
+  :after org)
 
 (use-package ox-koma-letter
   :after org
