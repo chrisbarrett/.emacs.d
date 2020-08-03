@@ -384,6 +384,7 @@ By default, this shows the information specified by `global-mode-string'."
                   (ledger-occur-xact-face ((t :inherit region)))
                   (ledger-report-negative-amount ((t :foreground ,red)))
                   (link ((t :underline t :foreground ,blue)))
+                  (highlight-thing ((t (:weight bold))))
                   (lsp-ui-sideline-current-symbol ((t (:inherit lsp-face-highlight-read :height 0.99))))
                   (lsp-ui-sideline-symbol ((t :height 0.99)))
                   (lsp-ui-sideline-symbol-info ((t :foreground "grey" :slant italic :height 0.99 :weight light)))
