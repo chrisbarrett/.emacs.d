@@ -474,6 +474,31 @@ error if validations fails."
 (schema-define port-number
   (nat :max 65535))
 
+(defun schema--syntax-check-string (plist)
+  (when-let* ((regexp (plist-get plist :match)))
+    (unless (or (stringp regexp) (listp regexp))
+      (schema--raise-compilation-error plist "Regexp must be a string or rx form"))
+
+    (when (listp regexp)
+      (condition-case err
+          (rx-to-string regexp)
+        (error
+         (schema--raise-compilation-error plist (error-message-string err))))))
+
+  plist)
+
+(defun schema--eval-string (plist s)
+  (if-let* ((regexp (plist-get plist :match)))
+      (string-match-p (if (stringp regexp) regexp (rx-to-string regexp))
+                      s)
+    t))
+
+
+(schema-define-pattern string (&rest plist)
+  `(and stringp
+        (lambda (s)
+          (schema--eval-string ',(schema--syntax-check-string plist) s))))
+
 (provide 'schema)
 
 ;;; schema.el ends here

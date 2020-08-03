@@ -326,6 +326,10 @@
     (expect-fail (schema (optional 2)) 1)))
 
 (describe "numbers"
+  (it "num"
+    (expect-pass (schema (num)) 1)
+    (expect-fail (schema (num)) ""))
+
   (it "gt/gte"
     (expect-fail (schema (num :min 1)) 0)
     (expect-fail (schema (num :min 1)) 0.5)
@@ -394,3 +398,23 @@
     (expect-fail (schema port-number) 1.5)
     (expect-pass (schema port-number) 65535)
     (expect-fail (schema port-number) 65536)))
+
+(describe "strings"
+  (it "matching by regexp string"
+    (expect-fail (schema (string :match "foo")) "")
+    (expect-pass (schema (string :match "foo")) "foo")
+    (expect-pass (schema (string :match "foo")) "foobar")
+    (expect-pass (schema (string :match "bar")) "foobar")
+    (expect-fail (schema (string :match "^bar")) "foobar")
+    (expect-fail (schema (string :match "^bar")) "foo^bar"))
+
+  (it "matching by rx"
+    (expect-fail (schema (string :match (or "foo" "bar"))) "")
+    (expect-pass (schema (string :match (or "foo" "bar"))) "foo")
+    (expect-pass (schema (string :match (or "foo" "bar"))) "foobar")
+    (expect-pass (schema (string :match (and "foo" "bar"))) "foobar")
+    (expect-pass (schema (string :match (and "bar"))) "foobar")
+    (expect-fail (schema (string :match (and bol "bar"))) "foobar")
+    (expect-fail (schema (string :match (and bol "bar"))) "foo^bar")
+
+    (expect-compile-fail '(string :match (invalid-rx-macro)))))
