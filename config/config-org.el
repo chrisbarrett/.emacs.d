@@ -176,7 +176,7 @@
  org-tags-exclude-from-inheritance '("crypt")
  org-crypt-disable-auto-save 'encypt
 
- org-attach-directory (f-join paths-org-directory "data")
+ org-attach-id-dir (f-join paths-org-directory "data")
  org-archive-location (concat (f-join org-directory "archive.org") "::datetree/")
  org-archive-subtree-add-inherited-tags t
 
