@@ -400,6 +400,7 @@ By default, this shows the information specified by `global-mode-string'."
                   (org-block-begin-line ((t :extend t :inherit shadow)))
                   (org-block-end-line ((t :extend t :inherit shadow)))
                   (org-upcoming-deadline ((t :foreground ,orange)))
+                  (org-list-dt ((t :weight semibold :foreground ,(doom-blend fg blue 0.7))))
                   (org-drawer ((t :inherit shadow)))
                   (org-formula ((t :inherit shadow)))
                   (org-funcs-agenda-note ((t (:inherit font-lock-string-face :italic t))))
