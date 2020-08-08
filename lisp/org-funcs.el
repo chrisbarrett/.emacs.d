@@ -75,9 +75,12 @@ Slightly faster than the version that ships with org-roam."
            (dolist (file (f-files entry (lambda (it)
                                           (string-match-p org-agenda-file-regexp it))))
              (find-file-noselect file)))))
-  (if (org-clocking-p)
-      (org-agenda nil "wa")
-    (org-agenda nil "pa"))
+  (cond ((org-clocking-p)
+         (org-agenda nil "wa"))
+        ((seq-contains-p (org-get-tags-at) "@broca")
+         (org-agenda nil "ba"))
+        (t
+         (org-agenda nil "pa")))
   (get-buffer org-agenda-buffer-name))
 
 
