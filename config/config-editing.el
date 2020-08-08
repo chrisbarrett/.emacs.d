@@ -59,6 +59,19 @@
 
 ;; Define some editing commands.
 
+(defun insert-date (str)
+  "Read date string STR interactively and insert it at point."
+  (interactive (list
+                (if (not current-prefix-arg)
+                    (format-time-string "%F")
+                  (let ((formats (seq-map #'format-time-string
+                                          '("%F"
+                                            "%F %R"
+                                            "%X"
+                                            "%c"))))
+                    (completing-read "Format: " formats nil t)))))
+  (insert str))
+
 ;; Define a command to indent every line in the buffer. This should really be a
 ;; thing out-of-the-box.
 
