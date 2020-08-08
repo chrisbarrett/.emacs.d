@@ -76,7 +76,7 @@ Callers of this function already widen the buffer view."
             (save-excursion
               (forward-line 1)
               (while (and (not has-next) (< (point) subtree-end))
-                (unless (member "WAITING" (org-get-tags))
+                (unless (member "WAIT" (org-get-tags))
                   (setq has-next t))))
             (if has-next
                 nil
@@ -94,7 +94,7 @@ Callers of this function already widen the buffer view."
             (save-excursion
               (forward-line 1)
               (while (and (not has-next) (< (point) subtree-end))
-                (unless (member "WAITING" (org-get-tags))
+                (unless (member "WAIT" (org-get-tags))
                   (setq has-next t))))
             (if has-next
                 next-headline

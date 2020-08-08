@@ -124,7 +124,7 @@
  org-log-reschedule 'time
  org-log-repeat 'time
 
- org-todo-keywords '((type "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c@)"))
+ org-todo-keywords '((type "TODO(t)" "WAIT(w)" "|" "DONE(d)" "CANCELLED(c@)"))
 
  org-src-fontify-natively t
  org-src-window-setup 'current-window
@@ -225,7 +225,7 @@
   (with-temp-buffer
     (let ((default-directory dir))
       (call-process "rg" nil t nil
-                    "TODO|CANCELLED|WAITING|DONE"
+                    "TODO|CANCELLED|WAIT|DONE"
                     "--files-with-matches"
                     "--type" "org"
                     "--case-sensitive"
@@ -481,11 +481,11 @@
                         (org-agenda-skip-function #'org-funcs-skip-items-already-in-agenda)))
 
             ,(when show-catchups-p
-               `(tags-todo "+catchups&-PRIORITY=\"A\"-TODO=\"WAITING\""
+               `(tags-todo "+catchups&-PRIORITY=\"A\"-TODO=\"WAIT\""
                            ((org-agenda-overriding-header "People & Catchup Topics")
                             (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp))))
 
-            (todo "WAITING"
+            (todo "WAIT"
                   ((org-agenda-overriding-header "Delegated")
                    (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp)))
             (todo "TODO"
@@ -507,7 +507,7 @@
           ((agenda ""
                    ((org-agenda-overriding-header "Review agenda this week")
                     (org-agenda-use-time-grid t)))
-           (todo "WAITING"
+           (todo "WAIT"
                  ((org-agenda-overriding-header "Review Delegated Actions. Should I follow up today or course correct?")))
            (todo "TODO"
                  ((org-agenda-overriding-header "Review Next Actions. Are these the next thing to do?")
