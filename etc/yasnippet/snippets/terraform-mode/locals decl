@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: locals decl
+# key: l
+# condition: (yas-funcs-bolp)
+# --
+locals {
+  ${1:name} = $0
+}
