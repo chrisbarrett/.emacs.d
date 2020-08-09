@@ -52,7 +52,7 @@ If any function in this list returns nil, the error is not displayed.")
     (defun config-lsp--setup-buffer ()
       (setq-local evil-lookup-func #'lsp-describe-thing-at-point)
       (setq-local company-minimum-prefix-length 1)
-      (setq-local company-idle-delay 0.05)
+      (setq-local company-idle-delay 0.1)
 
       ;; Use server highlighting.
       (when (gethash "documentHighlightProvider" (lsp--server-capabilities))
