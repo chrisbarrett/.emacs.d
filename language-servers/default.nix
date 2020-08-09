@@ -1,6 +1,8 @@
 { pkgs, ... }:
 let
   node = pkgs.callPackage ./node { };
+  terraform-ls = pkgs.callPackage ./terraform-ls.nix { };
+
   emmyLuaJar = pkgs.fetchurl {
     name = "emmy-lua.jar";
     url =
@@ -21,6 +23,7 @@ in pkgs.symlinkJoin {
     node.vscode-json-languageserver
   ];
   postBuild = ''
+    cp ${terraform-ls}/bin/* $out/bin
     mkdir -p $out/lib
     cp ${emmyLuaJar} $out/lib/emmy-lua.jar
     cp ${
