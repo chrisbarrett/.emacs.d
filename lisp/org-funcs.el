@@ -32,6 +32,7 @@
 (defvar org-agenda-custom-commands nil)
 
 (defun org-funcs-dailies-file-path ()
+  (org-capture-put :default-time (current-time))
   (let* ((template (alist-get "d" org-roam-dailies-capture-templates nil nil #'equal))
          (file-path-template (plist-get template :file-name))
          (expanded-path (concat (string-trim (org-roam-capture--fill-template file-path-template))
