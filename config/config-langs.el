@@ -95,7 +95,9 @@
 
 (use-package json-mode
   :commands (json-mode)
-  :mode ("\\.json\\'" . json-mode))
+  :mode ("\\.json\\'" . json-mode)
+  :custom
+  ((json-reformat:indent-width 2)))
 
 (use-package highlight-indent-guides
   :hook ((python-mode . highlight-indent-guides-mode)
