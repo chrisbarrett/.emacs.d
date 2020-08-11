@@ -453,8 +453,7 @@
 (use-package winner
   :general ("<C-left>" 'winner-undo
             "<C-right>"'winner-redo)
-  :config (winner-mode t))
-
+  :hook (after-init . winner-mode))
 
 (use-package saveplace
   :config (save-place-mode +1))
