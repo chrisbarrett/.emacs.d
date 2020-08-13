@@ -71,16 +71,7 @@
 
 (use-package terraform-mode
   :mode ("\\.tf\\(vars\\)?\\'" . terraform-mode)
-  :preface
-  (progn
-    (defun config-langs--terraform-format ()
-      (start-process "terraform-fmt" "*terraform-format*" "terraform" "fmt"))
-
-    (defun config-langs--set-up-terraform-mode ()
-      (unless (bound-and-true-p terraform-mode-inhibit-format)
-        (add-hook 'after-save-hook #'config-langs--terraform-format nil t))))
-  :config
-  (add-hook 'terraform-mode-hook #'config-langs--set-up-terraform-mode))
+  :hook (terraform . terraform-format-on-save-mode))
 
 (use-package yaml-mode
   :mode ("\\.\\(e?ya?\\|ra\\)ml\\'" . yaml-mode)
