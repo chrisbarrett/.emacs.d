@@ -71,7 +71,7 @@
 
 (use-package terraform-mode
   :mode ("\\.tf\\(vars\\)?\\'" . terraform-mode)
-  :hook (terraform . terraform-format-on-save-mode))
+  :hook (terraform-mode . terraform-format-on-save-mode))
 
 (use-package yaml-mode
   :mode ("\\.\\(e?ya?\\|ra\\)ml\\'" . yaml-mode)
