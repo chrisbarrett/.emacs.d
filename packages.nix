@@ -137,6 +137,7 @@
         undo-tree
         unfill
         use-package
+        verb
         volatile-highlights
         wgrep
         which-key

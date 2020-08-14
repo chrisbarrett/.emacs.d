@@ -847,6 +847,36 @@
 (use-package org-format-headings
   :commands (org-format-all-headings org-format-heading))
 
+;; `verb' is an extension to org-mode for making web requests specified via
+;; headlines.
+(use-package verb
+  :after (:all org hydra)
+  :preface
+  (progn
+    (pretty-hydra-define verb-commands
+      (:hint nil
+       :color teal
+       :title (hydra-title-with-mat-icon "call_made" "HTTP Request (verb.el)"))
+      ("Request at Pt"
+       (("s" verb-send-request-on-point "send")
+        ("o" verb-send-request-on-point-other-window "send (other window)"))
+       "Export..."
+       (("e" verb-export-request-on-point-curl "as curl")
+        ("E" verb-export-request-on-point-verb "as verb"))
+       "Misc"
+       (("x" verb-kill-all-response-buffers "kill response buffers")
+        ("v" verb-set-var "set variable"))))
+
+    (defun config-org--verb-ctrl-c-ctrl-c-handler ()
+      "Show verb commands."
+      (interactive)
+      (when (seq-contains-p (org-get-tags) "verb")
+        (require 'verb)
+        (verb-commands/body)
+        t)))
+  :init
+  (add-hook 'org-ctrl-c-ctrl-c-hook #'config-org--verb-ctrl-c-ctrl-c-handler))
+
 (provide 'config-org)
 
 ;;; config-org.el ends here
