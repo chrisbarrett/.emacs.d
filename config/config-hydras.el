@@ -374,7 +374,8 @@
    (("s" magit-status "magit")
     ("d" config-git-diff-buffer-file "diff buffer...")
     ("b" magit-blame "blame...")
-    ("f" config-git-find-file "find file..."))
+    ("f" config-git-find-file "find file...")
+    ("r" browse-at-remote "browse at remote"))
    ""
    (("h" git-hunks/body "navigate hunks")
     ("l" magit-log-buffer-file "log buffer")

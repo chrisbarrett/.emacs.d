@@ -15,6 +15,7 @@
         async
         auctex
         auto-highlight-symbol
+        browse-at-remote
         buttercup
         cargo
         clojure-mode

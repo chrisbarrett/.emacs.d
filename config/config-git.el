@@ -172,6 +172,12 @@
    "b" 'vc-annotate-prev-revision
    "." 'vc-annotate-working-revision))
 
+;; `browse-at-remote' provides commands for opening the current buffer in the
+;; source repo.
+
+(use-package browse-at-remote
+  :commands (browse-at-remote))
+
 (provide 'config-git)
 
 ;;; config-git.el ends here
