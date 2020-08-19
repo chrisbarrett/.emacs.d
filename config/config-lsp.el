@@ -127,16 +127,15 @@ If any function in this list returns nil, the error is not displayed.")
       (lsp-ui-sideline))
 
     (defun config-lsp--configure-ui ()
-      (lsp-ui-sideline-mode +1)
-      (lsp-flycheck-enable t)))
+      (lsp-ui-sideline-mode +1)))
   :init
-  (progn
-    (require 'lsp-ui-flycheck)
-    (with-eval-after-load 'lsp-mode
-      (define-key lsp-mode-map (kbd "C-c u") #'config-lsp-toggle-ui-overlays)))
+  (with-eval-after-load 'lsp-mode
+    (define-key lsp-mode-map (kbd "C-c u") #'config-lsp-toggle-ui-overlays))
   :config
   (progn
     (add-hook 'lsp-after-open-hook #'config-lsp--configure-ui)
+    (require 'lsp-diagnostics)
+    (require 'lsp-modeline)
     (general-setq lsp-ui-sideline-show-code-actions nil
                   lsp-ui-sideline-show-hover nil
                   lsp-ui-doc-enable nil)
