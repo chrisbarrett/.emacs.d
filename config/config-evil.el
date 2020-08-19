@@ -284,7 +284,9 @@ COUNT is the number of repetitions."
 ;; compatability.
 
 (use-package evil-iedit-state
-  :commands (evil-iedit-state/iedit-mode))
+  :commands (evil-iedit-state/iedit-mode)
+  :config
+  (define-obsolete-function-alias 'iedit-cleanup 'iedit-lib-cleanup))
 
 
 (provide 'config-evil)
