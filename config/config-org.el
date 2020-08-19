@@ -397,6 +397,10 @@
     (add-to-list 'org-latex-default-packages-alist
                  '("colorlinks=true" "hyperref" nil))
 
+
+    ;; Ensure directories are opened in dired, not Finder.app on macOS.
+    (add-to-list 'org-file-apps '(directory . emacs))
+
     (org-clock-persistence-insinuate)
     (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
     (advice-add 'org-add-log-note :before #'config-org--exit-minibuffer)
