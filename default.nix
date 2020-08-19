@@ -75,7 +75,7 @@ let
   });
 
   emacs = emacsWithCustomisations
-    (if pkgs.stdenv.isDarwin then emacsMac else pkgs.emacsGcc);
+    (if pkgs.stdenv.isDarwin then emacsMac else pkgs.emacsGit);
 
   packages = pkgs.callPackage ./packages.nix rec {
 
