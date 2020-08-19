@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
   } else {
     url =
       "https://releases.hashicorp.com/terraform-ls/${version}/terraform-ls_${version}_linux_amd64.zip";
-    sha256 = "1zc0dhz29pg1asw1zqig08fhy4ddjqji8kns3d5nai96qq7yy5s0";
+    sha256 = "1zkwsl7acvig7570jg07pflv60hg9bwk2dshzlh1lxdkslsdyq1m";
   });
 
   noCheck = true;
