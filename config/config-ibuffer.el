@@ -33,11 +33,25 @@
      (list (rx (or "*Messages*"
                    "*magit-"
                    "*git-auto-push*"
+                   ".elc"
+                   "magit-process"
+                   "magit-diff"
+                   "magit-revision"
+                   "TAGS"
                    "*Backtrace*"
                    "*new*"
                    "*Org"
                    "*Flycheck error messages*"
-                   "*Help*"))))
+                   "*Quail Completions*"
+                   "*scratch*"
+                   "*direnv*"
+                   "*calc trail*"
+                   "*Help*"))
+           ;; Don't show roam buffers
+           (lambda (it)
+             (with-current-buffer it
+               (when (buffer-file-name)
+                 (string-match-p "/org/roam/" (buffer-file-name)))))))
 
     (add-hook 'ibuffer-mode-hook #'hl-line-mode)
 
@@ -94,12 +108,17 @@
   :preface
   (defun config-ibuffer--setup-buffer ()
     (ibuffer-projectile-set-filter-groups)
-    (add-to-list 'ibuffer-filter-groups '("Dired" (mode . dired-mode)))
-    (add-to-list 'ibuffer-filter-groups '("Ensime" (predicate . (s-matches? "Ensime" (buffer-name)))))
-    (add-to-list 'ibuffer-filter-groups '("System" (predicate . (-contains? '("*Messages*" "*scratch*") (buffer-name)))))
-    (add-to-list 'ibuffer-filter-groups '("Shells" (mode . eshell-mode)))
-    (unless (eq ibuffer-sorting-mode 'alphabetic)
-      (ibuffer-do-sort-by-alphabetic))
+    (add-to-list 'ibuffer-filter-groups '("emacs-src" (predicate . (when (buffer-file-name)
+                                                                     (s-matches? "/share/emacs" (buffer-file-name))))))
+
+    (add-to-list 'ibuffer-filter-groups '("src" (predicate . (when (buffer-file-name)
+                                                               (s-matches? (rx (or "/src/" "/lib/")) (buffer-file-name))))))
+    (add-to-list 'ibuffer-filter-groups '("test" (predicate . (when (buffer-file-name)
+                                                                (s-matches? "/test/" (buffer-file-name))))))
+
+    (unless (eq ibuffer-sorting-mode 'major-mode)
+      (setq ibuffer-sorting-reversep t)
+      (ibuffer-do-sort-by-major-mode))
 
     ;; All this buffer modification will have messed up the separator
     ;; fontification, so force the display table to update now.

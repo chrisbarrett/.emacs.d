@@ -103,7 +103,10 @@
     ;; HACK: Declare variable which is unsafely referenced inside lib.
     (defvar web-mode-content-type nil)
     (dolist (spec '((nix-mode all-the-icons-faicon "linux" :face all-the-icons-purple)
-                    (ledger-mode all-the-icons-material "account_balance")
+                    (ledger-mode all-the-icons-material "account_balance" :face all-the-icons-purple)
+                    (calc-mode all-the-icons-faicon "calculator" :face all-the-icons-silver)
+                    (magit-reflog-mode all-the-icons-icon-for-mode magit-log-mode)
+                    (magit-revision-mode all-the-icons-alltheicon "git")
                     (makefile-mode all-the-icons-fileicon "gnu" :face all-the-icons-dorange)
                     (makefile-bsdmake-mode all-the-icons-fileicon "gnu" :face all-the-icons-dorange)
                     (gfm-mode all-the-icons-faicon "github-alt" :v-adjust 0.0 :face all-the-icons-lblue)
