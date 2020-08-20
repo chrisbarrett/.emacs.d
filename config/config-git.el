@@ -36,6 +36,10 @@
           (call-interactively #'magit-find-file)
         (call-interactively #'magit-find-file-other-window)))
 
+    (defun config-git--fix-magit-status-header-line ()
+      (let ((cookie (face-remap-add-relative 'header-line 'magit-header-line)))
+        (face-remap-remove-relative cookie)))
+
     (defun config-git-diff-buffer-file (&optional arg)
       (interactive "P")
       (let* ((file (magit-file-relative-name))
@@ -51,6 +55,7 @@
           (user-error "Buffer isn't visiting a file"))))))
   :config
   (progn
+    (add-hook 'magit-status-mode-hook #'config-git--fix-magit-status-header-line)
     (add-hook 'magit-blame-mode-hook #'config-git--reveal-org-buffer)
     (setq magit-repository-directories (--map (cons it 1) paths-project-directories))
     (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
