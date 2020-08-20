@@ -61,7 +61,14 @@
     (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
     (setq magit-log-section-commit-count 0)))
 
-(use-package forge :after magit)
+;; `forge' teaches magit how to display and work with pull requests and issues.
+
+(use-package forge
+  :after magit
+  :config
+  (progn
+    (add-hook 'magit-status-sections-hook 'forge-insert-requested-reviews 90)
+    (add-hook 'magit-status-sections-hook 'forge-insert-assigned-issues 90)))
 
 ;; This package automatically prepends JIRA ticket numbers to commit messages if
 ;; the current git branch looks like it relates to a JIRA ticket.
