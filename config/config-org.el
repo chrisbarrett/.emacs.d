@@ -681,38 +681,28 @@
   :defer t)
 
 ;; `org-id' provides support for linking to org headings via UUIDs.
+;;
+;; Annoyingly, it sets an ID property if you happen to invoke `org-capture'
+;; while point is on a headline. Set advice to disable this behaviour.
 (use-package org-id
   :after org
   :preface
   (progn
-    (autoload 'org-id-get-create "org-id")
-    (autoload 'org-id-store-link "org-id")
+    (defvar config-org--in-org-capture-p nil)
 
-    ;; Transparently create ID properties when storing links to org headings. As
-    ;; a corner case, avoid doing this as part of the capture process.
-
-    (defvar config-org--capturing-p nil)
-
-    (defun config-org--on-capture (f &rest args)
-      (let ((config-org--capturing-p t)
-            (org-link-parameters (--remove (equal "id" (car it)) org-link-parameters)))
+    (defun config-org--bind-in-org-capture-p (f &rest args)
+      (let ((config-org--in-org-capture-p t))
         (apply f args)))
 
-    (defun config-org--prompt-for-creating-id (f &rest args)
-      (cond ((and (not config-org--capturing-p) (derived-mode-p 'org-mode) (org-at-heading-p))
-             (let ((id (org-id-get-create))
-                   (heading (org-link-display-format (substring-no-properties (org-get-heading t t t t)))))
-               (org-id-store-link)
-               (push (list (concat "id:" id) heading heading) org-stored-links)
-               (message "Stored: %s" heading)))
-            (t
-             (apply f args)))))
-  :init
-  (progn
-    (advice-add 'org-capture :around #'config-org--on-capture)
-    (advice-add 'org-store-link :around #'config-org--prompt-for-creating-id))
+    (defun config-org--ignore-if-capturing (f &rest args)
+      (unless config-org--in-org-capture-p
+        (apply f args))))
   :config
-  (org-link-set-parameters "id" :store #'org-id-store-link))
+  (progn
+    (advice-add 'org-capture :around #'config-org--bind-in-org-capture-p)
+    (advice-add 'org-id-store-link :around #'config-org--ignore-if-capturing))
+  :custom
+  ((org-id-link-to-org-use-id 'create-if-interactive-and-no-custom-id)))
 
 ;; `org-edna' provides todo dependencies, triggers, and more complex repeaters.
 (use-package org-edna
