@@ -445,7 +445,8 @@
             (interactive)
             (org-save-all-org-buffers)
             (org-agenda-redo))
-   "/" #'org-agenda-filter-by-tag
+   "/" #'org-agenda-filter
+   "?" #'org-agenda-filter-by-tag
    "B" #'org-agenda-bulk-action
    "v" #'org-agenda-view-mode-dispatch
    "t" #'org-agenda-todo
