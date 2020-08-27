@@ -67,6 +67,7 @@
   :after magit
   :config
   (progn
+    (remove-hook 'magit-status-sections-hook 'forge-insert-issues)
     (add-hook 'magit-status-sections-hook 'forge-insert-requested-reviews 90)
     (add-hook 'magit-status-sections-hook 'forge-insert-assigned-issues 90)))
 
