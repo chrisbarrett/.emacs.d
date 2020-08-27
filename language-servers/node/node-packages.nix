@@ -634,13 +634,13 @@ let
         sha512 = "6J72N8UNa462wa/KFODt/PJ3IU60SDpC3QXC1Hjc1BXXpfL2C9R5+AU7jhe0F6GREqVMh4Juu+NY7xn+6dipUQ==";
       };
     };
-    "espree-7.2.0" = {
+    "espree-7.3.0" = {
       name = "espree";
       packageName = "espree";
-      version = "7.2.0";
+      version = "7.3.0";
       src = fetchurl {
-        url = "https://registry.npmjs.org/espree/-/espree-7.2.0.tgz";
-        sha512 = "H+cQ3+3JYRMEIOl87e7QdHX70ocly5iW4+dttuR8iYSPr/hXKFb+7dBsZ7+u1adC4VrnPlTkv0+OwuPnDop19g==";
+        url = "https://registry.npmjs.org/espree/-/espree-7.3.0.tgz";
+        sha512 = "dksIWsvKCixn1yrEXO8UosNSxaDoSYpq9reEjZSbHLpT5hpaCAKTLBwq0RHtLrIr+c0ByiYzWT8KTMRzoRCNlw==";
       };
     };
     "esprima-4.0.1" = {
@@ -2098,10 +2098,10 @@ in
   bash-language-server = nodeEnv.buildNodePackage {
     name = "bash-language-server";
     packageName = "bash-language-server";
-    version = "1.16.1";
+    version = "1.17.0";
     src = fetchurl {
-      url = "https://registry.npmjs.org/bash-language-server/-/bash-language-server-1.16.1.tgz";
-      sha512 = "IS1Ix7qyRq7GTMXqhHUF44yY89i/1Ucn5KFLimEfDpwU1f3GvbV9VnDpqpG6kedJsl2LigEthSnoVlzaOwgt0g==";
+      url = "https://registry.npmjs.org/bash-language-server/-/bash-language-server-1.17.0.tgz";
+      sha512 = "t80ktUFL9DPaTO7yydoNYXIDKINweWbFvvUXesltmWj7UaIyepIVRAWUp4+62udJtor1VxVFEAXnsVDA640flw==";
     };
     dependencies = [
       sources."abab-2.0.4"
@@ -2316,7 +2316,7 @@ in
       sources."eslint-scope-5.1.0"
       sources."eslint-utils-2.1.0"
       sources."eslint-visitor-keys-1.3.0"
-      sources."espree-7.2.0"
+      sources."espree-7.3.0"
       sources."esprima-4.0.1"
       (sources."esquery-1.3.1" // {
         dependencies = [
@@ -2407,10 +2407,10 @@ in
   flow-bin = nodeEnv.buildNodePackage {
     name = "flow-bin";
     packageName = "flow-bin";
-    version = "0.131.0";
+    version = "0.132.0";
     src = fetchurl {
-      url = "https://registry.npmjs.org/flow-bin/-/flow-bin-0.131.0.tgz";
-      sha512 = "fZmoIBcDrtLhy/NNMxwJysSYzMr1ksRcAOMi3AHSoYXfcuQqTvhGJx+wqjlIOqIwz8RRYm8J4V4JrSJbIKP+Xg==";
+      url = "https://registry.npmjs.org/flow-bin/-/flow-bin-0.132.0.tgz";
+      sha512 = "S1g/vnAyNaLUdajmuUHCMl30qqye12gS6mr4LVyswf1k+JDF4efs6SfKmptuvnpitF3LGCVf0TIffChP8ljwnw==";
     };
     buildInputs = globalBuildInputs;
     meta = {
@@ -2425,10 +2425,10 @@ in
   typescript = nodeEnv.buildNodePackage {
     name = "typescript";
     packageName = "typescript";
-    version = "3.9.7";
+    version = "4.0.2";
     src = fetchurl {
-      url = "https://registry.npmjs.org/typescript/-/typescript-3.9.7.tgz";
-      sha512 = "BLbiRkiBzAwsjut4x/dsibSTB6yWpwT5qWmC2OfuCg3GgVQCSgMs4vEctYPhsaGtd0AeuuHMkjZ2h2WG8MSzRw==";
+      url = "https://registry.npmjs.org/typescript/-/typescript-4.0.2.tgz";
+      sha512 = "e4ERvRV2wb+rRZ/IQeb3jm2VxBsirQLpQhdxplZ2MEzGvDkkMmPglecnNDfSUBivMjP93vRbngYYDQqQ/78bcQ==";
     };
     buildInputs = globalBuildInputs;
     meta = {
