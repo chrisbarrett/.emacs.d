@@ -7,6 +7,7 @@
   (require 'use-package))
 
 (require 'major-mode-hydra)
+(require 'paths)
 
 (autoload 'display-buffer-fullframe "display-buffer-fullframe")
 (autoload 'indent-buffer "config-editing")
@@ -155,6 +156,15 @@
 ;; `format-all' applies formatting commands on save, based on major-mode.
 (use-package format-all
   :hook (prog-mode . format-all-mode))
+
+;; `plantuml-mode' is a major-mode for the text-based plantuml diagramming tool.
+(use-package plantuml-mode
+  :mode (("\\.plantuml\\'" . plantuml-mode)
+         ("\\.puml\\'" . plantuml-mode))
+  :custom
+  ((plantuml-default-exec-mode 'jar)
+   (plantuml-indent-level 2)
+   (plantuml-jar-path (getenv "NIX_EMACS_PLANTUML_JAR"))))
 
 (provide 'config-langs)
 

@@ -114,6 +114,7 @@
         paren-face
         pass
         pdf-tools
+        plantuml-mode
         pip-requirements
         poporg
         pretty-hydra
