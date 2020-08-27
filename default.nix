@@ -119,6 +119,7 @@ in pkgs.symlinkJoin {
           --set NIX_EMACS_LSP_ESLINT_NODE_PATH "${pkgs.nodejs}/bin/node" \
           --set NIX_EMACS_PLANTUML_JAR "${pkgs.plantuml}/lib/plantuml.jar" \
           --set NIX_EMACS_MU_BINARY "${pkgs.mu}/bin/mu" \
+          --set NIX_EMACS_ESLINT_SERVER_SCRIPT "${languageServers}/lib/eslintServer.js" \
           --set NIX_EMACS_EMMY_LUA_JAR "${languageServers}/lib/emmy-lua.jar" \
           --set NIX_EMACS_GROOVY_LANGUAGE_SERVER_JAR "${languageServers}/lib/groovy-language-server-all.jar" \
           --set JAVA_HOME "${pkgs.jdk}"

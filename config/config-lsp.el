@@ -24,8 +24,11 @@
    (lsp-enable-semantic-highlighting t)
    (lsp-restart 'auto-restart)
    (lsp-session-file (f-join paths-cache-directory "lsp-session-v1"))
-   (lsp-eslint-node-path (getenv "NIX_EMACS_LSP_ESLINT_NODE_PATH"))
-   (lsp-groovy-server-file (getenv "NIX_EMACS_GROOVY_LANGUAGE_SERVER_JAR")))
+   (lsp-groovy-server-file (getenv "NIX_EMACS_GROOVY_LANGUAGE_SERVER_JAR"))
+   (lsp-eslint-validate ["typescript" "javascript" "javascriptreact"])
+   (lsp-eslint-server-command (list (getenv "NIX_EMACS_LSP_ESLINT_NODE_PATH")
+                                    (getenv "NIX_EMACS_ESLINT_SERVER_SCRIPT")
+                                    "--stdio")))
 
   :hook (prog-mode . lsp)
 

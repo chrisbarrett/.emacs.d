@@ -2,6 +2,7 @@
 let
   node = pkgs.callPackage ./node { };
   terraform-ls = pkgs.callPackage ./terraform-ls.nix { };
+  vscode-eslint = pkgs.callPackage ./vscode-eslint.nix { };
 
   emmyLuaJar = pkgs.fetchurl {
     name = "emmy-lua.jar";
@@ -29,5 +30,6 @@ in pkgs.symlinkJoin {
     cp ${
       ./groovy-language-server-all.jar
     } $out/lib/groovy-language-server-all.jar
+    cp ${vscode-eslint}/lib/eslintServer.js $out/lib/eslintServer.js
   '';
 }
