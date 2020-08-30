@@ -82,13 +82,12 @@
        ;; Groupings
 
        (,(rx bol (* space) (group (or "package" "node" "folder" "frame" "cloud" "database"))
-             (*? nonl)
-             (? (+ space) (group "as") (? (+ space) (group (+? (syntax word)))))
-             (* space)
-             "{" (* space) eol)
+             symbol-end)
         (1 'font-lock-keyword-face)
-        (2 'font-lock-keyword-face)
-        (3 'font-lock-variable-name-face))
+        (,(rx symbol-start (group "as") (+ space) (group (+ (syntax word)) symbol-end))
+         nil nil
+         (1 'font-lock-keyword-face)
+         (2 'font-lock-variable-name-face)))
 
        ;; Sequence diagrams
 
@@ -96,8 +95,7 @@
                                       "entity" "database" "collections"))
              (? (+ space)
                 (group (+ (syntax word)))
-                (* space)
-                eol))
+                symbol-end))
         (1 'font-lock-keyword-face)
         (2 'font-lock-variable-name-face))
 
