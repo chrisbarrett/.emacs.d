@@ -69,6 +69,14 @@
 
        (,(rx bol (* space) (group "!endsub")) (0 'font-lock-preprocessor-face))
 
+       ;; Naive macro highlighting
+
+       (,(rx (group upper (* (syntax word))) (* space) "(")
+        (1 'font-lock-function-name-face)
+        (,(rx (+ (syntax word)))
+         nil nil
+         (0 'font-lock-variable-name-face)))
+
        ;; Improved arrows syntax highlighting
 
        (,(rx (group (+ (syntax word))) (group (regexp config-langs--plantuml-arrows-regexp)))
