@@ -169,6 +169,10 @@
    (plantuml-indent-level 2)
    (plantuml-jar-path (getenv "NIX_EMACS_PLANTUML_JAR"))))
 
+(use-package flycheck-plantuml
+  :after (:all flycheck plantuml-mode)
+  :config (flycheck-plantuml-setup))
+
 (provide 'config-langs)
 
 ;;; config-langs.el ends here

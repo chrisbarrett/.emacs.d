@@ -61,6 +61,7 @@
         flycheck
         flycheck-ledger
         flycheck-package
+        flycheck-plantuml
         flycheck-rust
         forge
         format-all
