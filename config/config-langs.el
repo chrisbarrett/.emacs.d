@@ -161,6 +161,9 @@
 (use-package plantuml-mode
   :mode (("\\.plantuml\\'" . plantuml-mode)
          ("\\.puml\\'" . plantuml-mode))
+  :general
+  (:keymaps 'plantuml-mode-map
+   "C-c C-b" 'recompile)
   :custom
   ((plantuml-default-exec-mode 'jar)
    (plantuml-indent-level 2)
