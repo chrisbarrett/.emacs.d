@@ -417,6 +417,11 @@
   (progn
     (add-hook 'compilation-filter-hook #'config-basic-settings--colorize-compilation-buffer)
 
+    (add-to-list 'display-buffer-alist
+                 `(,(rx bos "*compilation*" eos)
+                   (display-buffer-reuse-window display-buffer-below-selected)
+                   (window-height    . 0.2)))
+
     ;; Clear default underline text properties applied to compilation highlights.
     (setq compilation-message-face 'compilation-base-face)))
 
