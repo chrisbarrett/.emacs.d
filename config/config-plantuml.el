@@ -18,24 +18,27 @@
    (plantuml-indent-level 2)
    (plantuml-jar-path (getenv "NIX_EMACS_PLANTUML_JAR")))
   :preface
-  (defconst config-langs--plantuml-arrows-regexp
-    (let* ((direction '(or "up" "u" "down" "d" "left" "l" "right" "r"))
-           (directives '(and "[" (*? nonl) "]"))
-           (lines '(+ "-"))
-           (dots '(+ "."))
-           ;; HACK: Make sure we have at least 2 characters in an arrow to avoid
-           ;; nonsense.
-           (arrow `(or  "---"
-                        "..."
-                        (and "<" ,lines)
-                        (and "<" ,dots)
-                        (and ,lines ">")
-                        (and ,dots ">")
-                        (and (? "<")
-                             (or (and ,lines (? ,directives) (? ,direction) ,lines)
-                                 (and ,dots (? ,directives) (? ,direction) ,dots))
-                             (? ">")))))
-      (rx-to-string `(and symbol-end (* space) ,arrow (* space) symbol-start) t)))
+  (progn
+    (defconst config-plantuml--participant-binder-rx
+      `(and word-start (+? (syntax word)) word-end))
+
+    (defconst config-plantuml--arrows-rx
+      (let* ((direction '(or "up" "u" "down" "d" "left" "l" "right" "r"))
+             (directives '(and "[" (*? nonl) "]"))
+             (lines '(+ "-"))
+             (dots '(+ ".")))
+        ;; HACK: Make sure we have at least 2 characters in an arrow to avoid
+        ;; nonsense.
+        `(or  "---"
+              "..."
+              (and "<" ,lines)
+              (and "<" ,dots)
+              (and ,lines ">")
+              (and ,dots ">")
+              (and (? "<")
+                   (or (and ,lines (? ,directives) (? ,direction) ,lines)
+                       (and ,dots (? ,directives) (? ,direction) ,dots))
+                   (? ">"))))))
 
   :config
   (progn
@@ -45,6 +48,9 @@
      'plantuml-mode
      `((,(rx bol (* space) (group (or "@startuml" "@enduml")))
         (0 'font-lock-preprocessor-face))
+
+       (,(rx bol (* space) (group "title") symbol-end)
+        (1 'font-lock-preprocessor-face))
 
        (,(rx bol (* space) (group "note"))
         (1 'font-lock-keyword-face)
@@ -71,21 +77,10 @@
 
        ;; Naive macro highlighting
 
-       (,(rx (group upper (* (syntax word))) (* space) "(")
-        (1 'font-lock-function-name-face)
-        (,(rx (+ (syntax word)))
-         nil nil
-         (0 'font-lock-variable-name-face)))
-
-       ;; Improved arrows syntax highlighting
-
-       (,(rx (group (+ (syntax word))) (group (regexp config-langs--plantuml-arrows-regexp)))
-        (1 'font-lock-variable-name-face)
-        (2 'font-lock-keyword-face)
-        (,(rx (group (* (syntax word)))
-              (group ":")
-              (group (* nonl)))
-         nil nil (1 'font-lock-variable-name-face) (2 'font-lock-keyword-face) (3 'font-lock-string-face)))
+       (,(rx bol (* space) (group upper (* (syntax word))) (* space) "("
+             (? (group (+ (syntax word)))))
+        (1 'font-lock-type-face)
+        (2 'font-lock-variable-name-face))
 
        ;; Groupings
 
@@ -107,6 +102,24 @@
         (1 'font-lock-keyword-face)
         (2 'font-lock-variable-name-face))
 
+
+       ;; Improved arrows syntax highlighting
+
+       (,(rx-to-string `(and bol
+                             (* space) (group ,config-plantuml--participant-binder-rx)
+                             (* space) (group ,config-plantuml--arrows-rx)
+                             (* space) (? (and (group ,config-plantuml--participant-binder-rx)
+                                               (* space)
+                                               (? (and
+                                                   (group ":")
+                                                   (group (* nonl))))))
+                             eol)
+                       t)
+        (1 'font-lock-variable-name-face)
+        (2 'font-lock-keyword-face)
+        (3 'font-lock-variable-name-face)
+        (4 'font-lock-keyword-face)
+        (5 'font-lock-doc-face))
 
        ;; Creole text formatting: https://plantuml.com/creole
 
