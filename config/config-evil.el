@@ -107,6 +107,8 @@ COUNT is the number of repetitions."
 
     (evil-set-initial-state 'grep-mode 'normal)
 
+    (evil-set-initial-state 'deft-mode 'emacs)
+
     (evil-set-initial-state 'occur-mode 'normal)
     (with-eval-after-load 'replace
       (evil-add-hjkl-bindings occur-mode-map))

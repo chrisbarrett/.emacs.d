@@ -33,6 +33,7 @@
         deadgrep
         default-text-scale
         deferred
+        deft
         direnv
         docker
         dockerfile-mode

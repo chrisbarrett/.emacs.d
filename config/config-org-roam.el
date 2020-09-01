@@ -71,6 +71,31 @@
   :config
   (push 'company-org-roam company-backends))
 
+;; `deft' provides a fast note-taking and search UI.
+
+(use-package deft
+  :commands (deft)
+  :preface
+  (defun config-org-roam--kill-deft ()
+    (interactive)
+    (when deft-buffer
+      (kill-buffer deft-buffer)))
+
+  :general
+  (:states 'emacs :keymaps 'deft-mode-map
+   "C-g" #'config-org-roam--kill-deft
+   "<escape>" #'config-org-roam--kill-deft)
+  :custom
+  ((deft-directory org-roam-directory)
+   (deft-default-extension "org")
+   (deft-use-filter-string-for-filename t)
+   (deft-auto-save-interval 0)
+   (deft-file-naming-rules '((noslash . "-")
+                             (nospace . "-")
+                             (case-fn . downcase))))
+  :config
+  (add-to-list 'deft-extensions "tex"))
+
 
 (provide 'config-org-roam)
 
