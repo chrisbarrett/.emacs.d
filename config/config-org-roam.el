@@ -11,6 +11,12 @@
 (require 'memoize)
 (require 's)
 
+(defvar config-org-roam-bibliography-notes-directory (f-join org-directory "roam" "notes"))
+(defvar config-org-roam-bibliography-path (f-join org-directory "bibliography.bib"))
+(defvar config-org-roam-bibnotes-file (f-join config-org-roam-bibliography-notes-directory "index.org"))
+
+(make-directory config-org-roam-bibliography-notes-directory t)
+
 ;; Use rg to search for candidates for org-agenda-files
 
 (defun config-org-roam--org-files-with-todos (dir)
@@ -123,12 +129,10 @@
 :END:
 "))
   :custom
-  ((bibtex-completion-notes-path (f-join org-roam-directory "bibtex"))
-   (bibtex-completion-bibliography (f-join org-directory "bibliography.bib"))
+  ((bibtex-completion-notes-path config-org-roam-bibliography-notes-directory)
+   (bibtex-completion-bibliography config-org-roam-bibliography-path)
    (bibtex-completion-pdf-field "file")
-   (bibtex-completion-notes-template-multiple-files config-org-roam--bibtex-file-template))
-  :config
-  (make-directory bibtex-completion-notes-path t))
+   (bibtex-completion-notes-template-multiple-files config-org-roam--bibtex-file-template)))
 
 (provide 'config-org-roam)
 
