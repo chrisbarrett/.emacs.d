@@ -54,6 +54,7 @@
 (advice-add 'org-agenda :before #'config-org-roam--update-agenda-files)
 
 ;; `org-roam' provides a specialised orgmode workflow and backlinks.
+
 (use-package org-roam
   :hook (after-init . org-roam-mode)
   :general
@@ -66,6 +67,7 @@
    (org-roam-db-location (f-join paths-cache-directory "org-roam.db"))))
 
 ;; `company-org-roam' provides a company backend for org-roam topics.
+
 (use-package company-org-roam
   :after (:all org-roam company)
   :config
