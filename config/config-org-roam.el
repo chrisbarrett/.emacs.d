@@ -134,6 +134,37 @@
    (bibtex-completion-pdf-field "file")
    (bibtex-completion-notes-template-multiple-files config-org-roam--bibtex-file-template)))
 
+;; `org-roam-bibtex' integrates org-roam with bibtex for bibliography
+;; management.
+
+(use-package org-roam-bibtex
+  :after (org-roam)
+  :hook (org-roam-mode . org-roam-bibtex-mode)
+  :custom
+  ((org-roam-bibtex-preformat-keywords '("=key=" "title" "url" "file" "author-or-editor" "keywords"))
+   (orb-templates
+    '(("r" "ref" plain (function org-roam-capture--get-point)
+       ""
+       :file-name "${slug}"
+       :head (string-trim-left "
+#+TITLE: ${=key=}: ${title}
+#+ROAM_KEY: ${ref}
+
+- tags ::
+- keywords :: ${keywords}
+
+* ${title}
+:PROPERTIES:
+:Custom_ID: ${=key=}
+:URL: ${url}
+:AUTHOR: ${author-or-editor}
+:NOTER_DOCUMENT: %(orb-process-file-field \"${=key=}\")
+:NOTER_PAGE:
+:END:
+
+")
+       :unnarrowed t)))))
+
 (provide 'config-org-roam)
 
 ;;; config-org-roam.el ends here

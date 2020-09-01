@@ -112,6 +112,7 @@
         org-edna
         org-present
         org-roam
+        org-roam-bibtex
         ox-gfm
         page-break-lines
         paren-face
