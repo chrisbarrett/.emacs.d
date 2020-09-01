@@ -23,7 +23,6 @@
 (require 'f)
 (require 'general)
 (require 'major-mode-hydra)
-(require 'memoize)
 (require 'org-funcs)
 (require 'paths)
 (require 's)
@@ -222,41 +221,6 @@
  org-agenda-text-search-extra-files (list (f-join org-directory "archive.org"))
  org-agenda-use-time-grid nil)
 
-;; Use rg to search for candidates for org-agenda-files
-
-(defun config-org--org-files-with-todos (dir)
-  (with-temp-buffer
-    (let ((default-directory dir))
-      (call-process "rg" nil t nil
-                    "TODO|CANCELLED|WAIT|DONE"
-                    "--files-with-matches"
-                    "--type" "org"
-                    "--case-sensitive"
-                    "--max-depth" "1")
-      (let ((results (split-string (buffer-substring (point-min) (point-max)) "\n" t)))
-        (seq-map (lambda (it) (f-join dir it))
-                 results)))))
-
-(ignore-errors
-  (memoize #'config-org--org-files-with-todos "1 minute"))
-
-(defun config-org--find-org-files-with-todos ()
-  (let* ((dirs (-flatten (list org-directory
-                               (when (bound-and-true-p org-roam-directory)
-                                 (list org-roam-directory
-                                       (f-join org-roam-directory "dailies")
-                                       (f-join org-roam-directory "projects"))))))
-         (files (seq-mapcat #'config-org--org-files-with-todos (seq-filter #'identity dirs))))
-    (seq-filter (lambda (file)
-                  ;; ignore dropbox conflict files
-                  (not (s-contains-p "conflicted copy" (f-filename file))))
-                files)))
-
-(defun config-org-update-agenda-files ()
-  (setq org-agenda-files (config-org--find-org-files-with-todos)))
-
-(add-hook 'org-roam-mode-hook #'config-org-update-agenda-files)
-
 ;; Update agenda files as we create new org buffers.
 
 (defun config-org--buffer-has-todo-keywords ()
@@ -340,9 +304,6 @@
     (defun config-org--after-archive (&rest _)
       (org-save-all-org-buffers))
 
-    (defun config-org--before-agenda (&rest _)
-      (config-org-update-agenda-files))
-
     ;; KLUDGE: Declare removed dynamic variable in case I revert to builtin org
     ;; version.
     (defvar org-log-states)
@@ -359,8 +320,6 @@
 
   :init
   (progn
-    (advice-add 'org-agenda :before #'config-org--before-agenda)
-
     (advice-add 'org-refile :after #'config-org--after-refile)
     (advice-add 'org-archive-subtree :before #'config-org--before-archive)
     (advice-add 'org-archive-subtree :after #'config-org--after-archive)
@@ -818,24 +777,6 @@
 ;; `om' provides a functional API for parsing and manipulating org files.
 (use-package om
   :defer t)
-
-;; `org-roam' provides a specialised orgmode workflow and backlinks.
-(use-package org-roam
-  :hook (after-init . org-roam-mode)
-  :general
-  (:states '(insert normal) :keymap 'org-mode-map
-   "C-c i" 'org-roam-insert
-   "C-c C-i" 'org-roam-insert
-   "C-c I" 'org-roam-insert-immediate)
-  :custom
-  ((org-roam-directory (f-join paths-org-directory "roam"))
-   (org-roam-db-location (f-join paths-cache-directory "org-roam.db"))))
-
-;; `company-org-roam' provides a company backend for org-roam topics.
-(use-package company-org-roam
-  :after (:all org-roam company)
-  :config
-  (push 'company-org-roam company-backends))
 
 ;; `org-format-headings' provides some commands to clean up the whitespace
 ;; around org headings.
