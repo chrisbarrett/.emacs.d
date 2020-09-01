@@ -262,14 +262,16 @@
     ("y" org-roam-dailies-yesterday "Dailies: yesterday")
     ("d" org-roam-dailies-date "Dialies: date..."))
 
+   "Refs"
+   (("b" helm-bibtex "bibliography")
+    ("r" org-ref "references"))
+
    "Goto"
-   (("i" org-funcs-goto-inbox "inbox")
-    ("w" org-funcs-goto-work "work"))
-   ""
    (("g" org-funcs-goto-headline "headline...")
     ("G" org-capture-goto-last-stored "last captured item")
     ("t" org-funcs-todo-list "todo list")
-    ("v" org-tags-view "tags"))))
+    ("v" org-tags-view "tags")
+    ("w" org-funcs-goto-work "work"))))
 
 (pretty-hydra-define project
   (:hint nil
