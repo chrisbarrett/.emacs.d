@@ -175,6 +175,36 @@
    (org-noter-hide-other nil)
    (org-noter-notes-search-path (list config-org-roam-bibliography-notes-directory))))
 
+;; `org-ref' provides tooling for inserting and formatting references in from a
+;; bibliography file.
+
+(use-package org-ref
+  :preface
+  (defconst config-org-roam--ref-note-title-format (string-trim-left "
+* TODO %y - %t
+:PROPERTIES:
+:CUSTOM_ID: %k
+:NOTER_DOCUMENT: %F
+:ROAM_KEY: cite:%k
+:AUTHOR: %9a
+:JOURNAL: %j
+:YEAR: %y
+:VOLUME: %v
+:PAGES: %p
+:DOI: %D
+:URL: %U
+:END:
+
+"))
+  :custom
+  ((org-ref-completion-library 'org-ref-helm-cite)
+   (org-ref-get-pdf-filename-function 'org-ref-get-pdf-filename-helm-bibtex)
+   (org-ref-default-bibliography (list config-org-roam-bibliography-path))
+   (org-ref-bibliography-notes config-org-roam-bibnotes-file)
+   (org-ref-note-title-format config-org-roam--ref-note-title-format)
+   (org-ref-notes-directory config-org-roam-bibliography-notes-directory)
+   (org-ref-notes-function 'orb-edit-notes)))
+
 (provide 'config-org-roam)
 
 ;;; config-org-roam.el ends here

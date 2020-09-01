@@ -112,6 +112,7 @@
         org-edna
         org-noter
         org-present
+        org-ref
         org-roam
         org-roam-bibtex
         ox-gfm
