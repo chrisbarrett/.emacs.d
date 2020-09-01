@@ -98,11 +98,11 @@
   :config
   (add-to-list 'deft-extensions "tex"))
 
-;; `ivy-bibtex' provides a UI for searching the bibliography.
-(use-package ivy-bibtex
-  :commands (ivy-bibtex ivy-bibtex-with-local-bibliography ivy-bibtex-with-notes))
+;; `helm-bibtex' provides a UI for searching the bibliography.
+(use-package helm-bibtex
+  :commands (helm-bibtex helm-bibtex-with-local-bibliography helm-bibtex-with-notes))
 
-;; `bibtex-completion' is the underlying mechanism used by ivy-bibtex.
+;; `bibtex-completion' is the underlying mechanism used by helm-bibtex.
 
 (use-package bibtex-completion
   :preface

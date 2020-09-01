@@ -76,6 +76,7 @@
         graphviz-dot-mode
         groovy-mode
         haskell-mode
+        helm-bibtex
         helpful
         hide-mode-line
         highlight-indent-guides
@@ -86,7 +87,6 @@
         hydra
         ibuffer-projectile
         ivy
-        ivy-bibtex
         ivy-historian
         json-mode
         latex-preview-pane
