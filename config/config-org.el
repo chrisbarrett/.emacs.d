@@ -764,16 +764,6 @@
     (add-hook 'org-present-mode-hook #'config-org--on-start-presentation)
     (add-hook 'org-present-mode-quit-hook #'config-org--on-end-presentation)))
 
-;; `org-protocol' provides a URL scheme and code triggering for Emacs.
-(use-package org-protocol
-  :after (:all server org)
-  :config
-  (org-funcs-update-capture-templates
-   (list
-    (org-funcs-capture-template " L" "org-protocol Link" '(file "inbox.org")
-                                "%(org-funcs-read-url-for-capture \"%:link\" \"%:description\" t)\n%:initial"
-                                :immediate-finish t))))
-
 ;; `om' provides a functional API for parsing and manipulating org files.
 (use-package om
   :defer t)
