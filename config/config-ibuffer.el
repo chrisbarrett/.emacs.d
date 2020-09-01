@@ -5,7 +5,13 @@
 (eval-when-compile
   (require 'use-package))
 
+(cl-eval-when (compile)
+  (require 'ibuffer))
+
+(require 'f)
 (require 'general)
+
+(autoload 'page-break-lines--update-display-tables "page-break-lines")
 
 
 
