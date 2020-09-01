@@ -77,6 +77,7 @@
         groovy-mode
         haskell-mode
         helpful
+        helm-bibtex
         hide-mode-line
         highlight-indent-guides
         highlight-thing

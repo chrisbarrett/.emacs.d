@@ -98,6 +98,37 @@
   :config
   (add-to-list 'deft-extensions "tex"))
 
+;; `helm-bibtex' provides a UI for searching the bibliography.
+(use-package helm-bibtex
+  :commands (helm-bibtex helm-bibtex-with-local-bibliography helm-bibtex-with-notes))
+
+;; `bibtex-completion' is the underlying mechanism used by helm-bibtex.
+
+(use-package bibtex-completion
+  :preface
+  (defconst config-org-roam--bibtex-file-template (string-trim-left "
+#+TITLE: ${title}
+#+ROAM_KEY: cite:${=key=}
+
+* TODO Notes
+:PROPERTIES:
+:CUSTOM_ID: ${=key=}
+:NOTER_DOCUMENT: %(orb-process-file-field \"${=key=}\")
+:AUTHOR: ${author-abbrev}
+:JOURNAL: ${journaltitle}
+:DATE: ${date}
+:YEAR: ${year}
+:DOI: ${doi}
+:URL: ${url}
+:END:
+"))
+  :custom
+  ((bibtex-completion-notes-path (f-join org-roam-directory "bibtex"))
+   (bibtex-completion-bibliography (f-join org-directory "bibliography.bib"))
+   (bibtex-completion-pdf-field "file")
+   (bibtex-completion-notes-template-multiple-files config-org-roam--bibtex-file-template))
+  :config
+  (make-directory bibtex-completion-notes-path t))
 
 (provide 'config-org-roam)
 
