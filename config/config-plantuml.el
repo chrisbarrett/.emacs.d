@@ -152,6 +152,9 @@
         (2 '(:underline (:style wave)))
         (3 'parenthesis))
 
+       (,(rx bol (* space) (group (+ "#")) (+ (not (any "*"))))
+        (1 'org-list-dt))
+
        (,(rx bol (* space) (group "*") (+ (not (any "*"))))
         (1 'org-list-dt))))))
 
