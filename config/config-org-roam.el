@@ -92,8 +92,8 @@
    (deft-default-extension "org")
    (deft-use-filter-string-for-filename t)
    (deft-auto-save-interval 0)
-   (deft-file-naming-rules '((noslash . "-")
-                             (nospace . "-")
+   (deft-file-naming-rules '((noslash . "_")
+                             (nospace . "_")
                              (case-fn . downcase))))
   :config
   (add-to-list 'deft-extensions "tex"))
