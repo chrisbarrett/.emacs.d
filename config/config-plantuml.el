@@ -35,6 +35,8 @@
               (and "<" ,dots)
               (and ,lines ">")
               (and ,dots ">")
+              (and "<" ,lines ">")
+              (and "<" ,dots ">")
               (and (? "<")
                    (or (and ,lines (? ,directives) (? ,direction) ,lines)
                        (and ,dots (? ,directives) (? ,direction) ,dots))
@@ -108,18 +110,15 @@
        (,(rx-to-string `(and bol
                              (* space) (group ,config-plantuml--participant-binder-rx)
                              (* space) (group ,config-plantuml--arrows-rx)
-                             (* space) (? (and (group ,config-plantuml--participant-binder-rx)
-                                               (* space)
-                                               (? (and
-                                                   (group ":")
-                                                   (group (* nonl))))))
-                             eol)
+                             (* space) (group ,config-plantuml--participant-binder-rx))
                        t)
         (1 'font-lock-variable-name-face)
         (2 'font-lock-keyword-face)
         (3 'font-lock-variable-name-face)
-        (4 'font-lock-keyword-face)
-        (5 'font-lock-doc-face))
+        (,(rx (group ":") (* space) (group (* nonl)))
+         nil nil
+         (1 'font-lock-keyword-face)
+         (2 'font-lock-string-face)))
 
        ;; Creole text formatting: https://plantuml.com/creole
 
