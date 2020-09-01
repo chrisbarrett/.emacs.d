@@ -203,7 +203,11 @@
    (org-ref-bibliography-notes config-org-roam-bibnotes-file)
    (org-ref-note-title-format config-org-roam--ref-note-title-format)
    (org-ref-notes-directory config-org-roam-bibliography-notes-directory)
-   (org-ref-notes-function 'orb-edit-notes)))
+   (org-ref-notes-function 'orb-edit-notes))
+  :config
+  (progn
+    (require 'org-ref-pdf)
+    (require 'org-ref-url-utils)))
 
 (provide 'config-org-roam)
 
