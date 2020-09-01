@@ -199,11 +199,6 @@ Return the position of the headline."
 
 
 
-(defun org-funcs-goto-inbox ()
-  "Switch to the inbox file."
-  (interactive)
-  (find-file (f-join paths-org-directory "inbox.org")))
-
 (defun org-funcs-get-roam-file-by-title (title)
   (cl-labels ((extract-title (record) (plist-get (cdr record) :title))
               (extract-file (record) (plist-get (cdr record) :path)))
