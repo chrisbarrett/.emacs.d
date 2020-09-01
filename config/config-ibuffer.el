@@ -105,6 +105,8 @@
 (use-package ibuffer-projectile
   :commands (ibuffer-projectile-set-filter-groups)
   :functions (ibuffer-do-sort-by-alphabetic)
+  :custom ((ibuffer-default-sorting-mode 'major-mode)
+           (ibuffer-default-sorting-reversep t))
   :preface
   (defun config-ibuffer--setup-buffer ()
     (ibuffer-projectile-set-filter-groups)
@@ -116,9 +118,10 @@
     (add-to-list 'ibuffer-filter-groups '("test" (predicate . (when (buffer-file-name)
                                                                 (s-matches? "/test/" (buffer-file-name))))))
 
-    (unless (eq ibuffer-sorting-mode 'major-mode)
-      (setq ibuffer-sorting-reversep t)
-      (ibuffer-do-sort-by-major-mode))
+
+
+    (unless (eq ibuffer-sorting-mode 'alphabetic)
+      (ibuffer-do-sort-by-alphabetic))
 
     ;; All this buffer modification will have messed up the separator
     ;; fontification, so force the display table to update now.
