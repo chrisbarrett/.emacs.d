@@ -165,6 +165,16 @@
 ")
        :unnarrowed t)))))
 
+;; `org-noter' allows you to annotate PDFs and other formats, storing the
+;; annotations in an org file.
+
+(use-package org-noter
+  :after (:any org pdf-view)
+  :custom
+  ((org-noter-always-create-frame nil)
+   (org-noter-hide-other nil)
+   (org-noter-notes-search-path (list config-org-roam-bibliography-notes-directory))))
+
 (provide 'config-org-roam)
 
 ;;; config-org-roam.el ends here

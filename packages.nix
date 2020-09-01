@@ -110,6 +110,7 @@
         org
         org-bullets
         org-edna
+        org-noter
         org-present
         org-roam
         org-roam-bibtex
