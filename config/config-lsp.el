@@ -13,6 +13,11 @@
   (require 'company)
   (require 'use-package))
 
+(defconst config-lsp-inhibited-modes
+  '(emacs-lisp-mode
+    ;; use `tide' instead
+    typescript-mode))
+
 (use-package lsp-mode
   :defer t
   :custom
@@ -30,7 +35,13 @@
                                     (getenv "NIX_EMACS_ESLINT_SERVER_SCRIPT")
                                     "--stdio")))
 
-  :hook (prog-mode . lsp)
+  :commands (lsp)
+  :preface
+  (defun config-lsp-maybe-enable-lsp ()
+    (unless (apply #'derived-mode-p config-lsp-inhibited-modes)
+      (lsp)))
+
+  :hook (prog-mode . config-lsp-maybe-enable-lsp)
 
   :preface
   (progn
