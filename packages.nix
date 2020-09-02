@@ -140,6 +140,7 @@
         smartparens
         swiper
         terraform-mode
+        tide
         toml-mode
         typescript-mode
         undo-tree

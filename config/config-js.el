@@ -3,7 +3,9 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'use-package)
+  (require 'use-package))
+
+(cl-eval-when (compile)
   (require 'flycheck))
 
 (require 'dash)
@@ -77,6 +79,20 @@ Expected to be set as a dir-local variable."
 (use-package typescript-mode
   :mode ("\\.tsx?\\'" . typescript-mode)
   :custom ((typescript-indent-level 2)))
+
+;; `tide' is a TS development environment. It's currently more enjoyable to use than the LSP.
+
+(use-package tide
+  :after (typescript-mode company flycheck)
+  :hook ((typescript-mode . tide-setup)
+         (typescript-mode . tide-hl-identifier-mode)
+         (before-save . tide-format-before-save))
+  :general
+  (:states '(normal insert emacs) :keymaps 'tide-mode-map
+   "M-." 'tide-jump-to-definition)
+  :config
+  (with-eval-after-load 'flycheck
+    (flycheck-add-next-checker 'typescript-tide '(warning . javascript-eslint) t)))
 
 ;; `nvm' teaches Emacs to update the exec-path according to the current nvm
 ;; profile.
