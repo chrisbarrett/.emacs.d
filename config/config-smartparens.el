@@ -323,6 +323,9 @@
       (sp-local-pair "=" "=" :unless '(sp-point-after-word-p config-smartparens--in-src-block-p) :post-handlers '(("[d1]" "SPC")))
       (sp-local-pair "«" "»" :unless '(config-smartparens--in-src-block-p)))
 
+    (sp-with-modes 'markdown-mode
+      (sp-local-pair "[" "]" :post-handlers '(config-smartparens--format-org-checkitem)))
+
     ;; Delete enclosing whitespace if necessary.
 
     (advice-add 'sp-backward-delete-char :around #'config-smartparens-delete-horizontal-space-for-delete)
