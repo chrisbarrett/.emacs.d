@@ -27,13 +27,15 @@
     (setq company-minimum-prefix-length 3)
     (setq company-tooltip-align-annotations t))
 
+  :custom
+  ((company-idle-delay 0.3)
+   (company-require-match nil))
+
   :config
   (progn
     (require 'company-tng)
     (with-eval-after-load 'evil
       (evil-define-key 'insert company-mode-map (kbd "S-<return>") #'company-complete))
-    (setq company-idle-delay 0.3)
-    (setq company-require-match nil)
     (add-hook 'company-mode-hook #'config-company--set-company-vars)))
 
 (use-package company-dabbrev
