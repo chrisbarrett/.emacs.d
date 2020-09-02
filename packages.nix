@@ -105,7 +105,6 @@
         nix-mode
         no-littering
         noflet
-        nvm
         ob-restclient
         org
         org-bullets

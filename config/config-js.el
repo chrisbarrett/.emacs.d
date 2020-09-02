@@ -94,24 +94,6 @@ Expected to be set as a dir-local variable."
   (with-eval-after-load 'flycheck
     (flycheck-add-next-checker 'typescript-tide '(warning . javascript-eslint) t)))
 
-;; `nvm' teaches Emacs to update the exec-path according to the current nvm
-;; profile.
-(use-package nvm
-  :when (file-directory-p "~/.config/nvm")
-  :custom ((nvm-dir "~/.config/nvm"))
-  :functions (nvm-use-for-buffer)
-  :preface
-  (defun config-js-maybe-use-nvm ()
-    ;; If there's a shell.nix, assume we're using Lorri to manage which Node+NPM
-    ;; programs are used.
-    (unless (locate-dominating-file default-directory "shell.nix")
-      (when (locate-dominating-file default-directory ".nvmrc")
-        (nvm-use-for-buffer)
-        t)))
-  :hook ((js-mode . config-js-maybe-use-nvm)
-         (org-mode . config-js-maybe-use-nvm)
-         (typescript-mode . config-js-maybe-use-nvm)))
-
 (provide 'config-js)
 
 ;;; config-js.el ends here
