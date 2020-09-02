@@ -215,29 +215,6 @@ Return the position of the headline."
   (find-file (org-funcs-get-roam-file-by-title org-funcs-work-file-title))
   (org-show-all))
 
-(defun org-funcs-goto-headline ()
-  "Prompt for a headline to jump to."
-  (interactive)
-  (-let [(_ file _ pos)
-         (org-refile-get-location "Goto"
-                                  (when (derived-mode-p 'org-mode)
-                                    (current-buffer)))]
-    (find-file file)
-    (widen)
-    (cond
-     (pos
-      (goto-char pos)
-      (let ((org-indirect-buffer-display 'current-window))
-        (org-tree-to-indirect-buffer))
-      (outline-hide-subtree)
-      (org-show-entry)
-      (org-show-children)
-      (org-show-set-visibility 'canonical))
-     (t
-      (goto-char (point-min))
-      (org-overview)
-      (org-forward-heading-same-level 1)))))
-
 (defun org-funcs-todo-list ()
   "Show the todo list for the current context."
   (interactive)

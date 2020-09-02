@@ -267,8 +267,7 @@
     ("r" org-ref "references"))
 
    "Goto"
-   (("g" org-funcs-goto-headline "headline...")
-    ("G" org-capture-goto-last-stored "last captured item")
+   (("g" org-capture-goto-last-stored "last captured item")
     ("t" org-funcs-todo-list "todo list")
     ("v" org-tags-view "tags")
     ("w" org-funcs-goto-work "work"))))
