@@ -155,7 +155,11 @@
 
 ;; `format-all' applies formatting commands on save, based on major-mode.
 (use-package format-all
-  :hook (prog-mode . format-all-mode))
+  :hook (prog-mode . format-all-mode)
+  :config
+  (add-to-list 'display-buffer-alist
+               `(,(rx bos "*format-all-errors*" eos)
+                 (allow-no-window . t))))
 
 (provide 'config-langs)
 
