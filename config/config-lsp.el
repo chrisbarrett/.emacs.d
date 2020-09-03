@@ -94,10 +94,13 @@ If any function in this list returns nil, the error is not displayed.")
 
 
   :config
-  (lsp-register-client
-   (make-lsp-client :new-connection (lsp-stdio-connection '("terraform-ls" "serve"))
-                    :major-modes '(terraform-mode)
-                    :server-id 'terraform-ls)))
+  (progn
+    (add-to-list 'lsp-disabled-clients 'ts-ls)
+
+    (lsp-register-client
+     (make-lsp-client :new-connection (lsp-stdio-connection '("terraform-ls" "serve"))
+                      :major-modes '(terraform-mode)
+                      :server-id 'terraform-ls))))
 
 (use-package dap-mode
   :hook ((lsp-mode . dap-mode))
