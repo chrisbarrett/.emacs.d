@@ -59,6 +59,7 @@
 
     (defun config-flycheck--maybe-inhibit-flycheck (result)
       (unless (or (equal (buffer-name) "*ediff-merge*")
+                  (string-match-p (rx "/node_modules/") default-directory)
                   config-etags-in-query-replace-session-p)
         result))
 
