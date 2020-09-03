@@ -26,6 +26,7 @@ let
       plantuml
       ripgrep
       shellcheck
+      shfmt
       sqlite
       tectonic
     ];
