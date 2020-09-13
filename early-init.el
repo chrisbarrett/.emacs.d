@@ -27,9 +27,9 @@
 
 ;; Disable some window chrome that doesn't make sense in a keyboard-driven UI.
 
-(setq menu-bar-mode nil)
-(setq tool-bar-mode nil)
-(setq scroll-bar-mode nil)
+(custom-set-variables '(menu-bar-mode nil)
+                      '(tool-bar-mode . nil)
+                      '(scroll-bar-mode nil))
 
 (modify-all-frames-parameters '((vertical-scroll-bars)
                                 (name . "Emacs")))
