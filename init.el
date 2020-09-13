@@ -5,6 +5,8 @@
 (when (version< emacs-version "27")
   (error "This version of Emacs is not supported"))
 
+;; This is inevitable.
+(require 'cl)
 (require 'subr-x)
 
 (add-hook 'emacs-startup-hook
