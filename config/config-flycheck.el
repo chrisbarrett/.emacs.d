@@ -129,10 +129,11 @@
 (use-package flycheck-package
   :after (:all flycheck elisp-mode)
   :config
-  (progn
-    (flycheck-package-setup)
-    (setf (flycheck-checker-get 'emacs-lisp-package 'predicate)
-          #'config-flycheck--elisp-package-flycheck-predicate)))
+  (eval
+   '(progn
+      (flycheck-package-setup)
+      (setf (flycheck-checker-get 'emacs-lisp-package 'predicate)
+            #'config-flycheck--elisp-package-flycheck-predicate))))
 
 ;; Checkdoc is used by flycheck for linting docstrings in elisp.
 
@@ -142,8 +143,9 @@
   ((checkdoc-force-docstrings-flag nil)
    (checkdoc-arguments-in-order-flag nil))
   :config
-  (setf (flycheck-checker-get 'emacs-lisp-checkdoc 'predicate)
-        #'config-flycheck--elisp-package-flycheck-predicate))
+  (eval
+   '(setf (flycheck-checker-get 'emacs-lisp-checkdoc 'predicate)
+          #'config-flycheck--elisp-package-flycheck-predicate)))
 
 (provide 'config-flycheck)
 
