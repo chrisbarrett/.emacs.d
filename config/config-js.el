@@ -83,9 +83,16 @@ Expected to be set as a dir-local variable."
 ;; `tide' is a TS development environment. It's currently more enjoyable to use than the LSP.
 
 (use-package tide
-  :after (typescript-mode company flycheck)
-  :hook ((typescript-mode . tide-setup)
-         (typescript-mode . tide-hl-identifier-mode)
+  :after (company flycheck)
+  :preface
+  (defun config-js--maybe-enable-tide ()
+    (unless (derived-mode-p 'json-mode)
+      (require 'tide)
+      (tide-setup)
+      (tide-hl-identifier-mode +1)))
+
+  :hook ((typescript-mode . config-js--maybe-enable-tide)
+         (js-mode . config-js--maybe-enable-tide)
          (before-save . tide-format-before-save))
   :general
   (:states '(normal insert emacs) :keymaps 'tide-mode-map

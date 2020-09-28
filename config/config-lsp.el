@@ -16,6 +16,7 @@
 (defconst config-lsp-inhibited-modes
   '(emacs-lisp-mode
     ;; use `tide' instead
+    js-mode
     typescript-mode))
 
 (use-package lsp-mode
