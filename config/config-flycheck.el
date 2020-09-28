@@ -8,6 +8,7 @@
 (require 'config-etags)
 (require 'dash)
 (require 'subr-x)
+(require 'flycheck)
 
 
 
