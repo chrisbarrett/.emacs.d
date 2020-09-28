@@ -385,7 +385,7 @@
 
   :config
   (general-setq
-   recentf-max-saved-items 1000
+   recentf-max-saved-items 100
    recentf-exclude '(config-basic-settings--boring-filename-p
                      config-basic-settings--boring-extension-p
                      file-remote-p
