@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: export interface
+# key: ei
+# condition: (yas-funcs-bolp)
+# --
+export interface ${1:Name} {
+  $0
+}
