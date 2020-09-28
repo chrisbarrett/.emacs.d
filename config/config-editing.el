@@ -468,24 +468,6 @@ Interactively, reverse the characters in the current region."
   ((annotate-blacklist-major-mode '(org-agenda-mode org-mode special-mode))
    (annotate-use-messages nil)))
 
-;; `literate-calc-mode' adds support for inline formulas and shows the results
-;; with overlays.
-
-(use-package literate-calc-mode
-  :commands (literate-calc-minor-mode)
-  :hook ((org-mode . config-editing--maybe-literate-calc-minor-mode))
-  :preface
-  (defun config-editing--maybe-literate-calc-minor-mode ()
-    (unless (and (buffer-file-name)
-                 (string-match-p "archive.org\\'" (buffer-file-name)))
-      (literate-calc-minor-mode)))
-  :config
-  ;; Don't run flyspell on tokens in literate-calc-mode expressions.
-  (defun config-editing--ad-flyspell-compat (f &rest args)
-    (and (apply f args)
-         (let ((line (buffer-substring (line-beginning-position) (line-end-position))))
-           (not (string-match-p literate-calc--expression line))))))
-
 (provide 'config-editing)
 
 ;;; config-editing.el ends here
