@@ -164,9 +164,9 @@
 
  ;; latex
 
- org-latex-compiler "tectonic"
- org-latex-compilers '("tectonic" "pdflatex" "xelatex" "lualatex")
- org-latex-pdf-process '("tectonic --outdir %o %f")
+ org-latex-compiler (getenv "NIX_EMACS_TECTONIC_BIN")
+ org-latex-compilers (list (getenv "NIX_EMACS_TECTONIC_BIN") "pdflatex" "xelatex" "lualatex")
+ org-latex-pdf-process (list (concat (getenv "NIX_EMACS_TECTONIC_BIN") " --outdir %o %f"))
 
  ;; org-habit
 
