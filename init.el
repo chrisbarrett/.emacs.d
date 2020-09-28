@@ -31,6 +31,10 @@
 
 (require 'general)
 
+;; It's inevitable right now. Avoids errors introduced by reshuffling of
+;; functions in Emacs 27.
+(require 'cl)
+
 (use-package major-mode-hydra
   :demand t
   :general (:states '(normal motion) "," #'major-mode-hydra)
