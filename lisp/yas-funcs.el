@@ -77,6 +77,7 @@ Fall back to the file name sans extension."
     ("stampit"   "@stamp/it")
     ("Configure" "@stamp/configure")
     ("Required"  "@stamp/required")
+    ((or "aws" "AWS")       "aws-sdk")
     ("_"       "lodash")
 
     ((guard (s-contains? "{" text))
