@@ -592,12 +592,12 @@
 ;; `evil-org' provides better compatability with org-mode.
 (use-package evil-org
   :hook (org-mode . evil-org-mode)
-  :general
-  (:states 'normal :keymaps 'evil-org-mode-map "t" #'org-todo)
-  :config
-  ;; Remove weird keybindings.
-  (general-unbind :states '(normal insert) :keymaps 'evil-org-mode-map
-    "M-l" "M-h" "J" "O" "M-l" "M-h"))
+  :custom ((evil-org-key-theme '(additional
+                                 calendar
+                                 heading
+                                 navigation
+                                 textobjects
+                                 todo))))
 
 ;; `org-bullets' displays orgmode bullets using pretty utf-8 characters.
 (use-package org-bullets
