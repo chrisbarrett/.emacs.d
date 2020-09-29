@@ -594,7 +594,6 @@
   :hook (org-mode . evil-org-mode)
   :custom ((evil-org-key-theme '(additional
                                  calendar
-                                 heading
                                  navigation
                                  textobjects
                                  todo))))
