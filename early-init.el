@@ -34,6 +34,11 @@
 (modify-all-frames-parameters '((vertical-scroll-bars)
                                 (name . "Emacs")))
 
+(when (boundp 'comp-eln-load-path)
+  (let ((cache-dir "~/.cache/emacs/eln-cache/"))
+    (mkdir cache-dir t)
+    (add-to-list 'comp-eln-load-path cache-dir)))
+
 (provide 'early-init)
 
 ;;; early-init.el ends here
