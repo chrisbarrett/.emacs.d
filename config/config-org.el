@@ -199,7 +199,7 @@
  ;; agenda
  org-stuck-projects '("" nil nil "")
  org-agenda-auto-exclude-function #'org-funcs-exclude-tasks-on-hold
- org-agenda-hide-tags-regexp (rx (or "noexport" "@someday"))
+ org-agenda-hide-tags-regexp (rx (or "noexport" "someday"))
  org-agenda-include-diary nil
  org-agenda-insert-diary-extract-time t
  org-agenda-search-view-always-boolean t
@@ -540,18 +540,18 @@
      (list
       '("p" . "personal context")
       (config-org--agenda-for-context "personal"
-                            :filter-preset (list "-@someday" (format "-%s" org-funcs-work-tag)))
+                            :filter-preset (list "-someday" (format "-%s" org-funcs-work-tag)))
       (config-org--plan-for-context '("personal")
-                          :filter-preset (list "-@someday" (format "-%s" org-funcs-work-tag)))
+                          :filter-preset (list "-someday" (format "-%s" org-funcs-work-tag)))
 
       (config-org--review-for-context '("@personal"))
 
       '("w" . "work context")
       (config-org--agenda-for-context "work"
-                            :filter-preset (list "-@someday" (format "+%s" org-funcs-work-tag))
+                            :filter-preset (list "-someday" (format "+%s" org-funcs-work-tag))
                             :show-catchups-p t)
-      (config-org--plan-for-context "work" :filter-preset (list "-@someday" (format "+%s" org-funcs-work-tag)))
-      (config-org--review-for-context "work" :filter-preset (list "-@someday" (format "+%s" org-funcs-work-tag)))))
+      (config-org--plan-for-context "work" :filter-preset (list "-someday" (format "+%s" org-funcs-work-tag)))
+      (config-org--review-for-context "work" :filter-preset (list "-someday" (format "+%s" org-funcs-work-tag)))))
 
     ;; Ensure the separator line is rendered whenever the org agenda view
     ;; changes. This is needed for page-break-lines to render the separator
