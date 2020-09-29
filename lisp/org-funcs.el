@@ -442,8 +442,7 @@ If NOTIFY-P is set, a desktop notification is displayed."
 (defconst org-funcs--refile-ignored-filename-regexp
   (rx (or "archive"
           "dailies"
-          "templates"
-          "conflicted copy")))
+          "templates")))
 
 (defun org-funcs-refile-candidates ()
   (f-files org-directory

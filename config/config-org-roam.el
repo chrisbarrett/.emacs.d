@@ -36,16 +36,12 @@
   (memoize #'config-org-roam--org-files-with-todos "1 minute"))
 
 (defun config-org-roam--find-org-files-with-todos ()
-  (let* ((dirs (-flatten (list org-directory
-                               (when (bound-and-true-p org-roam-directory)
-                                 (list org-roam-directory
-                                       (f-join org-roam-directory "dailies")
-                                       (f-join org-roam-directory "projects"))))))
-         (files (seq-mapcat #'config-org-roam--org-files-with-todos (seq-filter #'identity dirs))))
-    (seq-filter (lambda (file)
-                  ;; ignore dropbox conflict files
-                  (not (s-contains-p "conflicted copy" (f-filename file))))
-                files)))
+  (let ((dirs (-flatten (list org-directory
+                              (when (bound-and-true-p org-roam-directory)
+                                (list org-roam-directory
+                                      (f-join org-roam-directory "dailies")
+                                      (f-join org-roam-directory "projects")))))))
+    (seq-mapcat #'config-org-roam--org-files-with-todos (seq-filter #'identity dirs))))
 
 (defun config-org-roam--update-agenda-files (&rest _)
   (setq org-agenda-files (config-org-roam--find-org-files-with-todos)))
