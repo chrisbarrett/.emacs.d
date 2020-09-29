@@ -295,9 +295,9 @@
 
     (defun config-org--before-archive (&rest _)
       ;; Ensure we have a context before archiving.
-      (unless (seq-intersection '("@personal" "@work") (org-get-tags))
+      (unless (seq-intersection (list "@personal" org-funcs-work-tag) (org-get-tags))
         (let ((tag (pcase-exhaustive (read-char-choice "Set context: [w]ork  [p]ersonal" '(?w ?p))
-                     (?w "@work")
+                     (?w org-funcs-work-tag)
                      (?p "@personal"))))
           (org-toggle-tag tag 'on))))
 
@@ -437,7 +437,7 @@
       (seq-uniq (append tags '("-ignore"))))
 
     (cl-defun config-org--agenda-for-context (tag &key show-catchups-p filter-preset)
-      `(,(concat (substring tag 1 2) "a")
+      `(,(concat (substring tag 0 1) "a")
         ,(format "Agenda for context: %s" tag)
         ,(-non-nil
           `((agenda ""
@@ -538,20 +538,20 @@
 
     (org-funcs-update-agenda-custom-commands
      (list
-      '("p" . "@personal context")
-      (config-org--agenda-for-context "@personal"
-                            :filter-preset '("-@someday" "-@work"))
-      (config-org--plan-for-context '("@personal")
-                          :filter-preset '("-@someday" "-@work"))
+      '("p" . "personal context")
+      (config-org--agenda-for-context "personal"
+                            :filter-preset (list "-@someday" (format "-%s" org-funcs-work-tag)))
+      (config-org--plan-for-context '("personal")
+                          :filter-preset (list "-@someday" (format "-%s" org-funcs-work-tag)))
 
       (config-org--review-for-context '("@personal"))
 
-      '("w" . "@work context")
-      (config-org--agenda-for-context "@work"
-                            :filter-preset '("+@work" "-@someday")
+      '("w" . "work context")
+      (config-org--agenda-for-context "work"
+                            :filter-preset (list "-@someday" (format "+%s" org-funcs-work-tag))
                             :show-catchups-p t)
-      (config-org--plan-for-context "@work" :filter-preset '("+@work" "-@someday"))
-      (config-org--review-for-context "@work" :filter-preset '("+@work" "-@someday"))))
+      (config-org--plan-for-context "work" :filter-preset (list "-@someday" (format "+%s" org-funcs-work-tag)))
+      (config-org--review-for-context "work" :filter-preset (list "-@someday" (format "+%s" org-funcs-work-tag)))))
 
     ;; Ensure the separator line is rendered whenever the org agenda view
     ;; changes. This is needed for page-break-lines to render the separator

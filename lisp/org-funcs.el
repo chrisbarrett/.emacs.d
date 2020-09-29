@@ -31,6 +31,9 @@
 (defvar org-capture-templates nil)
 (defvar org-agenda-custom-commands nil)
 
+(defvar org-funcs-work-tag "broca"
+  "Tag for headlines that should be counted as in the work context.")
+
 (defun org-funcs-dailies-file-path ()
   (org-capture-put :default-time (current-time))
   (let* ((template (alist-get "d" org-roam-dailies-capture-templates nil nil #'equal))
@@ -101,7 +104,7 @@ Return the position of the headline."
           (delete-horizontal-space)
           (org-insert-heading nil nil t)
           (insert org-funcs--clocking-heading)
-          (org-set-tags "@work")
+          (org-set-tags org-funcs-work-tag)
           (point))))))
 
 (defun org-funcs-punch-in (buffer)
@@ -220,8 +223,8 @@ Return the position of the headline."
   (interactive)
   (org-agenda prefix-arg "t")
   (let ((tags (if (org-clocking-p)
-                  '("-someday" "+@work")
-                '("-someday" "-@work"))))
+                  (list "-someday" (format "+%s" org-funcs-work-tag))
+                (list "-someday" (format "-%s" org-funcs-work-tag)))))
     (org-agenda-filter-apply tags 'tag)))
 
 
@@ -338,7 +341,7 @@ If NOTIFY-P is set, a desktop notification is displayed."
 
   (let* ((domain (string-remove-prefix "www." (url-host (url-generic-parse-url url))))
          (verb (alist-get domain org-funcs--domain-to-verb-alist "Review" nil #'equal))
-         (tags (if (org-funcs--work-related-url-p url) ":@work:" "")))
+         (tags (if (org-funcs--work-related-url-p url) (format ":%s:" org-funcs-work-tag) "")))
     (prog1
         (format "* TODO %s [[%s][%s]]     %s"
                 verb
@@ -361,7 +364,7 @@ If NOTIFY-P is set, a desktop notification is displayed."
   (goto-char (point-max)))
 
 (defun org-funcs-capture-todo ()
-  (let ((tags (if (org-clocking-p) ":@work:" "")))
+  (let ((tags (if (org-clocking-p) (format ":%s:" org-funcs-work-tag) "")))
     (concat "* TODO %?           " tags)))
 
 (defun org-funcs-update-capture-templates (templates)
