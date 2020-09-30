@@ -215,7 +215,7 @@ Return the position of the headline."
 (defun org-funcs-goto-work ()
   "Switch to the work file."
   (interactive)
-  (find-file (org-funcs-get-roam-file-by-title org-funcs-work-file-title))
+  (find-file (f-join org-directory "tasks" (format "%s.org" org-funcs-work-tag)))
   (org-show-all))
 
 (defun org-funcs-todo-list ()
