@@ -221,23 +221,6 @@
  org-agenda-text-search-extra-files (list (f-join org-directory "archive.org"))
  org-agenda-use-time-grid nil)
 
-;; Update agenda files as we create new org buffers.
-
-(defun config-org--buffer-has-todo-keywords ()
-  (and (derived-mode-p 'org-mode)
-       (save-match-data
-         (save-excursion
-           (goto-char (point-min))
-           (search-forward-regexp org-todo-regexp nil t)))))
-
-(defun config-org-maybe-add-to-agenda-files ()
-  (when (and (derived-mode-p 'org-mode)
-             (config-org--buffer-has-todo-keywords)
-             (buffer-file-name))
-    (add-to-list 'org-agenda-files (buffer-file-name))))
-
-(add-hook 'org-capture-after-finalize-hook #'config-org-maybe-add-to-agenda-files)
-
 
 
 ;; `org-funcs' provides supporting commands we want to bind.
@@ -287,7 +270,6 @@
 
     (defun config-org--set-local-vars-and-hooks ()
       (org-indent-mode +1)
-      (add-hook 'after-save-hook #'config-org-maybe-add-to-agenda-files nil t)
       (setq bidi-paragraph-direction nil))
 
     (defun config-org--after-refile (&rest _)

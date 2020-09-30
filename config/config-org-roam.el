@@ -23,7 +23,7 @@
   (with-temp-buffer
     (let ((default-directory dir))
       (call-process "rg" nil t nil
-                    "TODO|CANCELLED|WAIT|DONE"
+                    "^[*]+ +(TODO|WAIT)"
                     "--files-with-matches"
                     "--type" "org"
                     "--case-sensitive"
@@ -38,13 +38,13 @@
 (defun config-org-roam--find-org-files-with-todos ()
   (let ((dirs (-flatten (list org-directory
                               (when (bound-and-true-p org-roam-directory)
-                                (list org-roam-directory
-                                      (f-join org-roam-directory "dailies")
-                                      (f-join org-roam-directory "projects")))))))
+                                (f-join org-roam-directory "dailies"))))))
     (seq-mapcat #'config-org-roam--org-files-with-todos (seq-filter #'identity dirs))))
 
 (defun config-org-roam--update-agenda-files (&rest _)
-  (setq org-agenda-files (config-org-roam--find-org-files-with-todos)))
+  (setq org-agenda-files (cons
+                          (f-join org-directory "tasks")
+                          (config-org-roam--find-org-files-with-todos))))
 
 (add-hook 'org-roam-mode-hook #'config-org-roam--update-agenda-files)
 
@@ -54,6 +54,27 @@
 ;; Otherwise, org-agenda would attempt to load every org-roam file.
 
 (advice-add 'org-agenda :before #'config-org-roam--update-agenda-files)
+
+;; Update agenda files as we create new org buffers.
+
+(defun config-org-roam--buffer-has-todo-keywords-p ()
+  (and (derived-mode-p 'org-mode)
+       (save-match-data
+         (save-excursion
+           (goto-char (point-min))
+           (search-forward-regexp org-todo-regexp nil t)))))
+
+(defun config-org-roam--maybe-add-to-agenda-files ()
+  (when (and (derived-mode-p 'org-mode)
+             (config-org-roam--buffer-has-todo-keywords-p)
+             (buffer-file-name)
+             (string-match-p (regexp-quote (f-join org-roam-directory "dailies"))
+                             (buffer-file-name))
+             (buffer-file-name))
+    (add-to-list 'org-agenda-files (buffer-file-name))))
+
+(add-hook 'org-capture-after-finalize-hook #'config-org-roam--maybe-add-to-agenda-files)
+(add-hook 'after-save-hook #'config-org-roam--maybe-add-to-agenda-files)
 
 ;; `org-roam' provides a specialised orgmode workflow and backlinks.
 
