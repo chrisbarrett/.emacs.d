@@ -31,8 +31,22 @@
 (defvar org-capture-templates nil)
 (defvar org-agenda-custom-commands nil)
 
+(defvar org-funcs-historical-work-tags '("movio" "pushpay")
+  "Tags that relate to previous employers or projects.")
+
 (defvar org-funcs-work-tag "broca"
   "Tag for headlines that should be counted as in the work context.")
+
+(defun org-funcs-work-file-buffer ()
+  (find-file-noselect (f-join org-directory "tasks" (format "%s.org" org-funcs-work-tag))))
+
+(defun org-funcs-work-tag-p (tag-or-tags)
+  (let ((work-tags-found
+         (seq-intersection (cons org-funcs-work-tag org-funcs-historical-work-tags)
+                           (if (listp tag-or-tags)
+                               tag-or-tags
+                             (s-split ":" tag-or-tags t)))))
+    (not (seq-empty-p work-tags-found))))
 
 (defun org-funcs-dailies-file-path ()
   (org-capture-put :default-time (current-time))
@@ -109,7 +123,7 @@ Return the position of the headline."
 
 (defun org-funcs-punch-in (buffer)
   "Punch in with the default date tree in the given BUFFER."
-  (interactive (list (org-funcs-dailies-buffer-get-create)))
+  (interactive (list (org-funcs-work-file-buffer)))
   (with-current-buffer buffer
     (org-with-point-at (org-funcs--ensure-clocking-headline buffer)
       (org-clock-in '(16))))
@@ -210,13 +224,10 @@ Return the position of the headline."
         (extract-file hit)
       (error "No roam files with the given title"))))
 
-(defvar org-funcs-work-file-title nil)
-
 (defun org-funcs-goto-work ()
   "Switch to the work file."
   (interactive)
-  (find-file (f-join org-directory "tasks" (format "%s.org" org-funcs-work-tag)))
-  (org-show-all))
+  (switch-to-buffer (org-funcs-work-file-buffer)))
 
 (defun org-funcs-todo-list ()
   "Show the todo list for the current context."
