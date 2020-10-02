@@ -52,9 +52,6 @@
 (global-set-key (kbd "C-<up>") #'config-editing-transpose-line-up)
 (global-set-key (kbd "C-<down>") #'config-editing-transpose-line-down)
 
-(global-set-key (kbd "s-<up>") #'config-editing-transpose-line-up)
-(global-set-key (kbd "s-<down>") #'config-editing-transpose-line-down)
-
 
 
 ;; Define some editing commands.
