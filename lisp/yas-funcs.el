@@ -70,13 +70,9 @@ Fall back to the file name sans extension."
   (pcase text
     ('nil      "")
     (""        "")
-    ("Promise" "bluebird")
-    ("assert"  "power-assert")
     ("VError"  "verror")
     ("styles"  "./styles.css")
-    ("stampit"   "@stamp/it")
-    ("Configure" "@stamp/configure")
-    ("Required"  "@stamp/required")
+    ("memoize" "promise-memoize")
     ((or "aws" "AWS")       "aws-sdk")
     ("_"       "lodash")
 
