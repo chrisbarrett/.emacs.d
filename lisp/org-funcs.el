@@ -119,12 +119,16 @@ Return the position of the headline."
           (insert org-funcs--clocking-heading)
           (point))))))
 
-(defun org-funcs-punch-in (buffer)
-  "Punch in with the default date tree in the given BUFFER."
-  (interactive (list (org-funcs-work-file-buffer)))
-  (with-current-buffer buffer
-    (org-with-point-at (org-funcs--ensure-clocking-headline buffer)
-      (org-clock-in '(16))))
+(defun org-funcs-punch-in (&optional arg)
+  "Punch in with the default date tree.
+
+With ARG, don't resume previously clocked task."
+  (interactive "P")
+  (if (or arg (null org-clock-history))
+      (with-current-buffer (org-funcs-work-file-buffer)
+        (org-with-point-at (org-funcs--ensure-clocking-headline (current-buffer))
+          (org-clock-in '(16))))
+    (call-interactively #'org-clock-in-last))
   (when (derived-mode-p 'org-agenda-mode)
     ;; Swap agenda due to context change.
     (org-funcs-agenda-dwim)))
