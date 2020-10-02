@@ -198,6 +198,7 @@
 
  ;; agenda
  org-stuck-projects '("" nil nil "")
+ org-agenda-todo-ignore-scheduled t
  org-agenda-auto-exclude-function #'org-funcs-exclude-tasks-on-hold
  org-agenda-hide-tags-regexp (rx (or "noexport" "someday"))
  org-agenda-include-diary nil
