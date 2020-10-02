@@ -237,6 +237,10 @@ TAGS are the tags to use when displaying the list."
   (org-agenda prefix-arg "t")
   (org-agenda-filter-apply (cons "-ignore" tags) 'tag))
 
+(defun org-funcs-someday-review-list ()
+  (let ((org-agenda-todo-list-sublevels nil))
+    (org-funcs-todo-list '("+someday"))))
+
 
 
 (defun org-funcs-ctrl-c-ctrl-k ()
