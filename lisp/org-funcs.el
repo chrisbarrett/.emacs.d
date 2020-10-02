@@ -102,7 +102,8 @@ Slightly faster than the version that ships with org-roam."
   (get-buffer org-agenda-buffer-name))
 
 
-(defvar org-funcs--clocking-heading "Work hours")
+(defconst org-funcs--clocking-heading "Planning"
+  "The heading to clock in to when punching in.")
 
 (defun org-funcs--ensure-clocking-headline (buffer)
   "Create the default heading for clocking in BUFFER.
