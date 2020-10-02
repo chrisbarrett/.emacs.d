@@ -227,14 +227,15 @@ Return the position of the headline."
   (interactive)
   (switch-to-buffer (org-funcs-work-file-buffer)))
 
-(defun org-funcs-todo-list ()
-  "Show the todo list for the current context."
-  (interactive)
+(defun org-funcs-todo-list (tags)
+  "Show the todo list for the current context.
+
+TAGS are the tags to use when displaying the list."
+  (interactive (list (if (org-clocking-p)
+                         (list "-someday" (format "+%s" org-funcs-work-tag))
+                       (list "-someday" (format "-%s" org-funcs-work-tag)))))
   (org-agenda prefix-arg "t")
-  (let ((tags (if (org-clocking-p)
-                  (list "-someday" (format "+%s" org-funcs-work-tag))
-                (list "-someday" (format "-%s" org-funcs-work-tag)))))
-    (org-agenda-filter-apply tags 'tag)))
+  (org-agenda-filter-apply (cons "-ignore" tags) 'tag))
 
 
 
