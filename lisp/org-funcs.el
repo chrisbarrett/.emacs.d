@@ -117,7 +117,6 @@ Return the position of the headline."
           (delete-horizontal-space)
           (org-insert-heading nil nil t)
           (insert org-funcs--clocking-heading)
-          (org-set-tags org-funcs-work-tag)
           (point))))))
 
 (defun org-funcs-punch-in (buffer)
