@@ -278,11 +278,10 @@
 
     (defun config-org--before-archive (&rest _)
       ;; Ensure we have a context before archiving.
-      (unless (seq-intersection (list "@personal" org-funcs-work-tag) (org-get-tags))
+      (when (seq-empty-p (org-get-tags))
         (let ((tag (pcase-exhaustive (read-char-choice "Set context: [w]ork  [p]ersonal" '(?w ?p))
-                     (?w org-funcs-work-tag)
-                     (?p "@personal"))))
-          (org-toggle-tag tag 'on))))
+                     (?w (org-toggle-tag org-funcs-work-tag 'on))
+                     (?p nil)))))))
 
     (defun config-org--after-archive (&rest _)
       (org-save-all-org-buffers))
