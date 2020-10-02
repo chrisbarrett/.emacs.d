@@ -451,7 +451,7 @@
     (cl-defun config-org--plan-for-context (tag-or-tags &key filter-preset)
       (let ((tags (-list tag-or-tags)))
         (cl-assert tags t "At least one tag must be supplied")
-        `(,(concat (substring (car tags) 1 2) "p")
+        `(,(concat (substring (car tags) 0 1) "p")
           ,(format "Plan for context: %s" (s-join ", " tags))
           ((agenda ""
                    ((org-agenda-overriding-header "Review agenda this week")
@@ -476,7 +476,7 @@
     (cl-defun config-org--review-for-context (tag-or-tags &key filter-preset)
       (let ((tags (-list tag-or-tags)))
         (cl-assert tags t "At least one tag must be supplied")
-        `(,(concat (substring (car tags) 1 2) "r")
+        `(,(concat (substring (car tags) 0 1) "r")
           ,(format "Review for context: %s" (s-join ", " tags))
           ((agenda ""
                    ((org-agenda-overriding-header "Review agenda this week")
@@ -526,7 +526,7 @@
       (config-org--plan-for-context '("personal")
                           :filter-preset (list "-someday" (format "-%s" org-funcs-work-tag)))
 
-      (config-org--review-for-context '("@personal"))
+      (config-org--review-for-context '("personal"))
 
       '("w" . "work context")
       (config-org--agenda-for-context "work"
