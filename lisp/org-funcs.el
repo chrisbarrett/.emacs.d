@@ -95,8 +95,6 @@ Slightly faster than the version that ships with org-roam."
              (find-file-noselect file)))))
   (cond ((org-clocking-p)
          (org-agenda nil "wa"))
-        ((seq-contains-p (org-get-tags) "@broca")
-         (org-agenda nil "ba"))
         (t
          (org-agenda nil "pa")))
   (get-buffer org-agenda-buffer-name))
