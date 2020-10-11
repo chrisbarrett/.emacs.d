@@ -18,6 +18,7 @@
 
 (cl-eval-when (compile)
   (require 'org)
+  (require 'org-ref)
   (require 'org-roam)
   (require 'org-agenda)
   (require 'org-clock)
@@ -365,6 +366,53 @@ If NOTIFY-P is set, a desktop notification is displayed."
 (defun org-funcs-update-agenda-custom-commands (templates)
   (let ((ht (ht-merge (ht-from-alist org-agenda-custom-commands) (ht-from-alist templates))))
     (setq org-agenda-custom-commands (-sort (-on 'string-lessp 'car) (ht->alist ht)))))
+
+(defvar org-funcs--pdf-download-timeout-seconds 30)
+
+
+(defun org-funcs-url-to-reference (url)
+  "Create a PDF of URL and add it to the bibliography."
+  (interactive (list (org-funcs-read-url)))
+  (require 'org-ref)
+  (let ((bibfile (car (org-ref-find-bibliography)))
+        (tmpfile (make-temp-file "wkhtmltopdf_" nil ".pdf"))
+        (reporter (make-progress-reporter "Downloading PDF"))
+        (status))
+
+    (async-start-process "wkhtmltopdf"
+                         (getenv "NIX_EMACS_WKHTMLTOPDF_BIN")
+                         (lambda (_proc)
+                           (setq status 'done))
+                         url
+                         tmpfile)
+
+    (cl-labels ((loop ()
+                      (pcase-exhaustive status
+                        ('done
+                         (progress-reporter-done reporter)
+                         (org-ref-url-html-to-bibtex bibfile url)
+                         (let* ((key
+                                 (with-current-buffer (find-file bibfile)
+                                   (save-excursion
+                                     (bibtex-beginning-of-entry)
+                                     (let ((bibtex-expand-strings t))
+                                       (reftex-get-bib-field "=key=" (bibtex-parse-entry t))))))
+                                (target
+                                 (f-join org-ref-pdf-directory (format  "%s.pdf" key))))
+                           (rename-file tmpfile target)
+                           (message "PDF downloaded to %s" target)))
+                        ('timeout
+                         (progress-reporter-done reporter)
+                         (message "wkhtmltopdf timed out"))
+                        (_
+                         (progress-reporter-update reporter)
+                         (run-with-timer 0.5 nil #'loop)))))
+      (loop))
+
+    (run-with-timer org-funcs--pdf-download-timeout-seconds
+                    nil
+                    (lambda ()
+                      (setq status 'timeout)))))
 
 
 ;; Priorities

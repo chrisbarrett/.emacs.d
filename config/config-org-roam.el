@@ -125,7 +125,13 @@
 (use-package helm-bibtex
   :commands (helm-bibtex helm-bibtex-with-local-bibliography helm-bibtex-with-notes))
 
-;; `bibtex-completion' is the underlying mechanism used by helm-bibtex.
+;; `bibtex' and `bibtex-completion' is the underlying mechanism used by helm-bibtex.
+
+(use-package bibtex
+  :defer t
+  :custom
+  ((bibtex-dialect 'biblatex)
+   (bibtex-completion-library-path (f-join org-directory "pdfs/"))))
 
 (use-package bibtex-completion
   :preface
