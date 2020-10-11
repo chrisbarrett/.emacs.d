@@ -451,7 +451,7 @@
   :custom
   ((transient-mode-line-format nil))
   :preface
-  (defun config-git--ad-transient-header-line-fixes (&rest _)
+  (defun config-themes--ad-transient-header-line-fixes (&rest _)
     (with-selected-window transient--window
       (save-excursion
         (goto-char (point-min))
@@ -460,7 +460,7 @@
         (insert (propertize "\n" 'face 'transient-separator 'line-height t)))
       (setq header-line-format nil)))
   :config
-  (advice-add 'transient--show :after #'config-git--ad-transient-header-line-fixes))
+  (advice-add 'transient--show :after #'config-themes--ad-transient-header-line-fixes))
 
 (provide 'config-themes)
 
