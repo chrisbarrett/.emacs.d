@@ -330,6 +330,18 @@
 
 
 
+(defconst config-basic-settings--large-file-allowed-extensions
+  '("pdf" "png" "jpg" "jpeg"))
+
+(defun config-basic-settings--dont-abort-if-allowed-extension (f &rest args)
+  (-let [(_size _op filename) args]
+    (unless (--any-p (f-ext-p filename it) config-basic-settings--large-file-allowed-extensions)
+      (apply f args))))
+
+(advice-add #'abort-if-file-too-large :around #'config-basic-settings--dont-abort-if-allowed-extension)
+
+
+
 (use-package simple
   :general ("M-SPC" #'cycle-spacing))
 
