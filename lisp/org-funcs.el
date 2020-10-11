@@ -23,6 +23,7 @@
   (require 'org-clock)
   (require 'org-capture))
 
+(autoload 'org-cliplink-retrieve-title-synchronously "org-cliplink")
 (autoload 'org-project-p "org-project")
 (autoload 'org-project-skip-stuck-projects "org-project")
 (autoload 'xml-parse-string "xml")
@@ -282,47 +283,11 @@ TAGS are the tags to use when displaying the list."
         input
       (org-funcs-read-url prompt default))))
 
-(defun org-funcs--retrieve-html (url)
-  (with-current-buffer (url-retrieve-synchronously url t)
-    (goto-char (point-min))
-    ;; Remove DOS EOL chars
-    (while (search-forward "\r\n" nil t)
-      (replace-match "\n"))
-
-    (goto-char (point-min))
-    (search-forward "\n\n" nil t)
-    (libxml-parse-html-region (point) (point-max))))
-
-(defun org-funcs--unencode-entities-in-string (str)
-  (or (ignore-errors
-        (with-temp-buffer
-          (insert str)
-          (goto-char (point-min))
-          (xml-parse-string)))
-      str))
-
-(defun org-funcs--guess-title-from-url-fragment (url)
-  (-some->> (url-generic-parse-url url)
-    (url-filename)
-    (f-filename)
-    (url-unhex-string)
-    (s-replace "+" " " )))
-
-(defun org-funcs--extract-title (html)
-  (cadr (alist-get 'title (cdr (alist-get 'head (cdr html))))))
-
 (defun org-funcs-guess-or-retrieve-title (url)
-  (cond
-   ((string-match-p (rx ".atlassian.net/wiki/") url)
-    (org-funcs--guess-title-from-url-fragment url))
-   ((string-match-p (rx "github.com/" (+? nonl) "/pull/" (+ digit) eol) url)
-    (cadr (s-match (rx "github.com/" (group (+? nonl) "/pull/" (+ digit) eol))
-                   url)))
-   (t
-    (-some->> (org-funcs--retrieve-html url)
-      (org-funcs--extract-title)
-      (s-replace-regexp (rx (any "\r\n\t")) "")
-      (s-trim)))))
+  (if-let* ((match (s-match (rx "github.com/" (group (+? nonl) "/pull/" (+ digit) eol))
+                            url)))
+      (cadr match)
+    (org-cliplink-retrieve-title-synchronously url)))
 
 (defconst org-funcs--domain-to-verb-alist
   '(("audible.com" . "Listen to")
@@ -345,7 +310,7 @@ TAGS are the tags to use when displaying the list."
      (when-let* ((repo (org-funcs--parse-github-repo-from-url url)))
        (seq-contains-p org-funcs-work-repos repo)))))
 
-(defun org-funcs-read-url-for-capture (&optional url title notify-p)
+(defun org-funcs-read-url-for-capture (&optional url title)
   "Return a URL capture template string for use with `org-capture'.
 
 URL and TITLE are added to the template.
@@ -360,14 +325,11 @@ If NOTIFY-P is set, a desktop notification is displayed."
   (let* ((domain (string-remove-prefix "www." (url-host (url-generic-parse-url url))))
          (verb (alist-get domain org-funcs--domain-to-verb-alist "Review" nil #'equal))
          (tags (if (org-funcs--work-related-url-p url) (format ":%s:" org-funcs-work-tag) "")))
-    (prog1
-        (format "* TODO %s [[%s][%s]]     %s"
-                verb
-                url
-                (org-link-escape (or title url))
-                tags)
-      (when notify-p
-        (alert title :title "Link Captured")))))
+    (format "* TODO %s [[%s][%s]]     %s"
+            verb
+            url
+            (org-link-escape (or title url))
+            tags)))
 
 (defun org-funcs-capture-link ()
   "Context-sensitive link capture."

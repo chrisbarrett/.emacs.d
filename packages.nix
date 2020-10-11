@@ -108,6 +108,7 @@
         ob-restclient
         org
         org-bullets
+        org-cliplink
         org-edna
         org-noter
         org-present
