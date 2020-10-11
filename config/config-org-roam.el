@@ -163,13 +163,18 @@
 (use-package org-roam-bibtex
   :after (org-roam)
   :hook (org-roam-mode . org-roam-bibtex-mode)
+  :init
+  (use-package orb-note-actions
+    :after org-roam-bibtex
+    :general (:keymaps 'org-mode-map "C-c n a" 'orb-note-actions))
   :custom
   ((org-roam-bibtex-preformat-keywords '("=key=" "title" "url" "file" "author-or-editor" "keywords"))
+   (orb-note-actions-frontend 'hydra)
    (orb-templates
-    '(("r" "ref" plain (function org-roam-capture--get-point)
+    `(("r" "ref" plain (function org-roam-capture--get-point)
        ""
        :file-name "${slug}"
-       :head (string-trim-left "
+       :head ,(string-trim-left "
 #+TITLE: ${=key=}: ${title}
 #+ROAM_KEY: ${ref}
 
@@ -178,7 +183,7 @@
 
 * ${title}
 :PROPERTIES:
-:Custom_ID: ${=key=}
+:CUSTOM_ID: ${=key=}
 :URL: ${url}
 :AUTHOR: ${author-or-editor}
 :NOTER_DOCUMENT: %(orb-process-file-field \"${=key=}\")
