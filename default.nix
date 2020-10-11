@@ -29,6 +29,7 @@ let
       shfmt
       sqlite
       tectonic
+      wkhtmltopdf
     ];
   };
 
@@ -124,6 +125,7 @@ in pkgs.symlinkJoin {
           --set NIX_EMACS_EMMY_LUA_JAR "${languageServers}/lib/emmy-lua.jar" \
           --set NIX_EMACS_GROOVY_LANGUAGE_SERVER_JAR "${languageServers}/lib/groovy-language-server-all.jar" \
           --set NIX_EMACS_TECTONIC_BIN "${pkgs.tectonic}/bin/tectonic" \
+          --set NIX_EMACS_WKHTMLTOPDF_BIN "${pkgs.wkhtmltopdf}/bin/wkhtmltopdf" \
           --set JAVA_HOME "${pkgs.jdk}"
       fi
     done
