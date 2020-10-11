@@ -11,10 +11,11 @@
 
   :general
   ([remap completion-at-point] #'company-manual-begin
-   [remap complete-symbol] #'company-manual-begin
+   [remap complete-symbol] #'company-manual-begin)
+  (:states '(insert normal emacs) :keymaps 'company-active-map
    "S-<return>" #'company-complete
-   :keymaps 'comint-mode-map
-   [remap indent-for-tab-command] #'company-manual-begin)
+   "<return>" #'company-complete-selection)
+  (:keymaps 'comint-mode-map [remap indent-for-tab-command] #'company-manual-begin)
 
   :preface
   (general-unbind :keymaps 'company-active-map "C-w" "C-h")
@@ -34,8 +35,6 @@
   :config
   (progn
     (require 'company-tng)
-    (with-eval-after-load 'evil
-      (evil-define-key 'insert company-mode-map (kbd "S-<return>") #'company-complete))
     (add-hook 'company-mode-hook #'config-company--set-company-vars)))
 
 (use-package company-dabbrev
