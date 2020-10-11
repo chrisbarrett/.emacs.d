@@ -226,15 +226,6 @@
     (doom-modeline-def-segment space
       (doom-modeline-spc))
 
-    (doom-modeline-def-segment system
-      "Mode line construct for miscellaneous information.
-By default, this shows the information specified by `global-mode-string'."
-      (when (config-themes--right-top-window-p t)
-        (let ((time (string-join (-map (-compose #'string-trim #'format-time-string)
-                                       '("%a" "%e" "%b %R")) " ")))
-          (propertize (concat (doom-modeline-spc) time (doom-modeline-spc))
-                      'face `(:background ,(face-background 'region))))))
-
     ;; override default modeline
     (doom-modeline-def-modeline 'main
       '(bar workspace-name window-number modals matches buffer-info remote-host buffer-position parrot selection-info)
@@ -243,8 +234,7 @@ By default, this shows the information specified by `global-mode-string'."
                     process vcs
                     checker
                     space
-                    org-clock
-                    system))))
+                    org-clock))))
 
 ;; `hide-mode-line' provides a mode that hides the modeline.
 
