@@ -215,6 +215,7 @@
 "))
   :custom
   ((org-ref-completion-library 'org-ref-helm-cite)
+   (org-ref-pdf-directory (f-join org-directory "pdfs/"))
    (org-ref-get-pdf-filename-function 'org-ref-get-pdf-filename-helm-bibtex)
    (org-ref-default-bibliography (list config-org-roam-bibliography-path))
    (org-ref-bibliography-notes config-org-roam-bibnotes-file)
