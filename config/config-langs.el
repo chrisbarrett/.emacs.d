@@ -74,6 +74,11 @@
   :mode ("\\.tf\\(vars\\)?\\'" . terraform-mode)
   :hook (terraform-mode . terraform-format-on-save-mode))
 
+(use-package hcl-mode
+  :mode
+  (("\\.hcl\\'" . hcl-mode)
+   ("\\.nomad\\'" . hcl-mode)))
+
 (use-package yaml-mode
   :mode ("\\.\\(e?ya?\\|ra\\)ml\\'" . yaml-mode)
   :general
