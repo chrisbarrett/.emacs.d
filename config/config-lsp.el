@@ -100,7 +100,7 @@ If any function in this list returns nil, the error is not displayed.")
 
     (lsp-register-client
      (make-lsp-client :new-connection (lsp-stdio-connection '("terraform-ls" "serve"))
-                      :major-modes '(terraform-mode)
+                      :major-modes '(terraform-mode hcl-mode)
                       :server-id 'terraform-ls))))
 
 (use-package dap-mode
