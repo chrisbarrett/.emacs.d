@@ -4,5 +4,4 @@
 # --
 module "${1:name}" {
   source = $0
-  # version = ""
 }
