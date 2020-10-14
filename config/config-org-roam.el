@@ -42,9 +42,9 @@
     (seq-mapcat #'config-org-roam--org-files-with-todos (seq-filter #'identity dirs))))
 
 (defun config-org-roam--update-agenda-files (&rest _)
-  (setq org-agenda-files (cons
-                          (f-join org-directory "tasks")
-                          (config-org-roam--find-org-files-with-todos))))
+  (setq org-agenda-files `(,(f-join org-directory "archive.org")
+                           ,(f-join org-directory "tasks")
+                           ,@(config-org-roam--find-org-files-with-todos))))
 
 (add-hook 'org-roam-mode-hook #'config-org-roam--update-agenda-files)
 
