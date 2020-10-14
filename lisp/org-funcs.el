@@ -102,7 +102,7 @@ Slightly faster than the version that ships with org-roam."
   (get-buffer org-agenda-buffer-name))
 
 
-(defconst org-funcs--clocking-heading "Planning"
+(defconst org-funcs--clocking-heading "Planning & Reading"
   "The heading to clock in to when punching in.")
 
 (defun org-funcs--ensure-clocking-headline (buffer)
