@@ -321,7 +321,7 @@ If NOTIFY-P is set, a desktop notification is displayed."
    (let* ((url (org-funcs-read-url))
           (guess (org-funcs-guess-or-retrieve-title url))
           (title (read-string "Title: " guess)))
-     (list url title nil)))
+     (list url title)))
 
   (let* ((domain (string-remove-prefix "www." (url-host (url-generic-parse-url url))))
          (verb (alist-get domain org-funcs--domain-to-verb-alist "Review" nil #'equal))
