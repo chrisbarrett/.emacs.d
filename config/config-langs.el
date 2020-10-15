@@ -34,25 +34,6 @@
   :init
   (add-hook 'makefile-mode-hook #'config-langs--set-up-makefile-mode))
 
-(use-package java-mode
-  :defer t
-  :config
-  (progn
-    (when (bound-and-true-p java-mode-map)
-      (define-key java-mode-map [remap c-fill-paragraph] #'indent-buffer))
-
-    (major-mode-hydra-define java-mode nil
-      ("Imports"
-       (("ri" lsp-java-add-import "add import")
-        ("ro" lsp-java-organize-imports "organise imports"))
-       "Refactor"
-       (("rl" lsp-java-extract-to-local-variable "extract local var")
-        ("rm" lsp-java-extract-method "extract method")
-        ("rr" lsp-rename "rename")
-        ("ap" lsp-java-create-parameter "add parameter")
-        ("af" lsp-java-create-field "add field")
-        ("ax" lsp-java-add-unimplemented-methods "add method stubs"))))))
-
 (use-package clojure-mode
   :mode ("\\.clj[sd]?\\'" . clojure-mode))
 

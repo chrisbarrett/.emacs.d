@@ -122,20 +122,6 @@ If any function in this list returns nil, the error is not displayed.")
 (use-package dap-ui
   :hook ((dap-mode . dap-ui-mode)))
 
-(use-package lsp-java
-  :defer t
-  :preface
-  (defun config-lsp--java-mode-setup ()
-    (setq-local company-backends '(company-lsp)))
-  :init
-  (add-hook 'java-mode-hook #'config-lsp--java-mode-setup)
-  :config
-  (let ((cache-dir (f-join paths-cache-directory "lsp-java")))
-    (f-mkdir cache-dir)
-    (general-setq lsp-java-server-install-dir (f-join cache-dir "eclipse.jdt.ls/server/")
-                  lsp-java-workspace-dir (f-join cache-dir "workspace/")
-                  lsp-java-workspace-cache-dir (f-join cache-dir "workspace" ".cache/"))))
-
 (use-package lsp-ui
   :after lsp-mode
   :preface

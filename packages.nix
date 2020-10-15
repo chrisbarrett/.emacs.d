@@ -92,7 +92,6 @@
         latex-preview-pane
         ledger-mode
         link-hint
-        lsp-java
         lsp-mode
         lsp-ui
         lua-mode
