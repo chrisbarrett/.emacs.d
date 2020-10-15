@@ -58,7 +58,17 @@
 (use-package hcl-mode
   :mode
   (("\\.hcl\\'" . hcl-mode)
-   ("\\.nomad\\'" . hcl-mode)))
+   ("\\.nomad\\'" . hcl-mode))
+  :preface
+  (progn
+    (defun config-langs--format-hcl ()
+      (when (executable-find "terragrunt")
+        (call-process "terragrunt" nil nil nil "hclfmt")))
+
+    (defun config-langs--set-up-hcl-mode ()
+      (add-hook 'after-save-hook #'config-langs--format-hcl nil t)))
+
+  :hook (hcl-mode . config-langs--set-up-hcl-mode))
 
 (use-package yaml-mode
   :mode ("\\.\\(e?ya?\\|ra\\)ml\\'" . yaml-mode)
