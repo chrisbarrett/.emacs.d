@@ -98,6 +98,7 @@ If any function in this list returns nil, the error is not displayed.")
   (progn
     (add-to-list 'lsp-disabled-clients 'ts-ls)
     (add-to-list 'lsp-disabled-clients 'terraform-lsp)
+    (add-to-list 'lsp-language-id-configuration '(hcl-mode . "hcl"))
 
     (lsp-register-client
      (make-lsp-client :new-connection (lsp-stdio-connection '("terraform-ls" "serve"))
