@@ -188,7 +188,9 @@
   :after (:any org pdf-view)
   :custom
   ((org-noter-always-create-frame nil)
-   (org-noter-hide-other nil)
+   (org-noter-separate-notes-from-heading t)
+   (org-noter-hide-other t)
+   (org-noter-insert-note-no-questions t)
    (org-noter-notes-search-path (list config-org-roam-bibliography-notes-directory))))
 
 ;; `org-ref' provides tooling for inserting and formatting references in from a
