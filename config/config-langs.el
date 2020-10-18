@@ -129,6 +129,7 @@
     (require 'pdf-links)
     (require 'pdf-outline)
     (require 'pdf-history)
+    (require 'pdf-cache)
     (require 'pdf-annot)
     (require 'pdf-view)
     (pdf-tools-install)
