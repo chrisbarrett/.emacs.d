@@ -109,6 +109,11 @@
             "n" #'pdf-view-next-page
             "N" #'pdf-view-previous-page
             "p" #'pdf-view-previous-page)
+  :preface
+  (defun config-langs--maybe-pdf-midnight-mode ()
+    (when (equal 'dark (frame-parameter nil 'background-mode))
+      (pdf-view-midnight-minor-mode +1)))
+
   :custom
   ((pdf-view-display-size 'fit-page)
    (pdf-annot-activate-created-annotations t))
@@ -125,7 +130,9 @@
     (require 'pdf-outline)
     (require 'pdf-history)
     (require 'pdf-annot)
-    (pdf-tools-install)))
+    (require 'pdf-view)
+    (pdf-tools-install)
+    (add-hook 'pdf-view-mode-hook #'config-langs--maybe-pdf-midnight-mode)))
 
 (use-package graphql-mode
   :mode ("\\.graphql\\'" . graphql-mode))
