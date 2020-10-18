@@ -15,6 +15,26 @@
 (defvar config-org-roam-bibliography-path (f-join org-directory "bibliography.bib"))
 (defvar config-org-roam-bibnotes-file (f-join config-org-roam-bibliography-notes-directory "index.org"))
 
+(defconst config-org-roam--notes-file-template (string-trim-left "
+#+TITLE: ${title}
+#+ROAM_KEY: cite:${=key=}
+
+- tags ::
+- keywords :: ${keywords}
+
+* Notes
+:PROPERTIES:
+:CUSTOM_ID: ${=key=}
+:NOTER_DOCUMENT: %(orb-process-file-field \"${=key=}\")
+:AUTHOR: ${author-abbrev}
+:JOURNAL: ${journaltitle}
+:DATE: ${date}
+:YEAR: ${year}
+:DOI: ${doi}
+:URL: ${url}
+:END:
+"))
+
 (make-directory config-org-roam-bibliography-notes-directory t)
 
 ;; Use rg to search for candidates for org-agenda-files
@@ -135,28 +155,11 @@
    (bibtex-completion-library-path (f-join org-directory "pdfs/"))))
 
 (use-package bibtex-completion
-  :preface
-  (defconst config-org-roam--bibtex-file-template (string-trim-left "
-#+TITLE: ${title}
-#+ROAM_KEY: cite:${=key=}
-
-* TODO Notes
-:PROPERTIES:
-:CUSTOM_ID: ${=key=}
-:NOTER_DOCUMENT: %(orb-process-file-field \"${=key=}\")
-:AUTHOR: ${author-abbrev}
-:JOURNAL: ${journaltitle}
-:DATE: ${date}
-:YEAR: ${year}
-:DOI: ${doi}
-:URL: ${url}
-:END:
-"))
   :custom
   ((bibtex-completion-notes-path config-org-roam-bibliography-notes-directory)
    (bibtex-completion-bibliography config-org-roam-bibliography-path)
    (bibtex-completion-pdf-field "file")
-   (bibtex-completion-notes-template-multiple-files config-org-roam--bibtex-file-template)))
+   (bibtex-completion-notes-template-multiple-files config-org-roam--notes-file-template)))
 
 ;; `org-roam-bibtex' integrates org-roam with bibtex for bibliography
 ;; management.
