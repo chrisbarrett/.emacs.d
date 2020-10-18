@@ -20,9 +20,10 @@
 (autoload 'ledger-import "ledger-import")
 (autoload 'ledger-report "ledger-mode" nil t)
 (autoload 'neotree-toggle "neotree")
+(autoload 'org-capture-goto-last-stored "org-capture")
 (autoload 'org-clock/body "org-hydras")
 (autoload 'org-narrow-to-subtree "org")
-(autoload 'org-capture-goto-last-stored "org-capture")
+(autoload 'org-ref-bibtex-hydra/body "org-ref-bibtex")
 (autoload 'profiler-report "profiler")
 (autoload 'profiler-stop "profiler")
 
@@ -264,7 +265,7 @@
 
    "Refs"
    (("b" helm-bibtex "bibliography")
-    ("r" org-ref "references"))
+    ("r" org-ref-bibtex-hydra/body "references"))
 
    "Goto"
    (("g" org-capture-goto-last-stored "last captured item")
