@@ -178,23 +178,7 @@
     `(("r" "ref" plain (function org-roam-capture--get-point)
        ""
        :file-name "${slug}"
-       :head ,(string-trim-left "
-#+TITLE: ${=key=}: ${title}
-#+ROAM_KEY: ${ref}
-
-- tags ::
-- keywords :: ${keywords}
-
-* ${title}
-:PROPERTIES:
-:CUSTOM_ID: ${=key=}
-:URL: ${url}
-:AUTHOR: ${author-or-editor}
-:NOTER_DOCUMENT: %(orb-process-file-field \"${=key=}\")
-:NOTER_PAGE:
-:END:
-
-")
+       :head ,config-org-roam--notes-file-template
        :unnarrowed t)))))
 
 ;; `org-noter' allows you to annotate PDFs and other formats, storing the
