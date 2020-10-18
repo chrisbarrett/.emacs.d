@@ -237,7 +237,8 @@
   :config
   (progn
     (require 'org-ref-pdf)
-    (require 'org-ref-url-utils)))
+    (require 'org-ref-url-utils)
+    (defalias 'dnd-unescape-uri 'dnd--unescape-uri)))
 
 (provide 'config-org-roam)
 
