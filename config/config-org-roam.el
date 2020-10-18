@@ -186,6 +186,10 @@
 
 (use-package org-noter
   :after (:any org pdf-view)
+  :general (:keymaps 'pdf-view-mode-map
+            :states '(normal motion)
+            "i" 'org-noter-insert-note
+            [?\t] 'org-noter)
   :custom
   ((org-noter-always-create-frame nil)
    (org-noter-separate-notes-from-heading t)
