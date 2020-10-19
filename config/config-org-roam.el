@@ -213,6 +213,13 @@
 
   :preface
   (progn
+
+    (defun config-org-roam--maybe-org-noter ()
+      (when (or (org-entry-get (point) "NOTER_DOCUMENT")
+                (org-entry-get (point) "NOTER_PAGE"))
+        (org-noter)))
+
+
     ;; HACK: org-noter's default file content can't be customised, so hook into
     ;; the note creation process to customise new notes files.
 
@@ -245,6 +252,8 @@
                                       (inhibit-read-only t))
                                  (config-org-roam--insert-default-bib-notes-header key title)
                                  (config-org-roam--replace-default-heading key))))))))))
+  :init
+  (add-hook 'org-open-at-point-functions #'config-org-roam--maybe-org-noter)
   :config
   (advice-add #'org-noter :after #'config-org-roam--ensure-default-file-content))
 
