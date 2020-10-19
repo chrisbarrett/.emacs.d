@@ -14,6 +14,7 @@
 (autoload 'org-reveal "org")
 (autoload 'thing-at-point-looking-at "thingatpt")
 
+(blink-cursor-mode -1)
 
 ;; Ensure we always use one-char y-or-n-p.
 
