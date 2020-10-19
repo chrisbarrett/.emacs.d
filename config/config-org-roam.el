@@ -16,8 +16,9 @@
 (defvar config-org-roam-bibnotes-file (f-join config-org-roam-bibliography-notes-directory "index.org"))
 
 (defconst config-org-roam--notes-file-template (string-trim-left "
-#+TITLE: ${title}
-#+ROAM_KEY: cite:${=key=}
+#+title: ${title}
+#+roam_key: cite:${=key=}
+#+roam_tags:
 
 - tags ::
 - keywords :: ${keywords}
@@ -25,15 +26,24 @@
 * Notes
 :PROPERTIES:
 :CUSTOM_ID: ${=key=}
-:NOTER_DOCUMENT: %(orb-process-file-field \"${=key=}\")
-:AUTHOR: ${author-abbrev}
-:JOURNAL: ${journaltitle}
-:DATE: ${date}
-:YEAR: ${year}
-:DOI: ${doi}
-:URL: ${url}
+:NOTER_DOCUMENT: %(f-relative (orb-process-file-field \"${=key=}\") org-directory)
 :END:
 "))
+
+(defun config-org-roam--insert-default-bib-notes-header (key title)
+  (save-excursion
+    (goto-char (point-min))
+    (insert (string-trim-left (format "
+#+title: %s
+#+roam_key: cite:%s
+#+roam_tags:
+
+- tags ::
+- keywords ::
+
+" title key))))
+  )
+
 
 (make-directory config-org-roam-bibliography-notes-directory t)
 
@@ -172,7 +182,7 @@
     :after org-roam-bibtex
     :general (:keymaps 'org-mode-map "C-c n a" 'orb-note-actions))
   :custom
-  ((org-roam-bibtex-preformat-keywords '("=key=" "title" "url" "file" "author-or-editor" "keywords"))
+  ((org-roam-bibtex-preformat-keywords '("=key=" "title" "url" "file" "keywords"))
    (orb-note-actions-frontend 'hydra)
    (orb-templates
     `(("r" "ref" plain (function org-roam-capture--get-point)
@@ -195,7 +205,24 @@
    (org-noter-separate-notes-from-heading t)
    (org-noter-hide-other t)
    (org-noter-insert-note-no-questions t)
-   (org-noter-notes-search-path (list config-org-roam-bibliography-notes-directory))))
+   (org-noter-default-notes-file-names nil)
+   (org-noter-notes-search-path (list config-org-roam-bibliography-notes-directory)))
+
+  :preface
+  (defun config-org-roam--ensure-default-file-content (&rest _)
+    (org-noter--with-valid-session
+     (with-current-buffer (org-noter--session-notes-buffer session)
+       (save-restriction
+         (widen)
+         (unless (string-match-p (rx "#+title:")
+                                 (buffer-substring (point-min) 100))
+           (let* ((key (org-noter--session-display-name session))
+                  (pdf-meta (pdf-info-metadata (org-noter--session-doc-buffer session)))
+                  (title (alist-get 'title pdf-meta "TITLE"))
+                  (inhibit-read-only t))
+             (config-org-roam--insert-default-bib-notes-header key title)))))))
+  :config
+  (advice-add #'org-noter :after #'config-org-roam--ensure-default-file-content))
 
 ;; `org-ref' provides tooling for inserting and formatting references in from a
 ;; bibliography file.
