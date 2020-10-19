@@ -128,8 +128,7 @@
         (pdf-view-midnight-minor-mode +1))))
 
   :custom
-  ((pdf-view-display-size 'fit-page)
-   (pdf-annot-activate-created-annotations t))
+  ((pdf-view-display-size 'fit-page))
   :init
   (progn
     (use-package pdf-history
@@ -138,12 +137,12 @@
       :commands (pdf-occur-global-minor-mode)))
   :config
   (progn
+    (require 'pdf-annot)
     (require 'pdf-sync)
     (require 'pdf-links)
     (require 'pdf-outline)
     (require 'pdf-history)
     (require 'pdf-cache)
-    (require 'pdf-annot)
     (require 'pdf-view)
 
     ;; Redefine a few macros as functions to work around byte compilation errors.
