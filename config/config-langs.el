@@ -140,6 +140,13 @@
     (require 'pdf-cache)
     (require 'pdf-annot)
     (require 'pdf-view)
+    ;; Re-eval a few macros dynamically to avoid errors
+    (defmacro pdf-view-current-page (&optional window)
+      `(image-mode-window-get 'page ,window))
+
+    (defmacro pdf-view-current-overlay (&optional window)
+      `(image-mode-window-get 'overlay ,window))
+
     (pdf-tools-install)
     (add-hook 'after-theme-change-functions #'config-langs--mightnight-mode-for-theme)
     (add-hook 'pdf-view-mode-hook #'config-langs--maybe-pdf-midnight-mode)))
