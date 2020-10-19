@@ -204,8 +204,8 @@
 (use-package org-noter
   :after (:any org pdf-view)
   :general (:keymaps 'pdf-view-mode-map
-            :states '(normal motion)
-            "q" 'org-noter-kill-session
+            :states '(normal visual motion)
+            "q" 'config-org-roam-kill-org-noter-pdf
             "i" 'org-noter-insert-note
             [?\t] 'org-noter)
   :custom
@@ -218,6 +218,14 @@
 
   :preface
   (progn
+
+    (defun config-org-roam-kill-org-noter-pdf ()
+      (interactive)
+      (if (< 1 (length (window-list)))
+          (delete-window)
+        (bury-buffer))
+      (org-noter--with-valid-session
+       (org-noter-kill-session session)))
 
     (defun config-org-roam--maybe-org-noter ()
       (when (or (org-entry-get (point) "NOTER_DOCUMENT")
