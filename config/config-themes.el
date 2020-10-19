@@ -200,12 +200,19 @@
            (doom-modeline-icon t)
            (doom-modeline-enable-word-count t))
   :preface
-  (defun config-themes--update-all-modelines ()
-    "Ensure we update the header line in addition to the mode-line."
-    (force-mode-line-update t))
+  (progn
+    (defun config-themes--clear-mode-line (&rest _)
+      (setq-local mode-line-format nil))
+
+    (defun config-themes--update-all-modelines ()
+      "Ensure we update the header line in addition to the mode-line."
+      (force-mode-line-update t)))
 
   :config
   (progn
+    ;; Use header line instead
+    (advice-add 'doom-modeline-set-modeline :after #'config-themes--clear-mode-line)
+
     (defun config-themes--right-top-window-p (must-be-fullscreen-p)
       (--find (and (if must-be-fullscreen-p (frame-parameter it 'fullscreen) t)
                    (or (equal 1 (length (window-list it 'never)))
