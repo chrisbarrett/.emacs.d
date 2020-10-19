@@ -15,7 +15,9 @@
 (defvar config-org-roam-bibliography-path (f-join org-directory "bibliography.bib"))
 (defvar config-org-roam-bibnotes-file (f-join config-org-roam-bibliography-notes-directory "index.org"))
 
-(defconst config-org-roam--notes-file-template (string-trim-left "
+(defconst config-org-roam--default-heading-title "Notes")
+
+(defconst config-org-roam--notes-file-template (string-trim-left (format "
 #+title: ${title}
 #+roam_key: cite:${=key=}
 #+category: ${=key=}
@@ -24,12 +26,12 @@
 - tags ::
 - keywords :: ${keywords}
 
-* TODO Rewrite notes to zettel
+* %s
 :PROPERTIES:
 :CUSTOM_ID: ${=key=}
-:NOTER_DOCUMENT: %(f-relative (orb-process-file-field \"${=key=}\") org-directory)
+:NOTER_DOCUMENT: %%(f-relative (orb-process-file-field \"${=key=}\") org-directory)
 :END:
-"))
+" config-org-roam--default-heading-title)))
 
 (defun config-org-roam--insert-default-bib-notes-header (key title)
   (save-excursion
@@ -210,18 +212,39 @@
    (org-noter-notes-search-path (list config-org-roam-bibliography-notes-directory)))
 
   :preface
-  (defun config-org-roam--ensure-default-file-content (&rest _)
-    (org-noter--with-valid-session
-     (with-current-buffer (org-noter--session-notes-buffer session)
-       (save-restriction
-         (widen)
-         (unless (string-match-p (rx "#+title:")
-                                 (buffer-substring (point-min) 100))
-           (let* ((key (org-noter--session-display-name session))
-                  (pdf-meta (pdf-info-metadata (org-noter--session-doc-buffer session)))
-                  (title (alist-get 'title pdf-meta "TITLE"))
-                  (inhibit-read-only t))
-             (config-org-roam--insert-default-bib-notes-header key title)))))))
+  (progn
+    ;; HACK: org-noter's default file content can't be customised, so hook into
+    ;; the note creation process to customise new notes files.
+
+    (defun config-org-roam--replace-default-heading (key)
+      (save-excursion
+        (save-match-data
+          (goto-char (point-min))
+          (when (search-forward-regexp (rx-to-string `(and bol (+ "*")
+                                                           (+ space)
+                                                           symbol-start
+                                                           (group ,key)
+                                                           symbol-end))
+                                       nil t)
+            (replace-match config-org-roam--default-heading-title t nil nil 1)))))
+
+    (defun config-org-roam--ensure-default-file-content (&rest _)
+      ;; HACK: Have to perform this outside `org-noter', since that function
+      ;; actually calls itself recursively :/
+      (run-with-timer 0 nil
+                      (lambda ()
+                        (org-noter--with-valid-session
+                         (with-current-buffer (org-noter--session-notes-buffer session)
+                           (save-restriction
+                             (widen)
+                             (unless (string-match-p (rx "#+title:")
+                                                     (buffer-substring (point-min) 100))
+                               (let* ((key (org-noter--session-display-name session))
+                                      (pdf-meta (pdf-info-metadata (org-noter--session-doc-buffer session)))
+                                      (title (alist-get 'title pdf-meta "TITLE"))
+                                      (inhibit-read-only t))
+                                 (config-org-roam--insert-default-bib-notes-header key title)
+                                 (config-org-roam--replace-default-heading key))))))))))
   :config
   (advice-add #'org-noter :after #'config-org-roam--ensure-default-file-content))
 
