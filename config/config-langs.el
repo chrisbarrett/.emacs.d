@@ -90,7 +90,12 @@
 
 (use-package highlight-indent-guides
   :hook ((python-mode . highlight-indent-guides-mode)
-         (yaml-mode . highlight-indent-guides-mode)))
+         (yaml-mode . highlight-indent-guides-mode))
+  :preface
+  (defun config-langs--update-ident-guides (&rest _)
+    (highlight-indent-guides-auto-set-faces))
+  :config
+  (add-hook 'after-theme-change-functions #'config-langs--update-ident-guides))
 
 (use-package lua-mode
   :mode ("\\.lua\\'" . lua-mode)
