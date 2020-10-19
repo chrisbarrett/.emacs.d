@@ -201,6 +201,7 @@
   :after (:any org pdf-view)
   :general (:keymaps 'pdf-view-mode-map
             :states '(normal motion)
+            "q" 'org-noter-kill-session
             "i" 'org-noter-insert-note
             [?\t] 'org-noter)
   :custom
