@@ -212,6 +212,7 @@
   ((org-noter-always-create-frame nil)
    (org-noter-separate-notes-from-heading t)
    (org-noter-hide-other t)
+   (org-noter-auto-save-last-location t)
    (org-noter-insert-note-no-questions t)
    (org-noter-default-notes-file-names nil)
    (org-noter-notes-search-path (list config-org-roam-bibliography-notes-directory)))
