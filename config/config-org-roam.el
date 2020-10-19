@@ -115,11 +115,17 @@
   (:states '(insert normal) :keymap 'org-mode-map
    "C-c i" 'org-roam-insert
    "C-c C-i" 'org-roam-insert
-   "C-c TAB" nil
+   "C-c TAB" 'config-org-roam-maybe-insert
    "C-c I" 'org-roam-insert-immediate)
   :custom
   ((org-roam-directory (f-join paths-org-directory "roam"))
-   (org-roam-db-location (f-join paths-cache-directory "org-roam.db"))))
+   (org-roam-db-location (f-join paths-cache-directory "org-roam.db")))
+  :preface
+  (defun config-org-roam-maybe-insert ()
+    "Insert an org-roam link, unless we're at a table."
+    (interactive)
+    (let ((command (if (org-at-table-p) #'org-ctrl-c-tab #'org-roam-insert)))
+      (call-interactively command))))
 
 ;; `company-org-roam' provides a company backend for org-roam topics.
 
