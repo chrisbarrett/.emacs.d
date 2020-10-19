@@ -6,6 +6,7 @@
   (require 'use-package))
 
 (require 'parameters)
+(require 'hooks)
 
 (use-package menu-bar
   :general ("C-c e e" #'toggle-debug-on-error))
@@ -431,18 +432,11 @@
 
     (config-themes-toggle parameters-default-theme)))
 
-
-(defun config-themes--after-enable-theme (&rest _)
-  ;; Delete posframes after changing themes.
+(defun config-themes--delete-posframes (&rest _)
   (when (fboundp 'posframe-delete-all)
-    (posframe-delete-all))
-  ;; Force org buffers to refontify to fix org-bullet properties.
-  (dolist (buf (buffer-list))
-    (with-current-buffer buf
-      (when (derived-mode-p 'org-mode)
-        (font-lock-flush (point-min) (point-max))))))
+    (posframe-delete-all)))
 
-(advice-add 'enable-theme :after #'config-themes--after-enable-theme)
+(add-hook 'after-theme-change-functions #'config-themes--delete-posframes)
 
 ;; customise transient so that it looks right when using a header line.
 

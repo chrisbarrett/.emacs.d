@@ -22,6 +22,7 @@
 
 (require 'f)
 (require 'general)
+(require 'hooks)
 (require 'major-mode-hydra)
 (require 'org-funcs)
 (require 'paths)
@@ -583,7 +584,15 @@
 ;; `org-bullets' displays orgmode bullets using pretty utf-8 characters.
 (use-package org-bullets
   :custom ((org-bullets-bullet-list '("○")))
-  :hook (org-mode . org-bullets-mode))
+  :hook (org-mode . org-bullets-mode)
+  :preface
+  (defun config-org--redraw-bullets (&rest _)
+    (dolist (buf (buffer-list))
+      (with-current-buffer buf
+        (when (derived-mode-p 'org-mode)
+          (font-lock-flush (point-min) (point-max))))))
+  :config
+  (add-hook 'after-theme-change-functions #'config-org--redraw-bullets))
 
 ;; Automatically enter insert state when inserting new headings or using
 ;; org-capture.
