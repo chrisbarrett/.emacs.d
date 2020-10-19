@@ -23,7 +23,6 @@
 #+category: ${=key=}
 #+roam_tags:
 
-- tags ::
 - keywords :: ${keywords}
 
 * %s
@@ -42,7 +41,6 @@
 #+category: %s
 #+roam_tags:
 
-- tags ::
 - keywords ::
 
 " title key key)))))
