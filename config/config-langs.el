@@ -7,6 +7,7 @@
   (require 'use-package))
 
 (require 'major-mode-hydra)
+(require 'hooks)
 (require 'paths)
 
 (autoload 'display-buffer-fullframe "display-buffer-fullframe")
@@ -110,9 +111,16 @@
             "N" #'pdf-view-previous-page
             "p" #'pdf-view-previous-page)
   :preface
-  (defun config-langs--maybe-pdf-midnight-mode ()
-    (when (equal 'dark (frame-parameter nil 'background-mode))
-      (pdf-view-midnight-minor-mode +1)))
+  (progn
+    (defun config-langs--mightnight-mode-for-theme (bg-style)
+      (dolist (buf (buffer-list))
+        (with-current-buffer buf
+          (when (derived-mode-p 'pdf-view-mode)
+            (pdf-view-midnight-minor-mode (if (equal 'dark bg-style) +1 -1))))))
+
+    (defun config-langs--maybe-pdf-midnight-mode ()
+      (when (equal 'dark (frame-parameter nil 'background-mode))
+        (pdf-view-midnight-minor-mode +1))))
 
   :custom
   ((pdf-view-display-size 'fit-page)
@@ -133,6 +141,7 @@
     (require 'pdf-annot)
     (require 'pdf-view)
     (pdf-tools-install)
+    (add-hook 'after-theme-change-functions #'config-langs--mightnight-mode-for-theme)
     (add-hook 'pdf-view-mode-hook #'config-langs--maybe-pdf-midnight-mode)))
 
 (use-package graphql-mode
