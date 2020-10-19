@@ -18,12 +18,13 @@
 (defconst config-org-roam--notes-file-template (string-trim-left "
 #+title: ${title}
 #+roam_key: cite:${=key=}
+#+category: ${=key=}
 #+roam_tags:
 
 - tags ::
 - keywords :: ${keywords}
 
-* Notes
+* TODO Rewrite notes to zettel
 :PROPERTIES:
 :CUSTOM_ID: ${=key=}
 :NOTER_DOCUMENT: %(f-relative (orb-process-file-field \"${=key=}\") org-directory)
@@ -36,13 +37,13 @@
     (insert (string-trim-left (format "
 #+title: %s
 #+roam_key: cite:%s
+#+category: %s
 #+roam_tags:
 
 - tags ::
 - keywords ::
 
-" title key))))
-  )
+" title key key)))))
 
 
 (make-directory config-org-roam-bibliography-notes-directory t)
