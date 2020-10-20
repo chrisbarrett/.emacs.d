@@ -205,8 +205,8 @@
     org-noter = github {
       name = "org-noter";
       owner = "chrisbarrett";
-      rev = "57ae15a7ead612f96d06742ba0ddc300c6be9377";
-      sha256 = "0639fqidlgkfgffglblwa19c2i48b635dnyb48r3jggy7k7h0q49";
+      rev = "6c2c1a91c1830e03110487867734137f5698904a";
+      sha256 = "1gvalalk27kvvm1ysj8vpjdky3sfw8jvympv9vkkr3dby8b2apwa";
       buildInputs = [ super.org ];
     };
 
