@@ -112,21 +112,11 @@
 (use-package pdf-tools
   :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
   :general (:states '(motion normal) :keymaps 'pdf-view-mode-map
+            "t" #'pdf-view-midnight-minor-mode
             "n" #'pdf-view-next-page
             "N" #'pdf-view-previous-page
             "p" #'pdf-view-previous-page)
-  :preface
-  (progn
-    (defun config-langs--mightnight-mode-for-theme (bg-style)
-      (dolist (buf (buffer-list))
-        (with-current-buffer buf
-          (when (derived-mode-p 'pdf-view-mode)
-            (pdf-view-midnight-minor-mode (if (equal 'dark bg-style) +1 -1))))))
-
-    (defun config-langs--maybe-pdf-midnight-mode ()
-      (when (equal 'dark (frame-parameter nil 'background-mode))
-        (pdf-view-midnight-minor-mode +1))))
-
+  :hook ((pdf-view-mode . pdf-view-midnight-minor-mode))
   :custom
   ((pdf-view-display-size 'fit-page))
   :init
@@ -152,9 +142,7 @@
     (defun pdf-view-current-overlay (&optional window)
       (image-mode-window-get 'overlay window))
 
-    (pdf-tools-install)
-    (add-hook 'after-theme-change-functions #'config-langs--mightnight-mode-for-theme)
-    (add-hook 'pdf-view-mode-hook #'config-langs--maybe-pdf-midnight-mode)))
+    (pdf-tools-install)))
 
 (use-package graphql-mode
   :mode ("\\.graphql\\'" . graphql-mode))
