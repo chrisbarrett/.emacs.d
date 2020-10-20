@@ -269,7 +269,13 @@
   :init
   (add-hook 'org-open-at-point-functions #'config-org-roam--maybe-org-noter)
   :config
-  (advice-add #'org-noter :after #'config-org-roam--ensure-default-file-content))
+  (progn
+    ;; KLUDGE: Redefine minor mode to avoid setting modeline.
+    (define-minor-mode org-noter-doc-mode
+      "Minor mode for the document buffer.
+Keymap:
+\\{org-noter-doc-mode-map}")
+    (advice-add #'org-noter :after #'config-org-roam--ensure-default-file-content)))
 
 ;; `org-ref' provides tooling for inserting and formatting references in from a
 ;; bibliography file.
