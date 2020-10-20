@@ -23,7 +23,7 @@
 #+category: ${=key=}
 #+roam_tags:
 
-- keywords :: ${keywords}
+- keywords ::
 
 * %s
 :PROPERTIES:
@@ -31,20 +31,6 @@
 :NOTER_DOCUMENT: %%(f-relative (orb-process-file-field \"${=key=}\") org-directory)
 :END:
 " config-org-roam--default-heading-title)))
-
-(defun config-org-roam--insert-default-bib-notes-header (key title)
-  (save-excursion
-    (goto-char (point-min))
-    (insert (string-trim-left (format "
-#+title: %s
-#+roam_key: cite:%s
-#+category: %s
-#+roam_tags:
-
-- keywords ::
-
-" title key key)))))
-
 
 (make-directory config-org-roam-bibliography-notes-directory t)
 
@@ -202,6 +188,10 @@
 
 ;; `org-noter' allows you to annotate PDFs and other formats, storing the
 ;; annotations in an org file.
+;;
+;; Note that I use a custom fork of org-noter that provides extra hooks to
+;; customise the buffer it creates. This is the final piece needed to make
+;; literature notes buffers the same, no matter how I create them.
 
 (use-package org-noter
   :after (:any org pdf-view)
@@ -212,6 +202,7 @@
             [?\t] 'org-noter)
   :custom
   ((org-noter-always-create-frame nil)
+   (org-noter-root-headline-format-function `(lambda (_) ,config-org-roam--default-heading-title))
    (org-noter-separate-notes-from-heading t)
    (org-noter-hide-other t)
    (org-noter-auto-save-last-location t)
@@ -221,7 +212,6 @@
 
   :preface
   (progn
-
     (defun config-org-roam-kill-org-noter-pdf ()
       (interactive)
       (if (< 1 (length (window-list)))
@@ -235,48 +225,37 @@
                 (org-entry-get (point) "NOTER_PAGE"))
         (org-noter)))
 
-    ;; HACK: org-noter's default file content can't be customised, so hook into
-    ;; the note creation process to customise new notes files.
+    (defun config-org-roam--guess-pdf-title-for-notes ()
+      (let* ((most-recent-pdf (seq-find (lambda (it)
+                                          (with-current-buffer it
+                                            (derived-mode-p 'pdf-view-mode 'doc-view-mode)))
+                                        (buffer-list)))
+             (pdf-meta (pdf-info-metadata most-recent-pdf))
+             (found (alist-get 'title pdf-meta)))
+        (if (or (null found) (string-blank-p found))
+            "UNKNOWN TITLE"
+          found)))
 
-    (defun config-org-roam--replace-default-heading (key)
-      (save-excursion
-        (save-match-data
-          (goto-char (point-min))
-          (when (search-forward-regexp (rx-to-string `(and bol (+ "*")
-                                                           (+ space)
-                                                           symbol-start
-                                                           (group ,key)
-                                                           symbol-end))
-                                       nil t)
-            (replace-match config-org-roam--default-heading-title t nil nil 1)))))
+    (defun config-org-roam--insert-document-header-for-org-noter-notes ()
+      (org-with-wide-buffer
+       (goto-char (point-min))
+       (unless (string-match-p (rx "#+title:") (buffer-substring (line-beginning-position) (line-end-position)))
+         (let* ((key (file-name-base (buffer-file-name)))
+                (title (config-org-roam--guess-pdf-title-for-notes))
+                (inhibit-read-only t))
+           (insert (string-trim-left (format "
+#+title: %s
+#+roam_key: cite:%s
+#+category: %s
+#+roam_tags:
 
-    (defun config-org-roam--ensure-default-file-content (&rest _)
-      ;; HACK: Have to perform this outside `org-noter', since that function
-      ;; actually calls itself recursively :/
-      (run-with-timer 0 nil
-                      (lambda ()
-                        (org-noter--with-valid-session
-                         (with-current-buffer (org-noter--session-notes-buffer session)
-                           (save-restriction
-                             (widen)
-                             (unless (string-match-p (rx "#+title:")
-                                                     (buffer-substring (point-min) 100))
-                               (let* ((key (org-noter--session-display-name session))
-                                      (pdf-meta (pdf-info-metadata (org-noter--session-doc-buffer session)))
-                                      (title (alist-get 'title pdf-meta "TITLE"))
-                                      (inhibit-read-only t))
-                                 (config-org-roam--insert-default-bib-notes-header key title)
-                                 (config-org-roam--replace-default-heading key))))))))))
+- keywords ::
+
+" title key key))))))))
   :init
   (add-hook 'org-open-at-point-functions #'config-org-roam--maybe-org-noter)
   :config
-  (progn
-    ;; KLUDGE: Redefine minor mode to avoid setting modeline.
-    (define-minor-mode org-noter-doc-mode
-      "Minor mode for the document buffer.
-Keymap:
-\\{org-noter-doc-mode-map}")
-    (advice-add #'org-noter :after #'config-org-roam--ensure-default-file-content)))
+  (add-hook 'org-noter-root-headline-inserted-hook #'config-org-roam--insert-document-header-for-org-noter-notes))
 
 ;; `org-ref' provides tooling for inserting and formatting references in from a
 ;; bibliography file.
