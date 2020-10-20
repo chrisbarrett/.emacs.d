@@ -369,6 +369,36 @@ If NOTIFY-P is set, a desktop notification is displayed."
 
 (defvar org-funcs--pdf-download-timeout-seconds 30)
 
+(defun org-funcs--parse-html-metadata (buf)
+  (with-current-buffer buf
+    (save-excursion
+      (let ((coding 'utf-8)
+            (title)
+            (author))
+        (goto-char (point-min))
+        (when (search-forward-regexp (rx "charset=" (group (+ (any "-" alnum)))) nil t)
+          (setq coding (intern (match-string 1))))
+        (goto-char (point-min))
+        (when (search-forward-regexp (rx "<title>" (group (+? nonl))"</title>") nil t)
+          (setq title (decode-coding-string  (match-string 1) coding)))
+        (goto-char (point-min))
+        (when (search-forward-regexp (rx "<meta name=\"author\"" (+? (not (any ">"))) "content=\"" (group (+? nonl)) "\"") nil t)
+          (setq author (decode-coding-string (match-string 1) coding)))
+        (list :title title :author author)))))
+
+(defun org-funcs--apply-html-meta-to-pdf (url pdf-file)
+  (-let* ((response (url-retrieve-synchronously url t t 5))
+          ((&keys :title :author) (org-funcs--parse-html-metadata response))
+          (title (if (or (null title) (string-empty-p title))
+                     (read-string "Title: ")
+                   title))
+          (author (if (or (null author) (string-empty-p author))
+                      (read-string "Author: ")
+                    author)))
+    (shell-command-to-string (format "exiftool -Title=%s -Author=%s %s"
+                                     (shell-quote-argument title)
+                                     (shell-quote-argument author)
+                                     (shell-quote-argument pdf-file)))))
 
 (defun org-funcs-url-to-reference (url)
   "Create a PDF of URL and add it to the bibliography."
@@ -399,6 +429,7 @@ If NOTIFY-P is set, a desktop notification is displayed."
                                        (reftex-get-bib-field "=key=" (bibtex-parse-entry t))))))
                                 (target
                                  (f-join org-ref-pdf-directory (format  "%s.pdf" key))))
+                           (org-funcs--apply-html-meta-to-pdf url tmpfile)
                            (rename-file tmpfile target)
                            (message "PDF downloaded to %s" target)))
                         ('timeout
