@@ -69,7 +69,9 @@
 (defun config-org-roam--find-org-files-with-todos ()
   (let ((dirs (-flatten (list org-directory
                               (when (bound-and-true-p org-roam-directory)
-                                (f-join org-roam-directory "dailies"))))))
+                                (list
+                                 (f-join org-roam-directory "notes")
+                                 (f-join org-roam-directory "dailies")))))))
     (seq-mapcat #'config-org-roam--org-files-with-todos (seq-filter #'identity dirs))))
 
 (defun config-org-roam--update-agenda-files (&rest _)
