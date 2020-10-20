@@ -285,7 +285,7 @@ TAGS are the tags to use when displaying the list."
       (org-funcs-read-url prompt default))))
 
 (defun org-funcs-guess-or-retrieve-title (url)
-  (if-let* ((match (s-match (rx "github.com/" (group (+? nonl) "/pull/" (+ digit) eol))
+  (if-let* ((match (s-match (rx "github.com/" (group (+? nonl) (or "/issues/" "/pull/") (+ digit) eol))
                             url)))
       (cadr match)
     (org-cliplink-retrieve-title-synchronously url)))
