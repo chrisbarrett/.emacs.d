@@ -159,7 +159,11 @@
 (use-package nameless
   :defines (nameless-current-name)
   :commands nameless-mode
-  :hook (emacs-lisp-mode . nameless-mode)
+  :preface
+  (defun config-elisp--maybe-nameless-mode ()
+    (when (f-descendant-of-p default-directory user-emacs-directory)
+      (nameless-mode +1)))
+  :hook (emacs-lisp-mode . config-elisp--maybe-nameless-mode)
   :config
   (progn
     (add-to-list 'display-buffer-alist
