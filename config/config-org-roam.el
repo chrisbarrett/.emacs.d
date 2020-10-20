@@ -15,7 +15,7 @@
 (defvar config-org-roam-bibliography-path (f-join org-directory "bibliography.bib"))
 (defvar config-org-roam-bibnotes-file (f-join config-org-roam-bibliography-notes-directory "index.org"))
 
-(defconst config-org-roam--default-heading-title "Notes")
+(defconst config-org-roam--default-heading-title "TODO Link literature notes to zettel in org-roam")
 
 (defconst config-org-roam--notes-file-template (string-trim-left (format "
 #+title: ${title}
@@ -234,7 +234,6 @@
       (when (or (org-entry-get (point) "NOTER_DOCUMENT")
                 (org-entry-get (point) "NOTER_PAGE"))
         (org-noter)))
-
 
     ;; HACK: org-noter's default file content can't be customised, so hook into
     ;; the note creation process to customise new notes files.
