@@ -434,6 +434,8 @@ If NOTIFY-P is set, a desktop notification is displayed."
                            (message "PDF downloaded to %s" target)))
                         ('timeout
                          (progress-reporter-done reporter)
+                         (ignore-errors
+                           (delete-file tmpfile))
                          (message "wkhtmltopdf timed out"))
                         (_
                          (progress-reporter-update reporter)
