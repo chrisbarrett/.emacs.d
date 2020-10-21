@@ -203,6 +203,7 @@
   :custom
   ((org-noter-always-create-frame nil)
    (org-noter-root-headline-format-function `(lambda (_) ,config-org-roam--default-heading-title))
+   (org-noter-doc-property-in-notes t)
    (org-noter-separate-notes-from-heading t)
    (org-noter-show-notes-count-in-doc-mode-line nil)
    (org-noter-hide-other t)
