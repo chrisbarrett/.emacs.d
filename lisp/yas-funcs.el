@@ -66,12 +66,24 @@ Fall back to the file name sans extension."
 
 ;;; JS
 
+(defcustom yas-funcs-js-import-to-module-alist '()
+  "Map the name of a default import to a module.
+
+Expected to be set via directory variable."
+  :type '(alist :key-type string :value-type string)
+  :group 'yas-funcs
+  :safe (lambda (it)
+          (and (listp it)
+               (seq-every-p #'car #'stringp)
+               (seq-every-p #'cdr #'stringp))))
+
 (cl-defun yas-funcs-js-module-name-for-binding (&optional (text yas-text))
   (pcase text
     ('nil      "")
     (""        "")
+    ((guard (assoc (string-trim text) yas-funcs-js-import-to-module-alist))
+     (cdr (assoc (string-trim text) yas-funcs-js-import-to-module-alist)))
     ("VError"  "verror")
-    ("styles"  "./styles.css")
     ("memoize" "promise-memoize")
     ((or "aws" "AWS")       "aws-sdk")
     ("_"       "lodash")
