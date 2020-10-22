@@ -105,6 +105,11 @@ Expected to be set via directory variable."
       (--map (format "this.%s = %s;" it it))
       (s-join "\n"))))
 
+
+(defun yas-funcs-js-buffer-imports-logger-p ()
+  (let ((str (buffer-substring-no-properties (point-min) (point-max))))
+    (string-match-p (rx bol "import" (+ space) symbol-start "logger" symbol-end) str)))
+
 
 ;;; Rust
 
