@@ -63,6 +63,7 @@ Expected to be set as a dir-local variable."
 
 ;; `emmet-mode' provides support for expandable HTML/JSX snippets.
 (use-package emmet-mode
+  :disabled t
   :general (:states '(normal insert)
             :keymaps '(js-mode-map typescript-mode-map)
             "C-M-n" 'emmet-next-edit-point
