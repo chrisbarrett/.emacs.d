@@ -1,4 +1,4 @@
-# key: log
+# key: info
 # name: logger.info
 # condition: (and (yas-funcs-bolp) (yas-funcs-js-buffer-imports-logger-p))
 # --
