@@ -89,9 +89,9 @@
 (use-package git-auto-commit-mode
   :commands (git-auto-commit-mode)
   :hook (pass-mode . git-auto-commit-mode)
-  :init
-  (add-to-list 'safe-local-variable-values '(gac-automatically-push-p . t))
-  :custom ((gac-debounce-interval 10)))
+  :custom ((gac-debounce-interval 10)
+           (gac-automatically-push-p t)
+           (gac-automatically-add-new-files-p t)))
 
 ;; git-commit-mode is used when editing git commit messages.
 
