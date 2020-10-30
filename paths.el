@@ -9,10 +9,10 @@
 (require 'subr-x)
 (require 'seq)
 
-(defconst paths-ledger-directory "~/Dropbox/ledger")
-(defconst paths-ledger-lisp-directory "~/Dropbox/ledger/lisp")
+(defconst paths-ledger-directory "~/Documents/ledger")
+(defconst paths-ledger-lisp-directory "~/Documents/ledger/lisp")
 
-(defvar paths-org-directory "~/Dropbox/org")
+(defvar paths-org-directory "~/Documents/org")
 
 (defconst paths-nix-directory "~/.config/nixpkgs")
 
