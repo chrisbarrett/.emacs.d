@@ -594,6 +594,11 @@
   :config
   (add-hook 'after-theme-change-functions #'config-org--redraw-bullets))
 
+(use-package org-crypt
+  :after org
+  :config
+  (org-crypt-use-before-save-magic))
+
 ;; Automatically enter insert state when inserting new headings or using
 ;; org-capture.
 (with-eval-after-load 'evil
