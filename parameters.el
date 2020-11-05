@@ -9,11 +9,12 @@
 (require 'f)
 
 (defvar parameters-default-theme
-  (if (equal (ignore-errors
-               (string-trim (f-read-text "~/.cache/theme")))
-             "light")
-      'doom-solarized-light
-    'doom-one)
+  (if (string-match-p "dark" (with-temp-buffer
+                               (ignore-errors
+                                 (call-process "gsettings" nil t nil "get" "org.gnome.desktop.interface" "gtk-theme"))
+                               (string-trim (buffer-string))))
+      'doom-one
+    'doom-solarized-light)
   "The theme to use when Emacs first starts up.")
 
 (defvar parameters-default-text-height 100
