@@ -1,7 +1,5 @@
-# key: it
-# name: it
+# key: todo
+# name: it.todo
 # condition: (and (yas-funcs-bolp) (yas-funcs-js-inside-describe-p))
 # --
-it('${1:behaviour}', () => {
-  $0
-});
+it.todo('$0');

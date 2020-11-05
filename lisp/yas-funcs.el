@@ -110,6 +110,10 @@ Expected to be set via directory variable."
   (let ((str (buffer-substring-no-properties (point-min) (point-max))))
     (string-match-p (rx bol "import" (+ space) symbol-start "logger" symbol-end) str)))
 
+(defun yas-funcs-js-inside-describe-p ()
+  (save-excursion
+    (search-backward-regexp (rx bol (* space) symbol-start "describe" symbol-end) nil t)))
+
 
 ;;; Rust
 
