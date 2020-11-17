@@ -11,6 +11,14 @@
 (use-package menu-bar
   :general ("C-c e e" #'toggle-debug-on-error))
 
+(defun config-themes-large-screen ()
+  (set-face-attribute 'default nil :height (truncate (* parameters-default-text-height 1.2)))
+  (set-face-attribute 'variable-pitch nil :height (truncate (* parameters-variable-pitch-text-height 1.2))))
+
+(defun config-themes-standard-screen ()
+  (set-face-attribute 'default nil :height parameters-default-text-height)
+  (set-face-attribute 'variable-pitch nil :height parameters-variable-pitch-text-height))
+
 ;; page-break-lines shows a horizontal separator in buffers instead of a
 ;; page-break control character (^L).
 
