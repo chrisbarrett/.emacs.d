@@ -20,6 +20,17 @@
                 (unless (frame-focus-state)
                   (garbage-collect))))))
 
+;; Set a reasonable background-colour for the startup sequence to avoid eye
+;; murder.
+
+(when (eq system-type 'gnu/linux)
+  (let ((gtk-theme (with-temp-buffer
+                     (ignore-errors
+                       (call-process "gsettings" nil t nil
+                                     "get" "org.gnome.desktop.interface" "gtk-theme"))
+                     (buffer-string))))
+    (set-background-color (if (string-match-p "dark" gtk-theme) "#282c34" "#FDF6E3"))))
+
 
 ;; Load some core packages
 
