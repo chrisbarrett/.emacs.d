@@ -20,6 +20,9 @@
 (defvar parameters-default-text-height 100
   "The default text height. Bump this value for HIDPI screens.")
 
+(defvar parameters-large-screen-scaling-factor 1.4
+  "The scaling factor to use when the screen is large.")
+
 (defvar parameters-default-font-family "Ubuntu Mono"
   "The font family to use for the default face.")
 
