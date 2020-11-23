@@ -119,13 +119,6 @@
     (add-to-list 'ibuffer-filter-groups '("emacs-src" (predicate . (when (buffer-file-name)
                                                                      (s-matches? "/share/emacs" (buffer-file-name))))))
 
-    (add-to-list 'ibuffer-filter-groups '("src" (predicate . (when (buffer-file-name)
-                                                               (s-matches? (rx (or "/src/" "/lib/")) (buffer-file-name))))))
-    (add-to-list 'ibuffer-filter-groups '("test" (predicate . (when (buffer-file-name)
-                                                                (s-matches? "/test/" (buffer-file-name))))))
-
-
-
     (unless (eq ibuffer-sorting-mode 'alphabetic)
       (ibuffer-do-sort-by-alphabetic))
 
