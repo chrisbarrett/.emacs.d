@@ -25,7 +25,10 @@
   :preface
   (defun config-langs--suppress-final-newline ()
     (setq-local require-final-newline nil))
-  :config (add-hook 'csv-mode-hook #'config-langs--suppress-final-newline))
+  :config
+  (progn
+    (add-hook 'csv-mode-hook #'hl-line-mode)
+    (add-hook 'csv-mode-hook #'config-langs--suppress-final-newline)))
 
 (use-package make-mode
   :preface
