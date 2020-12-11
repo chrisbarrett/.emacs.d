@@ -315,13 +315,7 @@
                      :post-handlers '(config-smartparens-add-space-after-sexp-insertion)))
 
     (sp-with-modes 'org-mode
-      (sp-local-pair "[" "]" :post-handlers '(config-smartparens--format-org-checkitem))
-      (sp-local-pair "*" "*" :actions '(insert wrap) :unless '(sp-point-after-word-p sp-point-at-bol-p config-smartparens--in-src-block-p) :wrap "C-*" :skip-match 'config-smartparens--org-skip-asterisk)
-      (sp-local-pair "_" "_" :unless '(sp-point-after-word-p config-smartparens--in-src-block-p) :wrap "C-_")
-      (sp-local-pair "/" "/" :unless '(sp-point-after-word-p config-smartparens--point-in-square-brackets-p config-smartparens--in-src-block-p) :post-handlers '(("[d1]" "SPC")))
-      (sp-local-pair "~" "~" :unless '(sp-point-after-word-p config-smartparens--in-src-block-p) :post-handlers '(("[d1]" "SPC")))
-      (sp-local-pair "=" "=" :unless '(sp-point-after-word-p config-smartparens--in-src-block-p) :post-handlers '(("[d1]" "SPC")))
-      (sp-local-pair "«" "»" :unless '(config-smartparens--in-src-block-p)))
+      (sp-local-pair "[" "]" :post-handlers '(config-smartparens--format-org-checkitem)))
 
     (sp-with-modes 'markdown-mode
       (sp-local-pair "[" "]" :post-handlers '(config-smartparens--format-org-checkitem)))
