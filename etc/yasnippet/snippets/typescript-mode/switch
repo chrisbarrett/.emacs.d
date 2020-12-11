@@ -4,6 +4,7 @@
 # condition: (yas-funcs-bolp)
 # --
 switch (${1:scrutinee}) {
-  case ${2:pat}:
+  case ${2:pat}: {
     return $0
+  }
 }
