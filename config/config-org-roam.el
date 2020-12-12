@@ -298,7 +298,10 @@
 ;; `org-roam-gc' provides a command to clean up dailies.
 
 (use-package org-roam-gc
-  :commands (org-roam-gc))
+  :after org-roam
+  :commands (org-roam-gc)
+  :init
+  (run-with-idle-timer 2 nil #'org-roam-gc))
 
 (provide 'config-org-roam)
 
