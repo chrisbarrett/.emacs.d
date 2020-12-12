@@ -72,8 +72,11 @@ removing files."
                          (org-roam-gc--remove-file file (and interactive
                                                   org-roam-gc-prompt-before-deleting-p))))
            (length))))
-    (message "Deleted %s file%s" count (if (eq 1 count) "" "s"))))
-
+    (cond
+     (interactive
+      (message "Deleted %s file%s" count (if (eq 1 count) "" "s")))
+     ((< 0 count)
+      (message "org-roam-gc deleted %s file%s" count (if (eq 1 count) "" "s"))))))
 
 (provide 'org-roam-gc)
 
