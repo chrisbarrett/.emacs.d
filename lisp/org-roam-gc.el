@@ -37,10 +37,15 @@
      (message ,msg ,@args)
      nil))
 
+(defun org-roam-gc--file-editing-p (file)
+  (when-let* ((buf (find-buffer-visiting file)))
+    (or (buffer-modified-p buf)
+        (get-buffer-window-list buf))))
+
 (defun org-roam-gc--remove-file (file confirm-p)
   (let ((file (expand-file-name file)))
     (cond
-     ((find-buffer-visiting file)
+     ((org-roam-gc--file-editing-p file)
       (org-roam-gc--log "Skipping open file: %s" file))
 
      (t
