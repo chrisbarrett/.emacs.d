@@ -295,6 +295,11 @@
     (require 'org-ref-url-utils)
     (defalias 'dnd-unescape-uri 'dnd--unescape-uri)))
 
+;; `org-roam-gc' provides a command to clean up dailies.
+
+(use-package org-roam-gc
+  :commands (org-roam-gc))
+
 (provide 'config-org-roam)
 
 ;;; config-org-roam.el ends here
