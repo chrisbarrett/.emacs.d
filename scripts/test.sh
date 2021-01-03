@@ -52,3 +52,12 @@ if [ 0 -eq "$SECONDS" ]; then
 else
 	fail "$RESULT"
 fi
+
+echo -n "check: source directory exists... "
+RESULT=$(run_emacs --eval '(message "%s" find-function-C-source-directory)')
+SRC_DIR=$(echo "$RESULT" | tail -n 1)
+if [ -d "$SRC_DIR" ] && [ -f "$SRC_DIR/emacs.c" ]; then
+	success
+else
+	fail "$RESULT"
+fi

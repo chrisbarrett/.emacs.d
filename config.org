@@ -227,6 +227,13 @@ Load lisp in =org= and =ledger= dirs.
 #+end_src
 
 
+Set C source directory to use the source files from the Nix build.
+
+#+begin_src emacs-lisp
+  (setq find-function-C-source-directory (getenv "NIX_EMACS_SRC_DIR"))
+#+end_src
+
+
 * File postamble
 
 #+begin_src emacs-lisp
