@@ -5,7 +5,7 @@
   packages = epkgs:
     with epkgs;
     let
-      fromOverlay = [ use-package ];
+      fromOverlay = [ use-package no-littering ];
 
       extraPackages = { };
     in fromOverlay ++ pkgs.lib.attrsets.attrValues extraPackages;

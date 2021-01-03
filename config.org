@@ -163,6 +163,57 @@ Load this early to avoid warnings caused by reorganised functions in Emacs 27+.
     (require 'cl))
 #+end_src
 
+* Configure paths and config layout
+
+#+begin_src emacs-lisp
+  (require 'paths (expand-file-name "paths.el" user-emacs-directory))
+  (paths-initialise)
+#+end_src
+
+Load themes from =.emacs.d/themes=.
+
+#+begin_src emacs-lisp
+  (setq custom-theme-directory (concat paths-themes-directory "/"))
+#+end_src
+
+Create autosave files inside the XDG cache directory.
+
+#+begin_src emacs-lisp
+  (setq auto-save-file-name-transforms
+        `((".*" ,(expand-file-name "auto-save" paths-cache-directory) t)))
+#+end_src
+
+** Configure =no-littering= to use these paths
+
+Customises many packages to create a cleaner =.emacs.d= layout.
+
+See: [[https://github.com/emacscollective/no-littering][emacscollective/no-littering]]
+
+#+begin_src emacs-lisp
+  (use-package no-littering
+    :demand t
+    :custom
+    ((no-littering-etc-directory paths-etc-directory)
+     (no-littering-var-directory paths-cache-directory))
+    :config
+    (progn
+      (eval-when-compile
+        (require 'recentf))
+
+      (with-eval-after-load 'recentf
+        (add-to-list 'recentf-exclude no-littering-etc-directory)
+        (add-to-list 'recentf-exclude no-littering-var-directory))))
+#+end_src
+
+
+* Load host-specific settings
+
+#+begin_src emacs-lisp
+  (when (file-exists-p paths-hostfile)
+    (load-file paths-hostfile))
+#+end_src
+
+
 * File postamble
 
 #+begin_src emacs-lisp
