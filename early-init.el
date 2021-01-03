@@ -11,6 +11,9 @@
 (setenv "INSIDE_EMACS" "true")
 
 
+(setq read-process-output-max (* 1024 1024))
+
+
 (setq package-enable-at-startup nil)
 
 

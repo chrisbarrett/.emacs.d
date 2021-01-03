@@ -28,6 +28,13 @@ Emacs.
   (setenv "INSIDE_EMACS" "true")
 #+end_src
 
+Crank up the max size of subprocess output to read. This is needed for language
+servers to perform well, since they communicate using large chunks of JSON.
+
+#+begin_src emacs-lisp
+  (setq read-process-output-max (* 1024 1024))
+#+end_src
+
 Disable =package.el=, since it increases startup time and I use
 [[https://github.com/nix-community/emacs-overlay][nix-community/emacs-overlay]] to handle package installation.
 
