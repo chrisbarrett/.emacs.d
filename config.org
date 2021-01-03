@@ -1,6 +1,7 @@
 # -*- eval: (add-hook 'after-save-hook #'tangle-init-files nil t); -*-
 #+title: Emacs Configuration
 #+author: Chris Barrett
+#+property: header-args :results silent
 #+property: header-args:emacs-lisp :tangle "config.el"
 #+startup: fold
 
