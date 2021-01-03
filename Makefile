@@ -11,4 +11,6 @@ $(BUILD): $(shell find . -type f -name '*.nix')
 
 .PHONY: check
 check: $(BUILD)
-	@./scripts/test.sh "$(EMACS)"
+	@$(EMACS) --batch \
+		-l config-tests.el -l early-init.el -l init.el \
+		-f ert-run-tests-batch-and-exit
