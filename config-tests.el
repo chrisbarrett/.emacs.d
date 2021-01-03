@@ -10,8 +10,10 @@
   (should (seq-contains-p (directory-files find-function-C-source-directory) "emacs.c")))
 
 (ert-deftest startup-time-less-than-one-second ()
-  (let ((startup-duration-seconds (with-no-warnings emacs-init-duration)))
-    (should (< startup-duration-seconds 1))))
+  (should (< (with-no-warnings emacs-init-duration) 1)))
+
+(ert-deftest startup-time-less-than-one-second-with-after-init ()
+  (should (< (with-no-warnings total-startup-time) 1)))
 
 ;; (provide 'config-tests)
 ;;; config-tests.el ends here

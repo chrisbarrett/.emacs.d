@@ -1188,6 +1188,12 @@ Make =<escape>= issue =keyboard-quit= in as many situations as possible.
 * File postamble
 
 #+begin_src emacs-lisp
+  (defvar total-startup-time nil)
+
+  (add-hook 'after-init-hook (lambda ()
+                               (setq total-startup-time (float-time (time-subtract (current-time) (with-no-warnings emacs-start-time))))
+                               (message "after-init completed (%.3f seconds total startup time)" total-startup-time)))
+
   ;; (provide 'config)
   ;;; config.el ends here
 #+end_src
