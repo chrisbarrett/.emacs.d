@@ -5,9 +5,16 @@
   packages = epkgs:
     with epkgs;
     let
-      fromOverlay = [ use-package no-littering f ];
+      fromOverlay =
+        [ use-package general no-littering f dash world-time-mode direnv ];
 
-      extraPackages = { };
+      extraPackages = {
+        info-plus = emacsmirror {
+          name = "info-plus";
+          rev = "4a6b93c170169594e1e8ea60cd799a1a88a969da";
+          sha256 = "1xzmx7m1qbl3b1x6yq1db1a108xqaa64ljfv1hdw763zmy4kc6m0";
+        };
+      };
     in fromOverlay ++ pkgs.lib.attrsets.attrValues extraPackages;
 
   # Apply any patches needed here.
