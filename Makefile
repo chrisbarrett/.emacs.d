@@ -9,6 +9,10 @@ $(BUILD): $(shell find . -type f -name '*.nix')
 	nix-build
 	@touch $(BUILD)
 
+.PHONY: run
+run : $(BUILD)
+	@$(EMACS) -q -l early-init.el -l init.el --eval "(run-hooks 'after-init-hook)"
+
 .PHONY: check
 check: $(BUILD)
 	@$(EMACS) --batch \
