@@ -12,5 +12,6 @@ $(BUILD): $(shell find . -type f -name '*.nix')
 .PHONY: check
 check: $(BUILD)
 	@$(EMACS) --batch \
+		-l shut-up -f shut-up-silence-emacs \
 		-l config-tests.el -l early-init.el -l init.el \
 		-f ert-run-tests-batch-and-exit

@@ -5,8 +5,16 @@
   packages = epkgs:
     with epkgs;
     let
-      fromOverlay =
-        [ use-package general no-littering f dash world-time-mode direnv ];
+      fromOverlay = [
+        shut-up
+        use-package
+        general
+        no-littering
+        f
+        dash
+        world-time-mode
+        direnv
+      ];
 
       extraPackages = {
         info-plus = emacsmirror {
