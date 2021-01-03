@@ -140,6 +140,19 @@ current GNOME theme.
       (set-background-color (if (string-match-p "dark" gtk-theme) "#282c34" "#FDF6E3"))))
 #+end_src
 
+* Configure =use-package=
+
+=use-package= provides a structured DSL for Lisp package configuration.
+
+See: [[https://github.com/jwiegley/use-package][jwiegley/use-package]]
+
+#+begin_src emacs-lisp
+  (with-no-warnings
+    (setq use-package-verbose t))
+
+  (eval-when-compile
+    (require 'use-package))
+  #+end_src
 
 * File postamble
 
