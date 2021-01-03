@@ -55,7 +55,7 @@
   (unless (file-exists-p (expand-file-name "config.el" (file-name-directory this-file)))
     (tangle-init-files)))
 
-(load (expand-file-name "config") t)
+(load (expand-file-name "config") nil t)
 
 (defconst emacs-init-duration (float-time (time-subtract (current-time) emacs-start-time)))
 

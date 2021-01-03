@@ -571,7 +571,7 @@ Keep custom settings in a separate file. This keeps =init.el= clean.
   (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 
   (when (file-exists-p custom-file)
-    (load-file custom-file))
+    (load custom-file nil t))
 #+end_src
 
 ** Copy-paste & clipboard settings
