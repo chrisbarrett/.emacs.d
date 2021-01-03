@@ -5,6 +5,9 @@
 
 ;;; Code:
 
+(defconst emacs-start-time (current-time)
+  "The time at which this instance of Emacs was started.")
+
 (require 'cl-macs)
 
 (cl-eval-when (compile)
@@ -53,6 +56,10 @@
     (tangle-init-files)))
 
 (load-file "./config.el")
+
+(defconst emacs-init-duration (float-time (time-subtract (current-time) emacs-start-time)))
+
+(message "config.el loaded (%s s)" emacs-init-duration)
 
 ;; (provide 'init)
 

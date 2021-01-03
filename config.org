@@ -19,14 +19,6 @@
   ;;; Code:
 #+end_src
 
-Save the time early-init started loading so the overall startup time can be
-computed.
-
-#+begin_src emacs-lisp
-  (defconst emacs-start-time (current-time)
-    "The time at which this instance of Emacs was started.")
-#+end_src
-
 Disable =package.el=, since it increases startup time and I use
 [[https://github.com/nix-community/emacs-overlay][nix-community/emacs-overlay]] to handle package installation.
 
@@ -87,9 +79,6 @@ Prevent GCs during user input in the minibuffer.
 * File postamble
 
 #+begin_src emacs-lisp
-  (let ((startup-time (float-time (time-subtract (current-time) emacs-start-time))))
-    (message "config.el loaded (%s s)" startup-time))
-
   ;; (provide 'config)
   ;;; config.el ends here
 #+end_src

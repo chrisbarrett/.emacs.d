@@ -8,10 +8,6 @@
 ;;; Code:
 
 
-(defconst emacs-start-time (current-time)
-  "The time at which this instance of Emacs was started.")
-
-
 (setq package-enable-at-startup nil)
 
 
