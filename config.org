@@ -2,6 +2,7 @@
 #+title: Emacs Configuration
 #+author: Chris Barrett
 #+property: header-args:emacs-lisp :tangle "config.el"
+#+startup: fold
 
 * Early Init
 :PROPERTIES:
