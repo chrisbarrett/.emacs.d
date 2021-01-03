@@ -1,4 +1,4 @@
-;;; early-init.el -- Run at the beginning of Emacs startup sequence.  -*- lexical-binding: t; -*-
+;;; early-init.el -- Run at the beginning of Emacs startup sequence.  -*- lexical-binding: t; buffer-read-only: t; -*-
 
 ;;; Commentary:
 

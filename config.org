@@ -11,7 +11,7 @@
 :END:
 
 #+begin_src emacs-lisp
-  ;;; early-init.el -- Run at the beginning of Emacs startup sequence.  -*- lexical-binding: t; -*-
+  ;;; early-init.el -- Run at the beginning of Emacs startup sequence.  -*- lexical-binding: t; buffer-read-only: t; -*-
 
   ;;; Commentary:
 
@@ -88,7 +88,7 @@ Disable some window chrome that doesn't make sense in a keyboard-driven UI.
 * File header
 
 #+begin_src emacs-lisp
-  ;;; config.el -- User init file for Emacs.  -*- lexical-binding: t; -*-
+  ;;; config.el -- User init file for Emacs.  -*- lexical-binding: t; buffer-read-only: t; -*-
 
   ;;; Commentary:
 
