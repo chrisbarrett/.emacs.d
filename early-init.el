@@ -26,3 +26,13 @@
     (mkdir cache-dir t)
     (add-to-list 'comp-eln-load-path cache-dir)))
 
+
+(setq frame-resize-pixelwise t)
+
+
+(custom-set-variables '(menu-bar-mode nil)
+                      '(tool-bar-mode . nil)
+                      '(scroll-bar-mode nil))
+
+(modify-all-frames-parameters '((vertical-scroll-bars)
+                                (name . "Emacs")))

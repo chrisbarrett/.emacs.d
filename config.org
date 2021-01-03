@@ -64,6 +64,27 @@ Override the ELN cache directory so that it's in an XDG-conformant directory.
       (mkdir cache-dir t)
       (add-to-list 'comp-eln-load-path cache-dir)))
 #+end_src
+
+** Apply early display settings
+
+Enable pixel-wise frame resizing so tiling window managers do the right thing.
+
+#+begin_src emacs-lisp
+  (setq frame-resize-pixelwise t)
+#+end_src
+
+Disable some window chrome that doesn't make sense in a keyboard-driven UI.
+
+#+begin_src emacs-lisp
+  (custom-set-variables '(menu-bar-mode nil)
+                        '(tool-bar-mode . nil)
+                        '(scroll-bar-mode nil))
+
+  (modify-all-frames-parameters '((vertical-scroll-bars)
+                                  (name . "Emacs")))
+#+end_src
+
+
 * File header
 
 #+begin_src emacs-lisp
