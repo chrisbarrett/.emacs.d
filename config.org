@@ -125,6 +125,22 @@ Prevent GCs during user input in the minibuffer.
   (add-hook 'minibuffer-exit-hook #'config--enable-gc)
 #+end_src
 
+* Set initial background colour
+
+Set a reasonable background colour before colour theme is loaded by checking the
+current GNOME theme.
+
+#+begin_src emacs-lisp
+  (when (eq system-type 'gnu/linux)
+    (let ((gtk-theme (with-temp-buffer
+                       (ignore-errors
+                         (call-process "gsettings" nil t nil
+                                       "get" "org.gnome.desktop.interface" "gtk-theme"))
+                       (buffer-string))))
+      (set-background-color (if (string-match-p "dark" gtk-theme) "#282c34" "#FDF6E3"))))
+#+end_src
+
+
 * File postamble
 
 #+begin_src emacs-lisp
