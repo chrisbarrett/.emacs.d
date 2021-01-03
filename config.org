@@ -1166,7 +1166,8 @@ Set the default heuristic for completing symbols.
 
 * Modal editing & Evil
 
-Evil breaks cursor settings when combined with hydra.
+=evil= breaks cursor settings when combined with hydra. To work around this, never
+show the cursor in deselected windows.
 
 #+begin_src emacs-lisp
   (setq-default cursor-in-non-selected-windows nil)
