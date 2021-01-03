@@ -1,7 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: handle
-# key: h
-# binding: direct-keybinding
-# condition: (yas-funcs-bolp)
-# --
-handle ${1:err} => $0

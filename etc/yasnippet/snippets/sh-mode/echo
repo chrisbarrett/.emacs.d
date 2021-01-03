@@ -1,7 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: echo
-# key: e
-# binding: direct-keybinding
-# condition: (yas-funcs-bolp)
-# --
-echo $0

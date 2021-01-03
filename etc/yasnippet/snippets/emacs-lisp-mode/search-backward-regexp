@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: search-backward-regexp
-# key: sbr
-# --
-(search-backward-regexp (rx $0))

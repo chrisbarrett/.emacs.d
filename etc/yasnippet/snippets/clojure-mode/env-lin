@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: env-lin
-# key: el
-# condition: (true? overtone-mode)
-# --
-(env-lin ${1:att} ${2:sus} ${3:rel})

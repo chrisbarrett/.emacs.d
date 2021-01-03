@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# key: fp
-# name: fprintf
-# --
-fprintf "$0 %!"`(yas/msg "Note that \"%%!\" causes printf to flush the channel")`

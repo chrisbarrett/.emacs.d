@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: %precedence
-# key: pr
-# condition: (yas-funcs-bolp)
-# --
-%precedence $0

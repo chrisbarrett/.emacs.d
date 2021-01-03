@@ -1,5 +1,0 @@
-# key: ch
-# name: Check
-# condition: (yas-funcs-bolp)
-# --
-Check $0.

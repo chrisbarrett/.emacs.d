@@ -1,8 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: insert
-# key: in
-# binding: direct-keybinding
-# expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 't))
-# --
-INSERT INTO ${1:table} ($2)
-VALUES ($0)

@@ -1,8 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: select
-# key: s
-# binding: direct-keybinding
-# expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 't))
-# --
-SELECT ${1:attrs}
-FROM $0

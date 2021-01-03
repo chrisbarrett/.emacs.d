@@ -1,9 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: do-while
-# key: dw
-# binding: direct-keybinding
-# condition: (yas-funcs-bolp)
-# --
-do {
-  $0
-} while $1

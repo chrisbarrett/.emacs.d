@@ -1,9 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: if
-# key: i
-# binding: direct-keybinding
-# expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 't))
-# --
-if ${1:test}
-then ${2:expr}
-else ${3:expr}

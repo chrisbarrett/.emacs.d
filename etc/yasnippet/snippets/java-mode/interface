@@ -1,7 +1,0 @@
-# key: in
-# name: interface
-# condition: (yas-funcs-bolp)
-# --
-interface ${1:Name} {
-  $0
-}

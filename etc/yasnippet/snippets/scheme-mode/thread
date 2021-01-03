@@ -1,5 +1,0 @@
-# key: thread
-# name: thread
-# --
-(thread (lambda ()
-         $0))

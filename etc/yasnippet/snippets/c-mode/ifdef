@@ -1,3 +1,0 @@
-#ifdef $1
-$0
-#endif

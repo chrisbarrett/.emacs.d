@@ -1,6 +1,0 @@
-# key: do
-# name: do
-# condition: (not (yas-funcs-bolp))
-# --
-do
-  $0

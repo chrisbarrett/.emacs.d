@@ -1,5 +1,0 @@
-# key: l
-# name: let (top-level)
-# condition: (yas-funcs-bolp)
-# --
-let ${1:binding} = $0

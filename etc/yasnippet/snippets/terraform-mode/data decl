@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# name: data decl
-# key: d
-# condition: (yas-funcs-bolp)
-# --
-data "${1:source}" "${2:name}" {
-  $0
-}

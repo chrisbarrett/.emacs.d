@@ -1,8 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: VOLUME
-# key: v
-# binding: direct-keybinding
-# condition: (yas-funcs-bolp)
-# --
-VOLUME [${1:path}]
-$0

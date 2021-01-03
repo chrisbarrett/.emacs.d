@@ -1,8 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: CMD
-# key: c
-# condition: (yas-funcs-bolp)
-# binding: direct-keybinding
-# --
-CMD [${1:bin}]
-$0

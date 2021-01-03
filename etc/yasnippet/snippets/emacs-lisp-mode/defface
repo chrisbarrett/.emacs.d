@@ -1,9 +1,0 @@
-# key: df
-# name: defface
-# condition: (yas-funcs-bolp)
-# --
-(defface $1
-  '((t
-     ($0)))
-  "Face for $3"
-  :group '${4:`(yas-funcs-el-custom-group)`})

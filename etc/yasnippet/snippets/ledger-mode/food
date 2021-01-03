@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# name: food
-# key: f
-# condition: (yas-funcs-bolp)
-# --
-`(format-time-string "%Y/%m/%d")` * Rebudget
-  Food for Week                          $ 200.00
-  Food for Month

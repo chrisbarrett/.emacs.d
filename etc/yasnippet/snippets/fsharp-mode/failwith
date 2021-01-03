@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: failwith
-# key: fw
-# --
-failwith "$0"

@@ -1,5 +1,0 @@
-# key: case
-# name: case
-# --
-(case $1
-  ($0))

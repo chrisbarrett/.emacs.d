@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: eprintln!
-# key: ep
-# --
-eprintln!("$0");

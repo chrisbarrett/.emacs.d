@@ -1,8 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: eval-when-compile
-# key: ewc
-# binding: direct-keybinding
-# condition: (yas-funcs-bolp)
-# --
-(eval-when-compile
-  $0)

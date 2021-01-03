@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# name: provider
-# key: p
-# condition: (yas-funcs-bolp)
-# --
-provider "${1:name}" {
-  $0
-}

@@ -1,7 +1,0 @@
-# key: r
-# name: rebudget posting
-# condition: (yas-funcs-bolp)
-# --
-`(format-time-string "%Y/%m/%d")` * Rebudget
-  $0
-  Unbudgeted

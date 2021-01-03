@@ -1,9 +1,0 @@
-# -*- mode: snippet -*-
-# name: record
-# key: rec
-# condition: (yas-funcs-bolp)
-# --
-type ${1:name} =
-  {
-    $0
-  }

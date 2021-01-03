@@ -1,7 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: on
-# key: o
-# binding: direct-keybinding
-# --
-ON ${1:attr} = ${2:attr}
-$0

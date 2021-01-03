@@ -1,8 +1,0 @@
-# key: st
-# name: structure (transparent)
-# expand-env: ((yas-indent-line (quote fixed)) (yas-wrap-around-region (quote t)))
-# condition: (yas-funcs-bolp)
-# --
-structure ${1:Name} : ${2:SIG$(upcase yas/text)} = struct
-  $0
-end

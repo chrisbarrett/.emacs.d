@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# key: gf
-# name: go func
-# --
-go func() {
-  $0
-}()

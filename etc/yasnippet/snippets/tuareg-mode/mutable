@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: mutable
-# key: mu
-# --
-mutable $0

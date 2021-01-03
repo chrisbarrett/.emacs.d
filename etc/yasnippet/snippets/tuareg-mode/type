@@ -1,5 +1,0 @@
-# key: t
-# name: type
-# condition: (yas-funcs-bolp)
-# --
-type ${1:indent} = $0

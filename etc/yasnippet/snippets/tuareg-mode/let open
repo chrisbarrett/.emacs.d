@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: let open
-# key: lo
-# condition: (yas-funcs-bolp)
-# --
-let open ${1:modid} in
-$0

@@ -1,5 +1,0 @@
-# key: sac
-# name: abstract sealed class
-# condition: (yas-funcs-bolp)
-# --
-sealed abstract class ${1:Name}

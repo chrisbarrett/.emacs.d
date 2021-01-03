@@ -1,8 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: src sql
-# key: sql
-# condition: (yas-funcs-bolp)
-# --
-#+begin_src sql
-  $0
-#+end_src

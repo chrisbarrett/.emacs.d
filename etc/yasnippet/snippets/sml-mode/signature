@@ -1,7 +1,0 @@
-# key: sig
-# name: signature
-# condition: (yas-funcs-bolp)
-# --
-signature ${1:NAME$(upcase yas/text)} = sig
-  $0
-end

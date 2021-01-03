@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: Allocate
-# key: a
-# condition: (yas-funcs-bolp)
-# expand-env: ((yas-indent-line nil) (yas-wrap-around-region 't))
-# --
-`(yas-funcs-ledger-format-allocation-posting)`

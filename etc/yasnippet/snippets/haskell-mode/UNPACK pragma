@@ -1,6 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: UNPACK pragma
-# key: up
-# binding: direct-keybinding
-# --
-{-# UNPACK #-} !$0

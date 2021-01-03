@@ -1,4 +1,0 @@
-# key: r
-# name: RUN
-# --
-RUN $0

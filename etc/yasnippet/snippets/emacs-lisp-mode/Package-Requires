@@ -1,5 +1,0 @@
-# key: pr
-# name: Package-Requires
-# condition: (yas-funcs-bolp)
-# --
-;; Package-Requires: ((emacs "24") (s "1.10.0") (f "0.17.2") (dash "2.12.0"))

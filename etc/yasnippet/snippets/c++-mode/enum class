@@ -1,7 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: enum class
-# key: ec
-# binding: direct-keybinding
-# condition: (yas-funcs-bolp)
-# --
-enum class ${1:Name} { $0 };

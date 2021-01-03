@@ -1,5 +1,0 @@
-# key: inc
-# name: include
-# condition: (yas-funcs-bolp)
-# --
-include $0

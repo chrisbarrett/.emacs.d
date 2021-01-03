@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: sig
-# key: sig
-# --
-sig
-  $0
-end

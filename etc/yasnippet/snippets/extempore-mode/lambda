@@ -1,7 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: lambda
-# key: \
-# binding: direct-keybinding
-# --
-(lambda ($1)
-  $0)

@@ -1,6 +1,0 @@
-# key: m
-# name: method
-# condition: (yas-funcs-bolp)
-# --
-def ${1:name}(self${2:, $3}):
-    ${4:pass}

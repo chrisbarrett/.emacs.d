@@ -1,8 +1,0 @@
-# key: clj
-# name: src clojure
-# condition: (yas-funcs-bolp)
-# expand-env: ((yas-indent-line nil))
-# --
-#+begin_src clojure
-  ($0)
-#+end_src

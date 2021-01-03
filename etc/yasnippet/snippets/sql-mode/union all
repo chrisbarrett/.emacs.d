@@ -1,7 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: union all
-# key: ua
-# binding: direct-keybinding
-# --
-UNION ALL
-$0

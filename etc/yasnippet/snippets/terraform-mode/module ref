@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: module ref
-# key: m
-# condition: (not (yas-funcs-bolp))
-# --
-module.$0

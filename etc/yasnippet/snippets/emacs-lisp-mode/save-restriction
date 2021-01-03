@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: save-restriction
-# key: sr
-# --
-(save-restriction
-  (narrow-to-region $1)
-  $0)

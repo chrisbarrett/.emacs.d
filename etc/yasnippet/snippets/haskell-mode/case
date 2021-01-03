@@ -1,5 +1,0 @@
-# key: c
-# name: case
-# --
-case ${1:expr} of
-  ${2:pat} -> $0

@@ -1,7 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: autoload directive
-# key: al
-# binding: direct-keybinding
-# condition: (and (yas-funcs-bolp) (yas-funcs-el-at-line-above-decl-p))
-# --
-;;;###autoload

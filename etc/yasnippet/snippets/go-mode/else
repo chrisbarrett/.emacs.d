@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# name: else
-# key: e
-# condition: (or (yas-funcs-bolp) (s-matches? (rx (* space) "}" (* space) "e" (* space) eos) (buffer-substring (line-beginning-position) (point))))
-# --
-`(just-one-space)`else {
-  $0
-}

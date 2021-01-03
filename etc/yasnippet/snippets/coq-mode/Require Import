@@ -1,7 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: Require Import
-# key: ri
-# binding: direct-keybinding
-# condition: (yas-funcs-bolp)
-# --
-Require Import ${1:modids}.
