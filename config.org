@@ -154,6 +154,15 @@ See: [[https://github.com/jwiegley/use-package][jwiegley/use-package]]
     (require 'use-package))
   #+end_src
 
+* Load =cl=
+
+Load this early to avoid warnings caused by reorganised functions in Emacs 27+.
+
+#+begin_src emacs-lisp
+  (with-no-warnings
+    (require 'cl))
+#+end_src
+
 * File postamble
 
 #+begin_src emacs-lisp
