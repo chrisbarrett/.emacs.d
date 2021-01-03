@@ -21,6 +21,13 @@
   ;;; Code:
 #+end_src
 
+Set an environment variable so child processes can detect that they're inside
+Emacs.
+
+#+begin_src emacs-lisp
+  (setenv "INSIDE_EMACS" "true")
+#+end_src
+
 Disable =package.el=, since it increases startup time and I use
 [[https://github.com/nix-community/emacs-overlay][nix-community/emacs-overlay]] to handle package installation.
 

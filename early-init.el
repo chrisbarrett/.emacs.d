@@ -8,6 +8,9 @@
 ;;; Code:
 
 
+(setenv "INSIDE_EMACS" "true")
+
+
 (setq package-enable-at-startup nil)
 
 
