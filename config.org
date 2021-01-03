@@ -38,6 +38,16 @@ increase settings. We will set final values at the end of the startup sequence.
   (setq gc-cons-percentage 0.7)
 #+end_src
 
+** ELN cache path
+
+Override the ELN cache directory so that it's in an XDG-conformant directory.
+
+#+begin_src emacs-lisp
+  (when (boundp 'comp-eln-load-path)
+    (let ((cache-dir "~/.cache/emacs/eln-cache/"))
+      (mkdir cache-dir t)
+      (add-to-list 'comp-eln-load-path cache-dir)))
+#+end_src
 * File header
 
 #+begin_src emacs-lisp

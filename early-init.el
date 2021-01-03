@@ -13,3 +13,10 @@
 
 (setq gc-cons-threshold most-positive-fixnum)
 (setq gc-cons-percentage 0.7)
+
+
+(when (boundp 'comp-eln-load-path)
+  (let ((cache-dir "~/.cache/emacs/eln-cache/"))
+    (mkdir cache-dir t)
+    (add-to-list 'comp-eln-load-path cache-dir)))
+
