@@ -1,7 +1,19 @@
-emacs-batch = emacs --batch -l $(PWD)/early-init.el -l $(PWD)/init.el
+EMACS = $(PWD)/result/bin/emacs
+BUILD = .make/build
+
+emacs-batch = $(EMACS) --batch -l $(PWD)/early-init.el -l $(PWD)/init.el
+
+
+.PHONY: build
+build: $(BUILD)
+
+$(BUILD): $(shell find . -type f -name '*.nix')
+	@mkdir -p .make
+	nix-build
+	@touch $(BUILD)
 
 .PHONY: check
-check: check-loads-config check-startup-duration
+check: $(BUILD) check-loads-config check-startup-duration
 
 
 .PHONY: check-loads-config
