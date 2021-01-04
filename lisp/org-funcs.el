@@ -402,7 +402,7 @@ If NOTIFY-P is set, a desktop notification is displayed."
 
 (defun org-funcs-url-to-reference (url)
   "Create a PDF of URL and add it to the bibliography."
-  (interactive (list (org-funcs-read-url)))
+  (interactive (list (org-funcs-read-url "Add reference to URL: ")))
   (require 'org-ref)
   (let ((bibfile (car (org-ref-find-bibliography)))
         (tmpfile (make-temp-file "wkhtmltopdf_" nil ".pdf"))
