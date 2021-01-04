@@ -44,6 +44,10 @@
         rainbow-mode
         flycheck
         flycheck-package
+        magit
+        forge
+        evil-magit
+        git-auto-commit-mode
       ];
 
       extraPackages = {

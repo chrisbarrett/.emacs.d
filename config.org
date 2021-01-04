@@ -2372,6 +2372,159 @@ buffers simultaneously
     ((default-text-scale-amount 30)))
 #+end_src
 
+* Git
+
+** Magit
+
+=Magit= provides an excellent suite of interactive commands for working with git.
+
+#+begin_src emacs-lisp
+  (use-package magit
+    :commands (magit-status magit-blame magit-branch-and-checkout)
+
+    :general
+    (:keymaps 'transient-base-map "<escape>" #'transient-quit-one
+     :states 'normal :keymaps 'magit-refs-mode-map "." #'magit-branch-and-checkout)
+
+    :custom
+    ((magit-repository-directories (--map (cons it 1) paths-project-directories))
+     (magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
+     (magit-log-section-commit-count 0)))
+#+end_src
+
+Reveal the entire org buffer when blaming.
+
+#+begin_src emacs-lisp
+  (use-package magit
+    :after (org)
+    :preface
+    (progn
+      (autoload 'org-reveal "org")
+
+      (defun config-git--reveal-org-buffer ()
+        (when (derived-mode-p 'org-mode)
+          (org-reveal t))))
+    :config
+    (add-hook 'magit-blame-mode-hook #'config-git--reveal-org-buffer))
+#+end_src
+
+Reconfigure =magit= keybindings to better support =evil=.
+
+#+begin_src emacs-lisp
+  (use-package evil-magit
+    :after (:and magit evil-common)
+    :demand t
+    :config (evil-magit-init))
+#+end_src
+
+*** GPG verification
+
+Hack =magit='s commit info to show output of a GPG signature check.
+
+#+begin_src emacs-lisp
+  (use-package magit-gpg
+    :after (magit)
+    :demand t
+    :commands (magit-gpg-insert-revision-gpg)
+    :preface
+    (progn
+      (autoload 'magit-add-section-hook "magit")
+      (autoload 'magit-insert-revision-headers "magit"))
+    :config
+    (magit-add-section-hook 'magit-revision-sections-hook
+                            #'magit-gpg-insert-revision-gpg
+                            #'magit-insert-revision-headers
+                            t))
+#+end_src
+
+** Forge
+
+=forge= teaches =magit= how to work with pull requests and issues.
+
+#+begin_src emacs-lisp
+  (use-package forge
+    :after magit
+    :demand t
+    :config
+    (progn
+      (remove-hook 'magit-status-sections-hook 'forge-insert-issues)
+      (add-hook 'magit-status-sections-hook 'forge-insert-requested-reviews 90)
+      (add-hook 'magit-status-sections-hook 'forge-insert-assigned-issues 90)))
+#+end_src
+
+** Committing on save
+
+=git-auto-commit-mode= provides a mode that automatically commits changes after
+saving a buffer.
+
+#+begin_src emacs-lisp
+  (use-package git-auto-commit-mode
+    :commands (git-auto-commit-mode)
+    :hook (pass-mode . git-auto-commit-mode)
+    :custom ((gac-debounce-interval 10)
+             (gac-automatically-push-p t)
+             (gac-automatically-add-new-files-p t)))
+#+end_src
+
+** Step through file history
+
+=vc-annotate= lets you interactively step forward and backwards through a
+file's git history.
+
+#+begin_src emacs-lisp
+  (use-package vc-annotate
+    :commands (vc-annotate)
+    :general
+    (:states 'normal :keymaps 'vc-annotate-mode-map
+     "<return>" 'vc-annotate-find-revision-at-line
+     "<tab>" 'vc-annotate-goto-line
+     "n" 'vc-annotate-next-revision
+     "f" 'vc-annotate-next-revision
+     "l" 'vc-annotate-show-log-revision-at-line
+     "p" 'vc-annotate-prev-revision
+     "b" 'vc-annotate-prev-revision
+     "d" 'vc-annotate-show-diff-revision-at-line
+     "D" 'vc-annotate-show-changeset-diff-revision-at-line
+     "." 'vc-annotate-working-revision))
+#+end_src
+
+** Commit messages
+
+#+begin_src emacs-lisp
+  (use-package git-commit-mode
+    :preface
+    (defun config-git--configure-git-commit-mode ()
+      (setq-local fill-column 72))
+    :init
+    (add-hook 'git-commit-mode-hook #'config-git--configure-git-commit-mode))
+#+end_src
+
+** Browse file at remote
+
+=browse-at-remote= provides commands for opening the current buffer in the source
+repo, or copying the remote URL to the clipboard.
+
+#+begin_src emacs-lisp
+  (use-package browse-at-remote
+    :general
+    ("C-x v o" 'browse-at-remote
+     "C-x v y" 'browse-at-remote-kill)
+    :custom
+    ((browse-at-remote-add-line-number-if-no-region-selected nil)))
+#+end_src
+
+Provide more feedback when copying the URL to the clipboard.
+
+#+begin_src emacs-lisp
+  (use-package browse-at-remote
+    :preface
+    (defun config-browse-at-remote--message-kill (&rest _)
+      (let ((message-log-max))
+        (message "Copied to kill ring: %s" (substring-no-properties (car kill-ring)))))
+    :config
+    (advice-add 'browse-at-remote-kill :after #'config-browse-at-remote--message-kill))
+#+end_src
+
 * Syntax Checking & Linting
 
 =Flycheck= integrates with external tools to show indications of errors and
