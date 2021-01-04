@@ -49,6 +49,8 @@
         evil-magit
         git-auto-commit-mode
         nix-mode
+        markdown-mode
+        edit-indirect
       ];
 
       extraPackages = {

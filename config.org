@@ -2866,6 +2866,39 @@ Teach Emacs how to create a Nix language REPL.
                    (window-height   . 0.4))))
 #+end_src
 
+* Markdown
+
+Customise markdown file support.
+
+#+begin_src emacs-lisp
+  (use-package markdown-mode
+    :mode (("\\.md\\'" . gfm-mode)
+           ("\\.markdown\\'" . markdown-mode))
+
+    :general
+    (:states 'normal :keymaps 'markdown-mode-map
+     "TAB" #'markdown-cycle
+     "RET" #'markdown-follow-thing-at-point)
+    (:keymaps 'markdown-mode-map
+     "C-c C-l" #'markdown-insert-link
+     "C-c C-i" #'markdown-insert-image
+     "C-c C-f" #'markdown-insert-footnote
+     "C-c C--" #'markdown-insert-hr
+     "C-c C-e" #'markdown-export
+     "C-c C-o" #'markdown-preview
+     "C-c p" #'markdown-live-preview-mode
+     "C-<return>" #'markdown-insert-header-dwim
+     "M-<left>" #'markdown-promote
+     "M-<right>" #'markdown-demote
+     "M-<up>" #'markdown-move-subtree-up
+     "M-<down>" #'markdown-move-subtree-down)
+
+    :custom
+    ((markdown-command "multimarkdown")
+     (markdown-fontify-code-blocks-natively t)
+     (markdown-hide-urls t)))
+#+end_src
+
 
 * File postamble
 
