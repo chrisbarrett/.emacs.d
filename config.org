@@ -1624,6 +1624,87 @@ to manually apply it again.
     (add-hook 'company-mode-hook #'config-company--set-company-vars))
 #+end_src
 
+* Filesystem browsing
+
+=dired= is the builtin filesystem browser for Emacs.
+
+#+begin_src emacs-lisp
+  (use-package dired
+    :general
+    (:states 'normal :keymaps 'dired-mode-map "$" #'end-of-line)
+    :custom
+    ((dired-listing-switches "-alhv")
+     (dired-dwim-target t)
+     (dired-auto-revert-buffer t)
+     (dired-hide-details-hide-symlink-targets nil)
+     (dired-omit-files (rx bol (or (+ ".")
+                                   (and "__pycache__" eol)))))
+    :config
+    (progn
+      (add-hook 'dired-mode-hook #'hl-line-mode)
+      (put 'dired-find-alternate-file 'disabled nil)))
+#+end_src
+
+Teach =dired= to put directories first in sort order.
+
+#+begin_src emacs-lisp
+  (use-package dired
+    :preface
+    (defun config-dired--sort-directories-first (&rest _)
+      "Sort dired listings with directories first."
+      (save-excursion
+        (let (buffer-read-only)
+          (forward-line 2) ;; beyond dir. header
+          (sort-regexp-fields t "^.*$" "[ ]*." (point) (point-max)))
+        (set-buffer-modified-p nil)))
+    :config
+    (advice-add 'dired-readin :after #'config-dired--sort-directories-first))
+#+end_src
+
+** Rename files by editing =dired= buffer
+
+=wdired= is a mode that allows you to rename files and directories by editing the
+=dired= buffer itself.
+
+#+begin_src emacs-lisp
+  (use-package wdired
+    :general
+    (:states 'normal
+     :keymaps 'wdired-mode-map "^" #'evil-first-non-blank
+     :keymaps 'dired-mode-map "C-c C-e" #'wdired-change-to-wdired-mode))
+#+end_src
+
+
+** Hide file flags
+
+Use =dired+= to hide file flags.
+
+#+begin_src emacs-lisp
+  (use-package dired+
+    :hook (dired-mode . dired-hide-details-mode)
+    :custom
+    ((diredp-wrap-around-flag nil))
+    :general
+    (:states 'normal :keymaps 'dired-mode-map
+     "j" #'diredp-next-line
+     "k" #'diredp-previous-line))
+#+end_src
+
+** Toggle visibility of hidden files
+
+Use =dired-x= to toggle visibility of 'hidden' files (i.e. files starting with a
+dot).
+
+#+begin_src emacs-lisp
+  (use-package dired-x
+    :hook (dired-mode . dired-omit-mode)
+    :general
+    (:states 'normal :keymaps 'dired-mode-map "h" #'dired-omit-mode)
+    :custom
+    ((dired-omit-verbose nil)
+     (dired-clean-up-buffers-too t)))
+#+end_src
+
 * File postamble
 
 #+begin_src emacs-lisp

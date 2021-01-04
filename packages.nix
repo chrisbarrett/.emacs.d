@@ -27,6 +27,12 @@
       ];
 
       extraPackages = {
+        dired-plus = emacsmirror {
+          name = "dired-plus";
+          rev = "db4d82a6b1995a3aa31bd7f2dcaf9b83335d5576";
+          sha256 = "10rfjf6gn5cx1kxq97xq7p24rnkw0hnzj32x4hny7bc6s3635d3x";
+        };
+
         info-plus = emacsmirror {
           name = "info-plus";
           rev = "4a6b93c170169594e1e8ea60cd799a1a88a969da";
