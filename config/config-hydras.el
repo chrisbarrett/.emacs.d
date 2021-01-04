@@ -264,8 +264,9 @@
     ("d" org-roam-dailies-date "Dialies: date..."))
 
    "Refs"
-   (("b" helm-bibtex "bibliography")
-    ("r" org-ref-bibtex-hydra/body "references"))
+   (("b" helm-bibtex "bibliography...")
+    ("r" org-ref-bibtex-hydra/body "references...")
+    ("u" org-funcs-url-to-reference "create reference of URL..."))
 
    "Goto"
    (("g" org-capture-goto-last-stored "last captured item")
