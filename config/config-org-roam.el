@@ -288,7 +288,12 @@
    (org-ref-bibliography-notes config-org-roam-bibnotes-file)
    (org-ref-note-title-format config-org-roam--ref-note-title-format)
    (org-ref-notes-directory config-org-roam-bibliography-notes-directory)
-   (org-ref-notes-function 'orb-edit-notes))
+   (org-ref-notes-function 'orb-edit-notes)
+   ;; Make detection regexps a little more robust.
+   (org-ref-url-date-re
+    (rx "<meta property=\"" (group (+? alnum) ":published") "\"" (+? (not (any ">"))) "content=\"" (group (+? nonl)) "\""))
+   (org-ref-url-author-re
+    (rx "<meta name=\"author\"" (+? (not (any ">"))) "content=\"" (group (+? nonl)) "\"")))
   :config
   (progn
     (require 'org-ref-pdf)
