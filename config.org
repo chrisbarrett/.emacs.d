@@ -954,7 +954,7 @@ websites.
 #+end_src
 
 
-* Direnv support
+* =direnv= support
 
 Teach Emacs how to load environment variables from [[https://direnv.net/][direnv]].
 
