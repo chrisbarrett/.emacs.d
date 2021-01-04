@@ -2839,6 +2839,34 @@ certain types of Elisp files.
             #'config-flycheck--elisp-package-flycheck-predicate)))
 #+end_src
 
+* Nix
+
+Configure major-mode for Nix language buffers.
+
+#+begin_src emacs-lisp
+  (use-package nix-mode
+    :mode (("\\.nix\\'" . nix-mode)
+           ("\\.nix.in\\'" . nix-mode))
+    :custom
+    ((nix-indent-function 'nix-indent-line)))
+#+end_src
+
+Teach Emacs how to create a Nix language REPL.
+
+#+begin_src emacs-lisp
+  (use-package nix-repl
+    :commands (nix-repl-show)
+    :config
+    (add-to-list 'display-buffer-alist
+                 `(,(rx bos "*Nix-REPL*" eos)
+                   (display-buffer-reuse-window
+                    display-buffer-at-bottom)
+                   (reusable-frames . visible)
+                   (slot            . 1)
+                   (window-height   . 0.4))))
+#+end_src
+
+
 * File postamble
 
 #+begin_src emacs-lisp
