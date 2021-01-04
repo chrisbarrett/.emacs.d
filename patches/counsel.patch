@@ -1,0 +1,13 @@
+diff --git a/counsel.el b/counsel.el
+index 2ad5fbf..56e4eda 100644
+--- a/counsel.el
++++ b/counsel.el
+@@ -2360,7 +2360,7 @@ time."
+                                     (file-attributes file2))
+                                    (file-attribute-access-time
+                                     (file-attributes file1))))))))
+-    (mapcar #'substring-no-properties recentf-list)))
++    (delete-dups (mapcar #'substring-no-properties recentf-list))))
+ 
+ (defalias 'counsel--xml-parse-region
+   (if (cond ((fboundp 'libxml-available-p)

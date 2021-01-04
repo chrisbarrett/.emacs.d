@@ -1388,15 +1388,15 @@ Use =C-c C-e= to enter a =deadgrep= search buffer from =ivy.=
 #+begin_src emacs-lisp
   (use-package deadgrep
     :after (ivy)
+    :general
+    (:keymaps 'counsel-ag-map "C-c C-e" #'deadgrep-from-ivy)
     :preface
     (defun deadgrep-from-ivy ()
       (interactive)
       (ivy-exit-with-action
        (lambda (&rest _)
          (let ((deadgrep--search-type 'regexp))
-           (deadgrep (replace-regexp-in-string (rx (+ space)) ".*?" ivy-text))))))
-    :init
-    (general-define-key :keymaps 'counsel-ag-map "C-c C-e" #'deadgrep-from-ivy))
+           (deadgrep (replace-regexp-in-string (rx (+ space)) ".*?" ivy-text)))))))
 #+end_src
 
 ** Grep
@@ -1405,6 +1405,150 @@ Enable =wgrep=, which provides editable grep buffers.
 
 #+begin_src emacs-lisp
   (use-package wgrep)
+#+end_src
+
+* Prompts and UI
+
+** Ivy
+
+=ivy= is a package that provides incremental completion, similar to =helm= or =ido=,
+but actively maintained. =flx= is used as the fuzzy-matching indexer backend for
+ivy.
+
+#+begin_src emacs-lisp
+  (use-package ivy
+    :general
+    ("C-c C-r" #'ivy-resume
+     "C-x b" #'ivy-switch-buffer)
+
+    (:keymaps 'ivy-occur-mode-map
+     "C-x C-w" #'ivy-wgrep-change-to-wgrep-mode)
+
+    (:keymaps 'ivy-minibuffer-map
+     "C-z" #'ivy-dispatching-done
+     "C-l" #'ivy-partial-or-done
+     "C-<return>" #'ivy-immediate-done
+     "M-<return>" #'ivy-immediate-done
+     "<escape>" 'minibuffer-keyboard-quit)
+
+    ;; Browse read-expression histroy with ivy
+    (:keymaps 'read-expression-map
+     "C-r" #'counsel-minibuffer-history)
+
+    :commands (ivy-completing-read)
+
+    :custom
+    ((completing-read-function 'ivy-completing-read)
+     (ivy-use-virtual-buffers t)
+     (ivy-virtual-abbreviate 'abbreviate)
+     (ivy-count-format "(%d/%d) ")
+     (ivy-re-builders-alist '((t . ivy--regex-plus)))
+     (ivy-magic-slash-non-match-action nil)
+     (ivy-height 20)
+     (ivy-extra-directories '("."))
+
+     ;; Increase the maximum number of candidates that will be sorted
+     ;; using `flx'. The default is 200, which means `flx' is almost
+     ;; never used. Setting it too high (e.g. 10000) causes lag. This
+     ;; seems to be a good compromise (for example, @PythonNut uses it,
+     ;; see [1]).
+     ;;
+     ;; [1]: https://github.com/PythonNut/emacs-config/blob/c8bff5cce293006ec5cdc39a86982431a758a9a0/modules/config-ivy.el#L68
+     (ivy-flx-limit 2000))
+
+    :config
+    (progn
+      (advice-add 'ivy--queue-exhibit :around #'advice-ignore-errors)
+      (ivy-mode)))
+#+end_src
+
+*** Hide boring files from completions
+
+Hide =./= and =../= when finding files.
+
+#+begin_src emacs-lisp
+  (use-package ivy
+    :preface
+    (defun config-ivy-with-empty-ivy-extra-directories (f &rest args)
+      (let ((ivy-extra-directories nil))
+        (apply f args)))
+    :config
+    (advice-add #'counsel-find-file :around #'config-ivy-with-empty-ivy-extra-directories))
+#+end_src
+
+*** =wgrep= integration
+
+Define a command for entering =wgrep= straight from =ivy= results.
+
+#+begin_src emacs-lisp
+  (use-package ivy
+    :preface
+    (defun config-ivy-occur-then-wgrep ()
+      "Shortcut for calling `ivy-occur' then activating wgrep."
+      (interactive)
+      (noflet
+       ;; HACK: Run the original exit callback, then assume the occur buffer is
+       ;; being displayed and change to wgrep.
+       ((ivy-exit-with-action
+         (action)
+         (funcall this-fn (lambda (&rest args)
+                            (apply action args)
+                            (ivy-wgrep-change-to-wgrep-mode)))))
+       (ivy-occur)))
+    :general (:keymaps 'ivy-minibuffer-map (kbd "C-c C-e") #'config-ivy-occur-then-wgrep))
+#+end_src
+
+** In-buffer search
+
+=swiper= is a buffer search interface using =ivy=.
+
+#+begin_src emacs-lisp
+  (use-package swiper
+    :general (:states 'normal "/" 'swiper))
+#+end_src
+
+** Improve completion throughout Emacs using Counsel
+
+=counsel= provides replacements for core Emacs commands using =ivy=.
+
+#+begin_src emacs-lisp
+  (use-package counsel
+    :general
+    ("M-x" #'counsel-M-x "C-x C-f" #'counsel-find-file)
+    (:keymaps 'counsel-find-file-map
+     "C-M-j" #'ivy-immediate-done
+     "C-h" #'counsel-up-directory)
+    :custom ((counsel-yank-pop-separator (concat "\n" (make-vector 120 ?─) "\n")))
+    :config
+    (progn
+      (put 'counsel-find-symbol 'no-counsel-M-x t)
+      (setf (alist-get 'counsel-yank-pop ivy-height-alist) 20)
+      (counsel-mode +1)))
+#+end_src
+
+** Persistent history
+
+=historian= remembers your choices in completion menus.
+
+#+begin_src emacs-lisp
+  (use-package historian
+    :after (ivy)
+    :config (historian-mode +1))
+#+end_src
+
+=ivy-historian= integrates =historian= with =ivy=.
+
+#+begin_src emacs-lisp
+  (use-package ivy-historian
+    :after (:and ivy historian)
+    :custom
+    ;; Tweak historian weighting settings. These values are chosen
+    ;; subjectively to produce good results.
+    ((ivy-historian-freq-boost-factor 2000)
+     (ivy-historian-recent-boost 2000)
+     (ivy-historian-recent-decrement 1000))
+    :config
+    (ivy-historian-mode 1))
 #+end_src
 
 * Ediff

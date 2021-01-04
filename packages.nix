@@ -34,6 +34,11 @@
         dumb-jump
         deadgrep
         rotate
+        ivy
+        flx
+        counsel
+        historian
+        ivy-historian
       ];
 
       extraPackages = {
@@ -52,5 +57,7 @@
     in fromOverlay ++ pkgs.lib.attrsets.attrValues extraPackages;
 
   # Apply any patches needed here.
-  overrides = self: super: rec { };
+  overrides = self: super: rec {
+    counsel = withPatches super.counsel [ ./patches/counsel.patch ];
+  };
 }
