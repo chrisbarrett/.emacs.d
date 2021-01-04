@@ -23,6 +23,7 @@
         evil-matchit
         evil-numbers
         evil-iedit-state
+        company
       ];
 
       extraPackages = {
