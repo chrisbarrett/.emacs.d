@@ -420,7 +420,7 @@ If NOTIFY-P is set, a desktop notification is displayed."
 
     (cl-labels ((loop ()
                       (pcase-exhaustive status
-                        ('done
+                        ((or 'done 'unknown-exit)
                          (progress-reporter-done reporter)
                          (org-ref-url-html-to-bibtex bibfile url)
                          (let* ((key
@@ -440,8 +440,12 @@ If NOTIFY-P is set, a desktop notification is displayed."
                            (delete-file tmpfile))
                          (message "wkhtmltopdf timed out"))
                         (_
-                         (progress-reporter-update reporter)
-                         (run-with-timer 0.5 nil #'loop)))))
+                         (cond ((process-live-p process)
+                                (progress-reporter-update reporter)
+                                (run-with-timer 0.5 nil #'loop))
+                               (t
+                                (setq status 'unknown-exit)
+                                (loop)))))))
       (loop))
 
     (run-with-timer org-funcs--pdf-download-timeout-seconds
