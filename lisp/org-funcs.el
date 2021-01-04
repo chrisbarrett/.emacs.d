@@ -400,6 +400,16 @@ If NOTIFY-P is set, a desktop notification is displayed."
                                      (shell-quote-argument author)
                                      (shell-quote-argument pdf-file)))))
 
+(defconst org-funcs--wkhtmltopdf-error-buffer-name "*wkhtmltopdf errors*")
+
+(defun org-funcs--update-wkhtmltopdf-error-buffer (output)
+  (with-current-buffer (get-buffer-create org-funcs--wkhtmltopdf-error-buffer-name)
+    (let ((inhibit-read-only t))
+      (erase-buffer)
+      (insert output))
+    (read-only-mode +1)
+    (current-buffer)))
+
 (defun org-funcs-url-to-reference (url)
   "Create a PDF of URL and add it to the bibliography."
   (interactive (list (org-funcs-read-url "Add reference to URL: ")))
@@ -433,12 +443,27 @@ If NOTIFY-P is set, a desktop notification is displayed."
                                  (f-join org-ref-pdf-directory (format  "%s.pdf" key))))
                            (org-funcs--apply-html-meta-to-pdf url tmpfile)
                            (rename-file tmpfile target)
-                           (message "PDF downloaded to %s" target)))
+
+                           (pcase-exhaustive status
+                             ('unknown-exit
+                              (let ((cause (with-current-buffer buf (buffer-string))))
+                                (org-funcs--update-wkhtmltopdf-error-buffer cause))
+                              (message "PDF downloaded to %s, but there were errors.\nSee *wkhtmltopdf errors* for more details and check the output." target))
+                             (_
+                              (message "PDF downloaded to %s" target)))))
+
                         ('timeout
                          (progress-reporter-done reporter)
+
+                         (let ((cause (with-current-buffer buf (buffer-string))))
+                           (org-funcs--update-wkhtmltopdf-error-buffer cause))
+
                          (ignore-errors
                            (delete-file tmpfile))
-                         (message "wkhtmltopdf timed out"))
+                         (ignore-errors
+                           (kill-buffer (process-buffer process)))
+
+                         (message "PDF creation timed out. See *wkhtmltopdf errors* for details."))
                         (_
                          (cond ((process-live-p process)
                                 (progress-reporter-update reporter)
