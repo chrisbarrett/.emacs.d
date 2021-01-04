@@ -2389,7 +2389,7 @@ buffers simultaneously
 
     :custom
     ((magit-repository-directories (--map (cons it 1) paths-project-directories))
-     (magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
+     (magit-display-buffer-function 'magit-display-buffer-fullframe-status-v1)
      (magit-log-section-commit-count 0)))
 #+end_src
 
