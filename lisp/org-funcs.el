@@ -404,17 +404,19 @@ If NOTIFY-P is set, a desktop notification is displayed."
   "Create a PDF of URL and add it to the bibliography."
   (interactive (list (org-funcs-read-url "Add reference to URL: ")))
   (require 'org-ref)
-  (let ((bibfile (car (org-ref-find-bibliography)))
-        (tmpfile (make-temp-file "wkhtmltopdf_" nil ".pdf"))
-        (reporter (make-progress-reporter "Downloading PDF"))
-        (status))
-
-    (async-start-process "wkhtmltopdf"
-                         (getenv "NIX_EMACS_WKHTMLTOPDF_BIN")
-                         (lambda (_proc)
-                           (setq status 'done))
-                         url
-                         tmpfile)
+  (let* ((bibfile (car (org-ref-find-bibliography)))
+         (tmpfile (make-temp-file "wkhtmltopdf_" nil ".pdf"))
+         (reporter (make-progress-reporter "Downloading PDF"))
+         (status)
+         (process
+          (async-start-process "wkhtmltopdf"
+                               (getenv "NIX_EMACS_WKHTMLTOPDF_BIN")
+                               (lambda (_proc)
+                                 (setq status 'done))
+                               "--log-level" "warn"
+                               url
+                               tmpfile))
+         (buf (process-buffer process)))
 
     (cl-labels ((loop ()
                       (pcase-exhaustive status
