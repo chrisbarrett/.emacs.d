@@ -1219,6 +1219,7 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
 #+begin_src emacs-lisp
   (use-package autoinsert-files
     :after (autoinsert)
+    :commands (autoinsert-files-populate-templates)
     :preface
     (progn
       ;; Use yasnippet's `snippet-mode' for autoinsert templates
@@ -1259,7 +1260,7 @@ Prevent =flyspell= from showing suggestions in more contexts.
            (not (seq-intersection (face-at-point nil t)
                                   '(org-link verb-header)))))
     :config
-    (advice-add #'org-mode-flyspell-verify :filter-return #'config-flyspell--on-org-verify))
+    (advice-add 'org-mode-flyspell-verify :filter-return #'config-flyspell--on-org-verify))
 #+end_src
 
 
@@ -1380,8 +1381,8 @@ Provide feedback in the echo area on entering and exiting =deadgrep-edit-mode=.
         (message "Entering edit mode. Changes will be made to underlying files as you edit.")))
     :config
     (progn
-      (advice-add #'deadgrep-mode :before #'config-deadgrep--on-exit-edit-mode)
-      (advice-add #'deadgrep-edit-mode :after #'config-deadgrep--on-enter-edit-mode)))
+      (advice-add 'deadgrep-mode :before #'config-deadgrep--on-exit-edit-mode)
+      (advice-add 'deadgrep-edit-mode :after #'config-deadgrep--on-enter-edit-mode)))
 #+end_src
 
 Use =C-c C-e= to enter a =deadgrep= search buffer from =ivy.=
@@ -1392,12 +1393,16 @@ Use =C-c C-e= to enter a =deadgrep= search buffer from =ivy.=
     :general
     (:keymaps 'counsel-ag-map "C-c C-e" #'deadgrep-from-ivy)
     :preface
-    (defun deadgrep-from-ivy ()
-      (interactive)
-      (ivy-exit-with-action
-       (lambda (&rest _)
-         (let ((deadgrep--search-type 'regexp))
-           (deadgrep (replace-regexp-in-string (rx (+ space)) ".*?" ivy-text)))))))
+    (progn
+      (autoload 'ivy-exit-with-action "ivy")
+
+      (defun deadgrep-from-ivy ()
+        (interactive)
+        (ivy-exit-with-action
+         (lambda (&rest _)
+           (let ((deadgrep--search-type 'regexp))
+             (deadgrep (replace-regexp-in-string (rx (+ space)) ".*?"
+                                                 (with-no-warnings ivy-text)))))))))
 #+end_src
 
 ** Grep
@@ -2481,7 +2486,7 @@ Use =elisp-slime-nav= to go to definition in Emacs Lisp.
 
 #+begin_src emacs-lisp
   (use-package elisp-slime-nav
-    :hook (emacs-lisp-mode . turn-on-elisp-slime-nav-mode)
+    :hook (emacs-lisp-mode . elisp-slime-nav-mode)
     :general
     (:keymaps 'emacs-lisp-mode-map :states 'normal
      "M-." #'elisp-slime-nav-find-elisp-thing-at-point))
