@@ -1375,10 +1375,12 @@ Provide feedback in the echo area on entering and exiting =deadgrep-edit-mode=.
     (progn
       (defun config-deadgrep--on-exit-edit-mode (&rest _)
         (when (derived-mode-p 'deadgrep-edit-mode)
-          (message "Exiting edit mode.")))
+          (let ((message-log-max))
+            (message "Exiting edit mode."))))
 
       (defun config-deadgrep--on-enter-edit-mode (&rest _)
-        (message "Entering edit mode. Changes will be made to underlying files as you edit.")))
+        (let ((message-log-max))
+          (message "Entering edit mode. Changes will be made to underlying files as you edit."))))
     :config
     (progn
       (advice-add 'deadgrep-mode :before #'config-deadgrep--on-exit-edit-mode)
