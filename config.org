@@ -2387,6 +2387,186 @@ buffers simultaneously
     ((default-text-scale-amount 30)))
 #+end_src
 
+* Emacs Lisp
+
+#+begin_src emacs-lisp
+  (use-package elisp-mode
+    :general
+    (:keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map)
+     "C-c C-c" #'eval-defun
+     "C-c C-b" #'eval-buffer)
+    (:states 'visual
+     :keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map)
+     "C-c C-c" #'eval-region))
+#+end_src
+
+** Code navigation
+
+Use =elisp-slime-nav= to go to definition in Emacs Lisp.
+
+#+begin_src emacs-lisp
+  (use-package elisp-slime-nav
+    :hook (emacs-lisp-mode . turn-on-elisp-slime-nav-mode)
+    :general
+    (:keymaps 'emacs-lisp-mode-map :states 'normal
+     "M-." #'elisp-slime-nav-find-elisp-thing-at-point))
+#+end_src
+
+** Documentation
+
+=helpful= is a more feature-rich alternative to the Emacs Lisp help buffer.
+
+#+begin_src emacs-lisp
+  (use-package helpful
+    :general
+    (:keymaps '(emacs-lisp-mode-map helpful-mode-map) :states '(motion normal)
+     "K" 'helpful-at-point))
+#+end_src
+
+Display helpful buffers in side windows.
+
+#+begin_src emacs-lisp
+  (add-to-list 'display-buffer-alist
+               `(,(rx bos "*helpful ")
+                 (display-buffer-reuse-window
+                  display-buffer-pop-up-window)
+                 (reusable-frames . visible)
+                 (side            . right)
+                 (slot            . 1)
+                 (window-width    . 0.5)))
+#+end_src
+
+** Inline documentation
+
+=eldoc= shows function parameters in the minibuffer.
+
+#+begin_src emacs-lisp
+  (use-package eldoc
+    :hook (emacs-lisp-mode . eldoc-mode)
+    :custom
+    ((eldoc-idle-delay 0.2)))
+#+end_src
+
+** Hex colour literals
+
+=rainbow mode= applies colours for hex strings.
+
+#+begin_src emacs-lisp
+  (use-package rainbow-mode
+    :hook (emacs-lisp-mode . rainbow-mode))
+#+end_src
+
+** REPL
+
+=ielm= is the built-in REPL for Emacs Lisp.
+
+#+begin_src emacs-lisp
+  (use-package ielm
+    :general
+    (:keymaps 'emacs-lisp-mode-map "C-c C-z" #'ielm)
+    (:keymaps 'inferior-emacs-lisp-mode-map
+     "C-c C-z" #'config-elisp-pop-to-elisp-buffer)
+    :preface
+    (defun config-elisp-pop-to-elisp-buffer ()
+      (interactive)
+      (if-let* ((buf (seq-find (lambda (buf)
+                                 (with-current-buffer buf
+                                   (derived-mode-p 'emacs-lisp-mode)))
+                               (buffer-list))))
+          (pop-to-buffer buf)
+        (user-error "No Emacs Lisp buffers")))
+    :config
+    (add-hook 'inferior-emacs-lisp-mode-hook #'hs-minor-mode))
+#+end_src
+
+Display =ielm= in a side window.
+
+#+begin_src emacs-lisp
+  (add-to-list 'display-buffer-alist
+               `(,(rx bos "*ielm*" eos)
+                 (display-buffer-reuse-window display-buffer-in-side-window)
+                 (side            . right)
+                 (window-width    . 80)))
+#+end_src
+
+** Pretty-printing
+
+=pp= provides pretty-printing of lisp forms.
+
+#+begin_src emacs-lisp
+  (use-package pp
+    :general
+    (:keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map inferior-emacs-lisp-mode-map)
+     :states '(motion normal insert)
+     "C-c C-<return>" 'pp-eval-last-sexp
+     "C-c <return>" 'pp-eval-last-sexp
+     "C-c e" 'pp-macroexpand-last-sexp
+     "C-c C-e" 'pp-macroexpand-last-sexp))
+#+end_src
+
+** Improve indent function
+
+Teach the Emacs Lisp indentation function to indent plists nicely.
+
+#+begin_src emacs-lisp
+  (use-package lisp-mode
+    :preface
+    (progn
+      (defvar calculate-lisp-indent-last-sexp)
+
+      (defun config-elisp--better-lisp-indent-function (indent-point state)
+        (let ((normal-indent (current-column))
+              (orig-point (point)))
+          (goto-char (1+ (elt state 1)))
+          (parse-partial-sexp (point) calculate-lisp-indent-last-sexp 0 t)
+          (cond
+           ;; car of form doesn't seem to be a symbol, or is a keyword
+           ((and (elt state 2)
+                 (or (not (looking-at "\\sw\\|\\s_"))
+                     (looking-at ":")))
+            (unless (> (save-excursion (forward-line 1) (point))
+                       calculate-lisp-indent-last-sexp)
+              (goto-char calculate-lisp-indent-last-sexp)
+              (beginning-of-line)
+              (parse-partial-sexp (point) calculate-lisp-indent-last-sexp 0 t))
+
+            ;; Indent under the list or under the first sexp on the same
+            ;; line as calculate-lisp-indent-last-sexp.  Note that first
+            ;; thing on that line has to be complete sexp since we are
+            ;; inside the innermost containing sexp.
+            (backward-prefix-chars)
+            (current-column))
+           ((and (save-excursion
+                   (goto-char indent-point)
+                   (skip-syntax-forward " ")
+                   (not (looking-at ":")))
+                 (save-excursion
+                   (goto-char orig-point)
+                   (looking-at ":")))
+            (save-excursion
+              (goto-char (+ 2 (elt state 1)))
+              (current-column)))
+           (t
+            (let ((function (buffer-substring (point)
+                                              (progn (forward-sexp 1) (point))))
+                  method)
+              (setq method (or (function-get (intern-soft function)
+                                             'lisp-indent-function)
+                               (get (intern-soft function) 'lisp-indent-hook)))
+              (cond ((or (eq method 'defun)
+                         (and (null method)
+                              (> (length function) 3)
+                              (string-match "\\`def" function)))
+                     (lisp-indent-defform state indent-point))
+                    ((integerp method)
+                     (lisp-indent-specform method state
+                                           indent-point normal-indent))
+                    (method
+                     (funcall method indent-point state)))))))))
+    :custom
+    ((lisp-indent-function #'config-elisp--better-lisp-indent-function)))
+#+end_src
+
 * File postamble
 
 #+begin_src emacs-lisp

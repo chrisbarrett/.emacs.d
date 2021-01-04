@@ -39,6 +39,9 @@
         counsel
         historian
         ivy-historian
+        elisp-slime-nav
+        helpful
+        rainbow-mode
       ];
 
       extraPackages = {
