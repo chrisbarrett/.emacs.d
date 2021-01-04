@@ -925,6 +925,7 @@ system below.
 #+begin_src emacs-lisp
   (use-package info+
     :after (info)
+    :demand t
     :custom ((Info-fontify-angle-bracketed-flag nil)))
 #+end_src
 
@@ -1533,6 +1534,7 @@ Define a command for entering =wgrep= straight from =ivy= results.
 #+begin_src emacs-lisp
   (use-package historian
     :after (ivy)
+    :demand t
     :config (historian-mode +1))
 #+end_src
 
@@ -1540,7 +1542,8 @@ Define a command for entering =wgrep= straight from =ivy= results.
 
 #+begin_src emacs-lisp
   (use-package ivy-historian
-    :after (:and ivy historian)
+    :after (ivy)
+    :demand t
     :custom
     ;; Tweak historian weighting settings. These values are chosen
     ;; subjectively to produce good results.
@@ -1794,7 +1797,8 @@ Make motions make more sense in RTL languages.
 
 #+begin_src emacs-lisp
   (use-package evil-bidi
-    :after (evil))
+    :after (evil)
+    :demand t)
 #+end_src
 
 ** Customise navigation in help buffers
@@ -2003,6 +2007,7 @@ Teach =evil= how to surround objects with matched pairs.
 #+begin_src emacs-lisp
   (use-package evil-surround
     :after (evil)
+    :demand t
     :config (global-evil-surround-mode +1)
     :general
     (:states 'visual :keymaps 'evil-surround-mode-map
@@ -2045,7 +2050,8 @@ Define an extra =`sym'= pair for =emacs-lisp-mode=.
 
 #+begin_src emacs-lisp
   (use-package evil-collection
-    :after evil)
+    :after (evil)
+    :demand t)
 #+end_src
 
 ** text motions within function parameter lists
@@ -2069,6 +2075,7 @@ Teach =%= how to match more kinds of pairs.
 #+begin_src emacs-lisp
   (use-package evil-matchit
     :after (evil)
+    :demand t
     :config
     (global-evil-matchit-mode +1))
 #+end_src
@@ -2080,6 +2087,7 @@ Use =+= and =-= to increment and decrement numbers in normal state.
 #+begin_src emacs-lisp
   (use-package evil-numbers
     :after (evil)
+    :demand t
     :general (:states 'normal
               "+" #'evil-numbers/inc-at-pt
               "-" #'evil-numbers/dec-at-pt))
@@ -2315,6 +2323,7 @@ Teach =volatile-highlights-mode= to highlight text pasted by =evil= operations.
 #+begin_src emacs-lisp
   (use-package volatile-highlights
     :after (evil)
+    :demand t
     :config
     (progn
       (vhl/define-extension 'evil
