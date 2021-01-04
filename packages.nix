@@ -51,6 +51,7 @@
         nix-mode
         markdown-mode
         edit-indirect
+        ibuffer-projectile
       ];
 
       extraPackages = {

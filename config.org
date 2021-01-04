@@ -2623,6 +2623,133 @@ during =ediff= merges, etc.
     (advice-add 'flycheck-may-enable-mode :filter-return #'config-flycheck--maybe-inhibit))
 #+end_src
 
+* Buffer list
+
+=ibuffer= provides an interactive buffer list that is better than the default.
+
+#+begin_src emacs-lisp
+  (use-package ibuffer
+    :commands (ibuffer ibuffer-forward-line ibuffer-backward-line)
+    :defines (ibuffer-show-empty-filter-groups
+              ibuffer-never-show-predicates)
+    :general
+    ("C-x C-b" #'ibuffer-other-window)
+    (:keymaps 'ibuffer-mode-map :states 'motion
+     "<return>" #'ibuffer-visit-buffer
+     "j" #'ibuffer-forward-line
+     "k" #'ibuffer-backward-line)
+    :custom
+    ((ibuffer-expert t)
+     (ibuffer-default-sorting-mode 'major-mode)
+     (ibuffer-default-sorting-reversep t)
+     (ibuffer-formats '((mark modified " " (mode 1 1) " " (name 35 35 :left :elide) " " filename-and-process)))
+     (ibuffer-never-show-predicates
+      (list (rx (or "*Messages*"
+                    "*magit-"
+                    "*git-auto-push*"
+                    ".elc"
+                    "magit-process"
+                    "magit-diff"
+                    "magit-revision"
+                    "TAGS"
+                    "*Backtrace*"
+                    "*new*"
+                    "*Org"
+                    "*Flycheck error messages*"
+                    "*Quail Completions*"
+                    "*scratch*"
+                    "*direnv*"
+                    "*calc trail*"
+                    "*Help*"))
+            #'config-ibuffer--roam-buffer-p)))
+    :preface
+    (defun config-ibuffer--roam-buffer-p (buf)
+      (with-current-buffer buf
+        (when (buffer-file-name)
+          (string-match-p "/org/roam/" (buffer-file-name)))))
+
+    :config
+    (add-hook 'ibuffer-mode-hook #'hl-line-mode))
+#+end_src
+
+
+** Extensions
+
+=ibuf-ext= adds a few extra features to =ibuffer=.
+
+#+begin_src emacs-lisp
+  (use-package ibuf-ext
+    :hook (ibuffer-mode . ibuffer-auto-mode)
+    :custom
+    ((ibuffer-show-empty-filter-groups nil)))
+#+end_src
+
+** Cosmetic changes
+
+Override some default =ibuffer= columns.
+
+#+begin_src emacs-lisp
+  (use-package ibuffer
+    :commands (ibuffer-make-column-filename)
+    :preface
+    (cl-eval-when (compile)
+      (require 'ibuffer))
+    :config
+    (progn
+      (define-ibuffer-column name
+        (:inline t)
+        (let ((string (buffer-name)))
+          (if (not (seq-position string ?\n))
+              string
+            (replace-regexp-in-string
+             "\n" (propertize "^J" 'font-lock-face 'escape-glyph) string))))
+
+      (define-ibuffer-column filename-and-process
+        (:name "Filename/Process")
+        (let ((proc (get-buffer-process buffer))
+              (filename (ibuffer-make-column-filename buffer mark)))
+          (if proc
+              (concat (propertize (format "(%s %s)" proc (process-status proc))
+                                  'font-lock-face 'italic)
+                      (if (> (length filename) 0)
+                          (format " %s" filename)
+                        ""))
+            (require 'dired+)
+            (propertize (abbreviate-file-name filename) 'face 'diredp-symlink))))))
+#+end_src
+
+** Grouping by project
+
+=ibuffer-projectile= teaches =ibuffer= how to group files by =projectile= project.
+
+#+begin_src emacs-lisp
+  (use-package ibuffer-projectile
+    :commands (ibuffer-projectile-set-filter-groups)
+    :custom
+    ((ibuffer-projectile-prefix ""))
+
+    :preface
+    (progn
+      (autoload 'ibuffer-do-sort-by-alphabetic "ibuf-ext")
+      (autoload 'page-break-lines--update-display-tables "page-break-lines")
+
+      (defun config-ibuffer--setup-buffer ()
+        (ibuffer-projectile-set-filter-groups)
+        (add-to-list 'ibuffer-filter-groups '("emacs-src" (predicate . (when (buffer-file-name)
+                                                                         (string-match-p (rx "/share/emacs") (buffer-file-name))))))
+
+        (unless (eq ibuffer-sorting-mode 'alphabetic)
+          (ibuffer-do-sort-by-alphabetic))
+
+        ;; All this buffer modification will have messed up the separator
+        ;; fontification, so force the display table to update now.
+        (when (bound-and-true-p page-break-lines-mode)
+          (page-break-lines--update-display-tables))))
+    :init
+    (add-hook 'ibuffer-hook #'config-ibuffer--setup-buffer))
+#+end_src
+
+
 * Emacs Lisp
 
 #+begin_src emacs-lisp
