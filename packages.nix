@@ -24,6 +24,16 @@
         evil-numbers
         evil-iedit-state
         company
+        default-text-scale
+        editorconfig
+        aggressive-indent
+        ws-butler
+        unfill
+        volatile-highlights
+        highlight-thing
+        dumb-jump
+        deadgrep
+        rotate
       ];
 
       extraPackages = {

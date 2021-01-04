@@ -247,13 +247,16 @@ Load lisp in =org= and =ledger= dirs.
       (apply f args)))
 #+end_src
 
-* Editing functions
+* Utility functions
 
 #+begin_src emacs-lisp
-  (defun insert-uuid ()
-    "Insert a UUID at point."
-    (interactive "*")
-    (insert (string-trim (shell-command-to-string "uuidgen"))))
+  (defun face-ancestors (face)
+    "List all faces that FACE transitively inherits from."
+    (let (result)
+      (while (and face (not (equal face 'unspecified)))
+        (setq result (cons face result))
+        (setq face (face-attribute face :inherit)))
+      (nreverse result)))
 #+end_src
 
 
@@ -953,8 +956,329 @@ websites.
                ("Wikipedia" . [simple-query "en.wikipedia.org" "en.wikipedia.org/wiki/" ""]))))
 #+end_src
 
+* Improve basic editing configuration for all modes
 
-* =direnv= support
+** Code folding
+
+Enable hideshow in all programming buffers.
+
+#+begin_src emacs-lisp
+  (use-package hideshow
+    :hook (prog-mode . hs-minor-mode))
+#+end_src
+
+** Line transposition
+
+Use control key to transpose lines up and down.
+
+#+begin_src emacs-lisp
+  (autoload 'org-move-item-down "org-list")
+  (autoload 'org-move-item-up "org-list")
+
+  (defun transpose-line-up ()
+    "Move the current line up."
+    (interactive)
+    (if (derived-mode-p 'org-mode)
+        (org-move-item-up)
+
+      (transpose-lines 1)
+      (forward-line -2)
+      (indent-according-to-mode)))
+
+  (defun transpose-line-down ()
+    "Move the current line up."
+    (interactive)
+    (if (derived-mode-p 'org-mode)
+        (org-move-item-down)
+
+      (forward-line 1)
+      (transpose-lines 1)
+      (forward-line -1)
+      (indent-according-to-mode)))
+
+  (global-set-key (kbd "C-<up>") #'transpose-line-up)
+  (global-set-key (kbd "C-<down>") #'transpose-line-down)
+#+end_src
+
+
+** Useful interactive functions
+
+#+begin_src emacs-lisp
+  (defun insert-uuid ()
+    "Insert a UUID at point."
+    (interactive "*")
+    (insert (string-trim (shell-command-to-string "uuidgen"))))
+#+end_src
+
+#+begin_src emacs-lisp
+  (defun insert-date (str)
+    "Read date string STR interactively and insert it at point."
+    (interactive (list
+                  (if (not current-prefix-arg)
+                      (format-time-string "%F")
+                    (let ((formats (seq-map #'format-time-string
+                                            '("%F"
+                                              "%F %R"
+                                              "%X"
+                                              "%c"))))
+                      (completing-read "Format: " formats nil t)))))
+    (insert str))
+#+end_src
+
+Define a command for reversing the characters in the current region.
+
+#+begin_src emacs-lisp
+  (defun config-reverse-characters (beg end)
+    "Reverse the characters in the region from BEG to END.
+  Interactively, reverse the characters in the current region."
+    (interactive "*r")
+    (insert
+     (reverse
+      (delete-and-extract-region
+       beg end))))
+
+  (eval-and-compile
+    (unless (fboundp 'reverse-characters)
+      (defalias 'reverse-characters 'config-reverse-characters)))
+#+end_src
+
+** Indentation
+
+Automatically indent when inserting newlines.
+
+#+begin_src emacs-lisp
+  (general-define-key :keymaps '(text-mode-map prog-mode-map)
+    "RET" #'comment-indent-new-line)
+#+end_src
+
+Define a command to indent every line in the buffer. This should really be a
+thing out-of-the-box.
+
+#+begin_src emacs-lisp
+  (defun indent-buffer ()
+    "Indent the entire buffer."
+    (interactive "*")
+    (save-excursion
+      (delete-trailing-whitespace)
+      (indent-region (point-min) (point-max) nil)
+      (untabify (point-min) (point-max))))
+#+end_src
+
+Define a command to perform indentation in a context-sensitive way.
+
+#+begin_src emacs-lisp
+  (autoload 'lsp-format-region "lsp-mode")
+  (autoload 'lsp-format-buffer "lsp-mode")
+
+  (defun config-indent-dwim (&optional justify)
+    "Indent the thing at point.
+
+  Knows how to fill strings and comments, or indent code.
+
+  Optional arg JUSTIFY will justify comments and strings."
+    (interactive "*P")
+    (-let [(_ _ _ string-p comment-p) (syntax-ppss)]
+      (cond
+       (string-p
+        (let ((progress (make-progress-reporter "Filling paragraph")))
+          (fill-paragraph justify)
+          (progress-reporter-done progress)))
+       (comment-p
+        (let ((progress (make-progress-reporter "Filling comment")))
+          (fill-comment-paragraph justify)
+          (progress-reporter-done progress)))
+
+       ((region-active-p)
+        (if (bound-and-true-p lsp-mode)
+            (lsp-format-region (region-beginning) (region-end))
+          (indent-region (region-beginning) (region-end))))
+       (t
+        (let ((progress (make-progress-reporter "Indenting buffer")))
+          (if (bound-and-true-p lsp-mode)
+              (lsp-format-buffer)
+            (indent-buffer))
+          (progress-reporter-done progress))))))
+
+  (define-key prog-mode-map (kbd "M-q") #'config-indent-dwim)
+#+end_src
+
+** Aggressive indentation                                         :disabled:
+
+=aggressive-indent= automatically reindents code during editing.
+
+#+begin_src emacs-lisp
+  (use-package aggressive-indent
+    :hook (prog-mode . (lambda () (require 'aggressive-indent)))
+    :custom
+    ((aggressive-indent-excluded-modes
+      '(csharp-mode
+        diff-auto-refine-mode
+        dockerfile-mode
+        fstar-mode
+        graphviz-dot-mode
+        haskell-mode
+        haskell-cabal-mode
+        idris-mode
+        idris-repl-mode
+        inf-ruby-mode
+        java-mode
+        lua-mode
+        makefile-gmake-mode
+        makefile-mode
+        nix-mode
+        python-mode
+        restclient-mode
+        rust-mode
+        scala-mode
+        sql-mode
+        stylus-mode
+        terraform-mode
+        text-mode
+        toml-mode
+        yaml-mode)))
+
+    :preface
+    (defun turn-off-aggressive-indent-mode ()
+      (when (fboundp 'aggressive-indent-mode)
+        (aggressive-indent-mode -1)))
+
+    :config
+    (progn
+      (advice-add 'aggressive-indent--indent-if-changed :around #'advice-ignore-errors)
+      (add-hook 'diff-auto-refine-mode-hook #'turn-off-aggressive-indent-mode)
+      (global-aggressive-indent-mode +1)))
+#+end_src
+
+** Automatic whitespace cleanup
+
+=ws-butler= cleans up trailing whitespace as you edit.
+
+#+begin_src emacs-lisp
+  (use-package ws-butler
+    :hook ((prog-mode . (lambda () (require 'ws-butler)))
+           (text-mode . (lambda () (require 'ws-butler))))
+    :config
+    (ws-butler-global-mode))
+#+end_src
+
+** Paragraph fill
+
+=unfill= provides a command that is the opposite of fill-paragraph.
+
+#+begin_src emacs-lisp
+  (use-package unfill
+    :commands (unfill-region unfill-paragraph unfill-toggle))
+#+end_src
+
+** Alignment
+
+=align= provides useful functions for aligning text.
+
+#+begin_src emacs-lisp
+  (use-package align
+    :general ("C-x a a" #'align-regexp))
+#+end_src
+
+** Comment hiding
+
+=hide-comnt= provides a command for toggling whether comments are visible.
+
+#+begin_src emacs-lisp
+  (use-package hide-comnt
+    :commands (hide/show-comments-toggle))
+#+end_src
+
+** Basic jump-to-definition support
+
+=dump-jump= provides a good fallback for navigating to definitions in the absence
+of an LSP or semantic analysis.
+
+#+begin_src emacs-lisp
+  (use-package dumb-jump
+    :general (:states 'normal :keymaps 'prog-mode-map "M-." #'jump-to-definition)
+    :custom
+    ((dumb-jump-selector 'ivy)))
+#+end_src
+
+** File templates
+
+=autoinsert= provides file templates.
+
+#+begin_src emacs-lisp
+  (use-package autoinsert
+    :preface
+    (defvar auto-insert-alist nil)
+    :hook (find-file . auto-insert)
+    :custom
+    ((auto-insert-query nil)))
+#+end_src
+
+Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
+
+#+begin_src emacs-lisp
+  (use-package autoinsert-files
+    :after (autoinsert)
+    :preface
+    (progn
+      ;; Use yasnippet's `snippet-mode' for autoinsert templates
+      (autoload 'snippet-mode "yasnippet")
+
+      (defun config-autoinsert--maybe-snippet-mode ()
+        (require 'autoinsert)
+        (when (string-prefix-p auto-insert-directory (buffer-file-name))
+          (snippet-mode))))
+    :init
+    (add-hook 'find-file-hook #'config-autoinsert--maybe-snippet-mode)
+    :config
+    (advice-add 'auto-insert :before (lambda (&rest _)
+                                       (autoinsert-files-populate-templates))))
+#+end_src
+
+** Spellchecking
+
+=flyspell= provides spellchecking.
+
+#+begin_src emacs-lisp
+  (use-package flyspell
+    :hook
+    ((org-mode . flyspell-mode))
+    :custom
+    ((flyspell-issue-welcome-flag nil)
+     (flyspell-default-dictionary "en_GB")))
+#+end_src
+
+Prevent =flyspell= from showing suggestions in more contexts.
+
+#+begin_src emacs-lisp
+  (use-package flyspell
+    :after (org)
+    :preface
+    (defun config-flyspell--on-org-verify (result)
+      (and result
+           (not (seq-intersection (face-at-point nil t)
+                                  '(org-link verb-header)))))
+    :config
+    (advice-add #'org-mode-flyspell-verify :filter-return #'config-flyspell--on-org-verify))
+#+end_src
+
+
+** Undo history
+
+This package provides a visual representation of the undo history.
+
+#+begin_src emacs-lisp
+  (use-package undo-tree
+    :hook (org-mode . undo-tree-mode)
+    :general
+    ("C-x t" 'undo-tree-visualize)
+    (:states 'normal :keymaps 'org-mode-map
+     "C-r" 'undo-tree-redo
+     "u" 'undo-tree-undo))
+#+end_src
+
+* Integration with external tooling
+
+** =direnv= support
 
 Teach Emacs how to load environment variables from [[https://direnv.net/][direnv]].
 
@@ -965,6 +1289,122 @@ See: [[https://github.com/wbolster/emacs-direnv][wbolster/emacs-direnv]]
     :hook (after-init . direnv-mode)
     :custom
     ((direnv-always-show-summary nil)))
+#+end_src
+
+** =editorconfig= support
+
+Teach Emacs to respect editorconfig files.
+
+#+begin_src emacs-lisp
+  (use-package editorconfig
+    :hook (after-init . editorconfig-mode))
+#+end_src
+
+* Basic programming language modes
+
+** Configuration files
+
+Configure =conf-mode= for use with more kinds of config files.
+
+#+begin_src emacs-lisp
+  (use-package conf-mode
+    :mode
+    (("\\.env\\.erb\\'" . conf-mode)
+     ("\\.conf\\.erb\\'" . conf-mode)
+     ("\\.kll\\'" . conf-mode)))
+#+end_src
+
+** Hex editing
+
+=hexl= is Emacs' built-in hex editor.
+
+#+begin_src emacs-lisp
+  (use-package hexl
+    :general
+    (:states 'motion :keymaps 'hexl-mode-map
+     "]]" #'hexl-end-of-1k-page
+     "[[" #'hexl-beginning-of-1k-page
+     "h" #'hexl-backward-char
+     "l" #'hexl-forward-char
+     "j" #'hexl-next-line
+     "k" #'hexl-previous-line
+     "$" #'hexl-end-of-line
+     "^" #'hexl-beginning-of-line
+     "0" #'hexl-beginning-of-line))
+#+end_src
+
+
+* Searching
+
+** Ripgrep (=rg=)
+
+=deadgrep= provides a polished frontend for =ripgrep=.
+
+#+begin_src emacs-lisp
+  (use-package deadgrep
+    :commands (deadgrep)
+    :general (:keymaps 'deadgrep-mode-map "C-c C-w" #'deadgrep-edit-mode)
+    :init
+    (defalias 'rg #'deadgrep)
+    :config
+    (setq-default deadgrep--search-type 'regexp))
+#+end_src
+
+Use =c= in the =deadgrep= buffer to change the search term.
+
+#+begin_src emacs-lisp
+  (use-package deadgrep
+    :preface
+    (defun config-deadgrep--requery ()
+      (interactive)
+      (let ((button (save-excursion
+                      (goto-char (point-min))
+                      (forward-button 1))))
+        (button-activate button)))
+    :general (:states 'normal :keymaps 'deadgrep-mode-map
+              "c" #'config-deadgrep--requery))
+#+end_src
+
+Provide feedback in the echo area on entering and exiting =deadgrep-edit-mode=.
+
+#+begin_src emacs-lisp
+  (use-package deadgrep
+    :preface
+    (progn
+      (defun config-deadgrep--on-exit-edit-mode (&rest _)
+        (when (derived-mode-p 'deadgrep-edit-mode)
+          (message "Exiting edit mode.")))
+
+      (defun config-deadgrep--on-enter-edit-mode (&rest _)
+        (message "Entering edit mode. Changes will be made to underlying files as you edit.")))
+    :config
+    (progn
+      (advice-add #'deadgrep-mode :before #'config-deadgrep--on-exit-edit-mode)
+      (advice-add #'deadgrep-edit-mode :after #'config-deadgrep--on-enter-edit-mode)))
+#+end_src
+
+Use =C-c C-e= to enter a =deadgrep= search buffer from =ivy.=
+
+#+begin_src emacs-lisp
+  (use-package deadgrep
+    :after (ivy)
+    :preface
+    (defun deadgrep-from-ivy ()
+      (interactive)
+      (ivy-exit-with-action
+       (lambda (&rest _)
+         (let ((deadgrep--search-type 'regexp))
+           (deadgrep (replace-regexp-in-string (rx (+ space)) ".*?" ivy-text))))))
+    :init
+    (general-define-key :keymaps 'counsel-ag-map "C-c C-e" #'deadgrep-from-ivy))
+#+end_src
+
+** Grep
+
+Enable =wgrep=, which provides editable grep buffers.
+
+#+begin_src emacs-lisp
+  (use-package wgrep)
 #+end_src
 
 * Ediff
@@ -1105,7 +1545,9 @@ Clear default underline text properties applied to compilation highlights.
     ((compilation-message-face 'compilation-base-face)))
 #+end_src
 
-* Window navigation
+* Window management
+
+** Window state history
 
 =winner-mode= saves the window and buffer layout history, allowing you to cycle
 forward and back through layout states. This is useful for recovering a layout
@@ -1128,6 +1570,16 @@ after editing actions have changed what windows are shown.
                               "*Ibuffer*"
                               "*esh command on file*"))))
 #+end_src
+
+** Layouts
+
+=rotate= provides handy commands for manipulating the window layout.
+
+#+begin_src emacs-lisp
+  (use-package rotate
+    :commands (rotate-layout))
+#+end_src
+
 
 * Modal editing & Evil
 
@@ -1532,20 +1984,6 @@ compatibility.
 #+end_src
 
 
-* =undo-tree=
-
-This package provides a visual representation of the undo history.
-
-#+begin_src emacs-lisp
-  (use-package undo-tree
-    :hook (org-mode . undo-tree-mode)
-    :general
-    ("C-x t" 'undo-tree-visualize)
-    (:states 'normal :keymaps 'org-mode-map
-     "C-r" 'undo-tree-redo
-     "u" 'undo-tree-undo))
-#+end_src
-
 * Text completion engines
 
 ** =hippie-expand=
@@ -1703,6 +2141,97 @@ dot).
     :custom
     ((dired-omit-verbose nil)
      (dired-clean-up-buffers-too t)))
+#+end_src
+
+* Themeing
+
+** Highlight pasted text
+
+=volatile-highlights= shows highlights in the buffer when regions change.
+
+Load at compile-time so macro expansions are available.
+
+#+begin_src emacs-lisp
+  (cl-eval-when (compile)
+    (require 'volatile-highlights))
+#+end_src
+
+Configure the package.
+
+#+begin_src emacs-lisp
+  (use-package volatile-highlights
+    :hook ((prog-mode . (lambda () (require 'volatile-highlights)))
+           (text-mode . (lambda () (require 'volatile-highlights))))
+    :config
+    (volatile-highlights-mode))
+#+end_src
+
+Teach =volatile-highlights-mode= to highlight text pasted by =evil= operations.
+
+#+begin_src emacs-lisp
+  (use-package volatile-highlights
+    :after (evil)
+    :config
+    (progn
+      (vhl/define-extension 'evil
+                            'evil-move
+                            'evil-paste-after
+                            'evil-paste-before
+                            'evil-paste-pop)
+      (vhl/install-extension 'evil)
+      (vhl/load-extension 'evil)))
+#+end_src
+
+** Highlight the symbol at point
+
+=highlight-thing= highlights the symbol at point.
+
+#+begin_src emacs-lisp
+  (use-package highlight-thing
+    :hook (prog-mode . highlight-thing-mode)
+    :custom
+    ((highlight-thing-what-thing 'symbol)
+     (highlight-thing-delay-seconds 0.1)
+     (highlight-thing-limit-to-defun nil)
+     (highlight-thing-case-sensitive-p t))
+    :config
+    (set-face-attribute 'highlight-thing nil :inherit 'highlight))
+#+end_src
+
+Suppress =highlight-thing= when hovering over certain kinds of symbols.
+
+#+begin_src emacs-lisp
+  (use-package highlight-thing
+    :preface
+    (defun config-highlight-thing--should-highlight-p (res)
+      (unless (bound-and-true-p lsp-ui-mode)
+        (when res
+          (let ((excluded-faces '(font-lock-string-face
+                                  font-lock-keyword-face
+                                  font-lock-comment-face
+                                  font-lock-preprocessor-face
+                                  font-lock-builtin-face))
+                (faces (seq-mapcat #'face-ancestors (face-at-point nil t))))
+            (null (seq-intersection faces excluded-faces))))))
+
+    :config
+    (advice-add 'highlight-thing-should-highlight-p :filter-return
+                #'config-highlight-thing--should-highlight-p))
+#+end_src
+
+
+* Text scaling
+
+=default-text-scale= provides nice commands for changing text scale for all
+buffers simultaneously
+
+#+begin_src emacs-lisp
+  (use-package default-text-scale
+    :commands (default-text-scale-increase
+               default-text-scale-decrease
+               default-text-scale-reset)
+    :custom
+    ((default-text-scale-amount 30)))
 #+end_src
 
 * File postamble
