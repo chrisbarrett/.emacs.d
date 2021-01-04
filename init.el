@@ -22,6 +22,7 @@
   (let ((file-to-block-list))
     (message "Re-generating init files…")
     (save-restriction
+      (widen)
       (save-excursion
         (require 'org)
         (let ((inhibit-message t))
