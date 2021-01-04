@@ -1477,28 +1477,6 @@ Hide =./= and =../= when finding files.
     (advice-add #'counsel-find-file :around #'config-ivy-with-empty-ivy-extra-directories))
 #+end_src
 
-*** =wgrep= integration
-
-Define a command for entering =wgrep= straight from =ivy= results.
-
-#+begin_src emacs-lisp
-  (use-package ivy
-    :preface
-    (defun config-ivy-occur-then-wgrep ()
-      "Shortcut for calling `ivy-occur' then activating wgrep."
-      (interactive)
-      (noflet
-       ;; HACK: Run the original exit callback, then assume the occur buffer is
-       ;; being displayed and change to wgrep.
-       ((ivy-exit-with-action
-         (action)
-         (funcall this-fn (lambda (&rest args)
-                            (apply action args)
-                            (ivy-wgrep-change-to-wgrep-mode)))))
-       (ivy-occur)))
-    :general (:keymaps 'ivy-minibuffer-map (kbd "C-c C-e") #'config-ivy-occur-then-wgrep))
-#+end_src
-
 ** In-buffer search
 
 =swiper= is a buffer search interface using =ivy=.
