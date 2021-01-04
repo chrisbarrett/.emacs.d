@@ -14,6 +14,15 @@
         dash
         world-time-mode
         direnv
+        evil
+        link-hint
+        undo-tree
+        evil-surround
+        evil-collection
+        evil-args
+        evil-matchit
+        evil-numbers
+        evil-iedit-state
       ];
 
       extraPackages = {

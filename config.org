@@ -1166,12 +1166,205 @@ Set the default heuristic for completing symbols.
 
 * Modal editing & Evil
 
+=evil= provides Vim emulation.
+
+=evil= provides macros that I want to use in =:config= blocks, so teach the
+byte-compiler about them to avoid warnings.
+
+#+begin_src emacs-lisp
+  (cl-eval-when (compile)
+    (require 'evil))
+#+end_src
+
+Customise global vars and keybindings.
+
+#+begin_src emacs-lisp
+  (use-package evil
+    :hook (after-init . evil-mode)
+    :preface
+    (autoload 'display-warning "warnings")
+    :custom
+    ((evil-mode-line-format nil)
+     (evil-shift-width 2)
+     (evil-symbol-word-search t)
+     (evil-want-visual-char-semi-exclusive t)
+     (evil-want-Y-yank-to-eol t)
+     (evil-motion-state-cursor '("plum3" box))
+     (evil-visual-state-cursor '("gray" hbar))
+     (evil-normal-state-cursor '("IndianRed" box))
+     (evil-insert-state-cursor '("chartreuse3" bar))
+     (evil-emacs-state-cursor  '("SkyBlue2" (box . t))))
+    :general
+    (:states 'normal "go" #'browse-url-at-point))
+#+end_src
+
+Prevent visual state from updating the clipboard.
+
+#+begin_src emacs-lisp
+  (advice-add 'evil-visual-update-x-selection :override #'ignore)
+#+end_src
+
+Don't load =evil-keybinds.el=.
+
+#+begin_src emacs-lisp
+  (defvar evil-want-keybinding nil)
+#+end_src
+
+Use =Q= in normal state to execute the macro bound to =q= register. This is a
+convenient way to quickly define a macro, then execute it immediately--just
+double-tap =q= to record, then hit =Q= to execute.
+
+#+begin_src emacs-lisp
+  (use-package evil
+    :general (:states 'normal "Q" #'config-evil--execute-Q-macro)
+    :preface
+    (defun config-evil--execute-Q-macro (count)
+      "Execute the macro bound to the Q register.
+
+  COUNT is the number of repetitions."
+      (interactive (list
+                    (if current-prefix-arg
+                        (if (numberp current-prefix-arg) current-prefix-arg 0)
+                      1)))
+      (evil-execute-macro count (evil-get-register ?Q t))))
+#+end_src
+
+Make motions make more sense in RTL languages.
+
+#+begin_src emacs-lisp
+  (use-package evil-bidi
+    :after (evil))
+#+end_src
+
+** Customise navigation in help buffers
+
+#+begin_src emacs-lisp
+  (use-package evil
+    :config
+    (evil-define-key 'motion help-mode-map
+      (kbd "<escape>") #'quit-window
+      (kbd "^") #'help-go-back
+      (kbd "gh") #'help-follow-symbol))
+#+end_src
+
+
+** Initial states
+
+Customise which states evil to use for different modes.
+
+#+begin_src emacs-lisp
+  (use-package evil
+    :config
+    (progn
+      (evil-set-initial-state 'anaconda-mode-view-mode 'motion)
+      (evil-set-initial-state 'diff-mode 'motion)
+      (evil-set-initial-state 'ert-simple-view-mode 'motion)
+      (evil-set-initial-state 'eshell-mode 'insert)
+      (evil-set-initial-state 'flycheck-error-list-mode 'motion)
+      (evil-set-initial-state 'grep-mode 'normal)
+      (evil-set-initial-state 'haskell-debug-mode 'motion)
+      (evil-set-initial-state 'helpful-mode 'motion)
+      (evil-set-initial-state 'ibuffer-mode 'motion)
+      (evil-set-initial-state 'nix-repl-mode 'insert)
+      (evil-set-initial-state 'occur-mode 'normal)
+      (evil-set-initial-state 'org-agenda-mode 'motion)
+      (evil-set-initial-state 'prodigy-mode 'motion)
+      (evil-set-initial-state 'profiler-report-mode 'motion)
+      (evil-set-initial-state 'racer-help-mode 'motion)
+      (evil-set-initial-state 'tabulated-list-mode 'motion)
+      (evil-set-initial-state 'vterm-mode 'emacs)
+      (evil-set-initial-state 'wdired-mode 'normal)
+
+      (with-eval-after-load 'replace
+        (evil-add-hjkl-bindings occur-mode-map))))
+#+end_src
+
+** Archive navigation integration
+
+#+begin_src emacs-lisp
+  (use-package evil
+    :after (tar-mode)
+    :config
+    (progn
+      (evil-set-initial-state 'tar-mode 'emacs)
+      (evil-add-hjkl-bindings tar-mode-map)))
+#+end_src
+
+#+begin_src emacs-lisp
+  (use-package evil
+    :after (arc-mode)
+    :general
+    (:states 'motion :keymaps 'archive-mode-map
+     "q" 'kill-this-buffer
+     "o" 'archive-extract-other-window
+     "m" 'archive-mark
+     "x" 'archive-expunge
+     "U" 'archive-unmark-all-files
+     "j" 'archive-next-line
+     "k" 'archive-previous-line
+     "<return>" 'archive-extract)
+    :config
+    (evil-set-initial-state 'archive-mode 'emacs))
+#+end_src
+
+** =compilation= integration
+
+Disable =h= (help) binding in =compilation-mode=, which interferes with evil
+navigation.
+
+#+begin_src emacs-lisp
+  (use-package evil
+    :general (:states 'motion :keymaps 'compilation-mode-map
+              "h" #'evil-backward-char))
+#+end_src
+
+** =hydra= integration
+
 =evil= breaks cursor settings when combined with hydra. To work around this, never
 show the cursor in deselected windows.
 
 #+begin_src emacs-lisp
   (setq-default cursor-in-non-selected-windows nil)
 #+end_src
+
+** Spellchecker integration
+
+Add vim-style =:spell= and =:nospell= ex commands.
+
+#+begin_src emacs-lisp
+  (use-package evil
+    :functions (evil-ex-define-cmd)
+    :preface
+    (progn
+      (defun config-evil-flyspell-on ()
+        "Enable flyspell."
+        (interactive)
+        (turn-on-flyspell))
+
+      (defun config-evil-flyspell-off ()
+        "Disable flyspell."
+        (interactive)
+        (turn-off-flyspell)))
+    :config
+    (progn
+      (evil-ex-define-cmd "nospell" #'config-evil-flyspell-off)
+      (evil-ex-define-cmd "spell" #'config-evil-flyspell-on)))
+#+end_src
+
+Add more key bindings to work with spell-checker from normal state.
+
+#+begin_src emacs-lisp
+  (use-package evil-ispell
+    :after evil
+    :general (:states 'normal
+              "z SPC" #'flyspell-auto-correct-word
+              "zU" #'evil-ispell-correct-word
+              "zg" #'evil-ispell-mark-word-as-good
+              "zG" #'evil-ispell-mark-word-as-locally-good
+              "zn" #'evil-ispell-next-spelling-error
+              "zp" #'evil-ispell-previous-spelling-error))
+#+end_src
+
 
 ** Use escape key as =keyboard-quit=
 
@@ -1184,6 +1377,210 @@ Make =<escape>= issue =keyboard-quit= in as many situations as possible.
   (define-key minibuffer-local-must-match-map (kbd "<escape>") #'keyboard-escape-quit)
   (define-key minibuffer-local-isearch-map (kbd "<escape>") #'keyboard-escape-quit)
 #+end_src
+
+** =smartparens= integration
+
+Scanning for matched pairs in org buffers can lead to poor performance when
+deleting characters. Advise the evil delete command to just search for matched
+pairs within the surrounding few lines.
+
+#+begin_src emacs-lisp
+  (use-package evil
+    :after (smartparens)
+    :preface
+    (progn
+      (defvar config-evil--lines-to-search-for-pairs-on-delete 5)
+
+      (defun config-evil--bounds-of-surrounding-lines (lines-before lines-after)
+        (let ((start
+               (save-excursion
+                 (ignore-errors
+                   (forward-line (- lines-before)))
+                 (line-beginning-position)))
+              (end
+               (save-excursion
+                 (ignore-errors
+                   (forward-line lines-after))
+                 (line-end-position))))
+          (list start end)))
+
+      (defun config-evil--sp-delete-and-join-compat (fn &rest args)
+        (cond
+         ;; Narrow before deleting to improve performance in large org buffers.
+         ((and (bound-and-true-p smartparens-strict-mode)
+               (derived-mode-p 'org-mode))
+          (save-restriction
+            (apply #'narrow-to-region (config-evil--bounds-of-surrounding-lines
+                                       config-evil--lines-to-search-for-pairs-on-delete
+                                       config-evil--lines-to-search-for-pairs-on-delete))
+            (call-interactively 'sp-backward-delete-char)))
+
+         ((bound-and-true-p smartparens-strict-mode)
+          (call-interactively 'sp-backward-delete-char))
+
+         (t
+          (apply fn args)))))
+    :config
+    (advice-add 'evil-delete-backward-char-and-join :around #'config-evil--sp-delete-and-join-compat))
+#+end_src
+
+** =org-mode= integration
+
+Teach =evil= how to navigate using links in org buffers and the agenda.
+
+#+begin_src emacs-lisp
+  (use-package link-hint
+    :after (evil)
+    :config
+    (put 'link-hint-org-link :vars '(org-mode org-agenda-mode)))
+#+end_src
+
+** Surrounding selections
+
+Teach =evil= how to surround objects with matched pairs.
+
+#+begin_src emacs-lisp
+  (use-package evil-surround
+    :after (evil)
+    :config (global-evil-surround-mode +1)
+    :general
+    (:states 'visual :keymaps 'evil-surround-mode-map
+     "s" #'evil-surround-region
+     "S" #'evil-substitute)
+    :custom
+    ((evil-surround-pairs-alist '((?\( . ("(" . ")"))
+                                  (?\[ . ("[" . "]"))
+                                  (?\{ . ("{" . "}"))
+
+                                  (?\) . ("(" . ")"))
+                                  (?\] . ("[" . "]"))
+                                  (?\} . ("{" . "}"))
+
+                                  (?# . ("#{" . "}"))
+                                  (?b . ("(" . ")"))
+                                  (?B . ("{" . "}"))
+                                  (?> . ("<" . ">"))
+                                  (?t . evil-surround-read-tag)
+                                  (?< . evil-surround-read-tag)
+                                  (?f . evil-surround-function)))))
+#+end_src
+
+Define an extra =`sym'= pair for =emacs-lisp-mode=.
+
+#+begin_src emacs-lisp
+  (use-package evil-surround
+    :after (evil)
+    :preface
+    (defun config-evil--init-evil-surround-pairs ()
+      (make-local-variable 'evil-surround-pairs-alist)
+      (push '(?\` . ("`" . "'")) evil-surround-pairs-alist))
+    :hook
+    (emacs-lisp-mode-hook . config-evil--init-evil-surround-pairs))
+#+end_src
+
+** Community-maintained bindings
+
+=evil-collection= provides a community-managed set of keybindings for many modes.
+
+#+begin_src emacs-lisp
+  (use-package evil-collection
+    :after evil)
+#+end_src
+
+** text motions within function parameter lists
+
+=evil-args= provides text motions within function parameter lists, so you can
+manipulate parameters in a structured way.
+
+#+begin_src emacs-lisp
+  (use-package evil-args
+    :after (evil)
+    :general (:keymaps
+              'evil-inner-text-objects-map "a" #'evil-inner-arg
+              :keymaps
+              'evil-outer-text-objects-map "a" #'evil-outer-arg))
+#+end_src
+
+** improve matched-pair detection
+
+Teach =%= how to match more kinds of pairs.
+
+#+begin_src emacs-lisp
+  (use-package evil-matchit
+    :after (evil)
+    :config
+    (global-evil-matchit-mode +1))
+#+end_src
+
+** operate on numbers
+
+Use =+= and =-= to increment and decrement numbers in normal state.
+
+#+begin_src emacs-lisp
+  (use-package evil-numbers
+    :after (evil)
+    :general (:states 'normal
+              "+" #'evil-numbers/inc-at-pt
+              "-" #'evil-numbers/dec-at-pt))
+#+end_src
+
+** improve shift behaviour
+
+Teach =<= and =>= to shift text in a context-sensitive way.
+
+#+begin_src emacs-lisp
+  (use-package evil
+    :general (:states 'visual
+              "<" #'config-evil--shift-left
+              ">" #'config-evil--shift-right)
+    :preface
+    (progn
+      (defun config-evil--shift-left (&optional beg end)
+        "Shift left, keeping the region active.
+
+  BEG and END are the bounds of the active region."
+        (interactive "r")
+        (evil-shift-left beg end)
+        (evil-normal-state)
+        (evil-visual-restore))
+
+      (defun config-evil--shift-right (&optional beg end)
+        "Shift right, keeping the region active.
+
+  BEG and END are the bounds of the active region."
+        (interactive "r")
+        (evil-shift-right beg end)
+        (evil-normal-state)
+        (evil-visual-restore))))
+#+end_src
+
+** iedit integration
+
+=iedit= adds useful mass-renaming functionality. This package provides evil
+compatibility.
+
+#+begin_src emacs-lisp
+  (use-package evil-iedit-state
+    :commands (evil-iedit-state/iedit-mode)
+    :config
+    (define-obsolete-function-alias 'iedit-cleanup 'iedit-lib-cleanup))
+#+end_src
+
+
+* =undo-tree=
+
+This package provides a visual representation of the undo history.
+
+#+begin_src emacs-lisp
+  (use-package undo-tree
+    :hook (org-mode . undo-tree-mode)
+    :general
+    ("C-x t" 'undo-tree-visualize)
+    (:states 'normal :keymaps 'org-mode-map
+     "C-r" 'undo-tree-redo
+     "u" 'undo-tree-undo))
+#+end_src
+
 
 * File postamble
 
