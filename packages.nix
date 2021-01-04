@@ -42,6 +42,8 @@
         elisp-slime-nav
         helpful
         rainbow-mode
+        flycheck
+        flycheck-package
       ];
 
       extraPackages = {
