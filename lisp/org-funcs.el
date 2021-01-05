@@ -379,9 +379,12 @@ If NOTIFY-P is set, a desktop notification is displayed."
     (read-only-mode +1)
     (current-buffer)))
 
-(defun org-funcs-url-to-reference (url)
-  "Create a PDF of URL and add it to the bibliography."
-  (interactive (list (org-funcs-read-url "Add reference to URL: ")))
+(defun org-funcs-url-to-reference (url &optional show-pdf)
+  "Create a PDF of URL and add it to the bibliography.
+
+Optional argument SHOW-PDF determines whether to show the downloaded PDF."
+  (interactive (list (org-funcs-read-url "Add reference to URL: ")
+                     t))
   (require 'org-ref)
   (let* ((url (car (split-string url "?")))
          (bibfile (car (org-ref-find-bibliography)))
@@ -419,18 +422,20 @@ If NOTIFY-P is set, a desktop notification is displayed."
                                     (kill-buffer (process-buffer process))))
                 (loop ()
                       (pcase-exhaustive status
-                        ('done
-                         (progress-reporter-done reporter)
-                         ;; Append an entry to the bibfile.
-                         (org-ref-url-html-to-bibtex bibfile url)
-                         (let ((file (move-pdf-to-bib-dir (key-of-latest-bib-entry) tmpfile)))
-                           (message "PDF downloaded to %s" file)))
                         ('timeout
                          (cleanup-on-error)
                          (message "PDF creation timed out. See %s for details." org-funcs--wkhtmltopdf-error-buffer-name))
                         ((guard (process-live-p process))
                          (progress-reporter-update reporter)
                          (run-with-timer 0.5 nil #'loop))
+                        ((or 'done (guard (< 0 (f-size tmpfile))))
+                         (progress-reporter-done reporter)
+                         ;; Append an entry to the bibfile.
+                         (org-ref-url-html-to-bibtex bibfile url)
+                         (let ((file (move-pdf-to-bib-dir (key-of-latest-bib-entry) tmpfile)))
+                           (when show-pdf
+                             (find-file file))
+                           (message "PDF downloaded to %s" file)))
                         (_
                          (cleanup-on-error)
                          (message "PDF download failed. See %s for details." org-funcs--wkhtmltopdf-error-buffer-name)))))
