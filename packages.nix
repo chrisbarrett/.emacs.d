@@ -56,6 +56,8 @@
         auctex
         company-auctex
         latex-preview-pane
+        ledger-mode
+        flycheck-ledger
       ];
 
       extraPackages = {
