@@ -58,6 +58,8 @@
         latex-preview-pane
         ledger-mode
         flycheck-ledger
+        plantuml-mode
+        flycheck-plantuml
       ];
 
       extraPackages = {

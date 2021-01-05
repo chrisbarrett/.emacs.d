@@ -63,8 +63,11 @@ let
     (builder.overrideScope' packages.overrides).emacsWithPackages
     packages.packages;
 
-  customPathEntries =
-    strings.concatStringsSep ":" [ "${requiredPrograms}/bin" ];
+  customPathEntries = strings.concatStringsSep ":" [
+    "${requiredPrograms}/bin"
+    "${pkgs.jdk}/bin"
+  ];
+
 in pkgs.symlinkJoin {
   name = "emacs-wrapped";
   buildInputs = [ pkgs.makeWrapper ];
@@ -75,7 +78,9 @@ in pkgs.symlinkJoin {
         wrapProgram "$program" \
           --prefix PATH ":" "${customPathEntries}" \
           --set NIX_EMACS_SRC_DIR "${emacs}/share/emacs/src/" \
-          --set NIX_EMACS_TEX_PROGRAM "${pkgs.tectonic}/bin/tectonic"
+          --set NIX_EMACS_TEX_PROGRAM "${pkgs.tectonic}/bin/tectonic" \
+          --set NIX_EMACS_PLANTUML_JAR "${pkgs.plantuml}/lib/plantuml.jar" \
+          --set JAVA_HOME "${pkgs.jdk}"
       fi
     done
   '';
