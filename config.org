@@ -958,6 +958,69 @@ websites.
                ("Wikipedia" . [simple-query "en.wikipedia.org" "en.wikipedia.org/wiki/" ""]))))
 #+end_src
 
+* Better eval-expression
+
+Define an alternative version of =eval-expression= that uses =emacs-lisp-mode= to
+provide font-locking, and handles =smartparens= better.
+
+See: [[https://lists.gnu.org/archive/html/help-gnu-emacs/2014-07/msg00135.html][Re: How properly utilize the minibuffer and inactive minibuffer startup]]
+
+#+begin_src emacs-lisp
+  (defvar config-eval-expression-map
+    (let ((map (make-sparse-keymap)))
+      (set-keymap-parent map read-expression-map)
+      (define-key map (kbd "<escape>") #'minibuffer-keyboard-quit)
+      (define-key map (kbd "C-g") #'minibuffer-keyboard-quit)
+      map))
+
+  (defun config-eval-expression--read (prompt &optional initial-contents)
+    (let ((minibuffer-completing-symbol t))
+      (minibuffer-with-setup-hook
+          (lambda ()
+            (emacs-lisp-mode)
+            (use-local-map config-eval-expression-map)
+            (setq font-lock-mode t)
+            (funcall font-lock-function 1))
+        (read-from-minibuffer prompt initial-contents
+                              config-eval-expression-map nil
+                              'read-expression-history))))
+
+  (autoload 'pp-display-expression "pp")
+  (autoload 'pp-to-string "pp")
+
+  (defun config-eval-expression (expression &optional arg)
+    "Like `eval-expression' with nicer input handling.
+
+  - Use `emacs-lisp-mode' to provide font locking and better
+    integration with other packages.
+
+  - Use the `pp' library to display the output in a readable form.
+
+  EXPRESSION is a Lisp form to evaluate.
+
+  With optional prefix ARG, insert the results into the buffer at
+  point."
+    (interactive (list (read (config-eval-expression--read "Eval: "))
+                       current-prefix-arg))
+    (if arg
+        (insert (pp-to-string (eval expression lexical-binding)))
+      (pp-display-expression (eval expression lexical-binding)
+                             "*Pp Eval Output*")))
+#+end_src
+
+Use this command for evaluating expressions in the Lisp debugger too.
+
+#+begin_src emacs-lisp
+  (use-package debug
+    :config
+    (advice-add 'debugger-record-expression
+                :around
+                (lambda (f exp)
+                  (interactive (list (read (config-eval-expression--read "Eval: "))))
+                  (funcall f exp))
+                '((name . use-config-eval-expression--read))))
+#+end_src
+
 * Improve basic editing configuration for all modes
 
 ** Code folding
