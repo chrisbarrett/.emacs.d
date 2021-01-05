@@ -106,7 +106,7 @@
 
  org-loop-over-headlines-in-active-region 'start-level
 
- org-refile-targets '((org-funcs-refile-candidates . (:maxlevel . 3)))
+ org-refile-targets '((nil . (:maxlevel . 10)) (org-funcs-refile-candidates . (:maxlevel . 3)))
  org-refile-allow-creating-parent-nodes 'confirm
  org-refile-target-verify-function #'org-funcs-refile-verify-function
  org-refile-use-outline-path 'file
