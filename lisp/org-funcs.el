@@ -414,7 +414,8 @@ If NOTIFY-P is set, a desktop notification is displayed."
   "Create a PDF of URL and add it to the bibliography."
   (interactive (list (org-funcs-read-url "Add reference to URL: ")))
   (require 'org-ref)
-  (let* ((bibfile (car (org-ref-find-bibliography)))
+  (let* ((url (car (split-string url "?")))
+         (bibfile (car (org-ref-find-bibliography)))
          (tmpfile (make-temp-file "wkhtmltopdf_" nil ".pdf"))
          (reporter (make-progress-reporter "Downloading PDF"))
          (status)
@@ -428,49 +429,43 @@ If NOTIFY-P is set, a desktop notification is displayed."
                                tmpfile))
          (buf (process-buffer process)))
 
-    (cl-labels ((loop ()
+    (cl-labels ((key-of-latest-bib-entry ()
+                                         (with-current-buffer (find-file bibfile)
+                                           (save-excursion
+                                             (goto-char (point-max))
+                                             (bibtex-beginning-of-entry)
+                                             (let ((bibtex-expand-strings t))
+                                               (reftex-get-bib-field "=key=" (bibtex-parse-entry t))))))
+                (move-pdf-to-bib-dir (key file)
+                                     (let ((target (f-join org-ref-pdf-directory (format  "%s.pdf" key))))
+                                       (org-funcs--apply-html-meta-to-pdf url file)
+                                       (rename-file file target)
+                                       target))
+                (cleanup-on-error ()
+                                  (progress-reporter-done reporter)
+                                  (let ((cause (with-current-buffer buf (buffer-string))))
+                                    (org-funcs--update-wkhtmltopdf-error-buffer cause))
+                                  (ignore-errors
+                                    (delete-file tmpfile))
+                                  (ignore-errors
+                                    (kill-buffer (process-buffer process))))
+                (loop ()
                       (pcase-exhaustive status
-                        ((or 'done 'unknown-exit)
+                        ('done
                          (progress-reporter-done reporter)
+                         ;; Append an entry to the bibfile.
                          (org-ref-url-html-to-bibtex bibfile url)
-                         (let* ((key
-                                 (with-current-buffer (find-file bibfile)
-                                   (save-excursion
-                                     (bibtex-beginning-of-entry)
-                                     (let ((bibtex-expand-strings t))
-                                       (reftex-get-bib-field "=key=" (bibtex-parse-entry t))))))
-                                (target
-                                 (f-join org-ref-pdf-directory (format  "%s.pdf" key))))
-                           (org-funcs--apply-html-meta-to-pdf url tmpfile)
-                           (rename-file tmpfile target)
-
-                           (pcase-exhaustive status
-                             ('unknown-exit
-                              (let ((cause (with-current-buffer buf (buffer-string))))
-                                (org-funcs--update-wkhtmltopdf-error-buffer cause))
-                              (message "PDF downloaded to %s, but there were errors.\nSee *wkhtmltopdf errors* for more details and check the output." target))
-                             (_
-                              (message "PDF downloaded to %s" target)))))
-
+                         (let ((file (move-pdf-to-bib-dir (key-of-latest-bib-entry) tmpfile)))
+                           (message "PDF downloaded to %s" file)))
                         ('timeout
-                         (progress-reporter-done reporter)
-
-                         (let ((cause (with-current-buffer buf (buffer-string))))
-                           (org-funcs--update-wkhtmltopdf-error-buffer cause))
-
-                         (ignore-errors
-                           (delete-file tmpfile))
-                         (ignore-errors
-                           (kill-buffer (process-buffer process)))
-
-                         (message "PDF creation timed out. See *wkhtmltopdf errors* for details."))
+                         (cleanup-on-error)
+                         (message "PDF creation timed out. See %s for details." org-funcs--wkhtmltopdf-error-buffer-name))
+                        ((guard (process-live-p process))
+                         (progress-reporter-update reporter)
+                         (run-with-timer 0.5 nil #'loop))
                         (_
-                         (cond ((process-live-p process)
-                                (progress-reporter-update reporter)
-                                (run-with-timer 0.5 nil #'loop))
-                               (t
-                                (setq status 'unknown-exit)
-                                (loop)))))))
+                         (cleanup-on-error)
+                         (message "PDF download failed. See %s for details." org-funcs--wkhtmltopdf-error-buffer-name)))))
       (loop))
 
     (run-with-timer org-funcs--pdf-download-timeout-seconds
