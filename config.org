@@ -3058,15 +3058,18 @@ Make checkbox insertion a little smarter.
 #+begin_src emacs-lisp
   (use-package smartparens
     :preface
-    (defun config-smartparens--format-checkitem (_id action _context)
-      (when (and (equal action 'insert)
-                 (org-at-item-p))
-        (atomic-change-group
-          (just-one-space)
-          (search-backward "[" (line-beginning-position))
-          (just-one-space)
-          (search-forward "]" (line-end-position))
-          (just-one-space))))
+    (progn
+      (autoload 'org-at-item-p "org-list")
+
+      (defun config-smartparens--format-checkitem (_id action _context)
+        (when (and (equal action 'insert)
+                   (org-at-item-p))
+          (atomic-change-group
+            (just-one-space)
+            (search-backward "[" (line-beginning-position))
+            (just-one-space)
+            (search-forward "]" (line-end-position))
+            (just-one-space)))))
     :config
     (sp-with-modes '(org-mode markdown-mode gfm-mode)
       (sp-local-pair "[" "]" :post-handlers '(config-smartparens--format-checkitem))))
