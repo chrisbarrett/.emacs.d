@@ -53,6 +53,9 @@
         edit-indirect
         ibuffer-projectile
         smartparens
+        auctex
+        company-auctex
+        latex-preview-pane
       ];
 
       extraPackages = {

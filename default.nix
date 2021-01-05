@@ -74,7 +74,8 @@ in pkgs.symlinkJoin {
       if [ -f "$program" ]; then
         wrapProgram "$program" \
           --prefix PATH ":" "${customPathEntries}" \
-          --set NIX_EMACS_SRC_DIR "${emacs}/share/emacs/src/"
+          --set NIX_EMACS_SRC_DIR "${emacs}/share/emacs/src/" \
+          --set NIX_EMACS_TEX_PROGRAM "${pkgs.tectonic}/bin/tectonic"
       fi
     done
   '';
