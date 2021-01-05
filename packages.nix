@@ -52,6 +52,7 @@
         markdown-mode
         edit-indirect
         ibuffer-projectile
+        smartparens
       ];
 
       extraPackages = {

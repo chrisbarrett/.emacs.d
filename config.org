@@ -261,6 +261,22 @@ Load lisp in =org= and =ledger= dirs.
 #+end_src
 
 
+#+begin_src emacs-lisp
+  (defun bounds-of-surrounding-lines (lines-before lines-after)
+    (let ((start
+           (save-excursion
+             (ignore-errors
+               (forward-line (- lines-before)))
+             (line-beginning-position)))
+          (end
+           (save-excursion
+             (ignore-errors
+               (forward-line lines-after))
+             (line-end-position))))
+      (list start end)))
+#+end_src
+
+
 * Customise builtin features
 
 Set C source directory to use the source files from the Nix build.
@@ -2002,38 +2018,20 @@ pairs within the surrounding few lines.
   (use-package evil
     :after (smartparens)
     :preface
-    (progn
-      (defvar config-evil--lines-to-search-for-pairs-on-delete 5)
+    (defun config-evil--sp-delete-and-join-compat (fn &rest args)
+      (cond
+       ;; Narrow before deleting to improve performance in large org buffers.
+       ((and (bound-and-true-p smartparens-strict-mode)
+             (derived-mode-p 'org-mode))
+        (save-restriction
+          (apply #'narrow-to-region (bounds-of-surrounding-lines 5 5))
+          (call-interactively 'sp-backward-delete-char)))
 
-      (defun config-evil--bounds-of-surrounding-lines (lines-before lines-after)
-        (let ((start
-               (save-excursion
-                 (ignore-errors
-                   (forward-line (- lines-before)))
-                 (line-beginning-position)))
-              (end
-               (save-excursion
-                 (ignore-errors
-                   (forward-line lines-after))
-                 (line-end-position))))
-          (list start end)))
+       ((bound-and-true-p smartparens-strict-mode)
+        (call-interactively 'sp-backward-delete-char))
 
-      (defun config-evil--sp-delete-and-join-compat (fn &rest args)
-        (cond
-         ;; Narrow before deleting to improve performance in large org buffers.
-         ((and (bound-and-true-p smartparens-strict-mode)
-               (derived-mode-p 'org-mode))
-          (save-restriction
-            (apply #'narrow-to-region (config-evil--bounds-of-surrounding-lines
-                                       config-evil--lines-to-search-for-pairs-on-delete
-                                       config-evil--lines-to-search-for-pairs-on-delete))
-            (call-interactively 'sp-backward-delete-char)))
-
-         ((bound-and-true-p smartparens-strict-mode)
-          (call-interactively 'sp-backward-delete-char))
-
-         (t
-          (apply fn args)))))
+       (t
+        (apply fn args))))
     :config
     (advice-add 'evil-delete-backward-char-and-join :around #'config-evil--sp-delete-and-join-compat))
 #+end_src
@@ -2811,6 +2809,268 @@ Override some default =ibuffer= columns.
     :init
     (add-hook 'ibuffer-hook #'config-ibuffer--setup-buffer))
 #+end_src
+
+* Parentheses
+
+Use =smartparens= to keep parens and braces paired and manipulate expressions in a
+structured way.
+
+See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
+
+#+begin_src emacs-lisp
+  (use-package smartparens
+    :hook ((prog-mode . smartparens-strict-mode)
+           (text-mode . smartparens-strict-mode))
+
+    :general
+    (:keymaps 'smartparens-strict-mode-map
+     [remap c-electric-backspace] #'sp-backward-delete-char)
+    (:states 'insert
+     ")" #'sp-up-sexp)
+    (:states 'normal
+     "D" #'sp-kill-hybrid-sexp)
+
+    :custom
+    ((sp-show-pair-delay 0.2)
+     (sp-show-pair-from-inside t)
+     (sp-cancel-autoskip-on-backward-movement nil)
+     (sp-highlight-pair-overlay nil)
+     (sp-highlight-wrap-overlay nil)
+     (sp-highlight-wrap-tag-overlay nil)
+     (sp-navigate-close-if-unbalanced t)
+     (sp-message-width nil))
+
+    :config
+    (progn
+      (require 'smartparens-config)
+      (smartparens-global-strict-mode +1)
+      (show-smartparens-global-mode +1)))
+#+end_src
+
+
+Load macros and functions at compile time so I can use them in this config.
+
+#+begin_src emacs-lisp
+  (cl-eval-when (compile)
+    (require 'smartparens))
+
+  (autoload 'sp-pair "smartparens")
+  (autoload 'sp-local-pair "smartparens")
+#+end_src
+
+** Utility functions
+
+#+begin_src emacs-lisp
+  (autoload 'sp-get-pair "smartparens")
+  (autoload 'sp--get-opening-regexp "smartparens")
+  (autoload 'sp--get-closing-regexp "smartparens")
+
+  (defun config-smartparens-add-space-before-sexp-insertion (id action _context)
+    (when (eq action 'insert)
+      (save-excursion
+        (backward-char (length id))
+        (cond
+         ((and (eq (preceding-char) ?$)
+               (equal id "{")))
+
+         ((eq (char-syntax (preceding-char)) ?w)
+          (just-one-space))
+
+         ((and (looking-back (sp--get-closing-regexp) (line-beginning-position))
+               (not (eq (char-syntax (preceding-char)) ?')))
+          (just-one-space))))))
+
+  (defun config-smartparens-add-space-after-sexp-insertion (id action _context)
+    (when (eq action 'insert)
+      (save-excursion
+        (forward-char (sp-get-pair id :cl-l))
+        (when (or (eq (char-syntax (following-char)) ?w)
+                  (looking-at (sp--get-opening-regexp)))
+          (insert " ")))))
+#+end_src
+
+** Global pairs
+
+Define pairs that I want in all language modes.
+
+#+begin_src emacs-lisp
+  (use-package smartparens
+    :config
+    (progn
+      (sp-pair "`" "`"
+               :bind "M-`")
+      (sp-pair "{" "}"
+               :bind "M-{"
+               :pre-handlers '(config-smartparens-add-space-before-sexp-insertion)
+               :post-handlers '(("||\n[i]" "RET") ("| " "SPC")))
+      (sp-pair "[" "]"
+               :bind "M-["
+               :post-handlers '(("||\n[i]" "RET") ("| " "SPC")))
+      (sp-pair "(" ")"
+               :bind "M-("
+               :post-handlers '(("||\n[i]" "RET") ("| " "SPC")))
+      (sp-pair "\"" "\""
+               :bind "M-\""
+               :pre-handlers '(:add (config-smartparens-add-space-before-sexp-insertion)))))
+#+end_src
+
+** Delete enclosing whitespace as necessary on backspace
+
+#+begin_src emacs-lisp
+  (use-package smartparens
+    :preface
+    (progn
+      (autoload 'sp-get-enclosing-sexp "smartparens")
+
+      (defun config-smartparens-delete-horizontal-space-for-delete (f &rest args)
+        "Perform context-sensitive whitespace cleanups when deleting.
+
+  For performance, only consider the 5 lines before and after point."
+        (save-restriction
+          (apply #'narrow-to-region (bounds-of-surrounding-lines 5 5))
+
+          (-let* ((line-before-pt (buffer-substring (line-beginning-position) (point)))
+                  (line-after-pt (buffer-substring (point) (line-end-position)))
+
+                  ((&plist :beg beg :end end :op op :cl cl) (sp-get-enclosing-sexp))
+                  (inside-start (when op (+ beg (length op))))
+                  (inside-end   (when op (- end (length cl))))
+                  (inside       (when op
+                                  (concat (buffer-substring inside-start (point))
+                                          (buffer-substring (point) inside-end)))))
+            (cond
+             ;; Collapse horizontal space in empty pairs.
+             ;;
+             ;; [  |  ] -> [|]
+             ;;
+             ((when op (string-match-p (rx bos (+ space) eos) inside))
+              (delete-region inside-start inside-end))
+
+             ;; Delete contents for multiline pairs that were just inserted, e.g. braces.
+             ;;
+             ;; {
+             ;;   |
+             ;; }
+             ;;
+             ;; ->
+             ;;
+             ;; {|}
+             ((when op (string-match-p (rx bos (* space) "\n" (* space) "\n" (* space) eos) inside))
+              (delete-region inside-start inside-end))
+
+             ;; Delete back from end of the line.
+             ;;
+             ;;
+             ;; foo |
+             ;; ->
+             ;; foo|
+
+             ;; foo      |
+             ;; ->
+             ;; foo |
+             ((string-empty-p line-after-pt)
+              (if (string-match-p (rx space space eos) line-before-pt)
+                  (while (looking-back (rx space space) (line-beginning-position))
+                    (delete-char -1))
+                (funcall f args)))
+
+             ;; Don't aggressively delete whitespace if there's a comment
+             ;; following pt.
+             ;;
+             ;;
+             ;; foo |  // bar
+             ;;
+             ;; ->
+             ;;
+             ;; foo|  // bar
+             ;;
+             ((string-match-p (rx (* nonl) (syntax comment-start)) line-after-pt)
+              (funcall f args))
+
+             ;; Collapse surrounding space, but preserve padding inside pairs.
+             ;;
+             ;; foo | bar -> foo|bar
+             ;;
+             ;; foo | }   -> foo| }
+             ;;
+             ((and (string-match-p (rx (or bol (not space)) space eos) line-before-pt)
+                   (string-match-p (rx bos space (or eol (not space))) line-after-pt))
+              (let ((backward-only? (when inside (string-match-p (rx bos space) inside))))
+                (delete-horizontal-space backward-only?)))
+
+             ;; Delete if there is a single preceding space.
+             ;;
+             ;; foo |bar -> foo|bar
+             ;;
+             ;; but not:
+             ;;
+             ;; foo| bar -> foo|bar
+             ;;
+             ((and (string-match-p (rx (or bol (not space)) space eos) line-before-pt)
+                   (string-match-p (rx bos (not space)) line-after-pt))
+              (delete-char -1))
+
+             ;; Delete surrounding whitespace beyond a certain length.
+             ;;
+             ;; foo    |bar      -> foo |bar
+             ;; foo    |    bar  -> foo | bar
+             ((string-match-p (rx (+ space) eos) line-before-pt)
+              (let ((has-space? (eq (char-after) ? )))
+                (skip-chars-forward " ")
+                (while (looking-back (rx space space) (line-beginning-position))
+                  (delete-char -1))
+                (when has-space?
+                  (insert " ")
+                  (forward-char -1))))
+
+             (t
+              (funcall f args)))))))
+    :config
+    (advice-add 'sp-backward-delete-char :around #'config-smartparens-delete-horizontal-space-for-delete))
+#+end_src
+
+
+** Emacs lisp
+
+#+begin_src emacs-lisp
+  (use-package smartparens
+    :config
+    (sp-with-modes sp-lisp-modes
+      (sp-local-pair "(" nil
+                     :pre-handlers '(config-smartparens-add-space-before-sexp-insertion)
+                     :post-handlers '(config-smartparens-add-space-after-sexp-insertion))
+      (sp-local-pair "[" nil
+                     :pre-handlers '(config-smartparens-add-space-before-sexp-insertion)
+                     :post-handlers '(config-smartparens-add-space-after-sexp-insertion))
+      (sp-local-pair "\"" nil
+                     :pre-handlers '(config-smartparens-add-space-before-sexp-insertion)
+                     :post-handlers '(config-smartparens-add-space-after-sexp-insertion))
+      (sp-local-pair "{" nil
+                     :pre-handlers '(config-smartparens-add-space-before-sexp-insertion)
+                     :post-handlers '(config-smartparens-add-space-after-sexp-insertion))))
+#+end_src
+
+** Markdown & org-mode
+
+Make checkbox insertion a little smarter.
+
+#+begin_src emacs-lisp
+  (use-package smartparens
+    :preface
+    (defun config-smartparens--format-checkitem (_id action _context)
+      (when (and (equal action 'insert)
+                 (org-at-item-p))
+        (atomic-change-group
+          (just-one-space)
+          (search-backward "[" (line-beginning-position))
+          (just-one-space)
+          (search-forward "]" (line-end-position))
+          (just-one-space))))
+    :config
+    (sp-with-modes '(org-mode markdown-mode gfm-mode)
+      (sp-local-pair "[" "]" :post-handlers '(config-smartparens--format-checkitem))))
+#+end_src
+
 
 
 * Emacs Lisp
