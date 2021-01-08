@@ -60,6 +60,8 @@
         flycheck-ledger
         plantuml-mode
         flycheck-plantuml
+        projectile
+        counsel-projectile
       ];
 
       extraPackages = {
