@@ -212,7 +212,7 @@ Load =cl= early to avoid warnings caused by reorganised functions in Emacs 27+.
 ** Configure paths and config layout
 
 #+begin_src emacs-lisp
-  (require 'paths (expand-file-name "paths.el" (file-name-directory (or load-file-name (buffer-file-name)))))
+  (require 'paths (ignore-errors (expand-file-name "paths.el" (file-name-directory (or load-file-name (buffer-file-name))))))
   (paths-initialise)
 #+end_src
 
