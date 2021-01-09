@@ -936,14 +936,11 @@ use advice to ignore these.
 
 #+begin_src emacs-lisp
   (use-package ispell
-    :defer t
+    :commands (ispell-check-version ispell-find-aspell-dictionaries)
     :custom
     ((ispell-program-name "aspell")
      (ispell-dictionary "en_GB")
      (ispell-silently-savep t))
-
-    :commands (ispell-check-version
-               ispell-find-aspell-dictionaries)
     :config
     (progn
       (ispell-check-version)
@@ -1291,8 +1288,7 @@ Define a command to perform indentation in a context-sensitive way.
 =hide-comnt= provides a command for toggling whether comments are visible.
 
 #+begin_src emacs-lisp
-  (use-package hide-comnt
-    :commands (hide/show-comments-toggle))
+  (use-package hide-comnt)
 #+end_src
 
 ** Basic jump-to-definition support
@@ -1450,7 +1446,6 @@ Configure =conf-mode= for use with more kinds of config files.
 
 #+begin_src emacs-lisp
   (use-package deadgrep
-    :commands (deadgrep)
     :general (:keymaps 'deadgrep-mode-map "C-c C-w" #'deadgrep-edit-mode)
     :init
     (defalias 'rg #'deadgrep)
@@ -1548,8 +1543,6 @@ ivy.
     ;; Browse read-expression histroy with ivy
     (:keymaps 'read-expression-map
      "C-r" #'counsel-minibuffer-history)
-
-    :commands (ivy-completing-read)
 
     :custom
     ((completing-read-function 'ivy-completing-read)
@@ -1705,7 +1698,6 @@ Reveal the context around the selected hunk when diffing org buffers.
 
 #+begin_src emacs-lisp
   (use-package world-time-mode
-    :commands (world-time-list)
     :general
     (:states 'normal :keymaps 'world-time-table-mode-map "q" 'quit-window)
     :custom
@@ -2175,7 +2167,6 @@ compatibility.
 
 #+begin_src emacs-lisp
   (use-package evil-iedit-state
-    :commands (evil-iedit-state/iedit-mode)
     :config
     (define-obsolete-function-alias 'iedit-cleanup 'iedit-lib-cleanup))
 #+end_src
@@ -2502,9 +2493,6 @@ buffers simultaneously
 
 #+begin_src emacs-lisp
   (use-package default-text-scale
-    :commands (default-text-scale-increase
-               default-text-scale-decrease
-               default-text-scale-reset)
     :custom
     ((default-text-scale-amount 30)))
 #+end_src
@@ -2517,8 +2505,6 @@ buffers simultaneously
 
 #+begin_src emacs-lisp
   (use-package magit
-    :commands (magit-status magit-blame magit-branch-and-checkout)
-
     :general
     (:keymaps 'transient-base-map "<escape>" #'transient-quit-one
      :states 'normal :keymaps 'magit-refs-mode-map "." #'magit-branch-and-checkout)
@@ -2596,7 +2582,6 @@ saving a buffer.
 
 #+begin_src emacs-lisp
   (use-package git-auto-commit-mode
-    :commands (git-auto-commit-mode)
     :hook (pass-mode . git-auto-commit-mode)
     :custom ((gac-debounce-interval 10)
              (gac-automatically-push-p t)
@@ -2610,7 +2595,6 @@ file's git history.
 
 #+begin_src emacs-lisp
   (use-package vc-annotate
-    :commands (vc-annotate)
     :general
     (:states 'normal :keymaps 'vc-annotate-mode-map
      "<return>" 'vc-annotate-find-revision-at-line
@@ -2765,7 +2749,6 @@ during =ediff= merges, etc.
 
 #+begin_src emacs-lisp
   (use-package ibuffer
-    :commands (ibuffer ibuffer-forward-line ibuffer-backward-line)
     :defines (ibuffer-show-empty-filter-groups
               ibuffer-never-show-predicates)
     :general
@@ -2826,10 +2809,10 @@ Override some default =ibuffer= columns.
 
 #+begin_src emacs-lisp
   (use-package ibuffer
-    :commands (ibuffer-make-column-filename)
     :preface
     (cl-eval-when (compile)
       (require 'ibuffer))
+    :commands (ibuffer-make-column-filename)
     :config
     (progn
       (define-ibuffer-column name
@@ -2860,7 +2843,6 @@ Override some default =ibuffer= columns.
 
 #+begin_src emacs-lisp
   (use-package ibuffer-projectile
-    :commands (ibuffer-projectile-set-filter-groups)
     :custom
     ((ibuffer-projectile-prefix ""))
 
@@ -3382,7 +3364,6 @@ Teach Emacs how to create a Nix language REPL.
 
 #+begin_src emacs-lisp
   (use-package nix-repl
-    :commands (nix-repl-show)
     :config
     (add-to-list 'display-buffer-alist
                  `(,(rx bos "*Nix-REPL*" eos)
