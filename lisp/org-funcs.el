@@ -393,7 +393,7 @@ Optional argument SHOW-PDF determines whether to show the downloaded PDF."
          (status)
          (process
           (async-start-process "wkhtmltopdf"
-                               (getenv "NIX_EMACS_WKHTMLTOPDF_BIN")
+                               "/usr/bin/wkhtmltopdf"
                                (lambda (_proc)
                                  (setq status 'done))
                                "--log-level" "warn"
