@@ -2396,8 +2396,6 @@ of =projectile=. Use =projectile= until the builtin functionality is more comple
 #+begin_src emacs-lisp
   (use-package counsel-projectile
     :after (projectile)
-    :init
-    (load "counsel-projectile-autoloads" nil t)
     :preface
     (progn
       (defun config-projectile--extra-opts-on-prefix-args (&optional options)
