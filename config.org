@@ -153,6 +153,7 @@ See: [[https://github.com/jwiegley/use-package][jwiegley/use-package]]
   (with-no-warnings
     (setq use-package-always-defer t)
     (setq use-package-minimum-reported-time 0.05)
+    (setq use-package-compute-statistics t)
     (setq use-package-verbose (not noninteractive)))
 
   (eval-when-compile
