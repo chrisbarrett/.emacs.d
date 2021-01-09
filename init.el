@@ -9,6 +9,8 @@
   "The time at which this instance of Emacs was started.")
 
 (require 'cl-macs)
+(require 'f)
+(require 'thingatpt)
 
 (cl-eval-when (compile)
   (require 'org))
@@ -16,11 +18,61 @@
 (defvar tangle-debug nil
   "Whether to emit extra debugging information when tangling init files.")
 
+(defconst init--autoloads-file-header
+  ";;; config-autoloads.el -- All package autoloads slammed into one place.  -*- lexical-binding: t; buffer-read-only: t; -*-")
+
+
+(defun init--package-autoload-files ()
+  (seq-mapcat (lambda (dir)
+                (f-files dir (lambda (file) (string-match-p "-autoloads.el$" file))))
+              load-path))
+
+(defconst init--spurious-autoload-form
+  '(add-to-list 'load-path (directory-file-name
+                            (or (file-name-directory #$) (car load-path)))))
+
+(defun init--clean-autoloads-file ()
+  (let ((inhibit-read-only t))
+    (save-excursion
+      (goto-char (point-min))
+      (while (search-forward-regexp (rx bol "(add-to-list 'load-path") nil t)
+        (goto-char (line-beginning-position))
+        (let ((form (read (thing-at-point 'sexp))))
+          (when (equal form init--spurious-autoload-form)
+            (delete-region (point) (end-of-thing 'sexp))))))))
+
+
+(defun generate-package-autoloads ()
+  "Generate a consolidated autoloads file of all installed packages."
+  (interactive)
+  (let ((outfile (expand-file-name "config-autoloads.el")))
+
+    (when-let* ((buf (get-buffer outfile)))
+      (kill-buffer buf))
+    (ignore-errors
+      (f-delete outfile))
+
+    (f-touch outfile)
+    (f-append (concat init--autoloads-file-header "\n\n") 'utf-8 outfile)
+    (let ((reporter (make-progress-reporter "Generating autoloads file...")))
+
+      (dolist (autoloads-file (init--package-autoload-files))
+        (let ((text (format ";;; %s\n%s\n\n" autoloads-file (f-read autoloads-file))))
+          (f-append text 'utf-8 outfile)
+          (progress-reporter-update reporter nil autoloads-file)))
+
+      (with-current-buffer (find-file-noselect outfile t)
+        (init--clean-autoloads-file)
+        (save-buffer))
+
+      (progress-reporter-done reporter))))
+
 (defun tangle-init-files ()
   "Create init files from `config.org'."
   (interactive)
   (let ((file-to-block-list))
     (message "Re-generating init files…")
+    (generate-package-autoloads)
     (save-restriction
       (widen)
       (save-excursion
@@ -54,7 +106,8 @@
 
 (let ((this-file (or load-file-name (buffer-file-name))))
   (unless (file-exists-p (expand-file-name "config.el" (file-name-directory this-file)))
-    (tangle-init-files)))
+    (let ((default-directory (file-name-directory this-file)))
+      (tangle-init-files))))
 
 (load (expand-file-name "config") nil t)
 
