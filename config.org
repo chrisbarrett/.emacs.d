@@ -160,6 +160,24 @@ See: [[https://github.com/jwiegley/use-package][jwiegley/use-package]]
     (require 'use-package))
   #+end_src
 
+Define a helper function for loading files with =use-package='s timing functionality.
+
+#+begin_src emacs-lisp
+  (autoload 'use-package-require "use-package-core")
+
+  (defun load-file-with-stats (file)
+    (let ((name (intern (file-name-sans-extension (file-name-nondirectory file)))))
+      (eval
+       (macroexp-progn
+        (use-package-concat
+         (when use-package-compute-statistics
+           `((use-package-statistics-gather :config ',name nil)))
+         (use-package-require file)
+         (when use-package-compute-statistics
+           `((use-package-statistics-gather :config ',name nil))))))))
+#+end_src
+
+
 Enable =general=, which provides a key-binding DSL supported by =use-package=.
 
 See: [[https://github.com/noctuid/general.el][noctuid/general.el]]
@@ -184,10 +202,17 @@ Load =cl= early to avoid warnings caused by reorganised functions in Emacs 27+.
     (require 'cl))
 #+end_src
 
+** Load autoloads
+
+#+begin_src emacs-lisp
+  (load-file-with-stats (expand-file-name "config-autoloads.el" (file-name-directory (or load-file-name (buffer-file-name)))))
+#+end_src
+
+
 ** Configure paths and config layout
 
 #+begin_src emacs-lisp
-  (require 'paths (expand-file-name "paths.el" user-emacs-directory))
+  (require 'paths (expand-file-name "paths.el" (file-name-directory (or load-file-name (buffer-file-name)))))
   (paths-initialise)
 #+end_src
 
