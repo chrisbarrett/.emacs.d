@@ -101,7 +101,7 @@
             (with-temp-file file
               (insert lines)
               (indent-rigidly (point-min) (point-max) (- org-edit-src-content-indentation))
-              (message "—————• Writing %s…" file)))))
+              (message "Writing %s…" file)))))
       (message "Wrote all init files."))))
 
 (let ((this-file (or load-file-name (buffer-file-name))))
