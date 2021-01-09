@@ -2009,34 +2009,6 @@ Make =<escape>= issue =keyboard-quit= in as many situations as possible.
   (define-key minibuffer-local-isearch-map (kbd "<escape>") #'keyboard-escape-quit)
 #+end_src
 
-** =smartparens= integration
-
-Scanning for matched pairs in org buffers can lead to poor performance when
-deleting characters. Advise the evil delete command to just search for matched
-pairs within the surrounding few lines.
-
-#+begin_src emacs-lisp
-  (use-package evil
-    :after (smartparens)
-    :preface
-    (defun config-evil--sp-delete-and-join-compat (fn &rest args)
-      (cond
-       ;; Narrow before deleting to improve performance in large org buffers.
-       ((and (bound-and-true-p smartparens-strict-mode)
-             (derived-mode-p 'org-mode))
-        (save-restriction
-          (apply #'narrow-to-region (bounds-of-surrounding-lines 5 5))
-          (call-interactively 'sp-backward-delete-char)))
-
-       ((bound-and-true-p smartparens-strict-mode)
-        (call-interactively 'sp-backward-delete-char))
-
-       (t
-        (apply fn args))))
-    :config
-    (advice-add 'evil-delete-backward-char-and-join :around #'config-evil--sp-delete-and-join-compat))
-#+end_src
-
 ** =org-mode= integration
 
 Teach =evil= how to navigate using links in org buffers and the agenda.
@@ -3001,9 +2973,10 @@ Define pairs that I want in all language modes.
     (defun config-smartparens-delete-horizontal-space-for-delete (f &rest args)
       "Perform context-sensitive whitespace cleanups when deleting.
 
-  For performance, only consider the 5 lines before and after point."
+  For performance, only consider a subset of the buffer."
       (save-restriction
-        (apply #'narrow-to-region (bounds-of-surrounding-lines 5 5))
+        (unless (derived-mode-p 'emacs-lisp-mode)
+          (apply #'narrow-to-region (bounds-of-surrounding-lines 500 500)))
 
         (-let* ((line-before-pt (buffer-substring (line-beginning-position) (point)))
                 (line-after-pt (buffer-substring (point) (line-end-position)))
