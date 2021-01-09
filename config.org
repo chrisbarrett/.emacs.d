@@ -2535,7 +2535,7 @@ Reconfigure =magit= keybindings to better support =evil=.
 
 #+begin_src emacs-lisp
   (use-package evil-magit
-    :after (:and magit evil-common)
+    :after (:all magit evil-common)
     :demand t
     :config (evil-magit-init))
 #+end_src
@@ -3666,7 +3666,7 @@ Define a command to format a ledger buffer.
 
 #+begin_src emacs-lisp
   (use-package flycheck-ledger
-    :after (:and flycheck ledger-mode)
+    :after (:all flycheck ledger-mode)
     :demand t)
 #+end_src
 
