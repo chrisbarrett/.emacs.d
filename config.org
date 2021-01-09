@@ -253,7 +253,7 @@ Load host-specific settings, which are not checked into version control.
 
 #+begin_src emacs-lisp
   (when (file-exists-p paths-hostfile)
-    (load-file paths-hostfile))
+    (load-file-with-stats paths-hostfile))
 #+end_src
 
 Load lisp in =org= and =ledger= dirs.
