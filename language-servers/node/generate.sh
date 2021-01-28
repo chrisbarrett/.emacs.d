@@ -5,6 +5,7 @@ PACKAGE_ARRAY='[
   "dockerfile-language-server-nodejs",
   "eslint",
   "flow-bin",
+  "graphql-language-service-cli",
   "typescript",
   "typescript-language-server",
   "vscode-css-languageserver-bin",

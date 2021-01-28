@@ -17,6 +17,7 @@ in pkgs.symlinkJoin {
     node.bash-language-server
     node.dockerfile-language-server-nodejs
     node.eslint
+    node.graphql-language-service-cli
     node.typescript
     node.typescript-language-server
     node.vscode-css-languageserver-bin
