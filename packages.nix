@@ -62,6 +62,7 @@
         flycheck-plantuml
         projectile
         counsel-projectile
+        org
       ];
 
       extraPackages = {
