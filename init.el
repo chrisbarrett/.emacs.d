@@ -37,12 +37,12 @@
   (let ((inhibit-read-only t))
     (save-excursion
       (goto-char (point-min))
-      (while (search-forward-regexp (rx bol "(add-to-list 'load-path") nil t)
+      (while (and (search-forward-regexp (rx bol "(add-to-list 'load-path") nil t))
         (goto-char (line-beginning-position))
         (let ((form (read (thing-at-point 'sexp))))
           (when (equal form init--spurious-autoload-form)
-            (delete-region (point) (end-of-thing 'sexp))))))))
-
+            (delete-region (point) (end-of-thing 'sexp))))
+        (goto-char (line-end-position))))))
 
 (defun generate-package-autoloads ()
   "Generate a consolidated autoloads file of all installed packages."
@@ -74,7 +74,6 @@
   (interactive)
   (let ((file-to-block-list))
     (message "Re-generating init files…")
-    (generate-package-autoloads)
     (save-restriction
       (widen)
       (save-excursion
@@ -104,6 +103,8 @@
               (insert lines)
               (indent-rigidly (point-min) (point-max) (- org-edit-src-content-indentation))
               (message "Writing %s…" file)))))
+
+      (generate-package-autoloads)
       (message "Wrote all init files."))))
 
 (let* ((this-file (or load-file-name (buffer-file-name)))
