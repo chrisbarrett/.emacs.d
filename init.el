@@ -11,6 +11,7 @@
 (require 'cl-macs)
 (require 'f)
 (require 'thingatpt)
+(require 'subr-x)
 
 (cl-eval-when (compile)
   (require 'org))
