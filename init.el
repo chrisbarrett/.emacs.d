@@ -24,7 +24,7 @@
 
 (defun init--package-autoload-files ()
   (seq-mapcat (lambda (dir)
-		(when (file-directory-p dir)
+                (when (file-directory-p dir)
                   (f-files dir (lambda (file) (string-match-p "-autoloads.el$" file)))))
               load-path))
 
