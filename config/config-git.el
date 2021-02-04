@@ -16,7 +16,7 @@
   :commands (magit-status magit-blame magit-branch-and-checkout)
   :general (:keymaps 'transient-base-map "<escape>" #'transient-quit-one
             :states 'normal :keymaps 'magit-refs-mode-map "." #'magit-branch-and-checkout)
-  :functions (magit-display-buffer-fullframe-status-v1)
+  :functions (magit-display-buffer-same-window-except-diff-v1)
   :preface
   (progn
     (autoload 'magit-diff-dwim "magit-diff")
@@ -58,7 +58,7 @@
     (add-hook 'magit-status-mode-hook #'config-git--fix-magit-status-header-line)
     (add-hook 'magit-blame-mode-hook #'config-git--reveal-org-buffer)
     (setq magit-repository-directories (--map (cons it 1) paths-project-directories))
-    (setq magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
+    (setq magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
     (setq magit-log-section-commit-count 0)))
 
 ;; `forge' teaches magit how to display and work with pull requests and issues.
