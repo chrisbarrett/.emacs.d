@@ -105,12 +105,14 @@
               (message "Writing %s…" file)))))
       (message "Wrote all init files."))))
 
-(let ((this-file (or load-file-name (buffer-file-name))))
-  (unless (file-exists-p (expand-file-name "config.el" (file-name-directory this-file)))
+(let* ((this-file (or load-file-name (buffer-file-name)))
+       (config-lisp-file (expand-file-name "config.el" (file-name-directory this-file))))
+  (unless (file-exists-p config-lisp-file)
     (let ((default-directory (file-name-directory this-file)))
-      (tangle-init-files))))
+      (tangle-init-files)))
 
-(load (expand-file-name "config") nil t)
+  (load config-lisp-file nil t))
+
 
 (defconst emacs-init-duration (float-time (time-subtract (current-time) emacs-start-time)))
 
