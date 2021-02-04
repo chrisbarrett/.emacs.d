@@ -84,7 +84,6 @@ Disable some window chrome that doesn't make sense in a keyboard-driven UI.
                                   (name . "Emacs")))
 #+end_src
 
-
 * File header
 
 #+begin_src emacs-lisp
@@ -208,7 +207,6 @@ Load =cl= early to avoid warnings caused by reorganised functions in Emacs 27+.
   (load-file-with-stats (expand-file-name "config-autoloads.el" (file-name-directory (or load-file-name (buffer-file-name)))))
 #+end_src
 
-
 ** Configure paths and config layout
 
 #+begin_src emacs-lisp
@@ -302,7 +300,6 @@ Load lisp in =org= and =ledger= dirs.
              (line-end-position))))
       (list start end)))
 #+end_src
-
 
 * Customise builtin features
 
@@ -889,7 +886,6 @@ Automatically revert buffers if the underlying file changes on disk.
     (define-key shr-map (kbd "w") nil))
 #+end_src
 
-
 ** Code folding
 
 =hideshow= provides basic code folding. It can sometimes throw annoying errors, so
@@ -906,7 +902,6 @@ use advice to ignore these.
       (advice-add 'hs-show-block :around #'advice-ignore-errors)
       (advice-add 'hs-toggle-hiding :around #'advice-ignore-errors)))
 #+end_src
-
 
 ** Enable authinfo file support
 
@@ -1103,7 +1098,6 @@ Use control key to transpose lines up and down.
   (global-set-key (kbd "C-<up>") #'transpose-line-up)
   (global-set-key (kbd "C-<down>") #'transpose-line-down)
 #+end_src
-
 
 ** Useful interactive functions
 
@@ -1365,7 +1359,6 @@ Prevent =flyspell= from showing suggestions in more contexts.
     (advice-add 'org-mode-flyspell-verify :filter-return #'config-flyspell--on-org-verify))
 #+end_src
 
-
 ** Undo history
 
 This package provides a visual representation of the undo history.
@@ -1436,7 +1429,6 @@ Configure =conf-mode= for use with more kinds of config files.
      "^" #'hexl-beginning-of-line
      "0" #'hexl-beginning-of-line))
 #+end_src
-
 
 * Searching
 
@@ -1810,7 +1802,6 @@ after editing actions have changed what windows are shown.
     :commands (rotate-layout))
 #+end_src
 
-
 * Modal editing & Evil
 
 =evil= provides Vim emulation.
@@ -1894,7 +1885,6 @@ Make motions make more sense in RTL languages.
       (kbd "^") #'help-go-back
       (kbd "gh") #'help-follow-symbol))
 #+end_src
-
 
 ** Initial states
 
@@ -2012,7 +2002,6 @@ Add more key bindings to work with spell-checker from normal state.
               "zn" #'evil-ispell-next-spelling-error
               "zp" #'evil-ispell-previous-spelling-error))
 #+end_src
-
 
 ** Use escape key as =keyboard-quit=
 
@@ -2171,7 +2160,6 @@ compatibility.
     (define-obsolete-function-alias 'iedit-cleanup 'iedit-lib-cleanup))
 #+end_src
 
-
 * Text completion engines
 
 ** =hippie-expand=
@@ -2299,7 +2287,6 @@ Teach =dired= to put directories first in sort order.
      :keymaps 'wdired-mode-map "^" #'evil-first-non-blank
      :keymaps 'dired-mode-map "C-c C-e" #'wdired-change-to-wdired-mode))
 #+end_src
-
 
 ** Hide file flags
 
@@ -2484,7 +2471,6 @@ Suppress =highlight-thing= when hovering over certain kinds of symbols.
     (advice-add 'highlight-thing-should-highlight-p :filter-return
                 #'config-highlight-thing--should-highlight-p))
 #+end_src
-
 
 * Text scaling
 
@@ -2791,7 +2777,6 @@ during =ediff= merges, etc.
     (add-hook 'ibuffer-mode-hook #'hl-line-mode))
 #+end_src
 
-
 ** Extensions
 
 =ibuf-ext= adds a few extra features to =ibuffer=.
@@ -3085,7 +3070,6 @@ Define pairs that I want in all language modes.
     (advice-add 'sp-backward-delete-char :around #'config-smartparens-delete-horizontal-space-for-delete))
 #+end_src
 
-
 ** Emacs lisp
 
 #+begin_src emacs-lisp
@@ -3129,8 +3113,6 @@ Make checkbox insertion a little smarter.
     (sp-with-modes '(org-mode markdown-mode gfm-mode)
       (sp-local-pair "[" "]" :post-handlers '(config-smartparens--format-checkitem))))
 #+end_src
-
-
 
 * Emacs Lisp
 
@@ -3452,7 +3434,6 @@ intercept attempts to load Tex files and make sure =auctex= is loaded first.
       (add-hook 'LaTeX-mode-hook 'TeX-PDF-mode)))
 #+end_src
 
-
 ** Smarter autofill function
 
 Teach the autofill function in Latex buffers not to fill in certain contexts.
@@ -3510,7 +3491,6 @@ Teach the autofill function in Latex buffers not to fill in certain contexts.
             (TeX-save-document (TeX-master-file)))
           (TeX-command (getenv "NIX_EMACS_TEX_PROGRAM") 'TeX-master-file -1)))))
 #+end_src
-
 
 ** Environment folding
 
@@ -3660,7 +3640,6 @@ Define a command to format a ledger buffer.
             (ledger-format--align-price-assertion))
           (goto-char pos)))))
 #+end_src
-
 
 ** Flycheck support
 
@@ -3840,7 +3819,6 @@ Teach Emacs how to highlight arrows and important keywords.
        (,(rx bol (* space) (group "*") (+ (not (any "*"))))
         (1 'org-list-dt)))))
 #+end_src
-
 
 * File postamble
 
