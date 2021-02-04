@@ -24,7 +24,8 @@
 
 (defun init--package-autoload-files ()
   (seq-mapcat (lambda (dir)
-                (f-files dir (lambda (file) (string-match-p "-autoloads.el$" file))))
+		(when (file-directory-p dir)
+                  (f-files dir (lambda (file) (string-match-p "-autoloads.el$" file)))))
               load-path))
 
 (defconst init--spurious-autoload-form
