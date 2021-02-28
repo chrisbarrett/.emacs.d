@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: type
+# key: t
+# condition: (yas-funcs-bolp)
+# --
+type ${1:Name} {
+  $0
+}
