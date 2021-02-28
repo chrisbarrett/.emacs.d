@@ -36,11 +36,26 @@
     ("dS" dired-do-symlink "symlink (absolute)")
     ("dq" dired-do-search "search inside"))))
 
+(defvar find-args nil
+  "Last arguments given to `find' by \\[find-dired].")
+
+(defun config-dired-run-find-dired (&optional arg)
+  "Run `find-dired' here.
+
+With optional argument ARG, prompt for a directory."
+  (interactive "P")
+  (if arg
+      (call-interactively #'find-dired)
+    (find-dired default-directory
+                (read-string "Run find (with args): " find-args
+                             '(find-args-history . 1)))))
+
 (use-package dired
   :commands (dired dired-hide-details-mode)
   :defer t
   :general
-  (:states 'normal :keymaps 'dired-mode-map "$" #'end-of-line)
+  (:states 'normal :keymaps 'dired-mode-map "$" #'end-of-line
+   "F" #'config-dired-run-find-dired)
   :preface
   (progn
     ;; Needs to be set before dired+ loads.
