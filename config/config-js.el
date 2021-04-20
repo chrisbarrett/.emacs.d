@@ -78,7 +78,8 @@ Expected to be set as a dir-local variable."
 
 ;; `typescript-mode' adds support for editing typescript files.
 (use-package typescript-mode
-  :mode ("\\.tsx?\\'" . typescript-mode)
+  :mode (("\\.tsx?\\'" . typescript-mode)
+         ("\\.ts\\.snap\\'" . typescript-mode))
   :custom ((typescript-indent-level 2)))
 
 ;; `tide' is a TS development environment. It's currently more enjoyable to use than the LSP.
