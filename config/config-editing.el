@@ -426,6 +426,8 @@ Interactively, reverse the characters in the current region."
   :init
   (general-define-key :keymaps 'counsel-ag-map "C-c C-e" #'deadgrep-from-ivy)
 
+  :custom ((deadgrep-project-root-function 'projectile-project-root))
+
   :config
   (setq-default deadgrep--search-type 'regexp))
 
