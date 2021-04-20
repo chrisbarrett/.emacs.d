@@ -75,7 +75,8 @@
                  ;; HACK: Inhibit checks for elisp, otherwise flycheck will
                  ;; spawn a bunch of thrashing Emacs processes.
                  (unless (derived-mode-p 'emacs-lisp-mode)
-                   (flycheck-buffer)))))))))
+                   (ignore-errors
+                     (flycheck-buffer))))))))))
 
     (defun config-flycheck-display-error-messages (errors)
       (unless (flycheck-get-error-list-window 'current-frame)
