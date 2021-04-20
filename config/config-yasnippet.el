@@ -32,7 +32,7 @@
         term-mode))
 
     (defconst config-yasnippet-dont-activate-indentation-hack-modes
-      '(rust-mode))
+      '(rust-mode typescript-mode))
 
     (defun config-yasnippet-preserve-indentation (f &rest args)
       (let ((col
