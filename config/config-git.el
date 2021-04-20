@@ -71,11 +71,11 @@
     (add-hook 'magit-status-sections-hook 'forge-insert-requested-reviews 90)
     (add-hook 'magit-status-sections-hook 'forge-insert-assigned-issues 90)))
 
-;; This package automatically prepends JIRA ticket numbers to commit messages if
-;; the current git branch looks like it relates to a JIRA ticket.
+;; This package automatically prepends ticket numbers to commit messages if the
+;; current git branch looks like it relates to a ticket.
 
-(use-package git-commit-jira-prefix
-  :hook (git-commit-setup . git-commit-jira-prefix-insert))
+(use-package git-commit-ticket-prefix
+  :hook (git-commit-setup . git-commit-ticket-prefix-insert))
 
 ;; evil-magit reconfigures magit keybindings to better support evil.
 
