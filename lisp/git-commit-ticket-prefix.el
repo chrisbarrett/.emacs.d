@@ -67,6 +67,8 @@
 (require 's)
 (require 'git-commit)
 
+(defvar git-commit-ticket-prefix-format-string "%s: ")
+
 (autoload 'magit-get-current-branch "magit-git")
 
 (defun git-commit-ticket-prefix--ticket-number ()
@@ -91,7 +93,7 @@
       (unless (git-commit-ticket-prefix--message-contains-ticket-number? ticket)
         (goto-char (point-min))
         (goto-char (line-beginning-position))
-        (insert (format "%s " ticket))
+        (insert (format git-commit-ticket-prefix-format-string ticket))
         (just-one-space)
         t))))
 
