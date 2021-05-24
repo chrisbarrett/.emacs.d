@@ -87,11 +87,18 @@ Expected to be set as a dir-local variable."
 (use-package tide
   :after (company flycheck)
   :preface
-  (defun config-js--maybe-enable-tide ()
-    (unless (derived-mode-p 'json-mode)
-      (require 'tide)
-      (tide-setup)
-      (tide-hl-identifier-mode +1)))
+  (progn
+    (defun config-js--maybe-enable-tide ()
+      (unless (derived-mode-p 'json-mode)
+        (require 'tide)
+        (tide-setup)
+        (tide-hl-identifier-mode +1)))
+
+
+    (defun config-js--tide-help-evil-compat (buf)
+      (with-current-buffer buf
+        (evil-motion-state))
+      buf))
 
   :hook ((typescript-mode . config-js--maybe-enable-tide)
          (js-mode . config-js--maybe-enable-tide)
@@ -100,8 +107,11 @@ Expected to be set as a dir-local variable."
   (:states '(normal insert emacs) :keymaps 'tide-mode-map
    "M-." 'tide-jump-to-definition)
   :config
-  (with-eval-after-load 'flycheck
-    (flycheck-add-next-checker 'typescript-tide '(warning . javascript-eslint) t)))
+  (progn
+    (advice-add 'tide-make-help-buffer :filter-return #'config-js--tide-help-evil-compat)
+
+    (with-eval-after-load 'flycheck
+      (flycheck-add-next-checker 'typescript-tide '(warning . javascript-eslint) t))))
 
 (provide 'config-js)
 
