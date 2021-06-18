@@ -87,6 +87,10 @@ Expected to be set via directory variable."
     ("memoize" "promise-memoize")
     ((or "aws" "AWS")       "aws-sdk")
     ("_"       "lodash")
+    ("schema" "@broca/schema")
+    ("loadConfiguration" "@broca/config")
+    ("logger" "@broca/logger")
+    ("* as GQL" "@broca/gql")
 
     ((guard (s-contains? "{" text))
      "")
