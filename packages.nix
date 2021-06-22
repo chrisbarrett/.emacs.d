@@ -63,6 +63,7 @@
         projectile
         counsel-projectile
         org
+        mini-frame
       ];
 
       extraPackages = rec {
