@@ -283,6 +283,13 @@ minimalistic look and feel.
   (require 'nano-counsel)
 #+end_src
 
+Apply some extra settings to work well with Nano.
+
+#+begin_src emacs-lisp
+  (setq font-lock-maximum-decoration nil)
+  (setq font-lock-maximum-size nil)
+#+end_src
+
 * Common advice
 
 #+begin_src emacs-lisp
