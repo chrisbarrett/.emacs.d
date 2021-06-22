@@ -126,7 +126,7 @@ Prevent GCs during user input in the minibuffer.
   (add-hook 'minibuffer-exit-hook #'config--enable-gc)
 #+end_src
 
-** Set initial theme settings
+** Set initial theme settings                                      :disabled:
 
 Set reasonable placeholder foreground and background colours until the theme is
 loaded. Use the current GNOME theme to determine whether to use light or dark colours.
@@ -265,22 +265,26 @@ Load lisp in =org= and =ledger= dirs.
     (load (expand-file-name "init.el" paths-ledger-lisp-directory) t))
 #+end_src
 
-** Load theme
+** Use Nano theme
 
 Use =nano-theme= as well as its associated customisations to provide a
 minimalistic look and feel.
 
 #+begin_src emacs-lisp
-  (require 'nano-layout)
+  (setq nano-font-size 12)
 
+  (require 'nano-base-colors)
+  (require 'nano-colors)
   (require 'nano-faces)
   (nano-faces)
 
+  (require 'nano-theme-light)
   (require 'nano-theme)
   (nano-theme)
 
+  (require 'nano-minibuffer)
+
   (require 'nano-modeline)
-  (require 'nano-counsel)
 #+end_src
 
 Apply some extra settings to work well with Nano.
@@ -1588,6 +1592,7 @@ ivy.
 
     :config
     (progn
+      (require 'nano-counsel nil t)
       (advice-add 'ivy--queue-exhibit :around #'advice-ignore-errors)
       (ivy-mode)))
 #+end_src
