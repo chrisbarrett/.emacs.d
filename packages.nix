@@ -68,8 +68,8 @@
       extraPackages = {
         dired-plus = emacsmirror {
           name = "dired-plus";
-          rev = "db4d82a6b1995a3aa31bd7f2dcaf9b83335d5576";
-          sha256 = "10rfjf6gn5cx1kxq97xq7p24rnkw0hnzj32x4hny7bc6s3635d3x";
+          rev = "91ce389584b766985efe5821bf0d4143d9cd965b";
+          sha256 = "179kmv2za7ajq4b3aqpl83ny1dkvplf1bp65dqyyk9bc3jqli97p";
         };
 
         info-plus = emacsmirror {
