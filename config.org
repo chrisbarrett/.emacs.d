@@ -376,7 +376,6 @@ Prefer more recent Lisp files to outdated ELC files when loading.
   (setq load-prefer-newer t)
 #+end_src
 
-
 Do not query the user to accept insecure connections. Just disconnect them.
 
 #+begin_src emacs-lisp
