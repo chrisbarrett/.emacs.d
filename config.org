@@ -391,6 +391,13 @@ Do not query the user to accept insecure connections. Just disconnect them.
     ((nsm-noninteractive t)))
 #+end_src
 
+Disable file dialogs.
+
+#+begin_src emacs-lisp
+  (setq use-file-dialog nil)
+  (setq use-dialog-box nil)
+#+end_src
+
 ** Enable useful commands
 
 #+begin_src emacs-lisp
