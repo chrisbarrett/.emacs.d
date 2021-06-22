@@ -6,7 +6,8 @@ let
       "https://github.com/nix-community/emacs-overlay/archive/${overlayRev}.tar.gz";
   });
 in { pkgs ?
-  import <nixpkgs> { overlays = [ emacs-overlay (import ./overlays) ]; } }:
+  # HACK: Use unstable pkgs while Emacs GCC has JIT issues.
+  import <nixpkgs-unstable> { overlays = [ emacs-overlay (import ./overlays) ]; } }:
 
 let
   inherit (pkgs.lib) strings;
