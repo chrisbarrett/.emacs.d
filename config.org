@@ -265,6 +265,24 @@ Load lisp in =org= and =ledger= dirs.
     (load (expand-file-name "init.el" paths-ledger-lisp-directory) t))
 #+end_src
 
+** Load theme
+
+Use =nano-theme= as well as its associated customisations to provide a
+minimalistic look and feel.
+
+#+begin_src emacs-lisp
+  (require 'nano-layout)
+
+  (require 'nano-faces)
+  (nano-faces)
+
+  (require 'nano-theme)
+  (nano-theme)
+
+  (require 'nano-modeline)
+  (require 'nano-counsel)
+#+end_src
+
 * Common advice
 
 #+begin_src emacs-lisp

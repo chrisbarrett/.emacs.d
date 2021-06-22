@@ -77,6 +77,14 @@
           rev = "4a6b93c170169594e1e8ea60cd799a1a88a969da";
           sha256 = "1xzmx7m1qbl3b1x6yq1db1a108xqaa64ljfv1hdw763zmy4kc6m0";
         };
+
+        nano-emacs = github {
+          name = "nano-emacs";
+          owner = "rougier";
+          rev = "0f5995602fb442856d50407d5122453595b1ad2a";
+          sha256 = "1ml725v042q68r89l5ryx4f08cm81ng3pifijdfw62wnkdpdzpaj";
+          buildInputs = [epkgs.ts epkgs.mini-frame];
+        };
       };
     in fromOverlay ++ pkgs.lib.attrsets.attrValues extraPackages;
 
