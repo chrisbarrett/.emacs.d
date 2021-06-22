@@ -42,9 +42,9 @@ let
     emacsmirror = args: github (args // { owner = "emacsmirror"; });
 
     github = { name, repo ? name, rev, owner, sha256, buildInputs ? [ ]
-      , patches ? [ ] }:
+      , patches ? [ ], preBuild ? "" }:
       pkgs.callPackage ./builder.nix {
-        inherit emacs name buildInputs patches;
+        inherit emacs name buildInputs patches preBuild;
         src = pkgs.fetchFromGitHub { inherit sha256 repo rev owner; };
       };
 
