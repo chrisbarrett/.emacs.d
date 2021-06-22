@@ -36,6 +36,7 @@
         rotate
         ivy
         flx
+        smex
         counsel
         historian
         ivy-historian
