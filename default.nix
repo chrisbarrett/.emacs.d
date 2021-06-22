@@ -18,12 +18,6 @@ let
       ./patches/emacs/0003-prettier-ibuffer.patch
     ];
 
-    postPatch = ''
-      ${old.postPatch}
-      # Delete the built-in orgmode.
-      rm -r test/lisp/org lisp/org etc/org etc/ORG-NEWS doc/misc/org.texi
-    '';
-
     postInstall = ''
       ${old.postInstall}
       cp -r $src/src $out/share/emacs/src
