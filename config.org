@@ -2429,7 +2429,7 @@ of =projectile=. Use =projectile= until the builtin functionality is more comple
       (advice-add #'counsel-projectile-rg :filter-args #'config-projectile--extra-opts-on-prefix-args)))
 #+end_src
 
-* TODO Text snippets
+* Text snippets
 
 =yasnippet= provides expandable text snippets. I use them extensively to cut
 down on typing.
@@ -2437,7 +2437,37 @@ down on typing.
 #+begin_src emacs-lisp
   (use-package yasnippet
     :hook ((prog-mode . (lambda () (require 'yasnippet)))
-           (text-mode . (lambda () (require 'yasnippet)))))
+           (text-mode . (lambda () (require 'yasnippet))))
+    :custom ((yas-wrap-around-region t)
+             (yas-prompt-functions '(yas-completing-prompt))
+             (yas-verbosity 0)
+             (yas-minor-mode-map (make-sparse-keymap)))
+    :config
+    (yas-global-mode +1))
+#+end_src
+
+Make <tab> expand snippets in insert state.
+
+#+begin_src emacs-lisp
+  (with-eval-after-load 'yasnippet
+    ;; NOTE: yas-maybe-expand is a variable.
+    (general-define-key :states 'insert
+                        :keymaps 'yas-minor-mode-map
+                        "TAB" yas-maybe-expand))
+#+end_src
+
+Disable yasnippet in certain modes.
+
+#+begin_src emacs-lisp
+  (defconst yas-inhibited-modes
+    '(yaml-mode
+      term-mode))
+
+  (defun yas-maybe-inhibit-for-mode ()
+    (apply #'derived-mode-p yas-inhibited-modes))
+
+  (with-eval-after-load 'yasnippet
+    (add-to-list 'yas-dont-activate-functions #'yas-maybe-inhibit-for-mode))
 #+end_src
 
 ** Snippet functions
