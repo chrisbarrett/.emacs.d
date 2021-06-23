@@ -1878,10 +1878,13 @@ Prevent visual state from updating the clipboard.
   (advice-add 'evil-visual-update-x-selection :override #'ignore)
 #+end_src
 
-Don't load =evil-keybinds.el=.
+Prevent evil's own keybindings from loading--we use =evil-collection= to manage
+these instead.
 
 #+begin_src emacs-lisp
-  (defvar evil-want-keybinding nil)
+  (use-package evil
+    :custom ((evil-want-keybinding nil)
+             (evil-want-integration t)))
 #+end_src
 
 Use =Q= in normal state to execute the macro bound to =q= register. This is a
@@ -2113,7 +2116,9 @@ Define an extra =`sym'= pair for =emacs-lisp-mode=.
 #+begin_src emacs-lisp
   (use-package evil-collection
     :after (evil)
-    :demand t)
+    :demand t
+    :config
+    (evil-collection-init))
 #+end_src
 
 ** text motions within function parameter lists
