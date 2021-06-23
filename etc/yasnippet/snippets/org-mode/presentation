@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: presentation
+# key: presentation
+# --
+#+title: ${1:Untitled Presentation}
+#+author: `user-full-name`
+#+options: toc:nil reveal_mathjax:t
+
+#+reveal_trans: `(cb-org:reveal-read-transition)`
+#+reveal_theme: `(cb-org:reveal-read-theme)`
+
+$0

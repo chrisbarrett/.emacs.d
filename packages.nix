@@ -64,6 +64,7 @@
         counsel-projectile
         org
         mini-frame
+        yasnippet
       ];
 
       extraPackages = rec {

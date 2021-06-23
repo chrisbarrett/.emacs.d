@@ -1,0 +1,7 @@
+# key: m
+# name: module
+# condition: (yas-funcs-bolp)
+# --
+module "${1:name}" {
+  source = $0
+}
