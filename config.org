@@ -314,7 +314,6 @@ Apply some extra settings to work well with Nano.
       (nreverse result)))
 #+end_src
 
-
 #+begin_src emacs-lisp
   (defun bounds-of-surrounding-lines (lines-before lines-after)
     (let ((start
@@ -328,6 +327,16 @@ Apply some extra settings to work well with Nano.
                (forward-line lines-after))
              (line-end-position))))
       (list start end)))
+#+end_src
+
+#+begin_src emacs-lisp
+  (defun display-buffer-fullframe (buffer alist)
+    (when-let* ((window (or (display-buffer-reuse-window buffer alist)
+                            (display-buffer-same-window buffer alist)
+                            (display-buffer-pop-up-window buffer alist)
+                            (display-buffer-use-some-window buffer alist))))
+      (delete-other-windows window)
+      window))
 #+end_src
 
 * Customise builtin features
