@@ -2650,15 +2650,6 @@ Reveal the entire org buffer when blaming.
     (add-hook 'magit-blame-mode-hook #'config-git--reveal-org-buffer))
 #+end_src
 
-Reconfigure =magit= keybindings to better support =evil=.
-
-#+begin_src emacs-lisp
-  (use-package evil-magit
-    :after (:all magit evil-common)
-    :demand t
-    :config (evil-magit-init))
-#+end_src
-
 *** GPG verification
 
 Hack =magit='s commit info to show output of a GPG signature check.
