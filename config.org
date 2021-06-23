@@ -3773,9 +3773,76 @@ Define a command to format a ledger buffer.
     :demand t)
 #+end_src
 
-* TODO TypeScript
+* TypeScript
 
-* TODO JavaScript
+=typescript-mode= adds a major mode with syntax highlighting for TypeScript
+files.
+
+#+begin_src emacs-lisp
+  (use-package typescript-mode
+    :mode (("\\.tsx?\\'" . typescript-mode)
+           ("\\.ts\\.snap\\'" . typescript-mode))
+    :custom ((typescript-indent-level 2)))
+#+end_src
+
+=tide= is a TS development environment. It's currently more polished than the
+TypeScript language server.
+
+#+begin_src emacs-lisp
+  (use-package tide
+    :after (company flycheck)
+    :preface
+    (progn
+      (defun config-js--maybe-enable-tide ()
+        (unless (derived-mode-p 'json-mode)
+          (require 'tide)
+          (tide-setup)
+          (tide-hl-identifier-mode +1)))
+
+      (defun config-js--tide-help-evil-compat (buf)
+        (with-current-buffer buf
+          (evil-motion-state))
+        buf))
+
+    :hook ((typescript-mode . config-js--maybe-enable-tide)
+           (js-mode . config-js--maybe-enable-tide)
+           (before-save . tide-format-before-save))
+    :general
+    (:states '(normal insert emacs) :keymaps 'tide-mode-map
+     "M-." 'tide-jump-to-definition)
+    :config
+    (progn
+      (advice-add 'tide-make-help-buffer :filter-return #'config-js--tide-help-evil-compat)
+
+      (with-eval-after-load 'flycheck
+        (flycheck-add-next-checker 'typescript-tide '(warning . javascript-eslint) t))))
+#+end_src
+
+* JavaScript
+
+=js= is the Emacs built-in JavaScript mode.
+
+#+begin_src emacs-lisp
+  (use-package js
+    :mode ("\\.[cm]?jsx?\\'" . js-mode)
+    :custom ((js-indent-level 2)
+             (js-switch-indent-offset 2)
+             (js-js-tmpdir (f-join paths-cache-directory "js")))
+    :config
+    (setq js--prettify-symbols-alist '(("function" . ?ƒ))))
+
+#+end_src
+
+* CSS
+
+=css-mode= is the built-in CSS mode.
+
+#+begin_src emacs-lisp
+  (use-package css-mode
+    :defer t
+    :custom ((css-indent-offset 2)))
+#+end_src
+
 
 * TODO mu4e
 

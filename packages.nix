@@ -65,6 +65,8 @@
         org
         mini-frame
         yasnippet
+        typescript-mode
+        tide
       ];
 
       extraPackages = rec {
