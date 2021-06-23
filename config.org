@@ -3747,6 +3747,20 @@ Define a command to format a ledger buffer.
     :demand t)
 #+end_src
 
+* TODO TypeScript
+
+* TODO JavaScript
+
+* TODO mu4e
+
+* TODO org-mode
+
+* TODO org-agenda
+
+* TODO org-roam
+
+* TODO keybindings
+
 * PlantUML
 
 #+begin_src emacs-lisp
