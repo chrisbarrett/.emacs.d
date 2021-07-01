@@ -35,6 +35,13 @@ servers to perform well, since they communicate using large chunks of JSON.
   (setq read-process-output-max (* 1024 1024))
 #+end_src
 
+Make this checkout directory the value for ~user-emacs-directory~.
+
+#+begin_src emacs-lisp
+  (setq user-emacs-directory (file-name-directory (or load-file-name (buffer-file-name))))
+#+end_src
+
+
 ** Disable package.el
 
 Disable =package.el=, since it increases startup time and I use
@@ -204,13 +211,13 @@ Load =cl= early to avoid warnings caused by reorganised functions in Emacs 27+.
 ** Load autoloads
 
 #+begin_src emacs-lisp
-  (load-file-with-stats (expand-file-name "config-autoloads.el" (file-name-directory (or load-file-name (buffer-file-name)))))
+  (load-file-with-stats (expand-file-name "config-autoloads.el" user-emacs-directory))
 #+end_src
 
 ** Configure paths and config layout
 
 #+begin_src emacs-lisp
-  (require 'paths (ignore-errors (expand-file-name "paths.el" (file-name-directory (or load-file-name (buffer-file-name))))))
+  (require 'paths (ignore-errors (expand-file-name "paths.el" user-emacs-directory)))
   (paths-initialise)
 #+end_src
 
@@ -250,8 +257,10 @@ Teach =recentf= to use these paths
 Load host-specific settings, which are not checked into version control.
 
 #+begin_src emacs-lisp
-  (when (file-exists-p paths-hostfile)
-    (load-file-with-stats paths-hostfile))
+  (defconst user-site-file (expand-file-name "site.el" user-emacs-directory))
+
+  (when (file-exists-p user-site-file)
+    (load-file-with-stats user-site-file))
 #+end_src
 
 Load lisp in =org= and =ledger= dirs.

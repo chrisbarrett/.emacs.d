@@ -14,6 +14,9 @@
 (setq read-process-output-max (* 1024 1024))
 
 
+(setq user-emacs-directory (file-name-directory (or load-file-name (buffer-file-name))))
+
+
 (setq package-enable-at-startup nil)
 
 
