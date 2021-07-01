@@ -356,6 +356,21 @@ Interactively, reverse the characters in the current region."
     (when (featurep 'ivy)
       (setq dumb-jump-selector 'ivy))
 
+    (add-to-list 'dumb-jump-language-file-exts '(:language "graphql" :ext "graphql" :agtype nil :rgtype nil))
+    (add-to-list 'dumb-jump-language-file-exts '(:language "graphql" :ext "gql" :agtype nil :rgtype nil))
+
+    (add-to-list 'dumb-jump-find-rules
+                 '(:type "type" :supports ("ag" "grep" "rg") :language "graphql"
+                   :regex "(input|type|union)\\s+JJJ\\b"))
+    (add-to-list 'dumb-jump-find-rules
+                 '(:type "enum"
+                   :supports ("ag" "grep" "rg") :language "graphql"
+                   :regex "enum\\s+JJJ\\b"))
+    (add-to-list 'dumb-jump-find-rules
+                 '(:type "scalar"
+                   :supports ("ag" "grep" "rg") :language "graphql"
+                   :regex "scalar\\s+JJJ\\b"))
+
     (add-to-list 'dumb-jump-language-file-exts '(:language "javascript" :ext "ts" :agtype "js" :rgtype "ts"))))
 
 
