@@ -4378,7 +4378,7 @@ Teach Emacs how to highlight arrows and important keywords.
 ** ~,~ - Parens
 
 #+begin_src emacs-lisp
-  (leader-set-key :prefix "SPC ,"
+  (leader-set-key :infix ","
     "" '(nil :which-key "+parens")
     "h" #'sp-beginning-of-sexp
     "l" #'sp-end-of-sexp
@@ -4413,7 +4413,7 @@ Teach Emacs how to highlight arrows and important keywords.
 ** ~a~ - Applications
 
 #+begin_src emacs-lisp
-  (leader-set-key :prefix "SPC a"
+  (leader-set-key :infix "a"
     "" '(nil :which-key "+apps")
     "c" #'quick-calc
     "C" #'full-calc
@@ -4429,7 +4429,7 @@ Teach Emacs how to highlight arrows and important keywords.
 ** ~b~ - Buffers
 
 #+begin_src emacs-lisp
-  (leader-set-key :prefix "SPC b"
+  (leader-set-key :infix "b"
     "" '(nil :which-key "+bufs")
     "n" #'next-buffer
     "p" #'previous-buffer
@@ -4453,7 +4453,7 @@ Teach Emacs how to highlight arrows and important keywords.
 #+end_src
 
 #+begin_src emacs-lisp
-  (leader-set-key :prefix "SPC c"
+  (leader-set-key :infix "c"
     "" '(nil :which-key "+comments")
     "l" #'evilnc-comment-or-uncomment-lines
     "r" #'comment-or-uncomment-region
@@ -4477,7 +4477,7 @@ Teach Emacs how to highlight arrows and important keywords.
 #+end_src
 
 #+begin_src emacs-lisp
-  (leader-set-key :prefix "SPC e"
+  (leader-set-key :infix "e"
     "" '(nil :which-key "+errors")
     "n" #'flycheck-next-error
     "p" #'flycheck-previous-error
@@ -4536,7 +4536,7 @@ Teach Emacs how to highlight arrows and important keywords.
 #+end_src
 
 #+begin_src emacs-lisp
-  (leader-set-key :prefix "SPC f"
+  (leader-set-key :infix "f"
     "" '(nil :which-key "+files")
     "D" #'delete-current-buffer-and-file
     "e" #'sudo-edit
@@ -4613,7 +4613,7 @@ Teach Emacs how to highlight arrows and important keywords.
 #+end_src
 
 #+begin_src emacs-lisp
-  (leader-set-key :prefix "SPC g"
+  (leader-set-key :infix "g"
     "" '(nil :which-key "+git/goto")
     "c" #'jump-to-config-file
     "C" #'jump-to-tangled-config-file
@@ -4639,7 +4639,7 @@ Teach Emacs how to highlight arrows and important keywords.
 ** ~h~ - Help
 
 #+begin_src emacs-lisp
-  (leader-set-key :prefix "SPC h"
+  (leader-set-key :infix "h"
     "" '(nil :which-key "+help")
     "i" #'info
     "m" #'man
@@ -4661,7 +4661,7 @@ Teach Emacs how to highlight arrows and important keywords.
 ** ~k~ - Killing
 
 #+begin_src emacs-lisp
-  (leader-set-key :prefix "SPC k"
+  (leader-set-key :infix "k"
     "" '(nil :which-key "+kill")
     "b" #'kill-this-buffer
     "w" #'delete-window
@@ -4671,7 +4671,7 @@ Teach Emacs how to highlight arrows and important keywords.
 ** ~n~ - Narrowing
 
 #+begin_src emacs-lisp
-  (leader-set-key :prefix "SPC n"
+  (leader-set-key :infix "n"
     "" '(nil :which-key "+narrow")
     "f" #'narrow-to-defun
     "r" #'narrow-to-region
@@ -4683,7 +4683,7 @@ Teach Emacs how to highlight arrows and important keywords.
 ** ~p~ - Projects
 
 #+begin_src emacs-lisp
-  (leader-set-key :prefix "SPC p"
+  (leader-set-key :infix "p"
     "" '(nil :which-key "+projects")
     "<tab>" #'projectile-toggle-between-implementation-and-test
     "<backtab>" #'projectile-find-implementation-or-test-other-window
@@ -4703,7 +4703,7 @@ Teach Emacs how to highlight arrows and important keywords.
 ** ~t~ - Toggles
 
 #+begin_src emacs-lisp
-  (leader-set-key :prefix "SPC t"
+  (leader-set-key :infix "t"
     "" '(nil :which-key "+toggle")
     "i" #'toggle-input-method
     "c" #'hide/show-comments-toggle
@@ -4747,7 +4747,7 @@ Teach Emacs how to highlight arrows and important keywords.
 #+end_src
 
 #+begin_src emacs-lisp
-  (leader-set-key :prefix "SPC w"
+  (leader-set-key :infix "w"
     "" '(nil :which-key "+window")
     "w" #'evil-window-next
     "r" #'evil-window-rotate-downwards
@@ -4762,7 +4762,7 @@ Teach Emacs how to highlight arrows and important keywords.
 ** ~y~ - Text snippets
 
 #+begin_src emacs-lisp
-  (leader-set-key :prefix "SPC y"
+  (leader-set-key :infix "y"
     "" '(nil :which-key "+snippets")
     "n" #'yas-new-snippet
     "e" #'yas-expand
@@ -4774,7 +4774,7 @@ Teach Emacs how to highlight arrows and important keywords.
 ** ~z~ - Text Scale
 
 #+begin_src emacs-lisp
-  (leader-set-key :prefix "SPC z"
+  (leader-set-key :infix "z"
     "" '(nil :which-key "+zoom")
     "+" #'default-text-scale-increase
     "-" #'default-text-scale-decrease
