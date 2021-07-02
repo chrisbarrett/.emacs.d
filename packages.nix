@@ -38,6 +38,7 @@
         rotate
         ivy
         flx
+        pass
         smex
         counsel
         historian

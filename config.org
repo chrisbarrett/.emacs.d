@@ -3561,6 +3561,32 @@ certain types of Elisp files.
     (add-to-list 'emojify-inhibit-functions #'emojify-at-org-drawer-p))
 #+end_src
 
+* =pass= - Frontend to Unix ~password-store~
+
+#+begin_src emacs-lisp
+  (use-package pass
+    :commands (pass)
+    :after (password-store)
+    :general
+    (:states '(normal) :keymaps 'pass-view-mode-map "q" #'kill-this-buffer)
+    (:states '(normal) :keymaps 'pass-mode-map
+     "u" #'pass-copy-username
+     "U" #'pass-copy-url
+     "J" #'pass-goto-entry
+     "y" #'pass-copy-password
+     "f" #'pass-copy-field
+     "q" #'kill-this-buffer)
+    :custom
+    ((password-store-password-length 50)
+     (pass-username-field "email"))
+    :init
+    (add-to-list 'display-buffer-alist
+                 `(,(rx bos "*Password-Store*" eos)
+                   (display-buffer-reuse-window
+                    display-buffer-fullframe)
+                   (reusable-frames . visible))))
+#+end_src
+
 * Nix
 
 Configure major-mode for Nix language buffers.
