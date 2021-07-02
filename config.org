@@ -1060,7 +1060,7 @@ See: [[https://lists.gnu.org/archive/html/help-gnu-emacs/2014-07/msg00135.html][
       (define-key map (kbd "C-g") #'minibuffer-keyboard-quit)
       map))
 
-  (defun config-eval-expression--read (prompt &optional initial-contents)
+  (defun eval-expression-interactively--read (prompt &optional initial-contents)
     (let ((minibuffer-completing-symbol t))
       (minibuffer-with-setup-hook
           (lambda ()
@@ -1075,7 +1075,7 @@ See: [[https://lists.gnu.org/archive/html/help-gnu-emacs/2014-07/msg00135.html][
   (autoload 'pp-display-expression "pp")
   (autoload 'pp-to-string "pp")
 
-  (defun config-eval-expression (expression &optional arg)
+  (defun eval-expression-interactively (expression &optional arg)
     "Like `eval-expression' with nicer input handling.
 
   - Use `emacs-lisp-mode' to provide font locking and better
@@ -1087,7 +1087,7 @@ See: [[https://lists.gnu.org/archive/html/help-gnu-emacs/2014-07/msg00135.html][
 
   With optional prefix ARG, insert the results into the buffer at
   point."
-    (interactive (list (read (config-eval-expression--read "Eval: "))
+    (interactive (list (read (eval-expression-interactively--read "Eval: "))
                        current-prefix-arg))
     (if arg
         (insert (pp-to-string (eval expression lexical-binding)))
@@ -1103,7 +1103,7 @@ Use this command for evaluating expressions in the Lisp debugger too.
     (advice-add 'debugger-record-expression
                 :around
                 (lambda (f exp)
-                  (interactive (list (read (config-eval-expression--read "Eval: "))))
+                  (interactive (list (read (eval-expression-interactively--read "Eval: "))))
                   (funcall f exp))
                 '((name . use-config-eval-expression--read))))
 #+end_src
@@ -4357,7 +4357,7 @@ Teach Emacs how to highlight arrows and important keywords.
     "&" '(async-shell-command :which-key "shell cmd (async)")
     "'" '(poporg-dwim :which-key "edit comment")
     "/" '(counsel-projectile-rg :which-key "rg")
-    ":" '(eval-expression :which-key "eval")
+    ":" '(eval-expression-interactively :which-key "eval")
     "<tab>" '(alternate-buffer :which-key "other buf")
     "?" '(general-describe-keybindings :which-key "show bindings")
     "@" '(counsel-bookmark :which-key "bookmark")
