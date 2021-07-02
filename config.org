@@ -4381,7 +4381,10 @@ Teach Emacs how to highlight arrows and important keywords.
   (leader-set-key
     "!" '(shell-command :which-key "shell cmd")
     "&" '(async-shell-command :which-key "shell cmd (async)")
-    "'" '(poporg-dwim :which-key "edit comment")
+    "'" (general-predicate-dispatch 'poporg-dwim
+          (bound-and-true-p poporg-mode) 'poporg-edit-exit
+          (derived-mode-p 'org-mode) 'org-edit-special
+          (bound-and-true-p org-src-mode) 'org-edit-src-exit)
     "/" '(counsel-projectile-rg :which-key "rg")
     ":" '(eval-expression-interactively :which-key "eval")
     "<tab>" '(alternate-buffer :which-key "other buf")
@@ -4446,9 +4449,9 @@ Teach Emacs how to highlight arrows and important keywords.
     "m" #'mu4e
     "p" #'pass
     "r" '(nil :which-key "+profiler")
-    "r p" #'profiler-start
+    "r p" (general-predicate-dispatch 'profiler-start
+            (profiler-running-p) 'profiler-stop)
     "r r" #'profiler-report
-    "r s" #'profiler-stop
     "w" #'world-time-list)
 #+end_src
 
