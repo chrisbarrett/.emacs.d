@@ -32,6 +32,8 @@
         unfill
         volatile-highlights
         highlight-thing
+        terraform-mode
+        hcl-mode
         hl-todo
         dumb-jump
         deadgrep
