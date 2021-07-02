@@ -2641,6 +2641,33 @@ page-break control character (^L).
                                org-agenda-mode))))
 #+end_src
 
+** Apply a customizable face to parens
+
+=paren-face= applies a separate face for parens, allowing them to be
+de-emphasised.
+
+ #+begin_src emacs-lisp
+   (use-package paren-face
+     :hook (after-init . global-paren-face-mode)
+     :custom
+     ((paren-face-regexp (rx (any "{}();,"))))
+     :config
+     (progn
+       (set-face-attribute 'parenthesis nil
+                           :inherit 'font-lock-comment-face
+                           :weight 'light
+                           :italic nil
+                           :background nil)
+
+       (add-to-list 'paren-face-modes 'scala-mode)
+       (add-to-list 'paren-face-modes 'js-mode)
+       (add-to-list 'paren-face-modes 'typescript-mode)
+       (add-to-list 'paren-face-modes 'rust-mode)
+       (add-to-list 'paren-face-modes 'yaml-mode)
+       (font-lock-add-keywords 'js-mode `((,(rx (any ":")) 0 'parenthesis)))
+       (font-lock-add-keywords 'typescript-mode `((,(rx (any ":")) 0 'parenthesis)))))
+ #+end_src
+
 
 * Text scaling
 

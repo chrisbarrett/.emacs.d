@@ -54,6 +54,7 @@
         edit-indirect
         ibuffer-projectile
         smartparens
+        paren-face
         auctex
         company-auctex
         latex-preview-pane
