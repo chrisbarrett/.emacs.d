@@ -3941,11 +3941,22 @@ Define a command to format a ledger buffer.
     (add-hook 'yaml-mode-hook #'disable-autofill))
 #+end_src
 
-** =highlight-indent-guides= - show indentation level indicators
+* =json-mode= - JSON editing support
+
+#+begin_src emacs-lisp
+  (use-package json-mode
+    :commands (json-mode)
+    :mode ("\\.json\\'" . json-mode)
+    :custom
+    ((json-reformat:indent-width 2)))
+#+end_src
+
+* =highlight-indent-guides= - show indentation level indicators
 
 #+begin_src emacs-lisp
   (use-package highlight-indent-guides
-    :hook ((yaml-mode . highlight-indent-guides-mode)))
+    :hook ((yaml-mode . highlight-indent-guides-mode)
+           (json-mode . highlight-indent-guides-mode)))
 #+end_src
 
 * TypeScript

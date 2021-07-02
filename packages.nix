@@ -36,6 +36,7 @@
         hcl-mode
         yaml-mode
         highlight-indent-guides
+        json-mode
         hl-todo
         dumb-jump
         deadgrep
