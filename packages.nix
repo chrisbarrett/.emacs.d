@@ -40,6 +40,7 @@
         flx
         pass
         graphql-mode
+        format-all
         smex
         counsel
         historian

@@ -1423,6 +1423,15 @@ This package provides a visual representation of the undo history.
      "u" 'undo-tree-undo))
 #+end_src
 
+** =format-all= - Generic format-on-save system
+
+#+begin_src emacs-lisp
+  (use-package format-all
+    :hook (prog-mode . format-all-mode)
+    :custom
+    ((format-all-show-errors . 'never)))
+#+end_src
+
 * =direnv= - Support direnv files
 
 Teach Emacs how to load environment variables from [[https://direnv.net/][direnv]].
