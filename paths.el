@@ -30,9 +30,6 @@
 (unless (file-directory-p paths-cache-directory)
   (mkdir paths-cache-directory t))
 
-(defconst paths-nursery-directory
-  (concat user-emacs-directory "nursery"))
-
 (defconst paths-etc-directory
   (concat user-emacs-directory "etc"))
 
@@ -52,9 +49,6 @@
 
 (defconst paths-hostfile
   (f-join user-emacs-directory "host.el"))
-
-(defconst paths-personal-config
-  "~/Dropbox/lisp/personal-config.el")
 
 (defconst paths-project-directories
   (seq-filter #'file-directory-p '("~/Documents"
