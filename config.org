@@ -2459,32 +2459,46 @@ down on typing.
              (yas-prompt-functions '(yas-completing-prompt))
              (yas-verbosity 0)
              (yas-minor-mode-map (make-sparse-keymap)))
+    :general
+    (:keymaps 'yas-minor-mode-map :states 'insert
+     "TAB"
+     (general-predicate-dispatch 'indent-for-tab-command
+       (yas-maybe-expand-abbrev-key-filter t) 'yas-expand))
+    (:keymaps 'yas-keymap :states 'insert
+     "SPC"
+     (general-predicate-dispatch 'self-insert-command
+       (yas--maybe-clear-field-filter t) 'yas-skip-and-clear-field)
+     "<backspace>"
+     (general-predicate-dispatch 'backward-delete-char
+       (yas--maybe-clear-field-filter t) 'yas-skip-and-clear-field
+       (bound-and-true-p smartparens-mode) 'sp-backward-delete-char))
     :config
     (yas-global-mode +1))
 #+end_src
 
-Make <tab> expand snippets in insert state.
+** Customise backwards cycling behaviour
+
+When cycling backward through fields, place point at the end of the previous field.
 
 #+begin_src emacs-lisp
-  (with-eval-after-load 'yasnippet
-    ;; NOTE: yas-maybe-expand is a variable.
-    (general-define-key :states 'insert
-                        :keymaps 'yas-minor-mode-map
-                        "TAB" yas-maybe-expand))
-#+end_src
+  (defun config-yasnippet--end-of-field ()
+    (when-let* ((field (yas-current-field)))
+      (marker-position (yas--field-end field))))
 
-Disable yasnippet in certain modes.
+  (defun config-yasnippet--maybe-goto-field-end ()
+    "Move to the end of the current field if it has been modified."
+    (when-let* ((field (config-yasnippet--current-field)))
+      (when (and (yas--field-modified-p field)
+                 (yas--field-contains-point-p field))
+        (goto-char (config-yasnippet--end-of-field)))))
 
-#+begin_src emacs-lisp
-  (defconst yas-inhibited-modes
-    '(yaml-mode
-      term-mode))
+  (defun yasnippet-goto-field-end (&rest _)
+    (config-yasnippet--maybe-goto-field-end)
+    (when (and (boundp 'evil-mode) evil-mode (fboundp 'evil-insert-state))
+      (evil-insert-state)))
 
-  (defun yas-maybe-inhibit-for-mode ()
-    (apply #'derived-mode-p yas-inhibited-modes))
-
-  (with-eval-after-load 'yasnippet
-    (add-to-list 'yas-dont-activate-functions #'yas-maybe-inhibit-for-mode))
+  (advice-add 'yas-next-field :after #'yasnippet-goto-field-end)
+  (advice-add 'yas-prev-field :after #'yasnippet-goto-field-end)
 #+end_src
 
 ** Snippet functions
