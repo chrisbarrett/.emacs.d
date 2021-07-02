@@ -2692,6 +2692,36 @@ de-emphasised.
                  "NOTE")))))
 #+end_src
 
+* Show keys after a delay on input
+
+=which-key= displays available key bindings under the current prefix
+
+#+begin_src emacs-lisp
+  (use-package which-key
+    :hook (after-init . which-key-mode)
+    :custom
+    ((which-key-idle-delay 0.4)
+     (which-key-replacement-alist
+            (let ((custom-regex
+                   (rx bos
+                       ;; strip hydra prefix
+                       (? (and (+? nonl) "/"))
+                       (? (or
+                           ;; feature names
+                           "counsel"
+                           "evil")
+                          "-")
+                       (group (+ nonl)))))
+              `((("<left>") . ("←"))
+                (("<right>") . ("→"))
+                (("<\\([[:alnum:]-]+\\)>") . ("\\1"))
+                ((nil . "Prefix Command") . (nil . "prefix"))
+                ((nil . "\\`\\?\\?\\'") . (nil . "lambda"))
+                ((nil . "which-key-show-next-page-no-cycle") . (nil . "wk next pg"))
+                ((nil . ,custom-regex) . (nil . "\\1")))))))
+#+end_src
+
+
 * Text scaling
 
 =default-text-scale= provides nice commands for changing text scale for all

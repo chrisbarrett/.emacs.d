@@ -44,6 +44,7 @@
         ivy-historian
         elisp-slime-nav
         helpful
+        which-key
         rainbow-mode
         flycheck
         flycheck-package
