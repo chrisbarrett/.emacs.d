@@ -4058,6 +4058,9 @@ buffer when a hard newline would be used.
 * TODO org-agenda
 
 * TODO org-roam
+
+* TODO git-time-machine hydra
+
 * PlantUML
 
 #+begin_src emacs-lisp
