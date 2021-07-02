@@ -32,6 +32,7 @@
         unfill
         volatile-highlights
         highlight-thing
+        hl-todo
         dumb-jump
         deadgrep
         rotate

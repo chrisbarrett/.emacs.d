@@ -2668,6 +2668,29 @@ de-emphasised.
        (font-lock-add-keywords 'typescript-mode `((,(rx (any ":")) 0 'parenthesis)))))
  #+end_src
 
+** Highlight TODOs in comments
+
+=hl-todo= applies a separate face for todo keywords so they can be highlighted.
+
+#+begin_src emacs-lisp
+  (defun enable-hl-todo-unless-org-buffer ()
+    (unless (derived-mode-p 'org-mode)
+      (hl-todo-mode)))
+
+  (use-package hl-todo
+    :hook ((prog-mode . hl-todo-mode)
+           (text-mode . enable-hl-todo-unless-org-buffer))
+    :custom
+    ((hl-todo-keyword-faces
+      (seq-map (lambda (it) (cons it 'hl-todo))
+               '("TODO"
+                 "NEXT"
+                 "HACK"
+                 "FIXME"
+                 "KLUDGE"
+                 "PATCH"
+                 "NOTE")))))
+#+end_src
 
 * Text scaling
 
