@@ -1110,7 +1110,7 @@ Use this command for evaluating expressions in the Lisp debugger too.
 
 * Improve basic editing configuration for all modes
 
-** Code folding
+** =hideshow= - Code folding
 
 Enable hideshow in all programming buffers.
 
@@ -1179,18 +1179,15 @@ Use control key to transpose lines up and down.
 Define a command for reversing the characters in the current region.
 
 #+begin_src emacs-lisp
-  (defun config-reverse-characters (beg end)
-    "Reverse the characters in the region from BEG to END.
+  (unless (fboundp 'reverse-characters)
+    (defun reverse-characters (beg end)
+      "Reverse the characters in the region from BEG to END.
   Interactively, reverse the characters in the current region."
-    (interactive "*r")
-    (insert
-     (reverse
-      (delete-and-extract-region
-       beg end))))
-
-  (eval-and-compile
-    (unless (fboundp 'reverse-characters)
-      (defalias 'reverse-characters 'config-reverse-characters)))
+      (interactive "*r")
+      (insert
+       (reverse
+        (delete-and-extract-region
+         beg end)))))
 #+end_src
 
 ** Indentation
@@ -1253,7 +1250,7 @@ Define a command to perform indentation in a context-sensitive way.
   (define-key prog-mode-map (kbd "M-q") #'config-indent-dwim)
 #+end_src
 
-** Aggressive indentation                                         :disabled:
+** =aggressive-indent= - Aggressive indentation                   :disabled:
 
 =aggressive-indent= automatically reindents code during editing.
 
@@ -1300,7 +1297,7 @@ Define a command to perform indentation in a context-sensitive way.
       (global-aggressive-indent-mode +1)))
 #+end_src
 
-** Automatic whitespace cleanup
+** =ws-butler= - Automatic whitespace cleanup
 
 =ws-butler= cleans up trailing whitespace as you edit.
 
@@ -1312,7 +1309,7 @@ Define a command to perform indentation in a context-sensitive way.
     (ws-butler-global-mode))
 #+end_src
 
-** Paragraph fill
+** =unfill= - Paragraph fill/unfill
 
 =unfill= provides a command that is the opposite of fill-paragraph.
 
@@ -1330,7 +1327,7 @@ Define a command to perform indentation in a context-sensitive way.
     :general ("C-x a a" #'align-regexp))
 #+end_src
 
-** Comment hiding
+** =hide-comnt= - Comment hiding
 
 =hide-comnt= provides a command for toggling whether comments are visible.
 
@@ -1338,7 +1335,7 @@ Define a command to perform indentation in a context-sensitive way.
   (use-package hide-comnt)
 #+end_src
 
-** Basic jump-to-definition support
+** =dumb-jump= - Generic jump-to-definition support
 
 =dump-jump= provides a good fallback for navigating to definitions in the absence
 of an LSP or semantic analysis.
@@ -1350,7 +1347,7 @@ of an LSP or semantic analysis.
     ((dumb-jump-selector 'ivy)))
 #+end_src
 
-** File templates
+** =auto-insert= - File templates
 
 =autoinsert= provides file templates.
 
@@ -1385,7 +1382,7 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
                                        (autoinsert-files-populate-templates))))
 #+end_src
 
-** Spellchecking
+** =flyspell= - Spellchecking
 
 =flyspell= provides spellchecking.
 
@@ -1412,7 +1409,7 @@ Prevent =flyspell= from showing suggestions in more contexts.
     (advice-add 'org-mode-flyspell-verify :filter-return #'config-flyspell--on-org-verify))
 #+end_src
 
-** Undo history
+** =undo-tree= - Visual graph for undo history
 
 This package provides a visual representation of the undo history.
 
@@ -1426,9 +1423,7 @@ This package provides a visual representation of the undo history.
      "u" 'undo-tree-undo))
 #+end_src
 
-* Integration with external tooling
-
-** =direnv= support
+* =direnv= - Support direnv files
 
 Teach Emacs how to load environment variables from [[https://direnv.net/][direnv]].
 
@@ -1441,7 +1436,7 @@ See: [[https://github.com/wbolster/emacs-direnv][wbolster/emacs-direnv]]
     ((direnv-always-show-summary nil)))
 #+end_src
 
-** =editorconfig= support
+* =editorconfig= - Support editorconfig files
 
 Teach Emacs to respect editorconfig files.
 
@@ -1452,7 +1447,7 @@ Teach Emacs to respect editorconfig files.
 
 * Basic programming language modes
 
-** Configuration files
+** =conf-mode= - Configuration files
 
 Configure =conf-mode= for use with more kinds of config files.
 
@@ -1464,7 +1459,7 @@ Configure =conf-mode= for use with more kinds of config files.
      ("\\.kll\\'" . conf-mode)))
 #+end_src
 
-** Hex editing
+** =hexl-mode= - Hex editing
 
 =hexl= is Emacs' built-in hex editor.
 
@@ -1485,7 +1480,7 @@ Configure =conf-mode= for use with more kinds of config files.
 
 * Searching
 
-** Ripgrep (=rg=)
+** =deadgrep= - Ripgrep (=rg=) frontend
 
 =deadgrep= provides a polished frontend for =ripgrep=.
 
@@ -1553,7 +1548,7 @@ Use =C-c C-e= to enter a =deadgrep= search buffer from =ivy.=
                                                  (with-no-warnings ivy-text)))))))))
 #+end_src
 
-** Grep
+** =wgrep= - Directly editing =grep= results
 
 Enable =wgrep=, which provides editable grep buffers.
 
@@ -1561,9 +1556,9 @@ Enable =wgrep=, which provides editable grep buffers.
   (use-package wgrep)
 #+end_src
 
-* Prompts and UI
+* Prompts and UI enhancements
 
-** Ivy
+** =ivy= - completion framework
 
 =ivy= is a package that provides incremental completion, similar to =helm= or =ido=,
 but actively maintained. =flx= is used as the fuzzy-matching indexer backend for
@@ -1629,7 +1624,7 @@ Hide =./= and =../= when finding files.
     (advice-add #'counsel-find-file :around #'config-ivy-with-empty-ivy-extra-directories))
 #+end_src
 
-** In-buffer search
+** =swiper= - In-buffer search UI
 
 =swiper= is a buffer search interface using =ivy=.
 
@@ -1638,7 +1633,7 @@ Hide =./= and =../= when finding files.
     :general (:states 'normal "/" 'swiper))
 #+end_src
 
-** Improve completion throughout Emacs using Counsel
+** =counsel= - Better completions built on =ivy=
 
 =counsel= provides replacements for core Emacs commands using =ivy=.
 
@@ -1657,7 +1652,7 @@ Hide =./= and =../= when finding files.
       (counsel-mode +1)))
 #+end_src
 
-** Persistent history
+** =historian= - Persistent input history
 
 =historian= remembers your choices in completion menus.
 
@@ -1684,7 +1679,7 @@ Hide =./= and =../= when finding files.
     (ivy-historian-mode 1))
 #+end_src
 
-* Ediff
+* =ediff= - Interactive diff interface
 
 Configure how =ediff= should display windows when started.
 
@@ -1738,7 +1733,7 @@ Reveal the context around the selected hunk when diffing org buffers.
         (advice-add 'ediff-previous-difference :after #'config-ediff--org-reveal-around-difference)))
 #+end_src
 
-* World clock
+* =world-time-mode= - World clock UI
 
 =world-time-mode= provides a world clock.
 
@@ -1823,7 +1818,7 @@ Clear default underline text properties applied to compilation highlights.
 
 * Window management
 
-** Window state history
+** =winner= - Window state history
 
 =winner-mode= saves the window and buffer layout history, allowing you to cycle
 forward and back through layout states. This is useful for recovering a layout
@@ -1847,7 +1842,7 @@ after editing actions have changed what windows are shown.
                               "*esh command on file*"))))
 #+end_src
 
-** Layouts
+** =rotate= - Rotate buffers within window layout
 
 =rotate= provides handy commands for manipulating the window layout.
 
@@ -1856,9 +1851,7 @@ after editing actions have changed what windows are shown.
     :commands (rotate-layout))
 #+end_src
 
-* Modal editing & Evil
-
-=evil= provides Vim emulation.
+* =evil= - Vim-style modal editing
 
 =evil= provides macros that I want to use in =:config= blocks, so teach the
 byte-compiler about them to avoid warnings.
@@ -2221,7 +2214,7 @@ compatibility.
 
 * Text completion engines
 
-** =hippie-expand=
+** =hippie-expand= - generic text completion
 
 =hippie-expand= is a generic completion engine that works in most buffers without
 any special language-level support.
@@ -2254,7 +2247,7 @@ Set the default heuristic for completing symbols.
         try-complete-lisp-symbol))))
 #+end_src
 
-** =company=
+** =company= - UI for selecting completions
 
 =company= is a general-purpose completion frontend, showing a popup of completion
 options.
@@ -2297,7 +2290,7 @@ to manually apply it again.
     (add-hook 'company-mode-hook #'config-company--set-company-vars))
 #+end_src
 
-* Filesystem browsing
+* =dired= - Filesystem browsing
 
 =dired= is the builtin filesystem browser for Emacs.
 
@@ -2377,7 +2370,7 @@ dot).
      (dired-clean-up-buffers-too t)))
 #+end_src
 
-* Project and repo-level commands
+* =projectile= - Project and repo-level commands
 
 =projectile= provides commands for working with projects, and a useful utility
 function to find the root directory of the project.
@@ -2452,7 +2445,7 @@ of =projectile=. Use =projectile= until the builtin functionality is more comple
       (advice-add #'counsel-projectile-rg :filter-args #'config-projectile--extra-opts-on-prefix-args)))
 #+end_src
 
-* Text snippets
+* =yasnippet= - Text snippets
 
 =yasnippet= provides expandable text snippets. I use them extensively to cut
 down on typing.
@@ -2548,9 +2541,7 @@ These functions are used in the definitions of snippets.
 
 * Themeing
 
-** Highlight pasted text
-
-=volatile-highlights= shows highlights in the buffer when regions change.
+** =volatile-highlights= - Highlight pasted text
 
 Load at compile-time so macro expansions are available.
 
@@ -2586,9 +2577,7 @@ Teach =volatile-highlights-mode= to highlight text pasted by =evil= operations.
       (vhl/load-extension 'evil)))
 #+end_src
 
-** Highlight the symbol at point
-
-=highlight-thing= highlights the symbol at point.
+** =highlight-thing= - Highlight the symbol at point
 
 #+begin_src emacs-lisp
   (use-package highlight-thing
@@ -2623,11 +2612,10 @@ Suppress =highlight-thing= when hovering over certain kinds of symbols.
                 #'config-highlight-thing--should-highlight-p))
 #+end_src
 
-** Show page breaks characters as a horizontal rule
+** =page-break-lines= - Show page breaks characters as a horizontal rule
 
-
-~page-break-lines~ shows a horizontal separator in buffers instead of a
-page-break control character (^L).
+Shows a horizontal separator in buffers instead of a page-break control
+character (^L).
 
 #+begin_src emacs-lisp
   (use-package page-break-lines
@@ -2641,10 +2629,9 @@ page-break control character (^L).
                                org-agenda-mode))))
 #+end_src
 
-** Apply a customizable face to parens
+** =paren-face= - Apply a specific face to parens
 
-=paren-face= applies a separate face for parens, allowing them to be
-de-emphasised.
+Apply a separate face for parens, allowing them to be de-emphasised.
 
  #+begin_src emacs-lisp
    (use-package paren-face
@@ -2668,9 +2655,7 @@ de-emphasised.
        (font-lock-add-keywords 'typescript-mode `((,(rx (any ":")) 0 'parenthesis)))))
  #+end_src
 
-** Highlight TODOs in comments
-
-=hl-todo= applies a separate face for todo keywords so they can be highlighted.
+** =hl-todo= - Highlight TODOs in comments
 
 #+begin_src emacs-lisp
   (defun enable-hl-todo-unless-org-buffer ()
@@ -2692,40 +2677,18 @@ de-emphasised.
                  "NOTE")))))
 #+end_src
 
-* Show keys after a delay on input
-
-=which-key= displays available key bindings under the current prefix
+* =which-key= - Show keys after a delay on input
 
 #+begin_src emacs-lisp
   (use-package which-key
     :hook (after-init . which-key-mode)
     :custom
-    ((which-key-idle-delay 0.4)
-     (which-key-replacement-alist
-            (let ((custom-regex
-                   (rx bos
-                       ;; strip hydra prefix
-                       (? (and (+? nonl) "/"))
-                       (? (or
-                           ;; feature names
-                           "counsel"
-                           "evil")
-                          "-")
-                       (group (+ nonl)))))
-              `((("<left>") . ("←"))
-                (("<right>") . ("→"))
-                (("<\\([[:alnum:]-]+\\)>") . ("\\1"))
-                ((nil . "Prefix Command") . (nil . "prefix"))
-                ((nil . "\\`\\?\\?\\'") . (nil . "lambda"))
-                ((nil . "which-key-show-next-page-no-cycle") . (nil . "wk next pg"))
-                ((nil . ,custom-regex) . (nil . "\\1")))))))
+    ((which-key-idle-delay 0.4)))
 #+end_src
 
+* =default-text-scale= - Text scaling
 
-* Text scaling
-
-=default-text-scale= provides nice commands for changing text scale for all
-buffers simultaneously
+Provides nice commands for changing text scale for all buffers simultaneously
 
 #+begin_src emacs-lisp
   (use-package default-text-scale
@@ -2735,16 +2698,13 @@ buffers simultaneously
 
 * Git
 
-** Magit
-
-=Magit= provides an excellent suite of interactive commands for working with git.
+** =magit= - interactive commands for working with git
 
 #+begin_src emacs-lisp
   (use-package magit
     :general
     (:keymaps 'transient-base-map "<escape>" #'transient-quit-one
      :states 'normal :keymaps 'magit-refs-mode-map "." #'magit-branch-and-checkout)
-
     :custom
     ((magit-repository-directories (--map (cons it 1) paths-project-directories))
      (magit-display-buffer-function 'magit-display-buffer-fullframe-status-v1)
@@ -2787,9 +2747,7 @@ Hack =magit='s commit info to show output of a GPG signature check.
                             t))
 #+end_src
 
-** Forge
-
-=forge= teaches =magit= how to work with pull requests and issues.
+** =forge= - teaches =magit= how to work with pull requests and issues
 
 #+begin_src emacs-lisp
   (use-package forge
@@ -2802,10 +2760,7 @@ Hack =magit='s commit info to show output of a GPG signature check.
       (add-hook 'magit-status-sections-hook 'forge-insert-assigned-issues 90)))
 #+end_src
 
-** Committing on save
-
-=git-auto-commit-mode= provides a mode that automatically commits changes after
-saving a buffer.
+** =git-auto-commit-mode= - Commit files on save
 
 #+begin_src emacs-lisp
   (use-package git-auto-commit-mode
@@ -2815,10 +2770,7 @@ saving a buffer.
              (gac-automatically-add-new-files-p t)))
 #+end_src
 
-** Step through file history
-
-=vc-annotate= lets you interactively step forward and backwards through a
-file's git history.
+** =vc-annotate= - Step through file history
 
 #+begin_src emacs-lisp
   (use-package vc-annotate
@@ -2841,10 +2793,10 @@ file's git history.
 #+begin_src emacs-lisp
   (use-package git-commit-mode
     :preface
-    (defun config-git--configure-git-commit-mode ()
+    (defun configure-git-commit-mode ()
       (setq-local fill-column 72))
     :init
-    (add-hook 'git-commit-mode-hook #'config-git--configure-git-commit-mode))
+    (add-hook 'git-commit-mode-hook #'configure-git-commit-mode))
 #+end_src
 
 ** Browse file at remote
@@ -2873,7 +2825,7 @@ Provide more feedback when copying the URL to the clipboard.
     (advice-add 'browse-at-remote-kill :after #'config-browse-at-remote--message-kill))
 #+end_src
 
-* Syntax Checking & Linting
+* =flycheck= - Syntax Checking & Linting
 
 =Flycheck= integrates with external tools to show indications of errors and
 warnings in the buffer as you edit.
@@ -2970,7 +2922,7 @@ during =ediff= merges, etc.
     (advice-add 'flycheck-may-enable-mode :filter-return #'config-flycheck--maybe-inhibit))
 #+end_src
 
-* Buffer list
+* =ibuffer= - Better buffer list
 
 =ibuffer= provides an interactive buffer list that is better than the default.
 
@@ -3093,7 +3045,7 @@ Override some default =ibuffer= columns.
     (add-hook 'ibuffer-hook #'config-ibuffer--setup-buffer))
 #+end_src
 
-* Parentheses
+* =smartparens= - Structured expression editing
 
 Use =smartparens= to keep parens and braces paired and manipulate expressions in a
 structured way.
@@ -3355,7 +3307,7 @@ Make checkbox insertion a little smarter.
       (sp-local-pair "[" "]" :post-handlers '(config-smartparens--format-checkitem))))
 #+end_src
 
-* Emacs Lisp
+* =elisp-mode= - Emacs Lisp
 
 #+begin_src emacs-lisp
   (use-package elisp-mode
@@ -3571,9 +3523,7 @@ certain types of Elisp files.
             #'config-flycheck--elisp-package-flycheck-predicate)))
 #+end_src
 
-* Pretty lambdas in Lisp modes
-
-=prettify-symbols-mode= allows characters to be displayed in a different way.
+* =prettify-symbols-mode= - Pretty lambdas in Lisp modes
 
 #+begin_src emacs-lisp
   (use-package prettify-symbols-mode
@@ -3586,9 +3536,7 @@ certain types of Elisp files.
         (setq-local prettify-symbols-alist '(("lambda" . ?λ)))))))
 #+end_src
 
-* Render emoji
-
-=emojify= adds support for rendering emojis.
+* =emojify= - Render emoji
 
 #+begin_src emacs-lisp
   (use-package emojify
@@ -3639,9 +3587,7 @@ Teach Emacs how to create a Nix language REPL.
                    (window-height   . 0.4))))
 #+end_src
 
-* Markdown
-
-Customise markdown file support.
+* =markdown-mode= - Markdown file support
 
 #+begin_src emacs-lisp
   (use-package markdown-mode
@@ -3672,7 +3618,7 @@ Customise markdown file support.
      (markdown-hide-urls t)))
 #+end_src
 
-* Tex & Latex
+* =autctex= - Tex & Latex editing
 
 Use =auctex= as the Tex and Latex editing mode.
 
@@ -3801,7 +3747,7 @@ Teach the autofill function in Latex buffers not to fill in certain contexts.
     :general (:keymaps 'LaTeX-mode-map "C-c p" #'latex-preview-pane))
 #+end_src
 
-* Ledger
+* =ledger-mode= - Ledger accounting software interface
 
 #+begin_src emacs-lisp
   (use-package ledger-mode
@@ -4002,7 +3948,7 @@ TypeScript language server.
     :custom ((css-indent-offset 2)))
 #+end_src
 
-* Mail
+* =mu4e= - Mail user agent
 
 Use the system's =mu4e= installation for mail management. I use the
 systemd/launchd to run mbsync and indexing, so mu4e doesn't trigger fetching
@@ -4373,9 +4319,7 @@ Teach Emacs how to highlight arrows and important keywords.
         (1 'org-list-dt)))))
 #+end_src
 
-* Leader Key
-
-Set up ~SPACE~ as a leader key.
+* Set up ~SPACE~ as a leader key
 
 #+begin_src emacs-lisp
   (require 'general)
@@ -4409,32 +4353,33 @@ Set up ~SPACE~ as a leader key.
 
 #+begin_src emacs-lisp
   (leader-set-key
-    "!" #'shell-command
-    "&" #'async-shell-command
-    "'" #'poporg-dwim
-    "/" #'counsel-projectile-rg
-    ":" #'eval-expression
-    "<tab>" #'alternate-buffer
-    "?" #'counsel-descbinds
-    "@" #'counsel-bookmark
-    "|" #'rotate-layout
-    "SPC" #'ivy-switch-buffer
+    "!" '(shell-command :which-key "shell cmd")
+    "&" '(async-shell-command :which-key "shell cmd (async)")
+    "'" '(poporg-dwim :which-key "edit comment")
+    "/" '(counsel-projectile-rg :which-key "rg")
+    ":" '(eval-expression :which-key "eval")
+    "<tab>" '(alternate-buffer :which-key "other buf")
+    "?" '(general-describe-keybindings :which-key "show bindings")
+    "@" '(counsel-bookmark :which-key "bookmark")
+    "|" '(rotate-layout :which-key "rotate window layout")
+    "SPC" '(ivy-switch-buffer :which-key "switch buf")
     "C" #'compile
-    "D" #'dired-other-window
-    "S" #'deadgrep
+    "D" '(dired-other-window :which-key "dired (other)")
+    "S" '(deadgrep :which-key "rg (deadgrep)")
     "d" #'dired
-    "i" #'counsel-imenu
-    "q" #'delete-window
-    "r" #'ivy-resume
-    "s" #'evil-iedit-state/iedit-mode
-    "u" #'universal-argument
-    "x" #'counsel-M-x)
+    "i" '(counsel-imenu :which-key "imenu")
+    "q" '(delete-window :which-key "delete window")
+    "r" 'ivy-resume
+    "s" '(evil-iedit-state/iedit-mode :which-key "iedit")
+    "u" '(universal-argument :which-key "prefix arg")
+    "x" '(counsel-M-x :which-key "M-x"))
 #+end_src
 
 ** ~,~ - Parens
 
 #+begin_src emacs-lisp
   (leader-set-key :prefix "SPC ,"
+    "" '(nil :which-key "+parens")
     "h" #'sp-beginning-of-sexp
     "l" #'sp-end-of-sexp
     "n" #'sp-next-sexp
@@ -4469,10 +4414,12 @@ Set up ~SPACE~ as a leader key.
 
 #+begin_src emacs-lisp
   (leader-set-key :prefix "SPC a"
+    "" '(nil :which-key "+apps")
     "c" #'quick-calc
     "C" #'full-calc
     "m" #'mu4e
     "p" #'pass
+    "r" '(nil :which-key "+profiler")
     "r p" #'profiler-start
     "r r" #'profiler-report
     "r s" #'profiler-stop
@@ -4483,6 +4430,7 @@ Set up ~SPACE~ as a leader key.
 
 #+begin_src emacs-lisp
   (leader-set-key :prefix "SPC b"
+    "" '(nil :which-key "+bufs")
     "n" #'next-buffer
     "p" #'previous-buffer
     "l" #'ibuffer
@@ -4506,6 +4454,7 @@ Set up ~SPACE~ as a leader key.
 
 #+begin_src emacs-lisp
   (leader-set-key :prefix "SPC c"
+    "" '(nil :which-key "+comments")
     "l" #'evilnc-comment-or-uncomment-lines
     "r" #'comment-or-uncomment-region
     "s" #'comment-sexp)
@@ -4529,6 +4478,7 @@ Set up ~SPACE~ as a leader key.
 
 #+begin_src emacs-lisp
   (leader-set-key :prefix "SPC e"
+    "" '(nil :which-key "+errors")
     "n" #'flycheck-next-error
     "p" #'flycheck-previous-error
     "l" #'flycheck-toggle-error-list
@@ -4587,6 +4537,7 @@ Set up ~SPACE~ as a leader key.
 
 #+begin_src emacs-lisp
   (leader-set-key :prefix "SPC f"
+    "" '(nil :which-key "+files")
     "D" #'delete-current-buffer-and-file
     "e" #'sudo-edit
     "f" #'find-file
@@ -4663,6 +4614,7 @@ Set up ~SPACE~ as a leader key.
 
 #+begin_src emacs-lisp
   (leader-set-key :prefix "SPC g"
+    "" '(nil :which-key "+git/goto")
     "c" #'jump-to-config-file
     "C" #'jump-to-tangled-config-file
     "i" #'jump-to-init-file
@@ -4688,8 +4640,10 @@ Set up ~SPACE~ as a leader key.
 
 #+begin_src emacs-lisp
   (leader-set-key :prefix "SPC h"
+    "" '(nil :which-key "+help")
     "i" #'info
     "m" #'man
+    "d" '(nil :which-key "+describe")
     "d c" #'describe-face
     "d C" #'helpful-command
     "d f" #'helpful-callable
@@ -4697,6 +4651,7 @@ Set up ~SPACE~ as a leader key.
     "d m" #'describe-mode
     "d p" #'describe-text-properties
     "d v" #'helpful-variable
+    "f" '(nil :which-key "+find")
     "f c" #'find-face-definition
     "f f" #'find-function
     "f l" #'find-library
@@ -4707,6 +4662,7 @@ Set up ~SPACE~ as a leader key.
 
 #+begin_src emacs-lisp
   (leader-set-key :prefix "SPC k"
+    "" '(nil :which-key "+kill")
     "b" #'kill-this-buffer
     "w" #'delete-window
     "r" #'counsel-yank-pop)
@@ -4716,6 +4672,7 @@ Set up ~SPACE~ as a leader key.
 
 #+begin_src emacs-lisp
   (leader-set-key :prefix "SPC n"
+    "" '(nil :which-key "+narrow")
     "f" #'narrow-to-defun
     "r" #'narrow-to-region
     "w" #'widen
@@ -4727,6 +4684,7 @@ Set up ~SPACE~ as a leader key.
 
 #+begin_src emacs-lisp
   (leader-set-key :prefix "SPC p"
+    "" '(nil :which-key "+projects")
     "<tab>" #'projectile-toggle-between-implementation-and-test
     "<backtab>" #'projectile-find-implementation-or-test-other-window
     "!" #'projectile-run-async-shell-command-in-root
@@ -4746,6 +4704,7 @@ Set up ~SPACE~ as a leader key.
 
 #+begin_src emacs-lisp
   (leader-set-key :prefix "SPC t"
+    "" '(nil :which-key "+toggle")
     "i" #'toggle-input-method
     "c" #'hide/show-comments-toggle
     "m" #'global-hide-mode-line-mode)
@@ -4789,6 +4748,7 @@ Set up ~SPACE~ as a leader key.
 
 #+begin_src emacs-lisp
   (leader-set-key :prefix "SPC w"
+    "" '(nil :which-key "+window")
     "w" #'evil-window-next
     "r" #'evil-window-rotate-downwards
     "/" #'split-window-horizontally-dwim
@@ -4803,6 +4763,7 @@ Set up ~SPACE~ as a leader key.
 
 #+begin_src emacs-lisp
   (leader-set-key :prefix "SPC y"
+    "" '(nil :which-key "+snippets")
     "n" #'yas-new-snippet
     "e" #'yas-expand
     "f" #'yas-visit-snippet-file
@@ -4814,6 +4775,7 @@ Set up ~SPACE~ as a leader key.
 
 #+begin_src emacs-lisp
   (leader-set-key :prefix "SPC z"
+    "" '(nil :which-key "+zoom")
     "+" #'default-text-scale-increase
     "-" #'default-text-scale-decrease
     "=" #'default-text-scale-reset)
