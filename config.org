@@ -4241,7 +4241,7 @@ Set up ~SPACE~ as a leader key.
   (general-evil-setup)
 
   (general-define-key :states '(normal motion) "SPC" nil)
-  (general-create-definer leader-set-key :states '(normal motion) :prefix "SPC")
+  (general-create-definer leader-set-key :keymaps 'override :states '(normal motion) :prefix "SPC")
 #+end_src
 
 ** Top-level leader keybindings
