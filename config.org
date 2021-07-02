@@ -3896,7 +3896,7 @@ Define a command to format a ledger buffer.
           (goto-char pos)))))
 #+end_src
 
-** Flycheck support
+** =flycheck-ledger= - Flycheck support for ledger buffers
 
 #+begin_src emacs-lisp
   (use-package flycheck-ledger
