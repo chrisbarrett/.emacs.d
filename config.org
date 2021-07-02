@@ -252,7 +252,7 @@ Teach =recentf= to use these paths
       (add-to-list 'recentf-exclude no-littering-var-directory)))
 #+end_src
 
-** Load Lisp files from certain other directories  :disabled:
+** Load Lisp files from certain other directories                  :disabled:
 
 Load host-specific settings, which are not checked into version control.
 
@@ -1250,7 +1250,7 @@ Define a command to perform indentation in a context-sensitive way.
   (define-key prog-mode-map (kbd "M-q") #'config-indent-dwim)
 #+end_src
 
-** =aggressive-indent= - Aggressive indentation                   :disabled:
+** =aggressive-indent= - Aggressive indentation                    :disabled:
 
 =aggressive-indent= automatically reindents code during editing.
 
@@ -4022,7 +4022,6 @@ TypeScript language server.
                    :supports ("ag" "grep" "rg") :language "graphql"
                    :regex "scalar\\s+JJJ\\b")))
 #+end_src
-
 
 * =mu4e= - Mail user agent
 
