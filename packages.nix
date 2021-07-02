@@ -37,6 +37,7 @@
         yaml-mode
         highlight-indent-guides
         json-mode
+        pdf-tools
         hl-todo
         dumb-jump
         deadgrep
