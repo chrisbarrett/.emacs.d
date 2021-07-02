@@ -3926,6 +3926,28 @@ Define a command to format a ledger buffer.
     :demand t)
 #+end_src
 
+* =yaml-mode= - YAML editing support
+
+#+begin_src emacs-lisp
+  (defun disable-autofill ()
+    (auto-fill-mode -1))
+
+  (use-package yaml-mode
+    :mode ("\\.\\(e?ya?\\|ra\\)ml\\'" . yaml-mode)
+    :general
+    (:states '(normal insert) :keymaps 'yaml-mode-map
+     [backtab] 'yaml-indent-line)
+    :config
+    (add-hook 'yaml-mode-hook #'disable-autofill))
+#+end_src
+
+** =highlight-indent-guides= - show indentation level indicators
+
+#+begin_src emacs-lisp
+  (use-package highlight-indent-guides
+    :hook ((yaml-mode . highlight-indent-guides-mode)))
+#+end_src
+
 * TypeScript
 
 =typescript-mode= adds a major mode with syntax highlighting for TypeScript

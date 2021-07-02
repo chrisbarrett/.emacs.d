@@ -34,6 +34,8 @@
         highlight-thing
         terraform-mode
         hcl-mode
+        yaml-mode
+        highlight-indent-guides
         hl-todo
         dumb-jump
         deadgrep
