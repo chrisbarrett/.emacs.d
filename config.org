@@ -274,7 +274,7 @@ Load lisp in =org= and =ledger= dirs.
     (load (expand-file-name "init.el" paths-ledger-lisp-directory) t))
 #+end_src
 
-** Use Nano theme
+** Use Nano theme                                                  :disabled:
 
 Use =nano-theme= as well as its associated customisations to provide a
 minimalistic look and feel.
