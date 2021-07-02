@@ -42,9 +42,6 @@
 (defconst paths-elpa-directory
   (concat user-emacs-directory "elpa"))
 
-(defconst paths-config-directory
-  (concat user-emacs-directory "config"))
-
 (defconst paths-themes-directory
   (concat user-emacs-directory "themes"))
 
@@ -74,7 +71,6 @@ If argument INTERACTIVE-P is set, log additional information."
   (let* ((before load-path)
          (main-dirs
           (list paths-lisp-directory
-                paths-config-directory
                 paths-themes-directory
                 paths-site-lisp-directory))
          (subdirs
