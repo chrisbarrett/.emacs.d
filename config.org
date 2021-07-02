@@ -3974,6 +3974,34 @@ TypeScript language server.
     :custom ((css-indent-offset 2)))
 #+end_src
 
+* GraphQL
+
+#+begin_src emacs-lisp
+  (use-package graphql-mode
+    :mode ("\\.graphql\\'" . graphql-mode))
+#+end_src
+
+** Teach dumb-jump about GraphQL files
+
+#+begin_src emacs-lisp
+  (with-eval-after-load 'dumb-jump
+    (add-to-list 'dumb-jump-language-file-exts '(:language "graphql" :ext "graphql" :agtype nil :rgtype nil))
+    (add-to-list 'dumb-jump-language-file-exts '(:language "graphql" :ext "gql" :agtype nil :rgtype nil))
+
+    (add-to-list 'dumb-jump-find-rules
+                 '(:type "type" :supports ("ag" "grep" "rg") :language "graphql"
+                   :regex "(input|type|union)\\s+JJJ\\b"))
+    (add-to-list 'dumb-jump-find-rules
+                 '(:type "enum"
+                   :supports ("ag" "grep" "rg") :language "graphql"
+                   :regex "enum\\s+JJJ\\b"))
+    (add-to-list 'dumb-jump-find-rules
+                 '(:type "scalar"
+                   :supports ("ag" "grep" "rg") :language "graphql"
+                   :regex "scalar\\s+JJJ\\b")))
+#+end_src
+
+
 * =mu4e= - Mail user agent
 
 Use the system's =mu4e= installation for mail management. I use the

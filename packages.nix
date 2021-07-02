@@ -39,6 +39,7 @@
         ivy
         flx
         pass
+        graphql-mode
         smex
         counsel
         historian
