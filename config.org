@@ -1445,9 +1445,7 @@ Teach Emacs to respect editorconfig files.
     :hook (after-init . editorconfig-mode))
 #+end_src
 
-* Basic programming language modes
-
-** =conf-mode= - Configuration files
+* =conf-mode= - Configuration files
 
 Configure =conf-mode= for use with more kinds of config files.
 
@@ -1459,7 +1457,7 @@ Configure =conf-mode= for use with more kinds of config files.
      ("\\.kll\\'" . conf-mode)))
 #+end_src
 
-** =hexl-mode= - Hex editing
+* =hexl-mode= - Hex editing
 
 =hexl= is Emacs' built-in hex editor.
 
@@ -3872,7 +3870,7 @@ Use =C-c C-.= to change the timestamp of the transaction at point.
             (message "Date changed: %s -> %s" value updated))))))
 #+end_src
 
-** Format buffer
+** Format ledger buffer
 
 Define a command to format a ledger buffer.
 
