@@ -2455,6 +2455,7 @@ down on typing.
     :hook ((prog-mode . (lambda () (require 'yasnippet)))
            (text-mode . (lambda () (require 'yasnippet))))
     :custom ((yas-wrap-around-region t)
+             (yas-alias-to-yas/prefix-p nil)
              (yas-prompt-functions '(yas-completing-prompt))
              (yas-verbosity 0)
              (yas-minor-mode-map (make-sparse-keymap)))
