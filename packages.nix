@@ -76,6 +76,7 @@
         hide-mode-line
         magit-popup
         poporg
+        emojify
       ];
 
       extraPackages = rec {

@@ -3586,6 +3586,33 @@ certain types of Elisp files.
         (setq-local prettify-symbols-alist '(("lambda" . ?λ)))))))
 #+end_src
 
+* Render emoji
+
+=emojify= adds support for rendering emojis.
+
+#+begin_src emacs-lisp
+  (use-package emojify
+    :hook (after-init . global-emojify-mode)
+    :custom
+    ((emojify-emoji-styles '(github unicode))
+     (emojify-program-contexts '(comments))
+     (emojify-point-entered-behaviour 'uncover)
+     (emojify-user-emojis
+      '((":check:" . (("emoji" . ":white_check_mark:")
+                      ("name" . "White Heavy Check Mark")
+                      ("unicode" . "✅")
+                      ("image" . "2705.png")
+                      ("style" . "github"))))))
+    :preface
+    (defun emojify-at-org-drawer-p (_match beg _end)
+      (when (derived-mode-p 'org-mode 'org-agenda-mode)
+        (save-excursion
+          (goto-char (line-beginning-position))
+          (or (org-at-drawer-p) (org-at-property-p)))))
+    :config
+    (add-to-list 'emojify-inhibit-functions #'emojify-at-org-drawer-p))
+#+end_src
+
 * Nix
 
 Configure major-mode for Nix language buffers.
