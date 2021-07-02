@@ -3861,8 +3861,197 @@ TypeScript language server.
     :custom ((css-indent-offset 2)))
 #+end_src
 
+* Mail
 
-* TODO mu4e
+Use the system's =mu4e= installation for mail management. I use the
+systemd/launchd to run mbsync and indexing, so mu4e doesn't trigger fetching
+itself.
+
+#+begin_src emacs-lisp
+  (add-to-list 'load-path (getenv "NIX_EMACS_MU_LISP_DIR"))
+
+  (use-package mu4e
+    :commands (mu4e mu4e-compose-new)
+    :custom
+    ((mu4e-mu-binary (getenv "NIX_EMACS_MU_BINARY"))
+     (mu4e-bookmarks '(("flag:unread AND NOT (flag:trashed OR m:/walrus/Archive)"
+                        "Unread messages" ?u)
+                       ("d:today..now"
+                        "Today's messages" ?t)
+                       ("d:7d..now"
+                        "Last 7 days" ?w)
+                       ("d:30d..now"
+                        "Last 30 days" ?m)
+                       ("m:/walrus/Inbox"
+                        "Inbox" ?i)
+                       ("m:/walrus/Notifications AND d:14d..now"
+                        "Notifications" ?n)
+                       ("m:/walrus/Sent"
+                        "Sent messages" ?s)
+                       ("github"
+                        "Code & PRs" ?c)))
+     (mu4e-attachment-dir (f-expand "~/Downloads"))
+     (mu4e-context-policy 'pick-first)
+     (mu4e-compose-context-policy 'ask-if-none)
+     (message-kill-buffer-on-exit t)
+     (mu4e-view-use-gnus t)
+     (mu4e-use-fancy-chars t)
+     (mu4e-headers-include-related nil)
+     (mu4e-headers-attach-mark '("a" . "A"))
+     (mu4e-headers-unread-mark '("u" . "●"))
+     (mu4e-headers-seen-mark '(" " . " "))
+     (mu4e-hide-index-messages t)
+     (mu4e-headers-skip-duplicates t)
+     (mu4e-index-lazy-check t)
+     (mu4e-confirm-quit t)
+     (mu4e-view-prefer-html t)
+     (mu4e-view-show-images t)
+     (mu4e-view-show-addresses t)
+     (mu4e-headers-date-format "%d-%m-%y %k:%M")
+     (mu4e-completing-read-function #'completing-read)
+     (sendmail-program "msmtp")
+     (message-send-mail-function #'message-send-mail-with-sendmail)
+     (mu4e-change-filenames-when-moving t)
+
+     ;; Update every 30 seconds.
+     (mu4e-update-interval 30)
+
+     ;; Ensure I'm never prompted for the buffer coding system when sending mail.
+     (sendmail-coding-system 'utf-8)
+
+     ;; Send email with long lines and format=flowed.
+     (mu4e-compose-format-flowed t)
+     (fill-flowed-encode-column 998)
+
+     ;; Custom rendering of HTML messages
+     (mu4e-html2text-command #'config-mail--shr-buffer)))
+#+end_src
+
+Always use =mu4e= for mail composition.
+
+#+begin_src emacs-lisp
+  (global-set-key [remap compose-mail] #'mu4e-compose-new)
+#+end_src
+
+Display mu4e fullscreen.
+
+#+begin_src emacs-lisp
+  (use-package mu4e
+    :config
+    (add-to-list 'display-buffer-alist
+                 `(,(rx bos " *mu4e-main*" eos)
+                   (display-buffer-reuse-window
+                    display-buffer-fullframe)
+                   (reusable-frames . visible))))
+#+end_src
+
+
+Wrap lines in an intuitive way while viewing and editing.
+
+#+begin_src emacs-lisp
+  (use-package mu4e
+    :config
+    (progn
+      ;; Use word wrap instead of auto-fill.
+      (add-hook 'mu4e-compose-mode-hook #'turn-off-auto-fill)
+      (add-hook 'mu4e-compose-mode-hook (lambda () (setq word-wrap t)))
+
+      ;; Wrap lines when viewing.
+      (add-hook 'mu4e-view-mode-hook #'visual-line-mode)))
+#+end_src
+
+Define commands for viewing messages in a browser, either with =eww= or the
+default system browser.
+
+#+begin_src emacs-lisp
+  (use-package mu4e
+    :config
+    (progn
+      ;; View html message in eww. `av` in view to activate
+      (add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
+      ;; View html message in external browser. `a&` in view to activate
+      (add-to-list 'mu4e-view-actions '("&viewInExternalBrowser" . config-mail--view-in-external-browser-action) t)))
+#+end_src
+
+Define a refile action that marks messages as 'read' and moves them into the
+appropriate folder.
+
+#+begin_src emacs-lisp
+  (defun config-mail--message-from-me-p (msg)
+    (equal (mu4e-get-sent-folder msg) (mu4e-message-field msg :maildir)))
+
+  (use-package mu4e
+    :config
+    (setf (alist-get 'refile mu4e-marks)
+          '(:char ("r" . "▶")
+            :prompt "refile"
+            :dyn-target (lambda (target msg)
+                          (if (config-mail--message-from-me-p msg)
+                              (mu4e-get-sent-folder msg)
+                            (mu4e-get-refile-folder msg)))
+            :action (lambda (docid msg target)
+                      (unless (config-mail--message-from-me-p msg)
+                        (mu4e~proc-move docid (mu4e~mark-check-target target) "+S-u-N"))))))
+#+end_src
+
+Insert signatures before quoted content, as in other mail user agents.
+
+#+begin_src emacs-lisp
+  (defun config-mail--insert-signature-before-quoted-message ()
+    (unless (member mu4e-compose-type '(edit resend))
+      (save-excursion
+        (save-restriction
+          (widen)
+          (cond
+           ((eq mu4e-compose-type 'new)
+            (message-goto-body)
+            (kill-region (point) (point-max)))
+           ((message-goto-signature)
+            (forward-line -2)
+            (delete-region (point) (point-max))))
+
+          (message-goto-body)
+          (insert "\n")
+          (narrow-to-region (point-min) (point))
+
+          (let ((message-signature t)
+                (mu4e-compose-signature t)
+                (mu4e-compose-signature-auto-include t))
+            (message-insert-signature))
+
+          (when (member mu4e-compose-type '(forward reply))
+            (goto-char (point-max))
+            (insert "\n"))))))
+
+  (add-hook 'mu4e-compose-mode-hook #'config-mail--insert-signature-before-quoted-message)
+
+  (use-package mu4e
+    :custom
+    ((message-forward-before-signature nil)
+     (message-citation-line-function #'message-insert-formatted-citation-line)
+     (message-citation-line-format "On %a, %b %d %Y, %f wrote:\n")))
+#+end_src
+
+Don't quit mu4e, just bury the buffer.
+
+#+begin_src emacs-lisp
+  (global-set-key [remap mu4e-quit] #'bury-buffer)
+#+end_src
+
+Teach =org-mode= how to store links to messages in =mu4e=.
+
+#+begin_src emacs-lisp
+  (use-package org-mu4e
+    :after (:any org mu4e))
+#+end_src
+
+Normally newlines are reflowed automatically. Display newline symbols in the
+buffer when a hard newline would be used.
+
+#+begin_src emacs-lisp
+  (use-package messages-are-flowing
+    :hook (message-mode . messages-are-flowing-use-and-mark-hard-newlines))
+#+end_src
 
 * TODO org-mode
 

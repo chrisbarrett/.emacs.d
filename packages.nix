@@ -67,6 +67,7 @@
         yasnippet
         typescript-mode
         tide
+        messages-are-flowing
       ];
 
       extraPackages = rec {
@@ -87,7 +88,7 @@
           owner = "rougier";
           rev = "40b2d48da55b7ac841d62737ea9cdf54e8442cf3";
           sha256 = "1i94gdyk9f5c2vyr184znr54cbvg6apcq38l2389m3h8lxg1m5na";
-          buildInputs = [pkgs.mu];
+          buildInputs = [ pkgs.mu ];
         };
 
         mu4e-thread-folding = github {
@@ -95,7 +96,7 @@
           owner = "rougier";
           rev = "c6915585263a744b4da4a0e334393150603136dc";
           sha256 = "0fki9506q42fz6a86pnx2ll3kl25d6nh4b735c323abnwjirjd50";
-          buildInputs = [pkgs.mu];
+          buildInputs = [ pkgs.mu ];
         };
 
         nano-emacs = github {

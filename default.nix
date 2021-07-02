@@ -75,6 +75,8 @@ in pkgs.symlinkJoin {
           --set NIX_EMACS_SRC_DIR "${emacs}/share/emacs/src/" \
           --set NIX_EMACS_TEX_PROGRAM "${pkgs.tectonic}/bin/tectonic" \
           --set NIX_EMACS_PLANTUML_JAR "${pkgs.plantuml}/lib/plantuml.jar" \
+          --set NIX_EMACS_MU_BINARY "${pkgs.mu}/bin/mu" \
+          --set NIX_EMACS_MU_LISP_DIR "${pkgs.mu}/share/emacs/site-lisp/mu4e" \
           --set JAVA_HOME "${pkgs.jdk}"
       fi
     done
