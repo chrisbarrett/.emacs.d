@@ -3609,7 +3609,7 @@ certain types of Elisp files.
                    (reusable-frames . visible))))
 #+end_src
 
-* Nix
+* =nix-mode= Configure support for the Nix language
 
 Configure major-mode for Nix language buffers.
 
@@ -3998,7 +3998,7 @@ Define a command to format a ledger buffer.
       (pdf-tools-install)))
 #+end_src
 
-* TypeScript
+* =typescript-mode= & =tide= - TypeScript language support
 
 =typescript-mode= adds a major mode with syntax highlighting for TypeScript
 files.
@@ -4043,8 +4043,6 @@ TypeScript language server.
         (flycheck-add-next-checker 'typescript-tide '(warning . javascript-eslint) t))))
 #+end_src
 
-* JavaScript
-
 =js= is the Emacs built-in JavaScript mode.
 
 #+begin_src emacs-lisp
@@ -4052,13 +4050,10 @@ TypeScript language server.
     :mode ("\\.[cm]?jsx?\\'" . js-mode)
     :custom ((js-indent-level 2)
              (js-switch-indent-offset 2)
-             (js-js-tmpdir (f-join paths-cache-directory "js")))
-    :config
-    (setq js--prettify-symbols-alist '(("function" . ?ƒ))))
-
+             (js-js-tmpdir (f-join paths-cache-directory "js"))))
 #+end_src
 
-* CSS
+* =css-mode= - CSS editing support
 
 =css-mode= is the built-in CSS mode.
 
@@ -4068,7 +4063,7 @@ TypeScript language server.
     :custom ((css-indent-offset 2)))
 #+end_src
 
-* GraphQL
+* =graphql= - GraphQL schema definition language editing support
 
 #+begin_src emacs-lisp
   (use-package graphql-mode
@@ -4095,7 +4090,7 @@ TypeScript language server.
                    :regex "scalar\\s+JJJ\\b")))
 #+end_src
 
-* Terraform and HCL
+* =terraform-mode= & =hcl-mode= - Editing support for Terraform
 
 #+begin_src emacs-lisp
   (use-package terraform-mode
