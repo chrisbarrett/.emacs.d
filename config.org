@@ -2216,8 +2216,7 @@ compatibility.
 
 #+begin_src emacs-lisp
   (use-package evil-iedit-state
-    :config
-    (define-obsolete-function-alias 'iedit-cleanup 'iedit-lib-cleanup))
+    :commands (evil-iedit-state/iedit-mode))
 #+end_src
 
 * Text completion engines
