@@ -4058,9 +4058,6 @@ buffer when a hard newline would be used.
 * TODO org-agenda
 
 * TODO org-roam
-
-* TODO keybindings
-
 * PlantUML
 
 #+begin_src emacs-lisp
@@ -4230,6 +4227,452 @@ Teach Emacs how to highlight arrows and important keywords.
 
        (,(rx bol (* space) (group "*") (+ (not (any "*"))))
         (1 'org-list-dt)))))
+#+end_src
+
+* Leader Key
+
+Set up ~SPACE~ as a leader key.
+
+#+begin_src emacs-lisp
+  (require 'general)
+  (general-evil-setup)
+
+  (general-define-key :states '(normal motion) "SPC" nil)
+  (general-create-definer leader-set-key :states '(normal motion) :prefix "SPC")
+#+end_src
+
+** Top-level leader keybindings
+
+#+begin_src emacs-lisp
+  (defun alternate-buffer (&optional window)
+    "Toggle back and forth between two buffers.
+
+  WINDOW sets the window in which to toggle, and defaults to the
+  current window."
+    (interactive)
+    (let ((current-buffer (window-buffer window))
+          (buffer-predicate (frame-parameter (window-frame window) 'buffer-predicate)))
+      ;; switch to first buffer previously shown in this window that matches
+      ;; frame-parameter `buffer-predicate'
+      (switch-to-buffer
+       (or (car (seq-filter (lambda (buffer)
+                              (and (not (eq buffer current-buffer))
+                                   (or (null buffer-predicate) (funcall buffer-predicate buffer))))
+                            (seq-map #'car (window-prev-buffers window))))
+           ;; `other-buffer' honors `buffer-predicate' so no need to filter
+           (other-buffer current-buffer t)))))
+#+end_src
+
+#+begin_src emacs-lisp
+  (leader-set-key
+    "!" #'shell-command
+    "&" #'async-shell-command
+    "'" #'poporg-dwim
+    "/" #'counsel-projectile-rg
+    ":" #'eval-expression
+    "<tab>" #'alternate-buffer
+    "?" #'counsel-descbinds
+    "@" #'counsel-bookmark
+    "|" #'rotate-layout
+    "SPC" #'ivy-switch-buffer
+    "C" #'compile
+    "D" #'dired-other-window
+    "S" #'deadgrep
+    "d" #'dired
+    "i" #'counsel-imenu
+    "q" #'delete-window
+    "r" #'ivy-resume
+    "s" #'evil-iedit-state/iedit-mode
+    "u" #'universal-argument
+    "x" #'counsel-M-x)
+#+end_src
+
+** ~,~ - Parens
+
+#+begin_src emacs-lisp
+  (leader-set-key :prefix "SPC ,"
+    "h" #'sp-beginning-of-sexp
+    "l" #'sp-end-of-sexp
+    "n" #'sp-next-sexp
+    "p" #'sp-previous-sexp
+    "<" #'sp-backward-up-sexp
+    ">" #'sp-up-sexp
+    "c" #'sp-convolute-sexp
+    "d" #'sp-kill-sexp
+    "D" #'sp-backward-kill-sexp
+    "k" #'sp-splice-sexp-killing-forward
+    "K" #'sp-splice-sexp-killing-backward
+    "s" #'sp-splice-sexp-killing-around
+    "r" #'sp-raise-sexp
+    "a" #'sp-add-to-next-sexp
+    "A" #'sp-add-to-previous-sexp
+    "b" #'sp-forward-barf-sexp
+    "B" #'sp-backward-barf-sexp
+    "m" #'sp-forward-slurp-sexp
+    "M" #'sp-backward-slurp-sexp
+    "e" #'sp-emit-sexp
+    "j" #'sp-join-sexp
+    "t" #'sp-transpose-sexp
+    "U" #'sp-backward-unwrap-sexp
+    "u" #'sp-unwrap-sexp
+    "w" #'sp-rewrap-sexp
+    "x" #'sp-split-sexp
+    "y" #'sp-copy-sexp
+    "Y" #'sp-backward-copy-sexp)
+#+end_src
+
+** ~a~ - Applications
+
+#+begin_src emacs-lisp
+  (leader-set-key :prefix "SPC a"
+    "c" #'quick-calc
+    "C" #'full-calc
+    "m" #'mu4e
+    "p" #'pass
+    "r p" #'profiler-start
+    "r r" #'profiler-report
+    "r s" #'profiler-stop
+    "w" #'world-time-list)
+#+end_src
+
+** ~b~ - Buffers
+
+#+begin_src emacs-lisp
+  (leader-set-key :prefix "SPC b"
+    "n" #'next-buffer
+    "p" #'previous-buffer
+    "l" #'ibuffer
+    "s" #'switch-buffer
+    "b" #'bury-buffer
+    "d" #'kill-current-buffer
+    "w" #'save-buffer)
+#+end_src
+
+** ~c~ - Commenting
+
+#+begin_src emacs-lisp
+  (autoload 'sp-mark-sexp "smartparens")
+
+  (defun comment-sexp ()
+    "Comment the sexp at point."
+    (interactive)
+    (sp-mark-sexp)
+    (call-interactively #'comment-region))
+#+end_src
+
+#+begin_src emacs-lisp
+  (leader-set-key :prefix "SPC c"
+    "l" #'evilnc-comment-or-uncomment-lines
+    "r" #'comment-or-uncomment-region
+    "s" #'comment-sexp)
+#+end_src
+
+** ~e~ - Errors and Flycheck
+
+#+begin_src emacs-lisp
+  (autoload 'flycheck-list-errors "flycheck")
+
+  (defun flycheck-toggle-error-list ()
+    "Show or hide the error list."
+    (interactive)
+    (if-let* ((window (seq-find (lambda (it)
+                                  (equal flycheck-error-list-buffer
+                                         (buffer-name (window-buffer it))))
+                                (window-list))))
+        (delete-window window)
+      (flycheck-list-errors)))
+#+end_src
+
+#+begin_src emacs-lisp
+  (leader-set-key :prefix "SPC e"
+    "n" #'flycheck-next-error
+    "p" #'flycheck-previous-error
+    "l" #'flycheck-toggle-error-list
+    "r" #'flycheck-buffer
+    "c" #'flycheck-clear
+    "e" #'flycheck-explain-error-at-point
+    "h" #'flycheck-describe-checker
+    "s" #'flycheck-select-checker
+    "v" #'flycheck-verify-setup)
+#+end_src
+
+** ~f~ - Files
+
+#+begin_src emacs-lisp
+  (defun delete-current-buffer-and-file ()
+    "Remove the file associated with the current buffer, then kill it."
+    (interactive)
+    (let ((file (buffer-file-name)))
+      (cond
+       ((null file)
+        (kill-buffer))
+       ((not (file-exists-p file))
+        (kill-buffer))
+       ((yes-or-no-p "Delete this file? ")
+        (delete-file file t)
+        (kill-buffer)
+
+        (when (and (featurep 'projectile) (projectile-project-p))
+          (call-interactively #'projectile-invalidate-cache))
+
+        (message "File deleted: %s" file)))))
+
+  (defun sudo-edit (&optional arg)
+    "Reopen the current file as sudo for editing.
+
+  With prefix argument ARG, prompt for a file."
+    (interactive "p")
+    (let* ((fname (if (or arg (not buffer-file-name))
+                      (read-file-name "File: ")
+                    buffer-file-name))
+           (target (cond ((string-match-p "^/ssh:" fname)
+                          (with-temp-buffer
+                            (insert fname)
+                            (search-backward ":")
+                            (let ((last-match-end nil)
+                                  (last-ssh-hostname nil))
+                              (while (string-match "@\\\([^:|]+\\\)" fname last-match-end)
+                                (setq last-ssh-hostname (or (match-string 1 fname)
+                                                            last-ssh-hostname))
+                                (setq last-match-end (match-end 0)))
+                              (insert (format "|sudo:%s" (or last-ssh-hostname "localhost"))))
+                            (buffer-string)))
+                         (t (concat "/sudo:root@localhost:" fname)))))
+      (find-file target)))
+#+end_src
+
+#+begin_src emacs-lisp
+  (leader-set-key :prefix "SPC f"
+    "D" #'delete-current-buffer-and-file
+    "e" #'sudo-edit
+    "f" #'find-file
+    "F" #'find-file-other-window
+    "s" #'save-buffer
+    "S" #'save-some-buffers
+    "l" #'find-file-literally
+    "l" #'hexl-find-file
+    "w" #'write-file
+    "v" #'find-alternate-file
+    "r" #'counsel-recentf)
+#+end_src
+
+** ~g~ - Git & Goto
+
+#+begin_src emacs-lisp
+  (require 's)
+  (require 'xref)
+  (autoload 'projectile-find-file "projectile")
+  (autoload 'xref-push-marker-stack "xref")
+
+  (defun jump-to-file (file &optional pos)
+    (xref-push-marker-stack)
+    (let ((buf (or (get-buffer file) (find-file-noselect file))))
+      (switch-to-buffer buf)
+      (when pos
+        (goto-char pos))))
+
+  (defun jump-to-config-file ()
+    "Jump to the config.org file."
+    (interactive)
+    (jump-to-file (expand-file-name "config.org" user-emacs-directory)))
+
+  (defun jump-to-tangled-config-file ()
+    "Jump to the config.el file."
+    (interactive)
+    (jump-to-file (expand-file-name "config.el" user-emacs-directory)))
+
+  (defun jump-to-packages-file ()
+    "Jump to the packages.nix file."
+    (interactive)
+    (jump-to-file (expand-file-name "packages.nix" user-emacs-directory)))
+
+  (defun jump-to-init-file ()
+    "Open the Emacs init.el file."
+    (interactive)
+    (jump-to-file (expand-file-name "init.el" user-emacs-directory)))
+
+  (defun jump-to-nix-config ()
+    "Open a nix config file."
+    (interactive)
+    (let ((default-directory paths-nix-directory))
+      (projectile-find-file)))
+
+  (defun hostname ()
+    (cadr (s-match (rx (group (+? nonl)) (? "-" (+ digit)) (? ".local") eos)
+                   (downcase (system-name)))))
+
+  (defun jump-to-nix-system-config ()
+    "Open the nix system config file."
+    (interactive)
+    (jump-to-file (format (f-join paths-nix-directory (concat (hostname) ".nix")))))
+
+  (defun jump-to-site-file ()
+    "Open the Emacs site config file."
+    (interactive)
+    (jump-to-file user-site-file))
+
+  (defun jump-to-messages ()
+    "Open the messages buffer."
+    (interactive)
+    (display-buffer "*Messages*"))
+#+end_src
+
+#+begin_src emacs-lisp
+  (leader-set-key :prefix "SPC g"
+    "c" #'jump-to-config-file
+    "C" #'jump-to-tangled-config-file
+    "i" #'jump-to-init-file
+    "n" #'jump-to-nix-config
+    "S" #'jump-to-nix-system-config
+    "p" #'jump-to-packages-file
+    "?" #'jump-to-messages
+    "S" #'jump-to-site-file
+    "s" #'magit-status
+    "d" #'magit-diff-buffer-file
+    "b" #'magit-blame
+    "r" #'browse-at-remote
+    "l" #'magit-log-buffer-file
+    "w" #'magit-worktree-status
+    "W" #'magit-worktree
+    "g" #'xref-find-definitions
+    "G" #'xref-find-definitions-other-window
+    "m" #'xref-find-references
+    "SPC" #'pop-tag-mark)
+#+end_src
+
+** ~h~ - Help
+
+#+begin_src emacs-lisp
+  (leader-set-key :prefix "SPC h"
+    "i" #'info
+    "m" #'man
+    "d c" #'describe-face
+    "d C" #'helpful-command
+    "d f" #'helpful-callable
+    "d k" #'helpful-key
+    "d m" #'describe-mode
+    "d p" #'describe-text-properties
+    "d v" #'helpful-variable
+    "f c" #'find-face-definition
+    "f f" #'find-function
+    "f l" #'find-library
+    "f v" #'find-variable)
+#+end_src
+
+** ~k~ - Killing
+
+#+begin_src emacs-lisp
+  (leader-set-key :prefix "SPC k"
+    "b" #'kill-this-buffer
+    "w" #'delete-window
+    "r" #'counsel-yank-pop)
+#+end_src
+
+** ~n~ - Narrowing
+
+#+begin_src emacs-lisp
+  (leader-set-key :prefix "SPC n"
+    "f" #'narrow-to-defun
+    "r" #'narrow-to-region
+    "w" #'widen
+    "s" #'org-narrow-to-subtree
+    "S" #'org-tree-to-indirect-buffer)
+#+end_src
+
+** ~p~ - Projects
+
+#+begin_src emacs-lisp
+  (leader-set-key :prefix "SPC p"
+    "<tab>" #'projectile-toggle-between-implementation-and-test
+    "<backtab>" #'projectile-find-implementation-or-test-other-window
+    "!" #'projectile-run-async-shell-command-in-root
+    "c" #'projectile-compile-project
+    "u" #'projectile-run-project
+    "t" #'projectile-test-project
+    "p" #'counsel-projectile-switch-project
+    "f" #'counsel-projectile-find-file
+    "d" #'counsel-projectile-find-dir
+    "b" #'counsel-projectile-switch-to-buffer
+    "D" #'projectile-dired
+    "/" #'counsel-projectile-rg
+    "r" #'projectile-replace)
+#+end_src
+
+** ~t~ - Toggles
+
+#+begin_src emacs-lisp
+  (leader-set-key :prefix "SPC t"
+    "i" #'toggle-input-method
+    "c" #'hide/show-comments-toggle
+    "m" #'global-hide-mode-line-mode)
+#+end_src
+
+** ~w~ - Windows
+
+#+begin_src emacs-lisp
+  (defun split-window-horizontally-dwim (&optional arg)
+    "When splitting window, show the other buffer in the new window.
+
+  With prefix arg ARG, don't select the new window."
+    (interactive "P")
+    (split-window-horizontally)
+    (let ((target-window (next-window)))
+      (set-window-buffer target-window (other-buffer))
+      (unless arg
+        (select-window target-window))))
+
+  (defun split-window-vertically-dwim (&optional arg)
+    "When splitting window, show the other buffer in the new window.
+
+  With prefix arg ARG, don't select the new window."
+    (interactive "P")
+    (split-window-vertically)
+    (let ((target-window (next-window)))
+      (set-window-buffer target-window (other-buffer))
+      (unless arg
+        (select-window target-window))))
+
+  (defun toggle-window-dedication ()
+    "Toggle whether the current window is dedicated to its current buffer."
+    (interactive)
+    (let* ((window (selected-window))
+           (was-dedicated (window-dedicated-p window)))
+      (set-window-dedicated-p window (not was-dedicated))
+      (message "Window %sdedicated to %s"
+               (if was-dedicated "no longer " "")
+               (buffer-name))))
+#+end_src
+
+#+begin_src emacs-lisp
+  (leader-set-key :prefix "SPC w"
+    "w" #'evil-window-next
+    "r" #'evil-window-rotate-downwards
+    "/" #'split-window-horizontally-dwim
+    "-" #'split-window-vertically-dwim
+    "=" #'balance-windows
+    "d" #'delete-window
+    "o" #'delete-other-windows
+    "t" #'toggle-window-dedication)
+#+end_src
+
+** ~y~ - Text snippets
+
+#+begin_src emacs-lisp
+  (leader-set-key :prefix "SPC y"
+    "n" #'yas-new-snippet
+    "e" #'yas-expand
+    "f" #'yas-visit-snippet-file
+    "y" #'yas-insert-snippet)
+
+#+end_src
+
+** ~z~ - Text Scale
+
+#+begin_src emacs-lisp
+  (leader-set-key :prefix "SPC z"
+    "+" #'default-text-scale-increase
+    "-" #'default-text-scale-decrease
+    "=" #'default-text-scale-reset)
 #+end_src
 
 * File postamble
