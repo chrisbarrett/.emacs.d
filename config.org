@@ -3571,6 +3571,21 @@ certain types of Elisp files.
             #'config-flycheck--elisp-package-flycheck-predicate)))
 #+end_src
 
+* Pretty lambdas in Lisp modes
+
+=prettify-symbols-mode= allows characters to be displayed in a different way.
+
+#+begin_src emacs-lisp
+  (use-package prettify-symbols-mode
+    :hook ((emacs-lisp-mode . prettify-symbols-mode)
+           (prettify-symbols-mode . prettify-symbols-setup))
+    :preface
+    (defun prettify-symbols-setup ()
+      (cond
+       ((derived-mode-p 'emacs-lisp-mode 'lisp-mode 'scheme-mode)
+        (setq-local prettify-symbols-alist '(("lambda" . ?λ)))))))
+#+end_src
+
 * Nix
 
 Configure major-mode for Nix language buffers.
