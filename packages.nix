@@ -59,6 +59,7 @@
         latex-preview-pane
         ledger-mode
         flycheck-ledger
+        page-break-lines
         plantuml-mode
         flycheck-plantuml
         projectile

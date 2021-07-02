@@ -2623,6 +2623,25 @@ Suppress =highlight-thing= when hovering over certain kinds of symbols.
                 #'config-highlight-thing--should-highlight-p))
 #+end_src
 
+** Show page breaks characters as a horizontal rule
+
+
+~page-break-lines~ shows a horizontal separator in buffers instead of a
+page-break control character (^L).
+
+#+begin_src emacs-lisp
+  (use-package page-break-lines
+    :hook (after-init . global-page-break-lines-mode)
+    :custom
+    ((page-break-lines-modes '(prog-mode
+                               text-mode
+                               ibuffer-mode
+                               compilation-mode
+                               help-mode
+                               org-agenda-mode))))
+#+end_src
+
+
 * Text scaling
 
 =default-text-scale= provides nice commands for changing text scale for all
