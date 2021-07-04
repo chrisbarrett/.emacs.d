@@ -449,6 +449,13 @@ Disable file dialogs.
   (put 'erase-buffer 'disabled nil)
 #+end_src
 
+** Enable debugging via key command
+
+#+begin_src emacs-lisp
+  (general-define-key "C-c e e" 'toggle-debug-on-error)
+  (general-define-key "C-c e q" 'toggle-debug-on-quit)
+#+end_src
+
 ** General file & buffer settings
 
 Always insert a final newline, as per the Unix convention.
