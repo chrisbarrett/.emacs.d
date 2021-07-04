@@ -1,0 +1,8 @@
+# name: PlantUML template
+# match: (rx (or ".plantuml" ".puml") string-end)
+# --
+@startuml
+
+$0
+
+@enduml
