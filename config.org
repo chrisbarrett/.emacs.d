@@ -142,14 +142,20 @@ Prevent GCs during user input in the minibuffer.
 ** Define a function to select a value depending on the current GTK theme.
 
 #+begin_src emacs-lisp
-  (cl-defun choose-by-gtk-theme (&key light dark)
+  (defun gtk-theme-class ()
+    (with-temp-buffer
+      (ignore-errors
+        (call-process "gsettings" nil t nil
+                      "get" "org.gnome.desktop.interface" "gtk-theme"))
+      (if (string-match-p "dark" (buffer-string))
+          'dark
+        'light)))
+
+  (cl-defun choose-by-system-theme (&key light dark)
     (when (eq system-type 'gnu/linux)
-      (let ((gtk-theme (with-temp-buffer
-                         (ignore-errors
-                           (call-process "gsettings" nil t nil
-                                         "get" "org.gnome.desktop.interface" "gtk-theme"))
-                         (buffer-string))))
-        (if (string-match-p "dark" gtk-theme) light dark))))
+      (if (equal 'dark (gtk-theme-class))
+          dark
+        light)))
 #+end_src
 
 ** Set initial theme settings
@@ -158,8 +164,8 @@ Set reasonable placeholder foreground and background colours until the theme is
 loaded. Use the current GNOME theme to determine whether to use light or dark colours.
 
 #+begin_src emacs-lisp
-  (set-background-color (choose-by-gtk-theme :dark "#282c34" :light "#FDF6E3"))
-  (set-foreground-color (choose-by-gtk-theme :dark "#bbc2cf" :light "#556b72"))
+  (set-background-color (choose-by-system-theme :dark "#282c34" :light "#FDF6E3"))
+  (set-foreground-color (choose-by-system-theme :dark "#bbc2cf" :light "#556b72"))
 #+end_src
 
 ** Configure =use-package=
@@ -296,10 +302,10 @@ Load lisp in =org= and =ledger= dirs.
     :custom
     (doom-themes-enable-bold t)
     (doom-themes-enable-italic t)
-    :unless noninteractive
+    :init
+    (add-to-list 'custom-theme-load-path (file-name-directory (locate-library "doom-themes")))
     :config
-    (load-theme (choose-by-gtk-theme :light 'doom-solarized-light :dark 'doom-one) t)
-    (doom-themes-org-config))
+    (load-theme (choose-by-system-theme :light 'doom-solarized-light :dark 'doom-one) t))
 
   (defun config-themes-light ()
     (load-theme 'doom-solarized-light t))
