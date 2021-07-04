@@ -319,9 +319,7 @@ Apply some extra settings to work well with Nano.
     :demand t)
 
   (use-package emacs
-    :delight
-    hi-lock-mode
-    visual-line-mode)
+    :delight visual-line-mode)
 #+end_src
 
 
@@ -3024,6 +3022,14 @@ Teach =volatile-highlights-mode= to highlight text pasted by =evil= operations.
     :config
     (set-face-attribute 'highlight-thing nil :inherit 'highlight))
 #+end_src
+
+Disable the modeline indicator for ~hi-lock-mode~.
+
+#+begin_src emacs-lisp
+  (use-package hi-lock
+    :delight)
+#+end_src
+
 
 Suppress =highlight-thing= when hovering over certain kinds of symbols.
 
