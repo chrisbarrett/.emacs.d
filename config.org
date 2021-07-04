@@ -298,7 +298,7 @@ Load lisp in =org= and =ledger= dirs.
 
 #+begin_src emacs-lisp
   (use-package doom-themes
-    :ensure t
+    :demand t
     :custom
     (doom-themes-enable-bold t)
     (doom-themes-enable-italic t)
@@ -1509,6 +1509,7 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
 #+begin_src emacs-lisp
   (use-package autoinsert-files
     :after (autoinsert)
+    :demand t
     :commands (autoinsert-files-populate-templates)
     :init
     (defun autoinsert-maybe-enter-snippet-mode ()
