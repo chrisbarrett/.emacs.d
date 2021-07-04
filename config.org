@@ -5470,6 +5470,35 @@ Ensure we use dired rather than the Finder on macOS.
     "S" #'org-tree-to-indirect-buffer)
 #+end_src
 
+** ~o~ - org-mode
+
+#+begin_src emacs-lisp
+  (leader-set-key :infix "o"
+    "" '(nil :which-key "+org")
+    "SPC" '(deft :which-key "edit/create note...")
+    "a" '(org-funcs-agenda-dwim :which-key "agenda")
+    ;; TODO: clocking (c)
+    "k" '(org-capture :which-key "capture...")
+    "l" '(org-store-link :which-key "store link")
+    "s" '(org-search-view :which-key "search...")
+
+    "<tab>" '(org-roam :which-key "backlinks")
+    "f" '(org-roam-find-file :which-key "roam file...")
+    "I" '(org-roam-jump-to-index :wk "index file")
+    "n" '(org-funcs-dailies-today :wk "dailies: today")
+    "y" '(org-funcs-dailies-yesterday :wk "dailies: yesterday")
+    "d" '(org-funcs-dailies-date :wk "dailies: date...")
+
+    "b" '(helm-bibtex :wk "bibliography...")
+    ;; TODO: org-ref (r)
+    "u" '(org-funcs-url-to-reference :wk "create reference of URL...")
+
+    "g" '(org-capture-goto-last-stored :wk "last captured")
+    "t" '(org-funcs-todo-list :wk "todo list")
+    "v" '(org-tags-view :wk "tags")
+    "w" '(org-funcs-goto-work :wk "work"))
+#+end_src
+
 ** ~p~ - Projects
 
 #+begin_src emacs-lisp
