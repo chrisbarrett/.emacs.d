@@ -2138,36 +2138,36 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
 
 #+begin_src emacs-lisp
   (leader-set-key
-    "!" '(shell-command :which-key "shell cmd")
-    "&" '(async-shell-command :which-key "shell cmd (async)")
+    "!" '(shell-command :wk "shell cmd")
+    "&" '(async-shell-command :wk "shell cmd (async)")
     "'" (general-predicate-dispatch 'poporg-dwim
           (bound-and-true-p poporg-mode) 'poporg-edit-exit
           (derived-mode-p 'org-mode) 'org-edit-special
           (bound-and-true-p org-src-mode) 'org-edit-src-exit)
-    "/" '(counsel-projectile-rg :which-key "rg")
-    ":" '(eval-expression-interactively :which-key "eval")
-    "<tab>" '(alternate-buffer :which-key "other buf")
-    "?" '(general-describe-keybindings :which-key "show bindings")
-    "@" '(counsel-bookmark :which-key "bookmark")
-    "|" '(rotate-layout :which-key "rotate window layout")
-    "SPC" '(ivy-switch-buffer :which-key "switch buf")
+    "/" '(counsel-projectile-rg :wk "rg")
+    ":" '(eval-expression-interactively :wk "eval")
+    "<tab>" '(alternate-buffer :wk "other buf")
+    "?" '(general-describe-keybindings :wk "show bindings")
+    "@" '(counsel-bookmark :wk "bookmark")
+    "|" '(rotate-layout :wk "rotate window layout")
+    "SPC" '(ivy-switch-buffer :wk "switch buf")
     "C" #'compile
-    "D" '(dired-other-window :which-key "dired (other)")
-    "S" '(deadgrep :which-key "rg (deadgrep)")
+    "D" '(dired-other-window :wk "dired (other)")
+    "S" '(deadgrep :wk "rg (deadgrep)")
     "d" #'dired
-    "i" '(counsel-imenu :which-key "imenu")
-    "q" '(delete-window :which-key "delete window")
+    "i" '(counsel-imenu :wk "imenu")
+    "q" '(delete-window :wk "delete window")
     "r" 'ivy-resume
-    "s" '(evil-iedit-state/iedit-mode :which-key "iedit")
-    "u" '(universal-argument :which-key "prefix arg")
-    "x" '(counsel-M-x :which-key "M-x"))
+    "s" '(evil-iedit-state/iedit-mode :wk "iedit")
+    "u" '(universal-argument :wk "prefix arg")
+    "x" '(counsel-M-x :wk "M-x"))
 #+end_src
 
 ** ~,~ - Parens
 
 #+begin_src emacs-lisp
   (leader-set-key :infix ","
-    "" '(nil :which-key "+parens")
+    "" '(nil :wk "+parens")
     "h" #'sp-beginning-of-sexp
     "l" #'sp-end-of-sexp
     "n" #'sp-next-sexp
@@ -2202,12 +2202,12 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "a"
-    "" '(nil :which-key "+apps")
+    "" '(nil :wk "+apps")
     "c" #'quick-calc
     "C" #'full-calc
     "m" #'mu4e
     "p" #'pass
-    "r" '(nil :which-key "+profiler")
+    "r" '(nil :wk "+profiler")
     "r p" (general-predicate-dispatch 'profiler-start
             (profiler-running-p) 'profiler-stop)
     "r r" #'profiler-report
@@ -2218,7 +2218,7 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "b"
-    "" '(nil :which-key "+bufs")
+    "" '(nil :wk "+bufs")
     "n" #'next-buffer
     "p" #'previous-buffer
     "l" #'ibuffer
@@ -2242,7 +2242,7 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "c"
-    "" '(nil :which-key "+comments")
+    "" '(nil :wk "+comments")
     "l" #'evilnc-comment-or-uncomment-lines
     "r" #'comment-or-uncomment-region
     "s" #'comment-sexp)
@@ -2266,7 +2266,7 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "e"
-    "" '(nil :which-key "+errors")
+    "" '(nil :wk "+errors")
     "n" #'flycheck-next-error
     "p" #'flycheck-previous-error
     "l" #'flycheck-toggle-error-list
@@ -2392,7 +2392,7 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "f"
-    "" '(nil :which-key "+files")
+    "" '(nil :wk "+files")
     "D" #'delete-current-buffer-and-file
     "e" #'sudo-edit
     "f" #'find-file
@@ -2470,7 +2470,7 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "g"
-    "" '(nil :which-key "+git/goto")
+    "" '(nil :wk "+git/goto")
     "c" #'jump-to-config-file
     "C" #'jump-to-tangled-config-file
     "i" #'jump-to-init-file
@@ -2496,10 +2496,10 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "h"
-    "" '(nil :which-key "+help")
+    "" '(nil :wk "+help")
     "i" #'info
     "m" #'man
-    "d" '(nil :which-key "+describe")
+    "d" '(nil :wk "+describe")
     "d c" #'describe-face
     "d C" #'helpful-command
     "d f" #'helpful-callable
@@ -2507,7 +2507,7 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
     "d m" #'describe-mode
     "d p" #'describe-text-properties
     "d v" #'helpful-variable
-    "f" '(nil :which-key "+find")
+    "f" '(nil :wk "+find")
     "f c" #'find-face-definition
     "f f" #'find-function
     "f l" #'find-library
@@ -2518,7 +2518,7 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "k"
-    "" '(nil :which-key "+kill")
+    "" '(nil :wk "+kill")
     "b" #'kill-this-buffer
     "w" #'delete-window
     "r" #'counsel-yank-pop)
@@ -2528,7 +2528,7 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "n"
-    "" '(nil :which-key "+narrow")
+    "" '(nil :wk "+narrow")
     "f" #'narrow-to-defun
     "r" #'narrow-to-region
     "w" #'widen
@@ -2540,16 +2540,16 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "o"
-    "" '(nil :which-key "+org")
-    "SPC" '(deft :which-key "edit/create note...")
-    "a" '(org-funcs-agenda-dwim :which-key "agenda")
+    "" '(nil :wk "+org")
+    "SPC" '(deft :wk "edit/create note...")
+    "a" '(org-funcs-agenda-dwim :wk "agenda")
     ;; TODO: clocking (c)
-    "k" '(org-capture :which-key "capture...")
-    "l" '(org-store-link :which-key "store link")
-    "s" '(org-search-view :which-key "search...")
+    "k" '(org-capture :wk "capture...")
+    "l" '(org-store-link :wk "store link")
+    "s" '(org-search-view :wk "search...")
 
-    "<tab>" '(org-roam :which-key "backlinks")
-    "f" '(org-roam-find-file :which-key "roam file...")
+    "<tab>" '(org-roam :wk "backlinks")
+    "f" '(org-roam-find-file :wk "roam file...")
     "I" '(org-roam-jump-to-index :wk "index file")
     "n" '(org-funcs-dailies-today :wk "dailies: today")
     "y" '(org-funcs-dailies-yesterday :wk "dailies: yesterday")
@@ -2569,7 +2569,7 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "p"
-    "" '(nil :which-key "+projects")
+    "" '(nil :wk "+projects")
     "<tab>" #'projectile-toggle-between-implementation-and-test
     "<backtab>" #'projectile-find-implementation-or-test-other-window
     "!" #'projectile-run-async-shell-command-in-root
@@ -2589,7 +2589,7 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "t"
-    "" '(nil :which-key "+toggle")
+    "" '(nil :wk "+toggle")
     "i" #'toggle-input-method
     "c" #'hide/show-comments-toggle
     "m" #'global-hide-mode-line-mode)
@@ -2633,7 +2633,7 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "w"
-    "" '(nil :which-key "+window")
+    "" '(nil :wk "+window")
     "w" #'evil-window-next
     "r" #'evil-window-rotate-downwards
     "/" #'split-window-horizontally-dwim
@@ -2648,7 +2648,7 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "y"
-    "" '(nil :which-key "+snippets")
+    "" '(nil :wk "+snippets")
     "n" #'yas-new-snippet
     "e" #'yas-expand
     "f" #'yas-visit-snippet-file
@@ -2660,7 +2660,7 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "z"
-    "" '(nil :which-key "+zoom")
+    "" '(nil :wk "+zoom")
     "+" #'default-text-scale-increase
     "-" #'default-text-scale-decrease
     "=" #'default-text-scale-reset)
