@@ -322,7 +322,6 @@ Apply some extra settings to work well with Nano.
     :delight visual-line-mode)
 #+end_src
 
-
 * Common advice
 
 #+begin_src emacs-lisp
@@ -2102,14 +2101,17 @@ compatibility.
     :commands (evil-iedit-state/iedit-mode))
 #+end_src
 
-* Set up ~SPACE~ as a leader key
+* Set up leader keys
+
+Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
 
 #+begin_src emacs-lisp
   (require 'general)
   (general-evil-setup)
 
-  (general-define-key :states '(normal motion) "SPC" nil)
+  (general-define-key :states '(normal motion) "SPC" nil "," nil)
   (general-create-definer leader-set-key :keymaps 'override :states '(normal motion visual) :prefix "SPC")
+  (general-create-definer mode-leader-set-key :keymaps 'override :states '(normal motion visual) :prefix ",")
 #+end_src
 
 ** Top-level leader keybindings
@@ -3909,6 +3911,34 @@ Make checkbox insertion a little smarter.
      "C-c C-c" #'eval-region))
 #+end_src
 
+#+begin_src emacs-lisp
+  (mode-leader-set-key :keymaps 'emacs-lisp-mode-map
+    "e" '(nil :wk "+eval")
+    "eb" '(eval-buffer :wk "eval buf")
+    "ee" '(eval-expression :wk "eval expr")
+
+    "d" 'debug-on-entry
+    "cd" 'cancel-debug-on-entry
+    "v" 'debug-on-variable-change
+    "cv" 'cancel-debug-on-variable-change
+
+    "t" 'ert)
+
+  (mode-leader-set-key :keymaps 'debugger-mode-map
+    "," 'debugger-step-through
+    "b" 'debugger-frame
+    "c" 'debugger-continue
+    "j" 'debugger-jump
+    "u" 'debugger-frame-clear
+
+    "e" 'debugger-eval-expression
+    "R" 'debugger-record-expression
+    "r" 'debugger-return-value
+
+    "l" 'debugger-list-functions
+    "v" 'debugger-toggle-locals)
+#+end_src
+
 *** =elisp-slime-nav= - Code navigation
 
 Use =elisp-slime-nav= to go to definition in Emacs Lisp.
@@ -5084,6 +5114,19 @@ Set general org-mode variables.
      "C-c ." 'org-time-stamp))
 #+end_src
 
+#+begin_src emacs-lisp
+  (mode-leader-set-key :keymaps 'org-mode-map
+    "a" '(org-archive-subtree :wk "archive")
+    "r" '(org-funcs-refile-dwim :wk "refile")
+    "x" '(org-cut-subtree :wk "cut")
+    "y" '(org-copy-subtree :wk "copy")
+    "p" '(org-paste-subtree :wk "past")
+    "n" '(org-num-mode :wk "show heading numbers")
+    "o" '(org-tree-to-indirect-buffer :wk "tree to indirect buf")
+    "t" '(org-show-todo-tree :wk "todo tree"))
+#+end_src
+
+
 ** =org-funcs= - org functions used throughout config
 
 #+begin_src emacs-lisp
@@ -5639,6 +5682,13 @@ Ensure we use dired rather than the Finder on macOS.
     (org-agenda-text-search-extra-files (list (f-join org-directory "archive.org")))
     (org-agenda-use-time-grid nil))
 #+end_src
+
+#+begin_src emacs-lisp
+  (mode-leader-set-key :keymaps 'org-agenda-mode-map
+    "a" '(org-agenda-archive :wk "archive")
+    "r" '(org-funcs-refile-dwim :wk "refile"))
+#+end_src
+
 
 *** Easily exclude on-hold tasks
 
