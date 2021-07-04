@@ -3373,7 +3373,7 @@ of =projectile=. Use =projectile= until the builtin functionality is more comple
        "target")))
 #+end_src
 
-*** Use ivy for projectile commands
+*** =counsel-projectile= - Use counsel+ivy for projectile commands
 
 #+begin_src emacs-lisp
   (use-package counsel-projectile
