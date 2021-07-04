@@ -5503,7 +5503,7 @@ Set some default LaTeX packages.
 
 #+begin_src emacs-lisp
   (use-package org
-    :custom
+    :config
     (add-to-list 'org-latex-default-packages-alist '("colorlinks=true" "hyperref" nil)))
 #+end_src
 
