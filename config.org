@@ -281,34 +281,26 @@ Load lisp in =org= and =ledger= dirs.
     (load (expand-file-name "init.el" paths-ledger-lisp-directory) t))
 #+end_src
 
-** Use Nano theme                                                  :disabled:
-
-Use =nano-theme= as well as its associated customisations to provide a
-minimalist look and feel.
+** =doom-themes= - Use doom theme
 
 #+begin_src emacs-lisp
-  (setq nano-font-size 12)
+  (use-package doom-themes
+    :ensure t
+    :custom
+    (doom-themes-enable-bold t)
+    (doom-themes-enable-italic t)
+    :unless noninteractive
+    :config
+    (load-theme (choose-by-gtk-theme :light 'doom-solarized-light :dark 'doom-one) t)
+    (doom-themes-org-config))
 
-  (require 'nano-base-colors)
-  (require 'nano-colors)
-  (require 'nano-faces)
-  (nano-faces)
+  (defun config-themes-light ()
+    (load-theme 'doom-solarized-light t))
 
-  (require 'nano-theme-light)
-  (require 'nano-theme)
-  (nano-theme)
-
-  (require 'nano-minibuffer)
-
-  (require 'nano-modeline)
+  (defun config-themes-dark ()
+    (load-theme 'doom-one t))
 #+end_src
 
-Apply some extra settings to work well with Nano.
-
-#+begin_src emacs-lisp
-  (setq font-lock-maximum-decoration nil)
-  (setq font-lock-maximum-size nil)
-#+end_src
 
 ** =delight= - Hide minor modes
 

@@ -49,6 +49,7 @@
         flx
         pass
         graphql-mode
+        doom-themes
         format-all
         smex
         counsel
@@ -128,26 +129,6 @@
           rev = "c6915585263a744b4da4a0e334393150603136dc";
           sha256 = "0fki9506q42fz6a86pnx2ll3kl25d6nh4b735c323abnwjirjd50";
           buildInputs = [ pkgs.mu ];
-        };
-
-        nano-emacs = github {
-          name = "nano-emacs";
-          owner = "rougier";
-          rev = "0f5995602fb442856d50407d5122453595b1ad2a";
-          sha256 = "1ml725v042q68r89l5ryx4f08cm81ng3pifijdfw62wnkdpdzpaj";
-          buildInputs = with epkgs; [
-            smex
-            ts
-            mini-frame
-            svg-tag-mode
-            mu4e-dashboard
-            mu4e-thread-folding
-            pkgs.mu
-          ];
-          preBuild = ''
-            # Unneeded file that fails native compilation.
-            rm nano.el
-          '';
         };
       };
     in fromOverlay ++ pkgs.lib.attrsets.attrValues extraPackages;
