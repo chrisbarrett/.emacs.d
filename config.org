@@ -1277,7 +1277,6 @@ Define a command to perform indentation in a context-sensitive way.
         makefile-mode
         nix-mode
         python-mode
-        restclient-mode
         rust-mode
         scala-mode
         sql-mode
