@@ -104,21 +104,28 @@
               (indent-rigidly (point-min) (point-max) (- org-edit-src-content-indentation))
               (message "Writing %s…" file)))))
 
-      (generate-package-autoloads)
       (message "Wrote all init files."))))
 
-(let* ((this-file (or load-file-name (buffer-file-name)))
-       (config-lisp-file (expand-file-name "config.el" (file-name-directory this-file))))
-  (unless (file-exists-p config-lisp-file)
-    (let ((default-directory (file-name-directory this-file)))
-      (tangle-init-files)))
+(let ((this-file (or load-file-name (buffer-file-name))))
 
-  (load config-lisp-file nil t))
+  (let ((config-autoloads-file (expand-file-name "config-autoloads.el" (file-name-directory this-file))))
+    (unless (file-exists-p config-autoloads-file)
+      (let ((default-directory (file-name-directory this-file)))
+        (generate-package-autoloads))))
+
+  (let ((config-lisp-file (expand-file-name "config.el" (file-name-directory this-file))))
+    (unless (file-exists-p config-lisp-file)
+      (let ((default-directory (file-name-directory this-file)))
+        (tangle-init-files)))
+
+    (unless (getenv "NIX_EMACS_BUILDING_CONFIG_P")
+      (load config-lisp-file nil t))))
 
 
 (defconst emacs-init-duration (float-time (time-subtract (current-time) emacs-start-time)))
 
-(message "config.el loaded (%s s)" emacs-init-duration)
+(unless (getenv "NIX_EMACS_BUILDING_CONFIG_P")
+  (message "config.el loaded (%s s)" emacs-init-duration))
 
 ;; (provide 'init)
 

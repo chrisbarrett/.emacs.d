@@ -2,15 +2,20 @@ EMACS = $(PWD)/result/bin/emacs
 BUILD = .make/build
 TARGET_EL = config-autoloads.el config.el
 
+TARGETS = $(BUILD) $(TARGET_EL)
+
 EMACS_RUN_OPTS = -l early-init.el -l init.el --eval "(run-hooks 'after-init-hook)"
 
 .PHONY: build
-build: $(BUILD)
+build: $(TARGETS)
 
 $(BUILD): $(shell find . -type f -name '*.nix')
 	@mkdir -p .make
 	nix-build
 	@touch $(BUILD)
+
+$(TARGET_EL) : $(BUILD)
+	@NIX_EMACS_BUILDING_CONFIG_P=1 $(EMACS) --batch -l shut-up -f shut-up-silence-emacs -l early-init.el -l init.el
 
 .PHONY: clean
 clean :
