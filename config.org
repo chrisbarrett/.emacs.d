@@ -5681,7 +5681,34 @@ Ensure we use dired rather than the Finder on macOS.
     (org-agenda-clockreport-parameter-plist '(:link t :maxlevel 2 :fileskip0 t))
     (org-agenda-tags-column -100)
     (org-agenda-text-search-extra-files (list (f-join org-directory "archive.org")))
-    (org-agenda-use-time-grid nil))
+    (org-agenda-use-time-grid nil)
+
+    :general
+    (:keymaps 'org-agenda-mode-map :states 'motion
+     "/" 'org-agenda-filter
+     "?" 'org-agenda-filter-by-tag
+     "B" 'org-agenda-bulk-action
+     "v" 'org-agenda-view-mode-dispatch
+     "t" 'org-agenda-todo
+     "J" 'org-agenda-goto-date
+     "j" 'org-agenda-next-line
+     "k" 'org-agenda-previous-line
+     "f" 'org-agenda-later
+     "b" 'org-agenda-earlier
+     "M-j" 'org-agenda-next-item
+     "M-k" 'org-agenda-previous-item
+     "M-h" 'org-agenda-earlier
+     "M-l" 'org-agenda-later
+     "gd" 'org-agenda-toggle-time-grid
+     "gr" 'org-agenda-redo
+     "M-RET" 'org-agenda-show-and-scroll-up
+     "C-f" 'evil-scroll-page-down
+     "C-b" 'evil-scroll-page-up
+     ;; Restore bindings for search buffers
+     "+" 'org-agenda-manipulate-query-add
+     "`" 'org-agenda-manipulate-query-add-re
+     "-" 'org-agenda-manipulate-query-subtract
+     "_" 'org-agenda-manipulate-query-subtract-re))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -5689,6 +5716,117 @@ Ensure we use dired rather than the Finder on macOS.
     "a" '(org-agenda-archive :wk "archive")
     "r" '(org-funcs-refile-dwim :wk "refile"))
 #+end_src
+
+*** Define agenda views
+
+#+begin_src emacs-lisp
+  (use-package org-agenda
+    :after org-funcs
+    :demand t
+    :config
+    (defun config-org--standard-filter-preset (tags)
+      (seq-uniq (append tags '("-ignore"))))
+
+    (cl-defun config-org--agenda-for-context (tag &key show-catchups-p filter-preset)
+      `(,(concat (substring tag 0 1) "a")
+        ,(format "Agenda for context: %s" tag)
+        ,(-non-nil
+          `((agenda ""
+                    ((org-agenda-overriding-header "Today")
+                     (org-agenda-use-time-grid t)))
+            (tags-todo "-catchups&TODO=\"TODO\"|+PRIORITY=\"A\""
+                       ((org-agenda-overriding-header "Next Actions")
+                        (org-agenda-skip-function #'org-funcs-skip-items-already-in-agenda)))
+
+            ,(when show-catchups-p
+               `(tags-todo "+catchups&-PRIORITY=\"A\"-TODO=\"WAIT\""
+                           ((org-agenda-overriding-header "People & Catchup Topics")
+                            (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp))))
+
+            (todo "WAIT"
+                  ((org-agenda-overriding-header "Delegated")
+                   (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp)))
+            (todo "TODO"
+                  ((org-agenda-overriding-header "Stuck Projects")
+                   (org-agenda-skip-function #'org-project-skip-non-stuck-projects)))))
+
+        ((org-agenda-tag-filter-preset ',(config-org--standard-filter-preset filter-preset))
+         (org-agenda-start-with-log-mode '(closed clock state))
+         (org-agenda-span 'day)
+         (org-agenda-show-future-repeats nil)
+         (org-agenda-archives-mode nil)
+         (org-agenda-ignore-drawer-properties '(effort appt)))))
+
+    (cl-defun config-org--plan-for-context (tag-or-tags &key filter-preset)
+      (let ((tags (-list tag-or-tags)))
+        (cl-assert tags t "At least one tag must be supplied")
+        `(,(concat (substring (car tags) 0 1) "p")
+          ,(format "Plan for context: %s" (s-join ", " tags))
+          ((agenda ""
+                   ((org-agenda-overriding-header "Review agenda this week")
+                    (org-agenda-use-time-grid t)))
+           (todo "WAIT"
+                 ((org-agenda-overriding-header "Review Delegated Actions. Should I follow up today or course correct?")))
+           (todo "TODO"
+                 ((org-agenda-overriding-header "Review Next Actions. Are these the next thing to do?")
+                  (org-agenda-skip-function #'org-funcs-skip-items-already-in-agenda)))
+           (tags-todo "+LEVEL=1+TODO=\"TODO\""
+                      ((org-agenda-overriding-header "Review unscheduled actions. Any of these need to be prioritised?")
+                       (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp)))
+           (todo "TODO"
+                 ((org-agenda-overriding-header "Review projects. Are these all healthy?")
+                  (org-agenda-skip-function #'org-project-skip-non-projects))))
+          ((org-agenda-tag-filter ',(config-org--standard-filter-preset filter-preset))
+           (org-agenda-span 'week)
+           (org-agenda-show-future-repeats nil)
+           (org-agenda-archives-mode nil)
+           (org-agenda-ignore-drawer-properties '(effort appt))))))
+
+    (cl-defun config-org--review-for-context (tag-or-tags &key filter-preset)
+      (let ((tags (-list tag-or-tags)))
+        (cl-assert tags t "At least one tag must be supplied")
+        `(,(concat (substring (car tags) 0 1) "r")
+          ,(format "Review for context: %s" (s-join ", " tags))
+          ((agenda ""
+                   ((org-agenda-overriding-header "Review agenda this week")
+                    (org-agenda-use-time-grid nil)
+                    (org-agenda-show-log t)))
+           (todo "TODO"
+                 ((org-agenda-overriding-header "Review Next Actions. Are these the next thing to do?")
+                  (org-agenda-skip-function #'org-funcs-skip-items-already-in-agenda)))
+           (tags-todo "+LEVEL=1+TODO=\"TODO\""
+                      ((org-agenda-overriding-header "Review unscheduled actions. Any of these need to be prioritised?")
+                       (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp)))
+           (todo "TODO"
+                 ((org-agenda-overriding-header "Review projects. Are these all healthy?")
+                  (org-agenda-skip-function #'org-project-skip-non-projects))))
+          ((org-agenda-tag-filter-preset ',(config-org--standard-filter-preset filter-preset))
+           (org-agenda-span 'week)
+           (org-agenda-start-day "-7d")
+           (org-agenda-start-with-clockreport-mode t)
+           (org-agenda-log-mode-items '(closed state))
+           (org-agenda-show-future-repeats nil)
+           (org-agenda-archives-mode nil)
+           (org-agenda-ignore-drawer-properties '(effort appt))))))
+
+    (org-funcs-update-agenda-custom-commands
+     (list
+      '("p" . "personal context")
+      (config-org--agenda-for-context "personal"
+                                      :filter-preset (list "-someday" (format "-%s" org-funcs-work-tag)))
+      (config-org--plan-for-context '("personal")
+                                    :filter-preset (list "-someday" (format "-%s" org-funcs-work-tag)))
+
+      (config-org--review-for-context '("personal"))
+
+      '("w" . "work context")
+      (config-org--agenda-for-context "work"
+                                      :filter-preset (list "-someday" (format "+%s" org-funcs-work-tag))
+                                      :show-catchups-p t)
+      (config-org--plan-for-context "work" :filter-preset (list "-someday" (format "+%s" org-funcs-work-tag)))
+      (config-org--review-for-context "work" :filter-preset (list "-someday" (format "+%s" org-funcs-work-tag))))))
+#+end_src
+
 
 *** Easily exclude on-hold tasks
 
@@ -5702,18 +5840,47 @@ Ensure we use dired rather than the Finder on macOS.
     (org-agenda-auto-exclude-function #'org-funcs-exclude-tasks-on-hold))
 #+end_src
 
+*** Reveal context around item on ~TAB~
 
 #+begin_src emacs-lisp
+  (use-package org-agenda
+    :config
+    (defun config-org--on-show-item-from-agenda ()
+      (org-overview)
+      (org-reveal)
+      (org-show-subtree)
+      (org-display-outline-path))
 
+    (add-hook 'org-agenda-after-show-hook #'config-org--on-show-item-from-agenda))
 #+end_src
 
 *** Integration with builtin =appt= (appointments)
 
 #+begin_src emacs-lisp
+  (use-package org-agenda
+    :config
+    (add-hook 'org-finalize-agenda-hook 'org-agenda-to-appt))
+
   (use-package appt
     :custom
     (appt-message-warning-time 60)
     (appt-display-interval 5))
+#+end_src
+
+*** Use =page-break-lines= to draw separator
+
+#+begin_src emacs-lisp
+  (use-package org-agenda
+    :demand t
+    :after page-break-lines
+    :custom
+    (org-agenda-block-separator (char-to-string ?\f))
+    :config
+    (defun config-org--draw-separator (&rest _)
+      (page-break-lines--update-display-tables))
+
+    (advice-add 'org-agenda :after #'config-org--draw-separator)
+    (advice-add 'org-agenda-redo :after #'config-org--draw-separator))
 #+end_src
 
 ** TODO =org-roam= - Personal wiki & research tooling
