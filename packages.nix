@@ -9,7 +9,6 @@
         delight
         shut-up
         use-package
-        dash-functional
         dockerfile-mode
         general
         no-littering
