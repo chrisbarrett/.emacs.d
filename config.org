@@ -3564,7 +3564,7 @@ See: [[https://www.flycheck.org/en/latest/][flycheck.org]]
                                  org-agenda-mode)))
 #+end_src
 
-Show the =Flycheck= error list in a bottom window.
+*** Show the =Flycheck= error list in a bottom window.
 
 #+begin_src emacs-lisp
   (add-to-list 'display-buffer-alist
@@ -3576,6 +3576,38 @@ Show the =Flycheck= error list in a bottom window.
                  (slot            . 1)
                  (window-height   . 0.2)))
 #+end_src
+
+*** Customise the modeline indicator
+
+#+begin_src emacs-lisp
+  (use-package flycheck
+    :config
+    (defun flycheck-custom-mode-line-status-text (&optional status)
+      (pcase (or status flycheck-last-status-change)
+        (`no-checker " Checks[-]")
+        (`errored " Checks[ERROR]")
+        (`finished
+         (let-alist (flycheck-count-errors flycheck-current-errors)
+           (cond
+            ((and .error .warning)
+             (format " {%s error%s, %s warn%s}"
+                     .error
+                     (if (equal .error 1) "" "s")
+                     .warning
+                     (if (equal .warning 1) "" "s")))
+            .error
+            (format " {%s error%s}" .error (if (equal .error 1) "" "s"))
+
+            .warning
+            (format " {%s warning%s}" .warning (if (equal .warning 1) "" "s")))))
+        (`interrupted " Checks[interrupted]")
+        (`suspicious " Checks[suspicious]")
+        (_
+         "")))
+    :custom
+    (flycheck-mode-line '(:eval (flycheck-custom-mode-line-status-text))))
+#+end_src
+
 
 *** Projectile integration
 
