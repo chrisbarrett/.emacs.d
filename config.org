@@ -4725,6 +4725,13 @@ Configure =conf-mode= for use with more kinds of config files.
     ("\\.kll\\'" . conf-mode))
 #+end_src
 
+** =dockerfile-mode= - editing support for Dockerfile
+
+#+begin_src emacs-lisp
+  (use-package dockerfile-mode
+    :mode ("Dockerfile\\'" . dockerfile-mode))
+#+end_src
+
 * =pass= - Frontend to Unix ~password-store~
 
 #+begin_src emacs-lisp
@@ -5000,11 +5007,11 @@ Set general org-mode variables.
     (org-indirect-buffer-display 'current-window)
     (org-link-elisp-confirm-function 'y-or-n-p)
     (org-return-follows-link t)
-  
+
     :config
     (add-hook 'org-mode-hook #'auto-revert-mode)
     (add-hook 'org-mode-hook #'visual-line-mode)
-  
+
     :general
     ("C-c a" 'org-agenda
      "C-c s" 'org-search-view
