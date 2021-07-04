@@ -308,12 +308,15 @@ Load lisp in =org= and =ledger= dirs.
     (load-theme (choose-by-system-theme :light 'doom-solarized-light :dark 'doom-one) t))
 
   (defun config-themes-light ()
+    (dolist (theme custom-enabled-themes)
+      (disable-theme theme))
     (load-theme 'doom-solarized-light t))
 
   (defun config-themes-dark ()
+    (dolist (theme custom-enabled-themes)
+      (disable-theme theme))
     (load-theme 'doom-one t))
 #+end_src
-
 
 ** =delight= - Hide minor modes
 
