@@ -1,18 +1,21 @@
-;;; org-funcs.el --- Extra functions to support my orgmode configuration.  -*- lexical-binding: t; -*-
+;;; org-funcs.el --- Extra functions to support my orgmode configuration  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Chris Barrett
+
+;; Package-Requires: ((emacs "27.1"))
 
 ;; Author: Chris Barrett <chris+emacs@walrus.cool>
 
 ;;; Commentary:
 
+;; Extra functions to support org-mode config.
+
 ;;; Code:
 
 (require 'dash)
-(require 'dash-functional)
 (require 'f)
 (require 'ht)
-(require 'paths)
+(require 'seq)
 (require 'thingatpt)
 
 (cl-eval-when (compile)
