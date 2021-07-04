@@ -1429,7 +1429,7 @@ This package provides a visual representation of the undo history.
   (use-package format-all
     :hook (prog-mode . format-all-mode)
     :custom
-    ((format-all-show-errors . 'never)))
+    ((format-all-show-errors 'never)))
 #+end_src
 
 * =direnv= - Support direnv files
