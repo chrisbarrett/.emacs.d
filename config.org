@@ -5720,7 +5720,15 @@ Ensure we use dired rather than the Finder on macOS.
     (appt-display-interval 5))
 #+end_src
 
-** TODO org-roam
+** TODO =org-roam= - Personal wiki & research tooling
+
+#+begin_src emacs-lisp
+  (use-package org-roam
+    :demand t
+    :custom
+    (org-roam-directory (f-join paths-org-directory "roam")))
+#+end_src
+
 
 * File postamble
 
