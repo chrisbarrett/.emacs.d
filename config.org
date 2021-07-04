@@ -5657,7 +5657,7 @@ Ensure we use dired rather than the Finder on macOS.
     (add-to-list 'org-file-apps '(directory . emacs)))
 #+end_src
 
-** TODO org-agenda
+** =org-agenda= - Calendaring and configurable todo lists
 
 #+begin_src emacs-lisp
   (use-package org-agenda
