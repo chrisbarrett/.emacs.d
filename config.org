@@ -305,16 +305,6 @@ Load host-specific settings, which are not checked into version control.
     (load-theme 'doom-one t))
 #+end_src
 
-** =delight= - Hide minor modes
-
-#+begin_src emacs-lisp
-  (use-package delight
-    :demand t)
-
-  (use-package emacs
-    :delight visual-line-mode)
-#+end_src
-
 * Common advice
 
 #+begin_src emacs-lisp
@@ -961,7 +951,6 @@ use advice to ignore these.
 
 #+begin_src emacs-lisp
   (use-package hideshow
-    :delight hs-minor-mode
     :config
     (advice-add 'hs-hide-all :around #'advice-ignore-errors)
     (advice-add 'hs-hide-block :around 'advice-ignore-errors)
@@ -1184,7 +1173,6 @@ Reveal the context around the selected hunk when diffing org buffers.
 
 #+begin_src emacs-lisp
   (use-package eldoc
-    :delight
     :hook (emacs-lisp-mode . eldoc-mode)
     :custom
     (eldoc-idle-delay 0.2))
@@ -1432,7 +1420,6 @@ Define a command to perform indentation in a context-sensitive way.
 
 #+begin_src emacs-lisp
   (use-package ws-butler
-    :delight
     :hook
     (prog-mode . (lambda () (require 'ws-butler)))
     (text-mode . (lambda () (require 'ws-butler)))
@@ -1539,7 +1526,6 @@ This package provides a visual representation of the undo history.
 
 #+begin_src emacs-lisp
   (use-package undo-tree
-    :delight
     :hook (org-mode . undo-tree-mode)
     :general
     ("C-x t" 'undo-tree-visualize)
@@ -1552,7 +1538,6 @@ This package provides a visual representation of the undo history.
 
 #+begin_src emacs-lisp
   (use-package format-all
-    :delight
     :hook (prog-mode . format-all-mode)
     :custom
     (format-all-show-errors 'never))
@@ -1591,7 +1576,6 @@ down on typing.
 
 #+begin_src emacs-lisp
   (use-package yasnippet
-    :delight yas-minor-mode
     :hook
     (prog-mode . (lambda () (require 'yasnippet)))
     (text-mode . (lambda () (require 'yasnippet)))
@@ -1706,7 +1690,6 @@ Teach Emacs to respect editorconfig files.
 
 #+begin_src emacs-lisp
   (use-package editorconfig
-    :delight
     :hook (after-init . editorconfig-mode))
 #+end_src
 
@@ -1729,7 +1712,6 @@ See: [[https://github.com/wbolster/emacs-direnv][wbolster/emacs-direnv]]
 
 #+begin_src emacs-lisp
   (use-package rainbow-mode
-    :delight
     :hook
     (emacs-lisp-mode . rainbow-mode)
     (css-mode . rainbow-mode))
@@ -2012,7 +1994,6 @@ Define an extra =`sym'= pair for =emacs-lisp-mode=.
 #+begin_src emacs-lisp
   (use-package evil-collection
     :after (evil)
-    :delight evil-collection-unimpaired-mode
     :demand t
     :config
     (evil-collection-init))
@@ -2747,7 +2728,6 @@ ivy.
 
 #+begin_src emacs-lisp
   (use-package ivy
-    :delight
     :general
     ("C-c C-r" #'ivy-resume
      "C-x b" #'ivy-switch-buffer)
@@ -2819,7 +2799,6 @@ Hide =./= and =../= when finding files.
 
 #+begin_src emacs-lisp
   (use-package counsel
-    :delight
     :general
     ("M-x" #'counsel-M-x "C-x C-f" #'counsel-find-file)
     (:keymaps 'counsel-find-file-map
@@ -2939,7 +2918,6 @@ options.
 
 #+begin_src emacs-lisp
   (use-package company
-    :delight
     :hook (after-init . global-company-mode)
 
     :general
@@ -2991,7 +2969,6 @@ Configure the package.
 
 #+begin_src emacs-lisp
   (use-package volatile-highlights
-    :delight
     :hook
     (prog-mode . (lambda () (require 'volatile-highlights)))
     (text-mode . (lambda () (require 'volatile-highlights)))
@@ -3019,7 +2996,6 @@ Teach =volatile-highlights-mode= to highlight text pasted by =evil= operations.
 
 #+begin_src emacs-lisp
   (use-package highlight-thing
-    :delight
     :hook (prog-mode . highlight-thing-mode)
     :custom
     (highlight-thing-what-thing 'symbol)
@@ -3029,14 +3005,6 @@ Teach =volatile-highlights-mode= to highlight text pasted by =evil= operations.
     :config
     (set-face-attribute 'highlight-thing nil :inherit 'highlight))
 #+end_src
-
-Disable the modeline indicator for ~hi-lock-mode~.
-
-#+begin_src emacs-lisp
-  (use-package hi-lock
-    :delight)
-#+end_src
-
 
 Suppress =highlight-thing= when hovering over certain kinds of symbols.
 
@@ -3065,7 +3033,6 @@ character (^L).
 
 #+begin_src emacs-lisp
   (use-package page-break-lines
-    :delight
     :hook (after-init . global-page-break-lines-mode)
     :custom
     (page-break-lines-modes '(prog-mode
@@ -3125,7 +3092,6 @@ Apply a separate face for parens, allowing them to be de-emphasised.
 
 #+begin_src emacs-lisp
   (use-package which-key
-    :delight
     :hook (after-init . which-key-mode)
     :custom
     (which-key-idle-delay 0.4))
@@ -3365,7 +3331,6 @@ of =projectile=. Use =projectile= until the builtin functionality is more comple
 
 #+begin_src emacs-lisp
   (use-package projectile
-    :delight
     :hook (after-init . projectile-mode)
     :custom
     (projectile-project-search-path paths-project-directories)
@@ -3654,7 +3619,6 @@ See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
 
 #+begin_src emacs-lisp
   (use-package smartparens
-    :delight smartparens-mode smartparens-strict-mode
     :hook
     (prog-mode . smartparens-strict-mode)
     (text-mode . smartparens-strict-mode)
@@ -3953,7 +3917,6 @@ Use =elisp-slime-nav= to go to definition in Emacs Lisp.
 
 #+begin_src emacs-lisp
   (use-package elisp-slime-nav
-    :delight
     :hook (emacs-lisp-mode . elisp-slime-nav-mode)
     :general
     (:keymaps 'emacs-lisp-mode-map :states 'normal
@@ -4165,7 +4128,6 @@ TypeScript language server.
 
 #+begin_src emacs-lisp
   (use-package tide
-    :delight
     :after (company flycheck)
     :preface
     (defun tide-maybe-enable ()
@@ -5168,7 +5130,6 @@ Set general org-mode variables.
 
 #+begin_src emacs-lisp
   (use-package evil-org
-    :delight
     :hook (org-mode . evil-org-mode)
     :custom
     (evil-org-key-theme '(additional
@@ -5209,7 +5170,6 @@ Automatically enter insert state when inserting new headings or using
 
 #+begin_src emacs-lisp
   (use-package org
-    :delight org-indent-mode
     :custom
     (org-cycle-separator-lines 0)
     (org-hide-emphasis-markers nil)

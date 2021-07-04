@@ -6,7 +6,6 @@
     with epkgs;
     let
       fromOverlay = [
-        delight
         shut-up
         use-package
         dockerfile-mode
