@@ -1098,7 +1098,7 @@ Teach =ediff= how to copy contents from both buffers in a three-way merge.
   (use-package ediff
     :functions
     (ediff-setup-windows-plain ediff-copy-diff ediff-get-region-contents)
-    :custom
+    :config
     (defun ediff-copy-both-to-C ()
       "Copy both ediff buffers in a 3-way merge to the target buffer."
       (interactive)
@@ -4002,7 +4002,7 @@ Teach the Emacs Lisp indentation function to indent plists nicely.
                     (method
                      (funcall method indent-point state)))))))))
     :custom
-    ((lisp-indent-function #'config-elisp--better-lisp-indent-function)))
+    (lisp-indent-function #'config-elisp--better-lisp-indent-function))
 #+end_src
 
 *** Emacs lisp syntax checking
@@ -4051,8 +4051,9 @@ Inhibit these checkers for src blocks, test files etc.
 
 #+begin_src emacs-lisp
   (use-package prettify-symbols-mode
-    :hook ((emacs-lisp-mode . prettify-symbols-mode)
-           (prettify-symbols-mode . prettify-symbols-setup))
+    :hook
+    (emacs-lisp-mode . prettify-symbols-mode)
+    (prettify-symbols-mode . prettify-symbols-setup)
     :preface
     (defun prettify-symbols-setup ()
       (cond
@@ -5058,11 +5059,12 @@ Set general org-mode variables.
 #+begin_src emacs-lisp
   (use-package evil-org
     :hook (org-mode . evil-org-mode)
-    :custom ((evil-org-key-theme '(additional
-                                   calendar
-                                   navigation
-                                   textobjects
-                                   todo))))
+    :custom
+    (evil-org-key-theme '(additional
+                          calendar
+                          navigation
+                          textobjects
+                          todo)))
 #+end_src
 
 ** Evil state improvements
@@ -5117,8 +5119,9 @@ Automatically enter insert state when inserting new headings or using
 
 #+begin_src emacs-lisp
   (use-package org-bullets
-    :custom ((org-bullets-bullet-list '("○")))
     :hook (org-mode . org-bullets-mode)
+    :custom
+    (org-bullets-bullet-list '("○"))
 
     :config
     (defun org-bullets-redraw (&rest _)
