@@ -5115,7 +5115,9 @@ Set general org-mode variables.
 #+begin_src emacs-lisp
   (mode-leader-set-key :keymaps 'org-mode-map
     "a" '(org-archive-subtree :wk "archive")
-    "r" '(org-funcs-refile-dwim :wk "refile")
+    "r" (list (general-predicate-dispatch 'org-refile
+                (bound-and-true-p org-capture-mode) 'org-capture-refile)
+              :wk "refile")
     "x" '(org-cut-subtree :wk "cut")
     "y" '(org-copy-subtree :wk "copy")
     "p" '(org-paste-subtree :wk "past")
@@ -5714,7 +5716,7 @@ Ensure we use dired rather than the Finder on macOS.
 #+begin_src emacs-lisp
   (mode-leader-set-key :keymaps 'org-agenda-mode-map
     "a" '(org-agenda-archive :wk "archive")
-    "r" '(org-funcs-refile-dwim :wk "refile"))
+    "r" '(org-agenda-refile :wk "refile"))
 #+end_src
 
 *** Define agenda views
