@@ -2797,7 +2797,10 @@ ivy.
     :config
     (require 'nano-counsel nil t)
     (advice-add 'ivy--queue-exhibit :around #'advice-ignore-errors)
-    (ivy-mode))
+    (ivy-mode +1)
+
+    ;; KLUDGE: Something seems to be overriding the custom variable decl.
+    (setq ivy-height 20))
 #+end_src
 
 *** Hide boring files from completions
