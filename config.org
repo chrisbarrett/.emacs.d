@@ -3576,7 +3576,7 @@ certain types of Elisp files.
                       ("image" . "2705.png")
                       ("style" . "github"))))))
     :preface
-    (defun emojify-at-org-drawer-p (_match beg _end)
+    (defun emojify-at-org-drawer-p (&rest _)
       (when (derived-mode-p 'org-mode 'org-agenda-mode)
         (save-excursion
           (goto-char (line-beginning-position))
