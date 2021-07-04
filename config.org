@@ -4005,43 +4005,46 @@ Teach the Emacs Lisp indentation function to indent plists nicely.
     ((lisp-indent-function #'config-elisp--better-lisp-indent-function)))
 #+end_src
 
-*** Improved syntax checking
+*** Emacs lisp syntax checking
 
-=flycheck-package= adds a checker for =package.el= conventions. It is inhibited for
-certain types of Elisp files.
+Inhibit these checkers for src blocks, test files etc.
 
 #+begin_src emacs-lisp
-  (use-package flycheck-package
-    :after (:all flycheck elisp-mode)
-    :config
-    (defun config-elisp--flycheck-package-predicate ()
-      (not (or (bound-and-true-p no-byte-compile)
-               (bound-and-true-p org-src-mode)
-               (ignore-errors
-                 (string-match-p "^test-" (file-name-nondirectory (buffer-file-name)))))))
-
-    ;; Dynamic eval to work around macroexpansion errors in byte-compilation.
-    (eval
-     '(progn
-        (flycheck-package-setup)
-        (setf (flycheck-checker-get 'emacs-lisp-package 'predicate)
-              #'config-elisp--flycheck-package-predicate))))
+  (defun flycheck-custom-checkdoc-predicate ()
+    (not (or (bound-and-true-p no-byte-compile)
+             (bound-and-true-p org-src-mode)
+             (ignore-errors
+               (string-match-p "^test-" (file-name-nondirectory (buffer-file-name)))))))
 #+end_src
 
-=Checkdoc= is used by flycheck for linting Elisp docstrings.
+**** =checkdoc= - linting for Elisp docstrings
 
 #+begin_src emacs-lisp
   (use-package checkdoc
-    :after (flycheck)
+    :after (:all flycheck elisp-mode)
+    :demand t
     :custom
     (checkdoc-force-docstrings-flag nil)
     (checkdoc-arguments-in-order-flag nil)
-
     :config
     ;; Dynamic eval to work around macroexpansion errors in byte-compilation.
     (eval
      '(setf (flycheck-checker-get 'emacs-lisp-checkdoc 'predicate)
-            #'config-flycheck--elisp-package-flycheck-predicate)))
+            #'flycheck-custom-checkdoc-predicate)))
+#+end_src
+
+**** =flycheck-package= - checker for =package.el= conventions
+
+#+begin_src emacs-lisp
+  (use-package flycheck-package
+    :after (:all flycheck elisp-mode)
+    :demand t
+    :config
+    (flycheck-package-setup)
+    ;; Dynamic eval to work around macroexpansion errors in byte-compilation.
+    (eval
+     '(setf (flycheck-checker-get 'emacs-lisp-package 'predicate)
+            'flycheck-custom-checkdoc-predicate)))
 #+end_src
 
 ** =prettify-symbols-mode= - Pretty lambdas in Lisp modes
