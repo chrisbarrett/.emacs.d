@@ -3342,9 +3342,7 @@ of =projectile=. Use =projectile= until the builtin functionality is more comple
     (projectile-switch-project-action #'dired)
     (projectile-enable-caching t)
     (projectile-create-missing-test-files t)
-    (projectile-globally-ignored-files
-     '(".DS_Store"
-       "package-lock.json"))
+    (projectile-globally-ignored-files '("TAGS" ".DS_Store"))
     (projectile-globally-ignored-file-suffixes
      '("meta"
        "gz"
@@ -3356,19 +3354,15 @@ of =projectile=. Use =projectile= until the builtin functionality is more comple
     (projectile-globally-ignored-directories
      '("coverage"
        ".bzr"
-       ".ensime_cache"
        ".eunit"
        ".fslckout"
        ".g8"
        ".git"
        ".hg"
-       ".idea"
-       ".stack-work"
        ".svn"
        "dist"
        "jars"
        "node_modules"
-       "flow-typed/npm"
        "vendor"
        "target")))
 #+end_src
