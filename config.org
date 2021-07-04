@@ -1053,7 +1053,7 @@ provide font-locking, and handles =smartparens= better.
 See: [[https://lists.gnu.org/archive/html/help-gnu-emacs/2014-07/msg00135.html][Re: How properly utilize the minibuffer and inactive minibuffer startup]]
 
 #+begin_src emacs-lisp
-  (defvar config-eval-expression-map
+  (defvar eval-expression-interactively-map
     (let ((map (make-sparse-keymap)))
       (set-keymap-parent map read-expression-map)
       (define-key map (kbd "<escape>") #'minibuffer-keyboard-quit)
@@ -1065,11 +1065,11 @@ See: [[https://lists.gnu.org/archive/html/help-gnu-emacs/2014-07/msg00135.html][
       (minibuffer-with-setup-hook
           (lambda ()
             (emacs-lisp-mode)
-            (use-local-map config-eval-expression-map)
+            (use-local-map eval-expression-interactively-map)
             (setq font-lock-mode t)
             (funcall font-lock-function 1))
         (read-from-minibuffer prompt initial-contents
-                              config-eval-expression-map nil
+                              eval-expression-interactively-map nil
                               'read-expression-history))))
 
   (autoload 'pp-display-expression "pp")
