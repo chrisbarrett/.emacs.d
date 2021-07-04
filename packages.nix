@@ -93,6 +93,8 @@
         htmlize
         evil-org
         org-ref
+        org-roam
+        ox-gfm
       ];
 
       extraPackages = rec {
@@ -128,6 +130,15 @@
           rev = "c6915585263a744b4da4a0e334393150603136dc";
           sha256 = "0fki9506q42fz6a86pnx2ll3kl25d6nh4b735c323abnwjirjd50";
           buildInputs = [ pkgs.mu ];
+        };
+
+        om = github {
+          name = "om.el";
+          owner = "ndwarshuis";
+          rev = "5b3d6f2b326187cdd75b4590ba3a922b1288d726";
+          sha256 = "158nc5k8fxdm9s97737z4syls41i2dmmlb28l7k85wgdhpyngszh";
+          buildInputs = [ dash s org ];
+          patches = [ ./patches/om.patch ];
         };
       };
     in fromOverlay ++ pkgs.lib.attrsets.attrValues extraPackages;
