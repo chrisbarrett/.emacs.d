@@ -86,6 +86,9 @@
         magit-popup
         poporg
         emojify
+        org-bullets
+        htmlize
+        evil-org
       ];
 
       extraPackages = rec {
