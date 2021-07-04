@@ -1160,6 +1160,15 @@ Reveal the context around the selected hunk when diffing org buffers.
     (woman-default-indent 7))
 #+end_src
 
+** =eldoc= - Show documentation in the minibuffer
+
+#+begin_src emacs-lisp
+  (use-package eldoc
+    :hook (emacs-lisp-mode . eldoc-mode)
+    :custom
+    (eldoc-idle-delay 0.2))
+#+end_src
+
 * Better eval-expression
 
 Define an alternative version of =eval-expression= that uses =emacs-lisp-mode= to
@@ -1685,6 +1694,17 @@ See: [[https://github.com/wbolster/emacs-direnv][wbolster/emacs-direnv]]
     :hook (after-init . direnv-mode)
     :custom
     (direnv-always-show-summary nil))
+#+end_src
+
+** =rainbow-mode= - Hex colour literals
+
+=rainbow mode= applies colours for hex strings.
+
+#+begin_src emacs-lisp
+  (use-package rainbow-mode
+    :hook
+    (emacs-lisp-mode . rainbow-mode)
+    (css-mode . rainbow-mode))
 #+end_src
 
 * =evil= - Vim-style modal editing
@@ -3843,7 +3863,7 @@ Make checkbox insertion a little smarter.
      "C-c C-c" #'eval-region))
 #+end_src
 
-*** Code navigation
+*** =elisp-slime-nav= - Code navigation
 
 Use =elisp-slime-nav= to go to definition in Emacs Lisp.
 
@@ -3855,9 +3875,7 @@ Use =elisp-slime-nav= to go to definition in Emacs Lisp.
      "M-." #'elisp-slime-nav-find-elisp-thing-at-point))
 #+end_src
 
-*** Documentation
-
-=helpful= is a more feature-rich alternative to the Emacs Lisp help buffer.
+*** =helpful= - Better help buffer
 
 #+begin_src emacs-lisp
   (use-package helpful
@@ -3879,29 +3897,7 @@ Display helpful buffers in side windows.
                  (window-width    . 0.5)))
 #+end_src
 
-*** Inline documentation
-
-=eldoc= shows function parameters in the minibuffer.
-
-#+begin_src emacs-lisp
-  (use-package eldoc
-    :hook (emacs-lisp-mode . eldoc-mode)
-    :custom
-    (eldoc-idle-delay 0.2))
-#+end_src
-
-*** Hex colour literals
-
-=rainbow mode= applies colours for hex strings.
-
-#+begin_src emacs-lisp
-  (use-package rainbow-mode
-    :hook (emacs-lisp-mode . rainbow-mode))
-#+end_src
-
-*** REPL
-
-=ielm= is the built-in REPL for Emacs Lisp.
+*** =ielm= - Emacs Lisp REPL
 
 #+begin_src emacs-lisp
   (use-package ielm
@@ -3933,9 +3929,7 @@ Display =ielm= in a side window.
                  (window-width    . 80)))
 #+end_src
 
-*** Pretty-printing
-
-=pp= provides pretty-printing of lisp forms.
+*** =pp= - S-Expression Pretty-printing
 
 #+begin_src emacs-lisp
   (use-package pp
