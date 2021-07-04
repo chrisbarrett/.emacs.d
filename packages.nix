@@ -6,6 +6,7 @@
     with epkgs;
     let
       fromOverlay = [
+        delight
         shut-up
         use-package
         dash-functional
