@@ -4817,7 +4817,9 @@ Configure =conf-mode= for use with more kinds of config files.
     :mode ("Dockerfile\\'" . dockerfile-mode))
 #+end_src
 
-* =pass= - Frontend to Unix ~password-store~
+* Applications
+
+** =pass= - Frontend to Unix ~password-store~
 
 #+begin_src emacs-lisp
   (use-package pass
@@ -4846,7 +4848,7 @@ Configure =conf-mode= for use with more kinds of config files.
                    (reusable-frames . visible))))
 #+end_src
 
-* =pdf-tools= - PDF reader
+** =pdf-tools= - PDF reader
 
 #+begin_src emacs-lisp
   (use-package pdf-tools
@@ -4887,7 +4889,7 @@ Configure =conf-mode= for use with more kinds of config files.
     (pdf-tools-install))
 #+end_src
 
-* =mu4e= - Mail user agent
+** =mu4e= - Mail user agent
 
 Use the system's =mu4e= installation for mail management. I use the
 systemd/launchd to run mbsync and indexing, so mu4e doesn't trigger fetching
