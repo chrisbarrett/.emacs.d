@@ -237,19 +237,18 @@ See: [[https://github.com/emacscollective/no-littering][emacscollective/no-litte
   (use-package no-littering
     :demand t
     :custom
-    ((no-littering-etc-directory paths-etc-directory)
-     (no-littering-var-directory paths-cache-directory)))
+    (no-littering-etc-directory paths-etc-directory)
+    (no-littering-var-directory paths-cache-directory))
 #+end_src
 
 Teach =recentf= to use these paths
 
 #+begin_src emacs-lisp
   (use-package recentf
-    :after (no-littering)
+    :after no-littering
     :config
-    (progn
-      (add-to-list 'recentf-exclude no-littering-etc-directory)
-      (add-to-list 'recentf-exclude no-littering-var-directory)))
+    (add-to-list 'recentf-exclude no-littering-etc-directory)
+    (add-to-list 'recentf-exclude no-littering-var-directory))
 #+end_src
 
 ** Load site settings
@@ -279,7 +278,7 @@ Load lisp in =org= and =ledger= dirs.
 ** Use Nano theme                                                  :disabled:
 
 Use =nano-theme= as well as its associated customisations to provide a
-minimalistic look and feel.
+minimalist look and feel.
 
 #+begin_src emacs-lisp
   (setq nano-font-size 12)
@@ -357,7 +356,7 @@ Set C source directory to use the source files from the Nix build.
 #+begin_src emacs-lisp
   (use-package find-func
     :custom
-    ((find-function-C-source-directory (getenv "NIX_EMACS_SRC_DIR"))))
+    (find-function-C-source-directory (getenv "NIX_EMACS_SRC_DIR")))
 #+end_src
 
 Always use one-char =y-or-n-p=.
@@ -398,7 +397,7 @@ Save cookies to a cache file.
 #+begin_src emacs-lisp
   (use-package url
     :custom
-    ((url-cookie-file (expand-file-name "cookies" paths-cache-directory))))
+    (url-cookie-file (expand-file-name "cookies" paths-cache-directory)))
 #+end_src
 
 Prefer more recent Lisp files to outdated ELC files when loading.
@@ -412,7 +411,7 @@ Do not query the user to accept insecure connections. Just disconnect them.
 #+begin_src emacs-lisp
   (use-package nsm
     :custom
-    ((nsm-noninteractive t)))
+    (nsm-noninteractive t))
 #+end_src
 
 Disable file dialogs.
@@ -565,7 +564,7 @@ Don't try to ping things that look like domain names
 #+begin_src emacs-lisp
   (use-package ffap
     :custom
-    ((ffap-machine-p-known 'reject)))
+    (ffap-machine-p-known 'reject))
 #+end_src
 
 Disable warnings from obsolete advice system, since these are generally not
@@ -708,12 +707,12 @@ than paginating through the buffer.
   (setq scroll-conservatively 101)
 #+end_src
 
-** Comint
+** =comint= - Base package for interpreter inferior processes
 
 #+begin_src emacs-lisp
   (use-package comint
     :custom
-    ((comint-prompt-read-only t)))
+    (comint-prompt-read-only t))
 #+end_src
 
 ** Help
@@ -746,7 +745,7 @@ of symbols.
 #+begin_src emacs-lisp
   (use-package apropos
     :custom
-    ((apropos-do-all t)))
+    (apropos-do-all t))
 #+end_src
 
 ** State persistence
@@ -766,10 +765,10 @@ of symbols.
     :demand t
     :config (savehist-mode +1)
     :custom
-    ((savehist-additional-variables '(kill-ring
-                                      compile-command
-                                      search-ring
-                                      regexp-search-ring))))
+    (savehist-additional-variables '(kill-ring
+                                     compile-command
+                                     search-ring
+                                     regexp-search-ring)))
 #+end_src
 
 ** Bidirectional text editing
@@ -830,57 +829,56 @@ Teach =recentf= which files to exclude.
 #+begin_src emacs-lisp
   (use-package recentf
     :custom
-    ((recentf-exclude '(config-recentf--boring-filename-p
-                        config-recentf--boring-extension-p
-                        file-remote-p
-                        config-recentf--sudo-file-p
-                        config-recentf--child-of-boring-relative-dir-p
-                        config-recentf--child-of-boring-abs-dir-p)))
-    :preface
-    (progn
-      (defun config-recentf--boring-filename-p (f)
-        (memq (f-filename f) '("TAGS" ".DS_Store")))
+    (recentf-exclude '(config-recentf--boring-filename-p
+                       config-recentf--boring-extension-p
+                       file-remote-p
+                       config-recentf--sudo-file-p
+                       config-recentf--child-of-boring-relative-dir-p
+                       config-recentf--child-of-boring-abs-dir-p))
+    :config
+    (defun config-recentf--boring-filename-p (f)
+      (memq (f-filename f) '("TAGS" ".DS_Store")))
 
-      (defun config-recentf--boring-extension-p (f)
-        (seq-intersection (f-ext f) '("gz" "zip" "tar")))
+    (defun config-recentf--boring-extension-p (f)
+      (seq-intersection (f-ext f) '("gz" "zip" "tar")))
 
-      (defun config-recentf--sudo-file-p (f)
-        (string-prefix-p "/sudo:root@" f))
+    (defun config-recentf--sudo-file-p (f)
+      (string-prefix-p "/sudo:root@" f))
 
-      (defun config-recentf--child-of-boring-relative-dir-p (f)
-        (string-match-p (rx "/"
-                            (or
-                             ".cargo"
-                             ".ensime_cache"
-                             ".g8"
-                             ".git"
-                             ".stack-work"
-                             "Maildir"
-                             "build"
-                             "dist"
-                             "flow-typed/npm"
-                             "target"
-                             "vendor"
-                             )
-                            "/")
-                        f))
+    (defun config-recentf--child-of-boring-relative-dir-p (f)
+      (string-match-p (rx "/"
+                          (or
+                           ".cargo"
+                           ".ensime_cache"
+                           ".g8"
+                           ".git"
+                           ".stack-work"
+                           "Maildir"
+                           "build"
+                           "dist"
+                           "flow-typed/npm"
+                           "target"
+                           "vendor"
+                           )
+                          "/")
+                      f))
 
-      (defconst config-recentf--abs-dirs
-        (seq-map (lambda (it) (f-slash (file-truename it)))
-                 (list "/var/folders/"
-                       "/usr/local/Cellar/"
-                       "/tmp/"
-                       "/nix/store/"
-                       paths-cache-directory
-                       paths-etc-directory)))
+    (defconst config-recentf--abs-dirs
+      (seq-map (lambda (it) (f-slash (file-truename it)))
+               (list "/var/folders/"
+                     "/usr/local/Cellar/"
+                     "/tmp/"
+                     "/nix/store/"
+                     paths-cache-directory
+                     paths-etc-directory)))
 
-      (defun config-recentf--child-of-boring-abs-dir-p (f)
-        (let ((ignore-case (eq system-type 'darwin)))
-          (seq-find (lambda (d)
-                      (or
-                       (string-prefix-p d f ignore-case)
-                       (string-prefix-p d (file-truename f) ignore-case)))
-                    config-recentf--abs-dirs)))))
+    (defun config-recentf--child-of-boring-abs-dir-p (f)
+      (let ((ignore-case (eq system-type 'darwin)))
+        (seq-find (lambda (d)
+                    (or
+                     (string-prefix-p d f ignore-case)
+                     (string-prefix-p d (file-truename f) ignore-case)))
+                  config-recentf--abs-dirs))))
 #+end_src
 
 ** Multilingual input support
@@ -890,25 +888,21 @@ Set up LaTeX-style input method and add extra MULE rules for common chars.
 #+begin_src emacs-lisp
   (use-package mule
     :custom
-    ((default-input-method "TeX"))
+    (default-input-method "TeX")
 
-    :preface
-    (progn
-      (defvar quail-current-package)
-
-      (defun config-mule--set-tex-method-vars ()
-        (when-let* ((quail-current-package (assoc "TeX" quail-package-alist)))
-          (quail-defrule ";" (quail-lookup-key "\\"))
-          (quail-define-rules ((append . t))
-                              ("\\null" ?∅)
-                              ("\\rarr" ?→)
-                              ("\\larr" ?←)
-                              ("\\lr" ?↔)
-                              ("\\lam" ?λ)
-                              ("\\Lam" ?Λ)
-                              ("\\all" ?∀)
-                              ("\\rtack" ?⊢)))))
     :config
+    (defun config-mule--set-tex-method-vars ()
+      (when-let* ((quail-current-package (assoc "TeX" quail-package-alist)))
+        (quail-defrule ";" (quail-lookup-key "\\"))
+        (quail-define-rules ((append . t))
+                            ("\\null" ?∅)
+                            ("\\rarr" ?→)
+                            ("\\larr" ?←)
+                            ("\\lr" ?↔)
+                            ("\\lam" ?λ)
+                            ("\\Lam" ?Λ)
+                            ("\\all" ?∀)
+                            ("\\rtack" ?⊢))))
     (add-hook 'input-method-activate-hook #'config-mule--set-tex-method-vars))
 #+end_src
 
@@ -920,7 +914,7 @@ Automatically revert buffers if the underlying file changes on disk.
   (use-package autorevert
     :hook (after-init . global-auto-revert-mode)
     :custom
-    ((auto-revert-verbose nil)))
+    (auto-revert-verbose nil))
 #+end_src
 
 ** Clickable URLs
@@ -949,20 +943,20 @@ use advice to ignore these.
 #+begin_src emacs-lisp
   (use-package hideshow
     :config
-    (progn
-      (advice-add 'hs-hide-all :around #'advice-ignore-errors)
-      (advice-add 'hs-hide-block :around 'advice-ignore-errors)
-      (advice-add 'hs-minor-mode :around #'advice-ignore-errors)
-      (advice-add 'hs-show-all :around #'advice-ignore-errors)
-      (advice-add 'hs-show-block :around #'advice-ignore-errors)
-      (advice-add 'hs-toggle-hiding :around #'advice-ignore-errors)))
+    (advice-add 'hs-hide-all :around #'advice-ignore-errors)
+    (advice-add 'hs-hide-block :around 'advice-ignore-errors)
+    (advice-add 'hs-minor-mode :around #'advice-ignore-errors)
+    (advice-add 'hs-show-all :around #'advice-ignore-errors)
+    (advice-add 'hs-show-block :around #'advice-ignore-errors)
+    (advice-add 'hs-toggle-hiding :around #'advice-ignore-errors))
 #+end_src
 
 ** Enable authinfo file support
 
 #+begin_src emacs-lisp
   (use-package auth-source
-    :custom ((auth-sources '("~/.authinfo.gpg"))))
+    :custom
+    (auth-sources '("~/.authinfo.gpg")))
 #+end_src
 
 ** Pixel-wise scrolling
@@ -987,14 +981,15 @@ use advice to ignore these.
 #+begin_src emacs-lisp
   (use-package ispell
     :commands (ispell-check-version ispell-find-aspell-dictionaries)
+
     :custom
-    ((ispell-program-name "aspell")
-     (ispell-dictionary "en_GB")
-     (ispell-silently-savep t))
+    (ispell-program-name "aspell")
+    (ispell-dictionary "en_GB")
+    (ispell-silently-savep t)
+
     :config
-    (progn
-      (ispell-check-version)
-      (setq ispell-dictionary-alist (ispell-find-aspell-dictionaries))))
+    (ispell-check-version)
+    (setq ispell-dictionary-alist (ispell-find-aspell-dictionaries)))
 #+end_src
 
 ** Info system
@@ -1014,9 +1009,10 @@ system below.
 
 #+begin_src emacs-lisp
   (use-package info+
-    :after (info)
+    :after info
     :demand t
-    :custom ((Info-fontify-angle-bracketed-flag nil)))
+    :custom
+    (Info-fontify-angle-bracketed-flag nil))
 #+end_src
 
 ** Image viewing
@@ -1036,15 +1032,16 @@ websites.
 #+begin_src emacs-lisp
   (use-package webjump
     :commands (webjump)
-    :custom (webjump-sites
-             '(("DuckDuckGo" . [simple-query "duckduckgo.com" "duckduckgo.com/?q=" ""])
-               ("Google Calendar" . "calendar.google.com")
-               ("GMail" . "mail.google.com")
-               ("home-manager options" . "https://rycee.gitlab.io/home-manager/options.html")
-               ("Emacs Subreddit" . "reddit.com/r/emacs")
-               ("NixOS Options" . [simple-query "nixos.org" "nixos.org/nixos/options.html#" ""])
-               ("NixOS Packages" . [simple-query "nixos.org" "nixos.org/nixos/packages.html?query=" ""])
-               ("Wikipedia" . [simple-query "en.wikipedia.org" "en.wikipedia.org/wiki/" ""]))))
+    :custom
+    (webjump-sites
+     '(("DuckDuckGo" . [simple-query "duckduckgo.com" "duckduckgo.com/?q=" ""])
+       ("Google Calendar" . "calendar.google.com")
+       ("GMail" . "mail.google.com")
+       ("home-manager options" . "https://rycee.gitlab.io/home-manager/options.html")
+       ("Emacs Subreddit" . "reddit.com/r/emacs")
+       ("NixOS Options" . [simple-query "nixos.org" "nixos.org/nixos/options.html#" ""])
+       ("NixOS Packages" . [simple-query "nixos.org" "nixos.org/nixos/packages.html?query=" ""])
+       ("Wikipedia" . [simple-query "en.wikipedia.org" "en.wikipedia.org/wiki/" ""]))))
 #+end_src
 
 * Better eval-expression
@@ -1107,7 +1104,7 @@ Use this command for evaluating expressions in the Lisp debugger too.
                 (lambda (f exp)
                   (interactive (list (read (eval-expression-interactively--read "Eval: "))))
                   (funcall f exp))
-                '((name . use-config-eval-expression--read))))
+                '((name . use-eval-expression-interactively--read))))
 #+end_src
 
 * Improve basic editing configuration for all modes
@@ -1260,31 +1257,17 @@ Define a command to perform indentation in a context-sensitive way.
   (use-package aggressive-indent
     :hook (prog-mode . (lambda () (require 'aggressive-indent)))
     :custom
-    ((aggressive-indent-excluded-modes
-      '(csharp-mode
-        diff-auto-refine-mode
-        dockerfile-mode
-        fstar-mode
-        graphviz-dot-mode
-        haskell-mode
-        haskell-cabal-mode
-        idris-mode
-        idris-repl-mode
-        inf-ruby-mode
-        java-mode
-        lua-mode
-        makefile-gmake-mode
-        makefile-mode
-        nix-mode
-        python-mode
-        rust-mode
-        scala-mode
-        sql-mode
-        stylus-mode
-        terraform-mode
-        text-mode
-        toml-mode
-        yaml-mode)))
+    (aggressive-indent-excluded-modes
+     '(diff-auto-refine-mode
+       dockerfile-mode
+       graphviz-dot-mode
+       makefile-gmake-mode
+       makefile-mode
+       nix-mode
+       sql-mode
+       terraform-mode
+       text-mode
+       yaml-mode))
 
     :preface
     (defun turn-off-aggressive-indent-mode ()
@@ -1292,10 +1275,9 @@ Define a command to perform indentation in a context-sensitive way.
         (aggressive-indent-mode -1)))
 
     :config
-    (progn
-      (advice-add 'aggressive-indent--indent-if-changed :around #'advice-ignore-errors)
-      (add-hook 'diff-auto-refine-mode-hook #'turn-off-aggressive-indent-mode)
-      (global-aggressive-indent-mode +1)))
+    (advice-add 'aggressive-indent--indent-if-changed :around #'advice-ignore-errors)
+    (add-hook 'diff-auto-refine-mode-hook #'turn-off-aggressive-indent-mode)
+    (global-aggressive-indent-mode +1))
 #+end_src
 
 ** =ws-butler= - Automatic whitespace cleanup
@@ -1304,8 +1286,9 @@ Define a command to perform indentation in a context-sensitive way.
 
 #+begin_src emacs-lisp
   (use-package ws-butler
-    :hook ((prog-mode . (lambda () (require 'ws-butler)))
-           (text-mode . (lambda () (require 'ws-butler))))
+    :hook
+    (prog-mode . (lambda () (require 'ws-butler)))
+    (text-mode . (lambda () (require 'ws-butler)))
     :config
     (ws-butler-global-mode))
 #+end_src
@@ -1345,7 +1328,7 @@ of an LSP or semantic analysis.
   (use-package dumb-jump
     :general (:states 'normal :keymaps 'prog-mode-map "M-." #'jump-to-definition)
     :custom
-    ((dumb-jump-selector 'ivy)))
+    (dumb-jump-selector 'ivy))
 #+end_src
 
 ** =auto-insert= - File templates
@@ -1358,7 +1341,7 @@ of an LSP or semantic analysis.
     (defvar auto-insert-alist nil)
     :hook (find-file . auto-insert)
     :custom
-    ((auto-insert-query nil)))
+    (auto-insert-query nil))
 #+end_src
 
 Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
@@ -1367,17 +1350,12 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
   (use-package autoinsert-files
     :after (autoinsert)
     :commands (autoinsert-files-populate-templates)
-    :preface
-    (progn
-      ;; Use yasnippet's `snippet-mode' for autoinsert templates
-      (autoload 'snippet-mode "yasnippet")
-
-      (defun config-autoinsert--maybe-snippet-mode ()
-        (require 'autoinsert)
-        (when (string-prefix-p auto-insert-directory (buffer-file-name))
-          (snippet-mode))))
     :init
-    (add-hook 'find-file-hook #'config-autoinsert--maybe-snippet-mode)
+    (defun autoinsert-maybe-enter-snippet-mode ()
+      (require 'autoinsert)
+      (when (string-prefix-p auto-insert-directory (buffer-file-name))
+        (snippet-mode)))
+    (add-hook 'find-file-hook #'autoinsert-maybe-enter-snippet-mode)
     :config
     (advice-add 'auto-insert :before (lambda (&rest _)
                                        (autoinsert-files-populate-templates))))
@@ -1385,15 +1363,13 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
 
 ** =flyspell= - Spellchecking
 
-=flyspell= provides spellchecking.
-
 #+begin_src emacs-lisp
   (use-package flyspell
     :hook
-    ((org-mode . flyspell-mode))
+    (org-mode . flyspell-mode)
     :custom
-    ((flyspell-issue-welcome-flag nil)
-     (flyspell-default-dictionary "en_GB")))
+    (flyspell-issue-welcome-flag nil)
+    (flyspell-default-dictionary "en_GB"))
 #+end_src
 
 Prevent =flyspell= from showing suggestions in more contexts.
@@ -1401,13 +1377,12 @@ Prevent =flyspell= from showing suggestions in more contexts.
 #+begin_src emacs-lisp
   (use-package flyspell
     :after (org)
-    :preface
-    (defun config-flyspell--on-org-verify (result)
+    :config
+    (defun flyspell-on-org-verify (result)
       (and result
            (not (seq-intersection (face-at-point nil t)
                                   '(org-link verb-header)))))
-    :config
-    (advice-add 'org-mode-flyspell-verify :filter-return #'config-flyspell--on-org-verify))
+    (advice-add 'org-mode-flyspell-verify :filter-return #'flyspell-on-org-verify))
 #+end_src
 
 ** =undo-tree= - Visual graph for undo history
@@ -1430,7 +1405,7 @@ This package provides a visual representation of the undo history.
   (use-package format-all
     :hook (prog-mode . format-all-mode)
     :custom
-    ((format-all-show-errors 'never)))
+    (format-all-show-errors 'never))
 #+end_src
 
 * =direnv= - Support direnv files
@@ -1443,7 +1418,7 @@ See: [[https://github.com/wbolster/emacs-direnv][wbolster/emacs-direnv]]
   (use-package direnv
     :hook (after-init . direnv-mode)
     :custom
-    ((direnv-always-show-summary nil)))
+    (direnv-always-show-summary nil))
 #+end_src
 
 * =editorconfig= - Support editorconfig files
@@ -1462,9 +1437,9 @@ Configure =conf-mode= for use with more kinds of config files.
 #+begin_src emacs-lisp
   (use-package conf-mode
     :mode
-    (("\\.env\\.erb\\'" . conf-mode)
-     ("\\.conf\\.erb\\'" . conf-mode)
-     ("\\.kll\\'" . conf-mode)))
+    ("\\.env\\.erb\\'" . conf-mode)
+    ("\\.conf\\.erb\\'" . conf-mode)
+    ("\\.kll\\'" . conf-mode))
 #+end_src
 
 * =hexl-mode= - Hex editing
@@ -1520,20 +1495,18 @@ Provide feedback in the echo area on entering and exiting =deadgrep-edit-mode=.
 
 #+begin_src emacs-lisp
   (use-package deadgrep
-    :preface
-    (progn
-      (defun config-deadgrep--on-exit-edit-mode (&rest _)
-        (when (derived-mode-p 'deadgrep-edit-mode)
-          (let ((message-log-max))
-            (message "Exiting edit mode."))))
-
-      (defun config-deadgrep--on-enter-edit-mode (&rest _)
-        (let ((message-log-max))
-          (message "Entering edit mode. Changes will be made to underlying files as you edit."))))
     :config
-    (progn
-      (advice-add 'deadgrep-mode :before #'config-deadgrep--on-exit-edit-mode)
-      (advice-add 'deadgrep-edit-mode :after #'config-deadgrep--on-enter-edit-mode)))
+    (defun config-deadgrep--on-exit-edit-mode (&rest _)
+      (when (derived-mode-p 'deadgrep-edit-mode)
+        (let ((message-log-max))
+          (message "Exiting edit mode."))))
+
+    (defun config-deadgrep--on-enter-edit-mode (&rest _)
+      (let ((message-log-max))
+        (message "Entering edit mode. Changes will be made to underlying files as you edit.")))
+
+    (advice-add 'deadgrep-mode :before #'config-deadgrep--on-exit-edit-mode)
+    (advice-add 'deadgrep-edit-mode :after #'config-deadgrep--on-enter-edit-mode))
 #+end_src
 
 Use =C-c C-e= to enter a =deadgrep= search buffer from =ivy.=
@@ -1593,29 +1566,28 @@ ivy.
      "C-r" #'counsel-minibuffer-history)
 
     :custom
-    ((completing-read-function 'ivy-completing-read)
-     (ivy-use-virtual-buffers t)
-     (ivy-virtual-abbreviate 'abbreviate)
-     (ivy-count-format "(%d/%d) ")
-     (ivy-re-builders-alist '((t . ivy--regex-plus)))
-     (ivy-magic-slash-non-match-action nil)
-     (ivy-height 20)
-     (ivy-extra-directories '("."))
+    (completing-read-function 'ivy-completing-read)
+    (ivy-use-virtual-buffers t)
+    (ivy-virtual-abbreviate 'abbreviate)
+    (ivy-count-format "(%d/%d) ")
+    (ivy-re-builders-alist '((t . ivy--regex-plus)))
+    (ivy-magic-slash-non-match-action nil)
+    (ivy-height 20)
+    (ivy-extra-directories '("."))
 
-     ;; Increase the maximum number of candidates that will be sorted
-     ;; using `flx'. The default is 200, which means `flx' is almost
-     ;; never used. Setting it too high (e.g. 10000) causes lag. This
-     ;; seems to be a good compromise (for example, @PythonNut uses it,
-     ;; see [1]).
-     ;;
-     ;; [1]: https://github.com/PythonNut/emacs-config/blob/c8bff5cce293006ec5cdc39a86982431a758a9a0/modules/config-ivy.el#L68
-     (ivy-flx-limit 2000))
+    ;; Increase the maximum number of candidates that will be sorted
+    ;; using `flx'. The default is 200, which means `flx' is almost
+    ;; never used. Setting it too high (e.g. 10000) causes lag. This
+    ;; seems to be a good compromise (for example, @PythonNut uses it,
+    ;; see [1]).
+    ;;
+    ;; [1]: https://github.com/PythonNut/emacs-config/blob/c8bff5cce293006ec5cdc39a86982431a758a9a0/modules/config-ivy.el#L68
+    (ivy-flx-limit 2000)
 
     :config
-    (progn
-      (require 'nano-counsel nil t)
-      (advice-add 'ivy--queue-exhibit :around #'advice-ignore-errors)
-      (ivy-mode)))
+    (require 'nano-counsel nil t)
+    (advice-add 'ivy--queue-exhibit :around #'advice-ignore-errors)
+    (ivy-mode))
 #+end_src
 
 *** Hide boring files from completions
@@ -1624,17 +1596,15 @@ Hide =./= and =../= when finding files.
 
 #+begin_src emacs-lisp
   (use-package ivy
-    :preface
+    :config
     (defun config-ivy-with-empty-ivy-extra-directories (f &rest args)
       (let ((ivy-extra-directories nil))
         (apply f args)))
-    :config
+
     (advice-add #'counsel-find-file :around #'config-ivy-with-empty-ivy-extra-directories))
 #+end_src
 
 ** =swiper= - In-buffer search UI
-
-=swiper= is a buffer search interface using =ivy=.
 
 #+begin_src emacs-lisp
   (use-package swiper
@@ -1643,8 +1613,6 @@ Hide =./= and =../= when finding files.
 
 ** =counsel= - Better completions built on =ivy=
 
-=counsel= provides replacements for core Emacs commands using =ivy=.
-
 #+begin_src emacs-lisp
   (use-package counsel
     :general
@@ -1652,12 +1620,14 @@ Hide =./= and =../= when finding files.
     (:keymaps 'counsel-find-file-map
      "C-M-j" #'ivy-immediate-done
      "C-h" #'counsel-up-directory)
-    :custom ((counsel-yank-pop-separator (concat "\n" (make-vector 120 ?─) "\n")))
+
+    :custom
+    (counsel-yank-pop-separator (concat "\n" (make-vector 120 ?─) "\n"))
+
     :config
-    (progn
-      (put 'counsel-find-symbol 'no-counsel-M-x t)
-      (setf (alist-get 'counsel-yank-pop ivy-height-alist) 20)
-      (counsel-mode +1)))
+    (put 'counsel-find-symbol 'no-counsel-M-x t)
+    (setf (alist-get 'counsel-yank-pop ivy-height-alist) 20)
+    (counsel-mode +1))
 #+end_src
 
 ** =historian= - Persistent input history
@@ -1671,7 +1641,7 @@ Hide =./= and =../= when finding files.
     :config (historian-mode +1))
 #+end_src
 
-=ivy-historian= integrates =historian= with =ivy=.
+** =ivy-historian= - integrates =historian= with =ivy=.
 
 #+begin_src emacs-lisp
   (use-package ivy-historian
@@ -1680,9 +1650,9 @@ Hide =./= and =../= when finding files.
     :custom
     ;; Tweak historian weighting settings. These values are chosen
     ;; subjectively to produce good results.
-    ((ivy-historian-freq-boost-factor 2000)
-     (ivy-historian-recent-boost 2000)
-     (ivy-historian-recent-decrement 1000))
+    (ivy-historian-freq-boost-factor 2000)
+    (ivy-historian-recent-boost 2000)
+    (ivy-historian-recent-decrement 1000)
     :config
     (ivy-historian-mode 1))
 #+end_src
@@ -1694,8 +1664,8 @@ Configure how =ediff= should display windows when started.
 #+begin_src emacs-lisp
   (use-package ediff
     :custom
-    ((ediff-window-setup-function #'ediff-setup-windows-plain)
-     (ediff-split-window-function #'split-window-horizontally)))
+    (ediff-window-setup-function #'ediff-setup-windows-plain)
+    (ediff-split-window-function #'split-window-horizontally))
 #+end_src
 
 Teach =ediff= how to copy contents from both buffers in a three-way merge.
@@ -1704,41 +1674,38 @@ Teach =ediff= how to copy contents from both buffers in a three-way merge.
   (use-package ediff
     :functions
     (ediff-setup-windows-plain ediff-copy-diff ediff-get-region-contents)
-    :preface
-    (progn
-      (defun ediff-copy-both-to-C ()
-        "Copy both ediff buffers in a 3-way merge to the target buffer."
-        (interactive)
-        (let ((str
-               (concat
-                (ediff-get-region-contents ediff-current-difference 'A ediff-control-buffer)
-                (ediff-get-region-contents ediff-current-difference 'B ediff-control-buffer))))
-          (ediff-copy-diff ediff-current-difference nil 'C nil str)))
+    :custom
+    (defun ediff-copy-both-to-C ()
+      "Copy both ediff buffers in a 3-way merge to the target buffer."
+      (interactive)
+      (let ((str
+             (concat
+              (ediff-get-region-contents ediff-current-difference 'A ediff-control-buffer)
+              (ediff-get-region-contents ediff-current-difference 'B ediff-control-buffer))))
+        (ediff-copy-diff ediff-current-difference nil 'C nil str)))
 
-      (defun config-ediff--setup-keybinds ()
-        (define-key ediff-mode-map (kbd "B") #'ediff-copy-both-to-C)))
-    :config
+    (defun config-ediff--setup-keybinds ()
+      (define-key ediff-mode-map (kbd "B") #'ediff-copy-both-to-C))
+
     (add-hook 'ediff-keymap-setup-hook #'config-ediff--setup-keybinds))
 #+end_src
 
 Reveal the context around the selected hunk when diffing org buffers.
 
 #+begin_src emacs-lisp
-    (use-package ediff
-      :preface
-      (progn
-        (autoload 'org-reveal "org")
+  (use-package ediff
+    :config
+    (autoload 'org-reveal "org")
 
-        (defun config-ediff--org-reveal-around-difference (&rest _)
-          (dolist (buf (list ediff-buffer-A ediff-buffer-B ediff-buffer-C))
-            (when (and buf (buffer-live-p buf))
-              (with-current-buffer buf
-                (when (derived-mode-p 'org-mode)
-                  (org-reveal t)))))))
-      :config
-      (progn
-        (advice-add 'ediff-next-difference :after #'config-ediff--org-reveal-around-difference)
-        (advice-add 'ediff-previous-difference :after #'config-ediff--org-reveal-around-difference)))
+    (defun config-ediff--org-reveal-around-difference (&rest _)
+      (dolist (buf (list ediff-buffer-A ediff-buffer-B ediff-buffer-C))
+        (when (and buf (buffer-live-p buf))
+          (with-current-buffer buf
+            (when (derived-mode-p 'org-mode)
+              (org-reveal t))))))
+
+    (advice-add 'ediff-next-difference :after #'config-ediff--org-reveal-around-difference)
+    (advice-add 'ediff-previous-difference :after #'config-ediff--org-reveal-around-difference))
 #+end_src
 
 * =world-time-mode= - World clock UI
@@ -1750,59 +1717,40 @@ Reveal the context around the selected hunk when diffing org buffers.
     :general
     (:states 'normal :keymaps 'world-time-table-mode-map "q" 'quit-window)
     :custom
-    ((display-time-world-list '(("Pacific/Auckland" "NZT")
-                                ("America/Los_Angeles" "Pacific Time")
-                                ("Europe/Istanbul" "Turkey")
-                                ("Asia/Beirut" "Lebanon")
-                                ("Europe/Berlin" "Euro Central")
-                                ("UTC" "UTC"))))
+    (display-time-world-list '(("Pacific/Auckland" "NZT")
+                               ("America/Los_Angeles" "Pacific Time")
+                               ("Europe/Istanbul" "Turkey")
+                               ("Asia/Beirut" "Lebanon")
+                               ("Europe/Berlin" "Euro Central")
+                               ("UTC" "UTC")))
     :config
     (add-hook 'world-time-table-mode-hook 'hl-line-mode))
 #+end_src
 
-* Compilation
+* =compile= - Mode for compilation buffers
 
 #+begin_src emacs-lisp
   (use-package compile
     :custom
-    ((compilation-environment '("TERM=screen-256color"))
-     (compilation-always-kill t)
-     (compilation-ask-about-save nil)
-     (compilation-scroll-output 'first-error)))
+    (compilation-environment '("TERM=screen-256color"))
+    (compilation-always-kill t)
+    (compilation-ask-about-save nil)
+    (compilation-scroll-output 'first-error))
 #+end_src
 
 Colourise compilation output.
 
 #+begin_src emacs-lisp
   (use-package compile
-    :preface
-    (progn
-      (autoload 'ansi-color-apply-on-region "ansi-color")
-
-      (defvar compilation-filter-start)
-
-      (defun config-basic-settings--colorize-compilation-buffer ()
-        (let ((inhibit-read-only t))
-          (ansi-color-apply-on-region (save-excursion
-                                        (goto-char compilation-filter-start)
-                                        (line-beginning-position))
-                                      (point))))
-
-      (defface compilation-base-face nil
-        "Base face for compilation highlights"
-        :group 'config-basic-settings))
-
     :config
-    (progn
-      (add-hook 'compilation-filter-hook #'config-basic-settings--colorize-compilation-buffer)
+    (defun colourise-compilation-output ()
+      (let ((inhibit-read-only t))
+        (ansi-color-apply-on-region (save-excursion
+                                      (goto-char compilation-filter-start)
+                                      (line-beginning-position))
+                                    (point))))
 
-      (add-to-list 'display-buffer-alist
-                   `(,(rx bos "*compilation*" eos)
-                     (display-buffer-reuse-window display-buffer-below-selected)
-                     (window-height    . 0.2)))
-
-      ;; Clear default underline text properties applied to compilation highlights.
-      (setq compilation-message-face 'compilation-base-face)))
+    (add-hook 'compilation-filter-hook 'colourise-compilation-output))
 #+end_src
 
 Position compilation buffers.
@@ -1814,14 +1762,6 @@ Position compilation buffers.
                  `(,(rx bos "*compilation*" eos)
                    (display-buffer-reuse-window display-buffer-below-selected)
                    (window-height    . 0.2))))
-#+end_src
-
-Clear default underline text properties applied to compilation highlights.
-
-#+begin_src emacs-lisp
-  (use-package compile
-    :custom
-    ((compilation-message-face 'compilation-base-face)))
 #+end_src
 
 * Window management
@@ -1838,16 +1778,16 @@ after editing actions have changed what windows are shown.
               "<C-right>"'winner-redo)
     :hook (after-init . winner-mode)
     :custom
-    ((winner-boring-buffers '("*Completions*"
-                              "*Compile-Log*"
-                              "*inferior-lisp*"
-                              "*Fuzzy Completions*"
-                              "*Apropos*"
-                              "*Help*"
-                              "*cvs*"
-                              "*Buffer List*"
-                              "*Ibuffer*"
-                              "*esh command on file*"))))
+    (winner-boring-buffers '("*Completions*"
+                             "*Compile-Log*"
+                             "*inferior-lisp*"
+                             "*Fuzzy Completions*"
+                             "*Apropos*"
+                             "*Help*"
+                             "*cvs*"
+                             "*Buffer List*"
+                             "*Ibuffer*"
+                             "*esh command on file*")))
 #+end_src
 
 ** =rotate= - Rotate buffers within window layout
@@ -1874,20 +1814,18 @@ Customise global vars and keybindings.
 #+begin_src emacs-lisp
   (use-package evil
     :hook (after-init . evil-mode)
-    :preface
-    (autoload 'display-warning "warnings")
     :custom
-    ((evil-mode-line-format nil)
-     (evil-shift-width 2)
-     (evil-undo-system 'undo-redo)
-     (evil-symbol-word-search t)
-     (evil-want-visual-char-semi-exclusive t)
-     (evil-want-Y-yank-to-eol t)
-     (evil-motion-state-cursor '("plum3" box))
-     (evil-visual-state-cursor '("gray" hbar))
-     (evil-normal-state-cursor '("IndianRed" box))
-     (evil-insert-state-cursor '("chartreuse3" bar))
-     (evil-emacs-state-cursor  '("SkyBlue2" (box . t))))
+    (evil-mode-line-format nil)
+    (evil-shift-width 2)
+    (evil-undo-system 'undo-redo)
+    (evil-symbol-word-search t)
+    (evil-want-visual-char-semi-exclusive t)
+    (evil-want-Y-yank-to-eol t)
+    (evil-motion-state-cursor '("plum3" box))
+    (evil-visual-state-cursor '("gray" hbar))
+    (evil-normal-state-cursor '("IndianRed" box))
+    (evil-insert-state-cursor '("chartreuse3" bar))
+    (evil-emacs-state-cursor  '("SkyBlue2" (box . t)))
     :general
     (:states 'normal "go" #'browse-url-at-point))
 #+end_src
@@ -1903,9 +1841,12 @@ these instead.
 
 #+begin_src emacs-lisp
   (use-package evil
-    :custom ((evil-want-keybinding nil)
-             (evil-want-integration t)))
+    :custom
+    (evil-want-keybinding nil)
+    (evil-want-integration t))
 #+end_src
+
+** Execute macro bound to ~q~ with ~Q~
 
 Use =Q= in normal state to execute the macro bound to =q= register. This is a
 convenient way to quickly define a macro, then execute it immediately--just
@@ -1926,7 +1867,10 @@ double-tap =q= to record, then hit =Q= to execute.
       (evil-execute-macro count (evil-get-register ?Q t))))
 #+end_src
 
-Make motions make more sense in RTL languages.
+** Invert motions in RTL languages
+
+Make motions make more sense by following RTL text direction in Arabic, Farsi
+etc.
 
 #+begin_src emacs-lisp
   (use-package evil-bidi
@@ -1938,11 +1882,11 @@ Make motions make more sense in RTL languages.
 
 #+begin_src emacs-lisp
   (use-package evil
-    :config
-    (evil-define-key 'motion help-mode-map
-      (kbd "<escape>") #'quit-window
-      (kbd "^") #'help-go-back
-      (kbd "gh") #'help-follow-symbol))
+    :general
+    (:states 'motion :keymaps 'help-mode-map
+     "<escape>" 'quit-window
+     "^" 'help-go-back
+     "gh" 'help-follow-symbol))
 #+end_src
 
 ** Initial states
@@ -1952,28 +1896,27 @@ Customise which states evil to use for different modes.
 #+begin_src emacs-lisp
   (use-package evil
     :config
-    (progn
-      (evil-set-initial-state 'anaconda-mode-view-mode 'motion)
-      (evil-set-initial-state 'diff-mode 'motion)
-      (evil-set-initial-state 'ert-simple-view-mode 'motion)
-      (evil-set-initial-state 'eshell-mode 'insert)
-      (evil-set-initial-state 'flycheck-error-list-mode 'motion)
-      (evil-set-initial-state 'grep-mode 'normal)
-      (evil-set-initial-state 'haskell-debug-mode 'motion)
-      (evil-set-initial-state 'helpful-mode 'motion)
-      (evil-set-initial-state 'ibuffer-mode 'motion)
-      (evil-set-initial-state 'nix-repl-mode 'insert)
-      (evil-set-initial-state 'occur-mode 'normal)
-      (evil-set-initial-state 'org-agenda-mode 'motion)
-      (evil-set-initial-state 'prodigy-mode 'motion)
-      (evil-set-initial-state 'profiler-report-mode 'motion)
-      (evil-set-initial-state 'racer-help-mode 'motion)
-      (evil-set-initial-state 'tabulated-list-mode 'motion)
-      (evil-set-initial-state 'vterm-mode 'emacs)
-      (evil-set-initial-state 'wdired-mode 'normal)
+    (evil-set-initial-state 'anaconda-mode-view-mode 'motion)
+    (evil-set-initial-state 'diff-mode 'motion)
+    (evil-set-initial-state 'ert-simple-view-mode 'motion)
+    (evil-set-initial-state 'eshell-mode 'insert)
+    (evil-set-initial-state 'flycheck-error-list-mode 'motion)
+    (evil-set-initial-state 'grep-mode 'normal)
+    (evil-set-initial-state 'haskell-debug-mode 'motion)
+    (evil-set-initial-state 'helpful-mode 'motion)
+    (evil-set-initial-state 'ibuffer-mode 'motion)
+    (evil-set-initial-state 'nix-repl-mode 'insert)
+    (evil-set-initial-state 'occur-mode 'normal)
+    (evil-set-initial-state 'org-agenda-mode 'motion)
+    (evil-set-initial-state 'prodigy-mode 'motion)
+    (evil-set-initial-state 'profiler-report-mode 'motion)
+    (evil-set-initial-state 'racer-help-mode 'motion)
+    (evil-set-initial-state 'tabulated-list-mode 'motion)
+    (evil-set-initial-state 'vterm-mode 'emacs)
+    (evil-set-initial-state 'wdired-mode 'normal)
 
-      (with-eval-after-load 'replace
-        (evil-add-hjkl-bindings occur-mode-map))))
+    (with-eval-after-load 'replace
+      (evil-add-hjkl-bindings occur-mode-map)))
 #+end_src
 
 ** Archive navigation integration
@@ -1982,9 +1925,8 @@ Customise which states evil to use for different modes.
   (use-package evil
     :after (tar-mode)
     :config
-    (progn
-      (evil-set-initial-state 'tar-mode 'emacs)
-      (evil-add-hjkl-bindings tar-mode-map)))
+    (evil-set-initial-state 'tar-mode 'emacs)
+    (evil-add-hjkl-bindings tar-mode-map))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -2006,7 +1948,7 @@ Customise which states evil to use for different modes.
 
 ** =compilation= integration
 
-Disable =h= (help) binding in =compilation-mode=, which interferes with evil
+Disable ~h~ (help) binding in =compilation-mode=, which interferes with evil
 navigation.
 
 #+begin_src emacs-lisp
@@ -2026,26 +1968,23 @@ show the cursor in deselected windows.
 
 ** Spellchecker integration
 
-Add vim-style =:spell= and =:nospell= ex commands.
+Add vim-style ~:spell~ and ~:nospell~ ex commands.
 
 #+begin_src emacs-lisp
   (use-package evil
-    :functions (evil-ex-define-cmd)
-    :preface
-    (progn
-      (defun config-evil-flyspell-on ()
-        "Enable flyspell."
-        (interactive)
-        (turn-on-flyspell))
-
-      (defun config-evil-flyspell-off ()
-        "Disable flyspell."
-        (interactive)
-        (turn-off-flyspell)))
     :config
-    (progn
-      (evil-ex-define-cmd "nospell" #'config-evil-flyspell-off)
-      (evil-ex-define-cmd "spell" #'config-evil-flyspell-on)))
+    (defun evil-flyspell-on ()
+      "Enable flyspell."
+      (interactive)
+      (turn-on-flyspell))
+
+    (defun evil-flyspell-off ()
+      "Disable flyspell."
+      (interactive)
+      (turn-off-flyspell))
+
+    (evil-ex-define-cmd "nospell" #'evil-flyspell-off)
+    (evil-ex-define-cmd "spell" #'evil-flyspell-on))
 #+end_src
 
 Add more key bindings to work with spell-checker from normal state.
@@ -2067,11 +2006,12 @@ Add more key bindings to work with spell-checker from normal state.
 Make =<escape>= issue =keyboard-quit= in as many situations as possible.
 
 #+begin_src emacs-lisp
-  (define-key minibuffer-local-map (kbd "<escape>") #'keyboard-escape-quit)
-  (define-key minibuffer-local-ns-map (kbd "<escape>") #'keyboard-escape-quit)
-  (define-key minibuffer-local-completion-map (kbd "<escape>") #'keyboard-escape-quit)
-  (define-key minibuffer-local-must-match-map (kbd "<escape>") #'keyboard-escape-quit)
-  (define-key minibuffer-local-isearch-map (kbd "<escape>") #'keyboard-escape-quit)
+  (general-define-key :keymaps '(minibuffer-local-map
+                                 minibuffer-local-ns-map
+                                 minibuffer-local-completion-map
+                                 minibuffer-local-must-match-map
+                                 minibuffer-local-isearch-map)
+    "<escape>" 'keyboard-escape-quit)
 #+end_src
 
 ** =org-mode= integration
@@ -2099,21 +2039,21 @@ Teach =evil= how to surround objects with matched pairs.
      "s" #'evil-surround-region
      "S" #'evil-substitute)
     :custom
-    ((evil-surround-pairs-alist '((?\( . ("(" . ")"))
-                                  (?\[ . ("[" . "]"))
-                                  (?\{ . ("{" . "}"))
+    (evil-surround-pairs-alist '((?\( . ("(" . ")"))
+                                 (?\[ . ("[" . "]"))
+                                 (?\{ . ("{" . "}"))
 
-                                  (?\) . ("(" . ")"))
-                                  (?\] . ("[" . "]"))
-                                  (?\} . ("{" . "}"))
+                                 (?\) . ("(" . ")"))
+                                 (?\] . ("[" . "]"))
+                                 (?\} . ("{" . "}"))
 
-                                  (?# . ("#{" . "}"))
-                                  (?b . ("(" . ")"))
-                                  (?B . ("{" . "}"))
-                                  (?> . ("<" . ">"))
-                                  (?t . evil-surround-read-tag)
-                                  (?< . evil-surround-read-tag)
-                                  (?f . evil-surround-function)))))
+                                 (?# . ("#{" . "}"))
+                                 (?b . ("(" . ")"))
+                                 (?B . ("{" . "}"))
+                                 (?> . ("<" . ">"))
+                                 (?t . evil-surround-read-tag)
+                                 (?< . evil-surround-read-tag)
+                                 (?f . evil-surround-function))))
 #+end_src
 
 Define an extra =`sym'= pair for =emacs-lisp-mode=.
@@ -2141,7 +2081,7 @@ Define an extra =`sym'= pair for =emacs-lisp-mode=.
     (evil-collection-init))
 #+end_src
 
-** text motions within function parameter lists
+** Text motions within function parameter lists
 
 =evil-args= provides text motions within function parameter lists, so you can
 manipulate parameters in a structured way.
@@ -2155,9 +2095,9 @@ manipulate parameters in a structured way.
               'evil-outer-text-objects-map "a" #'evil-outer-arg))
 #+end_src
 
-** improve matched-pair detection
+** Improve matched-pair detection
 
-Teach =%= how to match more kinds of pairs.
+Teach ~%~ how to match more kinds of pairs.
 
 #+begin_src emacs-lisp
   (use-package evil-matchit
@@ -2167,9 +2107,9 @@ Teach =%= how to match more kinds of pairs.
     (global-evil-matchit-mode +1))
 #+end_src
 
-** operate on numbers
+** Operate on numbers
 
-Use =+= and =-= to increment and decrement numbers in normal state.
+Use ~+~ and ~-~ to increment and decrement numbers in normal state.
 
 #+begin_src emacs-lisp
   (use-package evil-numbers
@@ -2180,9 +2120,9 @@ Use =+= and =-= to increment and decrement numbers in normal state.
               "-" #'evil-numbers/dec-at-pt))
 #+end_src
 
-** improve shift behaviour
+** Improve shift behaviour
 
-Teach =<= and =>= to shift text in a context-sensitive way.
+Teach ~<~ and ~>~ to shift text in a context-sensitive way.
 
 #+begin_src emacs-lisp
   (use-package evil
@@ -2190,27 +2130,26 @@ Teach =<= and =>= to shift text in a context-sensitive way.
               "<" #'config-evil--shift-left
               ">" #'config-evil--shift-right)
     :preface
-    (progn
-      (defun config-evil--shift-left (&optional beg end)
-        "Shift left, keeping the region active.
+    (defun config-evil--shift-left (&optional beg end)
+      "Shift left, keeping the region active.
 
   BEG and END are the bounds of the active region."
-        (interactive "r")
-        (evil-shift-left beg end)
-        (evil-normal-state)
-        (evil-visual-restore))
+      (interactive "r")
+      (evil-shift-left beg end)
+      (evil-normal-state)
+      (evil-visual-restore))
 
-      (defun config-evil--shift-right (&optional beg end)
-        "Shift right, keeping the region active.
+    (defun config-evil--shift-right (&optional beg end)
+      "Shift right, keeping the region active.
 
   BEG and END are the bounds of the active region."
-        (interactive "r")
-        (evil-shift-right beg end)
-        (evil-normal-state)
-        (evil-visual-restore))))
+      (interactive "r")
+      (evil-shift-right beg end)
+      (evil-normal-state)
+      (evil-visual-restore)))
 #+end_src
 
-** iedit integration
+** =iedit= integration
 
 =iedit= adds useful mass-renaming functionality. This package provides evil
 compatibility.
@@ -2242,17 +2181,17 @@ Set the default heuristic for completing symbols.
 #+begin_src emacs-lisp
   (use-package hippie-exp
     :custom
-    ((hippie-expand-try-functions-list
-      '(try-expand-dabbrev
-        try-expand-dabbrev-all-buffers
-        try-expand-dabbrev-from-kill
-        try-complete-file-name-partially
-        try-complete-file-name
-        try-expand-all-abbrevs
-        try-expand-list
-        try-expand-line
-        try-complete-lisp-symbol-partially
-        try-complete-lisp-symbol))))
+    (hippie-expand-try-functions-list
+     '(try-expand-dabbrev
+       try-expand-dabbrev-all-buffers
+       try-expand-dabbrev-from-kill
+       try-complete-file-name-partially
+       try-complete-file-name
+       try-expand-all-abbrevs
+       try-expand-list
+       try-expand-line
+       try-complete-lisp-symbol-partially
+       try-complete-lisp-symbol)))
 #+end_src
 
 ** =company= - UI for selecting completions
@@ -2276,10 +2215,10 @@ options.
     (general-unbind :keymaps 'company-active-map "C-w" "C-h")
 
     :custom
-    ((company-idle-delay 0.3)
-     (company-minimum-prefix-length 3)
-     (company-tooltip-align-annotations t)
-     (company-require-match nil))
+    (company-idle-delay 0.3)
+    (company-minimum-prefix-length 3)
+    (company-tooltip-align-annotations t)
+    (company-require-match nil)
 
     :config
     (require 'company-tng))
@@ -2291,10 +2230,10 @@ to manually apply it again.
 #+begin_src emacs-lisp
   (use-package company
     :after evil-collection
-    :preface
+    :config
     (defun config-company--set-company-vars ()
       (define-key company-active-map (kbd "RET") #'company-complete-selection))
-    :config
+
     (add-hook 'company-mode-hook #'config-company--set-company-vars))
 #+end_src
 
@@ -2307,23 +2246,21 @@ to manually apply it again.
     :general
     (:states 'normal :keymaps 'dired-mode-map "$" #'end-of-line)
     :custom
-    ((dired-listing-switches "-alhv")
-     (dired-dwim-target t)
-     (dired-auto-revert-buffer t)
-     (dired-hide-details-hide-symlink-targets nil)
-     (dired-omit-files (rx bol (or (+ ".")
-                                   (and "__pycache__" eol)))))
+    (dired-listing-switches "-alhv")
+    (dired-dwim-target t)
+    (dired-auto-revert-buffer t)
+    (dired-hide-details-hide-symlink-targets nil)
+    (dired-omit-files (rx bol "."))
     :config
-    (progn
-      (add-hook 'dired-mode-hook #'hl-line-mode)
-      (put 'dired-find-alternate-file 'disabled nil)))
+    (add-hook 'dired-mode-hook #'hl-line-mode)
+    (put 'dired-find-alternate-file 'disabled nil))
 #+end_src
 
 Teach =dired= to put directories first in sort order.
 
 #+begin_src emacs-lisp
   (use-package dired
-    :preface
+    :config
     (defun config-dired--sort-directories-first (&rest _)
       "Sort dired listings with directories first."
       (save-excursion
@@ -2331,7 +2268,7 @@ Teach =dired= to put directories first in sort order.
           (forward-line 2) ;; beyond dir. header
           (sort-regexp-fields t "^.*$" "[ ]*." (point) (point-max)))
         (set-buffer-modified-p nil)))
-    :config
+
     (advice-add 'dired-readin :after #'config-dired--sort-directories-first))
 #+end_src
 
@@ -2356,7 +2293,7 @@ Use =dired+= to hide file flags.
   (use-package dired+
     :hook (dired-mode . dired-hide-details-mode)
     :custom
-    ((diredp-wrap-around-flag nil))
+    (diredp-wrap-around-flag nil)
     :general
     (:states 'normal :keymaps 'dired-mode-map
      "j" #'diredp-next-line
@@ -2374,8 +2311,8 @@ dot).
     :general
     (:states 'normal :keymaps 'dired-mode-map "h" #'dired-omit-mode)
     :custom
-    ((dired-omit-verbose nil)
-     (dired-clean-up-buffers-too t)))
+    (dired-omit-verbose nil)
+    (dired-clean-up-buffers-too t))
 #+end_src
 
 * =projectile= - Project and repo-level commands
@@ -2390,40 +2327,40 @@ of =projectile=. Use =projectile= until the builtin functionality is more comple
   (use-package projectile
     :hook (after-init . projectile-mode)
     :custom
-    ((projectile-project-search-path paths-project-directories)
-     (projectile-completion-system 'ivy)
-     (projectile-switch-project-action #'dired)
-     (projectile-enable-caching t)
-     (projectile-create-missing-test-files t)
-     (projectile-globally-ignored-files
-      '(".DS_Store"
-        "package-lock.json"))
-     (projectile-globally-ignored-file-suffixes
-      '("meta"
-        "gz"
-        "zip"
-        "tar"
-        "tgz"
-        "elc"
-        "eln"))
-     (projectile-globally-ignored-directories
-      '("coverage"
-        ".bzr"
-        ".ensime_cache"
-        ".eunit"
-        ".fslckout"
-        ".g8"
-        ".git"
-        ".hg"
-        ".idea"
-        ".stack-work"
-        ".svn"
-        "dist"
-        "jars"
-        "node_modules"
-        "flow-typed/npm"
-        "vendor"
-        "target"))))
+    (projectile-project-search-path paths-project-directories)
+    (projectile-completion-system 'ivy)
+    (projectile-switch-project-action #'dired)
+    (projectile-enable-caching t)
+    (projectile-create-missing-test-files t)
+    (projectile-globally-ignored-files
+     '(".DS_Store"
+       "package-lock.json"))
+    (projectile-globally-ignored-file-suffixes
+     '("meta"
+       "gz"
+       "zip"
+       "tar"
+       "tgz"
+       "elc"
+       "eln"))
+    (projectile-globally-ignored-directories
+     '("coverage"
+       ".bzr"
+       ".ensime_cache"
+       ".eunit"
+       ".fslckout"
+       ".g8"
+       ".git"
+       ".hg"
+       ".idea"
+       ".stack-work"
+       ".svn"
+       "dist"
+       "jars"
+       "node_modules"
+       "flow-typed/npm"
+       "vendor"
+       "target")))
 #+end_src
 
 ** Use ivy for projectile commands
@@ -2431,26 +2368,24 @@ of =projectile=. Use =projectile= until the builtin functionality is more comple
 #+begin_src emacs-lisp
   (use-package counsel-projectile
     :after (projectile)
-    :preface
-    (progn
-      (defun config-projectile--extra-opts-on-prefix-args (&optional options)
-        (list (if current-prefix-arg
-                  (read-string "Rg args: " options)
-                options)))
-
-      (defun config-projectile--escaped-symbol-at-point ()
-        (regexp-quote (substring-no-properties (or
-                                                (when (region-active-p)
-                                                  (buffer-substring (region-beginning) (region-end)))
-                                                (thing-at-point 'symbol)
-                                                "")))))
     :custom
-    ((counsel-projectile-rg-initial-input '(config-projectile--escaped-symbol-at-point))
-     (counsel-projectile-switch-project-action #'dired))
+    (counsel-projectile-rg-initial-input '(config-projectile--escaped-symbol-at-point))
+    (counsel-projectile-switch-project-action #'dired)
+
     :config
-    (progn
-      (counsel-projectile-mode +1)
-      (advice-add #'counsel-projectile-rg :filter-args #'config-projectile--extra-opts-on-prefix-args)))
+    (defun config-projectile--escaped-symbol-at-point ()
+      (regexp-quote (substring-no-properties (or
+                                              (when (region-active-p)
+                                                (buffer-substring (region-beginning) (region-end)))
+                                              (thing-at-point 'symbol)
+                                              ""))))
+
+    (defun config-projectile--extra-opts-on-prefix-args (&optional options)
+      (list (if current-prefix-arg
+                (read-string "Rg args: " options)
+              options)))
+    (counsel-projectile-mode +1)
+    (advice-add 'counsel-projectile-rg :filter-args 'config-projectile--extra-opts-on-prefix-args))
 #+end_src
 
 * =yasnippet= - Text snippets
@@ -2460,13 +2395,17 @@ down on typing.
 
 #+begin_src emacs-lisp
   (use-package yasnippet
-    :hook ((prog-mode . (lambda () (require 'yasnippet)))
-           (text-mode . (lambda () (require 'yasnippet))))
-    :custom ((yas-wrap-around-region t)
-             (yas-alias-to-yas/prefix-p nil)
-             (yas-prompt-functions '(yas-completing-prompt))
-             (yas-verbosity 0)
-             (yas-minor-mode-map (make-sparse-keymap)))
+    :hook
+    (prog-mode . (lambda () (require 'yasnippet)))
+    (text-mode . (lambda () (require 'yasnippet)))
+
+    :custom
+    (yas-wrap-around-region t)
+    (yas-alias-to-yas/prefix-p nil)
+    (yas-prompt-functions '(yas-completing-prompt))
+    (yas-verbosity 0)
+    (yas-minor-mode-map (make-sparse-keymap))
+
     :general
     (:keymaps 'yas-minor-mode-map :states 'insert
      "TAB"
@@ -2480,6 +2419,7 @@ down on typing.
      (general-predicate-dispatch 'backward-delete-char
        (yas--maybe-clear-field-filter t) 'yas-skip-and-clear-field
        (bound-and-true-p smartparens-mode) 'sp-backward-delete-char))
+
     :config
     (yas-global-mode +1))
 #+end_src
@@ -2489,24 +2429,26 @@ down on typing.
 When cycling backward through fields, place point at the end of the previous field.
 
 #+begin_src emacs-lisp
-  (defun config-yasnippet--end-of-field ()
-    (when-let* ((field (yas-current-field)))
-      (marker-position (yas--field-end field))))
+  (use-package yasnippet
+    :config
+    (defun config-yasnippet--end-of-field ()
+      (when-let* ((field (yas-current-field)))
+        (marker-position (yas--field-end field))))
 
-  (defun config-yasnippet--maybe-goto-field-end ()
-    "Move to the end of the current field if it has been modified."
-    (when-let* ((field (config-yasnippet--current-field)))
-      (when (and (yas--field-modified-p field)
-                 (yas--field-contains-point-p field))
-        (goto-char (config-yasnippet--end-of-field)))))
+    (defun config-yasnippet--maybe-goto-field-end ()
+      "Move to the end of the current field if it has been modified."
+      (when-let* ((field (config-yasnippet--current-field)))
+        (when (and (yas--field-modified-p field)
+                   (yas--field-contains-point-p field))
+          (goto-char (config-yasnippet--end-of-field)))))
 
-  (defun yasnippet-goto-field-end (&rest _)
-    (config-yasnippet--maybe-goto-field-end)
-    (when (and (boundp 'evil-mode) evil-mode (fboundp 'evil-insert-state))
-      (evil-insert-state)))
+    (defun yasnippet-goto-field-end (&rest _)
+      (config-yasnippet--maybe-goto-field-end)
+      (when (and (boundp 'evil-mode) evil-mode (fboundp 'evil-insert-state))
+        (evil-insert-state)))
 
-  (advice-add 'yas-next-field :after #'yasnippet-goto-field-end)
-  (advice-add 'yas-prev-field :after #'yasnippet-goto-field-end)
+    (advice-add 'yas-next-field :after #'yasnippet-goto-field-end)
+    (advice-add 'yas-prev-field :after #'yasnippet-goto-field-end))
 #+end_src
 
 ** Snippet functions
@@ -2531,8 +2473,7 @@ These functions are used in the definitions of snippets.
     "Find the first group defined in the current file.
   Fall back to the file name sans extension."
     (or
-     (cadr (s-match (rx "(defgroup" (+ space) (group (+ (not
-                                                         space))))
+     (cadr (s-match (rx "(defgroup" (+ space) (group (+ (not space))))
                     (buffer-string)))
      (cadr (s-match (rx ":group" (+ space) "'" (group (+ (any "-" alnum))))
                     (buffer-string)))
@@ -2577,8 +2518,9 @@ Configure the package.
 
 #+begin_src emacs-lisp
   (use-package volatile-highlights
-    :hook ((prog-mode . (lambda () (require 'volatile-highlights)))
-           (text-mode . (lambda () (require 'volatile-highlights))))
+    :hook
+    (prog-mode . (lambda () (require 'volatile-highlights)))
+    (text-mode . (lambda () (require 'volatile-highlights)))
     :config
     (volatile-highlights-mode))
 #+end_src
@@ -2590,14 +2532,13 @@ Teach =volatile-highlights-mode= to highlight text pasted by =evil= operations.
     :after (evil)
     :demand t
     :config
-    (progn
-      (vhl/define-extension 'evil
-                            'evil-move
-                            'evil-paste-after
-                            'evil-paste-before
-                            'evil-paste-pop)
-      (vhl/install-extension 'evil)
-      (vhl/load-extension 'evil)))
+    (vhl/define-extension 'evil
+                          'evil-move
+                          'evil-paste-after
+                          'evil-paste-before
+                          'evil-paste-pop)
+    (vhl/install-extension 'evil)
+    (vhl/load-extension 'evil))
 #+end_src
 
 ** =highlight-thing= - Highlight the symbol at point
@@ -2606,10 +2547,10 @@ Teach =volatile-highlights-mode= to highlight text pasted by =evil= operations.
   (use-package highlight-thing
     :hook (prog-mode . highlight-thing-mode)
     :custom
-    ((highlight-thing-what-thing 'symbol)
-     (highlight-thing-delay-seconds 0.1)
-     (highlight-thing-limit-to-defun nil)
-     (highlight-thing-case-sensitive-p t))
+    (highlight-thing-what-thing 'symbol)
+    (highlight-thing-delay-seconds 0.1)
+    (highlight-thing-limit-to-defun nil)
+    (highlight-thing-case-sensitive-p t)
     :config
     (set-face-attribute 'highlight-thing nil :inherit 'highlight))
 #+end_src
@@ -2618,7 +2559,7 @@ Suppress =highlight-thing= when hovering over certain kinds of symbols.
 
 #+begin_src emacs-lisp
   (use-package highlight-thing
-    :preface
+    :config
     (defun config-highlight-thing--should-highlight-p (res)
       (unless (bound-and-true-p lsp-ui-mode)
         (when res
@@ -2630,7 +2571,6 @@ Suppress =highlight-thing= when hovering over certain kinds of symbols.
                 (faces (seq-mapcat #'face-ancestors (face-at-point nil t))))
             (null (seq-intersection faces excluded-faces))))))
 
-    :config
     (advice-add 'highlight-thing-should-highlight-p :filter-return
                 #'config-highlight-thing--should-highlight-p))
 #+end_src
@@ -2644,12 +2584,12 @@ character (^L).
   (use-package page-break-lines
     :hook (after-init . global-page-break-lines-mode)
     :custom
-    ((page-break-lines-modes '(prog-mode
-                               text-mode
-                               ibuffer-mode
-                               compilation-mode
-                               help-mode
-                               org-agenda-mode))))
+    (page-break-lines-modes '(prog-mode
+                              text-mode
+                              ibuffer-mode
+                              compilation-mode
+                              help-mode
+                              org-agenda-mode)))
 #+end_src
 
 ** =paren-face= - Apply a specific face to parens
@@ -2660,44 +2600,43 @@ Apply a separate face for parens, allowing them to be de-emphasised.
    (use-package paren-face
      :hook (after-init . global-paren-face-mode)
      :custom
-     ((paren-face-regexp (rx (any "{}();,"))))
+     (paren-face-regexp (rx (any "{}();,")))
      :config
-     (progn
-       (set-face-attribute 'parenthesis nil
-                           :inherit 'font-lock-comment-face
-                           :weight 'light
-                           :italic nil
-                           :background nil)
+     (set-face-attribute 'parenthesis nil
+                         :inherit 'font-lock-comment-face
+                         :weight 'light
+                         :italic nil
+                         :background nil)
 
-       (add-to-list 'paren-face-modes 'scala-mode)
-       (add-to-list 'paren-face-modes 'js-mode)
-       (add-to-list 'paren-face-modes 'typescript-mode)
-       (add-to-list 'paren-face-modes 'rust-mode)
-       (add-to-list 'paren-face-modes 'yaml-mode)
-       (font-lock-add-keywords 'js-mode `((,(rx (any ":")) 0 'parenthesis)))
-       (font-lock-add-keywords 'typescript-mode `((,(rx (any ":")) 0 'parenthesis)))))
+     (add-to-list 'paren-face-modes 'scala-mode)
+     (add-to-list 'paren-face-modes 'js-mode)
+     (add-to-list 'paren-face-modes 'typescript-mode)
+     (add-to-list 'paren-face-modes 'rust-mode)
+     (add-to-list 'paren-face-modes 'yaml-mode)
+     (font-lock-add-keywords 'js-mode `((,(rx (any ":")) 0 'parenthesis)))
+     (font-lock-add-keywords 'typescript-mode `((,(rx (any ":")) 0 'parenthesis))))
  #+end_src
 
 ** =hl-todo= - Highlight TODOs in comments
 
 #+begin_src emacs-lisp
-  (defun enable-hl-todo-unless-org-buffer ()
-    (unless (derived-mode-p 'org-mode)
-      (hl-todo-mode)))
-
   (use-package hl-todo
     :hook ((prog-mode . hl-todo-mode)
            (text-mode . enable-hl-todo-unless-org-buffer))
+    :preface
+    (defun enable-hl-todo-unless-org-buffer ()
+      (unless (derived-mode-p 'org-mode)
+        (hl-todo-mode)))
     :custom
-    ((hl-todo-keyword-faces
-      (seq-map (lambda (it) (cons it 'hl-todo))
-               '("TODO"
-                 "NEXT"
-                 "HACK"
-                 "FIXME"
-                 "KLUDGE"
-                 "PATCH"
-                 "NOTE")))))
+    (hl-todo-keyword-faces
+     (seq-map (lambda (it) (cons it 'hl-todo))
+              '("TODO"
+                "NEXT"
+                "HACK"
+                "FIXME"
+                "KLUDGE"
+                "PATCH"
+                "NOTE"))))
 #+end_src
 
 * =which-key= - Show keys after a delay on input
@@ -2706,7 +2645,7 @@ Apply a separate face for parens, allowing them to be de-emphasised.
   (use-package which-key
     :hook (after-init . which-key-mode)
     :custom
-    ((which-key-idle-delay 0.4)))
+    (which-key-idle-delay 0.4))
 #+end_src
 
 * =default-text-scale= - Text scaling
@@ -2716,7 +2655,7 @@ Provides nice commands for changing text scale for all buffers simultaneously
 #+begin_src emacs-lisp
   (use-package default-text-scale
     :custom
-    ((default-text-scale-amount 30)))
+    (default-text-scale-amount 30))
 #+end_src
 
 * Git
@@ -2729,9 +2668,9 @@ Provides nice commands for changing text scale for all buffers simultaneously
     (:keymaps 'transient-base-map "<escape>" #'transient-quit-one
      :states 'normal :keymaps 'magit-refs-mode-map "." #'magit-branch-and-checkout)
     :custom
-    ((magit-repository-directories (--map (cons it 1) paths-project-directories))
-     (magit-display-buffer-function 'magit-display-buffer-fullframe-status-v1)
-     (magit-log-section-commit-count 0)))
+    (magit-repository-directories (--map (cons it 1) paths-project-directories))
+    (magit-display-buffer-function 'magit-display-buffer-fullframe-status-v1)
+    (magit-log-section-commit-count 0))
 #+end_src
 
 Reveal the entire org buffer when blaming.
@@ -2739,14 +2678,11 @@ Reveal the entire org buffer when blaming.
 #+begin_src emacs-lisp
   (use-package magit
     :after (org)
-    :preface
-    (progn
-      (autoload 'org-reveal "org")
-
-      (defun config-git--reveal-org-buffer ()
-        (when (derived-mode-p 'org-mode)
-          (org-reveal t))))
     :config
+    (defun config-git--reveal-org-buffer ()
+      (when (derived-mode-p 'org-mode)
+        (org-reveal t)))
+
     (add-hook 'magit-blame-mode-hook #'config-git--reveal-org-buffer))
 #+end_src
 
@@ -2760,9 +2696,8 @@ Hack =magit='s commit info to show output of a GPG signature check.
     :demand t
     :commands (magit-gpg-insert-revision-gpg)
     :preface
-    (progn
-      (autoload 'magit-add-section-hook "magit")
-      (autoload 'magit-insert-revision-headers "magit"))
+    (autoload 'magit-add-section-hook "magit")
+    (autoload 'magit-insert-revision-headers "magit")
     :config
     (magit-add-section-hook 'magit-revision-sections-hook
                             #'magit-gpg-insert-revision-gpg
@@ -2777,10 +2712,9 @@ Hack =magit='s commit info to show output of a GPG signature check.
     :after magit
     :demand t
     :config
-    (progn
-      (remove-hook 'magit-status-sections-hook 'forge-insert-issues)
-      (add-hook 'magit-status-sections-hook 'forge-insert-requested-reviews 90)
-      (add-hook 'magit-status-sections-hook 'forge-insert-assigned-issues 90)))
+    (remove-hook 'magit-status-sections-hook 'forge-insert-issues)
+    (add-hook 'magit-status-sections-hook 'forge-insert-requested-reviews 90)
+    (add-hook 'magit-status-sections-hook 'forge-insert-assigned-issues 90))
 #+end_src
 
 ** =git-auto-commit-mode= - Commit files on save
@@ -2788,9 +2722,10 @@ Hack =magit='s commit info to show output of a GPG signature check.
 #+begin_src emacs-lisp
   (use-package git-auto-commit-mode
     :hook (pass-mode . git-auto-commit-mode)
-    :custom ((gac-debounce-interval 10)
-             (gac-automatically-push-p t)
-             (gac-automatically-add-new-files-p t)))
+    :custom
+    (gac-debounce-interval 10)
+    (gac-automatically-push-p t)
+    (gac-automatically-add-new-files-p t))
 #+end_src
 
 ** =vc-annotate= - Step through file history
@@ -2815,11 +2750,11 @@ Hack =magit='s commit info to show output of a GPG signature check.
 
 #+begin_src emacs-lisp
   (use-package git-commit-mode
-    :preface
+    :init
     (defun configure-git-commit-mode ()
       (setq-local fill-column 72))
-    :init
-    (add-hook 'git-commit-mode-hook #'configure-git-commit-mode))
+
+    (add-hook 'git-commit-mode-hook 'configure-git-commit-mode))
 #+end_src
 
 ** Browse file at remote
@@ -2833,19 +2768,19 @@ repo, or copying the remote URL to the clipboard.
     ("C-x v o" 'browse-at-remote
      "C-x v y" 'browse-at-remote-kill)
     :custom
-    ((browse-at-remote-add-line-number-if-no-region-selected nil)))
+    (browse-at-remote-add-line-number-if-no-region-selected nil))
 #+end_src
 
 Provide more feedback when copying the URL to the clipboard.
 
 #+begin_src emacs-lisp
   (use-package browse-at-remote
-    :preface
+    :config
     (defun config-browse-at-remote--message-kill (&rest _)
       (let ((message-log-max))
         (message "Copied to kill ring: %s" (substring-no-properties (car kill-ring)))))
-    :config
-    (advice-add 'browse-at-remote-kill :after #'config-browse-at-remote--message-kill))
+
+    (advice-add 'browse-at-remote-kill :after 'config-browse-at-remote--message-kill))
 #+end_src
 
 * =flycheck= - Syntax Checking & Linting
@@ -2857,8 +2792,9 @@ See: [[https://www.flycheck.org/en/latest/][flycheck.org]]
 
 #+begin_src emacs-lisp
   (use-package flycheck
-    :hook ((after-init . global-flycheck-mode)
-           (prog-mode . flycheck-mode-on-safe))
+    :hook
+    (after-init . global-flycheck-mode)
+    (prog-mode . flycheck-mode-on-safe)
 
     :general
     (:keymaps
@@ -2878,12 +2814,12 @@ See: [[https://www.flycheck.org/en/latest/][flycheck.org]]
      "q" #'quit-window)
 
     :custom
-    ((flycheck-display-errors-delay 0.1)
-     (flycheck-emacs-lisp-load-path 'inherit)
-     (flycheck-python-pycompile-executable "python")
-     (flycheck-global-modes '(not text-mode
-                                  org-mode
-                                  org-agenda-mode))))
+    (flycheck-display-errors-delay 0.1)
+    (flycheck-emacs-lisp-load-path 'inherit)
+    (flycheck-python-pycompile-executable "python")
+    (flycheck-global-modes '(not text-mode
+                                 org-mode
+                                 org-agenda-mode)))
 #+end_src
 
 Show the =Flycheck= error list in a bottom window.
@@ -2907,23 +2843,18 @@ diagnostics do not go stale.
 #+begin_src emacs-lisp
   (use-package flycheck
     :after (projectile)
-    :functions (flycheck-buffer)
-    :preface
-    (progn
-      (autoload 'projectile-project-p "projectile")
-      (autoload 'projectile-process-current-project-buffers "projectile")
-
-      (defun config-flycheck--check-all-project-buffers ()
-        (when (and (bound-and-true-p projectile-mode) (projectile-project-p))
-          (projectile-process-current-project-buffers
-           (lambda (buf)
-             (with-current-buffer buf
-               (when (bound-and-true-p flycheck-mode)
-                 ;; HACK: Inhibit checks for elisp, otherwise flycheck will
-                 ;; spawn a bunch of thrashing Emacs processes.
-                 (unless (derived-mode-p 'emacs-lisp-mode)
-                   (flycheck-buffer)))))))))
     :config
+    (defun config-flycheck--check-all-project-buffers ()
+      (when (and (bound-and-true-p projectile-mode) (projectile-project-p))
+        (projectile-process-current-project-buffers
+         (lambda (buf)
+           (with-current-buffer buf
+             (when (bound-and-true-p flycheck-mode)
+               ;; HACK: Inhibit checks for elisp, otherwise flycheck will
+               ;; spawn a bunch of thrashing Emacs processes.
+               (unless (derived-mode-p 'emacs-lisp-mode)
+                 (flycheck-buffer))))))))
+
     (add-hook 'after-save-hook #'config-flycheck--check-all-project-buffers))
 #+end_src
 
@@ -2934,14 +2865,14 @@ during =ediff= merges, etc.
 
 #+begin_src emacs-lisp
   (use-package flycheck
-    :preface
+    :config
     (defun config-flycheck--maybe-inhibit (result)
       (unless (or (equal (buffer-name) "*ediff-merge*")
                   (string-suffix-p ".dir-locals.el" (buffer-file-name))
                   (string-match-p (rx bol "*Pp ") (buffer-name))
                   (string-match-p (rx "/node_modules/") default-directory))
         result))
-    :config
+
     (advice-add 'flycheck-may-enable-mode :filter-return #'config-flycheck--maybe-inhibit))
 #+end_src
 
@@ -2960,36 +2891,36 @@ during =ediff= merges, etc.
      "j" #'ibuffer-forward-line
      "k" #'ibuffer-backward-line)
     :custom
-    ((ibuffer-expert t)
-     (ibuffer-default-sorting-mode 'major-mode)
-     (ibuffer-default-sorting-reversep t)
-     (ibuffer-formats '((mark modified " " (mode 1 1) " " (name 35 35 :left :elide) " " filename-and-process)))
-     (ibuffer-never-show-predicates
-      (list (rx (or "*Messages*"
-                    "*magit-"
-                    "*git-auto-push*"
-                    ".elc"
-                    "magit-process"
-                    "magit-diff"
-                    "magit-revision"
-                    "TAGS"
-                    "*Backtrace*"
-                    "*new*"
-                    "*Org"
-                    "*Flycheck error messages*"
-                    "*Quail Completions*"
-                    "*scratch*"
-                    "*direnv*"
-                    "*calc trail*"
-                    "*Help*"))
-            #'config-ibuffer--roam-buffer-p)))
-    :preface
+    (ibuffer-expert t)
+    (ibuffer-default-sorting-mode 'major-mode)
+    (ibuffer-default-sorting-reversep t)
+    (ibuffer-formats '((mark modified " " (mode 1 1) " " (name 35 35 :left :elide) " " filename-and-process)))
+    (ibuffer-never-show-predicates
+     (list (rx (or "*Messages*"
+                   "*magit-"
+                   "*git-auto-push*"
+                   ".elc"
+                   "magit-process"
+                   "magit-diff"
+                   "magit-revision"
+                   "TAGS"
+                   "*Backtrace*"
+                   "*new*"
+                   "*Org"
+                   "*Flycheck error messages*"
+                   "*Quail Completions*"
+                   "*scratch*"
+                   "*direnv*"
+                   "*calc trail*"
+                   "*Help*"))
+           #'config-ibuffer--roam-buffer-p))
+
+    :config
     (defun config-ibuffer--roam-buffer-p (buf)
       (with-current-buffer buf
         (when (buffer-file-name)
           (string-match-p "/org/roam/" (buffer-file-name)))))
 
-    :config
     (add-hook 'ibuffer-mode-hook #'hl-line-mode))
 #+end_src
 
@@ -3001,7 +2932,7 @@ during =ediff= merges, etc.
   (use-package ibuf-ext
     :hook (ibuffer-mode . ibuffer-auto-mode)
     :custom
-    ((ibuffer-show-empty-filter-groups nil)))
+    (ibuffer-show-empty-filter-groups nil))
 #+end_src
 
 ** Cosmetic changes
@@ -3015,27 +2946,26 @@ Override some default =ibuffer= columns.
       (require 'ibuffer))
     :commands (ibuffer-make-column-filename)
     :config
-    (progn
-      (define-ibuffer-column name
-        (:inline t)
-        (let ((string (buffer-name)))
-          (if (not (seq-position string ?\n))
-              string
-            (replace-regexp-in-string
-             "\n" (propertize "^J" 'font-lock-face 'escape-glyph) string))))
+    (define-ibuffer-column name
+      (:inline t)
+      (let ((string (buffer-name)))
+        (if (not (seq-position string ?\n))
+            string
+          (replace-regexp-in-string
+           "\n" (propertize "^J" 'font-lock-face 'escape-glyph) string))))
 
-      (define-ibuffer-column filename-and-process
-        (:name "Filename/Process")
-        (let ((proc (get-buffer-process buffer))
-              (filename (ibuffer-make-column-filename buffer mark)))
-          (if proc
-              (concat (propertize (format "(%s %s)" proc (process-status proc))
-                                  'font-lock-face 'italic)
-                      (if (> (length filename) 0)
-                          (format " %s" filename)
-                        ""))
-            (require 'dired+)
-            (propertize (abbreviate-file-name filename) 'face 'diredp-symlink))))))
+    (define-ibuffer-column filename-and-process
+      (:name "Filename/Process")
+      (let ((proc (get-buffer-process buffer))
+            (filename (ibuffer-make-column-filename buffer mark)))
+        (if proc
+            (concat (propertize (format "(%s %s)" proc (process-status proc))
+                                'font-lock-face 'italic)
+                    (if (> (length filename) 0)
+                        (format " %s" filename)
+                      ""))
+          (require 'dired+)
+          (propertize (abbreviate-file-name filename) 'face 'diredp-symlink)))))
 #+end_src
 
 ** Grouping by project
@@ -3045,7 +2975,7 @@ Override some default =ibuffer= columns.
 #+begin_src emacs-lisp
   (use-package ibuffer-projectile
     :custom
-    ((ibuffer-projectile-prefix ""))
+    (ibuffer-projectile-prefix "")
 
     :preface
     (progn
@@ -3077,8 +3007,9 @@ See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
 
 #+begin_src emacs-lisp
   (use-package smartparens
-    :hook ((prog-mode . smartparens-strict-mode)
-           (text-mode . smartparens-strict-mode))
+    :hook
+    (prog-mode . smartparens-strict-mode)
+    (text-mode . smartparens-strict-mode)
 
     :general
     (:keymaps 'smartparens-strict-mode-map
@@ -3089,20 +3020,19 @@ See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
      "D" #'sp-kill-hybrid-sexp)
 
     :custom
-    ((sp-show-pair-delay 0.2)
-     (sp-show-pair-from-inside t)
-     (sp-cancel-autoskip-on-backward-movement nil)
-     (sp-highlight-pair-overlay nil)
-     (sp-highlight-wrap-overlay nil)
-     (sp-highlight-wrap-tag-overlay nil)
-     (sp-navigate-close-if-unbalanced t)
-     (sp-message-width nil))
+    (sp-show-pair-delay 0.2)
+    (sp-show-pair-from-inside t)
+    (sp-cancel-autoskip-on-backward-movement nil)
+    (sp-highlight-pair-overlay nil)
+    (sp-highlight-wrap-overlay nil)
+    (sp-highlight-wrap-tag-overlay nil)
+    (sp-navigate-close-if-unbalanced t)
+    (sp-message-width nil)
 
     :config
-    (progn
-      (require 'smartparens-config)
-      (smartparens-global-strict-mode +1)
-      (show-smartparens-global-mode +1)))
+    (require 'smartparens-config)
+    (smartparens-global-strict-mode +1)
+    (show-smartparens-global-mode +1))
 #+end_src
 
 
@@ -3154,22 +3084,21 @@ Define pairs that I want in all language modes.
 #+begin_src emacs-lisp
   (use-package smartparens
     :config
-    (progn
-      (sp-pair "`" "`"
-               :bind "M-`")
-      (sp-pair "{" "}"
-               :bind "M-{"
-               :pre-handlers '(config-smartparens-add-space-before-sexp-insertion)
-               :post-handlers '(("||\n[i]" "RET") ("| " "SPC")))
-      (sp-pair "[" "]"
-               :bind "M-["
-               :post-handlers '(("||\n[i]" "RET") ("| " "SPC")))
-      (sp-pair "(" ")"
-               :bind "M-("
-               :post-handlers '(("||\n[i]" "RET") ("| " "SPC")))
-      (sp-pair "\"" "\""
-               :bind "M-\""
-               :pre-handlers '(:add (config-smartparens-add-space-before-sexp-insertion)))))
+    (sp-pair "`" "`"
+             :bind "M-`")
+    (sp-pair "{" "}"
+             :bind "M-{"
+             :pre-handlers '(config-smartparens-add-space-before-sexp-insertion)
+             :post-handlers '(("||\n[i]" "RET") ("| " "SPC")))
+    (sp-pair "[" "]"
+             :bind "M-["
+             :post-handlers '(("||\n[i]" "RET") ("| " "SPC")))
+    (sp-pair "(" ")"
+             :bind "M-("
+             :post-handlers '(("||\n[i]" "RET") ("| " "SPC")))
+    (sp-pair "\"" "\""
+             :bind "M-\""
+             :pre-handlers '(:add (config-smartparens-add-space-before-sexp-insertion))))
 #+end_src
 
 ** Delete enclosing whitespace as necessary on backspace
@@ -3177,7 +3106,7 @@ Define pairs that I want in all language modes.
 #+begin_src emacs-lisp
   (use-package smartparens
     :functions (sp-get-enclosing-sexp)
-    :preface
+    :config
     (defun config-smartparens-delete-horizontal-space-for-delete (f &rest args)
       "Perform context-sensitive whitespace cleanups when deleting.
 
@@ -3282,7 +3211,7 @@ Define pairs that I want in all language modes.
 
            (t
             (funcall f args))))))
-    :config
+
     (advice-add 'sp-backward-delete-char :around #'config-smartparens-delete-horizontal-space-for-delete))
 #+end_src
 
@@ -3312,20 +3241,19 @@ Make checkbox insertion a little smarter.
 
 #+begin_src emacs-lisp
   (use-package smartparens
-    :preface
-    (progn
-      (autoload 'org-at-item-p "org-list")
-
-      (defun config-smartparens--format-checkitem (_id action _context)
-        (when (and (equal action 'insert)
-                   (org-at-item-p))
-          (atomic-change-group
-            (just-one-space)
-            (search-backward "[" (line-beginning-position))
-            (just-one-space)
-            (search-forward "]" (line-end-position))
-            (just-one-space)))))
     :config
+    (autoload 'org-at-item-p "org-list")
+
+    (defun config-smartparens--format-checkitem (_id action _context)
+      (when (and (equal action 'insert)
+                 (org-at-item-p))
+        (atomic-change-group
+          (just-one-space)
+          (search-backward "[" (line-beginning-position))
+          (just-one-space)
+          (search-forward "]" (line-end-position))
+          (just-one-space))))
+
     (sp-with-modes '(org-mode markdown-mode gfm-mode)
       (sp-local-pair "[" "]" :post-handlers '(config-smartparens--format-checkitem))))
 #+end_src
@@ -3387,7 +3315,7 @@ Display helpful buffers in side windows.
   (use-package eldoc
     :hook (emacs-lisp-mode . eldoc-mode)
     :custom
-    ((eldoc-idle-delay 0.2)))
+    (eldoc-idle-delay 0.2))
 #+end_src
 
 ** Hex colour literals
@@ -3409,7 +3337,8 @@ Display helpful buffers in side windows.
     (:keymaps 'emacs-lisp-mode-map "C-c C-z" #'ielm)
     (:keymaps 'inferior-emacs-lisp-mode-map
      "C-c C-z" #'config-elisp-pop-to-elisp-buffer)
-    :preface
+
+    :config
     (defun config-elisp-pop-to-elisp-buffer ()
       (interactive)
       (if-let* ((buf (seq-find (lambda (buf)
@@ -3418,7 +3347,7 @@ Display helpful buffers in side windows.
                                (buffer-list))))
           (pop-to-buffer buf)
         (user-error "No Emacs Lisp buffers")))
-    :config
+
     (add-hook 'inferior-emacs-lisp-mode-hook #'hs-minor-mode))
 #+end_src
 
@@ -3518,13 +3447,14 @@ certain types of Elisp files.
 #+begin_src emacs-lisp
   (use-package flycheck-package
     :after (:all flycheck elisp-mode)
-    :preface
+    :config
     (defun config-elisp--flycheck-package-predicate ()
       (not (or (bound-and-true-p no-byte-compile)
                (bound-and-true-p org-src-mode)
                (ignore-errors
                  (string-match-p "^test-" (file-name-nondirectory (buffer-file-name)))))))
-    :config
+
+    ;; Dynamic eval to work around macroexpansion errors in byte-compilation.
     (eval
      '(progn
         (flycheck-package-setup)
@@ -3538,9 +3468,11 @@ certain types of Elisp files.
   (use-package checkdoc
     :after (flycheck)
     :custom
-    ((checkdoc-force-docstrings-flag nil)
-     (checkdoc-arguments-in-order-flag nil))
+    (checkdoc-force-docstrings-flag nil)
+    (checkdoc-arguments-in-order-flag nil)
+
     :config
+    ;; Dynamic eval to work around macroexpansion errors in byte-compilation.
     (eval
      '(setf (flycheck-checker-get 'emacs-lisp-checkdoc 'predicate)
             #'config-flycheck--elisp-package-flycheck-predicate)))
@@ -3565,22 +3497,23 @@ certain types of Elisp files.
   (use-package emojify
     :hook (after-init . global-emojify-mode)
     :custom
-    ((emojify-emoji-styles '(github unicode))
-     (emojify-program-contexts '(comments))
-     (emojify-point-entered-behaviour 'uncover)
-     (emojify-user-emojis
-      '((":check:" . (("emoji" . ":white_check_mark:")
-                      ("name" . "White Heavy Check Mark")
-                      ("unicode" . "✅")
-                      ("image" . "2705.png")
-                      ("style" . "github"))))))
-    :preface
+    (emojify-emoji-styles '(github unicode))
+    (emojify-program-contexts '(comments))
+    (emojify-point-entered-behaviour 'uncover)
+    (emojify-user-emojis
+     '((":check:" . (("emoji" . ":white_check_mark:")
+                     ("name" . "White Heavy Check Mark")
+                     ("unicode" . "✅")
+                     ("image" . "2705.png")
+                     ("style" . "github")))))
+
+    :config
     (defun emojify-at-org-drawer-p (&rest _)
       (when (derived-mode-p 'org-mode 'org-agenda-mode)
         (save-excursion
           (goto-char (line-beginning-position))
           (or (org-at-drawer-p) (org-at-property-p)))))
-    :config
+
     (add-to-list 'emojify-inhibit-functions #'emojify-at-org-drawer-p))
 #+end_src
 
@@ -3590,6 +3523,7 @@ certain types of Elisp files.
   (use-package pass
     :commands (pass)
     :after (password-store)
+
     :general
     (:states '(normal) :keymaps 'pass-view-mode-map "q" #'kill-this-buffer)
     (:states '(normal) :keymaps 'pass-mode-map
@@ -3599,9 +3533,11 @@ certain types of Elisp files.
      "y" #'pass-copy-password
      "f" #'pass-copy-field
      "q" #'kill-this-buffer)
+
     :custom
-    ((password-store-password-length 50)
-     (pass-username-field "email"))
+    (password-store-password-length 50)
+    (pass-username-field "email")
+
     :init
     (add-to-list 'display-buffer-alist
                  `(,(rx bos "*Password-Store*" eos)
@@ -3619,7 +3555,7 @@ Configure major-mode for Nix language buffers.
     :mode (("\\.nix\\'" . nix-mode)
            ("\\.nix.in\\'" . nix-mode))
     :custom
-    ((nix-indent-function 'nix-indent-line)))
+    (nix-indent-function 'nix-indent-line))
 #+end_src
 
 Teach Emacs how to create a Nix language REPL.
@@ -3640,8 +3576,9 @@ Teach Emacs how to create a Nix language REPL.
 
 #+begin_src emacs-lisp
   (use-package markdown-mode
-    :mode (("\\.md\\'" . gfm-mode)
-           ("\\.markdown\\'" . markdown-mode))
+    :mode
+    ("\\.md\\'" . gfm-mode)
+    ("\\.markdown\\'" . markdown-mode)
 
     :general
     (:states 'normal :keymaps 'markdown-mode-map
@@ -3662,9 +3599,9 @@ Teach Emacs how to create a Nix language REPL.
      "M-<down>" #'markdown-move-subtree-down)
 
     :custom
-    ((markdown-command "multimarkdown")
-     (markdown-fontify-code-blocks-natively t)
-     (markdown-hide-urls t)))
+    (markdown-command "multimarkdown")
+    (markdown-fontify-code-blocks-natively t)
+    (markdown-hide-urls t))
 #+end_src
 
 * =autctex= - Tex & Latex editing
@@ -3688,28 +3625,27 @@ intercept attempts to load Tex files and make sure =auctex= is loaded first.
     :preface
     (defvar-local TeX-syntactic-comments t)
     :custom
-    ((TeX-command-default (getenv "NIX_EMACS_TEX_PROGRAM"))
-     (TeX-auto-save t)
-     (TeX-parse-self t)
-     (TeX-source-correlate-start-server nil)
-     ;; Use Emacs pdf-tools as viewer.
-     (TeX-view-program-selection '((output-pdf "PDF Tools")))
-     (TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view)))))
+    (TeX-command-default (getenv "NIX_EMACS_TEX_PROGRAM"))
+    (TeX-auto-save t)
+    (TeX-parse-self t)
+    (TeX-source-correlate-start-server nil)
+    ;; Use Emacs pdf-tools as viewer.
+    (TeX-view-program-selection '((output-pdf "PDF Tools")))
+    (TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view))))
 #+end_src
 
 #+begin_src emacs-lisp
   (use-package latex
     :custom
-    ((LaTeX-command (getenv "NIX_EMACS_TEX_PROGRAM"))
-     ;; Don't insert line-break at inline math.
-     (LaTeX-fill-break-at-separators nil))
+    (LaTeX-command (getenv "NIX_EMACS_TEX_PROGRAM"))
+    ;; Don't insert line-break at inline math.
+    (LaTeX-fill-break-at-separators nil)
     :config
-    (progn
-      (add-hook 'LaTeX-mode-hook 'flyspell-mode)
-      (add-hook 'LaTeX-mode-hook 'TeX-fold-mode)
-      (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
-      (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode)
-      (add-hook 'LaTeX-mode-hook 'TeX-PDF-mode)))
+    (add-hook 'LaTeX-mode-hook 'flyspell-mode)
+    (add-hook 'LaTeX-mode-hook 'TeX-fold-mode)
+    (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
+    (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode)
+    (add-hook 'LaTeX-mode-hook 'TeX-PDF-mode))
 #+end_src
 
 ** Smarter autofill function
@@ -3719,29 +3655,28 @@ Teach the autofill function in Latex buffers not to fill in certain contexts.
 #+begin_src emacs-lisp
   (use-package latex
     :functions (LaTeX-current-environment)
-    :preface
-    (progn
-      (defvar config-latex-no-indent-envs '("equation" "equation*" "align" "align*" "tabular" "tikzpicture"))
-
-      (defun config-latex--autofill ()
-        ;; Check whether the pointer is currently inside one of the
-        ;; environments described in `config-latex-no-indent-envs' and if so, inhibits
-        ;; the automatic filling of the current paragraph.
-        (let ((env)
-              (should-fill t)
-              (level 0))
-          (while (and should-fill (not (equal env "document")))
-            (cl-incf level)
-            (setq env (LaTeX-current-environment level))
-            (setq should-fill (not (member env config-latex-no-indent-envs))))
-
-          (when should-fill
-            (do-auto-fill))))
-
-      (defun config-latex--configure-autofill ()
-        (auto-fill-mode +1)
-        (setq-local auto-fill-function #'config-latex--autofill)))
     :config
+    (defvar config-latex-no-indent-envs '("equation" "equation*" "align" "align*" "tabular" "tikzpicture"))
+
+    (defun config-latex--autofill ()
+      ;; Check whether the pointer is currently inside one of the
+      ;; environments described in `config-latex-no-indent-envs' and if so, inhibits
+      ;; the automatic filling of the current paragraph.
+      (let ((env)
+            (should-fill t)
+            (level 0))
+        (while (and should-fill (not (equal env "document")))
+          (cl-incf level)
+          (setq env (LaTeX-current-environment level))
+          (setq should-fill (not (member env config-latex-no-indent-envs))))
+
+        (when should-fill
+          (do-auto-fill))))
+
+    (defun config-latex--configure-autofill ()
+      (auto-fill-mode +1)
+      (setq-local auto-fill-function #'config-latex--autofill))
+
     (add-hook 'LaTeX-mode-hook 'config-latex--configure-autofill))
 #+end_src
 
@@ -3755,19 +3690,18 @@ Teach the autofill function in Latex buffers not to fill in certain contexts.
     (:keymaps 'LaTeX-mode-map
      "C-c C-b" #'config-latex-build)
     :preface
-    (progn
-      (autoload 'TeX-command "tex-buf")
-      (autoload 'TeX-master-file "tex")
-      (autoload 'TeX-save-document "tex-buf")
+    (autoload 'TeX-command "tex-buf")
+    (autoload 'TeX-master-file "tex")
+    (autoload 'TeX-save-document "tex-buf")
 
-      (defvar TeX-save-query)
+    (defvar TeX-save-query)
 
-      (defun config-latex-build ()
-        (interactive)
-        (progn
-          (let ((TeX-save-query nil))
-            (TeX-save-document (TeX-master-file)))
-          (TeX-command (getenv "NIX_EMACS_TEX_PROGRAM") 'TeX-master-file -1)))))
+    (defun config-latex-build ()
+      (interactive)
+      (progn
+        (let ((TeX-save-query nil))
+          (TeX-save-document (TeX-master-file)))
+        (TeX-command (getenv "NIX_EMACS_TEX_PROGRAM") 'TeX-master-file -1))))
 #+end_src
 
 ** Environment folding
@@ -3813,9 +3747,9 @@ Teach the autofill function in Latex buffers not to fill in certain contexts.
      "M-RET" #'ledger-toggle-current-transaction)
 
     :custom
-    ((ledger-report-use-header-line nil)
-     (ledger-post-account-alignment-column 2)
-     (ledger-fontify-xact-state-overrides nil)))
+    (ledger-report-use-header-line nil)
+    (ledger-post-account-alignment-column 2)
+    (ledger-fontify-xact-state-overrides nil))
 #+end_src
 
 Configure how reports are displayed.
@@ -3839,12 +3773,12 @@ Configure how reports are displayed.
       :group 'ledger-faces)
 
     :config
-    (progn
-      (font-lock-add-keywords
-       'ledger-report-mode
-       `((,(rx "$" (* space) "-" (+ digit) (* (any digit ",")) (? "." (+ digit))) . 'ledger-report-negative-amount)
-         (,(rx (+ digit) "-" (= 3 alpha) "-" (+ digit)) . 'ledger-font-posting-date-face)))
-      (add-hook 'ledger-report-mode-hook 'font-lock-fontify-buffer)))
+    (font-lock-add-keywords
+     'ledger-report-mode
+     `((,(rx "$" (* space) "-" (+ digit) (* (any digit ",")) (? "." (+ digit))) . 'ledger-report-negative-amount)
+       (,(rx (+ digit) "-" (= 3 alpha) "-" (+ digit)) . 'ledger-font-posting-date-face)))
+
+    (add-hook 'ledger-report-mode-hook 'font-lock-fontify-buffer))
 #+end_src
 
 ** Changing transaction timestamps
@@ -3856,12 +3790,6 @@ Use =C-c C-.= to change the timestamp of the transaction at point.
     :general
     (:keymaps 'ledger-mode-map
      "C-c C-." #'config-ledger-set-xact-timestamp)
-
-    :functions (ledger-context-field-end-position
-                ledger-context-field-position
-                ledger-context-field-value
-                ledger-read-date
-                ledger-xact-context)
     :preface
     (defun config-ledger-set-xact-timestamp ()
       (interactive)
@@ -3890,33 +3818,32 @@ Define a command to format a ledger buffer.
 
     :functions (ledger-mode-clean-buffer)
     :preface
-    (progn
-      (defvar ledger-post-amount-alignment-column 52)
+    (defvar ledger-post-amount-alignment-column 52)
 
-      (defun ledger-format--align-price-assertion ()
-        (when (string-match-p (rx (+ space) "=" (* space) (not (any digit)))
-                              (buffer-substring (line-beginning-position)
-                                                (line-end-position)))
-          (unwind-protect
-              (progn
-                (goto-char (line-beginning-position))
-                (search-forward "=")
-                (goto-char (match-beginning 0))
-                (indent-to (1+ ledger-post-amount-alignment-column))
-                (skip-chars-forward " =")
-                (just-one-space))
-            (goto-char (line-end-position)))))
+    (defun ledger-format--align-price-assertion ()
+      (when (string-match-p (rx (+ space) "=" (* space) (not (any digit)))
+                            (buffer-substring (line-beginning-position)
+                                              (line-end-position)))
+        (unwind-protect
+            (progn
+              (goto-char (line-beginning-position))
+              (search-forward "=")
+              (goto-char (match-beginning 0))
+              (indent-to (1+ ledger-post-amount-alignment-column))
+              (skip-chars-forward " =")
+              (just-one-space))
+          (goto-char (line-end-position)))))
 
-      (defun ledger-format-buffer ()
-        "Reformat the buffer."
-        (interactive "*")
-        (let ((pos (point)))
-          (ignore-errors
-            (ledger-mode-clean-buffer))
-          (goto-char (point-min))
-          (while (search-forward-regexp (rx (>= 2 space) "=") nil t)
-            (ledger-format--align-price-assertion))
-          (goto-char pos)))))
+    (defun ledger-format-buffer ()
+      "Reformat the buffer."
+      (interactive "*")
+      (let ((pos (point)))
+        (ignore-errors
+          (ledger-mode-clean-buffer))
+        (goto-char (point-min))
+        (while (search-forward-regexp (rx (>= 2 space) "=") nil t)
+          (ledger-format--align-price-assertion))
+        (goto-char pos))))
 #+end_src
 
 ** =flycheck-ledger= - Flycheck support for ledger buffers
@@ -3949,15 +3876,16 @@ Define a command to format a ledger buffer.
     :commands (json-mode)
     :mode ("\\.json\\'" . json-mode)
     :custom
-    ((json-reformat:indent-width 2)))
+    (json-reformat:indent-width 2))
 #+end_src
 
 * =highlight-indent-guides= - show indentation level indicators
 
 #+begin_src emacs-lisp
   (use-package highlight-indent-guides
-    :hook ((yaml-mode . highlight-indent-guides-mode)
-           (json-mode . highlight-indent-guides-mode)))
+    :hook
+    (yaml-mode . highlight-indent-guides-mode)
+    (json-mode . highlight-indent-guides-mode))
 #+end_src
 
 * =pdf-tools= - PDF reader
@@ -3970,33 +3898,35 @@ Define a command to format a ledger buffer.
               "n" #'pdf-view-next-page
               "N" #'pdf-view-previous-page
               "p" #'pdf-view-previous-page)
-    :hook ((pdf-view-mode . pdf-view-midnight-minor-mode))
+    :hook
+    (pdf-view-mode . pdf-view-midnight-minor-mode)
+
     :custom
-    ((pdf-view-display-size 'fit-page))
+    (pdf-view-display-size 'fit-page)
+
     :init
-    (progn
-      (use-package pdf-history
-        :commands (pdf-history-minor-mode))
-      (use-package pdf-occur
-        :commands (pdf-occur-global-minor-mode)))
+    (use-package pdf-history
+      :commands (pdf-history-minor-mode))
+    (use-package pdf-occur
+      :commands (pdf-occur-global-minor-mode))
+
     :config
-    (progn
-      (require 'pdf-annot)
-      (require 'pdf-sync)
-      (require 'pdf-links)
-      (require 'pdf-outline)
-      (require 'pdf-history)
-      (require 'pdf-cache)
-      (require 'pdf-view)
+    (require 'pdf-annot)
+    (require 'pdf-sync)
+    (require 'pdf-links)
+    (require 'pdf-outline)
+    (require 'pdf-history)
+    (require 'pdf-cache)
+    (require 'pdf-view)
 
-      ;; Redefine a few macros as functions to work around byte compilation errors.
-      (defun pdf-view-current-page (&optional window)
-        (image-mode-window-get 'page window))
+    ;; Redefine a few macros as functions to work around byte compilation errors.
+    (defun pdf-view-current-page (&optional window)
+      (image-mode-window-get 'page window))
 
-      (defun pdf-view-current-overlay (&optional window)
-        (image-mode-window-get 'overlay window))
+    (defun pdf-view-current-overlay (&optional window)
+      (image-mode-window-get 'overlay window))
 
-      (pdf-tools-install)))
+    (pdf-tools-install))
 #+end_src
 
 * =typescript-mode= & =tide= - TypeScript language support
@@ -4006,9 +3936,11 @@ files.
 
 #+begin_src emacs-lisp
   (use-package typescript-mode
-    :mode (("\\.tsx?\\'" . typescript-mode)
-           ("\\.ts\\.snap\\'" . typescript-mode))
-    :custom ((typescript-indent-level 2)))
+    :mode
+    ("\\.tsx?\\'" . typescript-mode)
+    ("\\.ts\\.snap\\'" . typescript-mode)
+    :custom
+    (typescript-indent-level 2))
 #+end_src
 
 =tide= is a TS development environment. It's currently more polished than the
@@ -4018,50 +3950,50 @@ TypeScript language server.
   (use-package tide
     :after (company flycheck)
     :preface
-    (progn
-      (defun config-js--maybe-enable-tide ()
-        (unless (derived-mode-p 'json-mode)
-          (require 'tide)
-          (tide-setup)
-          (tide-hl-identifier-mode +1)))
+    (defun tide-maybe-enable ()
+      (unless (derived-mode-p 'json-mode)
+        (require 'tide)
+        (tide-setup)
+        (tide-hl-identifier-mode +1)))
 
-      (defun config-js--tide-help-evil-compat (buf)
-        (with-current-buffer buf
-          (evil-motion-state))
-        buf))
+    :hook
+    (typescript-mode . tide-maybe-enable)
+    (js-mode . tide-maybe-enable)
+    (before-save . tide-format-before-save)
 
-    :hook ((typescript-mode . config-js--maybe-enable-tide)
-           (js-mode . config-js--maybe-enable-tide)
-           (before-save . tide-format-before-save))
     :general
     (:states '(normal insert emacs) :keymaps 'tide-mode-map
      "M-." 'tide-jump-to-definition)
-    :config
-    (progn
-      (advice-add 'tide-make-help-buffer :filter-return #'config-js--tide-help-evil-compat)
 
-      (with-eval-after-load 'flycheck
-        (flycheck-add-next-checker 'typescript-tide '(warning . javascript-eslint) t))))
+    :config
+    (defun config-js--tide-help-evil-compat (buf)
+      (with-current-buffer buf
+        (evil-motion-state))
+      buf)
+    (advice-add 'tide-make-help-buffer :filter-return #'config-js--tide-help-evil-compat)
+
+    (with-eval-after-load 'flycheck
+      (flycheck-add-next-checker 'typescript-tide '(warning . javascript-eslint) t)))
 #+end_src
 
-=js= is the Emacs built-in JavaScript mode.
+* =js= - Editing support for JavaScript
 
 #+begin_src emacs-lisp
   (use-package js
     :mode ("\\.[cm]?jsx?\\'" . js-mode)
-    :custom ((js-indent-level 2)
-             (js-switch-indent-offset 2)
-             (js-js-tmpdir (f-join paths-cache-directory "js"))))
+    :custom
+    (js-indent-level 2)
+    (js-switch-indent-offset 2)
+    (js-js-tmpdir (f-join paths-cache-directory "js")))
 #+end_src
 
 * =css-mode= - CSS editing support
 
-=css-mode= is the built-in CSS mode.
-
 #+begin_src emacs-lisp
   (use-package css-mode
     :defer t
-    :custom ((css-indent-offset 2)))
+    :custom
+    (css-indent-offset 2))
 #+end_src
 
 * =graphql= - GraphQL schema definition language editing support
@@ -4074,7 +4006,9 @@ TypeScript language server.
 ** Teach dumb-jump about GraphQL files
 
 #+begin_src emacs-lisp
-  (with-eval-after-load 'dumb-jump
+  (use-package graphql-mode
+    :after dumb-jump
+    :config
     (add-to-list 'dumb-jump-language-file-exts '(:language "graphql" :ext "graphql" :agtype nil :rgtype nil))
     (add-to-list 'dumb-jump-language-file-exts '(:language "graphql" :ext "gql" :agtype nil :rgtype nil))
 
@@ -4099,8 +4033,8 @@ TypeScript language server.
 
   (use-package hcl-mode
     :mode
-    (("\\.hcl\\'" . hcl-mode)
-     ("\\.nomad\\'" . hcl-mode)))
+    ("\\.hcl\\'" . hcl-mode)
+    ("\\.nomad\\'" . hcl-mode))
 #+end_src
 
 Format HCL buffers on save.
@@ -4109,11 +4043,13 @@ Format HCL buffers on save.
   (use-package hcl-mode
     :after format-all
     :config
-    (define-format-all-formatter terragrunt-fmt
-      (:executable "terragrunt")
-      (:install (macos "brew install terragrunt"))
-      (:languages "Terragrunt")
-      (:format (format-all--buffer-easy executable "fmt" "-no-color" "-")))
+    ;; Dynamically eval to avoid macroexpansion error
+    (eval
+     '(define-format-all-formatter terragrunt-fmt
+        (:executable "terragrunt")
+        (:install (macos "brew install terragrunt"))
+        (:languages "Terragrunt")
+        (:format (format-all--buffer-easy executable "fmt" "-no-color" "-"))))
 
     (add-to-list 'format-all-default-formatters 'terragrunt-fmt))
 #+end_src
@@ -4122,15 +4058,19 @@ Format HCL buffers on save.
 
 #+begin_src emacs-lisp
   (use-package plantuml-mode
-    :mode (("\\.plantuml\\'" . plantuml-mode)
-           ("\\.puml\\'" . plantuml-mode))
+    :mode
+    ("\\.plantuml\\'" . plantuml-mode)
+    ("\\.puml\\'" . plantuml-mode)
+
     :general
     (:keymaps 'plantuml-mode-map
      "C-c C-b" 'recompile)
+
     :custom
-    ((plantuml-default-exec-mode 'jar)
-     (plantuml-indent-level 2)
-     (plantuml-jar-path (getenv "NIX_EMACS_PLANTUML_JAR")))
+    (plantuml-default-exec-mode 'jar)
+    (plantuml-indent-level 2)
+    (plantuml-jar-path (getenv "NIX_EMACS_PLANTUML_JAR"))
+
     :config
     (modify-syntax-entry ?_ "w" plantuml-mode-syntax-table))
 #+end_src
@@ -4150,32 +4090,30 @@ Teach Emacs how to highlight arrows and important keywords.
 
 #+begin_src emacs-lisp
   (use-package plantuml-mode
-    :preface
-    (progn
-      (defconst config-plantuml--participant-binder-rx
-        `(and word-start (+? (syntax word)) word-end))
-
-      (defconst config-plantuml--arrows-rx
-        (let* ((direction '(or "up" "u" "down" "d" "left" "l" "right" "r"))
-               (directives '(and "[" (*? nonl) "]"))
-               (lines '(+ "-"))
-               (dots '(+ ".")))
-          ;; HACK: Make sure we have at least 2 characters in an arrow to avoid
-          ;; nonsense.
-          `(or  "---"
-                "..."
-                (and "<" ,lines)
-                (and "<" ,dots)
-                (and ,lines ">")
-                (and ,dots ">")
-                (and "<" ,lines ">")
-                (and "<" ,dots ">")
-                (and (? "<")
-                     (or (and ,lines (? ,directives) (? ,direction) ,lines)
-                         (and ,dots (? ,directives) (? ,direction) ,dots))
-                     (? ">"))))))
-
     :config
+    (defconst config-plantuml--participant-binder-rx
+      `(and word-start (+? (syntax word)) word-end))
+
+    (defconst config-plantuml--arrows-rx
+      (let* ((direction '(or "up" "u" "down" "d" "left" "l" "right" "r"))
+             (directives '(and "[" (*? nonl) "]"))
+             (lines '(+ "-"))
+             (dots '(+ ".")))
+        ;; HACK: Make sure we have at least 2 characters in an arrow to avoid
+        ;; nonsense.
+        `(or  "---"
+              "..."
+              (and "<" ,lines)
+              (and "<" ,dots)
+              (and ,lines ">")
+              (and ,dots ">")
+              (and "<" ,lines ">")
+              (and "<" ,dots ">")
+              (and (? "<")
+                   (or (and ,lines (? ,directives) (? ,direction) ,lines)
+                       (and ,dots (? ,directives) (? ,direction) ,dots))
+                   (? ">")))))
+
     (font-lock-add-keywords
      'plantuml-mode
      `((,(rx bol (* space) (group (or "@startuml" "@enduml")))
@@ -4301,58 +4239,58 @@ itself.
   (use-package mu4e
     :commands (mu4e mu4e-compose-new)
     :custom
-    ((mu4e-mu-binary (getenv "NIX_EMACS_MU_BINARY"))
-     (mu4e-bookmarks '(("flag:unread AND NOT (flag:trashed OR m:/walrus/Archive)"
-                        "Unread messages" ?u)
-                       ("d:today..now"
-                        "Today's messages" ?t)
-                       ("d:7d..now"
-                        "Last 7 days" ?w)
-                       ("d:30d..now"
-                        "Last 30 days" ?m)
-                       ("m:/walrus/Inbox"
-                        "Inbox" ?i)
-                       ("m:/walrus/Notifications AND d:14d..now"
-                        "Notifications" ?n)
-                       ("m:/walrus/Sent"
-                        "Sent messages" ?s)
-                       ("github"
-                        "Code & PRs" ?c)))
-     (mu4e-attachment-dir (f-expand "~/Downloads"))
-     (mu4e-context-policy 'pick-first)
-     (mu4e-compose-context-policy 'ask-if-none)
-     (message-kill-buffer-on-exit t)
-     (mu4e-view-use-gnus t)
-     (mu4e-use-fancy-chars t)
-     (mu4e-headers-include-related nil)
-     (mu4e-headers-attach-mark '("a" . "A"))
-     (mu4e-headers-unread-mark '("u" . "●"))
-     (mu4e-headers-seen-mark '(" " . " "))
-     (mu4e-hide-index-messages t)
-     (mu4e-headers-skip-duplicates t)
-     (mu4e-index-lazy-check t)
-     (mu4e-confirm-quit t)
-     (mu4e-view-prefer-html t)
-     (mu4e-view-show-images t)
-     (mu4e-view-show-addresses t)
-     (mu4e-headers-date-format "%d-%m-%y %k:%M")
-     (mu4e-completing-read-function #'completing-read)
-     (sendmail-program "msmtp")
-     (message-send-mail-function #'message-send-mail-with-sendmail)
-     (mu4e-change-filenames-when-moving t)
+    (mu4e-mu-binary (getenv "NIX_EMACS_MU_BINARY"))
+    (mu4e-bookmarks '(("flag:unread AND NOT (flag:trashed OR m:/walrus/Archive)"
+                       "Unread messages" ?u)
+                      ("d:today..now"
+                       "Today's messages" ?t)
+                      ("d:7d..now"
+                       "Last 7 days" ?w)
+                      ("d:30d..now"
+                       "Last 30 days" ?m)
+                      ("m:/walrus/Inbox"
+                       "Inbox" ?i)
+                      ("m:/walrus/Notifications AND d:14d..now"
+                       "Notifications" ?n)
+                      ("m:/walrus/Sent"
+                       "Sent messages" ?s)
+                      ("github"
+                       "Code & PRs" ?c)))
+    (mu4e-attachment-dir (f-expand "~/Downloads"))
+    (mu4e-context-policy 'pick-first)
+    (mu4e-compose-context-policy 'ask-if-none)
+    (message-kill-buffer-on-exit t)
+    (mu4e-view-use-gnus t)
+    (mu4e-use-fancy-chars t)
+    (mu4e-headers-include-related nil)
+    (mu4e-headers-attach-mark '("a" . "A"))
+    (mu4e-headers-unread-mark '("u" . "●"))
+    (mu4e-headers-seen-mark '(" " . " "))
+    (mu4e-hide-index-messages t)
+    (mu4e-headers-skip-duplicates t)
+    (mu4e-index-lazy-check t)
+    (mu4e-confirm-quit t)
+    (mu4e-view-prefer-html t)
+    (mu4e-view-show-images t)
+    (mu4e-view-show-addresses t)
+    (mu4e-headers-date-format "%d-%m-%y %k:%M")
+    (mu4e-completing-read-function #'completing-read)
+    (sendmail-program "msmtp")
+    (message-send-mail-function #'message-send-mail-with-sendmail)
+    (mu4e-change-filenames-when-moving t)
 
-     ;; Update every 30 seconds.
-     (mu4e-update-interval 30)
+    ;; Update every 30 seconds.
+    (mu4e-update-interval 30)
 
-     ;; Ensure I'm never prompted for the buffer coding system when sending mail.
-     (sendmail-coding-system 'utf-8)
+    ;; Ensure I'm never prompted for the buffer coding system when sending mail.
+    (sendmail-coding-system 'utf-8)
 
-     ;; Send email with long lines and format=flowed.
-     (mu4e-compose-format-flowed t)
-     (fill-flowed-encode-column 998)
+    ;; Send email with long lines and format=flowed.
+    (mu4e-compose-format-flowed t)
+    (fill-flowed-encode-column 998)
 
-     ;; Custom rendering of HTML messages
-     (mu4e-html2text-command #'config-mail--shr-buffer)))
+    ;; Custom rendering of HTML messages
+    (mu4e-html2text-command #'config-mail--shr-buffer))
 #+end_src
 
 Always use =mu4e= for mail composition.
@@ -4379,13 +4317,12 @@ Wrap lines in an intuitive way while viewing and editing.
 #+begin_src emacs-lisp
   (use-package mu4e
     :config
-    (progn
-      ;; Use word wrap instead of auto-fill.
-      (add-hook 'mu4e-compose-mode-hook #'turn-off-auto-fill)
-      (add-hook 'mu4e-compose-mode-hook (lambda () (setq word-wrap t)))
+    ;; Use word wrap instead of auto-fill.
+    (add-hook 'mu4e-compose-mode-hook #'turn-off-auto-fill)
+    (add-hook 'mu4e-compose-mode-hook (lambda () (setq word-wrap t)))
 
-      ;; Wrap lines when viewing.
-      (add-hook 'mu4e-view-mode-hook #'visual-line-mode)))
+    ;; Wrap lines when viewing.
+    (add-hook 'mu4e-view-mode-hook #'visual-line-mode))
 #+end_src
 
 Define commands for viewing messages in a browser, either with =eww= or the
@@ -4394,22 +4331,21 @@ default system browser.
 #+begin_src emacs-lisp
   (use-package mu4e
     :config
-    (progn
-      ;; View html message in eww. `av` in view to activate
-      (add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
-      ;; View html message in external browser. `a&` in view to activate
-      (add-to-list 'mu4e-view-actions '("&viewInExternalBrowser" . config-mail--view-in-external-browser-action) t)))
+    ;; View html message in eww. `av` in view to activate
+    (add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
+    ;; View html message in external browser. `a&` in view to activate
+    (add-to-list 'mu4e-view-actions '("&viewInExternalBrowser" . config-mail--view-in-external-browser-action) t))
 #+end_src
 
 Define a refile action that marks messages as 'read' and moves them into the
 appropriate folder.
 
 #+begin_src emacs-lisp
-  (defun config-mail--message-from-me-p (msg)
-    (equal (mu4e-get-sent-folder msg) (mu4e-message-field msg :maildir)))
-
   (use-package mu4e
     :config
+    (defun config-mail--message-from-me-p (msg)
+      (equal (mu4e-get-sent-folder msg) (mu4e-message-field msg :maildir)))
+
     (setf (alist-get 'refile mu4e-marks)
           '(:char ("r" . "▶")
             :prompt "refile"
@@ -4425,39 +4361,40 @@ appropriate folder.
 Insert signatures before quoted content, as in other mail user agents.
 
 #+begin_src emacs-lisp
-  (defun config-mail--insert-signature-before-quoted-message ()
-    (unless (member mu4e-compose-type '(edit resend))
-      (save-excursion
-        (save-restriction
-          (widen)
-          (cond
-           ((eq mu4e-compose-type 'new)
-            (message-goto-body)
-            (kill-region (point) (point-max)))
-           ((message-goto-signature)
-            (forward-line -2)
-            (delete-region (point) (point-max))))
-
-          (message-goto-body)
-          (insert "\n")
-          (narrow-to-region (point-min) (point))
-
-          (let ((message-signature t)
-                (mu4e-compose-signature t)
-                (mu4e-compose-signature-auto-include t))
-            (message-insert-signature))
-
-          (when (member mu4e-compose-type '(forward reply))
-            (goto-char (point-max))
-            (insert "\n"))))))
-
-  (add-hook 'mu4e-compose-mode-hook #'config-mail--insert-signature-before-quoted-message)
-
   (use-package mu4e
     :custom
-    ((message-forward-before-signature nil)
-     (message-citation-line-function #'message-insert-formatted-citation-line)
-     (message-citation-line-format "On %a, %b %d %Y, %f wrote:\n")))
+    (message-forward-before-signature nil)
+    (message-citation-line-function #'message-insert-formatted-citation-line)
+    (message-citation-line-format "On %a, %b %d %Y, %f wrote:\n")
+
+    :config
+    (defun mu4e--insert-signature-before-quoted-message ()
+      (unless (member mu4e-compose-type '(edit resend))
+        (save-excursion
+          (save-restriction
+            (widen)
+            (cond
+             ((eq mu4e-compose-type 'new)
+              (message-goto-body)
+              (kill-region (point) (point-max)))
+             ((message-goto-signature)
+              (forward-line -2)
+              (delete-region (point) (point-max))))
+
+            (message-goto-body)
+            (insert "\n")
+            (narrow-to-region (point-min) (point))
+
+            (let ((message-signature t)
+                  (mu4e-compose-signature t)
+                  (mu4e-compose-signature-auto-include t))
+              (message-insert-signature))
+
+            (when (member mu4e-compose-type '(forward reply))
+              (goto-char (point-max))
+              (insert "\n"))))))
+
+    (add-hook 'mu4e-compose-mode-hook #'mu4e--insert-signature-before-quoted-message))
 #+end_src
 
 Don't quit mu4e, just bury the buffer.
@@ -4844,6 +4781,8 @@ cookie or 'cleared', which indicates no special priority.
 
 ~C-c p~ toggles a priority cookie on the current heading.
 
+*** Toggle priority in org-mode
+
 #+begin_src emacs-lisp
   (use-package org
     :general
@@ -4861,7 +4800,11 @@ cookie or 'cleared', which indicates no special priority.
                 (t
                  (org-priority ?A)
                  (message "Priority set")))))))
+#+end_src
 
+*** Toggle priority in org-agenda
+
+#+begin_src emacs-lisp
   (use-package org
     :general
     (:states 'motion :keymaps 'org-agenda-mode-map "C-c p" 'org-funcs-agenda-toggle-priority)
@@ -4890,6 +4833,7 @@ cookie or 'cleared', which indicates no special priority.
           (org-agenda-change-all-lines updated-heading heading-marker)
           (org-move-to-column col)))))
 #+end_src
+
 
 ** =org-capture= - Templates for quickly capturing information
 
@@ -4999,9 +4943,9 @@ Use Tectonic as org-mode's LaTeX compiler.
 #+begin_src emacs-lisp
   (use-package org
     :custom
-   (org-latex-compiler (getenv "NIX_EMACS_TECTONIC_BIN"))
-   (org-latex-compilers (list (getenv "NIX_EMACS_TECTONIC_BIN") "pdflatex" "xelatex" "lualatex"))
-   (org-latex-pdf-process (list (concat (getenv "NIX_EMACS_TECTONIC_BIN") " --outdir %o %f"))))
+    (org-latex-compiler (getenv "NIX_EMACS_TECTONIC_BIN"))
+    (org-latex-compilers (list (getenv "NIX_EMACS_TECTONIC_BIN") "pdflatex" "xelatex" "lualatex"))
+    (org-latex-pdf-process (list (concat (getenv "NIX_EMACS_TECTONIC_BIN") " --outdir %o %f"))))
 #+end_src
 
 Set some default LaTeX packages.
@@ -5009,8 +4953,7 @@ Set some default LaTeX packages.
 #+begin_src emacs-lisp
   (use-package org
     :custom
-    (add-to-list 'org-latex-default-packages-alist
-                 '("colorlinks=true" "hyperref" nil)))
+    (add-to-list 'org-latex-default-packages-alist '("colorlinks=true" "hyperref" nil)))
 #+end_src
 
 ** =org-crypt= - Encrypted file content
