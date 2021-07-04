@@ -5121,7 +5121,16 @@ Set general org-mode variables.
     "p" '(org-paste-subtree :wk "past")
     "n" '(org-num-mode :wk "show heading numbers")
     "o" '(org-tree-to-indirect-buffer :wk "tree to indirect buf")
-    "t" '(org-show-todo-tree :wk "todo tree"))
+    "t" '(org-show-todo-tree :wk "todo tree")
+
+    "e" '(nil :wk "babel")
+    "e b" '(org-babel-execute-buffer :wk "execute buffer")
+    "e e" (list (general-predicate-dispatch 'org-babel-execute-subtree
+             (org-in-src-block-p) 'org-babel-execute-src-block)
+           :wk "execute")
+
+    "e x" '(org-babel-demarcate-block :wk "split block")
+    "e v" '(org-babel-mark-block :wk "mark block"))
 #+end_src
 
 ** =org-funcs= - org functions used throughout config
