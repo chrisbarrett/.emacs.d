@@ -132,6 +132,13 @@ Prevent GCs during user input in the minibuffer.
   (add-hook 'minibuffer-exit-hook #'config--enable-gc)
 #+end_src
 
+** Start server
+
+#+begin_src emacs-lisp
+  (server-start)
+#+end_src
+
+
 ** Define a function to select a value depending on the current GTK theme.
 
 #+begin_src emacs-lisp
