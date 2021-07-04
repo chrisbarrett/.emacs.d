@@ -281,19 +281,6 @@ Load host-specific settings, which are not checked into version control.
     (load-file-with-stats user-site-file))
 #+end_src
 
-** Load Lisp from other locations                                  :disabled:
-
-Load lisp in =org= and =ledger= dirs.
-
-#+begin_src emacs-lisp
-  (with-eval-after-load 'org
-    (when (file-directory-p paths-org-lisp-directory)
-      (load (expand-file-name "init.el" paths-org-lisp-directory) t)))
-
-  (when (file-directory-p paths-ledger-lisp-directory)
-    (load (expand-file-name "init.el" paths-ledger-lisp-directory) t))
-#+end_src
-
 ** =doom-themes= - Use doom theme
 
 #+begin_src emacs-lisp
@@ -5729,6 +5716,19 @@ Ensure we use dired rather than the Finder on macOS.
     (org-roam-directory (f-join paths-org-directory "roam")))
 #+end_src
 
+
+* Load Lisp from other locations
+
+Load lisp in =org= and =ledger= dirs.
+
+#+begin_src emacs-lisp
+  (with-eval-after-load 'org
+    (when (file-directory-p paths-org-lisp-directory)
+      (load (expand-file-name "init.el" paths-org-lisp-directory) t)))
+
+  (when (file-directory-p paths-ledger-lisp-directory)
+    (load (expand-file-name "init.el" paths-ledger-lisp-directory) t))
+#+end_src
 
 * File postamble
 
