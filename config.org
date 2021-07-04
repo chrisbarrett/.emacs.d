@@ -5713,7 +5713,8 @@ Ensure we use dired rather than the Finder on macOS.
   (use-package org-roam
     :demand t
     :custom
-    (org-roam-directory (f-join paths-org-directory "roam")))
+    (org-roam-directory (f-join paths-org-directory "roam"))
+    (org-roam-index-file (f-join org-roam-directory "index.org")))
 #+end_src
 
 
