@@ -4107,7 +4107,9 @@ TypeScript language server.
 Format HCL buffers on save.
 
 #+begin_src emacs-lisp
-  (with-eval-after-load 'format-all
+  (use-package hcl-mode
+    :after format-all
+    :config
     (define-format-all-formatter terragrunt-fmt
       (:executable "terragrunt")
       (:install (macos "brew install terragrunt"))
