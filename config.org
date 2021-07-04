@@ -1151,6 +1151,15 @@ Reveal the context around the selected hunk when diffing org buffers.
     (add-hook 'world-time-table-mode-hook 'hl-line-mode))
 #+end_src
 
+** =woman= - system manual page reader
+
+#+begin_src emacs-lisp
+  (use-package woman
+    :custom
+    (woman-fill-frame t)
+    (woman-default-indent 7))
+#+end_src
+
 * Better eval-expression
 
 Define an alternative version of =eval-expression= that uses =emacs-lisp-mode= to
