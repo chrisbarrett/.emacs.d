@@ -1044,6 +1044,113 @@ websites.
        ("Wikipedia" . [simple-query "en.wikipedia.org" "en.wikipedia.org/wiki/" ""]))))
 #+end_src
 
+** =compile= - Mode for compilation buffers
+
+#+begin_src emacs-lisp
+  (use-package compile
+    :custom
+    (compilation-environment '("TERM=screen-256color"))
+    (compilation-always-kill t)
+    (compilation-ask-about-save nil)
+    (compilation-scroll-output 'first-error))
+#+end_src
+
+Colourise compilation output.
+
+#+begin_src emacs-lisp
+  (use-package compile
+    :config
+    (defun colourise-compilation-output ()
+      (let ((inhibit-read-only t))
+        (ansi-color-apply-on-region (save-excursion
+                                      (goto-char compilation-filter-start)
+                                      (line-beginning-position))
+                                    (point))))
+
+    (add-hook 'compilation-filter-hook 'colourise-compilation-output))
+#+end_src
+
+Position compilation buffers.
+
+#+begin_src emacs-lisp
+  (use-package compile
+    :config
+    (add-to-list 'display-buffer-alist
+                 `(,(rx bos "*compilation*" eos)
+                   (display-buffer-reuse-window display-buffer-below-selected)
+                   (window-height    . 0.2))))
+#+end_src
+
+** =ediff= - Interactive diff interface
+
+Configure how =ediff= should display windows when started.
+
+#+begin_src emacs-lisp
+  (use-package ediff
+    :custom
+    (ediff-window-setup-function #'ediff-setup-windows-plain)
+    (ediff-split-window-function #'split-window-horizontally))
+#+end_src
+
+Teach =ediff= how to copy contents from both buffers in a three-way merge.
+
+#+begin_src emacs-lisp
+  (use-package ediff
+    :functions
+    (ediff-setup-windows-plain ediff-copy-diff ediff-get-region-contents)
+    :custom
+    (defun ediff-copy-both-to-C ()
+      "Copy both ediff buffers in a 3-way merge to the target buffer."
+      (interactive)
+      (let ((str
+             (concat
+              (ediff-get-region-contents ediff-current-difference 'A ediff-control-buffer)
+              (ediff-get-region-contents ediff-current-difference 'B ediff-control-buffer))))
+        (ediff-copy-diff ediff-current-difference nil 'C nil str)))
+
+    (defun config-ediff--setup-keybinds ()
+      (define-key ediff-mode-map (kbd "B") #'ediff-copy-both-to-C))
+
+    (add-hook 'ediff-keymap-setup-hook #'config-ediff--setup-keybinds))
+#+end_src
+
+Reveal the context around the selected hunk when diffing org buffers.
+
+#+begin_src emacs-lisp
+  (use-package ediff
+    :config
+    (autoload 'org-reveal "org")
+
+    (defun config-ediff--org-reveal-around-difference (&rest _)
+      (dolist (buf (list ediff-buffer-A ediff-buffer-B ediff-buffer-C))
+        (when (and buf (buffer-live-p buf))
+          (with-current-buffer buf
+            (when (derived-mode-p 'org-mode)
+              (org-reveal t))))))
+
+    (advice-add 'ediff-next-difference :after #'config-ediff--org-reveal-around-difference)
+    (advice-add 'ediff-previous-difference :after #'config-ediff--org-reveal-around-difference))
+#+end_src
+
+** =world-time-mode= - World clock UI
+
+=world-time-mode= provides a world clock.
+
+#+begin_src emacs-lisp
+  (use-package world-time-mode
+    :general
+    (:states 'normal :keymaps 'world-time-table-mode-map "q" 'quit-window)
+    :custom
+    (display-time-world-list '(("Pacific/Auckland" "NZT")
+                               ("America/Los_Angeles" "Pacific Time")
+                               ("Europe/Istanbul" "Turkey")
+                               ("Asia/Beirut" "Lebanon")
+                               ("Europe/Berlin" "Euro Central")
+                               ("UTC" "UTC")))
+    :config
+    (add-hook 'world-time-table-mode-hook 'hl-line-mode))
+#+end_src
+
 * Better eval-expression
 
 Define an alternative version of =eval-expression= that uses =emacs-lisp-mode= to
@@ -1408,7 +1515,157 @@ This package provides a visual representation of the undo history.
     (format-all-show-errors 'never))
 #+end_src
 
-* =direnv= - Support direnv files
+** =emojify= - Render emoji
+
+#+begin_src emacs-lisp
+  (use-package emojify
+    :hook (after-init . global-emojify-mode)
+    :custom
+    (emojify-emoji-styles '(github unicode))
+    (emojify-program-contexts '(comments))
+    (emojify-point-entered-behaviour 'uncover)
+    (emojify-user-emojis
+     '((":check:" . (("emoji" . ":white_check_mark:")
+                     ("name" . "White Heavy Check Mark")
+                     ("unicode" . "✅")
+                     ("image" . "2705.png")
+                     ("style" . "github")))))
+
+    :config
+    (defun emojify-at-org-drawer-p (&rest _)
+      (when (derived-mode-p 'org-mode 'org-agenda-mode)
+        (save-excursion
+          (goto-char (line-beginning-position))
+          (or (org-at-drawer-p) (org-at-property-p)))))
+
+    (add-to-list 'emojify-inhibit-functions #'emojify-at-org-drawer-p))
+#+end_src
+
+** =yasnippet= - Text snippets
+
+=yasnippet= provides expandable text snippets. I use them extensively to cut
+down on typing.
+
+#+begin_src emacs-lisp
+  (use-package yasnippet
+    :hook
+    (prog-mode . (lambda () (require 'yasnippet)))
+    (text-mode . (lambda () (require 'yasnippet)))
+
+    :custom
+    (yas-wrap-around-region t)
+    (yas-alias-to-yas/prefix-p nil)
+    (yas-prompt-functions '(yas-completing-prompt))
+    (yas-verbosity 0)
+    (yas-minor-mode-map (make-sparse-keymap))
+
+    :general
+    (:keymaps 'yas-minor-mode-map :states 'insert
+     "TAB"
+     (general-predicate-dispatch 'indent-for-tab-command
+       (yas-maybe-expand-abbrev-key-filter t) 'yas-expand))
+    (:keymaps 'yas-keymap :states 'insert
+     "SPC"
+     (general-predicate-dispatch 'self-insert-command
+       (yas--maybe-clear-field-filter t) 'yas-skip-and-clear-field)
+     "<backspace>"
+     (general-predicate-dispatch 'backward-delete-char
+       (yas--maybe-clear-field-filter t) 'yas-skip-and-clear-field
+       (bound-and-true-p smartparens-mode) 'sp-backward-delete-char))
+
+    :config
+    (yas-global-mode +1))
+#+end_src
+
+*** Customise backwards cycling behaviour
+
+When cycling backward through fields, place point at the end of the previous field.
+
+#+begin_src emacs-lisp
+  (use-package yasnippet
+    :config
+    (defun config-yasnippet--end-of-field ()
+      (when-let* ((field (yas-current-field)))
+        (marker-position (yas--field-end field))))
+
+    (defun config-yasnippet--maybe-goto-field-end ()
+      "Move to the end of the current field if it has been modified."
+      (when-let* ((field (config-yasnippet--current-field)))
+        (when (and (yas--field-modified-p field)
+                   (yas--field-contains-point-p field))
+          (goto-char (config-yasnippet--end-of-field)))))
+
+    (defun yasnippet-goto-field-end (&rest _)
+      (config-yasnippet--maybe-goto-field-end)
+      (when (and (boundp 'evil-mode) evil-mode (fboundp 'evil-insert-state))
+        (evil-insert-state)))
+
+    (advice-add 'yas-next-field :after #'yasnippet-goto-field-end)
+    (advice-add 'yas-prev-field :after #'yasnippet-goto-field-end))
+#+end_src
+
+*** Snippet functions
+
+These functions are used in the definitions of snippets.
+
+**** General
+
+#+begin_src emacs-lisp
+  (defun yas-funcs-bolp ()
+    "Non-nil if point is on an empty line or at the first word.
+  The rest of the line must be blank."
+    (let ((line (buffer-substring (line-beginning-position) (line-end-position))))
+      (string-match-p (rx bol (* space) (* word) (* space) eol)
+                      line)))
+#+end_src
+
+**** emacs-lisp
+
+#+begin_src emacs-lisp
+  (defun yas-funcs-el-custom-group ()
+    "Find the first group defined in the current file.
+  Fall back to the file name sans extension."
+    (or
+     (cadr (s-match (rx "(defgroup" (+ space) (group (+ (not space))))
+                    (buffer-string)))
+     (cadr (s-match (rx ":group" (+ space) "'" (group (+ (any "-" alnum))))
+                    (buffer-string)))
+     (file-name-sans-extension (file-name-nondirectory buffer-file-name))))
+
+  (defun yas-funcs-el-autoload-file (sym)
+    (if-let* ((file (symbol-file (if (stringp sym) (intern sym) sym))))
+        (file-name-sans-extension (file-name-nondirectory file))
+      ""))
+
+  (defun yas-funcs-el-at-line-above-decl-p ()
+    (save-excursion
+      (forward-line)
+      (back-to-indentation)
+      (thing-at-point-looking-at (rx (* space) "("
+                                     (or "cl-defun" "defun" "defvar" "defconst"
+                                         "define-minor-mode"
+                                         "define-globalized-minor-mode"
+                                         "define-derived-mode")))))
+
+  (defun yas-funcs-el-package-prefix ()
+    (if (bound-and-true-p nameless-current-name)
+        nameless-current-name
+      (f-base (or (buffer-file-name) (buffer-name)))))
+
+  (defun yas-funcs-buttercup-file-p ()
+    (string-match-p "^test-" (file-name-nondirectory (buffer-file-name))))
+#+end_src
+
+** =editorconfig= - Support editorconfig files
+
+Teach Emacs to respect editorconfig files.
+
+#+begin_src emacs-lisp
+  (use-package editorconfig
+    :hook (after-init . editorconfig-mode))
+#+end_src
+
+** =direnv= - Support direnv files
 
 Teach Emacs how to load environment variables from [[https://direnv.net/][direnv]].
 
@@ -1419,384 +1676,6 @@ See: [[https://github.com/wbolster/emacs-direnv][wbolster/emacs-direnv]]
     :hook (after-init . direnv-mode)
     :custom
     (direnv-always-show-summary nil))
-#+end_src
-
-* =editorconfig= - Support editorconfig files
-
-Teach Emacs to respect editorconfig files.
-
-#+begin_src emacs-lisp
-  (use-package editorconfig
-    :hook (after-init . editorconfig-mode))
-#+end_src
-
-* =conf-mode= - Configuration files
-
-Configure =conf-mode= for use with more kinds of config files.
-
-#+begin_src emacs-lisp
-  (use-package conf-mode
-    :mode
-    ("\\.env\\.erb\\'" . conf-mode)
-    ("\\.conf\\.erb\\'" . conf-mode)
-    ("\\.kll\\'" . conf-mode))
-#+end_src
-
-* =hexl-mode= - Hex editing
-
-=hexl= is Emacs' built-in hex editor.
-
-#+begin_src emacs-lisp
-  (use-package hexl
-    :general
-    (:states 'motion :keymaps 'hexl-mode-map
-     "]]" #'hexl-end-of-1k-page
-     "[[" #'hexl-beginning-of-1k-page
-     "h" #'hexl-backward-char
-     "l" #'hexl-forward-char
-     "j" #'hexl-next-line
-     "k" #'hexl-previous-line
-     "$" #'hexl-end-of-line
-     "^" #'hexl-beginning-of-line
-     "0" #'hexl-beginning-of-line))
-#+end_src
-
-* Searching
-
-** =deadgrep= - Ripgrep (=rg=) frontend
-
-=deadgrep= provides a polished frontend for =ripgrep=.
-
-#+begin_src emacs-lisp
-  (use-package deadgrep
-    :general (:keymaps 'deadgrep-mode-map "C-c C-w" #'deadgrep-edit-mode)
-    :init
-    (defalias 'rg #'deadgrep)
-    :config
-    (setq-default deadgrep--search-type 'regexp))
-#+end_src
-
-Use =c= in the =deadgrep= buffer to change the search term.
-
-#+begin_src emacs-lisp
-  (use-package deadgrep
-    :preface
-    (defun config-deadgrep--requery ()
-      (interactive)
-      (let ((button (save-excursion
-                      (goto-char (point-min))
-                      (forward-button 1))))
-        (button-activate button)))
-    :general (:states 'normal :keymaps 'deadgrep-mode-map
-              "c" #'config-deadgrep--requery))
-#+end_src
-
-Provide feedback in the echo area on entering and exiting =deadgrep-edit-mode=.
-
-#+begin_src emacs-lisp
-  (use-package deadgrep
-    :config
-    (defun config-deadgrep--on-exit-edit-mode (&rest _)
-      (when (derived-mode-p 'deadgrep-edit-mode)
-        (let ((message-log-max))
-          (message "Exiting edit mode."))))
-
-    (defun config-deadgrep--on-enter-edit-mode (&rest _)
-      (let ((message-log-max))
-        (message "Entering edit mode. Changes will be made to underlying files as you edit.")))
-
-    (advice-add 'deadgrep-mode :before #'config-deadgrep--on-exit-edit-mode)
-    (advice-add 'deadgrep-edit-mode :after #'config-deadgrep--on-enter-edit-mode))
-#+end_src
-
-Use =C-c C-e= to enter a =deadgrep= search buffer from =ivy.=
-
-#+begin_src emacs-lisp
-  (use-package deadgrep
-    :after (ivy)
-    :general
-    (:keymaps 'counsel-ag-map "C-c C-e" #'deadgrep-from-ivy)
-    :preface
-    (progn
-      (autoload 'ivy-exit-with-action "ivy")
-
-      (defun deadgrep-from-ivy ()
-        (interactive)
-        (ivy-exit-with-action
-         (lambda (&rest _)
-           (let ((deadgrep--search-type 'regexp))
-             (deadgrep (replace-regexp-in-string (rx (+ space)) ".*?"
-                                                 (with-no-warnings ivy-text)))))))))
-#+end_src
-
-** =wgrep= - Directly editing =grep= results
-
-Enable =wgrep=, which provides editable grep buffers.
-
-#+begin_src emacs-lisp
-  (use-package wgrep)
-#+end_src
-
-* Prompts and UI enhancements
-
-** =ivy= - completion framework
-
-=ivy= is a package that provides incremental completion, similar to =helm= or =ido=,
-but actively maintained. =flx= is used as the fuzzy-matching indexer backend for
-ivy.
-
-#+begin_src emacs-lisp
-  (use-package ivy
-    :general
-    ("C-c C-r" #'ivy-resume
-     "C-x b" #'ivy-switch-buffer)
-
-    (:keymaps 'ivy-occur-mode-map
-     "C-x C-w" #'ivy-wgrep-change-to-wgrep-mode)
-
-    (:keymaps 'ivy-minibuffer-map
-     "C-z" #'ivy-dispatching-done
-     "C-l" #'ivy-partial-or-done
-     "C-<return>" #'ivy-immediate-done
-     "M-<return>" #'ivy-immediate-done
-     "<escape>" 'minibuffer-keyboard-quit)
-
-    ;; Browse read-expression histroy with ivy
-    (:keymaps 'read-expression-map
-     "C-r" #'counsel-minibuffer-history)
-
-    :custom
-    (completing-read-function 'ivy-completing-read)
-    (ivy-use-virtual-buffers t)
-    (ivy-virtual-abbreviate 'abbreviate)
-    (ivy-count-format "(%d/%d) ")
-    (ivy-re-builders-alist '((t . ivy--regex-plus)))
-    (ivy-magic-slash-non-match-action nil)
-    (ivy-height 20)
-    (ivy-extra-directories '("."))
-
-    ;; Increase the maximum number of candidates that will be sorted
-    ;; using `flx'. The default is 200, which means `flx' is almost
-    ;; never used. Setting it too high (e.g. 10000) causes lag. This
-    ;; seems to be a good compromise (for example, @PythonNut uses it,
-    ;; see [1]).
-    ;;
-    ;; [1]: https://github.com/PythonNut/emacs-config/blob/c8bff5cce293006ec5cdc39a86982431a758a9a0/modules/config-ivy.el#L68
-    (ivy-flx-limit 2000)
-
-    :config
-    (require 'nano-counsel nil t)
-    (advice-add 'ivy--queue-exhibit :around #'advice-ignore-errors)
-    (ivy-mode))
-#+end_src
-
-*** Hide boring files from completions
-
-Hide =./= and =../= when finding files.
-
-#+begin_src emacs-lisp
-  (use-package ivy
-    :config
-    (defun config-ivy-with-empty-ivy-extra-directories (f &rest args)
-      (let ((ivy-extra-directories nil))
-        (apply f args)))
-
-    (advice-add #'counsel-find-file :around #'config-ivy-with-empty-ivy-extra-directories))
-#+end_src
-
-** =swiper= - In-buffer search UI
-
-#+begin_src emacs-lisp
-  (use-package swiper
-    :general (:states 'normal "/" 'swiper))
-#+end_src
-
-** =counsel= - Better completions built on =ivy=
-
-#+begin_src emacs-lisp
-  (use-package counsel
-    :general
-    ("M-x" #'counsel-M-x "C-x C-f" #'counsel-find-file)
-    (:keymaps 'counsel-find-file-map
-     "C-M-j" #'ivy-immediate-done
-     "C-h" #'counsel-up-directory)
-
-    :custom
-    (counsel-yank-pop-separator (concat "\n" (make-vector 120 ?─) "\n"))
-
-    :config
-    (put 'counsel-find-symbol 'no-counsel-M-x t)
-    (setf (alist-get 'counsel-yank-pop ivy-height-alist) 20)
-    (counsel-mode +1))
-#+end_src
-
-** =historian= - Persistent input history
-
-=historian= remembers your choices in completion menus.
-
-#+begin_src emacs-lisp
-  (use-package historian
-    :after (ivy)
-    :demand t
-    :config (historian-mode +1))
-#+end_src
-
-** =ivy-historian= - integrates =historian= with =ivy=.
-
-#+begin_src emacs-lisp
-  (use-package ivy-historian
-    :after (ivy)
-    :demand t
-    :custom
-    ;; Tweak historian weighting settings. These values are chosen
-    ;; subjectively to produce good results.
-    (ivy-historian-freq-boost-factor 2000)
-    (ivy-historian-recent-boost 2000)
-    (ivy-historian-recent-decrement 1000)
-    :config
-    (ivy-historian-mode 1))
-#+end_src
-
-* =ediff= - Interactive diff interface
-
-Configure how =ediff= should display windows when started.
-
-#+begin_src emacs-lisp
-  (use-package ediff
-    :custom
-    (ediff-window-setup-function #'ediff-setup-windows-plain)
-    (ediff-split-window-function #'split-window-horizontally))
-#+end_src
-
-Teach =ediff= how to copy contents from both buffers in a three-way merge.
-
-#+begin_src emacs-lisp
-  (use-package ediff
-    :functions
-    (ediff-setup-windows-plain ediff-copy-diff ediff-get-region-contents)
-    :custom
-    (defun ediff-copy-both-to-C ()
-      "Copy both ediff buffers in a 3-way merge to the target buffer."
-      (interactive)
-      (let ((str
-             (concat
-              (ediff-get-region-contents ediff-current-difference 'A ediff-control-buffer)
-              (ediff-get-region-contents ediff-current-difference 'B ediff-control-buffer))))
-        (ediff-copy-diff ediff-current-difference nil 'C nil str)))
-
-    (defun config-ediff--setup-keybinds ()
-      (define-key ediff-mode-map (kbd "B") #'ediff-copy-both-to-C))
-
-    (add-hook 'ediff-keymap-setup-hook #'config-ediff--setup-keybinds))
-#+end_src
-
-Reveal the context around the selected hunk when diffing org buffers.
-
-#+begin_src emacs-lisp
-  (use-package ediff
-    :config
-    (autoload 'org-reveal "org")
-
-    (defun config-ediff--org-reveal-around-difference (&rest _)
-      (dolist (buf (list ediff-buffer-A ediff-buffer-B ediff-buffer-C))
-        (when (and buf (buffer-live-p buf))
-          (with-current-buffer buf
-            (when (derived-mode-p 'org-mode)
-              (org-reveal t))))))
-
-    (advice-add 'ediff-next-difference :after #'config-ediff--org-reveal-around-difference)
-    (advice-add 'ediff-previous-difference :after #'config-ediff--org-reveal-around-difference))
-#+end_src
-
-* =world-time-mode= - World clock UI
-
-=world-time-mode= provides a world clock.
-
-#+begin_src emacs-lisp
-  (use-package world-time-mode
-    :general
-    (:states 'normal :keymaps 'world-time-table-mode-map "q" 'quit-window)
-    :custom
-    (display-time-world-list '(("Pacific/Auckland" "NZT")
-                               ("America/Los_Angeles" "Pacific Time")
-                               ("Europe/Istanbul" "Turkey")
-                               ("Asia/Beirut" "Lebanon")
-                               ("Europe/Berlin" "Euro Central")
-                               ("UTC" "UTC")))
-    :config
-    (add-hook 'world-time-table-mode-hook 'hl-line-mode))
-#+end_src
-
-* =compile= - Mode for compilation buffers
-
-#+begin_src emacs-lisp
-  (use-package compile
-    :custom
-    (compilation-environment '("TERM=screen-256color"))
-    (compilation-always-kill t)
-    (compilation-ask-about-save nil)
-    (compilation-scroll-output 'first-error))
-#+end_src
-
-Colourise compilation output.
-
-#+begin_src emacs-lisp
-  (use-package compile
-    :config
-    (defun colourise-compilation-output ()
-      (let ((inhibit-read-only t))
-        (ansi-color-apply-on-region (save-excursion
-                                      (goto-char compilation-filter-start)
-                                      (line-beginning-position))
-                                    (point))))
-
-    (add-hook 'compilation-filter-hook 'colourise-compilation-output))
-#+end_src
-
-Position compilation buffers.
-
-#+begin_src emacs-lisp
-  (use-package compile
-    :config
-    (add-to-list 'display-buffer-alist
-                 `(,(rx bos "*compilation*" eos)
-                   (display-buffer-reuse-window display-buffer-below-selected)
-                   (window-height    . 0.2))))
-#+end_src
-
-* Window management
-
-** =winner= - Window state history
-
-=winner-mode= saves the window and buffer layout history, allowing you to cycle
-forward and back through layout states. This is useful for recovering a layout
-after editing actions have changed what windows are shown.
-
-#+begin_src emacs-lisp
-  (use-package winner
-    :general ("<C-left>" 'winner-undo
-              "<C-right>"'winner-redo)
-    :hook (after-init . winner-mode)
-    :custom
-    (winner-boring-buffers '("*Completions*"
-                             "*Compile-Log*"
-                             "*inferior-lisp*"
-                             "*Fuzzy Completions*"
-                             "*Apropos*"
-                             "*Help*"
-                             "*cvs*"
-                             "*Buffer List*"
-                             "*Ibuffer*"
-                             "*esh command on file*")))
-#+end_src
-
-** =rotate= - Rotate buffers within window layout
-
-=rotate= provides handy commands for manipulating the window layout.
-
-#+begin_src emacs-lisp
-  (use-package rotate
-    :commands (rotate-layout))
 #+end_src
 
 * =evil= - Vim-style modal editing
@@ -2159,6 +2038,799 @@ compatibility.
     :commands (evil-iedit-state/iedit-mode))
 #+end_src
 
+* Set up ~SPACE~ as a leader key
+
+#+begin_src emacs-lisp
+  (require 'general)
+  (general-evil-setup)
+
+  (general-define-key :states '(normal motion) "SPC" nil)
+  (general-create-definer leader-set-key :keymaps 'override :states '(normal motion visual) :prefix "SPC")
+#+end_src
+
+** Top-level leader keybindings
+
+#+begin_src emacs-lisp
+  (defun alternate-buffer (&optional window)
+    "Toggle back and forth between two buffers.
+
+  WINDOW sets the window in which to toggle, and defaults to the
+  current window."
+    (interactive)
+    (let ((current-buffer (window-buffer window))
+          (buffer-predicate (frame-parameter (window-frame window) 'buffer-predicate)))
+      ;; switch to first buffer previously shown in this window that matches
+      ;; frame-parameter `buffer-predicate'
+      (switch-to-buffer
+       (or (car (seq-filter (lambda (buffer)
+                              (and (not (eq buffer current-buffer))
+                                   (or (null buffer-predicate) (funcall buffer-predicate buffer))))
+                            (seq-map #'car (window-prev-buffers window))))
+           ;; `other-buffer' honors `buffer-predicate' so no need to filter
+           (other-buffer current-buffer t)))))
+#+end_src
+
+#+begin_src emacs-lisp
+  (leader-set-key
+    "!" '(shell-command :which-key "shell cmd")
+    "&" '(async-shell-command :which-key "shell cmd (async)")
+    "'" (general-predicate-dispatch 'poporg-dwim
+          (bound-and-true-p poporg-mode) 'poporg-edit-exit
+          (derived-mode-p 'org-mode) 'org-edit-special
+          (bound-and-true-p org-src-mode) 'org-edit-src-exit)
+    "/" '(counsel-projectile-rg :which-key "rg")
+    ":" '(eval-expression-interactively :which-key "eval")
+    "<tab>" '(alternate-buffer :which-key "other buf")
+    "?" '(general-describe-keybindings :which-key "show bindings")
+    "@" '(counsel-bookmark :which-key "bookmark")
+    "|" '(rotate-layout :which-key "rotate window layout")
+    "SPC" '(ivy-switch-buffer :which-key "switch buf")
+    "C" #'compile
+    "D" '(dired-other-window :which-key "dired (other)")
+    "S" '(deadgrep :which-key "rg (deadgrep)")
+    "d" #'dired
+    "i" '(counsel-imenu :which-key "imenu")
+    "q" '(delete-window :which-key "delete window")
+    "r" 'ivy-resume
+    "s" '(evil-iedit-state/iedit-mode :which-key "iedit")
+    "u" '(universal-argument :which-key "prefix arg")
+    "x" '(counsel-M-x :which-key "M-x"))
+#+end_src
+
+** ~,~ - Parens
+
+#+begin_src emacs-lisp
+  (leader-set-key :infix ","
+    "" '(nil :which-key "+parens")
+    "h" #'sp-beginning-of-sexp
+    "l" #'sp-end-of-sexp
+    "n" #'sp-next-sexp
+    "p" #'sp-previous-sexp
+    "<" #'sp-backward-up-sexp
+    ">" #'sp-up-sexp
+    "c" #'sp-convolute-sexp
+    "d" #'sp-kill-sexp
+    "D" #'sp-backward-kill-sexp
+    "k" #'sp-splice-sexp-killing-forward
+    "K" #'sp-splice-sexp-killing-backward
+    "s" #'sp-splice-sexp-killing-around
+    "r" #'sp-raise-sexp
+    "a" #'sp-add-to-next-sexp
+    "A" #'sp-add-to-previous-sexp
+    "b" #'sp-forward-barf-sexp
+    "B" #'sp-backward-barf-sexp
+    "m" #'sp-forward-slurp-sexp
+    "M" #'sp-backward-slurp-sexp
+    "e" #'sp-emit-sexp
+    "j" #'sp-join-sexp
+    "t" #'sp-transpose-sexp
+    "U" #'sp-backward-unwrap-sexp
+    "u" #'sp-unwrap-sexp
+    "w" #'sp-rewrap-sexp
+    "x" #'sp-split-sexp
+    "y" #'sp-copy-sexp
+    "Y" #'sp-backward-copy-sexp)
+#+end_src
+
+** ~a~ - Applications
+
+#+begin_src emacs-lisp
+  (leader-set-key :infix "a"
+    "" '(nil :which-key "+apps")
+    "c" #'quick-calc
+    "C" #'full-calc
+    "m" #'mu4e
+    "p" #'pass
+    "r" '(nil :which-key "+profiler")
+    "r p" (general-predicate-dispatch 'profiler-start
+            (profiler-running-p) 'profiler-stop)
+    "r r" #'profiler-report
+    "w" #'world-time-list)
+#+end_src
+
+** ~b~ - Buffers
+
+#+begin_src emacs-lisp
+  (leader-set-key :infix "b"
+    "" '(nil :which-key "+bufs")
+    "n" #'next-buffer
+    "p" #'previous-buffer
+    "l" #'ibuffer
+    "s" #'switch-to-buffer
+    "b" #'bury-buffer
+    "d" #'kill-current-buffer
+    "w" #'save-buffer)
+#+end_src
+
+** ~c~ - Commenting
+
+#+begin_src emacs-lisp
+  (autoload 'sp-mark-sexp "smartparens")
+
+  (defun comment-sexp ()
+    "Comment the sexp at point."
+    (interactive)
+    (sp-mark-sexp)
+    (call-interactively #'comment-region))
+#+end_src
+
+#+begin_src emacs-lisp
+  (leader-set-key :infix "c"
+    "" '(nil :which-key "+comments")
+    "l" #'evilnc-comment-or-uncomment-lines
+    "r" #'comment-or-uncomment-region
+    "s" #'comment-sexp)
+#+end_src
+
+** ~e~ - Errors and Flycheck
+
+#+begin_src emacs-lisp
+  (autoload 'flycheck-list-errors "flycheck")
+
+  (defun flycheck-toggle-error-list ()
+    "Show or hide the error list."
+    (interactive)
+    (if-let* ((window (seq-find (lambda (it)
+                                  (equal flycheck-error-list-buffer
+                                         (buffer-name (window-buffer it))))
+                                (window-list))))
+        (delete-window window)
+      (flycheck-list-errors)))
+#+end_src
+
+#+begin_src emacs-lisp
+  (leader-set-key :infix "e"
+    "" '(nil :which-key "+errors")
+    "n" #'flycheck-next-error
+    "p" #'flycheck-previous-error
+    "l" #'flycheck-toggle-error-list
+    "r" #'flycheck-buffer
+    "c" #'flycheck-clear
+    "e" #'flycheck-explain-error-at-point
+    "h" #'flycheck-describe-checker
+    "s" #'flycheck-select-checker
+    "v" #'flycheck-verify-setup)
+#+end_src
+
+** ~f~ - Files
+
+#+begin_src emacs-lisp
+  (autoload 'projectile-project-p "projectile")
+  (autoload 'projectile-invalidate-cache "projectile")
+
+  (defun delete-current-buffer-and-file ()
+    "Remove the file associated with the current buffer, then kill it."
+    (interactive)
+    (let ((file (buffer-file-name)))
+      (cond
+       ((null file)
+        (kill-buffer))
+       ((not (file-exists-p file))
+        (kill-buffer))
+       ((yes-or-no-p "Delete this file? ")
+        (delete-file file t)
+        (kill-buffer)
+
+        (when (projectile-project-p)
+          (call-interactively #'projectile-invalidate-cache))
+
+        (message "File deleted: %s" file)))))
+
+  (defun sudo-edit (&optional arg)
+    "Reopen the current file as sudo for editing.
+
+  With prefix argument ARG, prompt for a file."
+    (interactive "p")
+    (let* ((fname (if (or arg (not buffer-file-name))
+                      (read-file-name "File: ")
+                    buffer-file-name))
+           (target (cond ((string-match-p "^/ssh:" fname)
+                          (with-temp-buffer
+                            (insert fname)
+                            (search-backward ":")
+                            (let ((last-match-end nil)
+                                  (last-ssh-hostname nil))
+                              (while (string-match "@\\\([^:|]+\\\)" fname last-match-end)
+                                (setq last-ssh-hostname (or (match-string 1 fname)
+                                                            last-ssh-hostname))
+                                (setq last-match-end (match-end 0)))
+                              (insert (format "|sudo:%s" (or last-ssh-hostname "localhost"))))
+                            (buffer-string)))
+                         (t (concat "/sudo:root@localhost:" fname)))))
+      (find-file target)))
+
+  (defun assert-file-exists-for-buffer (&optional buf)
+    (let ((cur (buffer-file-name buf)))
+      (if (not (and cur (file-exists-p cur)))
+          (error "Buffer is not visiting a file!")
+        cur)))
+
+  (defun rename-file-and-buffer--vc-rename (src dest)
+    (condition-case err
+        (when (vc-backend src)
+          (vc-rename-file src dest)
+          t)
+      (error
+       (let ((msg (error-message-string err)))
+         (cond
+          ((string-match-p "New file already exists" msg) nil)
+          ((string-match-p "Please update files" msg)
+           (unless (y-or-n-p "VC cannot track this change automatically.  Continue? ")
+             (error msg)))
+          (t
+           (error msg)))))))
+
+  (autoload 'recentf-cleanup "recentf")
+  (require 'subr-x)
+
+  (defun rename-file-and-buffer--try (src dest)
+    (when (and (file-exists-p dest) (not (y-or-n-p "File exists.  Overwrite? ")))
+      (user-error "Aborted"))
+    (rename-file src dest t)
+    (when-let* ((buf (get-file-buffer src)))
+      (with-current-buffer buf
+        (rename-buffer dest)
+        (set-visited-file-name dest)
+        (set-buffer-modified-p nil))
+
+      (recentf-cleanup)
+      (when (projectile-project-p)
+        (projectile-invalidate-cache nil))))
+
+  (autoload 'f-join "f")
+
+  ;;;###autoload
+  (defun rename-file-and-buffer (buffer dest-dir dest-filename)
+    "Rename the current buffer and file it is visiting.
+  Performs basic VC cleanup.
+
+  BUFFER is the buffer to rename.
+
+  DEST-DIR is the directory to move the underlying file to.
+
+  DEST-FILENAME is the new filename for the underlying file."
+    (interactive (let ((cur (assert-file-exists-for-buffer)))
+                   (list (current-buffer)
+                         (read-directory-name "Move to directory: " (file-name-directory cur))
+                         (read-string "New name: " (file-name-nondirectory cur)))))
+    (let ((src (assert-file-exists-for-buffer buffer))
+          (dest-path (f-join dest-dir dest-filename)))
+      (or (rename-file-and-buffer--vc-rename src dest-path)
+          (rename-file-and-buffer--try src dest-path))
+      (when (and (fboundp 'projectile-project-p) (projectile-project-p))
+        (call-interactively #'projectile-invalidate-cache))
+      (message "File '%s' moved to '%s'"
+               (abbreviate-file-name (file-name-nondirectory src))
+               (abbreviate-file-name dest-path))))
+#+end_src
+
+#+begin_src emacs-lisp
+  (leader-set-key :infix "f"
+    "" '(nil :which-key "+files")
+    "D" #'delete-current-buffer-and-file
+    "e" #'sudo-edit
+    "f" #'find-file
+    "F" #'find-file-other-window
+    "s" #'save-buffer
+    "S" #'save-some-buffers
+    "l" #'find-file-literally
+    "l" #'hexl-find-file
+    "w" #'write-file
+    "v" #'find-alternate-file
+    "r" #'counsel-recentf
+    "R" #'rename-file-and-buffer)
+#+end_src
+
+** ~g~ - Git & Goto
+
+#+begin_src emacs-lisp
+  (require 's)
+  (require 'xref)
+  (autoload 'projectile-find-file "projectile")
+  (autoload 'xref-push-marker-stack "xref")
+
+  (defun jump-to-file (file &optional pos)
+    (xref-push-marker-stack)
+    (let ((buf (or (get-buffer file) (find-file-noselect file))))
+      (switch-to-buffer buf)
+      (when pos
+        (goto-char pos))))
+
+  (defun jump-to-config-file ()
+    "Jump to the config.org file."
+    (interactive)
+    (jump-to-file (expand-file-name "config.org" user-emacs-directory)))
+
+  (defun jump-to-tangled-config-file ()
+    "Jump to the config.el file."
+    (interactive)
+    (jump-to-file (expand-file-name "config.el" user-emacs-directory)))
+
+  (defun jump-to-packages-file ()
+    "Jump to the packages.nix file."
+    (interactive)
+    (jump-to-file (expand-file-name "packages.nix" user-emacs-directory)))
+
+  (defun jump-to-init-file ()
+    "Open the Emacs init.el file."
+    (interactive)
+    (jump-to-file (expand-file-name "init.el" user-emacs-directory)))
+
+  (defun jump-to-nix-config ()
+    "Open a nix config file."
+    (interactive)
+    (let ((default-directory paths-nix-directory))
+      (projectile-find-file)))
+
+  (defun hostname ()
+    (cadr (s-match (rx (group (+? nonl)) (? "-" (+ digit)) (? ".local") eos)
+                   (downcase (system-name)))))
+
+  (defun jump-to-nix-system-config ()
+    "Open the nix system config file."
+    (interactive)
+    (jump-to-file (format (f-join paths-nix-directory (concat (hostname) ".nix")))))
+
+  (defun jump-to-site-file ()
+    "Open the Emacs site config file."
+    (interactive)
+    (jump-to-file user-site-file))
+
+  (defun jump-to-messages ()
+    "Open the messages buffer."
+    (interactive)
+    (display-buffer "*Messages*"))
+#+end_src
+
+#+begin_src emacs-lisp
+  (leader-set-key :infix "g"
+    "" '(nil :which-key "+git/goto")
+    "c" #'jump-to-config-file
+    "C" #'jump-to-tangled-config-file
+    "i" #'jump-to-init-file
+    "n" #'jump-to-nix-config
+    "S" #'jump-to-nix-system-config
+    "p" #'jump-to-packages-file
+    "?" #'jump-to-messages
+    "S" #'jump-to-site-file
+    "s" #'magit-status
+    "d" #'magit-diff-buffer-file
+    "b" #'magit-blame
+    "r" #'browse-at-remote
+    "l" #'magit-log-buffer-file
+    "w" #'magit-worktree-status
+    "W" #'magit-worktree
+    "g" #'xref-find-definitions
+    "G" #'xref-find-definitions-other-window
+    "m" #'xref-find-references
+    "SPC" #'pop-tag-mark)
+#+end_src
+
+** ~h~ - Help
+
+#+begin_src emacs-lisp
+  (leader-set-key :infix "h"
+    "" '(nil :which-key "+help")
+    "i" #'info
+    "m" #'man
+    "d" '(nil :which-key "+describe")
+    "d c" #'describe-face
+    "d C" #'helpful-command
+    "d f" #'helpful-callable
+    "d k" #'helpful-key
+    "d m" #'describe-mode
+    "d p" #'describe-text-properties
+    "d v" #'helpful-variable
+    "f" '(nil :which-key "+find")
+    "f c" #'find-face-definition
+    "f f" #'find-function
+    "f l" #'find-library
+    "f v" #'find-variable)
+#+end_src
+
+** ~k~ - Killing
+
+#+begin_src emacs-lisp
+  (leader-set-key :infix "k"
+    "" '(nil :which-key "+kill")
+    "b" #'kill-this-buffer
+    "w" #'delete-window
+    "r" #'counsel-yank-pop)
+#+end_src
+
+** ~n~ - Narrowing
+
+#+begin_src emacs-lisp
+  (leader-set-key :infix "n"
+    "" '(nil :which-key "+narrow")
+    "f" #'narrow-to-defun
+    "r" #'narrow-to-region
+    "w" #'widen
+    "s" #'org-narrow-to-subtree
+    "S" #'org-tree-to-indirect-buffer)
+#+end_src
+
+** ~o~ - org-mode
+
+#+begin_src emacs-lisp
+  (leader-set-key :infix "o"
+    "" '(nil :which-key "+org")
+    "SPC" '(deft :which-key "edit/create note...")
+    "a" '(org-funcs-agenda-dwim :which-key "agenda")
+    ;; TODO: clocking (c)
+    "k" '(org-capture :which-key "capture...")
+    "l" '(org-store-link :which-key "store link")
+    "s" '(org-search-view :which-key "search...")
+
+    "<tab>" '(org-roam :which-key "backlinks")
+    "f" '(org-roam-find-file :which-key "roam file...")
+    "I" '(org-roam-jump-to-index :wk "index file")
+    "n" '(org-funcs-dailies-today :wk "dailies: today")
+    "y" '(org-funcs-dailies-yesterday :wk "dailies: yesterday")
+    "d" '(org-funcs-dailies-date :wk "dailies: date...")
+
+    "b" '(helm-bibtex :wk "bibliography...")
+    ;; TODO: org-ref (r)
+    "u" '(org-funcs-url-to-reference :wk "create reference of URL...")
+
+    "g" '(org-capture-goto-last-stored :wk "last captured")
+    "t" '(org-funcs-todo-list :wk "todo list")
+    "v" '(org-tags-view :wk "tags")
+    "w" '(org-funcs-goto-work :wk "work"))
+#+end_src
+
+** ~p~ - Projects
+
+#+begin_src emacs-lisp
+  (leader-set-key :infix "p"
+    "" '(nil :which-key "+projects")
+    "<tab>" #'projectile-toggle-between-implementation-and-test
+    "<backtab>" #'projectile-find-implementation-or-test-other-window
+    "!" #'projectile-run-async-shell-command-in-root
+    "c" #'projectile-compile-project
+    "u" #'projectile-run-project
+    "t" #'projectile-test-project
+    "p" #'counsel-projectile-switch-project
+    "f" #'counsel-projectile-find-file
+    "d" #'counsel-projectile-find-dir
+    "b" #'counsel-projectile-switch-to-buffer
+    "D" #'projectile-dired
+    "/" #'counsel-projectile-rg
+    "r" #'projectile-replace)
+#+end_src
+
+** ~t~ - Toggles
+
+#+begin_src emacs-lisp
+  (leader-set-key :infix "t"
+    "" '(nil :which-key "+toggle")
+    "i" #'toggle-input-method
+    "c" #'hide/show-comments-toggle
+    "m" #'global-hide-mode-line-mode)
+#+end_src
+
+** ~w~ - Windows
+
+#+begin_src emacs-lisp
+  (defun split-window-horizontally-dwim (&optional arg)
+    "When splitting window, show the other buffer in the new window.
+
+  With prefix arg ARG, don't select the new window."
+    (interactive "P")
+    (split-window-horizontally)
+    (let ((target-window (next-window)))
+      (set-window-buffer target-window (other-buffer))
+      (unless arg
+        (select-window target-window))))
+
+  (defun split-window-vertically-dwim (&optional arg)
+    "When splitting window, show the other buffer in the new window.
+
+  With prefix arg ARG, don't select the new window."
+    (interactive "P")
+    (split-window-vertically)
+    (let ((target-window (next-window)))
+      (set-window-buffer target-window (other-buffer))
+      (unless arg
+        (select-window target-window))))
+
+  (defun toggle-window-dedication ()
+    "Toggle whether the current window is dedicated to its current buffer."
+    (interactive)
+    (let* ((window (selected-window))
+           (was-dedicated (window-dedicated-p window)))
+      (set-window-dedicated-p window (not was-dedicated))
+      (message "Window %sdedicated to %s"
+               (if was-dedicated "no longer " "")
+               (buffer-name))))
+#+end_src
+
+#+begin_src emacs-lisp
+  (leader-set-key :infix "w"
+    "" '(nil :which-key "+window")
+    "w" #'evil-window-next
+    "r" #'evil-window-rotate-downwards
+    "/" #'split-window-horizontally-dwim
+    "-" #'split-window-vertically-dwim
+    "=" #'balance-windows
+    "d" #'delete-window
+    "o" #'delete-other-windows
+    "t" #'toggle-window-dedication)
+#+end_src
+
+** ~y~ - Text snippets
+
+#+begin_src emacs-lisp
+  (leader-set-key :infix "y"
+    "" '(nil :which-key "+snippets")
+    "n" #'yas-new-snippet
+    "e" #'yas-expand
+    "f" #'yas-visit-snippet-file
+    "y" #'yas-insert-snippet)
+
+#+end_src
+
+** ~z~ - Text Scale
+
+#+begin_src emacs-lisp
+  (leader-set-key :infix "z"
+    "" '(nil :which-key "+zoom")
+    "+" #'default-text-scale-increase
+    "-" #'default-text-scale-decrease
+    "=" #'default-text-scale-reset)
+#+end_src
+
+* Search & replace
+
+** =deadgrep= - Ripgrep (=rg=) frontend
+
+=deadgrep= provides a polished frontend for =ripgrep=.
+
+#+begin_src emacs-lisp
+  (use-package deadgrep
+    :general (:keymaps 'deadgrep-mode-map "C-c C-w" #'deadgrep-edit-mode)
+    :init
+    (defalias 'rg #'deadgrep)
+    :config
+    (setq-default deadgrep--search-type 'regexp))
+#+end_src
+
+Use =c= in the =deadgrep= buffer to change the search term.
+
+#+begin_src emacs-lisp
+  (use-package deadgrep
+    :preface
+    (defun config-deadgrep--requery ()
+      (interactive)
+      (let ((button (save-excursion
+                      (goto-char (point-min))
+                      (forward-button 1))))
+        (button-activate button)))
+    :general (:states 'normal :keymaps 'deadgrep-mode-map
+              "c" #'config-deadgrep--requery))
+#+end_src
+
+Provide feedback in the echo area on entering and exiting =deadgrep-edit-mode=.
+
+#+begin_src emacs-lisp
+  (use-package deadgrep
+    :config
+    (defun config-deadgrep--on-exit-edit-mode (&rest _)
+      (when (derived-mode-p 'deadgrep-edit-mode)
+        (let ((message-log-max))
+          (message "Exiting edit mode."))))
+
+    (defun config-deadgrep--on-enter-edit-mode (&rest _)
+      (let ((message-log-max))
+        (message "Entering edit mode. Changes will be made to underlying files as you edit.")))
+
+    (advice-add 'deadgrep-mode :before #'config-deadgrep--on-exit-edit-mode)
+    (advice-add 'deadgrep-edit-mode :after #'config-deadgrep--on-enter-edit-mode))
+#+end_src
+
+Use =C-c C-e= to enter a =deadgrep= search buffer from =ivy.=
+
+#+begin_src emacs-lisp
+  (use-package deadgrep
+    :after (ivy)
+    :general
+    (:keymaps 'counsel-ag-map "C-c C-e" #'deadgrep-from-ivy)
+    :preface
+    (progn
+      (autoload 'ivy-exit-with-action "ivy")
+
+      (defun deadgrep-from-ivy ()
+        (interactive)
+        (ivy-exit-with-action
+         (lambda (&rest _)
+           (let ((deadgrep--search-type 'regexp))
+             (deadgrep (replace-regexp-in-string (rx (+ space)) ".*?"
+                                                 (with-no-warnings ivy-text)))))))))
+#+end_src
+
+** =wgrep= - Directly editing =grep= results
+
+Enable =wgrep=, which provides editable grep buffers.
+
+#+begin_src emacs-lisp
+  (use-package wgrep)
+#+end_src
+
+* Prompts and UI enhancements
+
+** =ivy= - completion framework
+
+=ivy= is a package that provides incremental completion, similar to =helm= or =ido=,
+but actively maintained. =flx= is used as the fuzzy-matching indexer backend for
+ivy.
+
+#+begin_src emacs-lisp
+  (use-package ivy
+    :general
+    ("C-c C-r" #'ivy-resume
+     "C-x b" #'ivy-switch-buffer)
+
+    (:keymaps 'ivy-occur-mode-map
+     "C-x C-w" #'ivy-wgrep-change-to-wgrep-mode)
+
+    (:keymaps 'ivy-minibuffer-map
+     "C-z" #'ivy-dispatching-done
+     "C-l" #'ivy-partial-or-done
+     "C-<return>" #'ivy-immediate-done
+     "M-<return>" #'ivy-immediate-done
+     "<escape>" 'minibuffer-keyboard-quit)
+
+    ;; Browse read-expression histroy with ivy
+    (:keymaps 'read-expression-map
+     "C-r" #'counsel-minibuffer-history)
+
+    :custom
+    (completing-read-function 'ivy-completing-read)
+    (ivy-use-virtual-buffers t)
+    (ivy-virtual-abbreviate 'abbreviate)
+    (ivy-count-format "(%d/%d) ")
+    (ivy-re-builders-alist '((t . ivy--regex-plus)))
+    (ivy-magic-slash-non-match-action nil)
+    (ivy-height 20)
+    (ivy-extra-directories '("."))
+
+    ;; Increase the maximum number of candidates that will be sorted
+    ;; using `flx'. The default is 200, which means `flx' is almost
+    ;; never used. Setting it too high (e.g. 10000) causes lag. This
+    ;; seems to be a good compromise (for example, @PythonNut uses it,
+    ;; see [1]).
+    ;;
+    ;; [1]: https://github.com/PythonNut/emacs-config/blob/c8bff5cce293006ec5cdc39a86982431a758a9a0/modules/config-ivy.el#L68
+    (ivy-flx-limit 2000)
+
+    :config
+    (require 'nano-counsel nil t)
+    (advice-add 'ivy--queue-exhibit :around #'advice-ignore-errors)
+    (ivy-mode))
+#+end_src
+
+*** Hide boring files from completions
+
+Hide =./= and =../= when finding files.
+
+#+begin_src emacs-lisp
+  (use-package ivy
+    :config
+    (defun config-ivy-with-empty-ivy-extra-directories (f &rest args)
+      (let ((ivy-extra-directories nil))
+        (apply f args)))
+
+    (advice-add #'counsel-find-file :around #'config-ivy-with-empty-ivy-extra-directories))
+#+end_src
+
+** =swiper= - In-buffer search UI
+
+#+begin_src emacs-lisp
+  (use-package swiper
+    :general (:states 'normal "/" 'swiper))
+#+end_src
+
+** =counsel= - Better completions built on =ivy=
+
+#+begin_src emacs-lisp
+  (use-package counsel
+    :general
+    ("M-x" #'counsel-M-x "C-x C-f" #'counsel-find-file)
+    (:keymaps 'counsel-find-file-map
+     "C-M-j" #'ivy-immediate-done
+     "C-h" #'counsel-up-directory)
+
+    :custom
+    (counsel-yank-pop-separator (concat "\n" (make-vector 120 ?─) "\n"))
+
+    :config
+    (put 'counsel-find-symbol 'no-counsel-M-x t)
+    (setf (alist-get 'counsel-yank-pop ivy-height-alist) 20)
+    (counsel-mode +1))
+#+end_src
+
+** =historian= - Persistent input history
+
+=historian= remembers your choices in completion menus.
+
+#+begin_src emacs-lisp
+  (use-package historian
+    :after (ivy)
+    :demand t
+    :config (historian-mode +1))
+#+end_src
+
+** =ivy-historian= - integrates =historian= with =ivy=.
+
+#+begin_src emacs-lisp
+  (use-package ivy-historian
+    :after (ivy)
+    :demand t
+    :custom
+    ;; Tweak historian weighting settings. These values are chosen
+    ;; subjectively to produce good results.
+    (ivy-historian-freq-boost-factor 2000)
+    (ivy-historian-recent-boost 2000)
+    (ivy-historian-recent-decrement 1000)
+    :config
+    (ivy-historian-mode 1))
+#+end_src
+
+* Window management
+
+** =winner= - Window state history
+
+=winner-mode= saves the window and buffer layout history, allowing you to cycle
+forward and back through layout states. This is useful for recovering a layout
+after editing actions have changed what windows are shown.
+
+#+begin_src emacs-lisp
+  (use-package winner
+    :general ("<C-left>" 'winner-undo
+              "<C-right>"'winner-redo)
+    :hook (after-init . winner-mode)
+    :custom
+    (winner-boring-buffers '("*Completions*"
+                             "*Compile-Log*"
+                             "*inferior-lisp*"
+                             "*Fuzzy Completions*"
+                             "*Apropos*"
+                             "*Help*"
+                             "*cvs*"
+                             "*Buffer List*"
+                             "*Ibuffer*"
+                             "*esh command on file*")))
+#+end_src
+
+** =rotate= - Rotate buffers within window layout
+
+=rotate= provides handy commands for manipulating the window layout.
+
+#+begin_src emacs-lisp
+  (use-package rotate
+    :commands (rotate-layout))
+#+end_src
+
 * Text completion engines
 
 ** =hippie-expand= - generic text completion
@@ -2235,272 +2907,6 @@ to manually apply it again.
       (define-key company-active-map (kbd "RET") #'company-complete-selection))
 
     (add-hook 'company-mode-hook #'config-company--set-company-vars))
-#+end_src
-
-* =dired= - Filesystem browsing
-
-=dired= is the builtin filesystem browser for Emacs.
-
-#+begin_src emacs-lisp
-  (use-package dired
-    :general
-    (:states 'normal :keymaps 'dired-mode-map "$" #'end-of-line)
-    :custom
-    (dired-listing-switches "-alhv")
-    (dired-dwim-target t)
-    (dired-auto-revert-buffer t)
-    (dired-hide-details-hide-symlink-targets nil)
-    (dired-omit-files (rx bol "."))
-    :config
-    (add-hook 'dired-mode-hook #'hl-line-mode)
-    (put 'dired-find-alternate-file 'disabled nil))
-#+end_src
-
-Teach =dired= to put directories first in sort order.
-
-#+begin_src emacs-lisp
-  (use-package dired
-    :config
-    (defun config-dired--sort-directories-first (&rest _)
-      "Sort dired listings with directories first."
-      (save-excursion
-        (let (buffer-read-only)
-          (forward-line 2) ;; beyond dir. header
-          (sort-regexp-fields t "^.*$" "[ ]*." (point) (point-max)))
-        (set-buffer-modified-p nil)))
-
-    (advice-add 'dired-readin :after #'config-dired--sort-directories-first))
-#+end_src
-
-** Rename files by editing =dired= buffer
-
-=wdired= is a mode that allows you to rename files and directories by editing the
-=dired= buffer itself.
-
-#+begin_src emacs-lisp
-  (use-package wdired
-    :general
-    (:states 'normal
-     :keymaps 'wdired-mode-map "^" #'evil-first-non-blank
-     :keymaps 'dired-mode-map "C-c C-e" #'wdired-change-to-wdired-mode))
-#+end_src
-
-** Hide file flags
-
-Use =dired+= to hide file flags.
-
-#+begin_src emacs-lisp
-  (use-package dired+
-    :hook (dired-mode . dired-hide-details-mode)
-    :custom
-    (diredp-wrap-around-flag nil)
-    :general
-    (:states 'normal :keymaps 'dired-mode-map
-     "j" #'diredp-next-line
-     "k" #'diredp-previous-line))
-#+end_src
-
-** Toggle visibility of hidden files
-
-Use =dired-x= to toggle visibility of 'hidden' files (i.e. files starting with a
-dot).
-
-#+begin_src emacs-lisp
-  (use-package dired-x
-    :hook (dired-mode . dired-omit-mode)
-    :general
-    (:states 'normal :keymaps 'dired-mode-map "h" #'dired-omit-mode)
-    :custom
-    (dired-omit-verbose nil)
-    (dired-clean-up-buffers-too t))
-#+end_src
-
-* =projectile= - Project and repo-level commands
-
-=projectile= provides commands for working with projects, and a useful utility
-function to find the root directory of the project.
-
-Emacs now comes with =project.el=, but it provides a subset of the functionality
-of =projectile=. Use =projectile= until the builtin functionality is more complete.
-
-#+begin_src emacs-lisp
-  (use-package projectile
-    :hook (after-init . projectile-mode)
-    :custom
-    (projectile-project-search-path paths-project-directories)
-    (projectile-completion-system 'ivy)
-    (projectile-switch-project-action #'dired)
-    (projectile-enable-caching t)
-    (projectile-create-missing-test-files t)
-    (projectile-globally-ignored-files
-     '(".DS_Store"
-       "package-lock.json"))
-    (projectile-globally-ignored-file-suffixes
-     '("meta"
-       "gz"
-       "zip"
-       "tar"
-       "tgz"
-       "elc"
-       "eln"))
-    (projectile-globally-ignored-directories
-     '("coverage"
-       ".bzr"
-       ".ensime_cache"
-       ".eunit"
-       ".fslckout"
-       ".g8"
-       ".git"
-       ".hg"
-       ".idea"
-       ".stack-work"
-       ".svn"
-       "dist"
-       "jars"
-       "node_modules"
-       "flow-typed/npm"
-       "vendor"
-       "target")))
-#+end_src
-
-** Use ivy for projectile commands
-
-#+begin_src emacs-lisp
-  (use-package counsel-projectile
-    :after (projectile)
-    :custom
-    (counsel-projectile-rg-initial-input '(config-projectile--escaped-symbol-at-point))
-    (counsel-projectile-switch-project-action #'dired)
-
-    :config
-    (defun config-projectile--escaped-symbol-at-point ()
-      (regexp-quote (substring-no-properties (or
-                                              (when (region-active-p)
-                                                (buffer-substring (region-beginning) (region-end)))
-                                              (thing-at-point 'symbol)
-                                              ""))))
-
-    (defun config-projectile--extra-opts-on-prefix-args (&optional options)
-      (list (if current-prefix-arg
-                (read-string "Rg args: " options)
-              options)))
-    (counsel-projectile-mode +1)
-    (advice-add 'counsel-projectile-rg :filter-args 'config-projectile--extra-opts-on-prefix-args))
-#+end_src
-
-* =yasnippet= - Text snippets
-
-=yasnippet= provides expandable text snippets. I use them extensively to cut
-down on typing.
-
-#+begin_src emacs-lisp
-  (use-package yasnippet
-    :hook
-    (prog-mode . (lambda () (require 'yasnippet)))
-    (text-mode . (lambda () (require 'yasnippet)))
-
-    :custom
-    (yas-wrap-around-region t)
-    (yas-alias-to-yas/prefix-p nil)
-    (yas-prompt-functions '(yas-completing-prompt))
-    (yas-verbosity 0)
-    (yas-minor-mode-map (make-sparse-keymap))
-
-    :general
-    (:keymaps 'yas-minor-mode-map :states 'insert
-     "TAB"
-     (general-predicate-dispatch 'indent-for-tab-command
-       (yas-maybe-expand-abbrev-key-filter t) 'yas-expand))
-    (:keymaps 'yas-keymap :states 'insert
-     "SPC"
-     (general-predicate-dispatch 'self-insert-command
-       (yas--maybe-clear-field-filter t) 'yas-skip-and-clear-field)
-     "<backspace>"
-     (general-predicate-dispatch 'backward-delete-char
-       (yas--maybe-clear-field-filter t) 'yas-skip-and-clear-field
-       (bound-and-true-p smartparens-mode) 'sp-backward-delete-char))
-
-    :config
-    (yas-global-mode +1))
-#+end_src
-
-** Customise backwards cycling behaviour
-
-When cycling backward through fields, place point at the end of the previous field.
-
-#+begin_src emacs-lisp
-  (use-package yasnippet
-    :config
-    (defun config-yasnippet--end-of-field ()
-      (when-let* ((field (yas-current-field)))
-        (marker-position (yas--field-end field))))
-
-    (defun config-yasnippet--maybe-goto-field-end ()
-      "Move to the end of the current field if it has been modified."
-      (when-let* ((field (config-yasnippet--current-field)))
-        (when (and (yas--field-modified-p field)
-                   (yas--field-contains-point-p field))
-          (goto-char (config-yasnippet--end-of-field)))))
-
-    (defun yasnippet-goto-field-end (&rest _)
-      (config-yasnippet--maybe-goto-field-end)
-      (when (and (boundp 'evil-mode) evil-mode (fboundp 'evil-insert-state))
-        (evil-insert-state)))
-
-    (advice-add 'yas-next-field :after #'yasnippet-goto-field-end)
-    (advice-add 'yas-prev-field :after #'yasnippet-goto-field-end))
-#+end_src
-
-** Snippet functions
-
-These functions are used in the definitions of snippets.
-
-*** General
-
-#+begin_src emacs-lisp
-  (defun yas-funcs-bolp ()
-    "Non-nil if point is on an empty line or at the first word.
-  The rest of the line must be blank."
-    (let ((line (buffer-substring (line-beginning-position) (line-end-position))))
-      (string-match-p (rx bol (* space) (* word) (* space) eol)
-                      line)))
-#+end_src
-
-*** emacs-lisp
-
-#+begin_src emacs-lisp
-  (defun yas-funcs-el-custom-group ()
-    "Find the first group defined in the current file.
-  Fall back to the file name sans extension."
-    (or
-     (cadr (s-match (rx "(defgroup" (+ space) (group (+ (not space))))
-                    (buffer-string)))
-     (cadr (s-match (rx ":group" (+ space) "'" (group (+ (any "-" alnum))))
-                    (buffer-string)))
-     (file-name-sans-extension (file-name-nondirectory buffer-file-name))))
-
-  (defun yas-funcs-el-autoload-file (sym)
-    (if-let* ((file (symbol-file (if (stringp sym) (intern sym) sym))))
-        (file-name-sans-extension (file-name-nondirectory file))
-      ""))
-
-  (defun yas-funcs-el-at-line-above-decl-p ()
-    (save-excursion
-      (forward-line)
-      (back-to-indentation)
-      (thing-at-point-looking-at (rx (* space) "("
-                                     (or "cl-defun" "defun" "defvar" "defconst"
-                                         "define-minor-mode"
-                                         "define-globalized-minor-mode"
-                                         "define-derived-mode")))))
-
-  (defun yas-funcs-el-package-prefix ()
-    (if (bound-and-true-p nameless-current-name)
-        nameless-current-name
-      (f-base (or (buffer-file-name) (buffer-name)))))
-
-  (defun yas-funcs-buttercup-file-p ()
-    (string-match-p "^test-" (file-name-nondirectory (buffer-file-name))))
 #+end_src
 
 * Themeing
@@ -2639,7 +3045,7 @@ Apply a separate face for parens, allowing them to be de-emphasised.
                 "NOTE"))))
 #+end_src
 
-* =which-key= - Show keys after a delay on input
+** =which-key= - Show keys after a delay on input
 
 #+begin_src emacs-lisp
   (use-package which-key
@@ -2648,7 +3054,7 @@ Apply a separate face for parens, allowing them to be de-emphasised.
     (which-key-idle-delay 0.4))
 #+end_src
 
-* =default-text-scale= - Text scaling
+** =default-text-scale= - Text scaling
 
 Provides nice commands for changing text scale for all buffers simultaneously
 
@@ -2656,6 +3062,281 @@ Provides nice commands for changing text scale for all buffers simultaneously
   (use-package default-text-scale
     :custom
     (default-text-scale-amount 30))
+#+end_src
+
+* File & Buffer management
+
+** =ibuffer= - Better buffer list
+
+=ibuffer= provides an interactive buffer list that is better than the default.
+
+#+begin_src emacs-lisp
+  (use-package ibuffer
+    :defines (ibuffer-show-empty-filter-groups
+              ibuffer-never-show-predicates)
+    :general
+    ("C-x C-b" #'ibuffer-other-window)
+    (:keymaps 'ibuffer-mode-map :states 'motion
+     "<return>" #'ibuffer-visit-buffer
+     "j" #'ibuffer-forward-line
+     "k" #'ibuffer-backward-line)
+    :custom
+    (ibuffer-expert t)
+    (ibuffer-default-sorting-mode 'major-mode)
+    (ibuffer-default-sorting-reversep t)
+    (ibuffer-formats '((mark modified " " (mode 1 1) " " (name 35 35 :left :elide) " " filename-and-process)))
+    (ibuffer-never-show-predicates
+     (list (rx (or "*Messages*"
+                   "*magit-"
+                   "*git-auto-push*"
+                   ".elc"
+                   "magit-process"
+                   "magit-diff"
+                   "magit-revision"
+                   "TAGS"
+                   "*Backtrace*"
+                   "*new*"
+                   "*Org"
+                   "*Flycheck error messages*"
+                   "*Quail Completions*"
+                   "*scratch*"
+                   "*direnv*"
+                   "*calc trail*"
+                   "*Help*"))
+           #'config-ibuffer--roam-buffer-p))
+
+    :config
+    (defun config-ibuffer--roam-buffer-p (buf)
+      (with-current-buffer buf
+        (when (buffer-file-name)
+          (string-match-p "/org/roam/" (buffer-file-name)))))
+
+    (add-hook 'ibuffer-mode-hook #'hl-line-mode))
+#+end_src
+
+*** Extensions
+
+=ibuf-ext= adds a few extra features to =ibuffer=.
+
+#+begin_src emacs-lisp
+  (use-package ibuf-ext
+    :hook (ibuffer-mode . ibuffer-auto-mode)
+    :custom
+    (ibuffer-show-empty-filter-groups nil))
+#+end_src
+
+*** Cosmetic changes
+
+Override some default =ibuffer= columns.
+
+#+begin_src emacs-lisp
+  (use-package ibuffer
+    :preface
+    (cl-eval-when (compile)
+      (require 'ibuffer))
+    :commands (ibuffer-make-column-filename)
+    :config
+    (define-ibuffer-column name
+      (:inline t)
+      (let ((string (buffer-name)))
+        (if (not (seq-position string ?\n))
+            string
+          (replace-regexp-in-string
+           "\n" (propertize "^J" 'font-lock-face 'escape-glyph) string))))
+
+    (define-ibuffer-column filename-and-process
+      (:name "Filename/Process")
+      (let ((proc (get-buffer-process buffer))
+            (filename (ibuffer-make-column-filename buffer mark)))
+        (if proc
+            (concat (propertize (format "(%s %s)" proc (process-status proc))
+                                'font-lock-face 'italic)
+                    (if (> (length filename) 0)
+                        (format " %s" filename)
+                      ""))
+          (require 'dired+)
+          (propertize (abbreviate-file-name filename) 'face 'diredp-symlink)))))
+#+end_src
+
+*** Grouping by project
+
+=ibuffer-projectile= teaches =ibuffer= how to group files by =projectile= project.
+
+#+begin_src emacs-lisp
+  (use-package ibuffer-projectile
+    :custom
+    (ibuffer-projectile-prefix "")
+
+    :preface
+    (progn
+      (autoload 'ibuffer-do-sort-by-alphabetic "ibuf-ext")
+      (autoload 'page-break-lines--update-display-tables "page-break-lines")
+
+      (defun config-ibuffer--setup-buffer ()
+        (ibuffer-projectile-set-filter-groups)
+        (add-to-list 'ibuffer-filter-groups '("emacs-src" (predicate . (when (buffer-file-name)
+                                                                         (string-match-p (rx "/share/emacs") (buffer-file-name))))))
+
+        (unless (eq ibuffer-sorting-mode 'alphabetic)
+          (ibuffer-do-sort-by-alphabetic))
+
+        ;; All this buffer modification will have messed up the separator
+        ;; fontification, so force the display table to update now.
+        (when (bound-and-true-p page-break-lines-mode)
+          (page-break-lines--update-display-tables))))
+    :init
+    (add-hook 'ibuffer-hook #'config-ibuffer--setup-buffer))
+#+end_src
+
+** =dired= - Filesystem browsing
+
+=dired= is the builtin filesystem browser for Emacs.
+
+#+begin_src emacs-lisp
+  (use-package dired
+    :general
+    (:states 'normal :keymaps 'dired-mode-map "$" #'end-of-line)
+    :custom
+    (dired-listing-switches "-alhv")
+    (dired-dwim-target t)
+    (dired-auto-revert-buffer t)
+    (dired-hide-details-hide-symlink-targets nil)
+    (dired-omit-files (rx bol "."))
+    :config
+    (add-hook 'dired-mode-hook #'hl-line-mode)
+    (put 'dired-find-alternate-file 'disabled nil))
+#+end_src
+
+Teach =dired= to put directories first in sort order.
+
+#+begin_src emacs-lisp
+  (use-package dired
+    :config
+    (defun config-dired--sort-directories-first (&rest _)
+      "Sort dired listings with directories first."
+      (save-excursion
+        (let (buffer-read-only)
+          (forward-line 2) ;; beyond dir. header
+          (sort-regexp-fields t "^.*$" "[ ]*." (point) (point-max)))
+        (set-buffer-modified-p nil)))
+
+    (advice-add 'dired-readin :after #'config-dired--sort-directories-first))
+#+end_src
+
+*** Rename files by editing =dired= buffer
+
+=wdired= is a mode that allows you to rename files and directories by editing the
+=dired= buffer itself.
+
+#+begin_src emacs-lisp
+  (use-package wdired
+    :general
+    (:states 'normal
+     :keymaps 'wdired-mode-map "^" #'evil-first-non-blank
+     :keymaps 'dired-mode-map "C-c C-e" #'wdired-change-to-wdired-mode))
+#+end_src
+
+*** Hide file flags
+
+Use =dired+= to hide file flags.
+
+#+begin_src emacs-lisp
+  (use-package dired+
+    :hook (dired-mode . dired-hide-details-mode)
+    :custom
+    (diredp-wrap-around-flag nil)
+    :general
+    (:states 'normal :keymaps 'dired-mode-map
+     "j" #'diredp-next-line
+     "k" #'diredp-previous-line))
+#+end_src
+
+*** Toggle visibility of hidden files
+
+Use =dired-x= to toggle visibility of 'hidden' files (i.e. files starting with a
+dot).
+
+#+begin_src emacs-lisp
+  (use-package dired-x
+    :hook (dired-mode . dired-omit-mode)
+    :general
+    (:states 'normal :keymaps 'dired-mode-map "h" #'dired-omit-mode)
+    :custom
+    (dired-omit-verbose nil)
+    (dired-clean-up-buffers-too t))
+#+end_src
+
+** =projectile= - Project and repo-level commands
+
+=projectile= provides commands for working with projects, and a useful utility
+function to find the root directory of the project.
+
+Emacs now comes with =project.el=, but it provides a subset of the functionality
+of =projectile=. Use =projectile= until the builtin functionality is more complete.
+
+#+begin_src emacs-lisp
+  (use-package projectile
+    :hook (after-init . projectile-mode)
+    :custom
+    (projectile-project-search-path paths-project-directories)
+    (projectile-completion-system 'ivy)
+    (projectile-switch-project-action #'dired)
+    (projectile-enable-caching t)
+    (projectile-create-missing-test-files t)
+    (projectile-globally-ignored-files
+     '(".DS_Store"
+       "package-lock.json"))
+    (projectile-globally-ignored-file-suffixes
+     '("meta"
+       "gz"
+       "zip"
+       "tar"
+       "tgz"
+       "elc"
+       "eln"))
+    (projectile-globally-ignored-directories
+     '("coverage"
+       ".bzr"
+       ".ensime_cache"
+       ".eunit"
+       ".fslckout"
+       ".g8"
+       ".git"
+       ".hg"
+       ".idea"
+       ".stack-work"
+       ".svn"
+       "dist"
+       "jars"
+       "node_modules"
+       "flow-typed/npm"
+       "vendor"
+       "target")))
+#+end_src
+
+*** Use ivy for projectile commands
+
+#+begin_src emacs-lisp
+  (use-package counsel-projectile
+    :after (projectile)
+    :custom
+    (counsel-projectile-rg-initial-input '(config-projectile--escaped-symbol-at-point))
+    (counsel-projectile-switch-project-action #'dired)
+
+    :config
+    (defun config-projectile--escaped-symbol-at-point ()
+      (regexp-quote (substring-no-properties (or
+                                              (when (region-active-p)
+                                                (buffer-substring (region-beginning) (region-end)))
+                                              (thing-at-point 'symbol)
+                                              ""))))
+
+    (defun config-projectile--extra-opts-on-prefix-args (&optional options)
+      (list (if current-prefix-arg
+                (read-string "Rg args: " options)
+              options)))
+    (counsel-projectile-mode +1)
+    (advice-add 'counsel-projectile-rg :filter-args 'config-projectile--extra-opts-on-prefix-args))
 #+end_src
 
 * Git
@@ -2746,7 +3427,7 @@ Hack =magit='s commit info to show output of a GPG signature check.
      "." 'vc-annotate-working-revision))
 #+end_src
 
-** Commit messages
+** =git-commit-mode= - Commit messages authoring mode
 
 #+begin_src emacs-lisp
   (use-package git-commit-mode
@@ -2757,7 +3438,7 @@ Hack =magit='s commit info to show output of a GPG signature check.
     (add-hook 'git-commit-mode-hook 'configure-git-commit-mode))
 #+end_src
 
-** Browse file at remote
+** =browse-at-remote= - Browse file at remote
 
 =browse-at-remote= provides commands for opening the current buffer in the source
 repo, or copying the remote URL to the clipboard.
@@ -2783,7 +3464,11 @@ Provide more feedback when copying the URL to the clipboard.
     (advice-add 'browse-at-remote-kill :after 'config-browse-at-remote--message-kill))
 #+end_src
 
-* =flycheck= - Syntax Checking & Linting
+** TODO git-time-machine hydra
+
+* Programming languages & text-modes
+
+** =flycheck= - Syntax Checking & Linting
 
 =Flycheck= integrates with external tools to show indications of errors and
 warnings in the buffer as you edit.
@@ -2835,7 +3520,7 @@ Show the =Flycheck= error list in a bottom window.
                  (window-height   . 0.2)))
 #+end_src
 
-** Projectile integration
+*** Projectile integration
 
 Automatically re-check all buffers belonging to a project on save. This ensures
 diagnostics do not go stale.
@@ -2858,7 +3543,7 @@ diagnostics do not go stale.
     (add-hook 'after-save-hook #'config-flycheck--check-all-project-buffers))
 #+end_src
 
-** Conditionally inhibit =Flycheck=
+*** Conditionally inhibit =Flycheck=
 
 Don't use =Flycheck= in certain situations, such as for files inside =node_modules=,
 during =ediff= merges, etc.
@@ -2876,129 +3561,7 @@ during =ediff= merges, etc.
     (advice-add 'flycheck-may-enable-mode :filter-return #'config-flycheck--maybe-inhibit))
 #+end_src
 
-* =ibuffer= - Better buffer list
-
-=ibuffer= provides an interactive buffer list that is better than the default.
-
-#+begin_src emacs-lisp
-  (use-package ibuffer
-    :defines (ibuffer-show-empty-filter-groups
-              ibuffer-never-show-predicates)
-    :general
-    ("C-x C-b" #'ibuffer-other-window)
-    (:keymaps 'ibuffer-mode-map :states 'motion
-     "<return>" #'ibuffer-visit-buffer
-     "j" #'ibuffer-forward-line
-     "k" #'ibuffer-backward-line)
-    :custom
-    (ibuffer-expert t)
-    (ibuffer-default-sorting-mode 'major-mode)
-    (ibuffer-default-sorting-reversep t)
-    (ibuffer-formats '((mark modified " " (mode 1 1) " " (name 35 35 :left :elide) " " filename-and-process)))
-    (ibuffer-never-show-predicates
-     (list (rx (or "*Messages*"
-                   "*magit-"
-                   "*git-auto-push*"
-                   ".elc"
-                   "magit-process"
-                   "magit-diff"
-                   "magit-revision"
-                   "TAGS"
-                   "*Backtrace*"
-                   "*new*"
-                   "*Org"
-                   "*Flycheck error messages*"
-                   "*Quail Completions*"
-                   "*scratch*"
-                   "*direnv*"
-                   "*calc trail*"
-                   "*Help*"))
-           #'config-ibuffer--roam-buffer-p))
-
-    :config
-    (defun config-ibuffer--roam-buffer-p (buf)
-      (with-current-buffer buf
-        (when (buffer-file-name)
-          (string-match-p "/org/roam/" (buffer-file-name)))))
-
-    (add-hook 'ibuffer-mode-hook #'hl-line-mode))
-#+end_src
-
-** Extensions
-
-=ibuf-ext= adds a few extra features to =ibuffer=.
-
-#+begin_src emacs-lisp
-  (use-package ibuf-ext
-    :hook (ibuffer-mode . ibuffer-auto-mode)
-    :custom
-    (ibuffer-show-empty-filter-groups nil))
-#+end_src
-
-** Cosmetic changes
-
-Override some default =ibuffer= columns.
-
-#+begin_src emacs-lisp
-  (use-package ibuffer
-    :preface
-    (cl-eval-when (compile)
-      (require 'ibuffer))
-    :commands (ibuffer-make-column-filename)
-    :config
-    (define-ibuffer-column name
-      (:inline t)
-      (let ((string (buffer-name)))
-        (if (not (seq-position string ?\n))
-            string
-          (replace-regexp-in-string
-           "\n" (propertize "^J" 'font-lock-face 'escape-glyph) string))))
-
-    (define-ibuffer-column filename-and-process
-      (:name "Filename/Process")
-      (let ((proc (get-buffer-process buffer))
-            (filename (ibuffer-make-column-filename buffer mark)))
-        (if proc
-            (concat (propertize (format "(%s %s)" proc (process-status proc))
-                                'font-lock-face 'italic)
-                    (if (> (length filename) 0)
-                        (format " %s" filename)
-                      ""))
-          (require 'dired+)
-          (propertize (abbreviate-file-name filename) 'face 'diredp-symlink)))))
-#+end_src
-
-** Grouping by project
-
-=ibuffer-projectile= teaches =ibuffer= how to group files by =projectile= project.
-
-#+begin_src emacs-lisp
-  (use-package ibuffer-projectile
-    :custom
-    (ibuffer-projectile-prefix "")
-
-    :preface
-    (progn
-      (autoload 'ibuffer-do-sort-by-alphabetic "ibuf-ext")
-      (autoload 'page-break-lines--update-display-tables "page-break-lines")
-
-      (defun config-ibuffer--setup-buffer ()
-        (ibuffer-projectile-set-filter-groups)
-        (add-to-list 'ibuffer-filter-groups '("emacs-src" (predicate . (when (buffer-file-name)
-                                                                         (string-match-p (rx "/share/emacs") (buffer-file-name))))))
-
-        (unless (eq ibuffer-sorting-mode 'alphabetic)
-          (ibuffer-do-sort-by-alphabetic))
-
-        ;; All this buffer modification will have messed up the separator
-        ;; fontification, so force the display table to update now.
-        (when (bound-and-true-p page-break-lines-mode)
-          (page-break-lines--update-display-tables))))
-    :init
-    (add-hook 'ibuffer-hook #'config-ibuffer--setup-buffer))
-#+end_src
-
-* =smartparens= - Structured expression editing
+** =smartparens= - Structured expression editing
 
 Use =smartparens= to keep parens and braces paired and manipulate expressions in a
 structured way.
@@ -3046,7 +3609,7 @@ Load macros and functions at compile time so I can use them in this config.
   (autoload 'sp-local-pair "smartparens")
 #+end_src
 
-** Utility functions
+*** Utility functions
 
 #+begin_src emacs-lisp
   (autoload 'sp-get-pair "smartparens")
@@ -3077,7 +3640,7 @@ Load macros and functions at compile time so I can use them in this config.
           (insert " ")))))
 #+end_src
 
-** Global pairs
+*** Global pairs
 
 Define pairs that I want in all language modes.
 
@@ -3101,7 +3664,7 @@ Define pairs that I want in all language modes.
              :pre-handlers '(:add (config-smartparens-add-space-before-sexp-insertion))))
 #+end_src
 
-** Delete enclosing whitespace as necessary on backspace
+*** Delete enclosing whitespace as necessary on backspace
 
 #+begin_src emacs-lisp
   (use-package smartparens
@@ -3215,7 +3778,7 @@ Define pairs that I want in all language modes.
     (advice-add 'sp-backward-delete-char :around #'config-smartparens-delete-horizontal-space-for-delete))
 #+end_src
 
-** Emacs lisp
+*** Emacs lisp
 
 #+begin_src emacs-lisp
   (use-package smartparens
@@ -3235,7 +3798,7 @@ Define pairs that I want in all language modes.
                      :post-handlers '(config-smartparens-add-space-after-sexp-insertion))))
 #+end_src
 
-** Markdown & org-mode
+*** Markdown & org-mode
 
 Make checkbox insertion a little smarter.
 
@@ -3258,7 +3821,7 @@ Make checkbox insertion a little smarter.
       (sp-local-pair "[" "]" :post-handlers '(config-smartparens--format-checkitem))))
 #+end_src
 
-* =elisp-mode= - Emacs Lisp
+** =elisp-mode= - Emacs Lisp
 
 #+begin_src emacs-lisp
   (use-package elisp-mode
@@ -3271,7 +3834,7 @@ Make checkbox insertion a little smarter.
      "C-c C-c" #'eval-region))
 #+end_src
 
-** Code navigation
+*** Code navigation
 
 Use =elisp-slime-nav= to go to definition in Emacs Lisp.
 
@@ -3283,7 +3846,7 @@ Use =elisp-slime-nav= to go to definition in Emacs Lisp.
      "M-." #'elisp-slime-nav-find-elisp-thing-at-point))
 #+end_src
 
-** Documentation
+*** Documentation
 
 =helpful= is a more feature-rich alternative to the Emacs Lisp help buffer.
 
@@ -3307,7 +3870,7 @@ Display helpful buffers in side windows.
                  (window-width    . 0.5)))
 #+end_src
 
-** Inline documentation
+*** Inline documentation
 
 =eldoc= shows function parameters in the minibuffer.
 
@@ -3318,7 +3881,7 @@ Display helpful buffers in side windows.
     (eldoc-idle-delay 0.2))
 #+end_src
 
-** Hex colour literals
+*** Hex colour literals
 
 =rainbow mode= applies colours for hex strings.
 
@@ -3327,7 +3890,7 @@ Display helpful buffers in side windows.
     :hook (emacs-lisp-mode . rainbow-mode))
 #+end_src
 
-** REPL
+*** REPL
 
 =ielm= is the built-in REPL for Emacs Lisp.
 
@@ -3361,7 +3924,7 @@ Display =ielm= in a side window.
                  (window-width    . 80)))
 #+end_src
 
-** Pretty-printing
+*** Pretty-printing
 
 =pp= provides pretty-printing of lisp forms.
 
@@ -3376,7 +3939,7 @@ Display =ielm= in a side window.
      "C-c C-e" 'pp-macroexpand-last-sexp))
 #+end_src
 
-** Improve indent function
+*** Improve indent function
 
 Teach the Emacs Lisp indentation function to indent plists nicely.
 
@@ -3439,7 +4002,7 @@ Teach the Emacs Lisp indentation function to indent plists nicely.
     ((lisp-indent-function #'config-elisp--better-lisp-indent-function)))
 #+end_src
 
-** Improved syntax checking
+*** Improved syntax checking
 
 =flycheck-package= adds a checker for =package.el= conventions. It is inhibited for
 certain types of Elisp files.
@@ -3478,7 +4041,7 @@ certain types of Elisp files.
             #'config-flycheck--elisp-package-flycheck-predicate)))
 #+end_src
 
-* =prettify-symbols-mode= - Pretty lambdas in Lisp modes
+** =prettify-symbols-mode= - Pretty lambdas in Lisp modes
 
 #+begin_src emacs-lisp
   (use-package prettify-symbols-mode
@@ -3491,445 +4054,7 @@ certain types of Elisp files.
         (setq-local prettify-symbols-alist '(("lambda" . ?λ)))))))
 #+end_src
 
-* =emojify= - Render emoji
-
-#+begin_src emacs-lisp
-  (use-package emojify
-    :hook (after-init . global-emojify-mode)
-    :custom
-    (emojify-emoji-styles '(github unicode))
-    (emojify-program-contexts '(comments))
-    (emojify-point-entered-behaviour 'uncover)
-    (emojify-user-emojis
-     '((":check:" . (("emoji" . ":white_check_mark:")
-                     ("name" . "White Heavy Check Mark")
-                     ("unicode" . "✅")
-                     ("image" . "2705.png")
-                     ("style" . "github")))))
-
-    :config
-    (defun emojify-at-org-drawer-p (&rest _)
-      (when (derived-mode-p 'org-mode 'org-agenda-mode)
-        (save-excursion
-          (goto-char (line-beginning-position))
-          (or (org-at-drawer-p) (org-at-property-p)))))
-
-    (add-to-list 'emojify-inhibit-functions #'emojify-at-org-drawer-p))
-#+end_src
-
-* =pass= - Frontend to Unix ~password-store~
-
-#+begin_src emacs-lisp
-  (use-package pass
-    :commands (pass)
-    :after (password-store)
-
-    :general
-    (:states '(normal) :keymaps 'pass-view-mode-map "q" #'kill-this-buffer)
-    (:states '(normal) :keymaps 'pass-mode-map
-     "u" #'pass-copy-username
-     "U" #'pass-copy-url
-     "J" #'pass-goto-entry
-     "y" #'pass-copy-password
-     "f" #'pass-copy-field
-     "q" #'kill-this-buffer)
-
-    :custom
-    (password-store-password-length 50)
-    (pass-username-field "email")
-
-    :init
-    (add-to-list 'display-buffer-alist
-                 `(,(rx bos "*Password-Store*" eos)
-                   (display-buffer-reuse-window
-                    display-buffer-fullframe)
-                   (reusable-frames . visible))))
-#+end_src
-
-* =nix-mode= Configure support for the Nix language
-
-Configure major-mode for Nix language buffers.
-
-#+begin_src emacs-lisp
-  (use-package nix-mode
-    :mode (("\\.nix\\'" . nix-mode)
-           ("\\.nix.in\\'" . nix-mode))
-    :custom
-    (nix-indent-function 'nix-indent-line))
-#+end_src
-
-Teach Emacs how to create a Nix language REPL.
-
-#+begin_src emacs-lisp
-  (use-package nix-repl
-    :config
-    (add-to-list 'display-buffer-alist
-                 `(,(rx bos "*Nix-REPL*" eos)
-                   (display-buffer-reuse-window
-                    display-buffer-at-bottom)
-                   (reusable-frames . visible)
-                   (slot            . 1)
-                   (window-height   . 0.4))))
-#+end_src
-
-* =markdown-mode= - Markdown file support
-
-#+begin_src emacs-lisp
-  (use-package markdown-mode
-    :mode
-    ("\\.md\\'" . gfm-mode)
-    ("\\.markdown\\'" . markdown-mode)
-
-    :general
-    (:states 'normal :keymaps 'markdown-mode-map
-     "TAB" #'markdown-cycle
-     "RET" #'markdown-follow-thing-at-point)
-    (:keymaps 'markdown-mode-map
-     "C-c C-l" #'markdown-insert-link
-     "C-c C-i" #'markdown-insert-image
-     "C-c C-f" #'markdown-insert-footnote
-     "C-c C--" #'markdown-insert-hr
-     "C-c C-e" #'markdown-export
-     "C-c C-o" #'markdown-preview
-     "C-c p" #'markdown-live-preview-mode
-     "C-<return>" #'markdown-insert-header-dwim
-     "M-<left>" #'markdown-promote
-     "M-<right>" #'markdown-demote
-     "M-<up>" #'markdown-move-subtree-up
-     "M-<down>" #'markdown-move-subtree-down)
-
-    :custom
-    (markdown-command "multimarkdown")
-    (markdown-fontify-code-blocks-natively t)
-    (markdown-hide-urls t))
-#+end_src
-
-* =autctex= - Tex & Latex editing
-
-Use =auctex= as the Tex and Latex editing mode.
-
-=auctex= is disgusting and clobbers the builtin Tex modes. To load it lazily,
-intercept attempts to load Tex files and make sure =auctex= is loaded first.
-
-#+begin_src emacs-lisp
-  (defun config-latex--lazy-load-auctex ()
-    (when (string-match-p (rx "." (or "latex" "tex") string-end)
-                          (buffer-name))
-      (require 'tex-site)))
-
-  (add-hook 'find-file-hook #'config-latex--lazy-load-auctex)
-#+end_src
-
-#+begin_src emacs-lisp
-  (use-package tex
-    :preface
-    (defvar-local TeX-syntactic-comments t)
-    :custom
-    (TeX-command-default (getenv "NIX_EMACS_TEX_PROGRAM"))
-    (TeX-auto-save t)
-    (TeX-parse-self t)
-    (TeX-source-correlate-start-server nil)
-    ;; Use Emacs pdf-tools as viewer.
-    (TeX-view-program-selection '((output-pdf "PDF Tools")))
-    (TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view))))
-#+end_src
-
-#+begin_src emacs-lisp
-  (use-package latex
-    :custom
-    (LaTeX-command (getenv "NIX_EMACS_TEX_PROGRAM"))
-    ;; Don't insert line-break at inline math.
-    (LaTeX-fill-break-at-separators nil)
-    :config
-    (add-hook 'LaTeX-mode-hook 'flyspell-mode)
-    (add-hook 'LaTeX-mode-hook 'TeX-fold-mode)
-    (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
-    (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode)
-    (add-hook 'LaTeX-mode-hook 'TeX-PDF-mode))
-#+end_src
-
-** Smarter autofill function
-
-Teach the autofill function in Latex buffers not to fill in certain contexts.
-
-#+begin_src emacs-lisp
-  (use-package latex
-    :functions (LaTeX-current-environment)
-    :config
-    (defvar config-latex-no-indent-envs '("equation" "equation*" "align" "align*" "tabular" "tikzpicture"))
-
-    (defun config-latex--autofill ()
-      ;; Check whether the pointer is currently inside one of the
-      ;; environments described in `config-latex-no-indent-envs' and if so, inhibits
-      ;; the automatic filling of the current paragraph.
-      (let ((env)
-            (should-fill t)
-            (level 0))
-        (while (and should-fill (not (equal env "document")))
-          (cl-incf level)
-          (setq env (LaTeX-current-environment level))
-          (setq should-fill (not (member env config-latex-no-indent-envs))))
-
-        (when should-fill
-          (do-auto-fill))))
-
-    (defun config-latex--configure-autofill ()
-      (auto-fill-mode +1)
-      (setq-local auto-fill-function #'config-latex--autofill))
-
-    (add-hook 'LaTeX-mode-hook 'config-latex--configure-autofill))
-#+end_src
-
-** Build command
-
-=C-c C-c= builds the current buffer with =tectonic=.
-
-#+begin_src emacs-lisp
-  (use-package latex
-    :general
-    (:keymaps 'LaTeX-mode-map
-     "C-c C-b" #'config-latex-build)
-    :preface
-    (autoload 'TeX-command "tex-buf")
-    (autoload 'TeX-master-file "tex")
-    (autoload 'TeX-save-document "tex-buf")
-
-    (defvar TeX-save-query)
-
-    (defun config-latex-build ()
-      (interactive)
-      (progn
-        (let ((TeX-save-query nil))
-          (TeX-save-document (TeX-master-file)))
-        (TeX-command (getenv "NIX_EMACS_TEX_PROGRAM") 'TeX-master-file -1))))
-#+end_src
-
-** Environment folding
-
-=tex-fold= enables folding of macros and environments. It's part of =auctex=.
-
-#+begin_src emacs-lisp
-  (use-package tex-fold
-    :after tex
-    :demand t)
-#+end_src
-
-** Code completion
-
-#+begin_src emacs-lisp
-  (use-package company-auctex
-    :after (:all tex company)
-    :demand t
-    :config (company-auctex-init))
-#+end_src
-
-** Show preview on save
-
-#+begin_src emacs-lisp
-  (use-package latex-preview-pane
-    :general (:keymaps 'LaTeX-mode-map "C-c p" #'latex-preview-pane))
-#+end_src
-
-* =ledger-mode= - Ledger accounting software interface
-
-#+begin_src emacs-lisp
-  (use-package ledger-mode
-    :mode ("\\.ledger$" . ledger-mode)
-
-    :general
-
-    (:keymaps 'ledger-report-mode-map
-     "C-c C-c" #'ledger-report
-     "q" #'kill-buffer-and-window)
-
-    (:keymaps 'ledger-mode-map
-     "C-c C-c" #'ledger-report
-     "M-RET" #'ledger-toggle-current-transaction)
-
-    :custom
-    (ledger-report-use-header-line nil)
-    (ledger-post-account-alignment-column 2)
-    (ledger-fontify-xact-state-overrides nil))
-#+end_src
-
-Configure how reports are displayed.
-
-#+begin_src emacs-lisp
-  (use-package ledger-mode
-    :config
-    (add-to-list 'display-buffer-alist
-                 `(,(rx bos "*Ledger Report*" eos)
-                   (display-buffer-reuse-window display-buffer-pop-up-window))))
-#+end_src
-
-** Highlight negative numbers in red
-
-#+begin_src emacs-lisp
-  (use-package ledger-mode
-    :preface
-    (defface ledger-report-negative-amount
-      `((t (:foreground "red")))
-      "Face for negative amounts in ledger reports."
-      :group 'ledger-faces)
-
-    :config
-    (font-lock-add-keywords
-     'ledger-report-mode
-     `((,(rx "$" (* space) "-" (+ digit) (* (any digit ",")) (? "." (+ digit))) . 'ledger-report-negative-amount)
-       (,(rx (+ digit) "-" (= 3 alpha) "-" (+ digit)) . 'ledger-font-posting-date-face)))
-
-    (add-hook 'ledger-report-mode-hook 'font-lock-fontify-buffer))
-#+end_src
-
-** Changing transaction timestamps
-
-Use =C-c C-.= to change the timestamp of the transaction at point.
-
-#+begin_src emacs-lisp
-  (use-package ledger-mode
-    :general
-    (:keymaps 'ledger-mode-map
-     "C-c C-." #'config-ledger-set-xact-timestamp)
-    :preface
-    (defun config-ledger-set-xact-timestamp ()
-      (interactive)
-      (when-let* ((ctx (ledger-xact-context))
-                  (value (ledger-context-field-value ctx 'date))
-                  (start (ledger-context-field-position ctx 'date))
-                  (end (ledger-context-field-end-position ctx 'date))
-                  (updated (ledger-read-date "Transaction date: ")))
-        (if (string= value updated)
-            (user-error "Date unchanged")
-          (save-excursion
-            (goto-char start)
-            (delete-region start end)
-            (insert updated))
-          (let ((message-log-max))
-            (message "Date changed: %s -> %s" value updated))))))
-#+end_src
-
-** Format ledger buffer
-
-Define a command to format a ledger buffer.
-
-#+begin_src emacs-lisp
-  (use-package ledger-mode
-    :general (:keymaps 'ledger-mode-map "M-q" #'ledger-format-buffer)
-
-    :functions (ledger-mode-clean-buffer)
-    :preface
-    (defvar ledger-post-amount-alignment-column 52)
-
-    (defun ledger-format--align-price-assertion ()
-      (when (string-match-p (rx (+ space) "=" (* space) (not (any digit)))
-                            (buffer-substring (line-beginning-position)
-                                              (line-end-position)))
-        (unwind-protect
-            (progn
-              (goto-char (line-beginning-position))
-              (search-forward "=")
-              (goto-char (match-beginning 0))
-              (indent-to (1+ ledger-post-amount-alignment-column))
-              (skip-chars-forward " =")
-              (just-one-space))
-          (goto-char (line-end-position)))))
-
-    (defun ledger-format-buffer ()
-      "Reformat the buffer."
-      (interactive "*")
-      (let ((pos (point)))
-        (ignore-errors
-          (ledger-mode-clean-buffer))
-        (goto-char (point-min))
-        (while (search-forward-regexp (rx (>= 2 space) "=") nil t)
-          (ledger-format--align-price-assertion))
-        (goto-char pos))))
-#+end_src
-
-** =flycheck-ledger= - Flycheck support for ledger buffers
-
-#+begin_src emacs-lisp
-  (use-package flycheck-ledger
-    :after (:all flycheck ledger-mode)
-    :demand t)
-#+end_src
-
-* =yaml-mode= - YAML editing support
-
-#+begin_src emacs-lisp
-  (defun disable-autofill ()
-    (auto-fill-mode -1))
-
-  (use-package yaml-mode
-    :mode ("\\.\\(e?ya?\\|ra\\)ml\\'" . yaml-mode)
-    :general
-    (:states '(normal insert) :keymaps 'yaml-mode-map
-     [backtab] 'yaml-indent-line)
-    :config
-    (add-hook 'yaml-mode-hook #'disable-autofill))
-#+end_src
-
-* =json-mode= - JSON editing support
-
-#+begin_src emacs-lisp
-  (use-package json-mode
-    :commands (json-mode)
-    :mode ("\\.json\\'" . json-mode)
-    :custom
-    (json-reformat:indent-width 2))
-#+end_src
-
-* =highlight-indent-guides= - show indentation level indicators
-
-#+begin_src emacs-lisp
-  (use-package highlight-indent-guides
-    :hook
-    (yaml-mode . highlight-indent-guides-mode)
-    (json-mode . highlight-indent-guides-mode))
-#+end_src
-
-* =pdf-tools= - PDF reader
-
-#+begin_src emacs-lisp
-  (use-package pdf-tools
-    :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
-    :general (:states '(motion normal) :keymaps 'pdf-view-mode-map
-              "t" #'pdf-view-midnight-minor-mode
-              "n" #'pdf-view-next-page
-              "N" #'pdf-view-previous-page
-              "p" #'pdf-view-previous-page)
-    :hook
-    (pdf-view-mode . pdf-view-midnight-minor-mode)
-
-    :custom
-    (pdf-view-display-size 'fit-page)
-
-    :init
-    (use-package pdf-history
-      :commands (pdf-history-minor-mode))
-    (use-package pdf-occur
-      :commands (pdf-occur-global-minor-mode))
-
-    :config
-    (require 'pdf-annot)
-    (require 'pdf-sync)
-    (require 'pdf-links)
-    (require 'pdf-outline)
-    (require 'pdf-history)
-    (require 'pdf-cache)
-    (require 'pdf-view)
-
-    ;; Redefine a few macros as functions to work around byte compilation errors.
-    (defun pdf-view-current-page (&optional window)
-      (image-mode-window-get 'page window))
-
-    (defun pdf-view-current-overlay (&optional window)
-      (image-mode-window-get 'overlay window))
-
-    (pdf-tools-install))
-#+end_src
-
-* =typescript-mode= & =tide= - TypeScript language support
+** =typescript-mode= & =tide= - TypeScript language support
 
 =typescript-mode= adds a major mode with syntax highlighting for TypeScript
 files.
@@ -3976,34 +4101,356 @@ TypeScript language server.
       (flycheck-add-next-checker 'typescript-tide '(warning . javascript-eslint) t)))
 #+end_src
 
-* =js= - Editing support for JavaScript
+** =nix-mode= Configure support for the Nix language
+
+Configure major-mode for Nix language buffers.
 
 #+begin_src emacs-lisp
-  (use-package js
-    :mode ("\\.[cm]?jsx?\\'" . js-mode)
+  (use-package nix-mode
+    :mode (("\\.nix\\'" . nix-mode)
+           ("\\.nix.in\\'" . nix-mode))
     :custom
-    (js-indent-level 2)
-    (js-switch-indent-offset 2)
-    (js-js-tmpdir (f-join paths-cache-directory "js")))
+    (nix-indent-function 'nix-indent-line))
 #+end_src
 
-* =css-mode= - CSS editing support
+Teach Emacs how to create a Nix language REPL.
 
 #+begin_src emacs-lisp
-  (use-package css-mode
-    :defer t
-    :custom
-    (css-indent-offset 2))
+  (use-package nix-repl
+    :config
+    (add-to-list 'display-buffer-alist
+                 `(,(rx bos "*Nix-REPL*" eos)
+                   (display-buffer-reuse-window
+                    display-buffer-at-bottom)
+                   (reusable-frames . visible)
+                   (slot            . 1)
+                   (window-height   . 0.4))))
 #+end_src
 
-* =graphql= - GraphQL schema definition language editing support
+** =yaml-mode= - YAML editing support
+
+#+begin_src emacs-lisp
+  (defun disable-autofill ()
+    (auto-fill-mode -1))
+
+  (use-package yaml-mode
+    :mode ("\\.\\(e?ya?\\|ra\\)ml\\'" . yaml-mode)
+    :general
+    (:states '(normal insert) :keymaps 'yaml-mode-map
+     [backtab] 'yaml-indent-line)
+    :config
+    (add-hook 'yaml-mode-hook #'disable-autofill))
+#+end_src
+
+** =json-mode= - JSON editing support
+
+#+begin_src emacs-lisp
+  (use-package json-mode
+    :commands (json-mode)
+    :mode ("\\.json\\'" . json-mode)
+    :custom
+    (json-reformat:indent-width 2))
+#+end_src
+
+** =highlight-indent-guides= - show indentation level indicators
+
+#+begin_src emacs-lisp
+  (use-package highlight-indent-guides
+    :hook
+    (yaml-mode . highlight-indent-guides-mode)
+    (json-mode . highlight-indent-guides-mode))
+#+end_src
+
+** =markdown-mode= - Markdown file support
+
+#+begin_src emacs-lisp
+  (use-package markdown-mode
+    :mode
+    ("\\.md\\'" . gfm-mode)
+    ("\\.markdown\\'" . markdown-mode)
+
+    :general
+    (:states 'normal :keymaps 'markdown-mode-map
+     "TAB" #'markdown-cycle
+     "RET" #'markdown-follow-thing-at-point)
+    (:keymaps 'markdown-mode-map
+     "C-c C-l" #'markdown-insert-link
+     "C-c C-i" #'markdown-insert-image
+     "C-c C-f" #'markdown-insert-footnote
+     "C-c C--" #'markdown-insert-hr
+     "C-c C-e" #'markdown-export
+     "C-c C-o" #'markdown-preview
+     "C-c p" #'markdown-live-preview-mode
+     "C-<return>" #'markdown-insert-header-dwim
+     "M-<left>" #'markdown-promote
+     "M-<right>" #'markdown-demote
+     "M-<up>" #'markdown-move-subtree-up
+     "M-<down>" #'markdown-move-subtree-down)
+
+    :custom
+    (markdown-command "multimarkdown")
+    (markdown-fontify-code-blocks-natively t)
+    (markdown-hide-urls t))
+#+end_src
+
+** =ledger-mode= - Ledger accounting software interface
+
+#+begin_src emacs-lisp
+  (use-package ledger-mode
+    :mode ("\\.ledger$" . ledger-mode)
+
+    :general
+
+    (:keymaps 'ledger-report-mode-map
+     "C-c C-c" #'ledger-report
+     "q" #'kill-buffer-and-window)
+
+    (:keymaps 'ledger-mode-map
+     "C-c C-c" #'ledger-report
+     "M-RET" #'ledger-toggle-current-transaction)
+
+    :custom
+    (ledger-report-use-header-line nil)
+    (ledger-post-account-alignment-column 2)
+    (ledger-fontify-xact-state-overrides nil))
+#+end_src
+
+Configure how reports are displayed.
+
+#+begin_src emacs-lisp
+  (use-package ledger-mode
+    :config
+    (add-to-list 'display-buffer-alist
+                 `(,(rx bos "*Ledger Report*" eos)
+                   (display-buffer-reuse-window display-buffer-pop-up-window))))
+#+end_src
+
+*** Highlight negative numbers in red
+
+#+begin_src emacs-lisp
+  (use-package ledger-mode
+    :preface
+    (defface ledger-report-negative-amount
+      `((t (:foreground "red")))
+      "Face for negative amounts in ledger reports."
+      :group 'ledger-faces)
+
+    :config
+    (font-lock-add-keywords
+     'ledger-report-mode
+     `((,(rx "$" (* space) "-" (+ digit) (* (any digit ",")) (? "." (+ digit))) . 'ledger-report-negative-amount)
+       (,(rx (+ digit) "-" (= 3 alpha) "-" (+ digit)) . 'ledger-font-posting-date-face)))
+
+    (add-hook 'ledger-report-mode-hook 'font-lock-fontify-buffer))
+#+end_src
+
+*** Changing transaction timestamps
+
+Use =C-c C-.= to change the timestamp of the transaction at point.
+
+#+begin_src emacs-lisp
+  (use-package ledger-mode
+    :general
+    (:keymaps 'ledger-mode-map
+     "C-c C-." #'config-ledger-set-xact-timestamp)
+    :preface
+    (defun config-ledger-set-xact-timestamp ()
+      (interactive)
+      (when-let* ((ctx (ledger-xact-context))
+                  (value (ledger-context-field-value ctx 'date))
+                  (start (ledger-context-field-position ctx 'date))
+                  (end (ledger-context-field-end-position ctx 'date))
+                  (updated (ledger-read-date "Transaction date: ")))
+        (if (string= value updated)
+            (user-error "Date unchanged")
+          (save-excursion
+            (goto-char start)
+            (delete-region start end)
+            (insert updated))
+          (let ((message-log-max))
+            (message "Date changed: %s -> %s" value updated))))))
+#+end_src
+
+*** Format ledger buffer
+
+Define a command to format a ledger buffer.
+
+#+begin_src emacs-lisp
+  (use-package ledger-mode
+    :general (:keymaps 'ledger-mode-map "M-q" #'ledger-format-buffer)
+
+    :functions (ledger-mode-clean-buffer)
+    :preface
+    (defvar ledger-post-amount-alignment-column 52)
+
+    (defun ledger-format--align-price-assertion ()
+      (when (string-match-p (rx (+ space) "=" (* space) (not (any digit)))
+                            (buffer-substring (line-beginning-position)
+                                              (line-end-position)))
+        (unwind-protect
+            (progn
+              (goto-char (line-beginning-position))
+              (search-forward "=")
+              (goto-char (match-beginning 0))
+              (indent-to (1+ ledger-post-amount-alignment-column))
+              (skip-chars-forward " =")
+              (just-one-space))
+          (goto-char (line-end-position)))))
+
+    (defun ledger-format-buffer ()
+      "Reformat the buffer."
+      (interactive "*")
+      (let ((pos (point)))
+        (ignore-errors
+          (ledger-mode-clean-buffer))
+        (goto-char (point-min))
+        (while (search-forward-regexp (rx (>= 2 space) "=") nil t)
+          (ledger-format--align-price-assertion))
+        (goto-char pos))))
+#+end_src
+
+*** =flycheck-ledger= - Flycheck support for ledger buffers
+
+#+begin_src emacs-lisp
+  (use-package flycheck-ledger
+    :after (:all flycheck ledger-mode)
+    :demand t)
+#+end_src
+
+** =autctex= - Tex & Latex editing
+
+Use =auctex= as the Tex and Latex editing mode.
+
+=auctex= is disgusting and clobbers the builtin Tex modes. To load it lazily,
+intercept attempts to load Tex files and make sure =auctex= is loaded first.
+
+#+begin_src emacs-lisp
+  (defun config-latex--lazy-load-auctex ()
+    (when (string-match-p (rx "." (or "latex" "tex") string-end)
+                          (buffer-name))
+      (require 'tex-site)))
+
+  (add-hook 'find-file-hook #'config-latex--lazy-load-auctex)
+#+end_src
+
+#+begin_src emacs-lisp
+  (use-package tex
+    :preface
+    (defvar-local TeX-syntactic-comments t)
+    :custom
+    (TeX-command-default (getenv "NIX_EMACS_TEX_PROGRAM"))
+    (TeX-auto-save t)
+    (TeX-parse-self t)
+    (TeX-source-correlate-start-server nil)
+    ;; Use Emacs pdf-tools as viewer.
+    (TeX-view-program-selection '((output-pdf "PDF Tools")))
+    (TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view))))
+#+end_src
+
+#+begin_src emacs-lisp
+  (use-package latex
+    :custom
+    (LaTeX-command (getenv "NIX_EMACS_TEX_PROGRAM"))
+    ;; Don't insert line-break at inline math.
+    (LaTeX-fill-break-at-separators nil)
+    :config
+    (add-hook 'LaTeX-mode-hook 'flyspell-mode)
+    (add-hook 'LaTeX-mode-hook 'TeX-fold-mode)
+    (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
+    (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode)
+    (add-hook 'LaTeX-mode-hook 'TeX-PDF-mode))
+#+end_src
+
+*** Smarter autofill function
+
+Teach the autofill function in Latex buffers not to fill in certain contexts.
+
+#+begin_src emacs-lisp
+  (use-package latex
+    :functions (LaTeX-current-environment)
+    :config
+    (defvar config-latex-no-indent-envs '("equation" "equation*" "align" "align*" "tabular" "tikzpicture"))
+
+    (defun config-latex--autofill ()
+      ;; Check whether the pointer is currently inside one of the
+      ;; environments described in `config-latex-no-indent-envs' and if so, inhibits
+      ;; the automatic filling of the current paragraph.
+      (let ((env)
+            (should-fill t)
+            (level 0))
+        (while (and should-fill (not (equal env "document")))
+          (cl-incf level)
+          (setq env (LaTeX-current-environment level))
+          (setq should-fill (not (member env config-latex-no-indent-envs))))
+
+        (when should-fill
+          (do-auto-fill))))
+
+    (defun config-latex--configure-autofill ()
+      (auto-fill-mode +1)
+      (setq-local auto-fill-function #'config-latex--autofill))
+
+    (add-hook 'LaTeX-mode-hook 'config-latex--configure-autofill))
+#+end_src
+
+*** Build command
+
+=C-c C-c= builds the current buffer with =tectonic=.
+
+#+begin_src emacs-lisp
+  (use-package latex
+    :general
+    (:keymaps 'LaTeX-mode-map
+     "C-c C-b" #'config-latex-build)
+    :preface
+    (autoload 'TeX-command "tex-buf")
+    (autoload 'TeX-master-file "tex")
+    (autoload 'TeX-save-document "tex-buf")
+
+    (defvar TeX-save-query)
+
+    (defun config-latex-build ()
+      (interactive)
+      (progn
+        (let ((TeX-save-query nil))
+          (TeX-save-document (TeX-master-file)))
+        (TeX-command (getenv "NIX_EMACS_TEX_PROGRAM") 'TeX-master-file -1))))
+#+end_src
+
+*** Environment folding
+
+=tex-fold= enables folding of macros and environments. It's part of =auctex=.
+
+#+begin_src emacs-lisp
+  (use-package tex-fold
+    :after tex
+    :demand t)
+#+end_src
+
+*** Code completion
+
+#+begin_src emacs-lisp
+  (use-package company-auctex
+    :after (:all tex company)
+    :demand t
+    :config (company-auctex-init))
+#+end_src
+
+*** Show preview on save
+
+#+begin_src emacs-lisp
+  (use-package latex-preview-pane
+    :general (:keymaps 'LaTeX-mode-map "C-c p" #'latex-preview-pane))
+#+end_src
+
+** =graphql= - GraphQL schema definition language editing support
 
 #+begin_src emacs-lisp
   (use-package graphql-mode
     :mode ("\\.graphql\\'" . graphql-mode))
 #+end_src
 
-** Teach dumb-jump about GraphQL files
+*** Teach dumb-jump about GraphQL files
 
 #+begin_src emacs-lisp
   (use-package graphql-mode
@@ -4025,36 +4472,18 @@ TypeScript language server.
                    :regex "scalar\\s+JJJ\\b")))
 #+end_src
 
-* =terraform-mode= & =hcl-mode= - Editing support for Terraform
+** =js= - Editing support for JavaScript
 
 #+begin_src emacs-lisp
-  (use-package terraform-mode
-    :mode ("\\.tf\\(vars\\)?\\'" . terraform-mode))
-
-  (use-package hcl-mode
-    :mode
-    ("\\.hcl\\'" . hcl-mode)
-    ("\\.nomad\\'" . hcl-mode))
+  (use-package js
+    :mode ("\\.[cm]?jsx?\\'" . js-mode)
+    :custom
+    (js-indent-level 2)
+    (js-switch-indent-offset 2)
+    (js-js-tmpdir (f-join paths-cache-directory "js")))
 #+end_src
 
-Format HCL buffers on save.
-
-#+begin_src emacs-lisp
-  (use-package hcl-mode
-    :after format-all
-    :config
-    ;; Dynamically eval to avoid macroexpansion error
-    (eval
-     '(define-format-all-formatter terragrunt-fmt
-        (:executable "terragrunt")
-        (:install (macos "brew install terragrunt"))
-        (:languages "Terragrunt")
-        (:format (format-all--buffer-easy executable "fmt" "-no-color" "-"))))
-
-    (add-to-list 'format-all-default-formatters 'terragrunt-fmt))
-#+end_src
-
-* =plantuml-mode= - Editing support for PlantUML diagrams
+** =plantuml-mode= - Editing support for PlantUML diagrams
 
 #+begin_src emacs-lisp
   (use-package plantuml-mode
@@ -4075,7 +4504,7 @@ Format HCL buffers on save.
     (modify-syntax-entry ?_ "w" plantuml-mode-syntax-table))
 #+end_src
 
-** Flycheck support
+*** Flycheck support
 
 #+begin_src emacs-lisp
   (use-package flycheck-plantuml
@@ -4084,7 +4513,7 @@ Format HCL buffers on save.
     :config (flycheck-plantuml-setup))
 #+end_src
 
-** Richer syntax highlighting
+*** Richer syntax highlighting
 
 Teach Emacs how to highlight arrows and important keywords.
 
@@ -4225,6 +4654,145 @@ Teach Emacs how to highlight arrows and important keywords.
 
        (,(rx bol (* space) (group "*") (+ (not (any "*"))))
         (1 'org-list-dt)))))
+#+end_src
+
+** =terraform-mode= & =hcl-mode= - Editing support for Terraform
+
+#+begin_src emacs-lisp
+  (use-package terraform-mode
+    :mode ("\\.tf\\(vars\\)?\\'" . terraform-mode))
+
+  (use-package hcl-mode
+    :mode
+    ("\\.hcl\\'" . hcl-mode)
+    ("\\.nomad\\'" . hcl-mode))
+#+end_src
+
+Format HCL buffers on save.
+
+#+begin_src emacs-lisp
+  (use-package hcl-mode
+    :after format-all
+    :config
+    ;; Dynamically eval to avoid macroexpansion error
+    (eval
+     '(define-format-all-formatter terragrunt-fmt
+        (:executable "terragrunt")
+        (:install (macos "brew install terragrunt"))
+        (:languages "Terragrunt")
+        (:format (format-all--buffer-easy executable "fmt" "-no-color" "-"))))
+
+    (add-to-list 'format-all-default-formatters 'terragrunt-fmt))
+#+end_src
+
+** =css-mode= - CSS editing support
+
+#+begin_src emacs-lisp
+  (use-package css-mode
+    :defer t
+    :custom
+    (css-indent-offset 2))
+#+end_src
+
+** =hexl-mode= - Hex editing
+
+=hexl= is Emacs' built-in hex editor.
+
+#+begin_src emacs-lisp
+  (use-package hexl
+    :general
+    (:states 'motion :keymaps 'hexl-mode-map
+     "]]" #'hexl-end-of-1k-page
+     "[[" #'hexl-beginning-of-1k-page
+     "h" #'hexl-backward-char
+     "l" #'hexl-forward-char
+     "j" #'hexl-next-line
+     "k" #'hexl-previous-line
+     "$" #'hexl-end-of-line
+     "^" #'hexl-beginning-of-line
+     "0" #'hexl-beginning-of-line))
+#+end_src
+
+** =conf-mode= - Configuration files
+
+Configure =conf-mode= for use with more kinds of config files.
+
+#+begin_src emacs-lisp
+  (use-package conf-mode
+    :mode
+    ("\\.env\\.erb\\'" . conf-mode)
+    ("\\.conf\\.erb\\'" . conf-mode)
+    ("\\.kll\\'" . conf-mode))
+#+end_src
+
+* =pass= - Frontend to Unix ~password-store~
+
+#+begin_src emacs-lisp
+  (use-package pass
+    :commands (pass)
+    :after (password-store)
+
+    :general
+    (:states '(normal) :keymaps 'pass-view-mode-map "q" #'kill-this-buffer)
+    (:states '(normal) :keymaps 'pass-mode-map
+     "u" #'pass-copy-username
+     "U" #'pass-copy-url
+     "J" #'pass-goto-entry
+     "y" #'pass-copy-password
+     "f" #'pass-copy-field
+     "q" #'kill-this-buffer)
+
+    :custom
+    (password-store-password-length 50)
+    (pass-username-field "email")
+
+    :init
+    (add-to-list 'display-buffer-alist
+                 `(,(rx bos "*Password-Store*" eos)
+                   (display-buffer-reuse-window
+                    display-buffer-fullframe)
+                   (reusable-frames . visible))))
+#+end_src
+
+* =pdf-tools= - PDF reader
+
+#+begin_src emacs-lisp
+  (use-package pdf-tools
+    :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
+    :general (:states '(motion normal) :keymaps 'pdf-view-mode-map
+              "t" #'pdf-view-midnight-minor-mode
+              "n" #'pdf-view-next-page
+              "N" #'pdf-view-previous-page
+              "p" #'pdf-view-previous-page)
+    :hook
+    (pdf-view-mode . pdf-view-midnight-minor-mode)
+
+    :custom
+    (pdf-view-display-size 'fit-page)
+
+    :init
+    (use-package pdf-history
+      :commands (pdf-history-minor-mode))
+    (use-package pdf-occur
+      :commands (pdf-occur-global-minor-mode))
+
+    :config
+    (require 'pdf-annot)
+    (require 'pdf-sync)
+    (require 'pdf-links)
+    (require 'pdf-outline)
+    (require 'pdf-history)
+    (require 'pdf-cache)
+    (require 'pdf-view)
+
+    ;; Redefine a few macros as functions to work around byte compilation errors.
+    (defun pdf-view-current-page (&optional window)
+      (image-mode-window-get 'page window))
+
+    (defun pdf-view-current-overlay (&optional window)
+      (image-mode-window-get 'overlay window))
+
+    (pdf-tools-install))
 #+end_src
 
 * =mu4e= - Mail user agent
@@ -5035,570 +5603,6 @@ Ensure we use dired rather than the Finder on macOS.
 #+end_src
 
 ** TODO org-roam
-
-* TODO git-time-machine hydra
-
-* Set up ~SPACE~ as a leader key
-
-#+begin_src emacs-lisp
-  (require 'general)
-  (general-evil-setup)
-
-  (general-define-key :states '(normal motion) "SPC" nil)
-  (general-create-definer leader-set-key :keymaps 'override :states '(normal motion visual) :prefix "SPC")
-#+end_src
-
-** Top-level leader keybindings
-
-#+begin_src emacs-lisp
-  (defun alternate-buffer (&optional window)
-    "Toggle back and forth between two buffers.
-
-  WINDOW sets the window in which to toggle, and defaults to the
-  current window."
-    (interactive)
-    (let ((current-buffer (window-buffer window))
-          (buffer-predicate (frame-parameter (window-frame window) 'buffer-predicate)))
-      ;; switch to first buffer previously shown in this window that matches
-      ;; frame-parameter `buffer-predicate'
-      (switch-to-buffer
-       (or (car (seq-filter (lambda (buffer)
-                              (and (not (eq buffer current-buffer))
-                                   (or (null buffer-predicate) (funcall buffer-predicate buffer))))
-                            (seq-map #'car (window-prev-buffers window))))
-           ;; `other-buffer' honors `buffer-predicate' so no need to filter
-           (other-buffer current-buffer t)))))
-#+end_src
-
-#+begin_src emacs-lisp
-  (leader-set-key
-    "!" '(shell-command :which-key "shell cmd")
-    "&" '(async-shell-command :which-key "shell cmd (async)")
-    "'" (general-predicate-dispatch 'poporg-dwim
-          (bound-and-true-p poporg-mode) 'poporg-edit-exit
-          (derived-mode-p 'org-mode) 'org-edit-special
-          (bound-and-true-p org-src-mode) 'org-edit-src-exit)
-    "/" '(counsel-projectile-rg :which-key "rg")
-    ":" '(eval-expression-interactively :which-key "eval")
-    "<tab>" '(alternate-buffer :which-key "other buf")
-    "?" '(general-describe-keybindings :which-key "show bindings")
-    "@" '(counsel-bookmark :which-key "bookmark")
-    "|" '(rotate-layout :which-key "rotate window layout")
-    "SPC" '(ivy-switch-buffer :which-key "switch buf")
-    "C" #'compile
-    "D" '(dired-other-window :which-key "dired (other)")
-    "S" '(deadgrep :which-key "rg (deadgrep)")
-    "d" #'dired
-    "i" '(counsel-imenu :which-key "imenu")
-    "q" '(delete-window :which-key "delete window")
-    "r" 'ivy-resume
-    "s" '(evil-iedit-state/iedit-mode :which-key "iedit")
-    "u" '(universal-argument :which-key "prefix arg")
-    "x" '(counsel-M-x :which-key "M-x"))
-#+end_src
-
-** ~,~ - Parens
-
-#+begin_src emacs-lisp
-  (leader-set-key :infix ","
-    "" '(nil :which-key "+parens")
-    "h" #'sp-beginning-of-sexp
-    "l" #'sp-end-of-sexp
-    "n" #'sp-next-sexp
-    "p" #'sp-previous-sexp
-    "<" #'sp-backward-up-sexp
-    ">" #'sp-up-sexp
-    "c" #'sp-convolute-sexp
-    "d" #'sp-kill-sexp
-    "D" #'sp-backward-kill-sexp
-    "k" #'sp-splice-sexp-killing-forward
-    "K" #'sp-splice-sexp-killing-backward
-    "s" #'sp-splice-sexp-killing-around
-    "r" #'sp-raise-sexp
-    "a" #'sp-add-to-next-sexp
-    "A" #'sp-add-to-previous-sexp
-    "b" #'sp-forward-barf-sexp
-    "B" #'sp-backward-barf-sexp
-    "m" #'sp-forward-slurp-sexp
-    "M" #'sp-backward-slurp-sexp
-    "e" #'sp-emit-sexp
-    "j" #'sp-join-sexp
-    "t" #'sp-transpose-sexp
-    "U" #'sp-backward-unwrap-sexp
-    "u" #'sp-unwrap-sexp
-    "w" #'sp-rewrap-sexp
-    "x" #'sp-split-sexp
-    "y" #'sp-copy-sexp
-    "Y" #'sp-backward-copy-sexp)
-#+end_src
-
-** ~a~ - Applications
-
-#+begin_src emacs-lisp
-  (leader-set-key :infix "a"
-    "" '(nil :which-key "+apps")
-    "c" #'quick-calc
-    "C" #'full-calc
-    "m" #'mu4e
-    "p" #'pass
-    "r" '(nil :which-key "+profiler")
-    "r p" (general-predicate-dispatch 'profiler-start
-            (profiler-running-p) 'profiler-stop)
-    "r r" #'profiler-report
-    "w" #'world-time-list)
-#+end_src
-
-** ~b~ - Buffers
-
-#+begin_src emacs-lisp
-  (leader-set-key :infix "b"
-    "" '(nil :which-key "+bufs")
-    "n" #'next-buffer
-    "p" #'previous-buffer
-    "l" #'ibuffer
-    "s" #'switch-to-buffer
-    "b" #'bury-buffer
-    "d" #'kill-current-buffer
-    "w" #'save-buffer)
-#+end_src
-
-** ~c~ - Commenting
-
-#+begin_src emacs-lisp
-  (autoload 'sp-mark-sexp "smartparens")
-
-  (defun comment-sexp ()
-    "Comment the sexp at point."
-    (interactive)
-    (sp-mark-sexp)
-    (call-interactively #'comment-region))
-#+end_src
-
-#+begin_src emacs-lisp
-  (leader-set-key :infix "c"
-    "" '(nil :which-key "+comments")
-    "l" #'evilnc-comment-or-uncomment-lines
-    "r" #'comment-or-uncomment-region
-    "s" #'comment-sexp)
-#+end_src
-
-** ~e~ - Errors and Flycheck
-
-#+begin_src emacs-lisp
-  (autoload 'flycheck-list-errors "flycheck")
-
-  (defun flycheck-toggle-error-list ()
-    "Show or hide the error list."
-    (interactive)
-    (if-let* ((window (seq-find (lambda (it)
-                                  (equal flycheck-error-list-buffer
-                                         (buffer-name (window-buffer it))))
-                                (window-list))))
-        (delete-window window)
-      (flycheck-list-errors)))
-#+end_src
-
-#+begin_src emacs-lisp
-  (leader-set-key :infix "e"
-    "" '(nil :which-key "+errors")
-    "n" #'flycheck-next-error
-    "p" #'flycheck-previous-error
-    "l" #'flycheck-toggle-error-list
-    "r" #'flycheck-buffer
-    "c" #'flycheck-clear
-    "e" #'flycheck-explain-error-at-point
-    "h" #'flycheck-describe-checker
-    "s" #'flycheck-select-checker
-    "v" #'flycheck-verify-setup)
-#+end_src
-
-** ~f~ - Files
-
-#+begin_src emacs-lisp
-  (autoload 'projectile-project-p "projectile")
-  (autoload 'projectile-invalidate-cache "projectile")
-
-  (defun delete-current-buffer-and-file ()
-    "Remove the file associated with the current buffer, then kill it."
-    (interactive)
-    (let ((file (buffer-file-name)))
-      (cond
-       ((null file)
-        (kill-buffer))
-       ((not (file-exists-p file))
-        (kill-buffer))
-       ((yes-or-no-p "Delete this file? ")
-        (delete-file file t)
-        (kill-buffer)
-
-        (when (projectile-project-p)
-          (call-interactively #'projectile-invalidate-cache))
-
-        (message "File deleted: %s" file)))))
-
-  (defun sudo-edit (&optional arg)
-    "Reopen the current file as sudo for editing.
-
-  With prefix argument ARG, prompt for a file."
-    (interactive "p")
-    (let* ((fname (if (or arg (not buffer-file-name))
-                      (read-file-name "File: ")
-                    buffer-file-name))
-           (target (cond ((string-match-p "^/ssh:" fname)
-                          (with-temp-buffer
-                            (insert fname)
-                            (search-backward ":")
-                            (let ((last-match-end nil)
-                                  (last-ssh-hostname nil))
-                              (while (string-match "@\\\([^:|]+\\\)" fname last-match-end)
-                                (setq last-ssh-hostname (or (match-string 1 fname)
-                                                            last-ssh-hostname))
-                                (setq last-match-end (match-end 0)))
-                              (insert (format "|sudo:%s" (or last-ssh-hostname "localhost"))))
-                            (buffer-string)))
-                         (t (concat "/sudo:root@localhost:" fname)))))
-      (find-file target)))
-
-  (defun assert-file-exists-for-buffer (&optional buf)
-    (let ((cur (buffer-file-name buf)))
-      (if (not (and cur (file-exists-p cur)))
-          (error "Buffer is not visiting a file!")
-        cur)))
-
-  (defun rename-file-and-buffer--vc-rename (src dest)
-    (condition-case err
-        (when (vc-backend src)
-          (vc-rename-file src dest)
-          t)
-      (error
-       (let ((msg (error-message-string err)))
-         (cond
-          ((string-match-p "New file already exists" msg) nil)
-          ((string-match-p "Please update files" msg)
-           (unless (y-or-n-p "VC cannot track this change automatically.  Continue? ")
-             (error msg)))
-          (t
-           (error msg)))))))
-
-  (autoload 'recentf-cleanup "recentf")
-  (require 'subr-x)
-
-  (defun rename-file-and-buffer--try (src dest)
-    (when (and (file-exists-p dest) (not (y-or-n-p "File exists.  Overwrite? ")))
-      (user-error "Aborted"))
-    (rename-file src dest t)
-    (when-let* ((buf (get-file-buffer src)))
-      (with-current-buffer buf
-        (rename-buffer dest)
-        (set-visited-file-name dest)
-        (set-buffer-modified-p nil))
-
-      (recentf-cleanup)
-      (when (projectile-project-p)
-        (projectile-invalidate-cache nil))))
-
-  (autoload 'f-join "f")
-
-  ;;;###autoload
-  (defun rename-file-and-buffer (buffer dest-dir dest-filename)
-    "Rename the current buffer and file it is visiting.
-  Performs basic VC cleanup.
-
-  BUFFER is the buffer to rename.
-
-  DEST-DIR is the directory to move the underlying file to.
-
-  DEST-FILENAME is the new filename for the underlying file."
-    (interactive (let ((cur (assert-file-exists-for-buffer)))
-                   (list (current-buffer)
-                         (read-directory-name "Move to directory: " (file-name-directory cur))
-                         (read-string "New name: " (file-name-nondirectory cur)))))
-    (let ((src (assert-file-exists-for-buffer buffer))
-          (dest-path (f-join dest-dir dest-filename)))
-      (or (rename-file-and-buffer--vc-rename src dest-path)
-          (rename-file-and-buffer--try src dest-path))
-      (when (and (fboundp 'projectile-project-p) (projectile-project-p))
-        (call-interactively #'projectile-invalidate-cache))
-      (message "File '%s' moved to '%s'"
-               (abbreviate-file-name (file-name-nondirectory src))
-               (abbreviate-file-name dest-path))))
-#+end_src
-
-#+begin_src emacs-lisp
-  (leader-set-key :infix "f"
-    "" '(nil :which-key "+files")
-    "D" #'delete-current-buffer-and-file
-    "e" #'sudo-edit
-    "f" #'find-file
-    "F" #'find-file-other-window
-    "s" #'save-buffer
-    "S" #'save-some-buffers
-    "l" #'find-file-literally
-    "l" #'hexl-find-file
-    "w" #'write-file
-    "v" #'find-alternate-file
-    "r" #'counsel-recentf
-    "R" #'rename-file-and-buffer)
-#+end_src
-
-** ~g~ - Git & Goto
-
-#+begin_src emacs-lisp
-  (require 's)
-  (require 'xref)
-  (autoload 'projectile-find-file "projectile")
-  (autoload 'xref-push-marker-stack "xref")
-
-  (defun jump-to-file (file &optional pos)
-    (xref-push-marker-stack)
-    (let ((buf (or (get-buffer file) (find-file-noselect file))))
-      (switch-to-buffer buf)
-      (when pos
-        (goto-char pos))))
-
-  (defun jump-to-config-file ()
-    "Jump to the config.org file."
-    (interactive)
-    (jump-to-file (expand-file-name "config.org" user-emacs-directory)))
-
-  (defun jump-to-tangled-config-file ()
-    "Jump to the config.el file."
-    (interactive)
-    (jump-to-file (expand-file-name "config.el" user-emacs-directory)))
-
-  (defun jump-to-packages-file ()
-    "Jump to the packages.nix file."
-    (interactive)
-    (jump-to-file (expand-file-name "packages.nix" user-emacs-directory)))
-
-  (defun jump-to-init-file ()
-    "Open the Emacs init.el file."
-    (interactive)
-    (jump-to-file (expand-file-name "init.el" user-emacs-directory)))
-
-  (defun jump-to-nix-config ()
-    "Open a nix config file."
-    (interactive)
-    (let ((default-directory paths-nix-directory))
-      (projectile-find-file)))
-
-  (defun hostname ()
-    (cadr (s-match (rx (group (+? nonl)) (? "-" (+ digit)) (? ".local") eos)
-                   (downcase (system-name)))))
-
-  (defun jump-to-nix-system-config ()
-    "Open the nix system config file."
-    (interactive)
-    (jump-to-file (format (f-join paths-nix-directory (concat (hostname) ".nix")))))
-
-  (defun jump-to-site-file ()
-    "Open the Emacs site config file."
-    (interactive)
-    (jump-to-file user-site-file))
-
-  (defun jump-to-messages ()
-    "Open the messages buffer."
-    (interactive)
-    (display-buffer "*Messages*"))
-#+end_src
-
-#+begin_src emacs-lisp
-  (leader-set-key :infix "g"
-    "" '(nil :which-key "+git/goto")
-    "c" #'jump-to-config-file
-    "C" #'jump-to-tangled-config-file
-    "i" #'jump-to-init-file
-    "n" #'jump-to-nix-config
-    "S" #'jump-to-nix-system-config
-    "p" #'jump-to-packages-file
-    "?" #'jump-to-messages
-    "S" #'jump-to-site-file
-    "s" #'magit-status
-    "d" #'magit-diff-buffer-file
-    "b" #'magit-blame
-    "r" #'browse-at-remote
-    "l" #'magit-log-buffer-file
-    "w" #'magit-worktree-status
-    "W" #'magit-worktree
-    "g" #'xref-find-definitions
-    "G" #'xref-find-definitions-other-window
-    "m" #'xref-find-references
-    "SPC" #'pop-tag-mark)
-#+end_src
-
-** ~h~ - Help
-
-#+begin_src emacs-lisp
-  (leader-set-key :infix "h"
-    "" '(nil :which-key "+help")
-    "i" #'info
-    "m" #'man
-    "d" '(nil :which-key "+describe")
-    "d c" #'describe-face
-    "d C" #'helpful-command
-    "d f" #'helpful-callable
-    "d k" #'helpful-key
-    "d m" #'describe-mode
-    "d p" #'describe-text-properties
-    "d v" #'helpful-variable
-    "f" '(nil :which-key "+find")
-    "f c" #'find-face-definition
-    "f f" #'find-function
-    "f l" #'find-library
-    "f v" #'find-variable)
-#+end_src
-
-** ~k~ - Killing
-
-#+begin_src emacs-lisp
-  (leader-set-key :infix "k"
-    "" '(nil :which-key "+kill")
-    "b" #'kill-this-buffer
-    "w" #'delete-window
-    "r" #'counsel-yank-pop)
-#+end_src
-
-** ~n~ - Narrowing
-
-#+begin_src emacs-lisp
-  (leader-set-key :infix "n"
-    "" '(nil :which-key "+narrow")
-    "f" #'narrow-to-defun
-    "r" #'narrow-to-region
-    "w" #'widen
-    "s" #'org-narrow-to-subtree
-    "S" #'org-tree-to-indirect-buffer)
-#+end_src
-
-** ~o~ - org-mode
-
-#+begin_src emacs-lisp
-  (leader-set-key :infix "o"
-    "" '(nil :which-key "+org")
-    "SPC" '(deft :which-key "edit/create note...")
-    "a" '(org-funcs-agenda-dwim :which-key "agenda")
-    ;; TODO: clocking (c)
-    "k" '(org-capture :which-key "capture...")
-    "l" '(org-store-link :which-key "store link")
-    "s" '(org-search-view :which-key "search...")
-
-    "<tab>" '(org-roam :which-key "backlinks")
-    "f" '(org-roam-find-file :which-key "roam file...")
-    "I" '(org-roam-jump-to-index :wk "index file")
-    "n" '(org-funcs-dailies-today :wk "dailies: today")
-    "y" '(org-funcs-dailies-yesterday :wk "dailies: yesterday")
-    "d" '(org-funcs-dailies-date :wk "dailies: date...")
-
-    "b" '(helm-bibtex :wk "bibliography...")
-    ;; TODO: org-ref (r)
-    "u" '(org-funcs-url-to-reference :wk "create reference of URL...")
-
-    "g" '(org-capture-goto-last-stored :wk "last captured")
-    "t" '(org-funcs-todo-list :wk "todo list")
-    "v" '(org-tags-view :wk "tags")
-    "w" '(org-funcs-goto-work :wk "work"))
-#+end_src
-
-** ~p~ - Projects
-
-#+begin_src emacs-lisp
-  (leader-set-key :infix "p"
-    "" '(nil :which-key "+projects")
-    "<tab>" #'projectile-toggle-between-implementation-and-test
-    "<backtab>" #'projectile-find-implementation-or-test-other-window
-    "!" #'projectile-run-async-shell-command-in-root
-    "c" #'projectile-compile-project
-    "u" #'projectile-run-project
-    "t" #'projectile-test-project
-    "p" #'counsel-projectile-switch-project
-    "f" #'counsel-projectile-find-file
-    "d" #'counsel-projectile-find-dir
-    "b" #'counsel-projectile-switch-to-buffer
-    "D" #'projectile-dired
-    "/" #'counsel-projectile-rg
-    "r" #'projectile-replace)
-#+end_src
-
-** ~t~ - Toggles
-
-#+begin_src emacs-lisp
-  (leader-set-key :infix "t"
-    "" '(nil :which-key "+toggle")
-    "i" #'toggle-input-method
-    "c" #'hide/show-comments-toggle
-    "m" #'global-hide-mode-line-mode)
-#+end_src
-
-** ~w~ - Windows
-
-#+begin_src emacs-lisp
-  (defun split-window-horizontally-dwim (&optional arg)
-    "When splitting window, show the other buffer in the new window.
-
-  With prefix arg ARG, don't select the new window."
-    (interactive "P")
-    (split-window-horizontally)
-    (let ((target-window (next-window)))
-      (set-window-buffer target-window (other-buffer))
-      (unless arg
-        (select-window target-window))))
-
-  (defun split-window-vertically-dwim (&optional arg)
-    "When splitting window, show the other buffer in the new window.
-
-  With prefix arg ARG, don't select the new window."
-    (interactive "P")
-    (split-window-vertically)
-    (let ((target-window (next-window)))
-      (set-window-buffer target-window (other-buffer))
-      (unless arg
-        (select-window target-window))))
-
-  (defun toggle-window-dedication ()
-    "Toggle whether the current window is dedicated to its current buffer."
-    (interactive)
-    (let* ((window (selected-window))
-           (was-dedicated (window-dedicated-p window)))
-      (set-window-dedicated-p window (not was-dedicated))
-      (message "Window %sdedicated to %s"
-               (if was-dedicated "no longer " "")
-               (buffer-name))))
-#+end_src
-
-#+begin_src emacs-lisp
-  (leader-set-key :infix "w"
-    "" '(nil :which-key "+window")
-    "w" #'evil-window-next
-    "r" #'evil-window-rotate-downwards
-    "/" #'split-window-horizontally-dwim
-    "-" #'split-window-vertically-dwim
-    "=" #'balance-windows
-    "d" #'delete-window
-    "o" #'delete-other-windows
-    "t" #'toggle-window-dedication)
-#+end_src
-
-** ~y~ - Text snippets
-
-#+begin_src emacs-lisp
-  (leader-set-key :infix "y"
-    "" '(nil :which-key "+snippets")
-    "n" #'yas-new-snippet
-    "e" #'yas-expand
-    "f" #'yas-visit-snippet-file
-    "y" #'yas-insert-snippet)
-
-#+end_src
-
-** ~z~ - Text Scale
-
-#+begin_src emacs-lisp
-  (leader-set-key :infix "z"
-    "" '(nil :which-key "+zoom")
-    "+" #'default-text-scale-increase
-    "-" #'default-text-scale-decrease
-    "=" #'default-text-scale-reset)
-#+end_src
 
 * File postamble
 
