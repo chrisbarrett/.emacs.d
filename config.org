@@ -133,20 +133,28 @@ Prevent GCs during user input in the minibuffer.
   (add-hook 'minibuffer-exit-hook #'config--enable-gc)
 #+end_src
 
-** Set initial theme settings                                      :disabled:
+** Define a function to select a value depending on the current GTK theme.
+
+#+begin_src emacs-lisp
+  (cl-defun choose-by-gtk-theme (&key light dark)
+    (when (eq system-type 'gnu/linux)
+      (let ((gtk-theme (with-temp-buffer
+                         (ignore-errors
+                           (call-process "gsettings" nil t nil
+                                         "get" "org.gnome.desktop.interface" "gtk-theme"))
+                         (buffer-string))))
+        (if (string-match-p "dark" gtk-theme) light dark))))
+#+end_src
+
+
+** Set initial theme settings
 
 Set reasonable placeholder foreground and background colours until the theme is
 loaded. Use the current GNOME theme to determine whether to use light or dark colours.
 
 #+begin_src emacs-lisp
-  (when (eq system-type 'gnu/linux)
-    (let ((gtk-theme (with-temp-buffer
-                       (ignore-errors
-                         (call-process "gsettings" nil t nil
-                                       "get" "org.gnome.desktop.interface" "gtk-theme"))
-                       (buffer-string))))
-      (set-background-color (if (string-match-p "dark" gtk-theme) "#282c34" "#FDF6E3"))
-      (set-foreground-color (if (string-match-p "dark" gtk-theme) "#bbc2cf" "#556b72"))))
+  (set-background-color (choose-by-gtk-theme :dark "#282c34" :light "#FDF6E3"))
+  (set-foreground-color (choose-by-gtk-theme :dark "#bbc2cf" :light "#556b72"))
 #+end_src
 
 ** Configure =use-package=
