@@ -4606,7 +4606,7 @@ buffer when a hard newline would be used.
     "n" #'next-buffer
     "p" #'previous-buffer
     "l" #'ibuffer
-    "s" #'switch-buffer
+    "s" #'switch-to-buffer
     "b" #'bury-buffer
     "d" #'kill-current-buffer
     "w" #'save-buffer)
