@@ -830,7 +830,7 @@ Prevent display-buffer from displaying in new frames.
   (advice-add #'abort-if-file-too-large :around #'config--dont-abort-if-allowed-extension)
 #+end_src
 
-** Recent files
+** =recentf= - Recent files
 
 Increase the number of saved files.
 
@@ -843,6 +843,7 @@ Teach =recentf= which files to exclude.
 
 #+begin_src emacs-lisp
   (use-package recentf
+    :hook (after-init . recentf-mode)
     :custom
     (recentf-exclude '(config-recentf--boring-filename-p
                        config-recentf--boring-extension-p
