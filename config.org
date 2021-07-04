@@ -4432,11 +4432,11 @@ Set general org-mode variables.
     (org-indirect-buffer-display 'current-window)
     (org-link-elisp-confirm-function 'y-or-n-p)
     (org-return-follows-link t)
-
+  
     :config
     (add-hook 'org-mode-hook #'auto-revert-mode)
     (add-hook 'org-mode-hook #'visual-line-mode)
-
+  
     :general
     ("C-c a" 'org-agenda
      "C-c s" 'org-search-view
@@ -4454,56 +4454,23 @@ Set general org-mode variables.
      "C-c ." 'org-time-stamp))
 #+end_src
 
-** Define utilities for working with org-roam dailies
+** =org-funcs= - org functions used throughout config
 
 #+begin_src emacs-lisp
-  (defvar org-funcs-historical-work-tags '("movio" "pushpay")
-    "Tags that relate to previous employers or projects.")
-
-  (defvar org-funcs-work-tag "broca"
-    "Tag for headlines that should be counted as in the work context.")
-
-  (defun org-funcs-work-file-buffer ()
-    (find-file-noselect (f-join org-directory "tasks" (format "%s.org" org-funcs-work-tag))))
-
-  (defun org-funcs-work-tag-p (tag-or-tags)
-    (let ((work-tags-found
-           (seq-intersection (cons org-funcs-work-tag org-funcs-historical-work-tags)
-                             (if (listp tag-or-tags)
-                                 tag-or-tags
-                               (s-split ":" tag-or-tags t)))))
-      (not (seq-empty-p work-tags-found))))
-
-  (defun org-funcs-dailies-file-path ()
-    (org-capture-put :default-time (current-time))
-    (let* ((template (alist-get "d" org-roam-dailies-capture-templates nil nil #'equal))
-           (file-path-template (plist-get template :file-name))
-           (expanded-path (concat (string-trim (org-roam-capture--fill-template file-path-template))
-                                  ".org")))
-      (f-join org-roam-directory expanded-path)))
-
-  (defun org-funcs-dailies-buffer-get-create ()
-    (let ((path (org-funcs-dailies-file-path)))
-      (with-current-buffer
-          (or (get-file-buffer path)
-              (find-file-noselect path))
-        (save-restriction
-          (widen)
-          (when (= (buffer-size) 0)
-            ;; Insert default content for dailies file.
-            (let* ((template (alist-get "d" org-roam-dailies-capture-templates nil nil #'equal))
-                   (content-template (plist-get template :head)))
-              (insert (org-roam-capture--fill-template content-template)))))
-
-        (current-buffer))))
-
-  (defun org-funcs-dailies-today ()
-    "Switch to today's notes file.
-
-  Slightly faster than the version that ships with org-roam."
-    (interactive)
-    (switch-to-buffer (org-funcs-dailies-buffer-get-create)))
+  (use-package org-funcs
+    :commands
+    org-funcs-dailies-today
+    org-funcs-agenda-dwim
+    org-funcs-punch-in
+    org-funcs-punch-out
+    org-funcs-punch-in-or-out
+    org-funcs-goto-work
+    org-funcs-todo-list
+    org-funcs-read-url-for-capture
+    org-funcs-url-to-reference
+    org-funcs-toggle-priority)
 #+end_src
+
 
 ** =evil-org= - Improve Evil integration with org-mode
 

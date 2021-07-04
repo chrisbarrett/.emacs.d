@@ -8,6 +8,7 @@
       fromOverlay = [
         shut-up
         use-package
+        dash-functional
         general
         no-littering
         f
@@ -89,6 +90,7 @@
         org-bullets
         htmlize
         evil-org
+        org-ref
       ];
 
       extraPackages = rec {
