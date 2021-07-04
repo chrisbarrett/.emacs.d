@@ -212,6 +212,13 @@ See: [[https://github.com/noctuid/general.el][noctuid/general.el]]
     :demand t)
 #+end_src
 
+** =delight= - Change or hide minor-mode lighters
+
+#+begin_src emacs-lisp
+  (use-package delight
+    :demand t)
+#+end_src
+
 ** Load features used often in config
 
 #+begin_src emacs-lisp
@@ -921,6 +928,7 @@ Automatically revert buffers if the underlying file changes on disk.
 
 #+begin_src emacs-lisp
   (use-package autorevert
+    :delight (auto-revert-mode " auto-revert")
     :hook (after-init . global-auto-revert-mode)
     :custom
     (auto-revert-verbose nil))
