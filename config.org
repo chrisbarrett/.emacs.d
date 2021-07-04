@@ -41,7 +41,6 @@ Make this checkout directory the value for ~user-emacs-directory~.
   (setq user-emacs-directory (file-name-directory (or load-file-name (buffer-file-name))))
 #+end_src
 
-
 ** Disable package.el
 
 Disable =package.el=, since it increases startup time and I use
@@ -145,7 +144,6 @@ Prevent GCs during user input in the minibuffer.
                          (buffer-string))))
         (if (string-match-p "dark" gtk-theme) light dark))))
 #+end_src
-
 
 ** Set initial theme settings
 
@@ -5128,7 +5126,6 @@ Set general org-mode variables.
     "t" '(org-show-todo-tree :wk "todo tree"))
 #+end_src
 
-
 ** =org-funcs= - org functions used throughout config
 
 #+begin_src emacs-lisp
@@ -5145,7 +5142,6 @@ Set general org-mode variables.
     org-funcs-url-to-reference
     org-funcs-toggle-priority)
 #+end_src
-
 
 ** =evil-org= - Improve Evil integration with org-mode
 
@@ -5227,7 +5223,6 @@ Automatically enter insert state when inserting new headings or using
             (font-lock-flush (point-min) (point-max))))))
     (add-hook 'after-theme-change-functions #'org-bullets-redraw))
 #+end_src
-
 
 ** Attachments
 
@@ -5386,7 +5381,6 @@ Exit minibuffer before adding notes.
     (advice-add 'org-add-log-note :before #'org-ad-exit-minibuffer))
 #+end_src
 
-
 ** =org-archive= - Archiving support for org-mode content
 
 #+begin_src emacs-lisp
@@ -5480,7 +5474,6 @@ cookie or 'cleared', which indicates no special priority.
           (org-move-to-column col)))))
 #+end_src
 
-
 ** =org-capture= - Templates for quickly capturing information
 
 Provides functionality for quickly inserting templated content into org files.
@@ -5532,7 +5525,6 @@ org-directory lisp config.
        :prepend nil
        :immediate-finish t))))
 #+end_src
-
 
 ** Export
 
@@ -5691,7 +5683,6 @@ Ensure we use dired rather than the Finder on macOS.
     "r" '(org-funcs-refile-dwim :wk "refile"))
 #+end_src
 
-
 *** Easily exclude on-hold tasks
 
 #+begin_src emacs-lisp
@@ -5708,7 +5699,6 @@ Ensure we use dired rather than the Finder on macOS.
 #+begin_src emacs-lisp
 
 #+end_src
-
 
 *** Integration with builtin =appt= (appointments)
 
