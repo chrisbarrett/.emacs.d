@@ -3141,6 +3141,18 @@ Provides nice commands for changing text scale for all buffers simultaneously
     (default-text-scale-amount 30))
 #+end_src
 
+** =minions= - Hides most minor modes behind a menu
+
+#+begin_src emacs-lisp
+  (use-package minions
+    :demand t
+    :custom
+    (minions-mode-line-lighter "...")
+    (minions-direct '(auto-revert-mode git-auto-commit-mode flycheck-mode))
+    :config
+    (minions-mode +1))
+#+end_src
+
 * File & Buffer management
 
 ** =ibuffer= - Better buffer list

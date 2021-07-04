@@ -95,6 +95,7 @@
         org-ref
         org-roam
         ox-gfm
+        minions
       ];
 
       extraPackages = rec {
