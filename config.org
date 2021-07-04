@@ -252,7 +252,7 @@ Teach =recentf= to use these paths
       (add-to-list 'recentf-exclude no-littering-var-directory)))
 #+end_src
 
-** Load Lisp files from certain other directories
+** Load site settings
 
 Load host-specific settings, which are not checked into version control.
 
@@ -262,6 +262,8 @@ Load host-specific settings, which are not checked into version control.
   (when (file-exists-p user-site-file)
     (load-file-with-stats user-site-file))
 #+end_src
+
+** Load Lisp from other locations                                  :disabled:
 
 Load lisp in =org= and =ledger= dirs.
 
