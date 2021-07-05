@@ -97,7 +97,6 @@
         ox-gfm
         minions
         memoize
-        company-org-roam
         deft
         helm-bibtex
         bibtex

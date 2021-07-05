@@ -5999,16 +5999,6 @@ org-agenda would attempt to load every org-roam file.
     (run-with-idle-timer 2 nil 'org-roam-gc))
 #+end_src
 
-*** =company-org-roam= - Adds org-roam cards to completions
-
-#+begin_src emacs-lisp
-  (use-package company-org-roam
-    :after (:all org-roam company)
-    :demand t
-    :config
-    (push 'company-org-roam company-backends))
-#+end_src
-
 *** =deft= - Provides a fast note-taking and search UI
 
 #+begin_src emacs-lisp
