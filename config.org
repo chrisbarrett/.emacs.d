@@ -5946,7 +5946,7 @@ org-agenda would attempt to load every org-roam file.
                                 (when (bound-and-true-p org-roam-directory)
                                   (list
                                    (f-join org-roam-directory "notes")
-                                   (f-join org-roam-directory "dailies")))))))
+                                   (expand-file-name org-roam-dailies-directory org-roam-directory)))))))
       (seq-mapcat #'config-org-roam--org-files-with-todos (seq-filter #'identity dirs))))
 
   (defun config-org-roam--update-agenda-files (&rest _)
