@@ -127,6 +127,24 @@ With ARG, don't resume previously clocked task."
                         #'org-funcs-punch-in)))
 
 
+;; Capture template helpers
+
+(defun org-funcs-update-capture-templates (templates)
+  "Merge TEMPLATES with existing values in `org-capture-templates'."
+  (let ((ht (ht-merge (ht-from-alist org-capture-templates) (ht-from-alist templates))))
+    (setq org-capture-templates (-sort (-on 'string-lessp 'car) (ht->alist ht)))))
+
+(defun org-funcs-capture-template-apply-defaults (template)
+  (-let ((defaults '(:clock-keep t :prepend t :immediate-finish nil :jump-to-captured nil :empty-lines 1))
+         ((positional-args keywords) (-split-with (-not #'keywordp) template)))
+    (append positional-args (ht->plist (ht-merge
+                                        (ht-from-plist defaults)
+                                        (ht-from-plist keywords))))))
+
+(cl-defun org-funcs-capture-template (key label form template &rest keywords)
+  (org-funcs-capture-template-apply-defaults (append (list key label 'entry form template) keywords)))
+
+
 ;; Agenda utils
 
 (defun org-funcs-exclude-tasks-on-hold (tag)
