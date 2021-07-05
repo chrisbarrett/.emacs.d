@@ -2126,7 +2126,9 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
     "&" '(async-shell-command :wk "shell cmd (async)")
     "'" (general-predicate-dispatch 'poporg-dwim
           (bound-and-true-p poporg-mode) 'poporg-edit-exit
+          (bound-and-true-p edit-indirect--overlay) 'edit-indirect-commit
           (derived-mode-p 'org-mode) 'org-edit-special
+          (and (derived-mode-p 'markdown-mode) (markdown-code-block-at-point-p)) 'markdown-edit-code-block
           (bound-and-true-p org-src-mode) 'org-edit-src-exit)
     "/" '(counsel-projectile-rg :wk "rg")
     ":" '(eval-expression-interactively :wk "eval")
