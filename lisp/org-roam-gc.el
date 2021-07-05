@@ -33,7 +33,7 @@
     (org-roam-gc--empty-content-p (current-buffer))))
 
 (defun org-roam-gc-dailies-files ()
-  (f-files (f-join org-roam-directory "dailies")))
+  (f-files (expand-file-name org-roam-dailies-directory org-roam-directory)))
 
 (defmacro org-roam-gc--log (msg &rest args)
   `(when org-roam-gc-debug
