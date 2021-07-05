@@ -5575,7 +5575,7 @@ cookie or 'cleared', which indicates no special priority.
 #+begin_src emacs-lisp
   (use-package org
     :custom
-    (org-export-backends '(ascii html latex odt slack gfm koma-letter))
+    (org-export-backends '(ascii html latex odt slack gfm))
     (org-html-html5-fancy t)
     (org-html-postamble nil)
     (org-export-exclude-tags '("noexport" "no_export" "crypt" "ignore"))
