@@ -5855,9 +5855,9 @@ Ensure we use dired rather than the Finder on macOS.
   (use-package org-roam
     :hook (org-mode . org-roam-mode)
     :custom
+    (org-roam-verbose nil)
     (org-roam-directory (f-join paths-org-directory "roam"))
     (org-roam-index-file (f-join org-roam-directory "index.org"))
-
     :general
     (:states '(insert normal) :keymap 'org-mode-map
      "C-c i" 'org-roam-insert
