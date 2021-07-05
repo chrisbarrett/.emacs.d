@@ -5332,11 +5332,6 @@ org headings.
   (use-package ox-slack
     :after org)
 
-  (use-package ox-koma-letter
-    :after org
-    :config
-    (add-to-list 'org-latex-packages-alist '("AUTO" "babel" nil)))
-
   (use-package htmlize
     :defer t)
 #+end_src
