@@ -2546,7 +2546,7 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
     "d" '(org-funcs-dailies-date :wk "dailies: date...")
 
     "b" '(helm-bibtex :wk "bibliography...")
-    ;; TODO: org-ref (r)
+    "r" 'org-ref-bibtex-hydra/body
     "u" '(org-funcs-url-to-reference :wk "create reference of URL...")
 
     "g" '(org-capture-goto-last-stored :wk "last captured")
