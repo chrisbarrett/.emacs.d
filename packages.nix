@@ -99,7 +99,6 @@
         memoize
         deft
         helm-bibtex
-        bibtex
         bibtex-completion
         org-roam-bibtex
       ];
