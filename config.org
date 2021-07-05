@@ -5094,7 +5094,7 @@ buffer when a hard newline would be used.
 
 * =org-mode= - Org document format & editing support
 
-Set general org-mode variables.
+** Set general org-mode variables.
 
 #+begin_src emacs-lisp
   (use-package org
@@ -5899,15 +5899,336 @@ Ensure we use dired rather than the Finder on macOS.
     (advice-add 'org-agenda-redo :after #'config-org--draw-separator))
 #+end_src
 
-** TODO =org-roam= - Personal wiki & research tooling
+** =org-roam= - Personal wiki & research tooling
 
 #+begin_src emacs-lisp
   (use-package org-roam
-    :demand t
+    :hook (org-mode . org-roam-mode)
     :custom
     (org-roam-directory (f-join paths-org-directory "roam"))
-    (org-roam-index-file (f-join org-roam-directory "index.org")))
+    (org-roam-index-file (f-join org-roam-directory "index.org"))
+
+    :general
+    (:states '(insert normal) :keymap 'org-mode-map
+     "C-c i" 'org-roam-insert
+     "C-c C-i" 'org-roam-insert
+     "C-c TAB" (general-predicate-dispatch 'org-roam-insert
+                 (org-at-table-p) 'org-ctrl-tab)
+     "C-c I" 'org-roam-insert-immediate))
 #+end_src
+
+*** Define shared paths used across packages
+
+#+begin_src emacs-lisp
+  (defvar config-org-roam-bibliography-notes-directory (f-join org-directory "roam" "notes"))
+  (defvar config-org-roam-bibliography-path (f-join org-directory "bibliography.bib"))
+  (defvar config-org-roam-bibnotes-file (f-join config-org-roam-bibliography-notes-directory "index.org"))
+
+  (defconst config-org-roam--default-heading-title "TODO Link literature notes to zettel in org-roam")
+
+  (defconst config-org-roam--notes-file-template (string-trim-left (format "
+  ,#+title: ${title}
+  ,#+roam_key: cite:${=key=}
+  ,#+category: ${=key=}
+  ,#+roam_tags:
+
+  - keywords ::
+
+  ,* %s
+  :PROPERTIES:
+  :CUSTOM_ID: ${=key=}
+  :NOTER_DOCUMENT: %%(f-relative (orb-process-file-field \"${=key=}\") org-directory)
+  :END:
+  " config-org-roam--default-heading-title)))
+#+end_src
+
+#+begin_src emacs-lisp
+  (make-directory config-org-roam-bibliography-notes-directory t)
+#+end_src
+
+*** Add roam files with TODOs to agenda
+
+Improve agenda performance by only including files that have todos. Otherwise,
+org-agenda would attempt to load every org-roam file.
+
+#+begin_src emacs-lisp
+  (defun config-org-roam--org-files-with-todos (dir)
+    (with-temp-buffer
+      (let ((default-directory dir))
+        (call-process "rg" nil t nil
+                      "^[*]+ +(TODO|WAIT)"
+                      "--files-with-matches"
+                      "--type" "org"
+                      "--case-sensitive"
+                      "--max-depth" "1")
+        (let ((results (split-string (buffer-substring (point-min) (point-max)) "\n" t)))
+          (seq-map (lambda (it) (f-join dir it))
+                   results)))))
+
+  (ignore-errors
+    (memoize #'config-org-roam--org-files-with-todos "1 minute"))
+
+  (defun config-org-roam--find-org-files-with-todos ()
+    (let ((dirs (-flatten (list org-directory
+                                (when (bound-and-true-p org-roam-directory)
+                                  (list
+                                   (f-join org-roam-directory "notes")
+                                   (f-join org-roam-directory "dailies")))))))
+      (seq-mapcat #'config-org-roam--org-files-with-todos (seq-filter #'identity dirs))))
+
+  (defun config-org-roam--update-agenda-files (&rest _)
+    (setq org-agenda-files `(,(f-join org-directory "archive.org")
+                             ,(f-join org-directory "tasks")
+                             ,@(config-org-roam--find-org-files-with-todos))))
+#+end_src
+
+**** Update every time we enter an org-roam file
+
+#+begin_src emacs-lisp
+  (add-hook 'org-roam-mode-hook #'config-org-roam--update-agenda-files)
+#+end_src
+
+**** Update every time we show the agenda
+
+#+begin_src emacs-lisp
+  (advice-add 'org-agenda :before #'config-org-roam--update-agenda-files)
+#+end_src
+
+**** Update agenda files on save or capture
+
+#+begin_src emacs-lisp
+  (defun config-org-roam--buffer-has-todo-keywords-p ()
+    (and (derived-mode-p 'org-mode)
+         (save-match-data
+           (save-excursion
+             (goto-char (point-min))
+             (search-forward-regexp org-todo-regexp nil t)))))
+
+  (defun config-org-roam--maybe-add-to-agenda-files ()
+    (when (and (derived-mode-p 'org-mode)
+               (config-org-roam--buffer-has-todo-keywords-p)
+               (buffer-file-name)
+               (string-match-p (regexp-quote (f-join org-roam-directory "dailies"))
+                               (buffer-file-name))
+               (buffer-file-name))
+      (add-to-list 'org-agenda-files (buffer-file-name))))
+
+  (add-hook 'org-capture-after-finalize-hook #'config-org-roam--maybe-add-to-agenda-files)
+  (add-hook 'after-save-hook #'config-org-roam--maybe-add-to-agenda-files)
+#+end_src
+
+*** Automatically clean up empty dailies
+
+#+begin_src emacs-lisp
+  (use-package org-roam-gc
+    :after org-roam
+    :demand t
+    :config
+    (run-with-idle-timer 2 nil 'org-roam-gc))
+#+end_src
+
+*** =company-org-roam= - Adds org-roam cards to completions
+
+#+begin_src emacs-lisp
+  (use-package company-org-roam
+    :after (:all org-roam company)
+    :demand t
+    :config
+    (push 'company-org-roam company-backends))
+#+end_src
+
+*** =deft= - Provides a fast note-taking and search UI
+
+#+begin_src emacs-lisp
+  (use-package deft
+    :commands (deft)
+    :custom
+    (deft-directory org-roam-directory)
+    (deft-default-extension "org")
+    (deft-use-filter-string-for-filename t)
+    (deft-auto-save-interval 0)
+    (deft-file-naming-rules '((noslash . "_")
+                              (nospace . "_")
+                              (case-fn . downcase)))
+    :general
+    (:states 'emacs :keymaps 'deft-mode-map
+     "C-g" 'deft-kill-buffer
+     "<escape>" 'deft-kill-buffer)
+    :config
+    (defun deft-kill-buffer ()
+      (interactive)
+      (when (bound-and-true-p deft-buffer)
+        (kill-buffer deft-buffer)))
+
+    (add-to-list 'deft-extensions "tex"))
+#+end_src
+
+*** =bibtex= - maintain a bibliography
+
+#+begin_src emacs-lisp
+  (use-package bibtex
+    :custom
+    (bibtex-dialect 'biblatex)
+    (bibtex-completion-library-path (f-join org-directory "pdfs/")))
+#+end_src
+
+*** =bibtex-completion= -
+
+#+begin_src emacs-lisp
+  (use-package bibtex-completion
+    :custom
+    (bibtex-completion-notes-path config-org-roam-bibliography-notes-directory)
+    (bibtex-completion-bibliography config-org-roam-bibliography-path)
+    (bibtex-completion-pdf-field "file")
+    (bibtex-completion-notes-template-multiple-files config-org-roam--notes-file-template))
+#+end_src
+
+*** =helm-bibtex= - UI for searching the =bibtex= bibliography
+
+#+begin_src emacs-lisp
+  (use-package helm-bibtex
+    :commands
+    helm-bibtex
+    helm-bibtex-with-local-bibliography
+    helm-bibtex-with-notes)
+#+end_src
+
+*** =org-roam-bibtex= - integrate org-roam with bibtex for bibliography management
+
+#+begin_src emacs-lisp
+  (use-package org-roam-bibtex
+    :hook (org-roam-mode . org-roam-bibtex-mode)
+    :custom
+    (org-roam-bibtex-preformat-keywords '("=key=" "title" "url" "file" "keywords"))
+    (orb-note-actions-frontend 'hydra)
+    (orb-templates
+     `(("r" "ref" plain (function org-roam-capture--get-point)
+        ""
+        :file-name "${slug}"
+        :head ,config-org-roam--notes-file-template
+        :unnarrowed t)))
+
+    :init
+    (use-package orb-note-actions
+      :after org-roam-bibtex
+      :general (:keymaps 'org-mode-map "C-c n a" 'orb-note-actions)))
+#+end_src
+
+*** =org-noter= - annotate PDFs etc to the an org file
+
+I use a custom fork of =org-noter= that provides extra hooks to customise the
+buffer it creates. This is the final piece needed to make literature notes
+buffers the same, no matter how I create them.
+
+#+begin_src emacs-lisp
+  (use-package org-noter
+    :after (:any org pdf-view)
+
+    :config
+    (defun org-noter-kill-pdf-and-session ()
+      (interactive)
+      (if (< 1 (length (window-list)))
+          (delete-window)
+        (bury-buffer))
+      (org-noter--with-valid-session (org-noter-kill-session session)))
+
+    :general
+    (:keymaps 'pdf-view-mode-map :states '(normal visual motion)
+     "q" 'org-noter-kill-pdf-and-session
+     "i" 'org-noter-insert-note
+     [?\t] 'org-noter)
+
+    :custom
+    ((org-noter-always-create-frame nil)
+     (org-noter-root-headline-format-function `(lambda (_) ,config-org-roam--default-heading-title))
+     (org-noter-doc-property-in-notes t)
+     (org-noter-separate-notes-from-heading t)
+     (org-noter-show-notes-count-in-doc-mode-line nil)
+     (org-noter-hide-other t)
+     (org-noter-auto-save-last-location t)
+     (org-noter-insert-note-no-questions t)
+     (org-noter-default-notes-file-names nil)
+     (org-noter-notes-search-path (list config-org-roam-bibliography-notes-directory)))
+
+    :init
+    (defun config-org-roam--maybe-org-noter ()
+      (when (or (org-entry-get (point) "NOTER_DOCUMENT")
+                (org-entry-get (point) "NOTER_PAGE"))
+        (org-noter)))
+
+    (add-hook 'org-open-at-point-functions 'config-org-roam--maybe-org-noter)
+
+    :config
+    (defun config-org-roam--guess-pdf-title-for-notes ()
+      (let* ((most-recent-pdf (seq-find (lambda (it)
+                                          (with-current-buffer it
+                                            (derived-mode-p 'pdf-view-mode 'doc-view-mode)))
+                                        (buffer-list)))
+             (pdf-meta (pdf-info-metadata most-recent-pdf))
+             (found (alist-get 'title pdf-meta)))
+        (if (or (null found) (string-blank-p found))
+            "UNKNOWN TITLE"
+          found)))
+
+    (defun config-org-roam--insert-document-header-for-org-noter-notes ()
+      (org-with-wide-buffer
+       (goto-char (point-min))
+       (unless (string-match-p (rx "#+title:") (buffer-substring (line-beginning-position) (line-end-position)))
+         (let* ((key (file-name-base (buffer-file-name)))
+                (title (config-org-roam--guess-pdf-title-for-notes))
+                (inhibit-read-only t))
+           (insert (string-trim-left (format "
+  ,#+title: %s
+  ,#+roam_key: cite:%s
+  ,#+category: %s
+  ,#+roam_tags:
+
+  - keywords ::
+
+  " title key key)))))))
+
+    (add-hook 'org-noter-root-headline-inserted-hook #'config-org-roam--insert-document-header-for-org-noter-notes))
+#+end_src
+
+*** =org-ref= - insert and format bibtex references
+
+#+begin_src emacs-lisp
+  (use-package org-ref
+    :custom
+    ((org-ref-completion-library 'org-ref-helm-cite)
+     (org-ref-pdf-directory (f-join org-directory "pdfs/"))
+     (org-ref-get-pdf-filename-function 'org-ref-get-pdf-filename-helm-bibtex)
+     (org-ref-default-bibliography (list config-org-roam-bibliography-path))
+     (org-ref-bibliography-notes config-org-roam-bibnotes-file)
+     (org-ref-note-title-format (string-trim-left "
+  ,* TODO %y - %t
+  :PROPERTIES:
+  :CUSTOM_ID: %k
+  :NOTER_DOCUMENT: %F
+  :ROAM_KEY: cite:%k
+  :AUTHOR: %9a
+  :JOURNAL: %j
+  :YEAR: %y
+  :VOLUME: %v
+  :PAGES: %p
+  :DOI: %D
+  :URL: %U
+  :END:
+
+  "))
+     (org-ref-notes-directory config-org-roam-bibliography-notes-directory)
+     (org-ref-notes-function 'orb-edit-notes)
+     ;; Make detection regexps a little more robust.
+     (org-ref-url-date-re
+      (rx "<meta property=\"" (group (+? alnum) ":published") "\"" (+? (not (any ">"))) "content=\"" (group (+? nonl)) "\""))
+     (org-ref-url-author-re
+      (rx "<meta name=\"author\"" (+? (not (any ">"))) "content=\"" (group (+? nonl)) "\"")))
+    :config
+    (require 'org-ref-pdf)
+    (require 'org-ref-url-utils)
+    (defalias 'dnd-unescape-uri 'dnd--unescape-uri))
+#+end_src
+
 
 * Load Lisp from other locations
 

@@ -96,6 +96,13 @@
         org-roam
         ox-gfm
         minions
+        memoize
+        company-org-roam
+        deft
+        helm-bibtex
+        bibtex
+        bibtex-completion
+        org-roam-bibtex
       ];
 
       extraPackages = rec {
