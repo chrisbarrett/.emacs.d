@@ -21,27 +21,28 @@
   ;;; Code:
 #+end_src
 
-Set an environment variable so child processes can detect that they're inside
-Emacs.
+** Set an environment variable so children can detect that they're inside Emacs
 
 #+begin_src emacs-lisp
   (setenv "INSIDE_EMACS" "true")
 #+end_src
 
-Crank up the max size of subprocess output to read. This is needed for language
-servers to perform well, since they communicate using large chunks of JSON.
+** Crank up the max size of subprocess output to read.
+
+This is needed for language servers to perform well, since they communicate
+using large chunks of JSON.
 
 #+begin_src emacs-lisp
   (setq read-process-output-max (* 1024 1024))
 #+end_src
 
-Make this checkout directory the value for ~user-emacs-directory~.
+** Make this checkout directory the value for ~user-emacs-directory~
 
 #+begin_src emacs-lisp
   (setq user-emacs-directory (file-name-directory (or load-file-name (buffer-file-name))))
 #+end_src
 
-** Disable package.el
+** Disable package.el to improve startup time
 
 Disable =package.el=, since it increases startup time and I use
 [[https://github.com/nix-community/emacs-overlay][nix-community/emacs-overlay]] to handle package installation.
@@ -50,7 +51,7 @@ Disable =package.el=, since it increases startup time and I use
   (setq package-enable-at-startup nil)
 #+end_src
 
-** Garbage collection settings
+** Increase GC limit to reduce collections during startup
 
 Garbage collection runs slow down the Emacs startup sequence. Temporarily
 increase settings. We will set final values at the end of the startup sequence.
@@ -60,9 +61,8 @@ increase settings. We will set final values at the end of the startup sequence.
   (setq gc-cons-percentage 0.7)
 #+end_src
 
-** ELN cache path
 
-Override the ELN cache directory so that it's in an XDG-conformant directory.
+** Put the ELN cache directory in an XDG-conformant place
 
 #+begin_src emacs-lisp
   (when (boundp 'comp-eln-load-path)
@@ -71,15 +71,17 @@ Override the ELN cache directory so that it's in an XDG-conformant directory.
       (add-to-list 'comp-eln-load-path cache-dir)))
 #+end_src
 
-** Apply early display settings
+** Enable pixel-wise frame resizing
 
-Enable pixel-wise frame resizing so tiling window managers do the right thing.
+This helps tiling window managers apply the right size to Emacs frames.
 
 #+begin_src emacs-lisp
   (setq frame-resize-pixelwise t)
 #+end_src
 
-Disable some window chrome that doesn't make sense in a keyboard-driven UI.
+** Disable menu bars, etc
+
+Disable window chrome that doesn't make sense in a keyboard-driven UI.
 
 #+begin_src emacs-lisp
   (custom-set-variables '(menu-bar-mode nil)
@@ -119,13 +121,13 @@ See: [[https://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-thre
     (setq gc-cons-threshold config-default-gc-threshold))
 #+end_src
 
-Restore GC settings after init sequence has completed.
+*** Restore GC settings after init sequence has completed
 
 #+begin_src emacs-lisp
   (add-hook 'after-init-hook #'config--enable-gc)
 #+end_src
 
-Prevent GCs during user input in the minibuffer.
+*** Prevent GCs during user input in the minibuffer
 
 #+begin_src emacs-lisp
   (add-hook 'minibuffer-setup-hook #'config--inhibit-gc)
@@ -135,11 +137,11 @@ Prevent GCs during user input in the minibuffer.
 ** Start server
 
 #+begin_src emacs-lisp
-  (server-start)
+  (unless noninteractive
+    (server-start))
 #+end_src
 
-
-** Define a function to select a value depending on the current GTK theme.
+** Define a function to select a value depending on the current GTK theme
 
 #+begin_src emacs-lisp
   (defun gtk-theme-class ()
@@ -158,7 +160,7 @@ Prevent GCs during user input in the minibuffer.
         light)))
 #+end_src
 
-** Set initial theme settings
+** Set background colour based on GTK theme
 
 Set reasonable placeholder foreground and background colours until the theme is
 loaded. Use the current GNOME theme to determine whether to use light or dark colours.
@@ -168,9 +170,7 @@ loaded. Use the current GNOME theme to determine whether to use light or dark co
   (set-foreground-color (choose-by-system-theme :dark "#bbc2cf" :light "#556b72"))
 #+end_src
 
-** Configure =use-package=
-
-=use-package= provides a structured DSL for Lisp package configuration.
+** =use-package= - DSL for Lisp package configuration
 
 See: [[https://github.com/jwiegley/use-package][jwiegley/use-package]]
 
@@ -203,7 +203,7 @@ Define a helper function for loading files with =use-package='s timing functiona
 #+end_src
 
 
-Enable =general=, which provides a key-binding DSL supported by =use-package=.
+** =general= - Provides a rich key-binding DSL supported by =use-package=
 
 See: [[https://github.com/noctuid/general.el][noctuid/general.el]]
 
@@ -227,7 +227,7 @@ See: [[https://github.com/noctuid/general.el][noctuid/general.el]]
   (require 'subr-x)
 #+end_src
 
-Load =cl= early to avoid warnings caused by reorganised functions in Emacs 27+.
+** Load =cl= early to avoid warnings caused by reorganised functions in Emacs 27+
 
 #+begin_src emacs-lisp
   (with-no-warnings
@@ -235,6 +235,8 @@ Load =cl= early to avoid warnings caused by reorganised functions in Emacs 27+.
 #+end_src
 
 ** Load autoloads
+
+I slam all package autoloads into a single file and read them in here.
 
 #+begin_src emacs-lisp
   (load-file-with-stats (expand-file-name "config-autoloads.el" user-emacs-directory))
@@ -245,12 +247,6 @@ Load =cl= early to avoid warnings caused by reorganised functions in Emacs 27+.
 #+begin_src emacs-lisp
   (require 'paths (ignore-errors (expand-file-name "paths.el" user-emacs-directory)))
   (paths-initialise)
-#+end_src
-
-Load themes from =.emacs.d/themes=.
-
-#+begin_src emacs-lisp
-  (setq custom-theme-directory (concat paths-themes-directory "/"))
 #+end_src
 
 *** Configure =no-littering= to use these paths
@@ -267,7 +263,7 @@ See: [[https://github.com/emacscollective/no-littering][emacscollective/no-litte
     (no-littering-var-directory paths-cache-directory))
 #+end_src
 
-Teach =recentf= to use these paths
+*** Teach =recentf= to use these paths
 
 #+begin_src emacs-lisp
   (use-package recentf
@@ -288,7 +284,7 @@ Load host-specific settings, which are not checked into version control.
     (load-file-with-stats user-site-file))
 #+end_src
 
-** =doom-themes= - Use doom theme
+** =doom-themes= - Enable appropriate theme for GTK theme
 
 #+begin_src emacs-lisp
   (use-package doom-themes
@@ -300,7 +296,15 @@ Load host-specific settings, which are not checked into version control.
     (add-to-list 'custom-theme-load-path (file-name-directory (locate-library "doom-themes")))
     :config
     (load-theme (choose-by-system-theme :light 'doom-solarized-light :dark 'doom-one) t))
+#+end_src
 
+** Define Lisp functions for switching theme via emacsclient
+
+I have =dark= and =light= scripts I execute to change theme across all my
+applications. The following functions will be invoked by those scripts over
+=emacsclient=.
+
+#+begin_src emacs-lisp
   (defun config-themes-light ()
     (dolist (theme custom-enabled-themes)
       (disable-theme theme))
@@ -429,7 +433,7 @@ Disable file dialogs.
   (setq use-dialog-box nil)
 #+end_src
 
-** Enable useful commands
+** Enable useful commands that are disabled by default
 
 #+begin_src emacs-lisp
   (put 'narrow-to-region 'disabled nil)
@@ -438,48 +442,49 @@ Disable file dialogs.
   (put 'erase-buffer 'disabled nil)
 #+end_src
 
-** Enable debugging via key command
+** Set global keybindings for =toggle-debug-on-error= and friends
 
 #+begin_src emacs-lisp
   (general-define-key "C-c e e" 'toggle-debug-on-error)
   (general-define-key "C-c e q" 'toggle-debug-on-quit)
 #+end_src
 
-** General file & buffer settings
+** General file formatting
 
-Always insert a final newline, as per the Unix convention.
+*** Always insert a final newline, as per the Unix convention.
 
 #+begin_src emacs-lisp
   (setq require-final-newline t)
 #+end_src
 
-Make scripts executable (using =chmod=) after save.
-
-#+begin_src emacs-lisp
-  (add-hook 'after-save-hook #'executable-make-buffer-file-executable-if-script-p)
-#+end_src
-
-Set default indentation settings.
+*** Set reasonable default indentation settings
 
 #+begin_src emacs-lisp
   (setq-default fill-column 80)
   (setq-default indent-tabs-mode nil)
 #+end_src
 
-Don't require two spaces to signal the end of a sentence--I don't use
-sentence-based commands that often anyway.
+*** Make scripts executable after save
+
+#+begin_src emacs-lisp
+  (add-hook 'after-save-hook #'executable-make-buffer-file-executable-if-script-p)
+#+end_src
+
+*** Don't require two spaces to signal the end of a sentence
+
+I don't use sentence-based commands that often anyway.
 
 #+begin_src emacs-lisp
   (setq sentence-end-double-space nil)
 #+end_src
 
-Don't nag when trying to create a new file or buffer.
+*** Don't nag when trying to create a new file or buffer
 
 #+begin_src emacs-lisp
   (setq confirm-nonexistent-file-or-buffer nil)
 #+end_src
 
-Do not show =^M= chars in files containing mixed UNIX and DOS line endings.
+*** Do not show =^M= chars in files containing mixed UNIX and DOS line endings
 
 #+begin_src emacs-lisp
   (defun config--hide-dos-eol ()
@@ -489,9 +494,19 @@ Do not show =^M= chars in files containing mixed UNIX and DOS line endings.
   (add-hook 'after-change-major-mode-hook #'config--hide-dos-eol)
 #+end_src
 
+*** Use UTF-8 everywhere by default
+
+#+begin_src emacs-lisp
+  (prefer-coding-system 'utf-8)
+  (set-default-coding-systems 'utf-8)
+  (set-terminal-coding-system 'utf-8)
+  (set-keyboard-coding-system 'utf-8)
+  (set-language-environment 'utf-8)
+#+end_src
+
 ** Whitespace handling
 
-Insert a leading space after comment start for new comment lines.
+*** Insert a leading space after comment start for new comment lines
 
 #+begin_src emacs-lisp
   (autoload 'thing-at-point-looking-at "thingatpt")
@@ -505,28 +520,15 @@ Insert a leading space after comment start for new comment lines.
   (advice-add #'comment-indent-new-line :after #'config--comment-insert-space)
 #+end_src
 
-Bind some simple key commands.
+*** Bind =cycle-spacing= to ~M-SPC~
 
 #+begin_src emacs-lisp
-  (use-package simple
-    :general ("M-SPC" #'cycle-spacing))
-#+end_src
-
-** File encoding
-
-Use UTF-8 everywhere by default.
-
-#+begin_src emacs-lisp
-  (prefer-coding-system 'utf-8)
-  (set-default-coding-systems 'utf-8)
-  (set-terminal-coding-system 'utf-8)
-  (set-keyboard-coding-system 'utf-8)
-  (set-language-environment 'utf-8)
+  (general-define-key "M-SPC" 'cycle-spacing)
 #+end_src
 
 ** Disable unwanted features
 
-Don't show the default startup screen.
+*** Inhibit the default startup screen
 
 #+begin_src emacs-lisp
   (setq initial-scratch-message nil)
@@ -534,47 +536,47 @@ Don't show the default startup screen.
   (setq initial-major-mode 'fundamental-mode)
 #+end_src
 
-Disable cursor blinking--I find it distracting.
+*** Disable cursor blinking
 
 #+begin_src emacs-lisp
   (blink-cursor-mode -1)
 #+end_src
 
-Never show the useless hello file.
+*** Never show the useless hello file
 
 #+begin_src emacs-lisp
   (defalias #'view-hello-file #'ignore)
 #+end_src
 
-
-Unset 2-window scrolling shortcuts.
+*** Unset 2-window scrolling shortcuts
 
 #+begin_src emacs-lisp
   (global-unset-key (kbd "<f2>"))
   (global-unset-key (kbd "S-<f2>"))
 #+end_src
 
-Disable audible bell.
+*** Disable audible bell
 
 #+begin_src emacs-lisp
   (setq ring-bell-function #'ignore)
 #+end_src
 
 
-Don't pollute directories with lockfiles, since I only run one instance of Emacs
-and never need to prevent concurrent file access.
+*** Don't pollute directories with lockfiles
+
+I only run one instance of Emacs and never need to prevent concurrent file access.
 
 #+begin_src emacs-lisp
   (setq create-lockfiles nil)
 #+end_src
 
-Don't nag when following symlinks to files under version control.
+*** Don't nag when following symlinks to files under version control
 
 #+begin_src emacs-lisp
   (setq vc-follow-symlinks t)
 #+end_src
 
-Don't try to ping things that look like domain names
+*** Don't try to ping things that look like domain names
 
 #+begin_src emacs-lisp
   (use-package ffap
@@ -582,14 +584,15 @@ Don't try to ping things that look like domain names
     (ffap-machine-p-known 'reject))
 #+end_src
 
-Disable warnings from obsolete advice system, since these are generally not
-actionable.
+*** Disable warnings from obsolete advice system
+
+These since these are caused by packages and are generally not actionable by me.
 
 #+begin_src emacs-lisp
   (setq ad-redefinition-action 'accept)
 #+end_src
 
-Don't confirm before killing subprocesses on exit.
+*** Don't confirm before killing subprocesses on exit
 
 #+begin_src emacs-lisp
   (setq confirm-kill-processes nil)
@@ -601,9 +604,8 @@ Don't confirm before killing subprocesses on exit.
   (advice-add #'save-buffers-kill-emacs :around #'config--suppress-no-process-prompt)
 #+end_src
 
-** ANSI colour code support
 
-Process ANSI color codes in shell output.
+** Convert ANSI color codes to text properties in shell output
 
 #+begin_src emacs-lisp
   (autoload 'ansi-color-apply-on-region "ansi-color")
@@ -619,13 +621,13 @@ Process ANSI color codes in shell output.
 
 ** Minibuffer settings
 
-Keep a longer history by default.
+*** Keep a longer history by default
 
 #+begin_src emacs-lisp
   (setq history-length 1000)
 #+end_src
 
-Hide files with boring extensions from find-file
+*** Hide files with boring extensions from find-file
 
 #+begin_src emacs-lisp
   (defun config--ff-hide-boring-files-in-completion (result)
@@ -647,7 +649,7 @@ Hide files with boring extensions from find-file
   (advice-add #'completion--file-name-table :filter-return #'config--ff-hide-boring-files-in-completion)
 #+end_src
 
-Remove lingering =*completions*= buffer whenever we exit the minibuffer.
+*** Remove lingering =*completions*= buffer whenever we exit the minibuffer
 
 #+begin_src emacs-lisp
   (defun config--cleanup-completions-buffer ()
@@ -659,8 +661,9 @@ Remove lingering =*completions*= buffer whenever we exit the minibuffer.
 
 ** Backup settings
 
-Emacs will automatically keep backups of unsaved files a you edit, which helps
-with crash recovery.
+*** Disable backup files
+
+Meh, I use git.
 
 #+begin_src emacs-lisp
   (setq make-backup-files nil)
@@ -669,7 +672,7 @@ with crash recovery.
   ;; (setq version-control t)
 #+end_src
 
-Create autosave files inside the XDG cache directory.
+*** Create autosave files inside the XDG cache directory.
 
 #+begin_src emacs-lisp
   (setq auto-save-file-name-transforms
@@ -689,20 +692,20 @@ Keep custom settings in a separate file. This keeps =init.el= clean.
 
 ** Copy-paste & clipboard settings
 
-Share the Emacs kill ring with the host OS clipboard.
+*** Share the Emacs kill ring with the host OS clipboard
 
 #+begin_src emacs-lisp
   (setq select-enable-clipboard t)
   (setq save-interprogram-paste-before-kill t)
 #+end_src
 
-Prevent duplicated entries in the kill ring.
+*** Prevent duplicated entries in the kill ring
 
 #+begin_src emacs-lisp
   (setq kill-do-not-save-duplicates t)
 #+end_src
 
-Clean up whitespace when inserting yanked text.
+*** Clean up whitespace when inserting yanked text
 
 #+begin_src emacs-lisp
   (defun config--yank-ws-cleanup (&rest _)
@@ -732,19 +735,19 @@ than paginating through the buffer.
 
 ** Help
 
-Always focus on help windows.
+*** Always focus on help windows
 
 #+begin_src emacs-lisp
   (setq help-window-select t)
 #+end_src
 
-Don't show 'press q to close' message.
+*** Don't show 'press q to close' message
 
 #+begin_src emacs-lisp
   (advice-add 'help-window-display-message :override #'ignore)
 #+end_src
 
-Customise how help buffers should be displayed.
+*** Customise how help buffers should be displayed
 
 #+begin_src emacs-lisp
   (add-to-list 'display-buffer-alist
@@ -754,8 +757,9 @@ Customise how help buffers should be displayed.
                  (window-width    . 80)))
 #+end_src
 
-=apropos= searches for symbols matching a pattern. Extend it to search more kinds
-of symbols.
+** =apropos= - searches for symbols matching a pattern
+
+Extend =apropos= to search for more kinds of symbols.
 
 #+begin_src emacs-lisp
   (use-package apropos
@@ -763,9 +767,7 @@ of symbols.
     (apropos-do-all t))
 #+end_src
 
-** State persistence
-
-=saveplace= persists the last location visited in a buffer.
+** =saveplace= - Persist the last location visited in a buffer
 
 #+begin_src emacs-lisp
   (use-package saveplace
@@ -773,7 +775,7 @@ of symbols.
     :config (save-place-mode +1))
 #+end_src
 
-=savehist= saves the minibuffer history across sessions.
+** =savehist= - Save the minibuffer history across sessions
 
 #+begin_src emacs-lisp
   (use-package savehist
@@ -795,9 +797,7 @@ Configure Emacs so that each paragraph may have a difference text direction.
   (setq-default bidi-paragraph-start-re "^")
 #+end_src
 
-** =display-buffer= settings
-
-Prevent display-buffer from displaying in new frames.
+** Prevent display-buffer from creating new frames
 
 #+begin_src emacs-lisp
   (defun config--display-buffer-fallback (buffer &rest _)
@@ -832,18 +832,17 @@ Prevent display-buffer from displaying in new frames.
 
 ** =recentf= - Recent files
 
-Increase the number of saved files.
-
-#+begin_src emacs-lisp
-  (with-eval-after-load 'recentf
-    (setq recentf-max-saved-items 100))
-#+end_src
-
-Teach =recentf= which files to exclude.
-
 #+begin_src emacs-lisp
   (use-package recentf
     :hook (after-init . recentf-mode)
+    :custom
+    (recentf-max-saved-items 100))
+#+end_src
+
+*** Specify which files to exclude
+
+#+begin_src emacs-lisp
+  (use-package recentf
     :custom
     (recentf-exclude '(config-recentf--boring-filename-p
                        config-recentf--boring-extension-p
@@ -862,20 +861,7 @@ Teach =recentf= which files to exclude.
       (string-prefix-p "/sudo:root@" f))
 
     (defun config-recentf--child-of-boring-relative-dir-p (f)
-      (string-match-p (rx "/"
-                          (or
-                           ".cargo"
-                           ".ensime_cache"
-                           ".g8"
-                           ".git"
-                           ".stack-work"
-                           "Maildir"
-                           "build"
-                           "dist"
-                           "flow-typed/npm"
-                           "target"
-                           "vendor"
-                           )
+      (string-match-p (rx "/" (or ".g8" ".git" "Maildir" "build" "dist" "target" "vendor")
                           "/")
                       f))
 
@@ -922,9 +908,7 @@ Set up LaTeX-style input method and add extra MULE rules for common chars.
     (add-hook 'input-method-activate-hook #'config-mule--set-tex-method-vars))
 #+end_src
 
-** auto-revert changed files
-
-Automatically revert buffers if the underlying file changes on disk.
+** =autorevert= - Revert buffers automatically if the file changes on disk
 
 #+begin_src emacs-lisp
   (use-package autorevert
@@ -934,16 +918,14 @@ Automatically revert buffers if the underlying file changes on disk.
     (auto-revert-verbose nil))
 #+end_src
 
-** Clickable URLs
-
-=goto-addr= turns URLs and mailto links into clickable buttons.
+** =goto-addr= - Turns URLs and mailto links into clickable buttons
 
 #+begin_src emacs-lisp
   (use-package goto-addr
     :hook (prog-mode . goto-address-prog-mode))
 #+end_src
 
-** Built-in HTML rendering
+** =shr= - Built-in HTML renderer
 
 #+begin_src emacs-lisp
   (use-package shr
@@ -952,10 +934,16 @@ Automatically revert buffers if the underlying file changes on disk.
     (define-key shr-map (kbd "w") nil))
 #+end_src
 
-** Code folding
+** =hideshow= - Basic code folding
 
-=hideshow= provides basic code folding. It can sometimes throw annoying errors, so
-use advice to ignore these.
+*** Enable hideshow in all programming buffers
+
+#+begin_src emacs-lisp
+  (use-package hideshow
+    :hook (prog-mode . hs-minor-mode))
+#+end_src
+
+*** Use advice to ignore some boring errors
 
 #+begin_src emacs-lisp
   (use-package hideshow
@@ -968,7 +956,7 @@ use advice to ignore these.
     (advice-add 'hs-toggle-hiding :around #'advice-ignore-errors))
 #+end_src
 
-** Enable authinfo file support
+** =authinfo= - Store sensitive keys & passwords in an encrypted file
 
 #+begin_src emacs-lisp
   (use-package auth-source
@@ -976,7 +964,7 @@ use advice to ignore these.
     (auth-sources '("~/.authinfo.gpg")))
 #+end_src
 
-** Pixel-wise scrolling
+** =pixel-scroll= - Enables pixel-wise scrolling
 
 #+begin_src emacs-lisp
   (use-package pixel-scroll
@@ -984,7 +972,9 @@ use advice to ignore these.
     :config (pixel-scroll-mode +1))
 #+end_src
 
-** Manpages
+** Manuals
+
+*** =man= - Manpages
 
 #+begin_src emacs-lisp
   (use-package man
@@ -993,23 +983,16 @@ use advice to ignore these.
               "M-p" #'Man-previous-section))
 #+end_src
 
-** Spellchecking
+*** =woman= - system manual page reader
 
 #+begin_src emacs-lisp
-  (use-package ispell
-    :commands (ispell-check-version ispell-find-aspell-dictionaries)
-
+  (use-package woman
     :custom
-    (ispell-program-name "aspell")
-    (ispell-dictionary "en_GB")
-    (ispell-silently-savep t)
-
-    :config
-    (ispell-check-version)
-    (setq ispell-dictionary-alist (ispell-find-aspell-dictionaries)))
+    (woman-fill-frame t)
+    (woman-default-indent 7))
 #+end_src
 
-** Info system
+*** =info= - Info manual system
 
 Emacs and many packages provide manuals in the =info= format. Configure this
 system below.
@@ -1022,7 +1005,7 @@ system below.
      "C-p" 'Info-backward-node))
 #+end_src
 
-=info+= adds lots of extra functionality, like bookmarking, etc.
+*** =info+= - adds extra functionality to Info
 
 #+begin_src emacs-lisp
   (use-package info+
@@ -1041,10 +1024,7 @@ system below.
               "+" #'image-increase-size))
 #+end_src
 
-** Jumping to common websites
-
-=webjump= provides an interface for quickly performing web searches and jumping to
-websites.
+** =webjump= - Kick off browser searches and open URLs from Emacs
 
 #+begin_src emacs-lisp
   (use-package webjump
@@ -1072,7 +1052,7 @@ websites.
     (compilation-scroll-output 'first-error))
 #+end_src
 
-Colourise compilation output.
+*** Colourise compilation output
 
 #+begin_src emacs-lisp
   (use-package compile
@@ -1087,7 +1067,7 @@ Colourise compilation output.
     (add-hook 'compilation-filter-hook 'colourise-compilation-output))
 #+end_src
 
-Position compilation buffers.
+*** Position compilation buffers
 
 #+begin_src emacs-lisp
   (use-package compile
@@ -1109,7 +1089,7 @@ Configure how =ediff= should display windows when started.
     (ediff-split-window-function #'split-window-horizontally))
 #+end_src
 
-Teach =ediff= how to copy contents from both buffers in a three-way merge.
+*** Teach =ediff= how to copy contents from both buffers in a three-way merge
 
 #+begin_src emacs-lisp
   (use-package ediff
@@ -1131,7 +1111,7 @@ Teach =ediff= how to copy contents from both buffers in a three-way merge.
     (add-hook 'ediff-keymap-setup-hook #'config-ediff--setup-keybinds))
 #+end_src
 
-Reveal the context around the selected hunk when diffing org buffers.
+*** Reveal the context around the selected hunk when diffing org buffers
 
 #+begin_src emacs-lisp
   (use-package ediff
@@ -1151,8 +1131,6 @@ Reveal the context around the selected hunk when diffing org buffers.
 
 ** =world-time-mode= - World clock UI
 
-=world-time-mode= provides a world clock.
-
 #+begin_src emacs-lisp
   (use-package world-time-mode
     :general
@@ -1166,15 +1144,6 @@ Reveal the context around the selected hunk when diffing org buffers.
                                ("UTC" "UTC")))
     :config
     (add-hook 'world-time-table-mode-hook 'hl-line-mode))
-#+end_src
-
-** =woman= - system manual page reader
-
-#+begin_src emacs-lisp
-  (use-package woman
-    :custom
-    (woman-fill-frame t)
-    (woman-default-indent 7))
 #+end_src
 
 ** =eldoc= - Show documentation in the minibuffer
@@ -1251,18 +1220,7 @@ Use this command for evaluating expressions in the Lisp debugger too.
 
 * Improve basic editing configuration for all modes
 
-** =hideshow= - Code folding
-
-Enable hideshow in all programming buffers.
-
-#+begin_src emacs-lisp
-  (use-package hideshow
-    :hook (prog-mode . hs-minor-mode))
-#+end_src
-
-** Line transposition
-
-Use control key to transpose lines up and down.
+** Use control key to transpose lines up and down
 
 #+begin_src emacs-lisp
   (autoload 'org-move-item-down "org-list")
@@ -1333,15 +1291,16 @@ Define a command for reversing the characters in the current region.
 
 ** Indentation
 
-Automatically indent when inserting newlines.
+*** Automatically indent when inserting newlines
 
 #+begin_src emacs-lisp
   (general-define-key :keymaps '(text-mode-map prog-mode-map)
     "RET" #'comment-indent-new-line)
 #+end_src
 
-Define a command to indent every line in the buffer. This should really be a
-thing out-of-the-box.
+*** Define a command to indent every line in the buffer
+
+This should really be a thing out-of-the-box.
 
 #+begin_src emacs-lisp
   (defun indent-buffer ()
@@ -1353,7 +1312,7 @@ thing out-of-the-box.
       (untabify (point-min) (point-max))))
 #+end_src
 
-Define a command to perform indentation in a context-sensitive way.
+*** Define a command to perform indentation in a context-sensitive way
 
 #+begin_src emacs-lisp
   (autoload 'lsp-format-region "lsp-mode")
@@ -1422,17 +1381,13 @@ Define a command to perform indentation in a context-sensitive way.
     (global-aggressive-indent-mode +1))
 #+end_src
 
-** =ws-butler= - Automatic whitespace cleanup
-
-=ws-butler= cleans up trailing whitespace as you edit.
+** =ws-butler= - Automatic whitespace cleanup while editing
 
 #+begin_src emacs-lisp
   (use-package ws-butler
     :hook
-    (prog-mode . (lambda () (require 'ws-butler)))
-    (text-mode . (lambda () (require 'ws-butler)))
-    :config
-    (ws-butler-global-mode))
+    (prog-mode . ws-butler-mode)
+    (text-mode . ws-butler-mode))
 #+end_src
 
 ** =unfill= - Paragraph fill/unfill
@@ -1444,21 +1399,18 @@ Define a command to perform indentation in a context-sensitive way.
     :commands (unfill-region unfill-paragraph unfill-toggle))
 #+end_src
 
-** Alignment
-
-=align= provides useful functions for aligning text.
+** =align= - Provides useful functions for aligning text
 
 #+begin_src emacs-lisp
   (use-package align
     :general ("C-x a a" #'align-regexp))
 #+end_src
 
-** =hide-comnt= - Comment hiding
-
-=hide-comnt= provides a command for toggling whether comments are visible.
+** =hide-comnt= - Toggle whether comments are visible
 
 #+begin_src emacs-lisp
-  (use-package hide-comnt)
+  (use-package hide-comnt
+    :commands (hide/show-comments-toggle))
 #+end_src
 
 ** =dumb-jump= - Generic jump-to-definition support
@@ -1504,7 +1456,23 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
                                        (autoinsert-files-populate-templates))))
 #+end_src
 
-** =flyspell= - Spellchecking
+** =ispell= - Spellchecking commands
+
+#+begin_src emacs-lisp
+  (use-package ispell
+    :commands (ispell-check-version ispell-find-aspell-dictionaries)
+
+    :custom
+    (ispell-program-name "aspell")
+    (ispell-dictionary "en_GB")
+    (ispell-silently-savep t)
+
+    :config
+    (ispell-check-version)
+    (setq ispell-dictionary-alist (ispell-find-aspell-dictionaries)))
+#+end_src
+
+** =flyspell= - Incremental spellchecking
 
 #+begin_src emacs-lisp
   (use-package flyspell
@@ -1515,7 +1483,7 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
     (flyspell-default-dictionary "en_GB"))
 #+end_src
 
-Prevent =flyspell= from showing suggestions in more contexts.
+*** Prevent =flyspell= from showing suggestions in more contexts
 
 #+begin_src emacs-lisp
   (use-package flyspell
@@ -1529,8 +1497,6 @@ Prevent =flyspell= from showing suggestions in more contexts.
 #+end_src
 
 ** =undo-tree= - Visual graph for undo history
-
-This package provides a visual representation of the undo history.
 
 #+begin_src emacs-lisp
   (use-package undo-tree
@@ -1698,8 +1664,6 @@ These functions are used in the definitions of snippets.
 
 ** =editorconfig= - Support editorconfig files
 
-Teach Emacs to respect editorconfig files.
-
 #+begin_src emacs-lisp
   (use-package editorconfig
     :hook (after-init . editorconfig-mode))
@@ -1718,9 +1682,7 @@ See: [[https://github.com/wbolster/emacs-direnv][wbolster/emacs-direnv]]
     (direnv-always-show-summary nil))
 #+end_src
 
-** =rainbow-mode= - Hex colour literals
-
-=rainbow mode= applies colours for hex strings.
+** =rainbow-mode= - Apply colours to hex strings in buffers
 
 #+begin_src emacs-lisp
   (use-package rainbow-mode
@@ -1819,9 +1781,7 @@ etc.
      "gh" 'help-follow-symbol))
 #+end_src
 
-** Initial states
-
-Customise which states evil to use for different modes.
+** Customise initial states of different modes
 
 #+begin_src emacs-lisp
   (use-package evil
@@ -1898,7 +1858,7 @@ show the cursor in deselected windows.
 
 ** Spellchecker integration
 
-Add vim-style ~:spell~ and ~:nospell~ ex commands.
+*** Add vim-style ~:spell~ and ~:nospell~ ex commands
 
 #+begin_src emacs-lisp
   (use-package evil
@@ -1917,7 +1877,7 @@ Add vim-style ~:spell~ and ~:nospell~ ex commands.
     (evil-ex-define-cmd "spell" #'evil-flyspell-on))
 #+end_src
 
-Add more key bindings to work with spell-checker from normal state.
+*** Add more key bindings to work with spell-checker from normal state
 
 #+begin_src emacs-lisp
   (use-package evil-ispell
@@ -1933,8 +1893,6 @@ Add more key bindings to work with spell-checker from normal state.
 
 ** Use escape key as =keyboard-quit=
 
-Make =<escape>= issue =keyboard-quit= in as many situations as possible.
-
 #+begin_src emacs-lisp
   (general-define-key :keymaps '(minibuffer-local-map
                                  minibuffer-local-ns-map
@@ -1944,9 +1902,7 @@ Make =<escape>= issue =keyboard-quit= in as many situations as possible.
     "<escape>" 'keyboard-escape-quit)
 #+end_src
 
-** =org-mode= integration
-
-Teach =evil= how to navigate using links in org buffers and the agenda.
+** =link-hint= - Teach =evil= how to navigate using links in org buffers and the agenda
 
 #+begin_src emacs-lisp
   (use-package link-hint
@@ -1955,9 +1911,8 @@ Teach =evil= how to navigate using links in org buffers and the agenda.
     (put 'link-hint-org-link :vars '(org-mode org-agenda-mode)))
 #+end_src
 
-** Surrounding selections
 
-Teach =evil= how to surround objects with matched pairs.
+** =evil-surround= - Teach =evil= how to wrap objects with matched pairs
 
 #+begin_src emacs-lisp
   (use-package evil-surround
@@ -1986,7 +1941,7 @@ Teach =evil= how to surround objects with matched pairs.
                                  (?f . evil-surround-function))))
 #+end_src
 
-Define an extra =`sym'= pair for =emacs-lisp-mode=.
+*** Define an extra =`sym'= pair for =emacs-lisp-mode=
 
 #+begin_src emacs-lisp
   (use-package evil-surround
@@ -1999,9 +1954,7 @@ Define an extra =`sym'= pair for =emacs-lisp-mode=.
     (emacs-lisp-mode-hook . config-evil--init-evil-surround-pairs))
 #+end_src
 
-** Community-maintained bindings
-
-=evil-collection= provides a community-managed set of keybindings for many modes.
+** =evil-collection= - Community-maintained bindings
 
 #+begin_src emacs-lisp
   (use-package evil-collection
@@ -2011,10 +1964,7 @@ Define an extra =`sym'= pair for =emacs-lisp-mode=.
     (evil-collection-init))
 #+end_src
 
-** Text motions within function parameter lists
-
-=evil-args= provides text motions within function parameter lists, so you can
-manipulate parameters in a structured way.
+** =evil-args= - Text motions for function parameter lists
 
 #+begin_src emacs-lisp
   (use-package evil-args
@@ -2025,9 +1975,7 @@ manipulate parameters in a structured way.
               'evil-outer-text-objects-map "a" #'evil-outer-arg))
 #+end_src
 
-** Improve matched-pair detection
-
-Teach ~%~ how to match more kinds of pairs.
+** =evil-matchit= - Teach ~%~ how to match more kinds of pairs
 
 #+begin_src emacs-lisp
   (use-package evil-matchit
@@ -2037,9 +1985,7 @@ Teach ~%~ how to match more kinds of pairs.
     (global-evil-matchit-mode +1))
 #+end_src
 
-** Operate on numbers
-
-Use ~+~ and ~-~ to increment and decrement numbers in normal state.
+** =evil-numbers= - Use ~+~ and ~-~ to change number at point
 
 #+begin_src emacs-lisp
   (use-package evil-numbers
@@ -2050,9 +1996,7 @@ Use ~+~ and ~-~ to increment and decrement numbers in normal state.
               "-" #'evil-numbers/dec-at-pt))
 #+end_src
 
-** Improve shift behaviour
-
-Teach ~<~ and ~>~ to shift text in a context-sensitive way.
+** Teach ~<~ and ~>~ to shift text in a context-sensitive way
 
 #+begin_src emacs-lisp
   (use-package evil
@@ -2079,7 +2023,7 @@ Teach ~<~ and ~>~ to shift text in a context-sensitive way.
       (evil-visual-restore)))
 #+end_src
 
-** =iedit= integration
+** =evil-iedit-state= - Easy renaming of symbol at point
 
 =iedit= adds useful mass-renaming functionality. This package provides evil
 compatibility.
@@ -2677,8 +2621,6 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
 
 ** =deadgrep= - Ripgrep (=rg=) frontend
 
-=deadgrep= provides a polished frontend for =ripgrep=.
-
 #+begin_src emacs-lisp
   (use-package deadgrep
     :general (:keymaps 'deadgrep-mode-map "C-c C-w" #'deadgrep-edit-mode)
@@ -2688,7 +2630,7 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
     (setq-default deadgrep--search-type 'regexp))
 #+end_src
 
-Use =c= in the =deadgrep= buffer to change the search term.
+*** Use ~c~ in the =deadgrep= buffer to change the search term
 
 #+begin_src emacs-lisp
   (use-package deadgrep
@@ -2703,7 +2645,7 @@ Use =c= in the =deadgrep= buffer to change the search term.
               "c" #'config-deadgrep--requery))
 #+end_src
 
-Provide feedback in the echo area on entering and exiting =deadgrep-edit-mode=.
+*** Provide feedback in the echo area on entering and exiting =deadgrep-edit-mode=
 
 #+begin_src emacs-lisp
   (use-package deadgrep
@@ -2721,7 +2663,7 @@ Provide feedback in the echo area on entering and exiting =deadgrep-edit-mode=.
     (advice-add 'deadgrep-edit-mode :after #'config-deadgrep--on-enter-edit-mode))
 #+end_src
 
-Use =C-c C-e= to enter a =deadgrep= search buffer from =ivy.=
+*** Use =C-c C-e= to enter a =deadgrep= search buffer from =ivy=
 
 #+begin_src emacs-lisp
   (use-package deadgrep
@@ -2741,7 +2683,7 @@ Use =C-c C-e= to enter a =deadgrep= search buffer from =ivy.=
                                                  (with-no-warnings ivy-text)))))))))
 #+end_src
 
-** =wgrep= - Directly editing =grep= results
+** =wgrep= - Directly edit =grep= results
 
 Enable =wgrep=, which provides editable grep buffers.
 
@@ -2907,6 +2849,24 @@ after editing actions have changed what windows are shown.
     :commands (rotate-layout))
 #+end_src
 
+** =popper= - Categorise buffers for window assignments
+
+#+begin_src emacs-lisp
+  (use-package popper
+    :hook (after-init . popper-mode)
+    :custom
+    (popper-mode-line nil)
+    (popper-group-function 'popper-group-by-projectile)
+    (popper-reference-buffers (list (rx bol "*Messages*")
+                                    (rx bol "*Backtrace*")
+                                    (rx bol "*tide-documentation*")
+                                    (rx bol "*ielm*")
+                                    (rx bol "*" (? "Async ") "Shell Command")
+                                    'help-mode
+                                    'occur-mode
+                                    'compilation-mode)))
+#+end_src
+
 * Text completion engines
 
 ** =hippie-expand= - generic text completion
@@ -2914,7 +2874,7 @@ after editing actions have changed what windows are shown.
 =hippie-expand= is a generic completion engine that works in most buffers without
 any special language-level support.
 
-Use =hippie-expand= as the default completion command for evil.
+*** Use =hippie-expand= as the default completion command for evil
 
 #+begin_src emacs-lisp
   (use-package hippie-exp
@@ -2924,7 +2884,7 @@ Use =hippie-expand= as the default completion command for evil.
 #+end_src
 
 
-Set the default heuristic for completing symbols.
+*** Set the default heuristic for completing symbols
 
 #+begin_src emacs-lisp
   (use-package hippie-exp
@@ -2989,14 +2949,14 @@ to manually apply it again.
 
 ** =volatile-highlights= - Highlight pasted text
 
-Load at compile-time so macro expansions are available.
+*** Load at compile-time so macro expansions are available
 
 #+begin_src emacs-lisp
   (cl-eval-when (compile)
     (require 'volatile-highlights))
 #+end_src
 
-Configure the package.
+*** Configure the package
 
 #+begin_src emacs-lisp
   (use-package volatile-highlights
@@ -3007,7 +2967,7 @@ Configure the package.
     (volatile-highlights-mode))
 #+end_src
 
-Teach =volatile-highlights-mode= to highlight text pasted by =evil= operations.
+*** Highlight text pasted by =evil= operations
 
 #+begin_src emacs-lisp
   (use-package volatile-highlights
@@ -3037,7 +2997,7 @@ Teach =volatile-highlights-mode= to highlight text pasted by =evil= operations.
     (set-face-attribute 'highlight-thing nil :inherit 'highlight))
 #+end_src
 
-Suppress =highlight-thing= when hovering over certain kinds of symbols.
+*** Suppress =highlight-thing= when hovering over certain kinds of symbols
 
 #+begin_src emacs-lisp
   (use-package highlight-thing
@@ -3059,9 +3019,6 @@ Suppress =highlight-thing= when hovering over certain kinds of symbols.
 
 ** =page-break-lines= - Show page breaks characters as a horizontal rule
 
-Shows a horizontal separator in buffers instead of a page-break control
-character (^L).
-
 #+begin_src emacs-lisp
   (use-package page-break-lines
     :hook (after-init . global-page-break-lines-mode)
@@ -3075,8 +3032,6 @@ character (^L).
 #+end_src
 
 ** =paren-face= - Apply a specific face to parens
-
-Apply a separate face for parens, allowing them to be de-emphasised.
 
  #+begin_src emacs-lisp
    (use-package paren-face
@@ -3128,9 +3083,7 @@ Apply a separate face for parens, allowing them to be de-emphasised.
     (which-key-idle-delay 0.4))
 #+end_src
 
-** =default-text-scale= - Text scaling
-
-Provides nice commands for changing text scale for all buffers simultaneously
+** =default-text-scale= - Commands for changing text scale for all buffers simultaneously
 
 #+begin_src emacs-lisp
   (use-package default-text-scale
@@ -3464,7 +3417,7 @@ of =projectile=. Use =projectile= until the builtin functionality is more comple
     (magit-log-section-commit-count 0))
 #+end_src
 
-Reveal the entire org buffer when blaming.
+*** Reveal the entire org buffer when blaming
 
 #+begin_src emacs-lisp
   (use-package magit
@@ -3477,7 +3430,7 @@ Reveal the entire org buffer when blaming.
     (add-hook 'magit-blame-mode-hook #'config-git--reveal-org-buffer))
 #+end_src
 
-*** GPG verification
+**** GPG verification
 
 Hack =magit='s commit info to show output of a GPG signature check.
 
@@ -3563,7 +3516,7 @@ repo, or copying the remote URL to the clipboard.
     (browse-at-remote-add-line-number-if-no-region-selected nil))
 #+end_src
 
-Provide more feedback when copying the URL to the clipboard.
+*** Provide better feedback by writing to =*Messages*=
 
 #+begin_src emacs-lisp
   (use-package browse-at-remote
@@ -3742,7 +3695,7 @@ See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
 #+end_src
 
 
-Load macros and functions at compile time so I can use them in this config.
+*** Load macros and functions at compile time so I can use them in this config
 
 #+begin_src emacs-lisp
   (cl-eval-when (compile)
@@ -3752,7 +3705,7 @@ Load macros and functions at compile time so I can use them in this config.
   (autoload 'sp-local-pair "smartparens")
 #+end_src
 
-*** Utility functions
+*** Define utility functions
 
 #+begin_src emacs-lisp
   (autoload 'sp-get-pair "smartparens")
@@ -3783,9 +3736,7 @@ Load macros and functions at compile time so I can use them in this config.
           (insert " ")))))
 #+end_src
 
-*** Global pairs
-
-Define pairs that I want in all language modes.
+*** Define pairs that I want in all language modes
 
 #+begin_src emacs-lisp
   (use-package smartparens
@@ -4203,7 +4154,7 @@ Inhibit these checkers for src blocks, test files etc.
         (setq-local prettify-symbols-alist '(("lambda" . ?λ)))))))
 #+end_src
 
-** =typescript-mode= & =tide= - TypeScript language support
+** =typescript-mode= - TypeScript language support
 
 =typescript-mode= adds a major mode with syntax highlighting for TypeScript
 files.
@@ -4217,8 +4168,9 @@ files.
     (typescript-indent-level 2))
 #+end_src
 
-=tide= is a TS development environment. It's currently more polished than the
-TypeScript language server.
+*** =tide= - Provides IDE functionality for TypeScript
+
+Tide is currently more polished than the TypeScript language server.
 
 #+begin_src emacs-lisp
   (use-package tide
@@ -4252,8 +4204,6 @@ TypeScript language server.
 
 ** =nix-mode= Configure support for the Nix language
 
-Configure major-mode for Nix language buffers.
-
 #+begin_src emacs-lisp
   (use-package nix-mode
     :mode (("\\.nix\\'" . nix-mode)
@@ -4262,7 +4212,7 @@ Configure major-mode for Nix language buffers.
     (nix-indent-function 'nix-indent-line))
 #+end_src
 
-Teach Emacs how to create a Nix language REPL.
+*** Teach Emacs how to create a Nix language REPL
 
 #+begin_src emacs-lisp
   (use-package nix-repl
@@ -4365,7 +4315,6 @@ Teach Emacs how to create a Nix language REPL.
     "e" 'markdown-export)
 #+end_src
 
-
 ** =ledger-mode= - Ledger accounting software interface
 
 #+begin_src emacs-lisp
@@ -4388,7 +4337,7 @@ Teach Emacs how to create a Nix language REPL.
     (ledger-fontify-xact-state-overrides nil))
 #+end_src
 
-Configure how reports are displayed.
+*** Configure how reports are displayed
 
 #+begin_src emacs-lisp
   (use-package ledger-mode
@@ -4686,9 +4635,7 @@ Teach the autofill function in Latex buffers not to fill in certain contexts.
     :config (flycheck-plantuml-setup))
 #+end_src
 
-*** Richer syntax highlighting
-
-Teach Emacs how to highlight arrows and important keywords.
+*** Highlight arrows and important keywords
 
 #+begin_src emacs-lisp
   (use-package plantuml-mode
@@ -4841,7 +4788,7 @@ Teach Emacs how to highlight arrows and important keywords.
     ("\\.nomad\\'" . hcl-mode))
 #+end_src
 
-Format HCL buffers on save.
+*** Format HCL buffers on save
 
 #+begin_src emacs-lisp
   (use-package hcl-mode
@@ -5043,13 +4990,13 @@ itself.
     (mu4e-html2text-command #'config-mail--shr-buffer))
 #+end_src
 
-Always use =mu4e= for mail composition.
+*** Always use =mu4e= for mail composition
 
 #+begin_src emacs-lisp
   (global-set-key [remap compose-mail] #'mu4e-compose-new)
 #+end_src
 
-Display mu4e fullscreen.
+*** Display mu4e fullscreen
 
 #+begin_src emacs-lisp
   (use-package mu4e
@@ -5061,8 +5008,7 @@ Display mu4e fullscreen.
                    (reusable-frames . visible))))
 #+end_src
 
-
-Wrap lines in an intuitive way while viewing and editing.
+*** Wrap lines in an intuitive way while viewing and editing.
 
 #+begin_src emacs-lisp
   (use-package mu4e
@@ -5075,8 +5021,9 @@ Wrap lines in an intuitive way while viewing and editing.
     (add-hook 'mu4e-view-mode-hook #'visual-line-mode))
 #+end_src
 
-Define commands for viewing messages in a browser, either with =eww= or the
-default system browser.
+*** Define commands for viewing messages in a browser
+
+Either with =eww= or the default system browser.
 
 #+begin_src emacs-lisp
   (use-package mu4e
@@ -5087,8 +5034,9 @@ default system browser.
     (add-to-list 'mu4e-view-actions '("&viewInExternalBrowser" . config-mail--view-in-external-browser-action) t))
 #+end_src
 
-Define a refile action that marks messages as 'read' and moves them into the
-appropriate folder.
+*** Define a smart refile action for ~r~
+
+Marks messages as 'read' and moves them into the appropriate folder.
 
 #+begin_src emacs-lisp
   (use-package mu4e
@@ -5108,7 +5056,7 @@ appropriate folder.
                         (mu4e~proc-move docid (mu4e~mark-check-target target) "+S-u-N"))))))
 #+end_src
 
-Insert signatures before quoted content, as in other mail user agents.
+*** Insert signatures before quoted content, as in other mail user agents
 
 #+begin_src emacs-lisp
   (use-package mu4e
@@ -5147,21 +5095,22 @@ Insert signatures before quoted content, as in other mail user agents.
     (add-hook 'mu4e-compose-mode-hook #'mu4e--insert-signature-before-quoted-message))
 #+end_src
 
-Don't quit mu4e, just bury the buffer.
+*** Don't quit mu4e, just bury the buffer
 
 #+begin_src emacs-lisp
   (global-set-key [remap mu4e-quit] #'bury-buffer)
 #+end_src
 
-Teach =org-mode= how to store links to messages in =mu4e=.
+*** Teach =org-mode= how to store links to messages in =mu4e=
 
 #+begin_src emacs-lisp
   (use-package org-mu4e
     :after (:any org mu4e))
 #+end_src
 
-Normally newlines are reflowed automatically. Display newline symbols in the
-buffer when a hard newline would be used.
+*** Display newline symbols in the buffer when a hard newline would be used
+
+Normally newlines are reflowed automatically.
 
 #+begin_src emacs-lisp
   (use-package messages-are-flowing
@@ -5961,8 +5910,8 @@ Ensure we use dired rather than the Finder on macOS.
 *** Define shared paths used across packages
 
 #+begin_src emacs-lisp
-  (defvar config-org-roam-bibliography-notes-directory (f-join org-directory "roam" "notes"))
-  (defvar config-org-roam-bibliography-path (f-join org-directory "bibliography.bib"))
+  (defvar config-org-roam-bibliography-notes-directory (f-join paths-org-directory "roam" "notes"))
+  (defvar config-org-roam-bibliography-path (f-join paths-org-directory "bibliography.bib"))
   (defvar config-org-roam-bibnotes-file (f-join config-org-roam-bibliography-notes-directory "index.org"))
 
   (defconst config-org-roam--default-heading-title "TODO Link literature notes to zettel in org-roam")
@@ -6264,11 +6213,13 @@ buffers the same, no matter how I create them.
 
 #+begin_src emacs-lisp
   (use-package org
+    :unless noninteractive
     :config
     (when (file-directory-p paths-org-lisp-directory)
       (load (expand-file-name "init.el" paths-org-lisp-directory) t)))
 
   (use-package ledger-mode
+    :unless noninteractive
     :config
     (when (file-directory-p paths-ledger-lisp-directory)
       (load (expand-file-name "init.el" paths-ledger-lisp-directory) t)))
