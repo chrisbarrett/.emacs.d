@@ -2533,8 +2533,6 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
     "k" '(org-capture :wk "capture...")
     "l" '(org-store-link :wk "store link")
     "s" '(org-search-view :wk "search...")
-
-    "<tab>" '(org-roam :wk "backlinks")
     "f" '(org-roam-find-file :wk "roam file...")
     "I" '(org-roam-jump-to-index :wk "index file")
     "n" '(org-funcs-dailies-today :wk "dailies: today")
@@ -5867,6 +5865,23 @@ Ensure we use dired rather than the Finder on macOS.
      "C-c TAB" (general-predicate-dispatch 'org-roam-insert
                  (org-at-table-p) 'org-ctrl-tab)
      "C-c I" 'org-roam-insert-immediate))
+#+end_src
+
+#+begin_src emacs-lisp
+  (mode-leader-set-key :keymaps 'org-roam-mode-map
+    "<tab>" '(org-roam :wk "backlinks")
+    "<" 'org-roam-dailies-find-previous-note
+    ">" 'org-roam-dailies-find-next-note
+    "J" 'org-roam-dailies-find-date
+
+    "m" '(nil :wk "+roam")
+
+    "m t" '(nil :wk "+tags")
+    "m t a" 'org-roam-tag-add
+    "m t x" 'org-roam-tag-delete
+
+    "m a a" 'org-roam-alias-add
+    "m a x" 'org-roam-alias-delete)
 #+end_src
 
 *** Define shared paths used across packages
