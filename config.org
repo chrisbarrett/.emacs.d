@@ -5501,58 +5501,6 @@ cookie or 'cleared', which indicates no special priority.
           (org-move-to-column col)))))
 #+end_src
 
-** =org-capture= - Templates for quickly capturing information
-
-Provides functionality for quickly inserting templated content into org files.
-
-Define some helpers to make it easy to dynamically update the list of capture templates.
-
-#+begin_src emacs-lisp
-  (require 'ht)
-
-  (defun org-funcs-dailies-file-for-capture ()
-    (switch-to-buffer (org-funcs-dailies-buffer-get-create))
-    (goto-char (point-max)))
-
-  (defun org-funcs-capture-todo ()
-    (let ((tags (if (org-clocking-p) (format ":%s:" org-funcs-work-tag) "")))
-      (concat "* TODO %?           " tags)))
-
-  (defun org-funcs-update-capture-templates (templates)
-    "Merge TEMPLATES with existing values in `org-capture-templates'."
-    (let ((ht (ht-merge (ht-from-alist org-capture-templates) (ht-from-alist templates))))
-      (setq org-capture-templates (-sort (-on 'string-lessp 'car) (ht->alist ht)))))
-
-  (defun org-funcs-capture-template-apply-defaults (template)
-    (-let ((defaults '(:clock-keep t :prepend t :immediate-finish nil :jump-to-captured nil :empty-lines 1))
-           ((positional-args keywords) (-split-with (-not #'keywordp) template)))
-      (append positional-args (ht->plist (ht-merge
-                                          (ht-from-plist defaults)
-                                          (ht-from-plist keywords))))))
-
-  (cl-defun org-funcs-capture-template (key label form template &rest keywords)
-    (org-funcs-capture-template-apply-defaults (append (list key label 'entry form template) keywords)))
-#+end_src
-
-Now, customise the default capture templates. More will be added in the
-org-directory lisp config.
-
-#+begin_src emacs-lisp
-  (use-package org-capture
-    :after org
-    :config
-    (org-funcs-update-capture-templates
-     (list
-      (org-funcs-capture-template
-       "t" "Todo" '(function org-funcs-dailies-file-for-capture) '(function org-funcs-capture-todo)
-       :prepend nil)
-
-      (org-funcs-capture-template
-       "l" "Link" '(function org-funcs-dailies-file-for-capture) '(function org-funcs-capture-link)
-       :prepend nil
-       :immediate-finish t))))
-#+end_src
-
 ** Export
 
 #+begin_src emacs-lisp
