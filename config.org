@@ -2191,16 +2191,29 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
 ** ~a~ - Applications
 
 #+begin_src emacs-lisp
+  (defun profiler-stop-and-report (&optional continue-p)
+    "Stop the profiler and show results.
+
+  With optional prefix arg CONTINUE-P, keep profiling."
+    (interactive "P")
+    (let ((ran-p (profiler-running-p)))
+
+      (unless continue-p
+        (profiler-stop))
+      (profiler-report)
+      (when ran-p
+        (if continue-p
+            (message "Profiler still recording")
+          (message "Profiler stopped")))))
+
   (leader-set-key :infix "a"
     "" '(nil :wk "+apps")
     "c" #'quick-calc
     "C" #'full-calc
     "m" #'mu4e
     "p" #'pass
-    "r" '(nil :wk "+profiler")
-    "r p" (general-predicate-dispatch 'profiler-start
-            (profiler-running-p) 'profiler-stop)
-    "r r" #'profiler-report
+    "r" (general-predicate-dispatch 'profiler-start
+          (and (featurep 'profiler) (profiler-running-p)) 'profiler-stop-and-report)
     "w" #'world-time-list)
 #+end_src
 
