@@ -4342,6 +4342,30 @@ Teach Emacs how to create a Nix language REPL.
     (markdown-hide-urls t))
 #+end_src
 
+#+begin_src emacs-lisp
+  (mode-leader-set-key :keymaps '(gfm-mode-map markdown-mode-map)
+    "i" '(nil :wk "+insert")
+    "i h" 'markdown-insert-header-dwim
+    "i c" 'markdown-insert-gfm-code-block
+    "i i" 'markdown-insert-image
+    "i f" 'markdown-insert-footnote
+    "i l" 'markdown-insert-link
+    "i w" 'markdown-insert-wiki-link
+    "i -" 'markdown-insert-hr
+
+    "m" '(nil :wk "+markup")
+    "m b" 'markdown-insert-bold
+    "m i" 'markdown-insert-italic
+    "m k" 'markdown-insert-kbd
+    "m q" 'markdown-insert-blockquote
+    "m s" 'markdown-insert-strike-through
+
+    "o" 'markdown-preview
+    "p" 'markdown-live-preview-mode
+    "e" 'markdown-export)
+#+end_src
+
+
 ** =ledger-mode= - Ledger accounting software interface
 
 #+begin_src emacs-lisp
