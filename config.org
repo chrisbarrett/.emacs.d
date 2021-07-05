@@ -2529,7 +2529,13 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
     "" '(nil :wk "+org")
     "SPC" '(deft :wk "edit/create note...")
     "a" '(org-funcs-agenda-dwim :wk "agenda")
-    ;; TODO: clocking (c)
+
+    "c" '(nil :wk "+clock")
+    "c i" 'org-funcs-punch-in
+    "c o" 'org-funcs-punch-out
+    "c r" 'org-resolve-clocks
+    "c g" 'org-clock-goto
+
     "k" 'org-roam-dailies-capture-today
     "l" '(org-store-link :wk "store link")
     "s" '(org-search-view :wk "search...")
