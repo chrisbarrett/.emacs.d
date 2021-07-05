@@ -6018,8 +6018,7 @@ org-agenda would attempt to load every org-roam file.
       (seq-mapcat #'config-org-roam--org-files-with-todos (seq-filter #'identity dirs))))
 
   (defun config-org-roam--update-agenda-files (&rest _)
-    (setq org-agenda-files `(,(f-join org-directory "archive.org")
-                             ,(f-join org-directory "tasks")
+    (setq org-agenda-files `(,(f-join org-directory "tasks")
                              ,@(config-org-roam--find-org-files-with-todos))))
 #+end_src
 
