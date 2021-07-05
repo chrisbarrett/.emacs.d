@@ -101,6 +101,7 @@
         helm-bibtex
         bibtex-completion
         org-roam-bibtex
+        popper
       ];
 
       extraPackages = rec {
