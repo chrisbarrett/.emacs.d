@@ -39,9 +39,6 @@
 (defconst paths-elpa-directory
   (concat user-emacs-directory "elpa"))
 
-(defconst paths-themes-directory
-  (concat user-emacs-directory "themes"))
-
 (defconst paths-site-lisp-directory
   (seq-find #'file-directory-p
             '("/run/current-system/sw/share/emacs/site-lisp"
@@ -63,12 +60,8 @@
 If argument INTERACTIVE-P is set, log additional information."
   (interactive "p")
   (let* ((before load-path)
-         (main-dirs
-          (list paths-lisp-directory
-                paths-themes-directory
-                paths-site-lisp-directory))
-         (subdirs
-          (f-directories paths-lisp-directory))
+         (main-dirs (list paths-lisp-directory paths-site-lisp-directory))
+         (subdirs (f-directories paths-lisp-directory))
          (updated-load-path
           (thread-last (append main-dirs subdirs load-path)
             (seq-uniq)
