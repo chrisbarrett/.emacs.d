@@ -52,36 +52,6 @@
                              (s-split ":" tag-or-tags t)))))
     (not (seq-empty-p work-tags-found))))
 
-(defun org-funcs-dailies-file-path ()
-  (org-capture-put :default-time (current-time))
-  (let* ((template (alist-get "d" org-roam-dailies-capture-templates nil nil #'equal))
-         (file-path-template (plist-get template :file-name))
-         (expanded-path (concat (string-trim (org-roam-capture--fill-template file-path-template))
-                                ".org")))
-    (f-join org-roam-directory expanded-path)))
-
-(defun org-funcs-dailies-buffer-get-create ()
-  (let ((path (org-funcs-dailies-file-path)))
-    (with-current-buffer
-        (or (get-file-buffer path)
-            (find-file-noselect path))
-      (save-restriction
-        (widen)
-        (when (= (buffer-size) 0)
-          ;; Insert default content for dailies file.
-          (let* ((template (alist-get "d" org-roam-dailies-capture-templates nil nil #'equal))
-                 (content-template (plist-get template :head)))
-            (insert (org-roam-capture--fill-template content-template)))))
-
-      (current-buffer))))
-
-(defun org-funcs-dailies-today ()
-  "Switch to today's notes file.
-
-Slightly faster than the version that ships with org-roam."
-  (interactive)
-  (switch-to-buffer (org-funcs-dailies-buffer-get-create)))
-
 
 ;; Clocking related stuff
 ;;
@@ -143,8 +113,7 @@ With ARG, don't resume previously clocked task."
   (when (org-clocking-p)
     (org-clock-out))
   (org-agenda-remove-restriction-lock)
-  (with-current-buffer (org-funcs-dailies-buffer-get-create)
-    (save-buffer))
+  (org-save-all-org-buffers)
   (when (derived-mode-p 'org-agenda-mode)
     ;; Swap agenda for context change.
     (org-funcs-agenda-dwim))
@@ -321,29 +290,6 @@ If NOTIFY-P is set, a desktop notification is displayed."
         (org-store-link nil)
         "* TODO Review %a (email)")
     (call-interactively #'org-funcs-read-url-for-capture)))
-
-(defun org-funcs-dailies-file-for-capture ()
-  (switch-to-buffer (org-funcs-dailies-buffer-get-create))
-  (goto-char (point-max)))
-
-(defun org-funcs-capture-todo ()
-  (let ((tags (if (org-clocking-p) (format ":%s:" org-funcs-work-tag) "")))
-    (concat "* TODO %?           " tags)))
-
-(defun org-funcs-update-capture-templates (templates)
-  "Merge TEMPLATES with existing values in `org-capture-templates'."
-  (let ((ht (ht-merge (ht-from-alist org-capture-templates) (ht-from-alist templates))))
-    (setq org-capture-templates (-sort (-on 'string-lessp 'car) (ht->alist ht)))))
-
-(defun org-funcs-capture-template-apply-defaults (template)
-  (-let ((defaults '(:clock-keep t :prepend t :immediate-finish nil :jump-to-captured nil :empty-lines 1))
-         ((positional-args keywords) (-split-with (-not #'keywordp) template)))
-    (append positional-args (ht->plist (ht-merge
-                                        (ht-from-plist defaults)
-                                        (ht-from-plist keywords))))))
-
-(cl-defun org-funcs-capture-template (key label form template &rest keywords)
-  (org-funcs-capture-template-apply-defaults (append (list key label 'entry form template) keywords)))
 
 (defun org-funcs-update-agenda-custom-commands (templates)
   (let ((ht (ht-merge (ht-from-alist org-agenda-custom-commands) (ht-from-alist templates))))

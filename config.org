@@ -3461,6 +3461,7 @@ Hack =magit='s commit info to show output of a GPG signature check.
 
 #+begin_src emacs-lisp
   (use-package git-auto-commit-mode
+    :delight " auto-commit"
     :hook (pass-mode . git-auto-commit-mode)
     :custom
     (gac-debounce-interval 10)
