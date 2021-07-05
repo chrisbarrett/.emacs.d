@@ -3540,6 +3540,14 @@ Hack =magit='s commit info to show output of a GPG signature check.
     (add-hook 'git-commit-mode-hook 'configure-git-commit-mode))
 #+end_src
 
+*** =git-commit-ticket-prefix= - Add ticket number to commit messaging
+
+#+begin_src emacs-lisp
+  (use-package git-commit-ticket-prefix
+    :commands (git-commit-ticket-prefix-insert)
+    :hook (git-commit-setup . git-commit-ticket-prefix-insert))
+#+end_src
+
 ** =browse-at-remote= - Browse file at remote
 
 =browse-at-remote= provides commands for opening the current buffer in the source
