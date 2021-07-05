@@ -5578,7 +5578,7 @@ cookie or 'cleared', which indicates no special priority.
     (org-export-backends '(ascii html latex odt slack gfm))
     (org-html-html5-fancy t)
     (org-html-postamble nil)
-    (org-export-exclude-tags '("noexport" "no_export" "crypt" "ignore"))
+    (org-export-exclude-tags '("noexport" "ignore"))
     (org-export-coding-system 'utf-8))
 #+end_src
 
@@ -5641,11 +5641,13 @@ Set some default LaTeX packages.
 ** =org-crypt= - Encrypted file content
 
 #+begin_src emacs-lisp
-  (use-package org
+  (use-package org-crypt
     :custom
     (org-tags-exclude-from-inheritance '("crypt"))
     (org-crypt-disable-auto-save 'encypt)
     :config
+    (with-eval-after-load 'ox
+      (push "crypt" org-export-exclude-tags))
     (org-crypt-use-before-save-magic))
 #+end_src
 
