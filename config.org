@@ -2070,8 +2070,10 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
 
 #+begin_src emacs-lisp
   (leader-set-key
-    "!" '(shell-command :wk "shell cmd")
-    "&" '(async-shell-command :wk "shell cmd (async)")
+    "$" 'popper-toggle-latest
+    "+" 'popper-toggle-type
+    "-" 'popper-kill-latest-popup
+    "!" '(async-shell-command :wk "shell cmd (async)")
     "'" (general-predicate-dispatch 'poporg-dwim
           (bound-and-true-p poporg-mode) 'poporg-edit-exit
           (bound-and-true-p edit-indirect--overlay) 'edit-indirect-commit
@@ -2080,7 +2082,9 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
           (bound-and-true-p org-src-mode) 'org-edit-src-exit)
     "/" '(counsel-projectile-rg :wk "rg")
     ":" '(eval-expression-interactively :wk "eval")
-    "<tab>" '(alternate-buffer :wk "other buf")
+    "<tab>" (list (general-predicate-dispatch 'alternate-buffer
+                    (bound-and-true-p popper-popup-status) 'popper-cycle)
+                  :wk "other buf")
     "?" '(general-describe-keybindings :wk "show bindings")
     "@" '(counsel-bookmark :wk "bookmark")
     "|" '(rotate-layout :wk "rotate window layout")
