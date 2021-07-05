@@ -3636,11 +3636,11 @@ See: [[https://www.flycheck.org/en/latest/][flycheck.org]]
                      (if (equal .error 1) "" "s")
                      .warning
                      (if (equal .warning 1) "" "s")))
-            .error
-            (format " {%s error%s}" .error (if (equal .error 1) "" "s"))
+            (.error
+             (format " {%s error%s}" .error (if (equal .error 1) "" "s")))
 
-            .warning
-            (format " {%s warning%s}" .warning (if (equal .warning 1) "" "s")))))
+            (.warning
+             (format " {%s warning%s}" .warning (if (equal .warning 1) "" "s"))))))
         (`interrupted " Checks[interrupted]")
         (`suspicious " Checks[suspicious]")
         (_
