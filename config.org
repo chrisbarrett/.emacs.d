@@ -3293,7 +3293,37 @@ Override some default =ibuffer= columns.
     (put 'dired-find-alternate-file 'disabled nil))
 #+end_src
 
-Teach =dired= to put directories first in sort order.
+#+begin_src emacs-lisp
+  (mode-leader-set-key :keymaps 'dired-mode-map
+    "?" 'dired-hide-details-mode
+    "." 'dired-omit-mode
+    "e" 'wdired-change-to-wdired-mode
+    "s" 'dired-sort-toggle-or-edit
+
+    "f" 'dired
+    "F" 'dired-other-window
+
+    "m" '(nil :wk "+mark")
+    "m a" 'dired-mark-unmarked-files
+    "m c" 'dired-change-marks
+    "m r" 'dired-mark-files-regexp
+    "m l" 'dired-mark-symlinks
+    "m d" 'dired-mark-directories
+    "U" 'dired-unmark-all-marks
+
+    "!" 'dired-do-shell-command
+
+    "d" '(nil :wk "+execute (marked)")
+    "d c" 'dired-do-copy
+    "d D" 'dired-do-delete
+    "d h" 'dired-do-hardlink
+    "d s" 'dired-do-relsymlink
+    "d S" 'dired-do-symlink
+    "d /" 'dired-do-search)
+#+end_src
+
+
+*** Put directories first in sort order
 
 #+begin_src emacs-lisp
   (use-package dired
