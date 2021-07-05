@@ -2541,9 +2541,9 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
     "s" '(org-search-view :wk "search...")
     "f" '(org-roam-find-file :wk "roam file...")
     "I" '(org-roam-jump-to-index :wk "index file")
-    "n" '(org-funcs-dailies-today :wk "dailies: today")
-    "y" '(org-funcs-dailies-yesterday :wk "dailies: yesterday")
-    "d" '(org-funcs-dailies-date :wk "dailies: date...")
+    "n" '(org-roam-dailies-find-today :wk "dailies: today")
+    "y" '(org-roam-dailies-find-yesterday :wk "dailies: yesterday")
+    "d" '(org-roam-dailies-find-date :wk "dailies: date...")
 
     "b" '(helm-bibtex :wk "bibliography...")
     "r" 'org-ref-bibtex-hydra/body
@@ -5164,7 +5164,6 @@ buffer when a hard newline would be used.
 #+begin_src emacs-lisp
   (use-package org-funcs
     :commands
-    org-funcs-dailies-today
     org-funcs-agenda-dwim
     org-funcs-punch-in
     org-funcs-punch-out
