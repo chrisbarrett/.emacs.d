@@ -348,26 +348,26 @@ Optional argument SHOW-PDF determines whether to show the downloaded PDF."
                                     (delete-file tmpfile))
                                   (ignore-errors
                                     (kill-buffer (process-buffer process))))
-                (loop ()
-                      (pcase-exhaustive status
-                        ('timeout
-                         (cleanup-on-error)
-                         (message "PDF creation timed out. See %s for details." org-funcs--wkhtmltopdf-error-buffer-name))
-                        ((guard (process-live-p process))
-                         (progress-reporter-update reporter)
-                         (run-with-timer 0.5 nil #'loop))
-                        ((or 'done (guard (< 0 (f-size tmpfile))))
-                         (progress-reporter-done reporter)
-                         ;; Append an entry to the bibfile.
-                         (org-ref-url-html-to-bibtex bibfile url)
-                         (let ((file (move-pdf-to-bib-dir (key-of-latest-bib-entry) tmpfile)))
-                           (when show-pdf
-                             (find-file file))
-                           (message "PDF downloaded to %s" file)))
-                        (_
-                         (cleanup-on-error)
-                         (message "PDF download failed. See %s for details." org-funcs--wkhtmltopdf-error-buffer-name)))))
-      (loop))
+                (go ()
+                    (pcase-exhaustive status
+                      ('timeout
+                       (cleanup-on-error)
+                       (message "PDF creation timed out. See %s for details." org-funcs--wkhtmltopdf-error-buffer-name))
+                      ((guard (process-live-p process))
+                       (progress-reporter-update reporter)
+                       (run-with-timer 0.5 nil #'go))
+                      ((or 'done (guard (< 0 (f-size tmpfile))))
+                       (progress-reporter-done reporter)
+                       ;; Append an entry to the bibfile.
+                       (org-ref-url-html-to-bibtex bibfile url)
+                       (let ((file (move-pdf-to-bib-dir (key-of-latest-bib-entry) tmpfile)))
+                         (when show-pdf
+                           (find-file file))
+                         (message "PDF downloaded to %s" file)))
+                      (_
+                       (cleanup-on-error)
+                       (message "PDF download failed. See %s for details." org-funcs--wkhtmltopdf-error-buffer-name)))))
+      (go))
 
     (run-with-timer org-funcs--pdf-download-timeout-seconds
                     nil
