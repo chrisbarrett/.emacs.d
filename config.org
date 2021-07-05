@@ -2083,7 +2083,7 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
     "/" '(counsel-projectile-rg :wk "rg")
     ":" '(eval-expression-interactively :wk "eval")
     "<tab>" (list (general-predicate-dispatch 'alternate-buffer
-                    (bound-and-true-p popper-popup-status) 'popper-cycle)
+                    (and (bound-and-true-p popper-popup-status) (memq popper-popup-status '(popup user-popup))) 'popper-cycle)
                   :wk "other buf")
     "?" '(general-describe-keybindings :wk "show bindings")
     "@" '(counsel-bookmark :wk "bookmark")
