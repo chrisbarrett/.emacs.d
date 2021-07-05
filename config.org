@@ -2335,23 +2335,56 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
       (message "File '%s' moved to '%s'"
                (abbreviate-file-name (file-name-nondirectory src))
                (abbreviate-file-name dest-path))))
+
+  (defun reload-file ()
+    "Revisit the current file."
+    (interactive)
+    (when-let* ((path (buffer-file-name)))
+      (find-alternate-file path)))
+
+  (defun copy-buffer-path ()
+    "Show and copy the full path to the current file in the minibuffer."
+    (interactive)
+    ;; list-buffers-directory is the variable set in dired buffers
+    (if-let* ((path (or (buffer-file-name) list-buffers-directory)))
+        (message (kill-new path))
+      (error "Buffer not visiting a file")))
+
+  (defun copy-buffer-name ()
+    "Show and copy the full path to the current file in the minibuffer."
+    (interactive)
+    (let ((name (if-let* ((path (buffer-file-name)))
+                    (file-name-nondirectory path)
+                  (buffer-name))))
+      (message (kill-new name))))
+
+  (defun copy-buffer-directory ()
+    "Show and copy the directory of the current file in the minibuffer."
+    (interactive)
+    ;; list-buffers-directory is the variable set in dired buffers
+    (if-let* ((path (or (ignore-errors (file-name-directory (buffer-file-name))) list-buffers-directory)))
+        (message (kill-new path))
+      (error "Buffer not visiting a file")))
 #+end_src
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "f"
     "" '(nil :wk "+files")
-    "D" #'delete-current-buffer-and-file
-    "e" #'sudo-edit
-    "f" #'find-file
-    "F" #'find-file-other-window
-    "s" #'save-buffer
-    "S" #'save-some-buffers
-    "l" #'find-file-literally
-    "l" #'hexl-find-file
-    "w" #'write-file
-    "v" #'find-alternate-file
-    "r" #'counsel-recentf
-    "R" #'rename-file-and-buffer)
+    "d" 'copy-buffer-directory
+    "y" 'copy-buffer-path
+    "Y" 'copy-buffer-name
+    "D" 'delete-current-buffer-and-file
+    "e" 'sudo-edit
+    "f" 'find-file
+    "F" 'find-file-other-window
+    "s" 'save-buffer
+    "S" 'save-some-buffers
+    "l" 'find-file-literally
+    "l" 'hexl-find-file
+    "w" 'write-file
+    "v" 'reload-file
+    "r" 'counsel-recentf
+    "R" 'rename-file-and-buffer)
 #+end_src
 
 ** ~g~ - Git & Goto
