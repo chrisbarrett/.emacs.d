@@ -1684,9 +1684,13 @@ These functions are used in the definitions of snippets.
                                          "define-derived-mode")))))
 
   (defun yas-funcs-el-package-prefix ()
-    (if (bound-and-true-p nameless-current-name)
-        nameless-current-name
-      (f-base (or (buffer-file-name) (buffer-name)))))
+    (cond
+     ((string-prefix-p "*Org Src" (buffer-name))
+      "")
+     ((bound-and-true-p nameless-current-name)
+      (format "%s-" nameless-current-name))
+     (t
+      (format "%s-" (f-base (or (buffer-file-name) (buffer-name)))))))
 
   (defun yas-funcs-buttercup-file-p ()
     (string-match-p "^test-" (file-name-nondirectory (buffer-file-name))))

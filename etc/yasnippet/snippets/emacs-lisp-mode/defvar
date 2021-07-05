@@ -2,4 +2,4 @@
 # name: defvar
 # condition: (yas-funcs-bolp)
 # --
-(defvar `(yas-funcs-el-package-prefix)`--$0)
+(defvar `(yas-funcs-el-package-prefix)`-$0)

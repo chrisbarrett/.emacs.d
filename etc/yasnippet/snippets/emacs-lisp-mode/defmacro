@@ -2,5 +2,5 @@
 # name: defmacro
 # condition: (yas-funcs-bolp)
 # --
-(defmacro `(yas-funcs-el-package-prefix)`-${1:name} ($2)
+(defmacro `(yas-funcs-el-package-prefix)`${1:name} ($2)
   $0)
