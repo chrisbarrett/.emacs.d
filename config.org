@@ -2497,12 +2497,13 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
     "c r" 'org-resolve-clocks
     "c g" 'org-clock-goto
 
-    "k" 'org-roam-dailies-capture-today
+    "k" '(org-capture :wk "capture...")
     "l" '(org-store-link :wk "store link")
     "s" '(org-search-view :wk "search...")
     "f" '(org-roam-find-file :wk "roam file...")
     "I" '(org-roam-jump-to-index :wk "index file")
     "n" '(org-roam-dailies-find-today :wk "dailies: today")
+    "N" 'org-roam-dailies-capture-today
     "y" '(org-roam-dailies-find-yesterday :wk "dailies: yesterday")
     "d" '(org-roam-dailies-find-date :wk "dailies: date...")
 
