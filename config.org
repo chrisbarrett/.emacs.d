@@ -2530,7 +2530,7 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
     "SPC" '(deft :wk "edit/create note...")
     "a" '(org-funcs-agenda-dwim :wk "agenda")
     ;; TODO: clocking (c)
-    "k" '(org-capture :wk "capture...")
+    "k" 'org-roam-dailies-capture-today
     "l" '(org-store-link :wk "store link")
     "s" '(org-search-view :wk "search...")
     "f" '(org-roam-find-file :wk "roam file...")
