@@ -5990,6 +5990,13 @@ Ensure we use dired rather than the Finder on macOS.
 #+begin_src emacs-lisp
   (use-package org-roam
     :hook (org-mode . org-roam-mode)
+    :commands
+    org-roam-find-file
+    org-roam-jump-to-index
+    org-roam-dailies-find-today
+    org-roam-dailies-capture-today
+    org-roam-dailies-find-yesterday
+    org-roam-dailies-find-date
     :custom
     (org-roam-verbose nil)
     (org-roam-directory (f-join paths-org-directory "roam"))
