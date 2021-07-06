@@ -5994,6 +5994,9 @@ Ensure we use dired rather than the Finder on macOS.
     (org-roam-verbose nil)
     (org-roam-directory (f-join paths-org-directory "roam"))
     (org-roam-index-file (f-join org-roam-directory "index.org"))
+
+    (org-roam-capture-templates
+     '(("d" "default" plain #'org-roam-capture--get-point "%?" :file-name "%<%Y-%m-%d--%H-%M-%S>" :head "#+title: ${title}\n" :unnarrowed t)))
     :general
     (:states '(insert normal) :keymap 'org-mode-map
      "C-c i" 'org-roam-insert
