@@ -1514,7 +1514,9 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
 
 #+begin_src emacs-lisp
   (use-package format-all
-    :hook (prog-mode . format-all-mode)
+    :hook
+    (prog-mode . format-all-mode)
+    (prog-mode . format-all-ensure-formatter)
     :custom
     (format-all-show-errors 'never))
 #+end_src
