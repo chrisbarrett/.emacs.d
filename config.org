@@ -4298,7 +4298,6 @@ Tide is currently more polished than the TypeScript language server.
     :hook
     (typescript-mode . tide-maybe-enable)
     (js-mode . tide-maybe-enable)
-    (before-save . tide-format-before-save)
 
     :general
     (:states '(normal insert emacs) :keymaps 'tide-mode-map
