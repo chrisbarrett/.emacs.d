@@ -1155,6 +1155,8 @@ Configure how =ediff= should display windows when started.
     (eldoc-idle-delay 0.2))
 #+end_src
 
+*** TODO Suppress eldoc when point is at a flycheck error
+
 * Better eval-expression
 
 Define an alternative version of =eval-expression= that uses =emacs-lisp-mode= to
