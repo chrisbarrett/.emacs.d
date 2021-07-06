@@ -1662,6 +1662,65 @@ These functions are used in the definitions of snippets.
     (string-match-p "^test-" (file-name-nondirectory (buffer-file-name))))
 #+end_src
 
+**** TypeScript/JavaScript
+
+#+begin_src emacs-lisp
+  (defcustom yas-funcs-js-import-to-module-alist '()
+    "Map the name of a default import to a module.
+
+  Expected to be set via directory variable."
+    :type '(alist :key-type string :value-type string)
+    :group 'yas-funcs
+    :safe (lambda (it)
+            (and (listp it)
+                 (seq-every-p #'car #'stringp)
+                 (seq-every-p #'cdr #'stringp))))
+
+  (use-package yasnippet
+    :config
+
+    (cl-defun yas-funcs-js-module-name-for-binding (&optional (text yas-text))
+      (pcase text
+        ('nil      "")
+        (""        "")
+        ((guard (assoc (string-trim text) yas-funcs-js-import-to-module-alist))
+         (cdr (assoc (string-trim text) yas-funcs-js-import-to-module-alist)))
+        ("VError"  "verror")
+        ("memoize" "promise-memoize")
+        ((or "aws" "AWS")       "aws-sdk")
+        ("_"       "lodash")
+        ("schema" "@broca/schema")
+        ("loadConfiguration" "@broca/config")
+        ("logger" "@broca/logger")
+        ("* as GQL" "@broca/gql")
+
+        ((guard (s-contains? "{" text))
+         "")
+        (s
+         (-if-let* ((match-binding (rx (* space) "*" (+ space) "as" (+ space) (group (+ (not (any space))))))
+                    ((_ name) (s-match match-binding text)))
+             (yas-funcs-js-module-name-for-binding name)
+           (s-downcase (s-dashed-words s))))))
+
+    (defun yas-funcs-js-ctor-body (argstring)
+      (when argstring
+        (thread-last argstring
+          (s-split (rx (or "," ".")))
+          (-map #'s-trim)
+          (-remove #'s-blank?)
+          (--map (format "this.%s = %s;" it it))
+          (s-join "\n"))))
+
+    (defun yas-funcs-js-buffer-imports-logger-p ()
+      (let ((str (buffer-substring-no-properties (point-min) (point-max))))
+        (string-match-p (rx bol "import" (+ space) symbol-start "logger" symbol-end) str)))
+
+    (defun yas-funcs-js-inside-describe-p ()
+      (save-excursion
+        (search-backward-regexp (rx bol (* space) symbol-start "describe" symbol-end) nil t))))
+#+end_src
+
+
 ** =editorconfig= - Support editorconfig files
 
 #+begin_src emacs-lisp
