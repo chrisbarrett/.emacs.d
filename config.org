@@ -1518,7 +1518,7 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
     (prog-mode . format-all-mode)
     (prog-mode . format-all-ensure-formatter)
     :custom
-    (format-all-show-errors 'never))
+    (format-all-show-errors 'errors))
 #+end_src
 
 ** =emojify= - Render emoji
