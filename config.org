@@ -3331,7 +3331,12 @@ Override some default =ibuffer= columns.
 #+begin_src emacs-lisp
   (use-package dired
     :general
-    (:states 'normal :keymaps 'dired-mode-map "$" #'end-of-line)
+    (:states 'normal :keymaps 'dired-mode-map
+     "$" #'end-of-line
+     "i" nil
+     "i i" 'dired-insert-subdir
+     "i q" 'dired-kill-subdir
+     "TAB" 'dired-hide-subdir)
     :custom
     (dired-listing-switches "-alhv")
     (dired-dwim-target t)
