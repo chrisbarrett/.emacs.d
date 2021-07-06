@@ -3638,8 +3638,6 @@ repo, or copying the remote URL to the clipboard.
     (advice-add 'browse-at-remote-kill :after 'config-browse-at-remote--message-kill))
 #+end_src
 
-** TODO git-time-machine hydra
-
 * Programming languages & text-modes
 
 ** =flycheck= - Syntax Checking & Linting
