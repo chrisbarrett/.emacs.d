@@ -4290,6 +4290,7 @@ Tide is currently more polished than the TypeScript language server.
       (unless (derived-mode-p 'json-mode)
         (require 'tide)
         (tide-setup)
+        (add-hook 'before-save-hook 'tide-format-before-save nil t)
         (tide-hl-identifier-mode +1)))
 
     :hook
