@@ -3575,6 +3575,7 @@ Hack =magit='s commit info to show output of a GPG signature check.
     :hook (pass-mode . git-auto-commit-mode)
     :custom
     (gac-debounce-interval 10)
+    (gac-silent-message-p t)
     (gac-automatically-push-p t)
     (gac-automatically-add-new-files-p t))
 #+end_src
