@@ -6008,9 +6008,9 @@ Ensure we use dired rather than the Finder on macOS.
      '(("d" "default" plain #'org-roam-capture--get-point "%?" :file-name "%<%Y-%m-%d--%H-%M-%S>" :head "#+title: ${title}\n" :unnarrowed t)))
     :general
     (:states '(insert normal) :keymap 'org-mode-map
-     "C-c i" 'org-roam-insert
+     "C-c i" 'org-roam-insert-immediate
      "C-c C-i" 'org-roam-insert
-     "C-c TAB" (general-predicate-dispatch 'org-roam-insert
+     "C-c TAB" (general-predicate-dispatch 'org-roam-insert-immediate
                  (org-at-table-p) 'org-ctrl-tab)
      "C-c I" 'org-roam-insert-immediate))
 #+end_src
