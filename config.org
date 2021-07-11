@@ -295,6 +295,12 @@ Load host-specific settings, which are not checked into version control.
     :init
     (add-to-list 'custom-theme-load-path (file-name-directory (locate-library "doom-themes")))
     :config
+
+    (custom-theme-set-faces 'user
+                            '(org-agenda-done ((t :inherit org-done :bold nil)))
+                            '(org-link ((t :inherit link :bold nil)))
+                            '(org-roam-link ((t :inherit org-link :underline nil))))
+
     (load-theme (choose-by-system-theme :light 'doom-solarized-light :dark 'doom-one) t))
 #+end_src
 
