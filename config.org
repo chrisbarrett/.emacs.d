@@ -297,6 +297,7 @@ Load host-specific settings, which are not checked into version control.
     :config
 
     (custom-theme-set-faces 'user
+                            '(highlight-thing ((t :inherit nil :foreground nil :background nil :bold t)))
                             '(org-agenda-done ((t :inherit org-done :bold nil)))
                             '(org-link ((t :inherit link :bold nil)))
                             '(org-roam-link ((t :inherit org-link :underline nil))))
