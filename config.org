@@ -5676,8 +5676,10 @@ cookie or 'cleared', which indicates no special priority.
     (org-src-window-setup 'current-window)
     (org-confirm-babel-evaluate nil)
     (org-babel-load-languages '((emacs-lisp . t)
+                                (python . t)
                                 (calc . t)
-                                (shell . t))))
+                                (shell . t)))
+    (org-babel-python-command (executable-find "python3")))
 #+end_src
 
 Show images in outputs (useful for GNUplot, etc).
