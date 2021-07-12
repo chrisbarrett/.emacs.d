@@ -284,6 +284,8 @@ Load host-specific settings, which are not checked into version control.
     (load-file-with-stats user-site-file))
 #+end_src
 
+* Colour theme
+
 ** =doom-themes= - Enable appropriate theme for GTK theme
 
 #+begin_src emacs-lisp
