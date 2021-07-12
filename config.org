@@ -305,6 +305,16 @@ Load host-specific settings, which are not checked into version control.
                             '(org-link ((t :inherit link :bold nil)))
                             '(org-roam-link ((t :inherit org-link :underline nil))))
 
+    (with-eval-after-load 'doom-solarized-light-theme
+      (custom-theme-set-faces 'doom-solarized-light
+                              '(mu4e-highlight-face ((t :foreground "#268bd2"))
+                                                    t)))
+
+    (with-eval-after-load 'doom-one-theme
+      (custom-theme-set-faces 'doom-one
+                              '(mu4e-highlight-face ((t :foreground "#51afef"))
+                                                    t)))
+
     (load-theme (choose-by-system-theme :light 'doom-solarized-light :dark 'doom-one) t))
 #+end_src
 
