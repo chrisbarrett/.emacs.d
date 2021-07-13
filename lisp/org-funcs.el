@@ -31,10 +31,6 @@
 (autoload 'org-project-skip-stuck-projects "org-project")
 (autoload 'xml-parse-string "xml")
 
-(defvar org-agenda-files nil)
-(defvar org-capture-templates nil)
-(defvar org-agenda-custom-commands nil)
-
 (defvar org-funcs-historical-work-tags '("movio" "pushpay")
   "Tags that relate to previous employers or projects.")
 
@@ -131,8 +127,9 @@ With ARG, don't resume previously clocked task."
 
 (defun org-funcs-update-capture-templates (templates)
   "Merge TEMPLATES with existing values in `org-capture-templates'."
-  (let ((ht (ht-merge (ht-from-alist org-capture-templates) (ht-from-alist templates))))
-    (setq org-capture-templates (-sort (-on 'string-lessp 'car) (ht->alist ht)))))
+  (with-eval-after-load 'org-capture
+    (let ((ht (ht-merge (ht-from-alist org-capture-templates) (ht-from-alist templates))))
+      (setq org-capture-templates (-sort (-on 'string-lessp 'car) (ht->alist ht))))))
 
 (defun org-funcs-capture-template-apply-defaults (template)
   (-let ((defaults '(:clock-keep t :prepend t :immediate-finish nil :jump-to-captured nil :empty-lines 1))
@@ -310,8 +307,9 @@ If NOTIFY-P is set, a desktop notification is displayed."
     (call-interactively #'org-funcs-read-url-for-capture)))
 
 (defun org-funcs-update-agenda-custom-commands (templates)
-  (let ((ht (ht-merge (ht-from-alist org-agenda-custom-commands) (ht-from-alist templates))))
-    (setq org-agenda-custom-commands (-sort (-on 'string-lessp 'car) (ht->alist ht)))))
+  (with-eval-after-load 'org-agenda
+    (let ((ht (ht-merge (ht-from-alist org-agenda-custom-commands) (ht-from-alist templates))))
+      (setq org-agenda-custom-commands (-sort (-on 'string-lessp 'car) (ht->alist ht))))))
 
 (defvar org-funcs--pdf-download-timeout-seconds 30)
 
