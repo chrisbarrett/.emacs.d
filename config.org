@@ -5725,7 +5725,7 @@ cookie or 'cleared', which indicates no special priority.
 *** Toggle priority in org-agenda
 
 #+begin_src emacs-lisp
-  (use-package org
+  (use-package org-agenda
     :general
     (:states 'motion :keymaps 'org-agenda-mode-map "C-c p" 'org-funcs-agenda-toggle-priority)
     :config
