@@ -212,7 +212,6 @@ Define a helper function for loading files with =use-package='s timing functiona
            `((use-package-statistics-gather :config ',name nil))))))))
 #+end_src
 
-
 ** =general= - Provides a rich key-binding DSL supported by =use-package=
 
 See: [[https://github.com/noctuid/general.el][noctuid/general.el]]
