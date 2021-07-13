@@ -6381,7 +6381,7 @@ buffers the same, no matter how I create them.
     (defalias 'dnd-unescape-uri 'dnd--unescape-uri))
 #+end_src
 
-*** TODO =org-roam-server=
+*** TODO =org-roam-server= - Serve org-roam notes for rendering by web browsers
 
 https://github.com/org-roam/org-roam-server
 
