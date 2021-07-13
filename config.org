@@ -5774,11 +5774,14 @@ cookie or 'cleared', which indicates no special priority.
     (org-src-fontify-natively t)
     (org-src-window-setup 'current-window)
     (org-confirm-babel-evaluate nil)
-    (org-babel-load-languages '((emacs-lisp . t)
-                                (python . t)
-                                (calc . t)
-                                (shell . t)))
-    (org-babel-python-command (executable-find "python3")))
+    (org-babel-python-command (executable-find "python3"))
+    :config
+    ;; KLUDGE: Setter is very slow. Wait for org-mode to actually load before
+    ;; setting.
+    (general-setq org-babel-load-languages '((emacs-lisp . t)
+                                             (python . t)
+                                             (calc . t)
+                                             (shell . t))))
 #+end_src
 
 Show images in outputs (useful for GNUplot, etc).
