@@ -69,6 +69,7 @@
         ibuffer-projectile
         smartparens
         paren-face
+        browse-at-remote
         auctex
         company-auctex
         latex-preview-pane
