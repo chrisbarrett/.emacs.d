@@ -107,6 +107,16 @@ Disable window chrome that doesn't make sense in a keyboard-driven UI.
 
 * Startup
 
+** Attach a hook at the very start of =after-init-hook= for computing duration
+
+#+begin_src emacs-lisp
+  (defvar after-init-start-time)
+
+  (add-hook 'after-init-hook (lambda ()
+                               (setq after-init-start-time (current-time)))
+            -99)
+#+end_src
+
 ** Tune garbage collection
 
 See: [[https://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-threshold/][Why are you changing gc-cons-threshold?]]
@@ -6298,11 +6308,14 @@ https://github.com/org-roam/org-roam-server
 * File postamble
 
 #+begin_src emacs-lisp
-  (defvar total-startup-time nil)
-
   (add-hook 'after-init-hook (lambda ()
-                               (setq total-startup-time (float-time (time-subtract (current-time) (with-no-warnings emacs-start-time))))
-                               (message "after-init completed (%.3f seconds total startup time)" total-startup-time)))
+                               (let* ((now (current-time))
+                                      (total-startup-duration (float-time (time-subtract now emacs-start-time)))
+                                      (after-init-duration (float-time (time-subtract now after-init-start-time))))
+                                 (message "after-init completed (%.3f hook duration, %.3f seconds total startup time)"
+                                          after-init-duration
+                                          total-startup-duration)))
+            99)
 
   ;; (provide 'config)
   ;;; config.el ends here
