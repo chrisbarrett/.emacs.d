@@ -1204,10 +1204,11 @@ See: [[https://lists.gnu.org/archive/html/help-gnu-emacs/2014-07/msg00135.html][
     (let ((minibuffer-completing-symbol t))
       (minibuffer-with-setup-hook
           (lambda ()
-            (emacs-lisp-mode)
-            (use-local-map eval-expression-interactively-map)
-            (setq font-lock-mode t)
-            (funcall font-lock-function 1))
+            (let ((inhibit-message t))
+              (emacs-lisp-mode)
+              (use-local-map eval-expression-interactively-map)
+              (setq font-lock-mode t)
+              (funcall font-lock-function 1)))
         (read-from-minibuffer prompt initial-contents
                               eval-expression-interactively-map nil
                               'read-expression-history))))
