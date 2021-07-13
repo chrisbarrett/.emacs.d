@@ -6059,9 +6059,6 @@ Ensure we use dired rather than the Finder on macOS.
   ,#+title: ${title}
   ,#+roam_key: cite:${=key=}
   ,#+category: ${=key=}
-  ,#+roam_tags:
-
-  - keywords ::
 
   ,* %s
   :PROPERTIES:
