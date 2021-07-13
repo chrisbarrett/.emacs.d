@@ -62,6 +62,7 @@
         flycheck-package
         magit
         forge
+        wgrep
         git-auto-commit-mode
         nix-mode
         markdown-mode
