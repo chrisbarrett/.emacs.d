@@ -107,6 +107,10 @@ Disable window chrome that doesn't make sense in a keyboard-driven UI.
 
 * Startup
 
+#+begin_src emacs-lisp
+  (toggle-debug-on-error)
+#+end_src
+
 ** Attach a hook at the very start of =after-init-hook= for computing duration
 
 #+begin_src emacs-lisp
