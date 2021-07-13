@@ -2181,10 +2181,31 @@ compatibility.
 
 * Set up leader keys
 
+Note that we ensure evil is loaded first before binding any keys below,
+otherwise =general= is pathologically slow.
+
+See:
+- [[https://github.com/noctuid/general.el/issues/180][general.el/issues/180]]
+- [[https://github.com/hlissner/doom-emacs/blob/3d21f4ef5ea79de77e32c85b6bdae18bee4d7d73/core/core-keybinds.el#L151][doom-emacs/core/core-keybinds.el]]
+
 ** Use ~SPC~ as the global leader key
 
 #+begin_src emacs-lisp
-  (general-create-definer leader-set-key :keymaps 'override :states '(normal motion visual) :prefix "SPC")
+  (use-package general
+    :after evil
+    :demand t
+    :config
+    (general-define-key :states '(normal motion) "SPC" nil))
+
+  (defmacro leader-set-key (&rest args)
+    (declare (indent defun))
+    `(use-package general
+       :after evil
+       :demand t
+       :config
+       (,'general-def ,@args ,@'(:keymaps 'override :states
+                                 '(normal motion visual)
+                                 :prefix "SPC"))))
 #+end_src
 
 *** Top-level leader keybindings
@@ -2800,8 +2821,21 @@ compatibility.
 ** Use ~,~ for mode-specific commands
 
 #+begin_src emacs-lisp
-  (general-define-key :states '(normal motion) "SPC" nil "," nil)
-  (general-create-definer mode-leader-set-key :keymaps 'override :states '(normal motion visual) :prefix ",")
+  (use-package general
+    :after evil
+    :demand t
+    :config
+    (general-define-key :states '(normal motion) "," nil))
+
+  (defmacro mode-leader-set-key (&rest args)
+    (declare (indent defun))
+    `(use-package general
+       :after evil
+       :demand t
+       :config
+       (,'general-def ,@args ,@'(:keymaps 'override :states
+                                 '(normal motion visual)
+                                 :prefix ","))))
 #+end_src
 
 * Search & replace
