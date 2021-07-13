@@ -5773,18 +5773,22 @@ cookie or 'cleared', which indicates no special priority.
     :custom
     (org-src-fontify-natively t)
     (org-src-window-setup 'current-window)
-    (org-confirm-babel-evaluate nil)
-    (org-babel-python-command (executable-find "python3"))
-    :config
-    ;; KLUDGE: Setter is very slow. Wait for org-mode to actually load before
-    ;; setting.
-    (general-setq org-babel-load-languages '((emacs-lisp . t)
-                                             (python . t)
-                                             (calc . t)
-                                             (shell . t))))
 #+end_src
 
-Show images in outputs (useful for GNUplot, etc).
+*** Defer language loading as late as possible
+
+#+begin_src emacs-lisp
+  (use-package ob
+    :custom
+    (org-confirm-babel-evaluate nil))
+    (org-babel-load-languages '((emacs-lisp . t)
+                                (python . t)
+                                (calc . t)
+                                (shell . t)))
+    (org-babel-python-command (executable-find "python3")))
+#+end_src
+
+*** Show images in outputs (useful for GNUplot, etc).
 
 #+begin_src emacs-lisp
   (use-package org
@@ -5792,7 +5796,7 @@ Show images in outputs (useful for GNUplot, etc).
     (add-hook 'org-babel-after-execute-hook 'org-display-inline-images t))
 #+end_src
 
-Prevent trailing whitespace from being created in src blocks.
+*** Prevent trailing whitespace from being created in src blocks.
 
 #+begin_src emacs-lisp
   (use-package org
