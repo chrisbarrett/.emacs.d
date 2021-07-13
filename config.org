@@ -2247,7 +2247,7 @@ compatibility.
 
 #+begin_src emacs-lisp
   (leader-set-key :infix ","
-    "" '(nil :wk "+parens")
+    "" '(nil :wk "parens")
     "h" #'sp-beginning-of-sexp
     "l" #'sp-end-of-sexp
     "n" #'sp-next-sexp
@@ -2297,7 +2297,7 @@ compatibility.
           (message "Profiler stopped")))))
 
   (leader-set-key :infix "a"
-    "" '(nil :wk "+apps")
+    "" '(nil :wk "apps")
     "c" #'quick-calc
     "C" #'full-calc
     "m" #'mu4e
@@ -2311,7 +2311,7 @@ compatibility.
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "b"
-    "" '(nil :wk "+bufs")
+    "" '(nil :wk "bufs")
     "n" #'next-buffer
     "p" #'previous-buffer
     "l" #'ibuffer
@@ -2335,7 +2335,7 @@ compatibility.
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "c"
-    "" '(nil :wk "+comments")
+    "" '(nil :wk "comments")
     "l" #'evilnc-comment-or-uncomment-lines
     "r" #'comment-or-uncomment-region
     "s" #'comment-sexp)
@@ -2359,7 +2359,7 @@ compatibility.
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "e"
-    "" '(nil :wk "+errors")
+    "" '(nil :wk "errors")
     "n" #'flycheck-next-error
     "p" #'flycheck-previous-error
     "l" #'flycheck-toggle-error-list
@@ -2515,7 +2515,7 @@ compatibility.
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "f"
-    "" '(nil :wk "+files")
+    "" '(nil :wk "files")
     "d" 'copy-buffer-directory
     "y" 'copy-buffer-path
     "Y" 'copy-buffer-name
@@ -2596,7 +2596,7 @@ compatibility.
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "g"
-    "" '(nil :wk "+git/goto")
+    "" '(nil :wk "git/goto")
     "c" #'jump-to-config-file
     "C" #'jump-to-tangled-config-file
     "i" #'jump-to-init-file
@@ -2622,10 +2622,10 @@ compatibility.
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "h"
-    "" '(nil :wk "+help")
+    "" '(nil :wk "help")
     "i" #'info
     "m" #'man
-    "d" '(nil :wk "+describe")
+    "d" '(nil :wk "describe")
     "d c" #'describe-face
     "d C" #'helpful-command
     "d f" #'helpful-callable
@@ -2633,7 +2633,7 @@ compatibility.
     "d m" #'describe-mode
     "d p" #'describe-text-properties
     "d v" #'helpful-variable
-    "f" '(nil :wk "+find")
+    "f" '(nil :wk "find")
     "f c" #'find-face-definition
     "f f" #'find-function
     "f l" #'find-library
@@ -2644,7 +2644,7 @@ compatibility.
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "k"
-    "" '(nil :wk "+kill")
+    "" '(nil :wk "kill")
     "b" #'kill-this-buffer
     "w" #'delete-window
     "r" #'counsel-yank-pop)
@@ -2654,7 +2654,7 @@ compatibility.
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "n"
-    "" '(nil :wk "+narrow")
+    "" '(nil :wk "narrow")
     "f" #'narrow-to-defun
     "r" #'narrow-to-region
     "w" #'widen
@@ -2666,11 +2666,11 @@ compatibility.
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "o"
-    "" '(nil :wk "+org")
+    "" '(nil :wk "org")
     "SPC" '(deft :wk "edit/create note...")
     "a" '(org-funcs-agenda-dwim :wk "agenda")
 
-    "c" '(nil :wk "+clock")
+    "c" '(nil :wk "clock")
     "c i" 'org-funcs-punch-in
     "c o" 'org-funcs-punch-out
     "c r" 'org-resolve-clocks
@@ -2700,7 +2700,7 @@ compatibility.
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "p"
-    "" '(nil :wk "+projects")
+    "" '(nil :wk "projects")
     "<tab>" #'projectile-toggle-between-implementation-and-test
     "<backtab>" #'projectile-find-implementation-or-test-other-window
     "!" #'projectile-run-async-shell-command-in-root
@@ -2720,7 +2720,7 @@ compatibility.
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "t"
-    "" '(nil :wk "+toggle")
+    "" '(nil :wk "toggle")
     "i" #'toggle-input-method
     "c" #'hide/show-comments-toggle
     "m" #'global-hide-mode-line-mode)
@@ -2764,7 +2764,7 @@ compatibility.
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "w"
-    "" '(nil :wk "+window")
+    "" '(nil :wk "window")
     "w" #'evil-window-next
     "r" #'evil-window-rotate-downwards
     "/" #'split-window-horizontally-dwim
@@ -2779,7 +2779,7 @@ compatibility.
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "y"
-    "" '(nil :wk "+snippets")
+    "" '(nil :wk "snippets")
     "n" #'yas-new-snippet
     "e" #'yas-expand
     "f" #'yas-visit-snippet-file
@@ -2791,7 +2791,7 @@ compatibility.
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "z"
-    "" '(nil :wk "+zoom")
+    "" '(nil :wk "zoom")
     "+" #'default-text-scale-increase
     "-" #'default-text-scale-decrease
     "=" #'default-text-scale-reset)
@@ -3448,7 +3448,7 @@ Override some default =ibuffer= columns.
     "f" 'dired
     "F" 'dired-other-window
 
-    "m" '(nil :wk "+mark")
+    "m" '(nil :wk "mark")
     "m a" 'dired-mark-unmarked-files
     "m c" 'dired-change-marks
     "m r" 'dired-mark-files-regexp
@@ -3458,7 +3458,7 @@ Override some default =ibuffer= columns.
 
     "!" 'dired-do-shell-command
 
-    "d" '(nil :wk "+execute (marked)")
+    "d" '(nil :wk "execute (marked)")
     "d c" 'dired-do-copy
     "d D" 'dired-do-delete
     "d h" 'dired-do-hardlink
@@ -4124,7 +4124,7 @@ Make checkbox insertion a little smarter.
 
 #+begin_src emacs-lisp
   (mode-leader-set-key :keymaps 'emacs-lisp-mode-map
-    "e" '(nil :wk "+eval")
+    "e" '(nil :wk "eval")
     "eb" '(eval-buffer :wk "eval buf")
     "ee" '(eval-expression :wk "eval expr")
 
@@ -4488,7 +4488,7 @@ Tide is currently more polished than the TypeScript language server.
 
 #+begin_src emacs-lisp
   (mode-leader-set-key :keymaps '(gfm-mode-map markdown-mode-map)
-    "i" '(nil :wk "+insert")
+    "i" '(nil :wk "insert")
     "i h" 'markdown-insert-header-dwim
     "i c" 'markdown-insert-gfm-code-block
     "i i" 'markdown-insert-image
@@ -4497,7 +4497,7 @@ Tide is currently more polished than the TypeScript language server.
     "i w" 'markdown-insert-wiki-link
     "i -" 'markdown-insert-hr
 
-    "m" '(nil :wk "+markup")
+    "m" '(nil :wk "markup")
     "m b" 'markdown-insert-bold
     "m i" 'markdown-insert-italic
     "m k" 'markdown-insert-kbd
@@ -6109,11 +6109,11 @@ Ensure we use dired rather than the Finder on macOS.
     ">" 'org-roam-dailies-find-next-note
     "J" 'org-roam-dailies-find-date
 
-    "l" '(nil :wk "+alias")
+    "l" '(nil :wk "alias")
     "l a" 'org-roam-alias-add
     "l x" 'org-roam-alias-delete
 
-    "k" '(nil :wk "+tags")
+    "k" '(nil :wk "tags")
     "k a" 'org-roam-tag-add
     "k x" 'org-roam-tag-delete)
 #+end_src
