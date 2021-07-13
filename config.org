@@ -1838,7 +1838,7 @@ See: [[https://github.com/wbolster/emacs-direnv][wbolster/emacs-direnv]]
 
 * =evil= - Vim-style modal editing
 
-=evil= provides macros that I want to use in =:config= blocks, so teach the
+=evil= provides macros that I want to use in ~:config~ blocks, so teach the
 byte-compiler about them to avoid warnings.
 
 #+begin_src emacs-lisp
@@ -1846,7 +1846,7 @@ byte-compiler about them to avoid warnings.
     (require 'evil))
 #+end_src
 
-Customise global vars and keybindings.
+** Customise global vars and keybindings
 
 #+begin_src emacs-lisp
   (use-package evil
@@ -1867,14 +1867,15 @@ Customise global vars and keybindings.
     (:states 'normal "go" #'browse-url-at-point))
 #+end_src
 
-Prevent visual state from updating the clipboard.
+** Prevent visual state from updating the clipboard
 
 #+begin_src emacs-lisp
   (advice-add 'evil-visual-update-x-selection :override #'ignore)
 #+end_src
 
-Prevent evil's own keybindings from loading--we use =evil-collection= to manage
-these instead.
+** Prevent evil's own keybindings from loading
+
+We use =evil-collection= to manage these instead.
 
 #+begin_src emacs-lisp
   (use-package evil
@@ -2180,18 +2181,13 @@ compatibility.
 
 * Set up leader keys
 
-Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
+** Use ~SPC~ as the global leader key
 
 #+begin_src emacs-lisp
-  (require 'general)
-  (general-evil-setup)
-
-  (general-define-key :states '(normal motion) "SPC" nil "," nil)
   (general-create-definer leader-set-key :keymaps 'override :states '(normal motion visual) :prefix "SPC")
-  (general-create-definer mode-leader-set-key :keymaps 'override :states '(normal motion visual) :prefix ",")
 #+end_src
 
-** Top-level leader keybindings
+*** Top-level leader keybindings
 
 #+begin_src emacs-lisp
   (defun alternate-buffer (&optional window)
@@ -2247,7 +2243,7 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
     "x" '(counsel-M-x :wk "M-x"))
 #+end_src
 
-** ~,~ - Parens
+*** ~,~ - Parens
 
 #+begin_src emacs-lisp
   (leader-set-key :infix ","
@@ -2282,7 +2278,7 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
     "Y" #'sp-backward-copy-sexp)
 #+end_src
 
-** ~a~ - Applications
+*** ~a~ - Applications
 
 #+begin_src emacs-lisp
   (defun profiler-stop-and-report (&optional continue-p)
@@ -2311,7 +2307,7 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
     "w" #'world-time-list)
 #+end_src
 
-** ~b~ - Buffers
+*** ~b~ - Buffers
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "b"
@@ -2325,7 +2321,7 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
     "w" #'save-buffer)
 #+end_src
 
-** ~c~ - Commenting
+*** ~c~ - Commenting
 
 #+begin_src emacs-lisp
   (autoload 'sp-mark-sexp "smartparens")
@@ -2345,7 +2341,7 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
     "s" #'comment-sexp)
 #+end_src
 
-** ~e~ - Errors and Flycheck
+*** ~e~ - Errors and Flycheck
 
 #+begin_src emacs-lisp
   (autoload 'flycheck-list-errors "flycheck")
@@ -2375,7 +2371,7 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
     "v" #'flycheck-verify-setup)
 #+end_src
 
-** ~f~ - Files
+*** ~f~ - Files
 
 #+begin_src emacs-lisp
   (autoload 'projectile-project-p "projectile")
@@ -2537,7 +2533,7 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
     "R" 'rename-file-and-buffer)
 #+end_src
 
-** ~g~ - Git & Goto
+*** ~g~ - Git & Goto
 
 #+begin_src emacs-lisp
   (require 's)
@@ -2622,7 +2618,7 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
     "SPC" #'pop-tag-mark)
 #+end_src
 
-** ~h~ - Help
+*** ~h~ - Help
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "h"
@@ -2644,7 +2640,7 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
     "f v" #'find-variable)
 #+end_src
 
-** ~k~ - Killing
+*** ~k~ - Killing
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "k"
@@ -2654,7 +2650,7 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
     "r" #'counsel-yank-pop)
 #+end_src
 
-** ~n~ - Narrowing
+*** ~n~ - Narrowing
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "n"
@@ -2666,7 +2662,7 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
     "S" #'org-tree-to-indirect-buffer)
 #+end_src
 
-** ~o~ - org-mode
+*** ~o~ - org-mode
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "o"
@@ -2700,7 +2696,7 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
     "w" '(org-funcs-goto-work :wk "work"))
 #+end_src
 
-** ~p~ - Projects
+*** ~p~ - Projects
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "p"
@@ -2720,7 +2716,7 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
     "r" #'projectile-replace)
 #+end_src
 
-** ~t~ - Toggles
+*** ~t~ - Toggles
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "t"
@@ -2730,7 +2726,7 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
     "m" #'global-hide-mode-line-mode)
 #+end_src
 
-** ~w~ - Windows
+*** ~w~ - Windows
 
 #+begin_src emacs-lisp
   (defun split-window-horizontally-dwim (&optional arg)
@@ -2779,7 +2775,7 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
     "t" #'toggle-window-dedication)
 #+end_src
 
-** ~y~ - Text snippets
+*** ~y~ - Text snippets
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "y"
@@ -2791,7 +2787,7 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
 
 #+end_src
 
-** ~z~ - Text Scale
+*** ~z~ - Text Scale
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "z"
@@ -2799,6 +2795,13 @@ Use ~SPC~ as the global leader key, and ~,~ for mode-specific commands.
     "+" #'default-text-scale-increase
     "-" #'default-text-scale-decrease
     "=" #'default-text-scale-reset)
+#+end_src
+
+** Use ~,~ for mode-specific commands
+
+#+begin_src emacs-lisp
+  (general-define-key :states '(normal motion) "SPC" nil "," nil)
+  (general-create-definer mode-leader-set-key :keymaps 'override :states '(normal motion visual) :prefix ",")
 #+end_src
 
 * Search & replace
