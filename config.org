@@ -1236,7 +1236,14 @@ See: [[https://lists.gnu.org/archive/html/help-gnu-emacs/2014-07/msg00135.html][
                              "*Pp Eval Output*")))
 #+end_src
 
-Use this command for evaluating expressions in the Lisp debugger too.
+** Bind this command to ~M-:~
+
+#+begin_src emacs-lisp
+  (general-define-key :keymaps 'override :states '(normal motion visual)
+    "M-:" 'eval-expression-interactively)
+#+end_src
+
+** Use this command for evaluating expressions in the Lisp debugger too
 
 #+begin_src emacs-lisp
   (use-package debug
