@@ -299,21 +299,19 @@ Load host-specific settings, which are not checked into version control.
     :config
 
     (custom-theme-set-faces 'user
-                            '(highlight-thing ((t :inherit nil :foreground nil :background nil :bold t)))
-                            '(org-roam-tag ((t :italic t)))
-                            '(org-agenda-done ((t :inherit org-done :bold nil)))
-                            '(org-link ((t :inherit link :bold nil)))
-                            '(org-roam-link ((t :inherit org-link :underline nil))))
+                            '(highlight ((t :inherit nil :foreground nil :background nil :bold t)))
+                            '(org-roam-tag ((t :italic t)) t)
+                            '(org-agenda-done ((t :inherit org-done :bold nil)) t)
+                            '(org-link ((t :inherit link :bold nil)) t)
+                            '(org-roam-link ((t :inherit org-link :underline nil)) t))
 
     (with-eval-after-load 'doom-solarized-light-theme
       (custom-theme-set-faces 'doom-solarized-light
-                              '(mu4e-highlight-face ((t :foreground "#268bd2"))
-                                                    t)))
+                              '(mu4e-highlight-face ((t :foreground "#268bd2")) t)))
 
     (with-eval-after-load 'doom-one-theme
       (custom-theme-set-faces 'doom-one
-                              '(mu4e-highlight-face ((t :foreground "#51afef"))
-                                                    t)))
+                              '(mu4e-highlight-face ((t :foreground "#51afef")) t)))
 
     (load-theme (choose-by-system-theme :light 'doom-solarized-light :dark 'doom-one) t))
 #+end_src
