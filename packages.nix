@@ -148,7 +148,8 @@
           patches = [ ./patches/om.patch ];
         };
       };
-    in fromOverlay ++ pkgs.lib.attrsets.attrValues extraPackages;
+    in
+    fromOverlay ++ pkgs.lib.attrsets.attrValues extraPackages;
 
   # Apply any patches needed here.
   overrides = self: super: rec {

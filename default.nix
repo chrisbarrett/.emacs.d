@@ -5,9 +5,10 @@ let
     url =
       "https://github.com/nix-community/emacs-overlay/archive/${overlayRev}.tar.gz";
   });
-in { pkgs ?
-  # HACK: Use unstable pkgs while Emacs GCC has JIT issues.
-  import <nixpkgs-unstable> { overlays = [ emacs-overlay (import ./overlays) ]; } }:
+in
+{ pkgs ? # HACK: Use unstable pkgs while Emacs GCC has JIT issues.
+  import <nixpkgs-unstable> { overlays = [ emacs-overlay (import ./overlays) ]; }
+}:
 
 let
   inherit (pkgs.lib) strings;
@@ -32,7 +33,7 @@ let
     paths = with pkgs; [
       (aspellWithDicts (ps: [ ps.en ]))
       multimarkdown
-      nixfmt
+      nixpkgs-fmt
       ripgrep
       sqlite
     ];
@@ -42,8 +43,16 @@ let
 
     emacsmirror = args: github (args // { owner = "emacsmirror"; });
 
-    github = { name, repo ? name, rev, owner, sha256, buildInputs ? [ ]
-      , patches ? [ ], preBuild ? "" }:
+    github =
+      { name
+      , repo ? name
+      , rev
+      , owner
+      , sha256
+      , buildInputs ? [ ]
+      , patches ? [ ]
+      , preBuild ? ""
+      }:
       pkgs.callPackage ./builder.nix {
         inherit emacs name buildInputs patches preBuild;
         src = pkgs.fetchFromGitHub { inherit sha256 repo rev owner; };
@@ -56,14 +65,15 @@ let
 
   emacsWithPackages =
     (builder.overrideScope' packages.overrides).emacsWithPackages
-    packages.packages;
+      packages.packages;
 
   customPathEntries = strings.concatStringsSep ":" [
     "${requiredPrograms}/bin"
     "${pkgs.jdk}/bin"
   ];
 
-in pkgs.symlinkJoin {
+in
+pkgs.symlinkJoin {
   name = "emacs-wrapped";
   buildInputs = [ pkgs.makeWrapper ];
   paths = [ emacsWithPackages ];
