@@ -13,7 +13,7 @@
   (should (< (with-no-warnings emacs-init-duration) 1)))
 
 (ert-deftest startup-time-less-than-one-second-with-after-init ()
-  (should (< (with-no-warnings total-startup-time) 1)))
+  (should (< (with-no-warnings total-startup-duration) 1)))
 
 ;; (provide 'config-tests)
 ;;; config-tests.el ends here

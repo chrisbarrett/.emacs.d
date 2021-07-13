@@ -145,8 +145,11 @@ that these leverage the ~DEPTH~ so that subsequent functions added to
 
 ** Log startup time duration
 
+Note that tests refer to ~total-startup-duration~, so it should not be inlined.
+
 #+begin_src emacs-lisp
   (defvar after-init-start-time)
+  (defvar total-startup-duration)
 
   (add-hook 'after-init-hook (lambda ()
                                (setq after-init-start-time (current-time)))
@@ -154,8 +157,8 @@ that these leverage the ~DEPTH~ so that subsequent functions added to
 
   (add-hook 'after-init-hook (lambda ()
                                (let* ((now (current-time))
-                                      (total-startup-duration (float-time (time-subtract now emacs-start-time)))
                                       (after-init-duration (float-time (time-subtract now after-init-start-time))))
+                                 (setq total-startup-duration (float-time (time-subtract now emacs-start-time)))
                                  (message "after-init completed (%.3f hook duration, %.3f seconds total startup time)"
                                           after-init-duration
                                           total-startup-duration)))
