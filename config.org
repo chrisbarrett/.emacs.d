@@ -3519,12 +3519,7 @@ of =projectile=. Use =projectile= until the builtin functionality is more comple
                                               (thing-at-point 'symbol)
                                               ""))))
 
-    (defun config-projectile--extra-opts-on-prefix-args (&optional options)
-      (list (if current-prefix-arg
-                (read-string "Rg args: " options)
-              options)))
-    (counsel-projectile-mode +1)
-    (advice-add 'counsel-projectile-rg :filter-args 'config-projectile--extra-opts-on-prefix-args))
+    (counsel-projectile-mode +1))
 #+end_src
 
 * Git
