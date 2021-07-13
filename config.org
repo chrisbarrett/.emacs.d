@@ -118,18 +118,19 @@ that these leverage the ~DEPTH~ so that subsequent functions added to
 
   (defvar startup-debugger-report-threshold-seconds 1)
 
-  (add-hook 'after-init-hook (lambda ()
-                               (profiler-start 'cpu))
-            -99)
+  (unless noninteractive
+    (add-hook 'after-init-hook (lambda ()
+                                 (profiler-start 'cpu))
+              -99)
 
-  (add-hook 'after-init-hook (lambda ()
-                               (profiler-stop)
-                               (let* ((now (current-time))
-                                      (total-startup-time (float-time (time-subtract now emacs-start-time))))
-                                 (unless (time-less-p total-startup-time
-                                                      (seconds-to-time startup-debugger-report-threshold-seconds))
-                                   (profiler-report))))
-            99)
+    (add-hook 'after-init-hook (lambda ()
+                                 (profiler-stop)
+                                 (let* ((now (current-time))
+                                        (total-startup-time (float-time (time-subtract now emacs-start-time))))
+                                   (unless (time-less-p total-startup-time
+                                                        (seconds-to-time startup-debugger-report-threshold-seconds))
+                                     (profiler-report))))
+              99))
 #+end_src
 
 ** Enable debugging for duration of startup sequence
