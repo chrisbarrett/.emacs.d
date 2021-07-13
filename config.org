@@ -105,21 +105,64 @@ Disable window chrome that doesn't make sense in a keyboard-driven UI.
   ;;; Code:
 #+end_src
 
-* Startup
+* Debugging
+
+Hook into the startup lifecycle to report useful debugging information. Note
+that these leverage the ~DEPTH~ so that subsequent functions added to
+~after-init-hook~ are still wrapped correctly.
+
+** Show profiler report if startup took too long
 
 #+begin_src emacs-lisp
-  (toggle-debug-on-error)
+  (require 'profiler)
+
+  (defvar startup-debugger-report-threshold-seconds 1)
+
+  (add-hook 'after-init-hook (lambda ()
+                               (profiler-start 'cpu))
+            -99)
+
+  (add-hook 'after-init-hook (lambda ()
+                               (profiler-stop)
+                               (let* ((now (current-time))
+                                      (total-startup-time (float-time (time-subtract now emacs-start-time))))
+                                 (unless (time-less-p total-startup-time
+                                                      (seconds-to-time startup-debugger-report-threshold-seconds))
+                                   (profiler-report))))
+            99)
 #+end_src
 
-** Attach a hook at the very start of =after-init-hook= for computing duration
+** Enable debugging for duration of startup sequence
+
+#+begin_src emacs-lisp
+  (setq debug-on-error t)
+
+  (add-hook 'after-init-hook
+            (lambda ()
+              (setq debug-on-error nil))
+            98)
+#+end_src
+
+** Log startup time duration
 
 #+begin_src emacs-lisp
   (defvar after-init-start-time)
 
   (add-hook 'after-init-hook (lambda ()
                                (setq after-init-start-time (current-time)))
-            -99)
+            -97)
+
+  (add-hook 'after-init-hook (lambda ()
+                               (let* ((now (current-time))
+                                      (total-startup-duration (float-time (time-subtract now emacs-start-time)))
+                                      (after-init-duration (float-time (time-subtract now after-init-start-time))))
+                                 (message "after-init completed (%.3f hook duration, %.3f seconds total startup time)"
+                                          after-init-duration
+                                          total-startup-duration)))
+            97)
 #+end_src
+
+* Startup
 
 ** Tune garbage collection
 
@@ -6323,15 +6366,6 @@ https://github.com/org-roam/org-roam-server
 * File postamble
 
 #+begin_src emacs-lisp
-  (add-hook 'after-init-hook (lambda ()
-                               (let* ((now (current-time))
-                                      (total-startup-duration (float-time (time-subtract now emacs-start-time)))
-                                      (after-init-duration (float-time (time-subtract now after-init-start-time))))
-                                 (message "after-init completed (%.3f hook duration, %.3f seconds total startup time)"
-                                          after-init-duration
-                                          total-startup-duration)))
-            99)
-
   ;; (provide 'config)
   ;;; config.el ends here
 #+end_src
