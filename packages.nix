@@ -139,6 +139,14 @@
           buildInputs = [ pkgs.mu ];
         };
 
+        org-noter = github {
+          name = "org-noter";
+          owner = "chrisbarrett";
+          rev = "6c2c1a91c1830e03110487867734137f5698904a";
+          sha256 = "1gvalalk27kvvm1ysj8vpjdky3sfw8jvympv9vkkr3dby8b2apwa";
+          buildInputs = [ org ];
+        };
+
         om = github {
           name = "om.el";
           owner = "ndwarshuis";
