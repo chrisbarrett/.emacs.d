@@ -4354,6 +4354,16 @@ Teach the Emacs Lisp indentation function to indent plists nicely.
     (flycheck-package-setup))
 #+end_src
 
+**** Disable these checkers in org src blocks
+
+#+begin_src emacs-lisp
+  (defun disable-flycheck-checkers-for-org-src-block ()
+    (push 'emacs-lisp-package flycheck-disabled-checkers)
+    (push 'emacs-lisp-checkdoc flycheck-disabled-checkers))
+
+  (add-hook 'org-src-mode-hook 'disable-flycheck-checkers-for-org-src-block)
+#+end_src
+
 ** =prettify-symbols-mode= - Pretty lambdas in Lisp modes
 
 #+begin_src emacs-lisp
