@@ -4333,16 +4333,6 @@ Teach the Emacs Lisp indentation function to indent plists nicely.
 
 *** Emacs lisp syntax checking
 
-Inhibit these checkers for src blocks, test files etc.
-
-#+begin_src emacs-lisp
-  (defun flycheck-custom-checkdoc-predicate ()
-    (not (or (bound-and-true-p no-byte-compile)
-             (bound-and-true-p org-src-mode)
-             (ignore-errors
-               (string-match-p "^test-" (file-name-nondirectory (buffer-file-name)))))))
-#+end_src
-
 **** =checkdoc= - linting for Elisp docstrings
 
 #+begin_src emacs-lisp
@@ -4351,12 +4341,7 @@ Inhibit these checkers for src blocks, test files etc.
     :demand t
     :custom
     (checkdoc-force-docstrings-flag nil)
-    (checkdoc-arguments-in-order-flag nil)
-    :config
-    ;; Dynamic eval to work around macroexpansion errors in byte-compilation.
-    (eval
-     '(setf (flycheck-checker-get 'emacs-lisp-checkdoc 'predicate)
-            #'flycheck-custom-checkdoc-predicate)))
+    (checkdoc-arguments-in-order-flag nil))
 #+end_src
 
 **** =flycheck-package= - checker for =package.el= conventions
@@ -4366,11 +4351,7 @@ Inhibit these checkers for src blocks, test files etc.
     :after (:all flycheck elisp-mode)
     :demand t
     :config
-    (flycheck-package-setup)
-    ;; Dynamic eval to work around macroexpansion errors in byte-compilation.
-    (eval
-     '(setf (flycheck-checker-get 'emacs-lisp-package 'predicate)
-            'flycheck-custom-checkdoc-predicate)))
+    (flycheck-package-setup))
 #+end_src
 
 ** =prettify-symbols-mode= - Pretty lambdas in Lisp modes
