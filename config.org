@@ -6408,6 +6408,8 @@ https://github.com/org-roam/org-roam-server
 * Use today's org-roam file for initial buffer
 
 #+begin_src emacs-lisp
+  (autoload 'org-roam-dailies-find-today "org-roam-dailies")
+
   (setq initial-buffer-choice
         (lambda ()
           (let ((inhibit-redisplay t))
