@@ -3830,18 +3830,20 @@ See: [[https://www.flycheck.org/en/latest/][flycheck.org]]
          (let-alist (flycheck-count-errors flycheck-current-errors)
            (cond
             ((and .error .warning)
-             (format " {%s error%s, %s warn%s}"
+             (format " ❌ (%s error%s, %s warn%s)"
                      .error
                      (if (equal .error 1) "" "s")
                      .warning
                      (if (equal .warning 1) "" "s")))
             (.error
-             (format " {%s error%s}" .error (if (equal .error 1) "" "s")))
+             (format " ❌ (%s error%s)" .error (if (equal .error 1) "" "s")))
 
             (.warning
-             (format " {%s warning%s}" .warning (if (equal .warning 1) "" "s"))))))
-        (`interrupted " Checks[interrupted]")
-        (`suspicious " Checks[suspicious]")
+             (format " ! (%s warning%s)" .warning (if (equal .warning 1) "" "s")))
+            (t
+             " ✔"))))
+        (`interrupted " ? (interrupted)")
+        (`suspicious " ? (suspicious)")
         (_
          "")))
     :custom
