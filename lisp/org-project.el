@@ -1,7 +1,5 @@
 ;;; org-project.el --- Project-related orgmode commands  -*- lexical-binding: t; -*-
 
-;; Package-Requires: ((emacs "27.1"))
-
 ;;; Commentary:
 
 ;; Adapted from:

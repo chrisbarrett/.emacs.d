@@ -2,8 +2,6 @@
 
 ;; Copyright (C) 2019  Chris Barrett
 
-;; Package-Requires: ((emacs "27.1"))
-
 ;; Author: Chris Barrett <chris+emacs@walrus.cool>
 
 ;;; Commentary:

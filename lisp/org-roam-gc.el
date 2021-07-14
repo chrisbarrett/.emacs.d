@@ -1,7 +1,4 @@
 ;;; org-roam-gc.el --- Clean up empty roam files -*- lexical-binding: t; -*-
-
-;; Package-Requires: ((emacs "27.1"))
-
 ;;; Commentary:
 ;;; Code:
 
@@ -73,7 +70,7 @@ removing files."
            (seq-filter #'org-roam-gc--empty-file-content-p)
            (seq-filter (lambda (file)
                          (org-roam-gc--remove-file file (and interactive
-                                                  org-roam-gc-prompt-before-deleting-p))))
+                                                             org-roam-gc-prompt-before-deleting-p))))
            (length))))
     (cond
      (interactive

@@ -1,7 +1,4 @@
 ;;; org-templates.el --- Declarative org capture templates.  -*- lexical-binding: t; -*-
-
-;; Package-Requires: ((emacs "27.1"))
-
 ;;; Commentary:
 
 ;; Provide a declarative syntax for declaring org-capture templates using files.
