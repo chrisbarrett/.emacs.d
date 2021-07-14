@@ -29,6 +29,7 @@
 (autoload 'org-cliplink-retrieve-title-synchronously "org-cliplink")
 (autoload 'org-project-p "org-project")
 (autoload 'org-project-skip-stuck-projects "org-project")
+(autoload 'org-ref-url-html-to-bibtex "org-ref-url-utils")
 (autoload 'xml-parse-string "xml")
 
 (defvar org-funcs-historical-work-tags '("movio" "pushpay")
