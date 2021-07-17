@@ -6131,7 +6131,6 @@ Ensure we use dired rather than the Finder on macOS.
 
 #+begin_src emacs-lisp
   (use-package org-roam
-    :hook (org-mode . org-roam-mode)
     :commands
     org-roam-find-file
     org-roam-jump-to-index
@@ -6139,13 +6138,21 @@ Ensure we use dired rather than the Finder on macOS.
     org-roam-dailies-capture-today
     org-roam-dailies-find-yesterday
     org-roam-dailies-find-date
+    org-roam-node-create
+    :init
+    (setq org-roam-directory (f-join paths-org-directory "roam"))
     :custom
+    (org-roam-v2-ack t)
     (org-roam-verbose nil)
-    (org-roam-directory (f-join paths-org-directory "roam"))
     (org-roam-index-file (f-join org-roam-directory "index.org"))
-
     (org-roam-capture-templates
-     '(("d" "default" plain #'org-roam-capture--get-point "%?" :file-name "%<%Y-%m-%d--%H-%M-%S>" :head "#+title: ${title}\n" :unnarrowed t)))
+     '(("d" "default" plain "%?" :if-new
+        (file+head "%<%Y-%m-%d--%H-%M-%S>.org" "#+title: ${title}\n")
+        :unnarrowed t)))
+
+    :config
+    (org-roam-setup)
+
     :general
     (:states '(insert normal) :keymap 'org-mode-map
      "C-c i" 'org-roam-insert-immediate
