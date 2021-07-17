@@ -1438,7 +1438,7 @@ This should really be a thing out-of-the-box.
   (define-key prog-mode-map (kbd "M-q") #'config-indent-dwim)
 #+end_src
 
-** =aggressive-indent= - Aggressive indentation                    :disabled:
+** =aggressive-indent= - Aggressive indentation                   :disabled:
 
 =aggressive-indent= automatically reindents code during editing.
 
