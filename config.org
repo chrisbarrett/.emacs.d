@@ -360,6 +360,7 @@ Load host-specific settings, which are not checked into version control.
 
     (custom-theme-set-faces 'user
                             '(highlight ((t :inherit nil :foreground nil :background nil :bold t)))
+                            '(org-drawer ((t :inherit org-special-keyword)))
                             '(org-roam-tag ((t :italic t)) t)
                             '(org-agenda-done ((t :inherit org-done :bold nil)) t)
                             '(org-link ((t :inherit link :bold nil)) t)
