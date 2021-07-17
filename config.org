@@ -6403,6 +6403,10 @@ buffers the same, no matter how I create them.
 
 https://github.com/org-roam/org-roam-server
 
+**** TODO Configure org-roam-protocol
+
+https://www.orgroam.com/manual.html#Installation-_00281_0029
+
 * Load Lisp from other locations
 
 #+begin_src emacs-lisp
