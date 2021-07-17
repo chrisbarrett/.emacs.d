@@ -5340,7 +5340,12 @@ Normally newlines are reflowed automatically.
 
 #+begin_src emacs-lisp
   (use-package messages-are-flowing
-    :hook (message-mode . messages-are-flowing-use-and-mark-hard-newlines))
+    :commands (messages-are-flowing--mark-hard-newlines)
+    :init
+    (defun setup-hard-newlines ()
+      (use-hard-newlines nil 'always)
+      (add-hook 'after-change-functions 'messages-are-flowing--mark-hard-newlines nil t))
+    :hook (message-mode . setup-hard-newlines))
 #+end_src
 
 * =org-mode= - Org document format & editing support
