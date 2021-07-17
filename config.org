@@ -5416,6 +5416,15 @@ Normally newlines are reflowed automatically.
     "e v" '(org-babel-mark-block :wk "mark block"))
 #+end_src
 
+** Allow ID lookups to work in task files
+
+#+begin_src emacs-lisp
+  (use-package org-id
+    :config
+    (dolist (file (f-files (f-join paths-org-directory "tasks")))
+      (add-to-list 'org-id-files file)))
+#+end_src
+
 ** =org-funcs= - org functions used throughout config
 
 #+begin_src emacs-lisp
