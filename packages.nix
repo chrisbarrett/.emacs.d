@@ -1,4 +1,4 @@
-{ pkgs, github, emacsmirror, withPatches }: {
+{ pkgs, lib, github, emacsmirror, withPatches }: {
   # Set the packages to bake in to emacs. The versions of packages are
   # determined by `emacs-overlay`, but can be overridden in the `overrides`
   # binding later in this file.
@@ -159,7 +159,7 @@
         };
       };
     in
-    fromOverlay ++ pkgs.lib.attrsets.attrValues extraPackages;
+    fromOverlay ++ lib.attrsets.attrValues extraPackages;
 
   # Apply any patches needed here.
   overrides = self: super: rec {
