@@ -2705,12 +2705,11 @@ See:
     "k" '(org-capture :wk "capture...")
     "l" '(org-store-link :wk "store link")
     "s" '(org-search-view :wk "search...")
-    "f" '(org-roam-find-file :wk "roam file...")
-    "I" '(org-roam-jump-to-index :wk "index file")
-    "n" '(org-roam-dailies-find-today :wk "dailies: today")
+    "f" '(org-roam-node-find :wk "roam file...")
+    "n" '(org-roam-dailies-goto-today :wk "dailies: today")
     "N" 'org-roam-dailies-capture-today
-    "y" '(org-roam-dailies-find-yesterday :wk "dailies: yesterday")
-    "d" '(org-roam-dailies-find-date :wk "dailies: date...")
+    "y" '(org-roam-dailies-goto-yesterday :wk "dailies: yesterday")
+    "d" '(org-roam-dailies-goto-date :wk "dailies: date...")
 
     "b" '(helm-bibtex :wk "bibliography...")
     "r" 'org-ref-bibtex-hydra/body
@@ -6133,19 +6132,17 @@ Ensure we use dired rather than the Finder on macOS.
 #+begin_src emacs-lisp
   (use-package org-roam
     :commands
-    org-roam-find-file
-    org-roam-jump-to-index
-    org-roam-dailies-find-today
+    org-roam-node-find
+    org-roam-dailies-goto-today
     org-roam-dailies-capture-today
-    org-roam-dailies-find-yesterday
-    org-roam-dailies-find-date
+    org-roam-dailies-goto-yesterday
+    org-roam-dailies-goto-date
     org-roam-node-create
     :init
     (setq org-roam-directory (f-join paths-org-directory "roam"))
     :custom
     (org-roam-v2-ack t)
     (org-roam-verbose nil)
-    (org-roam-index-file (f-join org-roam-directory "index.org"))
     (org-roam-capture-templates
      '(("d" "default" plain "%?" :if-new
         (file+head "%<%Y-%m-%d--%H-%M-%S>.org" "#+title: ${title}\n")
@@ -6156,19 +6153,17 @@ Ensure we use dired rather than the Finder on macOS.
 
     :general
     (:states '(insert normal) :keymap 'org-mode-map
-     "C-c i" 'org-roam-insert-immediate
-     "C-c C-i" 'org-roam-insert
-     "C-c TAB" (general-predicate-dispatch 'org-roam-insert-immediate
-                 (org-at-table-p) 'org-ctrl-tab)
-     "C-c I" 'org-roam-insert-immediate))
+     "C-c i" 'org-roam-node-insert
+     "C-c TAB" (general-predicate-dispatch 'org-roam-node-insert
+                 (org-at-table-p) 'org-ctrl-tab)))
 #+end_src
 
 #+begin_src emacs-lisp
-  (mode-leader-set-key :keymaps 'org-roam-mode-map
-    "<tab>" '(org-roam :wk "backlinks")
+  (mode-leader-set-key :keymaps 'org-mode-map
+    "<tab>" '(org-roam-buffer-toggle :wk "backlinks")
     "<" 'org-roam-dailies-find-previous-note
     ">" 'org-roam-dailies-find-next-note
-    "J" 'org-roam-dailies-find-date
+    "J" 'org-roam-dailies-goto-date
 
     "l" '(nil :wk "alias")
     "l a" 'org-roam-alias-add
@@ -6182,12 +6177,12 @@ Ensure we use dired rather than the Finder on macOS.
 *** Use today's org-roam file for initial buffer
 
 #+begin_src emacs-lisp
-  (autoload 'org-roam-dailies-find-today "org-roam-dailies")
+  (autoload 'org-roam-dailies-goto-today "org-roam-dailies")
 
   (setq initial-buffer-choice
         (lambda ()
           (let ((inhibit-redisplay t))
-            (org-roam-dailies-find-today)
+            (org-roam-dailies-goto-today)
             (delete-other-windows)
             (current-buffer))))
 #+end_src
