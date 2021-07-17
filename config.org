@@ -6157,6 +6157,20 @@ Ensure we use dired rather than the Finder on macOS.
     "k x" 'org-roam-tag-delete)
 #+end_src
 
+*** Use today's org-roam file for initial buffer
+
+#+begin_src emacs-lisp
+  (autoload 'org-roam-dailies-find-today "org-roam-dailies")
+
+  (setq initial-buffer-choice
+        (lambda ()
+          (let ((inhibit-redisplay t))
+            (org-roam-dailies-find-today)
+            (delete-other-windows)
+            (current-buffer))))
+#+end_src
+
+
 *** Define shared paths used across packages
 
 #+begin_src emacs-lisp
@@ -6404,20 +6418,6 @@ https://github.com/org-roam/org-roam-server
     (when (file-directory-p paths-ledger-lisp-directory)
       (load (expand-file-name "init.el" paths-ledger-lisp-directory) t)))
 #+end_src
-
-* Use today's org-roam file for initial buffer
-
-#+begin_src emacs-lisp
-  (autoload 'org-roam-dailies-find-today "org-roam-dailies")
-
-  (setq initial-buffer-choice
-        (lambda ()
-          (let ((inhibit-redisplay t))
-            (org-roam-dailies-find-today)
-            (delete-other-windows)
-            (current-buffer))))
-#+end_src
-
 
 * File postamble
 
