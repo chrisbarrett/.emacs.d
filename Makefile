@@ -17,7 +17,10 @@ $(BUILD): $(shell find . -type f -name '*.nix')
 
 $(TARGET_EL) : $(BUILD) $(SRCS)
 	@rm -f $(TARGET_EL)
-	@NIX_EMACS_BUILDING_CONFIG_P=1 $(EMACS) --batch -l shut-up -f shut-up-silence-emacs --eval '(setq make-backup-files nil)' -l early-init.el -l init.el
+	@NIX_EMACS_BUILDING_CONFIG_P=1 $(EMACS) --batch -l shut-up -f shut-up-silence-emacs \
+		--eval '(setq make-backup-files nil)' \
+		--eval '(setq-default indent-tabs-mode nil)' \
+		-l early-init.el -l init.el
 
 .PHONY: clean
 clean :
