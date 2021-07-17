@@ -5345,7 +5345,7 @@ Normally newlines are reflowed automatically.
 
 * =org-mode= - Org document format & editing support
 
-** Set general org-mode variables.
+** Set general org-mode variables
 
 #+begin_src emacs-lisp
   (use-package org
