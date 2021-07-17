@@ -1,13 +1,27 @@
 let
-  # 2020-07-13
-  overlayRev = "adda7c0c6947d5746bde2c984d806253e2f8ac00";
-  emacs-overlay = import (builtins.fetchTarball {
-    url =
-      "https://github.com/nix-community/emacs-overlay/archive/${overlayRev}.tar.gz";
-  });
+  nixpkgsWithOverlays = { emacsOverlayRev }:
+    import <nixpkgs-unstable> {
+      overlays = [
+        (import ./overlays)
+        # https://github.com/nix-community/emacs-overlay
+        (import (builtins.fetchTarball {
+          url =
+            "https://github.com/nix-community/emacs-overlay/archive/${emacsOverlayRev}.tar.gz";
+        }))
+      ];
+    };
 in
-{ pkgs ? # HACK: Use unstable pkgs while Emacs GCC has JIT issues.
-  import <nixpkgs-unstable> { overlays = [ emacs-overlay (import ./overlays) ]; }
+{
+  # Version of nixpkgs used for building binaries and Emacs itself.
+  pkgs ? nixpkgsWithOverlays {
+    # 2020-07-13
+    emacsOverlayRev = "adda7c0c6947d5746bde2c984d806253e2f8ac00";
+  }
+  # Version of nixpkgs that determines 3rd-party Lisp package versions.
+, lispPkgs ? nixpkgsWithOverlays {
+    # 2020-07-18
+    emacsOverlayRev = "458d30ef17167e390d0280d0f954ca8ee61ef701";
+  }
 }:
 
 let
@@ -40,7 +54,6 @@ let
   };
 
   packages = pkgs.callPackage ./packages.nix rec {
-
     emacsmirror = args: github (args // { owner = "emacsmirror"; });
 
     github =
@@ -61,7 +74,7 @@ let
     withPatches = pkg: patches: pkg.overrideAttrs (attrs: { inherit patches; });
   };
 
-  builder = pkgs.emacsPackagesNgGen emacs;
+  builder = lispPkgs.emacsPackagesNgGen emacs;
 
   emacsWithPackages =
     (builder.overrideScope' packages.overrides).emacsWithPackages
