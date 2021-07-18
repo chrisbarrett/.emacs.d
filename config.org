@@ -3674,7 +3674,7 @@ of =projectile=. Use =projectile= until the builtin functionality is more comple
     (add-hook 'magit-blame-mode-hook #'config-git--reveal-org-buffer))
 #+end_src
 
-**** GPG verification
+*** GPG verification
 
 Hack =magit='s commit info to show output of a GPG signature check.
 
