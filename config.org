@@ -1439,37 +1439,6 @@ This should really be a thing out-of-the-box.
   (define-key prog-mode-map (kbd "M-q") #'config-indent-dwim)
 #+end_src
 
-** =aggressive-indent= - Aggressive indentation                   :disabled:
-
-=aggressive-indent= automatically reindents code during editing.
-
-#+begin_src emacs-lisp
-  (use-package aggressive-indent
-    :hook (prog-mode . (lambda () (require 'aggressive-indent)))
-    :custom
-    (aggressive-indent-excluded-modes
-     '(diff-auto-refine-mode
-       dockerfile-mode
-       graphviz-dot-mode
-       makefile-gmake-mode
-       makefile-mode
-       nix-mode
-       sql-mode
-       terraform-mode
-       text-mode
-       yaml-mode))
-
-    :preface
-    (defun turn-off-aggressive-indent-mode ()
-      (when (fboundp 'aggressive-indent-mode)
-        (aggressive-indent-mode -1)))
-
-    :config
-    (advice-add 'aggressive-indent--indent-if-changed :around #'advice-ignore-errors)
-    (add-hook 'diff-auto-refine-mode-hook #'turn-off-aggressive-indent-mode)
-    (global-aggressive-indent-mode +1))
-#+end_src
-
 ** =ws-butler= - Automatic whitespace cleanup while editing
 
 #+begin_src emacs-lisp

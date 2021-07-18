@@ -6,7 +6,6 @@
     with epkgs;
     let
       fromOverlay = [
-        aggressive-indent
         auctex
         bibtex-completion
         browse-at-remote
