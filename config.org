@@ -2660,16 +2660,18 @@ See:
 *** ~o~ - org-mode
 
 #+begin_src emacs-lisp
+  (autoload 'org-ref-bibtex-hydra/body "org-ref-bibtex")
+
   (leader-set-key :infix "o"
     "" '(nil :wk "org")
-    "SPC" '(org-roam-dailies-capture-today "capture note...")
+    "SPC" '(org-roam-dailies-capture-today :wk "capture note...")
     "a" '(org-funcs-agenda-dwim :wk "agenda")
 
     "c" '(nil :wk "clock")
-    "c i" 'org-funcs-punch-in
-    "c o" 'org-funcs-punch-out
-    "c r" 'org-resolve-clocks
-    "c g" 'org-clock-goto
+    "c i" '(org-funcs-punch-in :wk "punch in")
+    "c o" '(org-funcs-punch-out :wk "punch out")
+    "c r" '(org-resolve-clocks :wk "resolve clocks")
+    "c g" '(org-clock-goto :wk "goto last clock")
 
     "k" '(org-capture :wk "capture...")
     "l" '(org-store-link :wk "store link")
@@ -2680,7 +2682,7 @@ See:
     "d" '(org-roam-dailies-goto-date :wk "dailies: date...")
 
     "b" '(helm-bibtex :wk "bibliography...")
-    "r" 'org-ref-bibtex-hydra/body
+    "r" '(org-ref-bibtex-hydra/body :wk "reference actions...")
     "u" '(org-funcs-url-to-reference :wk "create reference of URL...")
 
     "g" '(org-capture-goto-last-stored :wk "last captured")
