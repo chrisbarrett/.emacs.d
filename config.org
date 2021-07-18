@@ -5682,9 +5682,9 @@ Apply either an =@work= or =@personal= context when archiving.
     (defun org-apply-tags-before-archive (&rest _)
       ;; Ensure we have a context before archiving.
       (when (seq-empty-p (org-get-tags))
-        (let ((tag (pcase-exhaustive (read-char-choice "Set context: [w]ork  [p]ersonal" '(?w ?p))
-                     (?w (org-toggle-tag org-funcs-work-tag 'on))
-                     (?p nil)))))))
+        (pcase-exhaustive (read-char-choice "Set context: [w]ork  [p]ersonal" '(?w ?p))
+          (?w (org-toggle-tag org-funcs-work-tag 'on))
+          (?p nil))))
 
     (advice-add 'org-archive-subtree :before 'org-apply-tags-before-archive))
 #+end_src
