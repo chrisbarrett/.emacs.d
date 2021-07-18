@@ -73,6 +73,7 @@
         orderless
         org
         org-bullets
+        org-ql
         org-ref
         org-roam
         org-roam-bibtex

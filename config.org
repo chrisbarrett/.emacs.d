@@ -2665,6 +2665,7 @@ See:
   (leader-set-key :infix "o"
     "" '(nil :wk "org")
     "SPC" '(org-roam-dailies-capture-today :wk "capture note...")
+    "/" '(org-ql-search :wk "search...")
     "a" '(org-funcs-agenda-dwim :wk "agenda")
 
     "c" '(nil :wk "clock")
