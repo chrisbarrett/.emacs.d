@@ -6237,7 +6237,10 @@ Ensure we use dired rather than the Finder on macOS.
       (when (bound-and-true-p deft-buffer)
         (kill-buffer deft-buffer)))
 
-    (add-to-list 'deft-extensions "tex"))
+    (add-to-list 'deft-extensions "tex")
+
+    (with-eval-after-load 'evil
+      (evil-set-initial-state 'deft-mode 'emacs)))
 #+end_src
 
 *** =bibtex= - maintain a bibliography
