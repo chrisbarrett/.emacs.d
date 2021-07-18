@@ -6140,7 +6140,7 @@ Ensure we use dired rather than the Finder on macOS.
     org-roam-dailies-goto-date
     org-roam-node-create
     :init
-    (setq org-roam-directory (f-join paths-org-directory "roam"))
+    (setq org-roam-directory (f-join paths-org-directory "roam/"))
     :custom
     (org-roam-v2-ack t)
     (org-roam-verbose nil)
