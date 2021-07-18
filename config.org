@@ -3496,31 +3496,31 @@ Override some default =ibuffer= columns.
 
 #+begin_src emacs-lisp
   (mode-leader-set-key :keymaps 'dired-mode-map
-    "?" 'dired-hide-details-mode
-    "." 'dired-omit-mode
-    "e" 'wdired-change-to-wdired-mode
-    "s" 'dired-sort-toggle-or-edit
+    "?" '(dired-hide-details-mode :wk "toggle details")
+    "." '(dired-omit-mode :wk "toggle hidden")
+    "e" '(wdired-change-to-wdired-mode :wk "wdired")
+    "s" '(dired-sort-toggle-or-edit :wk "toggle sort")
 
     "f" 'dired
-    "F" 'dired-other-window
+    "F" '(dired-other-window :wk "dired (other window)")
 
     "m" '(nil :wk "mark")
-    "m a" 'dired-mark-unmarked-files
-    "m c" 'dired-change-marks
-    "m r" 'dired-mark-files-regexp
-    "m l" 'dired-mark-symlinks
-    "m d" 'dired-mark-directories
-    "U" 'dired-unmark-all-marks
+    "m a" '(dired-mark-unmarked-files :wk "unmarked")
+    "m c" '(dired-change-marks :wk "change")
+    "m r" '(dired-mark-files-regexp :wk "by regexp")
+    "m l" '(dired-mark-symlinks :wk "symlinks")
+    "m d" '(dired-mark-directories :wk "directories")
+    "U" '(dired-unmark-all-marks :wk "unmark all")
 
-    "!" 'dired-do-shell-command
+    "!" '(dired-do-shell-command :wk "shell command...")
 
     "d" '(nil :wk "execute (marked)")
-    "d c" 'dired-do-copy
-    "d D" 'dired-do-delete
-    "d h" 'dired-do-hardlink
-    "d s" 'dired-do-relsymlink
-    "d S" 'dired-do-symlink
-    "d /" 'dired-do-search)
+    "d c" '(dired-do-copy :wk "copy")
+    "d D" '(dired-do-delete :wk "delete")
+    "d h" '(dired-do-hardlink :wk "hardlink")
+    "d s" '(dired-do-relsymlink :wk "symlink (relative)")
+    "d S" '(dired-do-symlink :wk "symlink (absolute)")
+    "d /" '(dired-do-search :wk "search"))
 #+end_src
 
 
@@ -4187,26 +4187,27 @@ Make checkbox insertion a little smarter.
     "eb" '(eval-buffer :wk "eval buf")
     "ee" '(eval-expression :wk "eval expr")
 
-    "d" 'debug-on-entry
-    "cd" 'cancel-debug-on-entry
-    "v" 'debug-on-variable-change
-    "cv" 'cancel-debug-on-variable-change
+    "d" '(nil :wk "debug")
+    "df" '(debug-on-entry :wk "function...")
+    "dc" '(nil :wk "cancel... (function)")
+    "dv" '(debug-on-variable-change :wk "variable...")
+    "dV" '(cancel-debug-on-variable-change :wk "cancel... (variable)")
 
     "t" 'ert)
 
   (mode-leader-set-key :keymaps 'debugger-mode-map
-    "," 'debugger-step-through
-    "b" 'debugger-frame
-    "c" 'debugger-continue
-    "j" 'debugger-jump
-    "u" 'debugger-frame-clear
+    "," '(debugger-step-through :wk "step")
+    "b" '(debugger-frame :wk "frame")
+    "c" '(debugger-continue :wk "continue")
+    "j" '(debugger-jump :wk "jump")
+    "u" '(debugger-frame-clear :wk "clear frame")
 
-    "e" 'debugger-eval-expression
-    "R" 'debugger-record-expression
-    "r" 'debugger-return-value
+    "e" '(debugger-eval-expression :wk "eval...")
+    "R" '(debugger-record-expression :wk "record...")
+    "r" '(debugger-return-value :wk "return...")
 
-    "l" 'debugger-list-functions
-    "v" 'debugger-toggle-locals)
+    "l" '(debugger-list-functions :wk "list functions")
+    "v" '(debugger-toggle-locals :wk "toggle locals"))
 #+end_src
 
 *** =elisp-slime-nav= - Code navigation
@@ -4540,24 +4541,24 @@ Tide is currently more polished than the TypeScript language server.
 #+begin_src emacs-lisp
   (mode-leader-set-key :keymaps '(gfm-mode-map markdown-mode-map)
     "i" '(nil :wk "insert")
-    "i h" 'markdown-insert-header-dwim
-    "i c" 'markdown-insert-gfm-code-block
-    "i i" 'markdown-insert-image
-    "i f" 'markdown-insert-footnote
-    "i l" 'markdown-insert-link
-    "i w" 'markdown-insert-wiki-link
-    "i -" 'markdown-insert-hr
+    "i h" '(markdown-insert-header-dwim :wk "header")
+    "i c" '(markdown-insert-gfm-code-block :wk "code block...")
+    "i i" '(markdown-insert-image :wk "image")
+    "i f" '(markdown-insert-footnote :wk "footnote")
+    "i l" '(markdown-insert-link :wk "link")
+    "i w" '(markdown-insert-wiki-link :wk "wiki link")
+    "i -" '(markdown-insert-hr :wk "hr")
 
     "m" '(nil :wk "markup")
-    "m b" 'markdown-insert-bold
-    "m i" 'markdown-insert-italic
-    "m k" 'markdown-insert-kbd
-    "m q" 'markdown-insert-blockquote
-    "m s" 'markdown-insert-strike-through
+    "m b" '(markdown-insert-bold :wk "bold")
+    "m i" '(markdown-insert-italic :wk "italic")
+    "m k" '(markdown-insert-kbd :wk "kbd")
+    "m q" '(markdown-insert-blockquote :wk "blockquote")
+    "m s" '(markdown-insert-strike-through :wk "strike-through")
 
-    "o" 'markdown-preview
-    "p" 'markdown-live-preview-mode
-    "e" 'markdown-export)
+    "o" '(markdown-preview :wk "preview")
+    "p" '(markdown-live-preview-mode :wk "preview (live)")
+    "e" '(markdown-export :wk "export"))
 #+end_src
 
 ** =ledger-mode= - Ledger accounting software interface
