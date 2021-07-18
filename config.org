@@ -5920,8 +5920,9 @@ Ensure we use dired rather than the Finder on macOS.
 #+begin_src emacs-lisp
   (use-package org-agenda
     :after org
+    :init
+    (setq org-agenda-files `(,(f-join paths-org-directory "tasks")))
     :custom
-    (org-agenda-files `(,(f-join paths-org-directory "tasks")))
     (org-stuck-projects '("" nil nil ""))
     (org-agenda-todo-ignore-scheduled t)
     (org-agenda-hide-tags-regexp (rx (or "noexport" "someday")))
