@@ -6157,11 +6157,11 @@ Ensure we use dired rather than the Finder on macOS.
 
     "l" '(nil :wk "alias")
     "l a" '(org-roam-alias-add :wk "add alias")
-    "l x" '(org-roam-alias-delete :wk "remove alias")
+    "l x" '(org-roam-alias-remove :wk "remove alias")
 
     "k" '(nil :wk "tags")
     "k a" '(org-roam-tag-add :wk "add tag")
-    "k x" '(org-roam-tag-delete :wk "remove tag"))
+    "k x" '(org-roam-tag-remove :wk "remove tag"))
 #+end_src
 
 *** Use today's org-roam file for initial buffer
