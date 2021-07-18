@@ -6217,6 +6217,17 @@ Ensure we use dired rather than the Finder on macOS.
     (run-with-idle-timer 2 nil 'org-roam-gc))
 #+end_src
 
+*** Customise how the org-roam buffer is displayed
+
+#+begin_src emacs-lisp
+  (add-to-list 'display-buffer-alist
+               '(("\\*org-roam\\*"
+                  (display-buffer-in-direction)
+                  (direction . right)
+                  (window-width . 0.33)
+                  (window-height . fit-window-to-buffer))))
+#+end_src
+
 *** =bibtex= - maintain a bibliography
 
 #+begin_src emacs-lisp
