@@ -4531,6 +4531,7 @@ Tide is currently more polished than the TypeScript language server.
      "M-<down>" #'markdown-move-subtree-down)
 
     :custom
+    (markdown-asymmetric-header t)
     (markdown-command "multimarkdown")
     (markdown-fontify-code-blocks-natively t)
     (markdown-hide-urls t))
