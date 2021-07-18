@@ -4,8 +4,6 @@
 
 (require 'f)
 
-(defvar org-roam-directory)
-
 (defconst org-roam-gc-prompt-before-deleting-p nil
   "Whether to prompt before removing files when run interactively.")
 
@@ -30,6 +28,7 @@
     (org-roam-gc--empty-content-p (current-buffer))))
 
 (defun org-roam-gc-dailies-files ()
+  (require 'org-roam)
   (f-files (expand-file-name org-roam-dailies-directory org-roam-directory)))
 
 (defmacro org-roam-gc--log (msg &rest args)
