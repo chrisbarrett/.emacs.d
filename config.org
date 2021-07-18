@@ -6129,9 +6129,8 @@ Ensure we use dired rather than the Finder on macOS.
     org-roam-dailies-goto-yesterday
     org-roam-dailies-goto-date
     org-roam-node-create
-    :init
-    (setq org-roam-directory (f-join paths-org-directory "roam/"))
     :custom
+    (org-roam-directory (f-join paths-org-directory "roam/"))
     (org-roam-v2-ack t)
     (org-roam-verbose nil)
     (org-roam-capture-templates
@@ -6168,7 +6167,7 @@ Ensure we use dired rather than the Finder on macOS.
 *** Use today's org-roam file for initial buffer
 
 #+begin_src emacs-lisp
-  (autoload 'org-roam-dailies-goto-today "org-roam-dailies")
+  (autoload 'org-roam-dailies-goto-today "org-roam")
 
   (setq initial-buffer-choice
         (lambda ()
