@@ -318,9 +318,9 @@ See: [[https://github.com/emacscollective/no-littering][emacscollective/no-litte
 #+begin_src emacs-lisp
   (use-package no-littering
     :demand t
-    :custom
-    (no-littering-etc-directory paths-etc-directory)
-    (no-littering-var-directory paths-cache-directory))
+    :init
+    (setq no-littering-etc-directory paths-etc-directory)
+    (setq no-littering-var-directory paths-cache-directory))
 #+end_src
 
 *** Teach =recentf= to use these paths
