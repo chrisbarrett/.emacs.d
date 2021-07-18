@@ -2822,6 +2822,13 @@ See:
     "=" #'default-text-scale-reset)
 #+end_src
 
+*** Unbind SPC in magit-section for compatability
+
+#+begin_src emacs-lisp
+  (use-package magit-section
+    :general (:keymaps 'magit-section-mode-map "SPC" nil))
+#+end_src
+
 ** Use ~,~ for mode-specific commands
 
 #+begin_src emacs-lisp
