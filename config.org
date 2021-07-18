@@ -3071,7 +3071,6 @@ after editing actions have changed what windows are shown.
     (popper-mode-line nil)
     (popper-group-function 'popper-group-by-projectile)
     (popper-reference-buffers (list (rx bol "*Messages*")
-                                    (rx bol "*Backtrace*")
                                     (rx bol "*tide-documentation*")
                                     (rx bol "*ielm*")
                                     (rx bol "*" (? "Async ") "Shell Command")
@@ -4152,6 +4151,8 @@ Make checkbox insertion a little smarter.
      "C-c C-c" #'eval-region))
 #+end_src
 
+*** Set leader keys
+
 #+begin_src emacs-lisp
   (mode-leader-set-key :keymaps 'emacs-lisp-mode-map
     "e" '(nil :wk "eval")
@@ -4165,7 +4166,13 @@ Make checkbox insertion a little smarter.
     "dV" '(cancel-debug-on-variable-change :wk "cancel... (variable)")
 
     "t" 'ert)
+#+end_src
 
+*** =debug= - Emacs Lisp debugger
+
+**** Set leader keys
+
+#+begin_src emacs-lisp
   (mode-leader-set-key :keymaps 'debugger-mode-map
     "," '(debugger-step-through :wk "step")
     "b" '(debugger-frame :wk "frame")
@@ -4179,6 +4186,17 @@ Make checkbox insertion a little smarter.
 
     "l" '(debugger-list-functions :wk "list functions")
     "v" '(debugger-toggle-locals :wk "toggle locals"))
+#+end_src
+
+**** Customise how debugger buffer is displayed
+
+#+begin_src emacs-lisp
+  (add-to-list 'display-buffer-alist
+             '(("\\*Backtrace\\*"
+                (display-buffer-in-direction)
+                (direction . right)
+                (window-width . 0.33)
+                (window-height . fit-window-to-buffer))))
 #+end_src
 
 *** =elisp-slime-nav= - Code navigation
