@@ -104,6 +104,7 @@
         bibtex-completion
         org-roam-bibtex
         popper
+        orderless
       ];
 
       extraPackages = rec {

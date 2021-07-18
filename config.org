@@ -3039,6 +3039,17 @@ Hide =./= and =../= when finding files.
     (ivy-historian-mode 1))
 #+end_src
 
+** =orderless= - order-insensitive matching algorithm
+
+https://github.com/oantolin/orderless
+
+#+begin_src emacs-lisp
+  (use-package orderless
+    :custom
+    (completion-styles '(orderless))
+    (ivy-re-builders-alist '((t . orderless-ivy-re-builder))))
+#+end_src
+
 * Window management
 
 ** =winner= - Window state history
