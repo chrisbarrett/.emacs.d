@@ -3661,7 +3661,7 @@ of =projectile=. Use =projectile= until the builtin functionality is more comple
     (magit-log-section-commit-count 0))
 #+end_src
 
-*** Reveal the entire org buffer when blaming
+*** Reveal the entire org buffer when blaming or visiting from a diff
 
 #+begin_src emacs-lisp
   (use-package magit
@@ -3671,6 +3671,7 @@ of =projectile=. Use =projectile= until the builtin functionality is more comple
       (when (derived-mode-p 'org-mode)
         (org-reveal t)))
 
+    (add-hook 'magit-diff-visit-file-hook 'config-git--reveal-org-buffer)
     (add-hook 'magit-blame-mode-hook #'config-git--reveal-org-buffer))
 #+end_src
 
