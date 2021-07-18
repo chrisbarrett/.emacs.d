@@ -2662,7 +2662,7 @@ See:
 #+begin_src emacs-lisp
   (leader-set-key :infix "o"
     "" '(nil :wk "org")
-    "SPC" '(deft :wk "edit/create note...")
+    "SPC" '(org-roam-dailies-capture-today "capture note...")
     "a" '(org-funcs-agenda-dwim :wk "agenda")
 
     "c" '(nil :wk "clock")
@@ -2676,7 +2676,6 @@ See:
     "s" '(org-search-view :wk "search...")
     "f" '(org-roam-node-find :wk "roam file...")
     "n" '(org-roam-dailies-goto-today :wk "dailies: today")
-    "N" 'org-roam-dailies-capture-today
     "y" '(org-roam-dailies-goto-yesterday :wk "dailies: yesterday")
     "d" '(org-roam-dailies-goto-date :wk "dailies: date...")
 
@@ -6212,35 +6211,6 @@ Ensure we use dired rather than the Finder on macOS.
     :demand t
     :config
     (run-with-idle-timer 2 nil 'org-roam-gc))
-#+end_src
-
-*** =deft= - Provides a fast note-taking and search UI
-
-#+begin_src emacs-lisp
-  (use-package deft
-    :commands (deft)
-    :custom
-    (deft-directory org-roam-directory)
-    (deft-default-extension "org")
-    (deft-use-filter-string-for-filename t)
-    (deft-auto-save-interval 0)
-    (deft-file-naming-rules '((noslash . "_")
-                              (nospace . "_")
-                              (case-fn . downcase)))
-    :general
-    (:states 'emacs :keymaps 'deft-mode-map
-     "C-g" 'deft-kill-buffer
-     "<escape>" 'deft-kill-buffer)
-    :config
-    (defun deft-kill-buffer ()
-      (interactive)
-      (when (bound-and-true-p deft-buffer)
-        (kill-buffer deft-buffer)))
-
-    (add-to-list 'deft-extensions "tex")
-
-    (with-eval-after-load 'evil
-      (evil-set-initial-state 'deft-mode 'emacs)))
 #+end_src
 
 *** =bibtex= - maintain a bibliography

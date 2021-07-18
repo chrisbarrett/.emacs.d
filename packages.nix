@@ -16,7 +16,6 @@
         dash
         deadgrep
         default-text-scale
-        deft
         delight
         direnv
         dockerfile-mode
