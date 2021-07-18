@@ -5384,6 +5384,7 @@ Normally newlines are reflowed automatically.
 #+begin_src emacs-lisp
   (mode-leader-set-key :keymaps 'org-mode-map
     "A" '(org-archive-subtree :wk "archive")
+    "/" '(org-sparse-tree :wk "sparse tree...")
     "r" (list (general-predicate-dispatch 'org-refile
                 (bound-and-true-p org-capture-mode) 'org-capture-refile)
               :wk "refile")
