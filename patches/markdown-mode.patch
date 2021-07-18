@@ -1,0 +1,26 @@
+diff --git a/markdown-mode.el b/markdown-mode.el
+index 18465a1..9549967 100644
+--- a/markdown-mode.el
++++ b/markdown-mode.el
+@@ -9552,6 +9552,7 @@ rows and columns and the column alignment."
+              (thing-at-point-looking-at markdown-regex-link-reference))
+          (or markdown-hide-urls markdown-hide-markup))
+     (let* ((imagep (string-equal (match-string 1) "!"))
++           (url (match-string-no-properties 6))
+            (edit-keys (markdown--substitute-command-keys
+                        (if imagep
+                            "\\[markdown-insert-image]"
+@@ -9563,11 +9564,9 @@ rows and columns and the column alignment."
+               (if referencep
+                   (concat
+                    (propertize "[" 'face 'markdown-markup-face)
+-                   (propertize (match-string-no-properties 6)
+-                               'face 'markdown-reference-face)
++                   (propertize url 'face 'markdown-reference-face)
+                    (propertize "]" 'face 'markdown-markup-face))
+-                (propertize (match-string-no-properties 6)
+-                            'face 'markdown-url-face)))))
++                (propertize url 'face 'markdown-url-face)))))
+    ;; Hidden language name for fenced code blocks
+    ((and (markdown-code-block-at-point-p)
+          (not (get-text-property (point) 'markdown-pre))

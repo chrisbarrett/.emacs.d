@@ -165,5 +165,6 @@
   # Apply any patches needed here.
   overrides = self: super: rec {
     counsel = withPatches super.counsel [ ./patches/counsel.patch ];
+    markdown-mode = withPatches super.markdown-mode [ ./patches/markdown-mode.patch ];
   };
 }
