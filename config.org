@@ -2274,34 +2274,34 @@ See:
 #+begin_src emacs-lisp
   (leader-set-key :infix ","
     "" '(nil :wk "parens")
-    "h" #'sp-beginning-of-sexp
-    "l" #'sp-end-of-sexp
-    "n" #'sp-next-sexp
-    "p" #'sp-previous-sexp
-    "<" #'sp-backward-up-sexp
-    ">" #'sp-up-sexp
-    "c" #'sp-convolute-sexp
-    "d" #'sp-kill-sexp
-    "D" #'sp-backward-kill-sexp
-    "k" #'sp-splice-sexp-killing-forward
-    "K" #'sp-splice-sexp-killing-backward
-    "s" #'sp-splice-sexp-killing-around
-    "r" #'sp-raise-sexp
-    "a" #'sp-add-to-next-sexp
-    "A" #'sp-add-to-previous-sexp
-    "b" #'sp-forward-barf-sexp
-    "B" #'sp-backward-barf-sexp
-    "m" #'sp-forward-slurp-sexp
-    "M" #'sp-backward-slurp-sexp
-    "e" #'sp-emit-sexp
-    "j" #'sp-join-sexp
-    "t" #'sp-transpose-sexp
-    "U" #'sp-backward-unwrap-sexp
-    "u" #'sp-unwrap-sexp
-    "w" #'sp-rewrap-sexp
-    "x" #'sp-split-sexp
-    "y" #'sp-copy-sexp
-    "Y" #'sp-backward-copy-sexp)
+    "h" '(sp-beginning-of-sexp :wk "go to start")
+    "l" '(sp-end-of-sexp :wk "go to end")
+    "n" '(sp-next-sexp :wk "next")
+    "p" '(sp-previous-sexp :wk "prev")
+    "<" '(sp-backward-up-sexp :wk "backward up")
+    ">" '(sp-up-sexp :wk "up")
+    "c" '(sp-convolute-sexp :wk "convolute")
+    "d" '(sp-kill-sexp :wk "kill")
+    "D" '(sp-backward-kill-sexp :wk "kill backward")
+    "k" '(sp-splice-sexp-killing-forward :wk "splice (forward)")
+    "K" '(sp-splice-sexp-killing-backward :wk "splice (back)")
+    "s" '(sp-splice-sexp-killing-around :wk "splice (around)")
+    "r" '(sp-raise-sexp :wk "raise")
+    "a" '(sp-add-to-next-sexp :wk "add to next")
+    "A" '(sp-add-to-previous-sexp :wk "add to prev")
+    "b" '(sp-forward-barf-sexp :wk "barf (forward)")
+    "B" '(sp-backward-barf-sexp :wk "barf (back)")
+    "m" '(sp-forward-slurp-sexp :wk "slurp (forward)")
+    "M" '(sp-backward-slurp-sexp :wk "slurp (back)")
+    "e" '(sp-emit-sexp :wk "emit")
+    "j" '(sp-join-sexp :wk "joi")
+    "t" '(sp-transpose-sexp :wk "transpose")
+    "U" '(sp-backward-unwrap-sexp :wk "unwrap (back)")
+    "u" '(sp-unwrap-sexp :wk "unwrap (forward)")
+    "w" '(sp-rewrap-sexp :wk "rewrap")
+    "x" '(sp-split-sexp :wk "split")
+    "y" '(sp-copy-sexp :wk "copy (forward)")
+    "Y" '(sp-backward-copy-sexp :wk "copy (back)"))
 #+end_src
 
 *** ~a~ - Applications
@@ -2338,13 +2338,13 @@ See:
 #+begin_src emacs-lisp
   (leader-set-key :infix "b"
     "" '(nil :wk "bufs")
-    "n" #'next-buffer
-    "p" #'previous-buffer
-    "l" #'ibuffer
-    "s" #'switch-to-buffer
-    "b" #'bury-buffer
-    "d" #'kill-current-buffer
-    "w" #'save-buffer)
+    "n" '(next-buffer :wk "next")
+    "p" '(previous-buffer :wk "prev")
+    "l" '(ibuffer :wk "list")
+    "s" '(switch-to-buffer :wk "switch...")
+    "b" '(bury-buffer :wk "bury")
+    "d" '(kill-current-buffer :wk "kill")
+    "w" '(save-buffer :wk "save"))
 #+end_src
 
 *** ~c~ - Commenting
@@ -2362,9 +2362,9 @@ See:
 #+begin_src emacs-lisp
   (leader-set-key :infix "c"
     "" '(nil :wk "comments")
-    "l" #'evilnc-comment-or-uncomment-lines
-    "r" #'comment-or-uncomment-region
-    "s" #'comment-sexp)
+    "l" '(evilnc-comment-or-uncomment-lines :wk "line")
+    "r" '(comment-or-uncomment-region :wk "region")
+    "s" '(comment-sexp :wk "sexp"))
 #+end_src
 
 *** ~e~ - Errors and Flycheck
@@ -2386,15 +2386,15 @@ See:
 #+begin_src emacs-lisp
   (leader-set-key :infix "e"
     "" '(nil :wk "errors")
-    "n" #'flycheck-next-error
-    "p" #'flycheck-previous-error
-    "l" #'flycheck-toggle-error-list
-    "r" #'flycheck-buffer
-    "c" #'flycheck-clear
-    "e" #'flycheck-explain-error-at-point
-    "h" #'flycheck-describe-checker
-    "s" #'flycheck-select-checker
-    "v" #'flycheck-verify-setup)
+    "n" '(flycheck-next-error :wk "next")
+    "p" '(flycheck-previous-error :wk "prev")
+    "l" '(flycheck-toggle-error-list :wk "list")
+    "r" '(flycheck-buffer :wk "run checks")
+    "c" '(flycheck-clear :wk "clear")
+    "e" '(flycheck-explain-error-at-point :wk "explain at pt")
+    "h" '(flycheck-describe-checker :wk "describe checker")
+    "s" '(flycheck-select-checker :wk "select checker")
+    "v" '(flycheck-verify-setup :wk "verify setup"))
 #+end_src
 
 *** ~f~ - Files
@@ -2542,21 +2542,21 @@ See:
 #+begin_src emacs-lisp
   (leader-set-key :infix "f"
     "" '(nil :wk "files")
-    "d" 'copy-buffer-directory
-    "y" 'copy-buffer-path
-    "Y" 'copy-buffer-name
-    "D" 'delete-current-buffer-and-file
+    "d" '(copy-buffer-directory :wk "copy dir")
+    "y" '(copy-buffer-path :wk "copy path")
+    "Y" '(copy-buffer-name :wk "copy name")
+    "D" '(delete-current-buffer-and-file :wk "delete buf & file")
     "e" 'sudo-edit
-    "f" 'find-file
-    "F" 'find-file-other-window
-    "s" 'save-buffer
-    "S" 'save-some-buffers
-    "l" 'find-file-literally
-    "l" 'hexl-find-file
-    "w" 'write-file
-    "v" 'reload-file
-    "r" 'counsel-recentf
-    "R" 'rename-file-and-buffer)
+    "f" '(find-file :wk "find...")
+    "F" '(find-file-other-window :wk "find... (other window)")
+    "s" '(save-buffer :wk "save")
+    "S" '(save-some-buffers :wk "save... (interactive)")
+    "l" '(find-file-literally :wk "find literally...")
+    "l" '(hexl-find-file :wk "find as hex...")
+    "w" '(write-file :wk "write copy...")
+    "v" '(reload-file :wk "reload from disk")
+    "r" '(counsel-recentf :wk "recent files...")
+    "R" '(rename-file-and-buffer :wk "rename..."))
 #+end_src
 
 *** ~g~ - Git & Goto
@@ -2623,25 +2623,25 @@ See:
 #+begin_src emacs-lisp
   (leader-set-key :infix "g"
     "" '(nil :wk "git/goto")
-    "c" #'jump-to-config-file
-    "C" #'jump-to-tangled-config-file
-    "i" #'jump-to-init-file
-    "n" #'jump-to-nix-config
-    "S" #'jump-to-nix-system-config
-    "p" #'jump-to-packages-file
-    "?" #'jump-to-messages
-    "S" #'jump-to-site-file
-    "s" #'magit-status
-    "d" #'magit-diff-buffer-file
-    "b" #'magit-blame
-    "r" #'browse-at-remote
-    "l" #'magit-log-buffer-file
-    "w" #'magit-worktree-status
-    "W" #'magit-worktree
-    "g" #'xref-find-definitions
-    "G" #'xref-find-definitions-other-window
-    "m" #'xref-find-references
-    "SPC" #'pop-tag-mark)
+    "c" '(jump-to-config-file :wk "to config.org")
+    "C" '(jump-to-tangled-config-file :wk "to tangled config")
+    "i" '(jump-to-init-file :wk "to init file")
+    "n" '(jump-to-nix-config :wk "to Nix config")
+    "S" '(jump-to-nix-system-config :wk "to system Nix config")
+    "p" '(jump-to-packages-file :wk "to packages.nix")
+    "?" '(jump-to-messages :wk "to messages buf")
+    "S" '(jump-to-site-file :wk "to site.el")
+    "s" '(magit-status :wk "magit")
+    "d" '(magit-diff-buffer-file :wk "git diff of file")
+    "b" '(magit-blame :wk "git blame")
+    "r" '(browse-at-remote :wk "file at git remote")
+    "l" '(magit-log-buffer-file :wk "git log")
+    "w" '(magit-worktree-status :wk "git worktree...")
+    "W" '(magit-worktree :wk "git worktree popup...")
+    "g" '(xref-find-definitions :wk "find defs")
+    "G" '(xref-find-definitions-other-window :wk "find def (other window)")
+    "m" '(xref-find-references :wk "find references")
+    "SPC" 'pop-tag-mark)
 #+end_src
 
 *** ~h~ - Help
@@ -2652,18 +2652,18 @@ See:
     "i" #'info
     "m" #'man
     "d" '(nil :wk "describe")
-    "d c" #'describe-face
-    "d C" #'helpful-command
-    "d f" #'helpful-callable
-    "d k" #'helpful-key
-    "d m" #'describe-mode
-    "d p" #'describe-text-properties
-    "d v" #'helpful-variable
+    "d c" '(describe-face :wk "face...")
+    "d C" '(helpful-command :wk "command...")
+    "d f" '(helpful-callable :wk "function...")
+    "d k" '(helpful-key :wk "key...")
+    "d m" '(describe-mode :wk "mode")
+    "d p" '(describe-text-properties :wk "properties at pt")
+    "d v" '(helpful-variable :wk "variable...")
     "f" '(nil :wk "find")
-    "f c" #'find-face-definition
-    "f f" #'find-function
-    "f l" #'find-library
-    "f v" #'find-variable)
+    "f c" '(find-face-definition :wk "face...")
+    "f f" '(find-function :wk "function...")
+    "f l" '(find-library :wk "lisp library...")
+    "f v" '(find-variable :wk "variable..."))
 #+end_src
 
 *** ~k~ - Killing
@@ -2681,11 +2681,11 @@ See:
 #+begin_src emacs-lisp
   (leader-set-key :infix "n"
     "" '(nil :wk "narrow")
-    "f" #'narrow-to-defun
-    "r" #'narrow-to-region
-    "w" #'widen
-    "s" #'org-narrow-to-subtree
-    "S" #'org-tree-to-indirect-buffer)
+    "f" '(narrow-to-defun :wk "defun")
+    "r" '(narrow-to-region :wk "region")
+    "w" 'widen
+    "s" '(org-narrow-to-subtree :wk "subtree")
+    "S" '(org-tree-to-indirect-buffer :wk "tree to indirect buffer"))
 #+end_src
 
 *** ~o~ - org-mode
@@ -2726,19 +2726,19 @@ See:
 #+begin_src emacs-lisp
   (leader-set-key :infix "p"
     "" '(nil :wk "projects")
-    "<tab>" #'projectile-toggle-between-implementation-and-test
-    "<backtab>" #'projectile-find-implementation-or-test-other-window
-    "!" #'projectile-run-async-shell-command-in-root
-    "c" #'projectile-compile-project
-    "u" #'projectile-run-project
-    "t" #'projectile-test-project
-    "p" #'counsel-projectile-switch-project
-    "f" #'counsel-projectile-find-file
-    "d" #'counsel-projectile-find-dir
-    "b" #'counsel-projectile-switch-to-buffer
-    "D" #'projectile-dired
-    "/" #'counsel-projectile-rg
-    "r" #'projectile-replace)
+    "<tab>" '(projectile-toggle-between-implementation-and-test :wk "toggle impl/test")
+    "<backtab>" '(projectile-find-implementation-or-test-other-window :wk "find impl/test")
+    "!" '(projectile-run-async-shell-command-in-root :wk "shell command...")
+    "c" '(projectile-compile-project :wk "compile...")
+    "u" '(projectile-run-project :wk "run...")
+    "t" '(projectile-test-project :wk "test...")
+    "p" '(counsel-projectile-switch-project :wk "switch...")
+    "f" '(counsel-projectile-find-file :wk "find file...")
+    "d" '(counsel-projectile-find-dir :wk "find dir...")
+    "b" '(counsel-projectile-switch-to-buffer :wk "switch buffer...")
+    "D" '(projectile-dired :wk "dired")
+    "/" '(counsel-projectile-rg :wk "search (rg)")
+    "r" '(projectile-replace :wk "replace"))
 #+end_src
 
 *** ~t~ - Toggles
@@ -2746,9 +2746,9 @@ See:
 #+begin_src emacs-lisp
   (leader-set-key :infix "t"
     "" '(nil :wk "toggle")
-    "i" #'toggle-input-method
-    "c" #'hide/show-comments-toggle
-    "m" #'global-hide-mode-line-mode)
+    "i" '(toggle-input-method :wk "input method")
+    "c" '(hide/show-comments-toggle :wk "comments")
+    "m" '(global-hide-mode-line-mode :wk "mode line"))
 #+end_src
 
 *** ~w~ - Windows
@@ -2790,14 +2790,14 @@ See:
 #+begin_src emacs-lisp
   (leader-set-key :infix "w"
     "" '(nil :wk "window")
-    "w" #'evil-window-next
-    "r" #'evil-window-rotate-downwards
-    "/" #'split-window-horizontally-dwim
-    "-" #'split-window-vertically-dwim
-    "=" #'balance-windows
-    "d" #'delete-window
-    "o" #'delete-other-windows
-    "t" #'toggle-window-dedication)
+    "w" '(evil-window-next :wk "next")
+    "r" '(evil-window-rotate-downwards :wk "rotate")
+    "/" '(split-window-horizontally-dwim :wk "split (horizontal)")
+    "-" '(split-window-vertically-dwim :wk "split (vertical)")
+    "=" '(balance-windows :wk "balance")
+    "d" '(delete-window :wk "delete")
+    "o" '(delete-other-windows :wk "delete others")
+    "t" '(toggle-window-dedication :wk "toggle dedication"))
 #+end_src
 
 *** ~y~ - Text snippets
@@ -2805,11 +2805,10 @@ See:
 #+begin_src emacs-lisp
   (leader-set-key :infix "y"
     "" '(nil :wk "snippets")
-    "n" #'yas-new-snippet
-    "e" #'yas-expand
-    "f" #'yas-visit-snippet-file
-    "y" #'yas-insert-snippet)
-
+    "n" '(yas-new-snippet :wk "new")
+    "e" '(yas-expand :wk "expand")
+    "f" '(yas-visit-snippet-file :wk "open...")
+    "y" '(yas-insert-snippet :wk "insert..."))
 #+end_src
 
 *** ~z~ - Text Scale
@@ -2817,9 +2816,9 @@ See:
 #+begin_src emacs-lisp
   (leader-set-key :infix "z"
     "" '(nil :wk "zoom")
-    "+" #'default-text-scale-increase
-    "-" #'default-text-scale-decrease
-    "=" #'default-text-scale-reset)
+    "+" '(default-text-scale-increase :wk "increase text scale")
+    "-" '(default-text-scale-decrease :wk "decrease text scale")
+    "=" '(default-text-scale-reset :wk "reset text scale"))
 #+end_src
 
 *** Unbind SPC in magit-section for compatability
@@ -6174,7 +6173,7 @@ Ensure we use dired rather than the Finder on macOS.
 
     :general
     (:states '(insert normal) :keymap 'org-mode-map
-     "C-c i" 'org-roam-node-insert
+     "C-c i" '(org-roam-node-insert :wk "insert org-roam link")
      "C-c TAB" (general-predicate-dispatch 'org-roam-node-insert
                  (org-at-table-p) 'org-ctrl-tab)))
 #+end_src
@@ -6182,17 +6181,17 @@ Ensure we use dired rather than the Finder on macOS.
 #+begin_src emacs-lisp
   (mode-leader-set-key :keymaps 'org-mode-map
     "<tab>" '(org-roam-buffer-toggle :wk "backlinks")
-    "<" 'org-roam-dailies-find-previous-note
-    ">" 'org-roam-dailies-find-next-note
-    "J" 'org-roam-dailies-goto-date
+    "<" '(org-roam-dailies-find-previous-note :wk "prev daily")
+    ">" '(org-roam-dailies-find-next-note :wk "next daily")
+    "J" '(org-roam-dailies-goto-date :wk "goto daily...")
 
     "l" '(nil :wk "alias")
-    "l a" 'org-roam-alias-add
-    "l x" 'org-roam-alias-delete
+    "l a" '(org-roam-alias-add :wk "add alias")
+    "l x" '(org-roam-alias-delete :wk "remove alias")
 
     "k" '(nil :wk "tags")
-    "k a" 'org-roam-tag-add
-    "k x" 'org-roam-tag-delete)
+    "k a" '(org-roam-tag-add :wk "add tag")
+    "k x" '(org-roam-tag-delete :wk "remove tag"))
 #+end_src
 
 *** Use today's org-roam file for initial buffer
