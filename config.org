@@ -2206,9 +2206,9 @@ See:
 
 #+begin_src emacs-lisp
   (leader-set-key
-    "$" 'popper-toggle-latest
-    "+" 'popper-toggle-type
-    "-" 'popper-kill-latest-popup
+    "$" '(popper-toggle-latest :wk "toggle popups")
+    "+" '(popper-toggle-type :wk "toggle popup or normal")
+    "-" '(popper-kill-latest-popup :wk "kill latest popup")
     "!" '(async-shell-command :wk "shell cmd (async)")
     "'" (general-predicate-dispatch 'poporg-dwim
           (bound-and-true-p poporg-mode) 'poporg-edit-exit
