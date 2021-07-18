@@ -3869,7 +3869,7 @@ See: [[https://www.flycheck.org/en/latest/][flycheck.org]]
 #+end_src
 
 
-*** Projectile integration
+*** Projectile integration                                       :disabled:
 
 Automatically re-check all buffers belonging to a project on save. This ensures
 diagnostics do not go stale.
