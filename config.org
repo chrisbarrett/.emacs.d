@@ -1652,7 +1652,7 @@ When cycling backward through fields, place point at the end of the previous fie
 
     (defun config-yasnippet--maybe-goto-field-end ()
       "Move to the end of the current field if it has been modified."
-      (when-let* ((field (config-yasnippet--current-field)))
+      (when-let* ((field (yas-current-field)))
         (when (and (yas--field-modified-p field)
                    (yas--field-contains-point-p field))
           (goto-char (config-yasnippet--end-of-field)))))
