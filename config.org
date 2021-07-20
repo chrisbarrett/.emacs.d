@@ -1879,7 +1879,7 @@ double-tap =q= to record, then hit =Q= to execute.
       (evil-execute-macro count (evil-get-register ?Q t))))
 #+end_src
 
-** Invert motions in RTL languages
+** Invert motions in RTL languages                                :disabled:
 
 Make motions make more sense by following RTL text direction in Arabic, Farsi
 etc.
