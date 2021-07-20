@@ -403,7 +403,17 @@ applications. The following functions will be invoked by those scripts over
       (apply f args)))
 #+end_src
 
-* Utility functions
+* Definitions needed for config
+
+** =display-buffer= variables
+
+#+begin_src emacs-lisp
+  (defconst display-buffer-slot-diagnostics 1)
+  (defconst display-buffer-slot-repls 2)
+  (defconst display-buffer-slot-documents 3)
+#+end_src
+
+** Utility functions
 
 #+begin_src emacs-lisp
   (defun face-ancestors (face)
@@ -831,9 +841,11 @@ than paginating through the buffer.
 #+begin_src emacs-lisp
   (add-to-list 'display-buffer-alist
                `(,(rx bos "*Help*" eos)
-                 (display-buffer-reuse-window display-buffer-in-side-window)
-                 (side            . right)
-                 (window-width    . 80)))
+                 (display-buffer-reuse-window display-buffer-pop-up-window)
+                 (slot . ,display-buffer-slot-documents)
+                 (reusable-frames . visible)
+                 (side . right)
+                 (window-width . 80)))
 #+end_src
 
 ** =apropos= - searches for symbols matching a pattern
@@ -1153,8 +1165,10 @@ system below.
     :config
     (add-to-list 'display-buffer-alist
                  `(,(rx bos "*compilation*" eos)
-                   (display-buffer-reuse-window display-buffer-below-selected)
-                   (window-height    . 0.2))))
+                   (display-buffer-reuse-window display-buffer-in-side-window)
+                   (slot . ,display-buffer-slot-diagnostics)
+                   (side . bottom)
+                   (window-height . 0.4))))
 #+end_src
 
 ** =ediff= - Interactive diff interface
@@ -3797,12 +3811,11 @@ See: [[https://www.flycheck.org/en/latest/][flycheck.org]]
 #+begin_src emacs-lisp
   (add-to-list 'display-buffer-alist
                `(,(rx bos "*Flycheck errors*" eos)
-                 (display-buffer-reuse-window
-                  display-buffer-in-side-window)
+                 (display-buffer-reuse-window display-buffer-in-side-window)
+                 (slot . ,display-buffer-slot-diagnostics)
                  (reusable-frames . visible)
-                 (side            . bottom)
-                 (slot            . 1)
-                 (window-height   . 0.2)))
+                 (side . bottom)
+                 (window-height . 0.4)))
 #+end_src
 
 *** Customise the modeline indicator
@@ -4192,11 +4205,12 @@ Make checkbox insertion a little smarter.
 
 #+begin_src emacs-lisp
   (add-to-list 'display-buffer-alist
-             '(("\\*Backtrace\\*"
-                (display-buffer-in-direction)
-                (direction . right)
-                (window-width . 0.33)
-                (window-height . fit-window-to-buffer))))
+               `((,(rx bos "*Backtrace*" eos)
+                  (display-buffer-reuse-window display-buffer-in-side-window)
+                  (slot . ,display-buffer-slot-diagnostics)
+                  (side . bottom)
+                  (reusable-frames . visible)
+                  (window-height . 0.4))))
 #+end_src
 
 *** =elisp-slime-nav= - Code navigation
@@ -4225,12 +4239,11 @@ Display helpful buffers in side windows.
 #+begin_src emacs-lisp
   (add-to-list 'display-buffer-alist
                `(,(rx bos "*helpful ")
-                 (display-buffer-reuse-window
-                  display-buffer-pop-up-window)
+                 (display-buffer-reuse-window display-buffer-pop-up-window)
+                 (slot . ,display-buffer-slot-documents)
                  (reusable-frames . visible)
-                 (side            . right)
-                 (slot            . 1)
-                 (window-width    . 0.5)))
+                 (side . right)
+                 (window-width . 0.5)))
 #+end_src
 
 *** =ielm= - Emacs Lisp REPL
@@ -4261,8 +4274,9 @@ Display =ielm= in a side window.
   (add-to-list 'display-buffer-alist
                `(,(rx bos "*ielm*" eos)
                  (display-buffer-reuse-window display-buffer-in-side-window)
-                 (side            . right)
-                 (window-width    . 80)))
+                 (slot . ,display-buffer-slot-repls)
+                 (side . right)
+                 (window-width . 80)))
 #+end_src
 
 *** =pp= - S-Expression Pretty-printing
@@ -4453,10 +4467,9 @@ Tide is currently more polished than the TypeScript language server.
     :config
     (add-to-list 'display-buffer-alist
                  `(,(rx bos "*Nix-REPL*" eos)
-                   (display-buffer-reuse-window
-                    display-buffer-at-bottom)
+                   (display-buffer-reuse-window display-buffer-at-bottom)
+                   (slot . ,display-buffer-slot-repls)
                    (reusable-frames . visible)
-                   (slot            . 1)
                    (window-height   . 0.4))))
 #+end_src
 
@@ -4579,7 +4592,9 @@ Tide is currently more polished than the TypeScript language server.
     :config
     (add-to-list 'display-buffer-alist
                  `(,(rx bos "*Ledger Report*" eos)
-                   (display-buffer-reuse-window display-buffer-pop-up-window))))
+                   (display-buffer-reuse-window display-buffer-pop-up-window)
+                   (slot . ,display-buffer-slot-documents)
+                   (reusable-frames . visible))))
 #+end_src
 
 *** Highlight negative numbers in red
@@ -5113,8 +5128,7 @@ Configure =conf-mode= for use with more kinds of config files.
     :init
     (add-to-list 'display-buffer-alist
                  `(,(rx bos "*Password-Store*" eos)
-                   (display-buffer-reuse-window
-                    display-buffer-fullframe)
+                   (display-buffer-reuse-window display-buffer-fullframe)
                    (reusable-frames . visible))))
 #+end_src
 
