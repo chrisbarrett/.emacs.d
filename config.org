@@ -6366,8 +6366,6 @@ buffers the same, no matter how I create them.
   ,#+category: %s
   ,#+roam_tags:
 
-  - keywords ::
-
   " title key key)))))))
 
     (add-hook 'org-noter-root-headline-inserted-hook #'config-org-roam--insert-document-header-for-org-noter-notes))
