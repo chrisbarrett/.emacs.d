@@ -20,7 +20,7 @@ in
   # Version of nixpkgs that determines 3rd-party Lisp package versions.
 , lispPkgs ? nixpkgsWithOverlays {
     # 2020-07-18
-    emacsOverlayRev = "458d30ef17167e390d0280d0f954ca8ee61ef701";
+    emacsOverlayRev = "9e8eb5db548eb8903a47e967c01f88727c03c975";
   }
 }:
 
