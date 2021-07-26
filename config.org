@@ -5408,7 +5408,8 @@ Normally newlines are reflowed automatically.
      "RET" 'org-return)
     (:states '(normal motion insert emacs) :keymaps 'org-mode-map
      "C-c C-." 'org-time-stamp-inactive
-     "C-c ." 'org-time-stamp))
+     "C-c ." 'org-time-stamp
+     "C-c o" 'org-table-toggle-coordinate-overlays))
 #+end_src
 
 ** Set up major-mode leader keybindings
