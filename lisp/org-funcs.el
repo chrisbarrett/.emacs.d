@@ -213,6 +213,11 @@ With ARG, don't resume previously clocked task."
         (extract-file hit)
       (error "No roam files with the given title"))))
 
+(defun org-funcs-goto-todos ()
+  "Switch to the general life-admin todos file."
+  (interactive)
+  (switch-to-buffer (find-file (f-join org-directory "tasks" "todos.org"))))
+
 (defun org-funcs-goto-work ()
   "Switch to the work file."
   (interactive)

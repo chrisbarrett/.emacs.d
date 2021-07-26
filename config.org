@@ -2700,6 +2700,7 @@ See:
     "r" '(org-ref-bibtex-hydra/body :wk "reference actions...")
     "u" '(org-funcs-url-to-reference :wk "create reference of URL...")
 
+    "p" '(org-funcs-goto-todos :wk "todos")
     "g" '(org-capture-goto-last-stored :wk "last captured")
     "t" '(org-funcs-todo-list :wk "todo list")
     "v" '(org-tags-view :wk "tags")
