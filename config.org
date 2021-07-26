@@ -6434,6 +6434,18 @@ https://github.com/org-roam/org-roam-server
 
 https://www.orgroam.com/manual.html#Installation-_00281_0029
 
+** =orgtbl-aggregate= - Add pivot tables to org-mode
+
+#+begin_src emacs-lisp
+  (use-package orgtbl-aggregate
+    :after (org)
+    :demand t)
+
+  (use-package org-insert-dblock
+    :demand t
+    :after (org))
+#+end_src
+
 * Load Lisp from other locations
 
 #+begin_src emacs-lisp
