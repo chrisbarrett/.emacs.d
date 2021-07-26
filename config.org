@@ -6180,7 +6180,7 @@ Ensure we use dired rather than the Finder on macOS.
     (:states '(insert normal) :keymap 'org-mode-map
      "C-c i" '(org-roam-node-insert :wk "insert org-roam link")
      "C-c TAB" (general-predicate-dispatch 'org-roam-node-insert
-                 (org-at-table-p) 'org-ctrl-tab)))
+                 (org-at-table-p) 'org-ctrl-c-tab)))
 #+end_src
 
 #+begin_src emacs-lisp
