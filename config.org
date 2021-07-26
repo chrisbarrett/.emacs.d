@@ -3244,7 +3244,7 @@ to manually apply it again.
                 #'config-highlight-thing--should-highlight-p))
 #+end_src
 
-** =page-break-lines= - Show page breaks characters as a horizontal rule
+** =page-break-lines= - Show page breaks characters as a horizontal rule :disabled:
 
 #+begin_src emacs-lisp
   (use-package page-break-lines
