@@ -3244,18 +3244,13 @@ to manually apply it again.
                 #'config-highlight-thing--should-highlight-p))
 #+end_src
 
-** =page-break-lines= - Show page breaks characters as a horizontal rule :disabled:
+** =page-break-lines= - Show page breaks characters as a horizontal rule
 
 #+begin_src emacs-lisp
   (use-package page-break-lines
     :hook (after-init . global-page-break-lines-mode)
     :custom
-    (page-break-lines-modes '(prog-mode
-                              text-mode
-                              ibuffer-mode
-                              compilation-mode
-                              help-mode
-                              org-agenda-mode)))
+    (page-break-lines-modes '(prog-mode org-agenda-mode)))
 #+end_src
 
 ** =paren-face= - Apply a specific face to parens
