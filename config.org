@@ -2683,8 +2683,8 @@ See:
     "a" '(org-funcs-agenda-dwim :wk "agenda")
 
     "c" '(nil :wk "clock")
-    "c i" '(org-funcs-punch-in :wk "punch in")
-    "c o" '(org-funcs-punch-out :wk "punch out")
+    "c i" '(clocking-punch-in :wk "punch in")
+    "c o" '(clocking-punch-out :wk "punch out")
     "c r" '(org-resolve-clocks :wk "resolve clocks")
     "c g" '(org-clock-goto :wk "goto last clock")
 
@@ -2704,7 +2704,7 @@ See:
     "g" '(org-capture-goto-last-stored :wk "last captured")
     "t" '(org-funcs-todo-list :wk "todo list")
     "v" '(org-tags-view :wk "tags")
-    "w" '(org-funcs-goto-work :wk "work"))
+    "w" '(clocking-find-client-buffer :wk "work"))
 #+end_src
 
 *** ~p~ - Projects
@@ -5672,6 +5672,7 @@ Limit refile depth and restrict to specific candidates.
     (org-clock-persist t)
     (org-clock-persist-query-resume nil)
     (org-clock-report-include-clocking-task t)
+    (org-clock-mode-line-total 'today)
     (org-log-done 'time)
     (org-log-into-drawer t)
     (org-log-redeadline 'time)
@@ -5712,7 +5713,7 @@ Apply either an =@work= or =@personal= context when archiving.
       ;; Ensure we have a context before archiving.
       (when (seq-empty-p (org-get-tags))
         (pcase-exhaustive (read-char-choice "Set context: [w]ork  [p]ersonal" '(?w ?p))
-          (?w (org-toggle-tag org-funcs-work-tag 'on))
+          (?w (org-toggle-tag (clocking-work-tag) 'on))
           (?p nil))))
 
     (advice-add 'org-archive-subtree :before 'org-apply-tags-before-archive))
@@ -5921,11 +5922,13 @@ Ensure we use dired rather than the Finder on macOS.
 ** =org-agenda= - Calendaring and configurable todo lists
 
 #+begin_src emacs-lisp
+  (autoload 'clocking-client-files "clocking")
+
   (use-package org-agenda
     :after org
-    :init
-    (setq org-agenda-files `(,(f-join paths-org-directory "tasks")))
     :custom
+    (org-agenda-files `(,(f-join paths-org-directory "tasks")
+                        ,@(clocking-client-files)))
     (org-stuck-projects '("" nil nil ""))
     (org-agenda-todo-ignore-scheduled t)
     (org-agenda-hide-tags-regexp (rx (or "noexport" "someday")))
@@ -6348,6 +6351,18 @@ https://github.com/org-roam/org-roam-server
 **** TODO Configure org-roam-protocol
 
 https://www.orgroam.com/manual.html#Installation-_00281_0029
+
+** =clocking= - clocking projects for different clients
+
+#+begin_src emacs-lisp
+  (use-package clocking
+    :commands (clocking-punch-in clocking-punch-out)
+    :general ("<f12>" (general-predicate-dispatch 'clocking-punch-in
+                        (and (fboundp 'org-clocking-p) (org-clocking-p)) 'clocking-punch-out))
+    :config
+    (setq org-clock-heading-function 'clocking-heading-function)
+    (add-hook 'clocking-agenda-should-update-hook #'org-funcs-agenda-dwim))
+#+end_src
 
 ** =orgtbl-aggregate= - Add pivot tables to org-mode
 

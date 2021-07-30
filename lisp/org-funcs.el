@@ -24,28 +24,12 @@
   (require 'org-clock)
   (require 'org-capture))
 
+(autoload 'clocking-work-tag "clocking")
 (autoload 'org-cliplink-retrieve-title-synchronously "org-cliplink")
 (autoload 'org-project-p "org-project")
 (autoload 'org-project-skip-stuck-projects "org-project")
 (autoload 'org-ref-url-html-to-bibtex "org-ref-url-utils")
 (autoload 'xml-parse-string "xml")
-
-(defvar org-funcs-historical-work-tags '("movio" "pushpay")
-  "Tags that relate to previous employers or projects.")
-
-(defvar org-funcs-work-tag "broca"
-  "Tag for headlines that should be counted as in the work context.")
-
-(defun org-funcs-work-file-buffer ()
-  (find-file-noselect (f-join org-directory "tasks" (format "%s.org" org-funcs-work-tag))))
-
-(defun org-funcs-work-tag-p (tag-or-tags)
-  (let ((work-tags-found
-         (seq-intersection (cons org-funcs-work-tag org-funcs-historical-work-tags)
-                           (if (listp tag-or-tags)
-                               tag-or-tags
-                             (s-split ":" tag-or-tags t)))))
-    (not (seq-empty-p work-tags-found))))
 
 
 ;; Clocking related stuff
@@ -65,62 +49,11 @@
                                           (string-match-p org-agenda-file-regexp it))))
              (find-file-noselect file)))))
   (let ((org-agenda-tag-filter-preset (-union org-agenda-tag-filter-preset
-                                              (if (org-clocking-p) '("+work") '("-work")))))
+                                              (if (org-clocking-p)
+                                                  (list (format "+%s" (clocking-work-tag)))
+                                                '("-work")))))
     (org-agenda nil org-funcs-custom-command-key))
   (get-buffer org-agenda-buffer-name))
-
-
-(defconst org-funcs--clocking-heading "Planning & Reading"
-  "The heading to clock in to when punching in.")
-
-(defun org-funcs--ensure-clocking-headline (buffer)
-  "Create the default heading for clocking in BUFFER.
-
-Return the position of the headline."
-  (with-current-buffer buffer
-    (save-excursion
-      (save-restriction
-        (widen)
-        (if-let* ((marker (org-find-exact-headline-in-buffer org-funcs--clocking-heading)))
-            (marker-position marker)
-          (goto-char (point-max))
-          (delete-horizontal-space)
-          (org-insert-heading nil nil t)
-          (insert org-funcs--clocking-heading)
-          (point))))))
-
-(defun org-funcs-punch-in (&optional arg)
-  "Punch in with the default date tree.
-
-With ARG, don't resume previously clocked task."
-  (interactive "P")
-  (if (or arg (null org-clock-history))
-      (with-current-buffer (org-funcs-work-file-buffer)
-        (org-with-point-at (org-funcs--ensure-clocking-headline (current-buffer))
-          (org-clock-in '(16))))
-    (call-interactively #'org-clock-in-last))
-  (when (derived-mode-p 'org-agenda-mode)
-    ;; Swap agenda due to context change.
-    (org-funcs-agenda-dwim)))
-
-(defun org-funcs-punch-out ()
-  "Stop the clock."
-  (interactive)
-  (when (org-clocking-p)
-    (org-clock-out))
-  (org-agenda-remove-restriction-lock)
-  (org-save-all-org-buffers)
-  (when (derived-mode-p 'org-agenda-mode)
-    ;; Swap agenda for context change.
-    (org-funcs-agenda-dwim))
-  (message "Punched out."))
-
-(defun org-funcs-punch-in-or-out ()
-  "Punch in or out of the current clock."
-  (interactive)
-  (call-interactively (if (org-clocking-p)
-                          #'org-funcs-punch-out
-                        #'org-funcs-punch-in)))
 
 
 ;; Capture template helpers
@@ -206,37 +139,20 @@ With ARG, don't resume previously clocked task."
 
 
 
-(defun org-funcs-get-roam-file-by-title (title)
-  (cl-labels ((extract-title (record) (plist-get (cdr record) :title))
-              (extract-file (record) (plist-get (cdr record) :path)))
-    (if-let* ((entries (org-roam--get-title-path-completions))
-              (hit (seq-find (lambda (it) (equal title (extract-title it))) entries)))
-        (extract-file hit)
-      (error "No roam files with the given title"))))
-
 (defun org-funcs-goto-todos ()
   "Switch to the general life-admin todos file."
   (interactive)
   (switch-to-buffer (find-file (f-join org-directory "tasks" "todos.org"))))
-
-(defun org-funcs-goto-work ()
-  "Switch to the work file."
-  (interactive)
-  (switch-to-buffer (org-funcs-work-file-buffer)))
 
 (defun org-funcs-todo-list (tags)
   "Show the todo list for the current context.
 
 TAGS are the tags to use when displaying the list."
   (interactive (list (if (org-clocking-p)
-                         (list "-someday" (format "+%s" org-funcs-work-tag))
-                       (list "-someday" (format "-%s" org-funcs-work-tag)))))
+                         (list "-someday" "+work")
+                       (list "-someday" "-work"))))
   (org-agenda prefix-arg "t")
   (org-agenda-filter-apply (cons "-ignore" tags) 'tag))
-
-(defun org-funcs-someday-review-list ()
-  (let ((org-agenda-todo-list-sublevels nil))
-    (org-funcs-todo-list '("+someday"))))
 
 
 ;; Capture utils
@@ -296,7 +212,7 @@ If NOTIFY-P is set, a desktop notification is displayed."
 
   (let* ((domain (string-remove-prefix "www." (url-host (url-generic-parse-url url))))
          (verb (alist-get domain org-funcs--domain-to-verb-alist "Review" nil #'equal))
-         (tags (if (org-funcs--work-related-url-p url) (format ":%s:" org-funcs-work-tag) "")))
+         (tags (if (org-funcs--work-related-url-p url) (format ":%s:" (clocking-work-tag)) "")))
     (format "* TODO %s [[%s][%s]]     %s"
             verb
             url
