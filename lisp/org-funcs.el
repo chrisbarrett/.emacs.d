@@ -52,8 +52,10 @@
 ;;
 ;; Stolen from http://doc.norang.ca/org-mode.html#Clocking
 
+(defconst org-funcs-custom-command-key "A")
+
 (defun org-funcs-agenda-dwim ()
-  "Show the appropriate org agenda view."
+  "Show the org agenda with appropriate tags set."
   (interactive)
   (dolist (entry org-agenda-files)
     (cond ((file-regular-p entry)
@@ -62,10 +64,9 @@
            (dolist (file (f-files entry (lambda (it)
                                           (string-match-p org-agenda-file-regexp it))))
              (find-file-noselect file)))))
-  (cond ((org-clocking-p)
-         (org-agenda nil "wa"))
-        (t
-         (org-agenda nil "pa")))
+  (let ((org-agenda-tag-filter-preset (-union org-agenda-tag-filter-preset
+                                              (if (org-clocking-p) '("+work") '("-work")))))
+    (org-agenda nil org-funcs-custom-command-key))
   (get-buffer org-agenda-buffer-name))
 
 
