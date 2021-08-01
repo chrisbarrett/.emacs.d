@@ -5922,13 +5922,31 @@ Ensure we use dired rather than the Finder on macOS.
 ** =org-agenda= - Calendaring and configurable todo lists
 
 #+begin_src emacs-lisp
+  (require 'subr-x)
+
   (autoload 'clocking-client-files "clocking")
+  (autoload 'org-roam-node-id "org-roam")
+  (autoload 'org-roam-node-file "org-roam")
+  (autoload 'org-roam-node-list "org-roam")
+
+  (defun roam-files-with-ids (&rest ids)
+    (hash-table-values
+     (seq-reduce (lambda (acc it)
+                   (let ((id (org-roam-node-id it))
+                         (file (org-roam-node-file it)))
+                     (when (member id ids)
+                       (puthash id file acc)))
+                   acc)
+                 (org-roam-node-list)
+                 (make-hash-table))))
 
   (use-package org-agenda
     :after org
+    :config
+    (setq org-agenda-files `(,(f-join paths-org-directory "tasks")
+                             ,@(clocking-client-files)
+                             ,@(roam-files-with-ids "981cb595-a959-4256-86d0-26e9ec00e4cf")))
     :custom
-    (org-agenda-files `(,(f-join paths-org-directory "tasks")
-                        ,@(clocking-client-files)))
     (org-stuck-projects '("" nil nil ""))
     (org-agenda-todo-ignore-scheduled t)
     (org-agenda-hide-tags-regexp (rx (or "noexport" "someday")))
