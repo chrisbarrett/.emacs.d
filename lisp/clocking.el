@@ -55,7 +55,7 @@ client. The ID is the org-roam node for the client's notes file."
   :group 'clocking
   :type '(alist :key-type string :value-type string))
 
-(defcustom clocking-default-headline-name "Planning"
+(defcustom clocking-default-headline-name "Planning & Meetings"
   "The name of the heading to clock in to if not working on a specific task.
 
 The heading will be created if needed."
