@@ -5993,9 +5993,9 @@ Ensure we use dired rather than the Finder on macOS.
   (use-package org-agenda
     :after org-funcs
     :demand t
-    :custom (org-agenda-tag-filter-preset '("-someday" "-ignore"))
-    :config
-    (org-funcs-update-agenda-custom-commands
+    :custom
+    (org-agenda-tag-filter-preset '("-someday" "-ignore"))
+    (org-agenda-custom-commands
      `((,org-funcs-custom-command-key
         "agenda"
         ((agenda ""

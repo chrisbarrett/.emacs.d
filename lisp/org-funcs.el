@@ -227,11 +227,6 @@ If NOTIFY-P is set, a desktop notification is displayed."
         "* TODO Review %a (email)")
     (call-interactively #'org-funcs-read-url-for-capture)))
 
-(defun org-funcs-update-agenda-custom-commands (templates)
-  (with-eval-after-load 'org-agenda
-    (let ((ht (ht-merge (ht-from-alist org-agenda-custom-commands) (ht-from-alist templates))))
-      (setq org-agenda-custom-commands (-sort (-on 'string-lessp 'car) (ht->alist ht))))))
-
 (defvar org-funcs--pdf-download-timeout-seconds 30)
 
 (defconst org-funcs--wkhtmltopdf-error-buffer-name "*wkhtmltopdf errors*")
