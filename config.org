@@ -5991,10 +5991,7 @@ Ensure we use dired rather than the Finder on macOS.
 
 #+begin_src emacs-lisp
   (use-package org-agenda
-    :after org-funcs
-    :demand t
     :custom
-    (org-agenda-tag-filter-preset '("-someday" "-ignore"))
     (org-agenda-custom-commands
      `((,org-funcs-custom-command-key
         "agenda"
@@ -6010,6 +6007,8 @@ Ensure we use dired rather than the Finder on macOS.
          (todo "TODO"
                ((org-agenda-overriding-header "Stuck Projects")
                 (org-agenda-skip-function #'org-project-skip-non-stuck-projects))))
+        ;; NOTE: value for `org-agenda-tag-filter-preset' is computed dynamically
+        ;; when agenda is invoked via `org-funcs-agenda-dwim'.
         ((org-agenda-start-with-log-mode '(closed clock state))
          (org-agenda-span 'day)
          (org-agenda-show-future-repeats nil)

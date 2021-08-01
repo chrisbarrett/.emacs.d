@@ -48,10 +48,11 @@
            (dolist (file (f-files entry (lambda (it)
                                           (string-match-p org-agenda-file-regexp it))))
              (find-file-noselect file)))))
-  (let ((org-agenda-tag-filter-preset (-union org-agenda-tag-filter-preset
-                                              (if (org-clocking-p)
-                                                  (list (format "+%s" (clocking-work-tag)))
-                                                '("-work")))))
+  (let ((org-agenda-tag-filter-preset (list "-someday"
+                                            "-ignore"
+                                            (if (org-clocking-p)
+                                                (format "+%s" (clocking-work-tag))
+                                              "-work"))))
     (org-agenda nil org-funcs-custom-command-key))
   (get-buffer org-agenda-buffer-name))
 
