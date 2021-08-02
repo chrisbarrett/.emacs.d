@@ -6032,7 +6032,8 @@ Ensure we use dired rather than the Finder on macOS.
        `(("p" "personal agenda" ,views
           ((org-agenda-tag-filter-preset '("-someday" "-ignore" "-work"))))
          ("w" "work agenda" ,views
-          ((org-agenda-tag-filter-preset (list "-someday" "-ignore" (format "+%s" (clocking-work-tag))))))))))
+          ((org-agenda-clockreport-mode t)
+           (org-agenda-tag-filter-preset (list "-someday" "-ignore" (format "+%s" (clocking-work-tag))))))))))
 #+end_src
 
 
