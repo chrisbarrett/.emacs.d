@@ -6161,11 +6161,14 @@ Ensure we use dired rather than the Finder on macOS.
   (defconst config-org-roam--default-heading-title "TODO Link literature notes to zettel in org-roam")
 
   (defconst config-org-roam--notes-file-template (string-trim-left (format "
-  ,#+title: ${title}
-  ,#+roam_key: cite:${=key=}
-  ,#+category: ${=key=}
+  :PROPERTIES:
+  :ID:       %%(org-id-get-create t)
+  :END:
+  #+title: ${title}
+  #+roam_key: cite:${=key=}
+  #+category: ${=key=}
 
-  ,* %s
+  * %s
   :PROPERTIES:
   :CUSTOM_ID: ${=key=}
   :NOTER_DOCUMENT: %%(f-relative (orb-process-file-field \"${=key=}\") org-directory)
