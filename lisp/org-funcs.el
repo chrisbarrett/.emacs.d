@@ -36,25 +36,12 @@
 ;;
 ;; Stolen from http://doc.norang.ca/org-mode.html#Clocking
 
-(defconst org-funcs-custom-command-key "A")
-
 (defun org-funcs-agenda-dwim ()
   "Show the org agenda with appropriate tags set."
   (interactive)
-  (dolist (entry org-agenda-files)
-    (cond ((file-regular-p entry)
-           (find-file-noselect entry))
-          ((file-directory-p entry)
-           (dolist (file (f-files entry (lambda (it)
-                                          (string-match-p org-agenda-file-regexp it))))
-             (find-file-noselect file)))))
-  (let ((org-agenda-tag-filter-preset (list "-someday"
-                                            "-ignore"
-                                            (if (org-clocking-p)
-                                                (format "+%s" (clocking-work-tag))
-                                              "-work"))))
-    (org-agenda nil org-funcs-custom-command-key))
-  (get-buffer org-agenda-buffer-name))
+  (if (org-clocking-p)
+      (org-agenda nil "w")
+    (org-agenda nil "p")))
 
 
 ;; Capture template helpers
