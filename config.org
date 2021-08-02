@@ -6009,6 +6009,8 @@ Ensure we use dired rather than the Finder on macOS.
 
 #+begin_src emacs-lisp
   (use-package org-agenda
+    :config
+    (plist-put org-agenda-clock-consistency-checks :gap-ok-around '("12:40" "4:00"))
     :custom
     (org-agenda-start-with-log-mode '(closed clock state))
     (org-agenda-span 'day)
