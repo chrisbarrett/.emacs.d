@@ -129,7 +129,7 @@ With prefix arg ARG, prompt for the client to open."
     (clocking--choose-tag-for-node-id (org-roam-node-id node))))
 
 (defun clocking-heading-function ()
-  (let ((headline (substring-no-properties (org-get-heading t t t t))))
+  (let ((headline (org-get-heading t t t t)))
     (format "%s/%s"
             clocking--last-client-choice
             headline)))
@@ -164,7 +164,11 @@ for the client to use."
                   (clocking--choose-client-node))))
       (clocking--punch-in-for-node node)))
    (t
-    (call-interactively #'org-clock-in-last)))
+    (condition-case _
+        (call-interactively #'org-clock-in-last)
+      (error
+       (with-current-buffer (clocking-find-client-buffer)
+         (org-clock-in))))))
 
   (when (derived-mode-p 'org-agenda-mode)
     ;; Swap agenda due to context change.
