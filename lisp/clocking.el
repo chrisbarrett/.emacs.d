@@ -147,20 +147,10 @@ Remembers the last client chosen. If prefix ARG is given, prompt
 for the client to use."
   (interactive "P")
   (setq clocking--session-active-p t)
-  (cond
-   (arg
-    (clocking--punch-in-for-node (clocking--choose-client-node)))
-   ((and (boundp 'org-clock-history) (null org-clock-history))
-    (let ((node (if (and arg clocking--last-client-choice)
-                    (clocking--get-node-by-name clocking--last-client-choice)
-                  (clocking--choose-client-node))))
-      (clocking--punch-in-for-node node)))
-   (t
-    (condition-case _
-        (call-interactively #'org-clock-in-last)
-      (error
-       (with-current-buffer (clocking-find-client-buffer)
-         (org-clock-in))))))
+  (clocking--punch-in-for-node
+   (if (or arg (null clocking--last-client-choice))
+       (clocking--choose-client-node)
+     (clocking--get-node-by-name clocking--last-client-choice)))
 
   (when (derived-mode-p 'org-agenda-mode)
     ;; Swap agenda due to context change.
