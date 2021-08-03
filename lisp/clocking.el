@@ -149,12 +149,15 @@ With prefix arg ARG, prompt for the client to open."
     (org-with-point-at (clocking--ensure-clocking-headline (current-buffer))
       (org-clock-in '(16)))))
 
+(defvar clocking--session-active-p nil)
+
 (defun clocking-punch-in (&optional arg)
   "Punch in with the default date tree.
 
 Remembers the last client chosen. If prefix ARG is given, prompt
 for the client to use."
   (interactive "P")
+  (setq clocking--session-active-p t)
   (cond
    (arg
     (clocking--punch-in-for-node (clocking--choose-client-node)))
@@ -177,6 +180,7 @@ for the client to use."
 (defun clocking-punch-out ()
   "Stop the clock."
   (interactive)
+  (setq clocking--session-active-p nil)
   (when (org-clocking-p)
     (org-clock-out))
   (org-agenda-remove-restriction-lock)
