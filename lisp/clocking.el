@@ -140,17 +140,39 @@ With prefix arg ARG, prompt for the client to open."
 
 (defvar clocking--session-active-p nil)
 
-(defun clocking-punch-in (&optional arg)
-  "Punch in with the default date tree.
-
-Remembers the last client chosen. If prefix ARG is given, prompt
-for the client to use."
-  (interactive "P")
-  (setq clocking--session-active-p t)
+(defun clocking--clock-in-on-default (&optional prompt-for-client)
   (clocking--punch-in-for-node
-   (if (or arg (null clocking--last-client-choice))
+   (if (or prompt-for-client (null clocking--last-client-choice))
        (clocking--choose-client-node)
-     (clocking--get-node-by-name clocking--last-client-choice)))
+     (clocking--get-node-by-name clocking--last-client-choice))))
+
+(defun clocking-punch-in (&optional arg)
+  "Punch in with the default date tree for a client.
+
+Remembers the last client chosen.
+
+With a `\\[universal-argument]' prefix argument ARG, clock into \
+the task at point.
+
+When ARG is `\\[universal-argument] \ \\[universal-argument]', \
+prompt for the client to use."
+  (interactive "p")
+  (setq clocking--session-active-p t)
+  (save-restriction
+    (widen)
+    (let ((clock-at-point (equal arg 4))
+          (prompt-for-client (equal arg 16)))
+      (cond
+       ((and clock-at-point
+             (derived-mode-p 'org-agenda-mode)
+             (org-with-point-at (org-get-at-bol 'org-hd-marker) (org-get-tags)))
+        (org-agenda-clock-in '(16)))
+       ((and clock-at-point
+             (derived-mode-p 'org-mode)
+             (not (org-before-first-heading-p)))
+        (org-clock-in '(16)))
+       (t
+        (clocking--clock-in-on-default prompt-for-client)))))
 
   (when (derived-mode-p 'org-agenda-mode)
     ;; Swap agenda due to context change.
@@ -169,21 +191,20 @@ for the client to use."
     (run-hooks 'clocking-agenda-should-update-hook))
   (message "Punched out."))
 
+(defun clocking--ancestor-todo-pos ()
+  (let (ancestor-todo)
+    (while (and (not ancestor-todo) (org-up-heading-safe))
+      (when (member (nth 2 (org-heading-components)) org-todo-keywords-1)
+        (setq ancestor-todo (point))))
+    ancestor-todo))
+
 (defun clocking--clock-in-on-parent ()
   (save-excursion
     (save-restriction
       (widen)
-      (let (ancestor-todo)
-        (while (and (not ancestor-todo) (org-up-heading-safe))
-          (when (member (nth 2 (org-heading-components)) org-todo-keywords-1)
-            (setq ancestor-todo (point))))
-
-        (cond
-         (ancestor-todo
-          (org-with-point-at ancestor-todo
-            (org-clock-in)))
-         (clocking--session-active-p
-          (clocking--punch-in-for-node (clocking--choose-client-node))))))))
+      (if-let* ((ancestor-todo (clocking--ancestor-todo-pos)))
+          (org-with-point-at ancestor-todo (org-clock-in))
+        (clocking--clock-in-on-default)))))
 
 (defun clocking-on-clock-out ()
   (when (and clocking--session-active-p
