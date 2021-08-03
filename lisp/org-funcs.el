@@ -32,18 +32,6 @@
 (autoload 'xml-parse-string "xml")
 
 
-;; Clocking related stuff
-;;
-;; Stolen from http://doc.norang.ca/org-mode.html#Clocking
-
-(defun org-funcs-agenda-dwim ()
-  "Show the org agenda with appropriate tags set."
-  (interactive)
-  (if (org-clocking-p)
-      (org-agenda nil "w")
-    (org-agenda nil "p")))
-
-
 ;; Capture template helpers
 
 (defun org-funcs-update-capture-templates (templates)
@@ -64,6 +52,13 @@
 
 
 ;; Agenda utils
+
+(defun org-funcs-agenda-dwim ()
+  "Show the org agenda with appropriate tags set."
+  (interactive)
+  (if (org-clocking-p)
+      (org-agenda nil "w")
+    (org-agenda nil "p")))
 
 (defun org-funcs-exclude-tasks-on-hold (tag)
   (and (equal tag "hold") (concat "-" tag)))
