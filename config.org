@@ -6009,13 +6009,15 @@ Ensure we use dired rather than the Finder on macOS.
 
 #+begin_src emacs-lisp
   (use-package org-agenda
-    :config
-    (plist-put org-agenda-clock-consistency-checks :gap-ok-around '("12:40" "4:00"))
     :custom
     (org-agenda-start-with-log-mode '(closed state))
     (org-agenda-span 'day)
     (org-agenda-show-future-repeats nil)
     (org-agenda-ignore-properties '(effort appt))
+    (org-agenda-clock-consistency-checks '(:gap-ok-around ("12:40" "4:00")
+                                           :max-duration "10:00"
+                                           :min-duration 0
+                                           :max-gap 0))
     (org-agenda-custom-commands
      (let ((views '((tags-todo "TODO=\"TODO\"|+PRIORITY=\"A\""
                                ((org-agenda-overriding-header "Next Actions")
