@@ -26,21 +26,10 @@
 (require 'ht)
 (require 'subr-x)
 
-(autoload 'org-agenda-remove-restriction-lock "org-agenda")
-(autoload 'org-clock-in "org-clock")
-(autoload 'org-clock-in-last "org-clock")
-(autoload 'org-clock-out "org-clock")
-(autoload 'org-clocking-p "org-clock")
-(autoload 'org-find-exact-headline-in-buffer "org")
-(autoload 'org-heading-components "org")
-(autoload 'org-insert-heading "org")
-(autoload 'org-roam-node--find "org-roam")
-(autoload 'org-roam-node-file "org-roam")
-(autoload 'org-roam-node-id "org-roam")
-(autoload 'org-roam-node-list "org-roam")
-(autoload 'org-roam-node-title "org-roam")
-(autoload 'org-save-all-org-buffers "org")
-(autoload 'org-with-point-at "org-macs" nil nil 'macro)
+(require 'org)
+(require 'org-agenda)
+(require 'org-clock)
+(require 'org-roam)
 
 (defgroup clocking nil
   "Functions for managing client timekeeping with org-clock."
@@ -189,6 +178,29 @@ for the client to use."
     ;; Swap agenda due to context change.
     (run-hooks 'clocking-agenda-should-update-hook))
   (message "Punched out."))
+
+(defun clocking--clock-in-on-parent ()
+  (save-excursion
+    (save-restriction
+      (widen)
+      (let (ancestor-todo)
+        (while (and (not ancestor-todo) (org-up-heading-safe))
+          (when (member (nth 2 (org-heading-components)) org-todo-keywords-1)
+            (setq ancestor-todo (point))))
+
+        (cond
+         (ancestor-todo
+          (org-with-point-at ancestor-todo
+            (org-clock-in)))
+         (clocking--session-active-p
+          (clocking--punch-in-for-node (clocking--choose-client-node))))))))
+
+(defun clocking-on-clock-out ()
+  (when (and clocking--session-active-p
+             (not org-clock-clocking-in)
+             (marker-buffer org-clock-default-task)
+             (not org-clock-resolving-clocks-due-to-idleness))
+    (clocking--clock-in-on-parent)))
 
 (provide 'clocking)
 

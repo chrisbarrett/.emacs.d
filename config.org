@@ -6385,7 +6385,8 @@ https://www.orgroam.com/manual.html#Installation-_00281_0029
                         (and (fboundp 'org-clocking-p) (org-clocking-p)) 'clocking-punch-out))
     :config
     (setq org-clock-heading-function 'clocking-heading-function)
-    (add-hook 'clocking-agenda-should-update-hook #'org-funcs-agenda-dwim))
+    (add-hook 'clocking-agenda-should-update-hook #'org-funcs-agenda-dwim)
+    (add-hook 'org-clock-out-hook 'clocking-on-clock-out))
 #+end_src
 
 ** =orgtbl-aggregate= - Add pivot tables to org-mode
