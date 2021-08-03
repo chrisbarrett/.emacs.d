@@ -77,7 +77,7 @@
     (org-funcs--skip-heading-safe)))
 
 (defun org-funcs--current-headline-is-todo ()
-  (string= "TODO" (org-get-todo-state)))
+  (equal "TODO" (org-get-todo-state)))
 
 (defun org-funcs--first-todo-at-this-level-p ()
   (let (should-skip-entry)
