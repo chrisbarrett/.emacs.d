@@ -1,6 +1,6 @@
 let
   nixpkgsWithOverlays = { emacsOverlayRev }:
-    import <nixpkgs-unstable> {
+    import <nixpkgs> {
       overlays = [
         (import ./overlays)
         # https://github.com/nix-community/emacs-overlay
