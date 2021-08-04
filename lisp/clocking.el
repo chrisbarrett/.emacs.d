@@ -26,10 +26,11 @@
 (require 'ht)
 (require 'subr-x)
 
-(require 'org)
-(require 'org-agenda)
-(require 'org-clock)
-(require 'org-roam)
+(cl-eval-when (compile)
+  (require 'org)
+  (require 'org-agenda)
+  (require 'org-clock)
+  (require 'org-roam))
 
 (defgroup clocking nil
   "Functions for managing client timekeeping with org-clock."
