@@ -202,7 +202,7 @@ See: [[https://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-thre
     (server-start))
 #+end_src
 
-** Define a function to select a value depending on the current GTK theme
+** Define a function to select a value depending on the current OS theme
 
 #+begin_src emacs-lisp
   (defun gtk-theme-class ()
@@ -214,17 +214,29 @@ See: [[https://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-thre
           'dark
         'light)))
 
+  (defun macos-theme ()
+    (with-temp-buffer
+      (ignore-errors
+        (call-process "defaults" nil t nil
+                      "read" "-g" "AppleInterfaceStyle"))
+      (if (string-match-p "dark" (buffer-string))
+          'dark
+        'light)))
+
   (cl-defun choose-by-system-theme (&key light dark)
-    (when (eq system-type 'gnu/linux)
-      (if (equal 'dark (gtk-theme-class))
+    (let ((theme
+           (pcase system-type
+             ('gnu/linux (gtk-theme-class))
+             ('darwin (macos-theme)))))
+      (if (equal 'dark theme)
           dark
         light)))
 #+end_src
 
-** Set background colour based on GTK theme
+** Set background colour based on OS theme
 
 Set reasonable placeholder foreground and background colours until the theme is
-loaded. Use the current GNOME theme to determine whether to use light or dark colours.
+loaded. Use the current WM theme to determine whether to use light or dark colours.
 
 #+begin_src emacs-lisp
   (set-background-color (choose-by-system-theme :dark "#282c34" :light "#FDF6E3"))
@@ -346,7 +358,7 @@ Load host-specific settings, which are not checked into version control.
 
 * Colour theme
 
-** =doom-themes= - Enable appropriate theme for GTK theme
+** =doom-themes= - Enable appropriate theme for OS theme
 
 #+begin_src emacs-lisp
   (use-package doom-themes
