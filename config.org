@@ -1832,6 +1832,7 @@ See: [[https://github.com/wbolster/emacs-direnv][wbolster/emacs-direnv]]
 #+begin_src emacs-lisp
   (use-package rainbow-mode
     :hook
+    (help-mode . rainbow-mode)
     (emacs-lisp-mode . rainbow-mode)
     (css-mode . rainbow-mode))
 #+end_src
