@@ -6403,6 +6403,8 @@ https://www.orgroam.com/manual.html#Installation-_00281_0029
     (add-hook 'org-clock-out-hook 'clocking-on-clock-out))
 #+end_src
 
+*** TODO Apply text properties for links in clocking function
+
 ** =orgtbl-aggregate= - Add pivot tables to org-mode
 
 #+begin_src emacs-lisp
