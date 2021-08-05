@@ -254,11 +254,7 @@ Optional argument SHOW-PDF determines whether to show the downloaded PDF."
                                tmpfile))
          (buf (process-buffer process)))
 
-    (cl-labels ((move-pdf-to-bib-dir (key file)
-                                     (let ((target (f-join org-ref-pdf-directory (format  "%s.pdf" key))))
-                                       (rename-file file target)
-                                       target))
-                (cleanup-on-error ()
+    (cl-labels ((cleanup-on-error ()
                                   (progress-reporter-done reporter)
                                   (let ((cause (with-current-buffer buf (buffer-string))))
                                     (org-funcs--update-wkhtmltopdf-error-buffer cause))
@@ -278,10 +274,12 @@ Optional argument SHOW-PDF determines whether to show the downloaded PDF."
                        (progress-reporter-done reporter)
                        ;; Append an entry to the bibfile.
                        (org-ref-url-html-to-bibtex bibfile url)
-                       (let ((file (move-pdf-to-bib-dir (org-funcs--key-of-latest-bib-entry bibfile) tmpfile)))
+                       (let* ((key (org-funcs--key-of-latest-bib-entry bibfile))
+                              (target (f-join org-ref-pdf-directory (format  "%s.pdf" key))))
+                         (rename-file tmpfile target)
                          (when show-pdf
-                           (find-file file))
-                         (message "PDF downloaded to %s" file)))
+                           (find-file target))
+                         (message "PDF downloaded to %s" target)))
                       (_
                        (cleanup-on-error)
                        (message "PDF download failed. See %s for details." org-funcs--wkhtmltopdf-error-buffer-name)))))
