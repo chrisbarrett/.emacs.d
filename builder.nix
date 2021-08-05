@@ -1,4 +1,12 @@
-{ stdenv, lib, emacs, name, src, buildInputs ? [ ], patches ? [ ], preBuild ? "" }:
+{ stdenv
+, lib
+, emacs
+, name
+, src
+, buildInputs ? [ ]
+, patches ? [ ]
+, preBuild ? ""
+}:
 
 stdenv.mkDerivation {
   inherit name src patches;
@@ -22,9 +30,8 @@ stdenv.mkDerivation {
     install *.el* $out/share/emacs/site-lisp
   '';
   meta = {
-    description =
-      "Emacs projects from the Internet that just compile .el files";
-    homepage = "http://www.emacswiki.org";
+    description = "Emacs projects from the Internet that just compile .el files";
+    homepage = http://www.emacswiki.org;
     platforms = lib.platforms.all;
   };
 }
