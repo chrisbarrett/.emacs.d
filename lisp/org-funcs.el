@@ -222,6 +222,8 @@ If NOTIFY-P is set, a desktop notification is displayed."
     (read-only-mode +1)
     (current-buffer)))
 
+(defvar org-funcs-wkhtmltopdf-program "wkhtmltopdf")
+
 (defun org-funcs-url-to-reference (url &optional show-pdf)
   "Create a PDF of URL and add it to the bibliography.
 
@@ -236,7 +238,7 @@ Optional argument SHOW-PDF determines whether to show the downloaded PDF."
          (status)
          (process
           (async-start-process "wkhtmltopdf"
-                               "/usr/bin/wkhtmltopdf"
+                               org-funcs-wkhtmltopdf-program
                                (lambda (_proc)
                                  (setq status 'done))
                                "--log-level" "warn"
