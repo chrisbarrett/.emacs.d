@@ -224,6 +224,14 @@ If NOTIFY-P is set, a desktop notification is displayed."
 
 (defvar org-funcs-wkhtmltopdf-program "wkhtmltopdf")
 
+(defun org-funcs--key-of-latest-bib-entry (bibfile)
+  (with-current-buffer (find-file bibfile)
+    (save-excursion
+      (goto-char (point-max))
+      (bibtex-beginning-of-entry)
+      (let ((bibtex-expand-strings t))
+        (reftex-get-bib-field "=key=" (bibtex-parse-entry t))))))
+
 (defun org-funcs-url-to-reference (url &optional show-pdf)
   "Create a PDF of URL and add it to the bibliography.
 
@@ -246,14 +254,7 @@ Optional argument SHOW-PDF determines whether to show the downloaded PDF."
                                tmpfile))
          (buf (process-buffer process)))
 
-    (cl-labels ((key-of-latest-bib-entry ()
-                                         (with-current-buffer (find-file bibfile)
-                                           (save-excursion
-                                             (goto-char (point-max))
-                                             (bibtex-beginning-of-entry)
-                                             (let ((bibtex-expand-strings t))
-                                               (reftex-get-bib-field "=key=" (bibtex-parse-entry t))))))
-                (move-pdf-to-bib-dir (key file)
+    (cl-labels ((move-pdf-to-bib-dir (key file)
                                      (let ((target (f-join org-ref-pdf-directory (format  "%s.pdf" key))))
                                        (rename-file file target)
                                        target))
@@ -277,7 +278,7 @@ Optional argument SHOW-PDF determines whether to show the downloaded PDF."
                        (progress-reporter-done reporter)
                        ;; Append an entry to the bibfile.
                        (org-ref-url-html-to-bibtex bibfile url)
-                       (let ((file (move-pdf-to-bib-dir (key-of-latest-bib-entry) tmpfile)))
+                       (let ((file (move-pdf-to-bib-dir (org-funcs--key-of-latest-bib-entry bibfile) tmpfile)))
                          (when show-pdf
                            (find-file file))
                          (message "PDF downloaded to %s" file)))
