@@ -53,9 +53,7 @@
         (when (or (not confirm-p)
                   (y-or-n-p (format "Delete file `%s'? " (f-abbrev file))))
           (kill-buffer)
-          (delete-file file)
-          (when (bound-and-true-p org-agenda-files)
-            (delete file org-agenda-files))))
+          (delete-file file)))
       t))))
 
 (defun org-roam-gc (&optional interactive)
