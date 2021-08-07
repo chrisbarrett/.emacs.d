@@ -9,6 +9,7 @@
         auctex
         bibtex-completion
         browse-at-remote
+        bufler
         company
         company-auctex
         counsel

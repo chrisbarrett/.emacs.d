@@ -2336,7 +2336,7 @@ See:
     "" '(nil :wk "bufs")
     "n" '(next-buffer :wk "next")
     "p" '(previous-buffer :wk "prev")
-    "l" '(ibuffer :wk "list")
+    "l" '(bufler :wk "list")
     "s" '(switch-to-buffer :wk "switch...")
     "b" '(bury-buffer :wk "bury")
     "d" '(kill-current-buffer :wk "kill")
@@ -3077,7 +3077,7 @@ after editing actions have changed what windows are shown.
                              "*Help*"
                              "*cvs*"
                              "*Buffer List*"
-                             "*Ibuffer*"
+                             "*Bufler*"
                              "*esh command on file*")))
 #+end_src
 
@@ -3341,126 +3341,45 @@ to manually apply it again.
 
 * File & Buffer management
 
-** =ibuffer= - Better buffer list
-
-=ibuffer= provides an interactive buffer list that is better than the default.
-
+** TODO =bufler= - Better buffer list
 #+begin_src emacs-lisp
-  (use-package ibuffer
-    :defines (ibuffer-show-empty-filter-groups
-              ibuffer-never-show-predicates)
+  (use-package bufler
+    :commands (bufler bufler-list)
+    :config
+    (evil-set-initial-state 'bufler-list-mode 'motion)
     :general
-    ("C-x C-b" #'ibuffer-other-window)
-    (:keymaps 'ibuffer-mode-map :states 'motion
-     "<return>" #'ibuffer-visit-buffer
-     "j" #'ibuffer-forward-line
-     "k" #'ibuffer-backward-line)
-    :custom
-    (ibuffer-expert t)
-    (ibuffer-default-sorting-mode 'major-mode)
-    (ibuffer-default-sorting-reversep t)
-    (ibuffer-formats '((mark modified " " (mode 1 1) " " (name 35 35 :left :elide) " " filename-and-process)))
-    (ibuffer-never-show-predicates
-     (list (rx (or "*Messages*"
-                   "*magit-"
-                   "*git-auto-push*"
-                   ".elc"
-                   "magit-process"
-                   "magit-diff"
-                   "magit-revision"
-                   "TAGS"
-                   "*Backtrace*"
-                   "*new*"
-                   "*Org"
-                   "*Flycheck error messages*"
-                   "*Quail Completions*"
-                   "*scratch*"
-                   "*direnv*"
-                   "*calc trail*"
-                   "*Help*"))
-           #'config-ibuffer--roam-buffer-p))
-
-    :config
-    (defun config-ibuffer--roam-buffer-p (buf)
-      (with-current-buffer buf
-        (when (buffer-file-name)
-          (string-match-p "/org/roam/" (buffer-file-name)))))
-
-    (add-hook 'ibuffer-mode-hook #'hl-line-mode))
-#+end_src
-
-*** Extensions
-
-=ibuf-ext= adds a few extra features to =ibuffer=.
-
-#+begin_src emacs-lisp
-  (use-package ibuf-ext
-    :hook (ibuffer-mode . ibuffer-auto-mode)
-    :custom
-    (ibuffer-show-empty-filter-groups nil))
-#+end_src
-
-*** Cosmetic changes
-
-Override some default =ibuffer= columns.
-
-#+begin_src emacs-lisp
-  (use-package ibuffer
-    :preface
-    (cl-eval-when (compile)
-      (require 'ibuffer))
-    :commands (ibuffer-make-column-filename)
-    :config
-    (define-ibuffer-column name
-      (:inline t)
-      (let ((string (buffer-name)))
-        (if (not (seq-position string ?\n))
-            string
-          (replace-regexp-in-string
-           "\n" (propertize "^J" 'font-lock-face 'escape-glyph) string))))
-
-    (define-ibuffer-column filename-and-process
-      (:name "Filename/Process")
-      (let ((proc (get-buffer-process buffer))
-            (filename (ibuffer-make-column-filename buffer mark)))
-        (if proc
-            (concat (propertize (format "(%s %s)" proc (process-status proc))
-                                'font-lock-face 'italic)
-                    (if (> (length filename) 0)
-                        (format " %s" filename)
-                      ""))
-          (require 'dired+)
-          (propertize (abbreviate-file-name filename) 'face 'diredp-symlink)))))
-#+end_src
-
-*** Grouping by project
-
-=ibuffer-projectile= teaches =ibuffer= how to group files by =projectile= project.
-
-#+begin_src emacs-lisp
-  (use-package ibuffer-projectile
-    :custom
-    (ibuffer-projectile-prefix "")
-
-    :preface
-    (progn
-      (autoload 'ibuffer-do-sort-by-alphabetic "ibuf-ext")
-      (autoload 'page-break-lines--update-display-tables "page-break-lines")
-
-      (defun config-ibuffer--setup-buffer ()
-        (ibuffer-projectile-set-filter-groups)
-        (add-to-list 'ibuffer-filter-groups '("emacs-src" (predicate . (when (buffer-file-name)
-                                                                         (string-match-p (rx "/share/emacs") (buffer-file-name))))))
-
-        (unless (eq ibuffer-sorting-mode 'alphabetic)
-          (ibuffer-do-sort-by-alphabetic))
-
-        ;; All this buffer modification will have messed up the separator
-        ;; fontification, so force the display table to update now.
-        (when (bound-and-true-p page-break-lines-mode)
-          (page-break-lines--update-display-tables))))
-    :init
-    (add-hook 'ibuffer-hook #'config-ibuffer--setup-buffer))
+    ("C-x C-b" 'bufler-list)
+    (:states '(motion) :keymaps 'bufler-list-mode-map
+     "1" 'magit-section-show-level-1
+     "2" 'magit-section-show-level-2
+     "3" 'magit-section-show-level-3
+     "4" 'magit-section-show-level-4
+     "<" 'beginning-of-buffer
+     "<backtab>" 'magit-section-cycle-global
+     "q" 'quit-window
+     ">" 'end-of-buffer
+     "?" 'hydra:bufler/body
+     "C-<tab>" 'magit-section-cycle
+     "DEL" 'scroll-down-command
+     "F" 'bufler-list-group-make-frame
+     "M-1" 'magit-section-show-level-1-all
+     "M-2" 'magit-section-show-level-2-all
+     "M-3" 'magit-section-show-level-3-all
+     "M-4" 'magit-section-show-level-4-all
+     "M-<tab>" 'magit-section-cycle
+     "M-n" 'magit-section-forward-sibling
+     "M-p" 'magit-section-backward-sibling
+     "N" 'bufler-list-buffer-name-workspace
+     "RET" 'bufler-list-buffer-switch
+     "TAB" 'magit-section-toggle
+     "^" 'magit-section-up
+     "f" 'bufler-list-group-frame
+     "g r" 'bufler
+     "d" 'bufler-list-buffer-kill
+     "n" 'magit-section-forward
+     "p" 'magit-section-backward
+     "q" 'quit-window
+     "s" 'bufler-list-buffer-save))
 #+end_src
 
 ** =dired= - Filesystem browsing
