@@ -3605,7 +3605,11 @@ Hack =magit='s commit info to show output of a GPG signature check.
                             t))
 #+end_src
 
-** =forge= - teaches =magit= how to work with pull requests and issues
+** =forge= - teaches =magit= how to work with pull requests and issues :disabled:
+:LOGBOOK:
+- Note taken on [2021-08-07 Sat 15:27] \\
+  Temporarily disabled while yaml dependency has build issues on macOS
+:END:
 
 #+begin_src emacs-lisp
   (use-package forge

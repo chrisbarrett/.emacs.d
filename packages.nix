@@ -41,7 +41,7 @@
         flycheck-ledger
         flycheck-package
         flycheck-plantuml
-        forge
+        # forge
         format-all
         general
         git-auto-commit-mode
