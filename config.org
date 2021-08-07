@@ -6045,6 +6045,7 @@ Ensure we use dired rather than the Finder on macOS.
     (org-roam-capture-templates
      '(("d" "default" plain "%?" :if-new
         (file+head "%<%Y-%m-%d--%H-%M-%S>.org" "#+title: ${title}\n")
+        :immediate-finish t
         :unnarrowed t)))
 
     :config
