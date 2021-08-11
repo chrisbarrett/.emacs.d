@@ -92,6 +92,51 @@ sessions."
 
 
 
+(eval-and-compile
+  (let ((cache nil))
+    (defun timekeep--latest-client-choice ()
+      (unless cache
+        (ignore-errors
+          (setq cache (f-read-text timekeep-cache-file 'utf-8))))
+      cache)
+
+    (defun timekeep--set-latest-client-choice (node-title)
+      (setq cache node-title)
+      (f-write-text cache 'utf-8 timekeep-cache-file)))
+
+  (let ((cache))
+    (defun timekeep--client-nodes ()
+      (when (or (null cache)
+                (hash-table-empty-p cache))
+        (let* ((client-node-ids (seq-map 'cdr timekeep-clients-alist))
+               (nodes (ht-values (seq-reduce (lambda (acc it)
+                                               (let ((id (org-roam-node-id it)))
+                                                 (when (member id client-node-ids)
+                                                   (ht-set acc id it)))
+                                               acc)
+                                             (org-roam-node-list)
+                                             (ht-create)))))
+          (setq cache (ht-from-alist (seq-map (lambda (node)
+                                                (cons (org-roam-node-title node) node))
+                                              nodes)))))
+      cache)))
+
+(defun timekeep--choose-client-node ()
+  (let* ((nodes (timekeep--client-nodes))
+         (choice (completing-read "Client: " (ht-keys nodes) nil t nil 'timekeep--choose-buffer-history
+                                  (timekeep--latest-client-choice))))
+    (timekeep--set-latest-client-choice choice)
+    (ht-get nodes choice)))
+
+(defun timekeep--get-node-by-name (name)
+  (ht-get (timekeep--client-nodes) name))
+
+(defun timekeep--latest-client-node-maybe-prompt (&optional ask)
+  (let ((client (timekeep--latest-client-choice)))
+    (if (or ask (null client))
+        (timekeep--choose-client-node)
+      (timekeep--get-node-by-name client))))
+
 (defun timekeep--ensure-default-headline (buffer)
   "Create the default heading for clocking in BUFFER.
 
@@ -108,65 +153,6 @@ Return the position of the headline."
           (insert timekeep-default-headline-name)
           (point))))))
 
-(defun timekeep--client-node-ids ()
-  (seq-map 'cdr timekeep-clients-alist))
-
-(defun timekeep--choose-tag-for-node-id (id)
-  (or (car (seq-find (lambda (it) (equal (cdr it) id))
-                     timekeep-clients-alist))
-      (completing-read "Tag: " (seq-map 'car timekeep-clients-alist))))
-
-(defvar timekeep--last-client-choice nil
-  "The title of the last client selected by `timekeep--choose-client-node'.")
-
-(defun timekeep--last-client-choice ()
-  (unless timekeep--last-client-choice
-    (ignore-errors
-      (setq timekeep--last-client-choice (f-read-text timekeep-cache-file 'utf-8))))
-  timekeep--last-client-choice)
-
-(defun timekeep--set-last-client-choice (node-title)
-  (setq timekeep--last-client-choice node-title)
-  (f-write-text node-title 'utf-8 timekeep-cache-file))
-
-(defvar timekeep--client-nodes-cache nil
-  "Hash-table of titles to org-roam-nodes.")
-
-(defun timekeep--client-nodes ()
-  (when (or (null timekeep--client-nodes-cache)
-            (hash-table-empty-p timekeep--client-nodes-cache))
-    (let ((nodes (ht-values (seq-reduce (lambda (acc it)
-                                          (let ((id (org-roam-node-id it)))
-                                            (when (member id (timekeep--client-node-ids))
-                                              (ht-set acc id it)))
-                                          acc)
-                                        (org-roam-node-list)
-                                        (ht-create)))))
-      (setq timekeep--client-nodes-cache (ht-from-alist (seq-map (lambda (node)
-                                                                   (cons (org-roam-node-title node) node))
-                                                                 nodes)))))
-  timekeep--client-nodes-cache)
-
-(defun timekeep--heading-function ()
-  (let ((headline (substring-no-properties (org-get-heading t t t t))))
-    (format "%s/%s"
-            (timekeep--last-client-choice)
-            (with-temp-buffer
-              (insert headline)
-              (org-mode)
-              (font-lock-ensure)
-              (buffer-string)))))
-
-(defun timekeep--choose-client-node ()
-  (let* ((nodes (timekeep--client-nodes))
-         (choice (completing-read "Client: " (ht-keys nodes) nil t nil 'timekeep--choose-buffer-history
-                                  (timekeep--last-client-choice))))
-    (timekeep--set-last-client-choice choice)
-    (ht-get nodes choice)))
-
-(defun timekeep--get-node-by-name (name)
-  (ht-get (timekeep--client-nodes) name))
-
 (defun timekeep--punch-in-for-node (node)
   (with-current-buffer (org-roam-node--find node)
     (org-with-point-at (timekeep--ensure-default-headline (current-buffer))
@@ -178,7 +164,7 @@ Return the position of the headline."
   (timekeep--punch-in-for-node
    (if prompt-for-client
        (timekeep--choose-client-node)
-     (timekeep--get-node-by-name (timekeep--last-client-choice)))))
+     (timekeep--get-node-by-name (timekeep--latest-client-choice)))))
 
 (defun timekeep--ancestor-todo-pos ()
   (let (ancestor-todo)
@@ -201,7 +187,7 @@ Return the position of the headline."
                                node))
                        (timekeep--client-nodes))))
     (when-let* ((node (alist-get (buffer-file-name) files nil nil #'equal)))
-      (setq timekeep--last-client-choice (org-roam-node-title node))
+      (timekeep--set-latest-client-choice (org-roam-node-title node))
       (setq timekeep--session-active-p t))))
 
 (defun timekeep--on-clock-out ()
@@ -212,6 +198,16 @@ Return the position of the headline."
     (timekeep--clock-in-on-parent)))
 
 
+
+(defun timekeep--heading-function ()
+  (let ((headline (substring-no-properties (org-get-heading t t t t))))
+    (format "%s/%s"
+            (timekeep--latest-client-choice)
+            (with-temp-buffer
+              (insert headline)
+              (org-mode)
+              (font-lock-ensure)
+              (buffer-string)))))
 
 ;;;###autoload
 (define-minor-mode timekeep-mode
@@ -278,20 +274,20 @@ prompt for the client to use."
 
 ;;;###autoload
 (defun timekeep-capture-target ()
-  (org-roam-node--find
-   (if (null timekeep--last-client-choice)
-       (timekeep--choose-client-node)
-     (timekeep--get-node-by-name timekeep--last-client-choice)))
+  (org-roam-node--find (timekeep--latest-client-node-maybe-prompt))
   (widen)
   (goto-char (point-max)))
 
+(defun timekeep--choose-tag-for-node-id (id)
+  (or (car (seq-find (lambda (it) (equal (cdr it) id))
+                     timekeep-clients-alist))
+      (completing-read "Tag: " (seq-map 'car timekeep-clients-alist))))
+
 ;;;###autoload
 (defun timekeep-work-tag ()
-  (let ((node
-         (if timekeep--last-client-choice
-             (timekeep--get-node-by-name timekeep--last-client-choice)
-           (timekeep--choose-client-node))))
-    (timekeep--choose-tag-for-node-id (org-roam-node-id node))))
+  (timekeep--choose-tag-for-node-id
+   (org-roam-node-id
+    (timekeep--latest-client-node-maybe-prompt))))
 
 ;;;###autoload
 (defun timekeep-client-files ()
@@ -305,13 +301,7 @@ With prefix arg ARG, prompt for the client to open."
   (interactive "P")
   (switch-to-buffer
    (org-roam-node--find
-    (cond
-     (arg
-      (timekeep--choose-client-node))
-     (timekeep--last-client-choice
-      (timekeep--get-node-by-name timekeep--last-client-choice))
-     (t
-      (timekeep--choose-client-node))))))
+    (timekeep--latest-client-node-maybe-prompt arg))))
 
 (provide 'timekeep)
 
