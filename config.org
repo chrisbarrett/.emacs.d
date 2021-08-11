@@ -2705,8 +2705,8 @@ See:
     "a" '(org-funcs-agenda-dwim :wk "agenda")
 
     "c" '(nil :wk "clock")
-    "c i" '(clocking-punch-in :wk "punch in")
-    "c o" '(clocking-punch-out :wk "punch out")
+    "c i" '(timekeep-punch-in :wk "punch in")
+    "c o" '(timekeep-punch-out :wk "punch out")
     "c r" '(org-resolve-clocks :wk "resolve clocks")
     "c g" '(org-clock-goto :wk "goto last clock")
 
@@ -2726,7 +2726,7 @@ See:
     "g" '(org-capture-goto-last-stored :wk "last captured")
     "t" '(org-funcs-todo-list :wk "todo list")
     "v" '(org-tags-view :wk "tags")
-    "w" '(clocking-find-client-buffer :wk "work"))
+    "w" '(timekeep-find-client-buffer :wk "work"))
 #+end_src
 
 *** ~p~ - Projects
@@ -5664,7 +5664,7 @@ Apply either an =@work= or =@personal= context when archiving.
       ;; Ensure we have a context before archiving.
       (when (seq-empty-p (org-get-tags))
         (pcase-exhaustive (read-char-choice "Set context: [w]ork  [p]ersonal" '(?w ?p))
-          (?w (org-toggle-tag (clocking-work-tag) 'on))
+          (?w (org-toggle-tag (timekeep-work-tag) 'on))
           (?p nil))))
 
     (advice-add 'org-archive-subtree :before 'org-apply-tags-before-archive))
@@ -5876,7 +5876,7 @@ Ensure we use dired rather than the Finder on macOS.
 #+begin_src emacs-lisp
   (require 'subr-x)
 
-  (autoload 'clocking-client-files "clocking")
+  (autoload 'timekeep-client-files "timekeep")
   (autoload 'org-roam-node-id "org-roam")
   (autoload 'org-roam-node-file "org-roam")
   (autoload 'org-roam-node-list "org-roam")
@@ -5896,7 +5896,7 @@ Ensure we use dired rather than the Finder on macOS.
     :after org
     :config
     (setq org-agenda-files `(,(f-join paths-org-directory "tasks")
-                             ,@(clocking-client-files)
+                             ,@(timekeep-client-files)
                              ,@(roam-files-with-ids "981cb595-a959-4256-86d0-26e9ec00e4cf"
                                                     "292C4988-2630-4FBB-935B-63B61A9DD2CD")))
     :custom
@@ -5989,7 +5989,7 @@ Ensure we use dired rather than the Finder on macOS.
            (org-agenda-archives-mode t)))
          ("w" "work agenda" ,views
           ((org-agenda-clockreport-mode t)
-           (org-agenda-tag-filter-preset (list "-someday" "-ignore" (format "+%s" (clocking-work-tag))))
+           (org-agenda-tag-filter-preset (list "-someday" "-ignore" (format "+%s" (timekeep-work-tag))))
            (org-agenda-archives-mode t)))))))
 #+end_src
 
@@ -6345,17 +6345,16 @@ https://github.com/org-roam/org-roam-server
 
 https://www.orgroam.com/manual.html#Installation-_00281_0029
 
-** =clocking= - clocking projects for different clients
+** =timekeep= - Better timekeeping handling for org-clock
 
 #+begin_src emacs-lisp
-  (use-package clocking
-    :commands (clocking-punch-in clocking-punch-out)
-    :general ("<f12>" (general-predicate-dispatch 'clocking-punch-in
-                        (and (fboundp 'org-clocking-p) (org-clocking-p)) 'clocking-punch-out))
+  (use-package timekeep
+    :commands (timekeep-punch-in timekeep-punch-out)
+    :general ("<f12>" (general-predicate-dispatch 'timekeep-punch-in
+                        (and (fboundp 'org-clocking-p) (org-clocking-p)) 'timekeep-punch-out))
     :config
-    (setq org-clock-heading-function 'clocking-heading-function)
-    (add-hook 'clocking-agenda-should-update-hook #'org-funcs-agenda-dwim)
-    (add-hook 'org-clock-out-hook 'clocking-on-clock-out))
+    (timekeep-global-mode +1)
+    (add-hook 'timekeep-agenda-should-update-hook #'org-funcs-agenda-dwim))
 #+end_src
 
 *** TODO Apply text properties for links in clocking function

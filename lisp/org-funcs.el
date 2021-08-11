@@ -24,7 +24,7 @@
   (require 'org-clock)
   (require 'org-capture))
 
-(autoload 'clocking-work-tag "clocking")
+(autoload 'timekeep-work-tag "timekeep")
 (autoload 'org-cliplink-retrieve-title-synchronously "org-cliplink")
 (autoload 'org-project-p "org-project")
 (autoload 'org-project-skip-stuck-projects "org-project")
@@ -195,7 +195,7 @@ If NOTIFY-P is set, a desktop notification is displayed."
 
   (let* ((domain (string-remove-prefix "www." (url-host (url-generic-parse-url url))))
          (verb (alist-get domain org-funcs--domain-to-verb-alist "Review" nil #'equal))
-         (tags (if (org-funcs--work-related-url-p url) (format ":%s:" (clocking-work-tag)) "")))
+         (tags (if (org-funcs--work-related-url-p url) (format ":%s:" (timekeep-work-tag)) "")))
     (format "* TODO %s [[%s][%s]]     %s"
             verb
             url
