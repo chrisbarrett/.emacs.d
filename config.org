@@ -5880,7 +5880,8 @@ Ensure we use dired rather than the Finder on macOS.
     :config
     (setq org-agenda-files `(,(f-join paths-org-directory "tasks")
                              ,@(clocking-client-files)
-                             ,@(roam-files-with-ids "981cb595-a959-4256-86d0-26e9ec00e4cf")))
+                             ,@(roam-files-with-ids "981cb595-a959-4256-86d0-26e9ec00e4cf"
+                                                    "292C4988-2630-4FBB-935B-63B61A9DD2CD")))
     :custom
     (org-stuck-projects '("" nil nil ""))
     (org-agenda-todo-ignore-scheduled t)
