@@ -245,11 +245,14 @@ used."
     (remove-hook 'org-clock-out-hook #'timekeep--on-clock-out)))
 
 ;;;###autoload
-(defun timekeep-punch-in (&optional arg)
-  "Punch in on the default clocking headline for a client.
+(defun timekeep-start (&optional arg)
+  "Start a timekeeping session.
 
-Remembers the last client chosen. With a prefix ARG, prompt for
-the client to use."
+Clocks in on the default timekeeep headline for a client and
+changes the behaviour of clocking commands.
+
+Remembers the last client chosen by default. With a prefix ARG,
+prompt for the client to use."
   (interactive "P")
   (save-restriction
     (widen)
@@ -260,7 +263,7 @@ the client to use."
     (run-hooks 'timekeep-agenda-should-update-hook)))
 
 ;;;###autoload
-(defun timekeep-punch-out ()
+(defun timekeep-stop ()
   "Clock out, pausing the timekeeping session."
   (interactive)
   (setq timekeep--session-active-p nil)

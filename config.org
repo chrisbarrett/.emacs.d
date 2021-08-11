@@ -2707,8 +2707,8 @@ See:
     "a" '(org-funcs-agenda-dwim :wk "agenda")
 
     "c" '(nil :wk "clock")
-    "c i" '(timekeep-punch-in :wk "punch in")
-    "c o" '(timekeep-punch-out :wk "punch out")
+    "c i" '(timekeep-start :wk "punch in")
+    "c o" '(timekeep-stop :wk "punch out")
     "c r" '(org-resolve-clocks :wk "resolve clocks")
     "c g" '(org-clock-goto :wk "goto last clock")
 
@@ -6351,9 +6351,9 @@ https://www.orgroam.com/manual.html#Installation-_00281_0029
 
 #+begin_src emacs-lisp
   (use-package timekeep
-    :commands (timekeep-punch-in timekeep-punch-out)
-    :general ("<f12>" (general-predicate-dispatch 'timekeep-punch-in
-                        (and (fboundp 'org-clocking-p) (org-clocking-p)) 'timekeep-punch-out))
+    :commands (timekeep-start timekeep-stop)
+    :general ("<f12>" (general-predicate-dispatch 'timekeep-start
+                        (and (fboundp 'org-clocking-p) (org-clocking-p)) 'timekeep-stop))
     :custom
     (timekeep-cache-file (expand-file-name "timekeep" paths-cache-directory))
     :config
