@@ -6357,7 +6357,7 @@ https://www.orgroam.com/manual.html#Installation-_00281_0029
     :custom
     (timekeep-cache-file (expand-file-name "timekeep" paths-cache-directory))
     :config
-    (timekeep-global-mode +1)
+    (timekeep-mode +1)
     (add-hook 'timekeep-agenda-should-update-hook #'org-funcs-agenda-dwim))
 #+end_src
 

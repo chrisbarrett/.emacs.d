@@ -223,26 +223,16 @@ When this mode is active, clocking out behaves differently:
 Customize `timekeep-clients-alist' to define which roam nodes are
 used."
   :group 'timekeep
+  :global t
   (if timekeep-mode
       (progn
         (setq org-clock-heading-function #'timekeep--heading-function)
-        (add-hook 'org-clock-in-hook #'timekeep--on-clock-in nil t)
-        (add-hook 'org-clock-out-hook #'timekeep--on-clock-out nil t))
+        (add-hook 'org-clock-in-hook #'timekeep--on-clock-in)
+        (add-hook 'org-clock-out-hook #'timekeep--on-clock-out))
     (setq timekeep--session-active-p nil)
     (setq org-clock-heading-function nil)
-    (remove-hook 'org-clock-in-hook #'timekeep--on-clock-in t)
-    (remove-hook 'org-clock-out-hook #'timekeep--on-clock-out t)))
-
-;;;###autoload
-(defun timekeep-mode-on ()
-  (when (derived-mode-p 'org-mode)
-    (timekeep-mode +1)))
-
-;;;###autoload
-(define-globalized-minor-mode timekeep-global-mode timekeep-mode
-  timekeep-mode-on
-  :init-value nil
-  :group 'timekeep)
+    (remove-hook 'org-clock-in-hook #'timekeep--on-clock-in)
+    (remove-hook 'org-clock-out-hook #'timekeep--on-clock-out)))
 
 ;;;###autoload
 (defun timekeep-punch-in (&optional arg)
@@ -250,27 +240,12 @@ used."
 
 Remembers the last client chosen.
 
-With a `\\[universal-argument]' prefix argument ARG, clock into \
-the task at point.
-
-When ARG is `\\[universal-argument] \ \\[universal-argument]', \
-prompt for the client to use."
-  (interactive "p")
+With a `\\[universal-argument]' prefix ARG, prompt for the client
+to use."
+  (interactive "P")
   (save-restriction
     (widen)
-    (let ((clock-at-point (equal arg 4))
-          (prompt-for-client (equal arg 16)))
-      (cond
-       ((and clock-at-point
-             (derived-mode-p 'org-agenda-mode)
-             (org-with-point-at (org-get-at-bol 'org-hd-marker) (org-get-tags)))
-        (org-agenda-clock-in '(16)))
-       ((and clock-at-point
-             (derived-mode-p 'org-mode)
-             (not (org-before-first-heading-p)))
-        (org-clock-in '(16)))
-       (t
-        (timekeep--clock-in-on-default prompt-for-client)))))
+    (timekeep--clock-in-on-default arg))
 
   (when (derived-mode-p 'org-agenda-mode)
     ;; Swap agenda due to context change.
