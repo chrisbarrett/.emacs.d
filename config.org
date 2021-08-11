@@ -5967,10 +5967,12 @@ Ensure we use dired rather than the Finder on macOS.
                           ((org-agenda-overriding-header "Stuck Projects")
                            (org-agenda-skip-function #'org-project-skip-non-stuck-projects))))))
        `(("p" "personal agenda" ,views
-          ((org-agenda-tag-filter-preset '("-someday" "-ignore" "-work"))))
+          ((org-agenda-tag-filter-preset '("-someday" "-ignore" "-work"))
+           (org-agenda-archives-mode t)))
          ("w" "work agenda" ,views
           ((org-agenda-clockreport-mode t)
-           (org-agenda-tag-filter-preset (list "-someday" "-ignore" (format "+%s" (clocking-work-tag))))))))))
+           (org-agenda-tag-filter-preset (list "-someday" "-ignore" (format "+%s" (clocking-work-tag))))
+           (org-agenda-archives-mode t)))))))
 #+end_src
 
 
