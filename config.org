@@ -6354,6 +6354,8 @@ https://www.orgroam.com/manual.html#Installation-_00281_0029
     :commands (timekeep-punch-in timekeep-punch-out)
     :general ("<f12>" (general-predicate-dispatch 'timekeep-punch-in
                         (and (fboundp 'org-clocking-p) (org-clocking-p)) 'timekeep-punch-out))
+    :custom
+    (timekeep-cache-file (expand-file-name "timekeep" paths-cache-directory))
     :config
     (timekeep-global-mode +1)
     (add-hook 'timekeep-agenda-should-update-hook #'org-funcs-agenda-dwim))

@@ -75,6 +75,11 @@ The heading will be created if needed."
   :group 'timekeep
   :type 'hook)
 
+(defcustom timekeep-cache-file (locate-user-emacs-file "timekeep")
+  "Path to timekeep's cache file."
+  :group 'timekeep
+  :type 'file)
+
 
 
 (defun timekeep--ensure-default-headline (buffer)
@@ -104,6 +109,16 @@ Return the position of the headline."
 (defvar timekeep--last-client-choice nil
   "The title of the last client selected by `timekeep--choose-client-node'.")
 
+(defun timekeep--last-client-choice ()
+  (unless timekeep--last-client-choice
+    (ignore-errors
+      (setq timekeep--last-client-choice (f-read-text timekeep-cache-file 'utf-8))))
+  timekeep--last-client-choice)
+
+(defun timekeep--set-last-client-choice (node-title)
+  (setq timekeep--last-client-choice node-title)
+  (f-write-text node-title 'utf-8 timekeep-cache-file))
+
 (defvar timekeep--client-nodes-cache nil
   "Hash-table of titles to org-roam-nodes.")
 
@@ -125,7 +140,7 @@ Return the position of the headline."
 (defun timekeep--heading-function ()
   (let ((headline (substring-no-properties (org-get-heading t t t t))))
     (format "%s/%s"
-            timekeep--last-client-choice
+            (timekeep--last-client-choice)
             (with-temp-buffer
               (insert headline)
               (org-mode)
@@ -135,8 +150,8 @@ Return the position of the headline."
 (defun timekeep--choose-client-node ()
   (let* ((nodes (timekeep--client-nodes))
          (choice (completing-read "Client: " (ht-keys nodes) nil t nil 'timekeep--choose-buffer-history
-                                  timekeep--last-client-choice)))
-    (setq timekeep--last-client-choice choice)
+                                  (timekeep--last-client-choice))))
+    (timekeep--set-last-client-choice choice)
     (ht-get nodes choice)))
 
 (defun timekeep--get-node-by-name (name)
@@ -151,9 +166,9 @@ Return the position of the headline."
 
 (defun timekeep--clock-in-on-default (&optional prompt-for-client)
   (timekeep--punch-in-for-node
-   (if (or prompt-for-client (null timekeep--last-client-choice))
+   (if prompt-for-client
        (timekeep--choose-client-node)
-     (timekeep--get-node-by-name timekeep--last-client-choice))))
+     (timekeep--get-node-by-name (timekeep--last-client-choice)))))
 
 (defun timekeep--ancestor-todo-pos ()
   (let (ancestor-todo)
