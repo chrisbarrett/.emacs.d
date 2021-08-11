@@ -703,6 +703,11 @@ These since these are caused by packages and are generally not actionable by me.
   (advice-add #'save-buffers-kill-emacs :around #'config--suppress-no-process-prompt)
 #+end_src
 
+*** Disable suspend-frame on C-z
+
+#+begin_src emacs-lisp
+  (global-unset-key (kbd "C-z"))
+#+end_src
 
 ** Convert ANSI color codes to text properties in shell output
 
