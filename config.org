@@ -1606,8 +1606,10 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
 #+begin_src emacs-lisp
   (use-package format-all
     :hook
-    (prog-mode . format-all-mode)
-    (prog-mode . format-all-ensure-formatter)
+    (typescript-mode . format-all-mode)
+    (typescript-mode . format-all-ensure-formatter)
+    (terraform-mode . format-all-mode)
+    (terraform-mode . format-all-ensure-formatter)
     :custom
     (format-all-show-errors 'never))
 #+end_src
