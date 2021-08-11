@@ -139,6 +139,14 @@ With prefix arg ARG, prompt for the client to open."
     (org-with-point-at (clocking--ensure-clocking-headline (current-buffer))
       (org-clock-in '(16)))))
 
+(defun clocking-capture-target ()
+  (org-roam-node--find
+   (if (null clocking--last-client-choice)
+       (clocking--choose-client-node)
+     (clocking--get-node-by-name clocking--last-client-choice)))
+  (widen)
+  (goto-char (point-max)))
+
 (defvar clocking--session-active-p nil)
 
 (defun clocking--clock-in-on-default (&optional prompt-for-client)
