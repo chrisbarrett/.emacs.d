@@ -126,10 +126,14 @@ With prefix arg ARG, prompt for the client to open."
     (clocking--choose-tag-for-node-id (org-roam-node-id node))))
 
 (defun clocking-heading-function ()
-  (let ((headline (nth 4 (org-heading-components))))
+  (let ((headline (substring-no-properties (org-get-heading t t t t))))
     (format "%s/%s"
             clocking--last-client-choice
-            headline)))
+            (with-temp-buffer
+              (insert headline)
+              (org-mode)
+              (font-lock-ensure)
+              (buffer-string)))))
 
 (defun clocking--choose-client-node ()
   (let* ((nodes (clocking--client-nodes))
