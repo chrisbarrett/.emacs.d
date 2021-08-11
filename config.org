@@ -1455,14 +1455,20 @@ This should really be a thing out-of-the-box.
           (progress-reporter-done progress)))
 
        ((region-active-p)
-        (if (bound-and-true-p lsp-mode)
-            (lsp-format-region (region-beginning) (region-end))
-          (indent-region (region-beginning) (region-end))))
+        (cond
+         ((bound-and-true-p lsp-mode)
+          (lsp-format-region (region-beginning) (region-end)))
+         (t
+          (indent-region (region-beginning) (region-end)))))
        (t
         (let ((progress (make-progress-reporter "Indenting buffer")))
-          (if (bound-and-true-p lsp-mode)
-              (lsp-format-buffer)
-            (indent-buffer))
+          (cond
+           ((bound-and-true-p format-all-mode)
+            (format-all-buffer))
+           ((bound-and-true-p lsp-mode)
+            (lsp-format-buffer))
+           (t
+            (indent-buffer)))
           (progress-reporter-done progress))))))
 
   (define-key prog-mode-map (kbd "M-q") #'config-indent-dwim)
