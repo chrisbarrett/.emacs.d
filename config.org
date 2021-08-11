@@ -464,7 +464,7 @@ applications. The following functions will be invoked by those scripts over
 
 * Customise builtin features
 
-Set C source directory to use the source files from the Nix build.
+** Set C source directory to use the source files from the Nix build
 
 #+begin_src emacs-lisp
   (use-package find-func
@@ -472,40 +472,38 @@ Set C source directory to use the source files from the Nix build.
     (find-function-C-source-directory (getenv "NIX_EMACS_SRC_DIR")))
 #+end_src
 
-Always use one-char =y-or-n-p=.
+** Always use one-char =y-or-n-p=
 
 #+begin_src emacs-lisp
   (defalias #'yes-or-no-p #'y-or-n-p)
 #+end_src
 
-Don't use the system trash can.
+** Don't use the system trash can
 
 #+begin_src emacs-lisp
   (setq delete-by-moving-to-trash nil)
 #+end_src
 
-Do not truncate the results of =eval-expression= and friends when logging their
-output with =message=.
+** Do not truncate the results of =eval-expression=
 
 #+begin_src emacs-lisp
   (setq eval-expression-print-length nil)
   (setq eval-expression-print-level nil)
 #+end_src
 
-Use 'Emacs', rather than the selected buffer, as the window manager's title for
-frames.
+** Use 'Emacs', rather than the selected buffer, as the window manager's title for frames
 
 #+begin_src emacs-lisp
   (setq frame-title-format "Emacs")
 #+end_src
 
-Instantly display current keystrokes in mini buffer
+** Instantly display current keystrokes in mini buffer
 
 #+begin_src emacs-lisp
  (setq echo-keystrokes 0.02)
 #+end_src
 
-Save cookies to a cache file.
+** Save cookies to a cache file.
 
 #+begin_src emacs-lisp
   (use-package url
@@ -513,13 +511,13 @@ Save cookies to a cache file.
     (url-cookie-file (expand-file-name "cookies" paths-cache-directory)))
 #+end_src
 
-Prefer more recent Lisp files to outdated ELC files when loading.
+** Prefer more recent Lisp files to outdated ELC files when loading
 
 #+begin_src emacs-lisp
   (setq load-prefer-newer t)
 #+end_src
 
-Do not query the user to accept insecure connections. Just disconnect them.
+** Automatically disconnect insecure connections
 
 #+begin_src emacs-lisp
   (use-package nsm
@@ -527,7 +525,7 @@ Do not query the user to accept insecure connections. Just disconnect them.
     (nsm-noninteractive t))
 #+end_src
 
-Disable file dialogs.
+** Disable file dialogs
 
 #+begin_src emacs-lisp
   (setq use-file-dialog nil)
