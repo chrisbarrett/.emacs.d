@@ -5378,6 +5378,12 @@ Normally newlines are reflowed automatically.
     :config
     (dolist (file (f-files (f-join paths-org-directory "tasks")))
       (add-to-list 'org-id-files file)))
+
+  (use-package org-id
+    :after org-roam
+    :config
+    (dolist (file (f-files org-roam-directory nil t))
+      (add-to-list 'org-id-files file)))
 #+end_src
 
 ** =org-funcs= - org functions used throughout config
