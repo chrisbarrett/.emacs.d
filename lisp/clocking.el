@@ -82,17 +82,23 @@ Return the position of the headline."
 (defvar clocking--last-client-choice nil
   "The title of the last client selected by `clocking--choose-client-node'.")
 
+(defvar clocking--client-nodes-cache nil
+  "Hash-table of titles to org-roam-nodes.")
+
 (defun clocking--client-nodes ()
-  (let ((nodes (ht-values (seq-reduce (lambda (acc it)
-                                        (let ((id (org-roam-node-id it)))
-                                          (when (member id (clocking--client-node-ids))
-                                            (ht-set acc id it)))
-                                        acc)
-                                      (org-roam-node-list)
-                                      (ht-create)))))
-    (ht-from-alist (seq-map (lambda (node)
-                              (cons (org-roam-node-title node) node))
-                            nodes))))
+  (when (or (null clocking--client-nodes-cache)
+            (hash-table-empty-p clocking--client-nodes-cache))
+    (let ((nodes (ht-values (seq-reduce (lambda (acc it)
+                                          (let ((id (org-roam-node-id it)))
+                                            (when (member id (clocking--client-node-ids))
+                                              (ht-set acc id it)))
+                                          acc)
+                                        (org-roam-node-list)
+                                        (ht-create)))))
+      (setq clocking--client-nodes-cache (ht-from-alist (seq-map (lambda (node)
+                                                                   (cons (org-roam-node-title node) node))
+                                                                 nodes)))))
+  clocking--client-nodes-cache)
 
 (defun clocking-client-files ()
   (seq-map #'org-roam-node-file (ht-values (clocking--client-nodes))))
