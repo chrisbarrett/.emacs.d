@@ -36,7 +36,7 @@
 
 ;; Customize `timekeep-clients-alist' to define which roam nodes are
 ;; used.
-;;
+
 ;; Adapted from http://doc.norang.ca/org-mode.html#Clocking
 
 ;;; Code:
@@ -44,11 +44,10 @@
 (require 'ht)
 (require 'subr-x)
 
-(cl-eval-when (compile)
-  (require 'org)
-  (require 'org-agenda)
-  (require 'org-clock)
-  (require 'org-roam))
+(require 'org)
+(require 'org-agenda)
+(require 'org-clock)
+(require 'org-roam)
 
 (defgroup timekeep nil
   "Functions for managing client timekeeping with org-clock."
@@ -59,7 +58,15 @@
   "Alist mapping org tags to IDs.
 
 Tags are expected to be file tags, applied to todos for that
-client. The ID is the org-roam node for the client's notes file."
+client. The ID is the org-roam node for the client's notes file.
+
+For example:
+
+  (setq timekeep-clients-alist '((\"Foo\" . \"<UUID-1>\")
+                                 (\"Bar\" . \"<UUID-2>\")))
+
+This form defines two clients and their corresponding IDs (taken
+from the PROPERTY drawer)."
   :group 'timekeep
   :type '(alist :key-type string :value-type string))
 
@@ -76,7 +83,10 @@ The heading will be created if needed."
   :type 'hook)
 
 (defcustom timekeep-cache-file (locate-user-emacs-file "timekeep")
-  "Path to timekeep's cache file."
+  "Path to timekeep's cache file.
+
+This is used to persist the selected client between Emacs
+sessions."
   :group 'timekeep
   :type 'file)
 
@@ -104,7 +114,7 @@ Return the position of the headline."
 (defun timekeep--choose-tag-for-node-id (id)
   (or (car (seq-find (lambda (it) (equal (cdr it) id))
                      timekeep-clients-alist))
-      (completing-read "Tag:" (seq-map 'car timekeep-clients-alist))))
+      (completing-read "Tag: " (seq-map 'car timekeep-clients-alist))))
 
 (defvar timekeep--last-client-choice nil
   "The title of the last client selected by `timekeep--choose-client-node'.")
@@ -236,12 +246,10 @@ used."
 
 ;;;###autoload
 (defun timekeep-punch-in (&optional arg)
-  "Punch in with the default date tree for a client.
+  "Punch in on the default clocking headline for a client.
 
-Remembers the last client chosen.
-
-With a `\\[universal-argument]' prefix ARG, prompt for the client
-to use."
+Remembers the last client chosen. With a prefix ARG, prompt for
+the client to use."
   (interactive "P")
   (save-restriction
     (widen)
@@ -253,7 +261,7 @@ to use."
 
 ;;;###autoload
 (defun timekeep-punch-out ()
-  "Stop the clock."
+  "Clock out, pausing the timekeeping session."
   (interactive)
   (setq timekeep--session-active-p nil)
   (when (org-clocking-p)
