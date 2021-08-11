@@ -79,7 +79,8 @@ Return the position of the headline."
                      clocking-clients-alist))
       (completing-read "Tag:" (seq-map 'car clocking-clients-alist))))
 
-(defvar clocking--last-client-choice nil)
+(defvar clocking--last-client-choice nil
+  "The title of the last client selected by `clocking--choose-client-node'.")
 
 (defun clocking--client-nodes ()
   (let ((nodes (ht-values (seq-reduce (lambda (acc it)
