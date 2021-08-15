@@ -3624,6 +3624,15 @@ Hack =magit='s commit info to show output of a GPG signature check.
                             t))
 #+end_src
 
+*** Improve magit performance on macOS
+
+See: https://github.com/magit/magit/commit/26e064e1d78acb4d4d422a0a5743609612863caa
+
+#+begin_src emacs-lisp
+  (when (equal system-type 'darwin)
+    (setq magit-git-executable (expand-file-name "~/.nix-profile/bin/git")))
+#+end_src
+
 ** =forge= - teaches =magit= how to work with pull requests and issues :disabled:
 :LOGBOOK:
 - Note taken on [2021-08-07 Sat 15:27] \\
