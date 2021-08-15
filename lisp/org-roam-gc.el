@@ -29,6 +29,7 @@
 
 (defun org-roam-gc-dailies-files ()
   (require 'org-roam)
+  (require 'org-roam-dailies)
   (f-files (expand-file-name org-roam-dailies-directory org-roam-directory)))
 
 (defmacro org-roam-gc--log (msg &rest args)
