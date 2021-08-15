@@ -154,7 +154,7 @@ Return the position of the headline."
           (point))))))
 
 (defun timekeep--punch-in-for-node (node)
-  (with-current-buffer (org-roam-node-find node)
+  (with-current-buffer (org-roam-node-find-noselect node)
     (org-with-point-at (timekeep--ensure-default-headline (current-buffer))
       (org-clock-in '(16)))))
 
@@ -274,7 +274,7 @@ prompt for the client to use."
 
 ;;;###autoload
 (defun timekeep-capture-target ()
-  (org-roam-node-find (timekeep--latest-client-node-maybe-prompt))
+  (org-roam-node-visit (timekeep--latest-client-node-maybe-prompt))
   (widen)
   (goto-char (point-max)))
 
@@ -300,7 +300,7 @@ prompt for the client to use."
 With prefix arg ARG, prompt for the client to open."
   (interactive "P")
   (switch-to-buffer
-   (org-roam-node-find
+   (org-roam-node-find-noselect
     (timekeep--latest-client-node-maybe-prompt arg))))
 
 (provide 'timekeep)
