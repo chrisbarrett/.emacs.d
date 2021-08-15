@@ -384,6 +384,7 @@ Load host-specific settings, which are not checked into version control.
                             '(org-roam-tag ((t :italic t)) t)
                             '(org-agenda-done ((t :inherit org-done :bold nil)) t)
                             '(org-link ((t :inherit link :bold nil)) t)
+                            '(font-lock-keyword-face ((t :weight normal :bold nil)) t)
                             '(org-roam-link ((t :inherit org-link :underline nil)) t))
 
     (with-eval-after-load 'doom-solarized-light-theme
