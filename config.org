@@ -116,21 +116,29 @@ that these leverage the ~DEPTH~ so that subsequent functions added to
 #+begin_src emacs-lisp
   (require 'profiler)
 
+  (defvar startup-debugger-report-enabled-p t
+    "Whether to show the debugger if startup takes to long.
+
+  This can be disabled in the site file.")
+
   (defvar startup-debugger-report-threshold-seconds 1)
 
-  (unless noninteractive
-    (add-hook 'after-init-hook (lambda ()
-                                 (profiler-start 'cpu))
-              -99)
+  (defun config-start-debugger-on-startup ()
+    (when startup-debugger-report-enabled-p
+      (profiler-start 'cpu)))
 
-    (add-hook 'after-init-hook (lambda ()
-                                 (profiler-stop)
-                                 (let* ((now (current-time))
-                                        (total-startup-time (float-time (time-subtract now emacs-start-time))))
-                                   (unless (time-less-p total-startup-time
-                                                        (seconds-to-time startup-debugger-report-threshold-seconds))
-                                     (profiler-report))))
-              99))
+  (defun config-stop-debugger-on-startup ()
+    (when startup-debugger-report-enabled-p
+      (profiler-stop)
+      (let* ((now (current-time))
+             (total-startup-time (float-time (time-subtract now emacs-start-time))))
+        (unless (time-less-p total-startup-time
+                             (seconds-to-time startup-debugger-report-threshold-seconds))
+          (profiler-report)))))
+
+  (unless noninteractive
+    (add-hook 'after-init-hook #'config-start-debugger-on-startup -99)
+    (add-hook 'after-init-hook #'config-stop-debugger-on-startup 99))
 #+end_src
 
 ** Enable debugging for duration of startup sequence
