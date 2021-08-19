@@ -694,7 +694,7 @@ I only run one instance of Emacs and never need to prevent concurrent file acces
 
 *** Disable warnings from obsolete advice system
 
-These since these are caused by packages and are generally not actionable by me.
+These are caused by packages and are generally not actionable by me.
 
 #+begin_src emacs-lisp
   (setq ad-redefinition-action 'accept)
