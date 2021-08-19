@@ -1617,6 +1617,8 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
     :hook
     (typescript-mode . format-all-mode)
     (typescript-mode . format-all-ensure-formatter)
+    (nix-mode . format-all-mode)
+    (nix-mode . format-all-ensure-formatter)
     (terraform-mode . format-all-mode)
     (terraform-mode . format-all-ensure-formatter)
     :custom
