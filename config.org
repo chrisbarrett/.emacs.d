@@ -6125,7 +6125,7 @@ Ensure we use dired rather than the Finder on macOS.
 *** Use today's org-roam file for initial buffer
 
 #+begin_src emacs-lisp
-  (autoload 'org-roam-dailies-goto-today "org-roam")
+  (autoload 'org-roam-dailies-goto-today "org-roam-dailies")
 
   (setq initial-buffer-choice
         (lambda ()
