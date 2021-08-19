@@ -6361,14 +6361,6 @@ buffers the same, no matter how I create them.
     (defalias 'dnd-unescape-uri 'dnd--unescape-uri))
 #+end_src
 
-*** TODO =org-roam-server= - Serve org-roam notes for rendering by web browsers
-
-https://github.com/org-roam/org-roam-server
-
-**** TODO Configure org-roam-protocol
-
-https://www.orgroam.com/manual.html#Installation-_00281_0029
-
 ** =timekeep= - Better timekeeping handling for org-clock
 
 #+begin_src emacs-lisp
@@ -6382,8 +6374,6 @@ https://www.orgroam.com/manual.html#Installation-_00281_0029
     (timekeep-mode +1)
     (add-hook 'timekeep-agenda-should-update-hook #'org-funcs-agenda-dwim))
 #+end_src
-
-*** TODO Apply text properties for links in clocking function
 
 ** =orgtbl-aggregate= - Add pivot tables to org-mode
 
