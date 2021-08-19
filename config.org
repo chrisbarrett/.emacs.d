@@ -3361,12 +3361,14 @@ to manually apply it again.
 
 * File & Buffer management
 
-** TODO =bufler= - Better buffer list
+** =bufler= - Better buffer list
 #+begin_src emacs-lisp
   (use-package bufler
     :commands (bufler bufler-list)
     :config
     (evil-set-initial-state 'bufler-list-mode 'motion)
+    (dolist (mode '(org-agenda-mode flycheck-error-message-mode magit-status-mode))
+      (add-to-list 'bufler-filter-buffer-modes mode))
     :general
     ("C-x C-b" 'bufler-list)
     (:states '(motion) :keymaps 'bufler-list-mode-map
