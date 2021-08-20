@@ -5369,6 +5369,9 @@ Normally newlines are reflowed automatically.
     "r" (list (general-predicate-dispatch 'org-refile
                 (bound-and-true-p org-capture-mode) 'org-capture-refile)
               :wk "refile")
+
+    "c" '(org-clock-display :wk "clock overlays")
+
     "x" '(org-cut-subtree :wk "cut")
     "y" '(org-copy-subtree :wk "copy")
     "p" '(org-paste-subtree :wk "past")
