@@ -140,6 +140,13 @@ TAGS are the tags to use when displaying the list."
 
 ;; Capture utils
 
+(defun org-funcs-capture-note-to-clocked-heading ()
+  (unless (org-clocking-p)
+    (user-error "No active clock"))
+  (org-with-point-at org-clock-marker
+    (org-add-note))
+  "")
+
 (defun org-funcs--last-url-kill ()
   "Return the most recent URL in the kill ring or X pasteboard."
   (--first (s-matches? (rx bos (or "http" "https" "www")) it)
