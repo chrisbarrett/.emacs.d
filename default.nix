@@ -29,7 +29,6 @@ let
     patches = old.patches ++ [
       ./patches/emacs/0001-optional-org-gnus.patch
       ./patches/emacs/0002-dont-warn-on-archives.patch
-      ./patches/emacs/0003-prettier-ibuffer.patch
     ];
 
     postInstall = ''
