@@ -4658,7 +4658,7 @@ intercept attempts to load Tex files and make sure =auctex= is loaded first.
     :preface
     (defvar-local TeX-syntactic-comments t)
     :custom
-    (TeX-command-default (getenv "NIX_EMACS_TEX_PROGRAM"))
+    (TeX-command (getenv "NIX_EMACS_TEX_PROGRAM"))
     (TeX-auto-save t)
     (TeX-parse-self t)
     (TeX-source-correlate-start-server nil)
