@@ -5371,6 +5371,7 @@ Normally newlines are reflowed automatically.
               :wk "refile")
 
     "c" '(org-clock-display :wk "clock overlays")
+    "i" '(org-id-get-create :wk "get/create heading ID")
 
     "x" '(org-cut-subtree :wk "cut")
     "y" '(org-copy-subtree :wk "copy")
