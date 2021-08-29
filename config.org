@@ -5928,6 +5928,7 @@ Ensure we use dired rather than the Finder on macOS.
                              ,@(timekeep-client-files)
                              ,@(roam-files-with-ids "981cb595-a959-4256-86d0-26e9ec00e4cf"
                                                     "292C4988-2630-4FBB-935B-63B61A9DD2CD"
+                                                    "cc9b95e2-87fe-4c39-b61c-9b8efb7a5e79"
                                                     "55a387b9-9bd2-427f-809e-b8a6d2100237")))
     :custom
     (org-stuck-projects '("" nil nil ""))
