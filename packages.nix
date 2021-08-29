@@ -78,6 +78,7 @@
         org-ref
         org-roam
         org-roam-bibtex
+        orgtbl-aggregate
         ox-gfm
         page-break-lines
         paren-face
@@ -157,14 +158,6 @@
           sha256 = "158nc5k8fxdm9s97737z4syls41i2dmmlb28l7k85wgdhpyngszh";
           buildInputs = [ dash s org ];
           patches = [ ./patches/om.patch ];
-        };
-
-        orgtbl-aggregate = github {
-          name = "orgaggregate";
-          owner = "tbanel";
-          rev = "639ec296ccca4e2f7405e9ef72506fad609f2167";
-          sha256 = "0nkm6y851sm1bp8ch9d7dxi1z07qs1254ab8zjv16hvq8arp0s6c";
-          buildInputs = [ org ];
         };
       };
     in
