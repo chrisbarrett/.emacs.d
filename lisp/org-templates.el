@@ -10,7 +10,7 @@
 (require 'dash)
 (require 'ht)
 (require 'interpolate)
-(require 'om)
+(require 'org-ml)
 (require 'seq)
 
 (defun org-templates--to-capture-template (spec)
@@ -22,7 +22,7 @@
             options)))
 
 (defun org-templates--src-block-plist (path src-node)
-  (let ((result (read (om-get-property :value src-node))))
+  (let ((result (read (org-ml-get-property :value src-node))))
 
     (let ((required '(:keys :description :target)))
       (when-let* ((missing (seq-difference required (ht-keys (ht-from-plist result)))))
@@ -44,13 +44,13 @@
     result))
 
 (defun org-templates--parse (path nodes)
-  (-let* ((parsed (om-get-children nodes))
+  (-let* ((parsed (org-ml-get-children nodes))
           (match-src-block '(:and src-block (:language "emacs-lisp")))
-          (initial-src-blocks (om-match (list :many match-src-block) (car parsed)))
-          (template (cons (om-match-delete `(:many ,match-src-block)
+          (initial-src-blocks (org-ml-match `(:any * ,match-src-block) (car parsed)))
+          (template (cons (org-ml-match-delete `(:any * ,match-src-block)
                                            (car parsed))
                           (cdr parsed)))
-          (template-string (substring-no-properties (string-trim-left (string-join (seq-map #'om-to-trimmed-string template) "\n")))))
+          (template-string (substring-no-properties (string-trim-left (string-join (seq-map #'org-ml-to-trimmed-string template) "\n")))))
     (seq-map (lambda (src-block)
                `(:template ,template-string ,@(org-templates--src-block-plist path src-block)))
              initial-src-blocks)))
@@ -61,7 +61,7 @@
 
 BUFFER is the buffer containing the org template to parse."
   (with-current-buffer buffer
-    (seq-map #'org-templates--to-capture-template (org-templates--parse (buffer-name) (om-parse-this-buffer)))))
+    (seq-map #'org-templates--to-capture-template (org-templates--parse (buffer-name) (org-ml-parse-this-buffer)))))
 
 ;;;###autoload
 (defun org-templates-from-file (path)
@@ -70,7 +70,7 @@ BUFFER is the buffer containing the org template to parse."
 PATH is the path to an org template file to parse."
   (with-temp-buffer
     (insert-file-contents path)
-    (seq-map #'org-templates--to-capture-template (org-templates--parse path (om-parse-this-buffer)))))
+    (seq-map #'org-templates--to-capture-template (org-templates--parse path (org-ml-parse-this-buffer)))))
 
 (provide 'org-templates)
 

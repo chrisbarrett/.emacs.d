@@ -74,6 +74,7 @@
         orderless
         org
         org-bullets
+        org-ml
         org-ql
         org-ref
         org-roam
@@ -149,15 +150,6 @@
           rev = "6c2c1a91c1830e03110487867734137f5698904a";
           sha256 = "1gvalalk27kvvm1ysj8vpjdky3sfw8jvympv9vkkr3dby8b2apwa";
           buildInputs = [ org ];
-        };
-
-        om = github {
-          name = "om.el";
-          owner = "ndwarshuis";
-          rev = "5b3d6f2b326187cdd75b4590ba3a922b1288d726";
-          sha256 = "158nc5k8fxdm9s97737z4syls41i2dmmlb28l7k85wgdhpyngszh";
-          buildInputs = [ dash s org ];
-          patches = [ ./patches/om.patch ];
         };
       };
     in
