@@ -97,6 +97,7 @@
         smex
         terraform-mode
         tide
+        ts
         typescript-mode
         undo-tree
         unfill
