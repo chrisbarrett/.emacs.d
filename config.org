@@ -6390,6 +6390,14 @@ buffers the same, no matter how I create them.
     :after (org))
 #+end_src
 
+** =ox-koma-letter= - Export backend for letters via latex
+
+#+begin_src emacs-lisp
+  (use-package ox-koma-letter
+    :demand t
+    :after ox)
+#+end_src
+
 ** Add a link type for opening macOS GUI applications
 
 #+begin_src emacs-lisp
