@@ -5414,10 +5414,6 @@ Normally newlines are reflowed automatically.
   (use-package org-funcs
     :commands
     org-funcs-agenda-dwim
-    org-funcs-punch-in
-    org-funcs-punch-out
-    org-funcs-punch-in-or-out
-    org-funcs-goto-work
     org-funcs-todo-list
     org-funcs-read-url-for-capture
     org-funcs-url-to-reference
