@@ -2697,6 +2697,7 @@ See:
   (leader-set-key :infix "o"
     "" '(nil :wk "org")
     "SPC" '(org-roam-dailies-capture-today :wk "capture note...")
+    "$" '(org-funcs-goto-accounts :wk "accounts")
     "/" '(org-ql-search :wk "search...")
     "a" '(org-funcs-agenda-dwim :wk "agenda")
 
