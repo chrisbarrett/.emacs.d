@@ -74,6 +74,7 @@
         orderless
         org
         org-bullets
+        org-contrib
         org-ml
         org-ql
         org-ref

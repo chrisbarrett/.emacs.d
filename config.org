@@ -6390,6 +6390,37 @@ buffers the same, no matter how I create them.
     :after (org))
 #+end_src
 
+** Add a link type for opening macOS GUI applications
+
+#+begin_src emacs-lisp
+  (use-package org
+    :config
+    (require 'ol)
+
+    (defun org-link-complete-mac-app (&optional arg)
+      (cl-labels ((apps-in (dir)
+                           (ignore-errors
+                             (f-entries dir (lambda (path)
+                                              (and (equal (f-ext path) "app")
+                                                   (not (string-prefix-p "." (f-filename path)))))))))
+        (let ((choices (thread-last (append (apps-in "/Applications")
+                                            (apps-in "/System/Applications")
+                                            (apps-in "/System/Applications/Utilities")
+                                            (apps-in "~/Applications"))
+                         (seq-map #'f-base)
+                         (seq-uniq)
+                         (seq-sort #'string<)))
+              (choice (completing-read "Application:" choices)))
+          (concat "mac-app:" choice))))
+
+    (defun org-link-follow-mac-app (app-name &optional arg)
+      (start-process "open" " open" "open" "-a" app-name))
+
+    (org-link-set-parameters "mac-app"
+                             :follow #'org-link-follow-mac-app
+                             :complete #'org-link-complete-app))
+#+end_src
+
 * Load Lisp from other locations
 
 #+begin_src emacs-lisp
