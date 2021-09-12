@@ -15,10 +15,12 @@
 
 (defun org-templates--to-capture-template (spec)
   (-let* (((&plist :keys :description :type :target :template :params :options) spec)
-          (make-template (list 'function
-                               (lambda ()
-                                 (apply #'interpolate template (when params (funcall params)))))))
-    (append (list keys description type target make-template)
+          (fn-name (intern (format "org-templates--make-template-%s" keys))))
+
+    (defalias fn-name (lambda ()
+                        (apply #'interpolate template (when params (funcall params)))))
+
+    (append (list keys description type target (list 'function fn-name))
             options)))
 
 (defun org-templates--src-block-plist (path src-node)
