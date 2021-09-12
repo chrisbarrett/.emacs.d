@@ -2712,6 +2712,7 @@ See:
     "s" '(org-search-view :wk "search...")
     "f" '(org-roam-node-find :wk "roam file...")
     "n" '(org-roam-dailies-goto-today :wk "dailies: today")
+    "T" '(org-roam-dailies-goto-tomorrow :wk "dailies: tomorrow")
     "y" '(org-roam-dailies-goto-yesterday :wk "dailies: yesterday")
     "d" '(org-roam-dailies-goto-date :wk "dailies: date...")
 
