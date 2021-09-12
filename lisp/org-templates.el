@@ -48,7 +48,7 @@
           (match-src-block '(:and src-block (:language "emacs-lisp")))
           (initial-src-blocks (org-ml-match `(:any * ,match-src-block) (car parsed)))
           (template (cons (org-ml-match-delete `(:any * ,match-src-block)
-                                           (car parsed))
+                                               (car parsed))
                           (cdr parsed)))
           (template-string (substring-no-properties (string-trim-left (string-join (seq-map #'org-ml-to-trimmed-string template) "\n")))))
     (seq-map (lambda (src-block)
