@@ -145,13 +145,7 @@ Return the position of the headline."
     (save-excursion
       (save-restriction
         (widen)
-        (if-let* ((marker (org-find-exact-headline-in-buffer timekeep-default-headline-name)))
-            (marker-position marker)
-          (goto-char (point-max))
-          (delete-horizontal-space)
-          (org-insert-heading nil nil t)
-          (insert timekeep-default-headline-name)
-          (point))))))
+        (marker-position (org-roam-capture-find-or-create-olp (list timekeep-default-headline-name)))))))
 
 (defun timekeep--punch-in-for-node (node)
   (with-current-buffer (org-roam-node-find-noselect node)
