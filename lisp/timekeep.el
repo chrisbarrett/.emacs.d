@@ -137,19 +137,21 @@ sessions."
         (timekeep--choose-client-node)
       (timekeep--get-node-by-name client))))
 
-(defun timekeep--ensure-default-headline (buffer)
-  "Create the default heading for clocking in BUFFER.
-
-Return the position of the headline."
+(defun timekeep--clocktree-headline (buffer)
   (with-current-buffer buffer
     (save-excursion
       (save-restriction
         (widen)
-        (marker-position (org-roam-capture-find-or-create-olp (list timekeep-default-headline-name)))))))
+        (let ((marker (org-roam-capture-find-or-create-olp (list timekeep-default-headline-name
+                                                                 (format-time-string "%Y %W")))))
+          (goto-char (marker-position marker))
+          (while (ignore-errors (org-move-subtree-up) (point))
+            t)
+          (point))))))
 
 (defun timekeep--punch-in-for-node (node)
   (with-current-buffer (org-roam-node-find-noselect node)
-    (org-with-point-at (timekeep--ensure-default-headline (current-buffer))
+    (org-with-point-at (timekeep--clocktree-headline (current-buffer))
       (org-clock-in '(16)))))
 
 (defvar timekeep--session-active-p nil)
@@ -271,6 +273,12 @@ prompt for the client to use."
   (org-roam-node-visit (timekeep--latest-client-node-maybe-prompt))
   (widen)
   (goto-char (point-max)))
+
+;;;###autoload
+(defun timekeep-meeting-capture-target ()
+  (org-roam-node-visit (timekeep--latest-client-node-maybe-prompt))
+  (widen)
+  (goto-char (timekeep--clocktree-headline (current-buffer))))
 
 (defun timekeep--choose-tag-for-node-id (id)
   (or (car (seq-find (lambda (it) (equal (cdr it) id))
