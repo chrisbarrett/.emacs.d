@@ -5925,6 +5925,9 @@ Ensure we use dired rather than the Finder on macOS.
     (setq org-agenda-files `(,(f-join paths-org-directory "tasks")
                              ,@(timekeep-client-files)
                              ,@(roam-files-with-ids "981cb595-a959-4256-86d0-26e9ec00e4cf"
+                                                    "2cb22f71-4cd4-4afd-ab61-e7ac782de3d0"
+                                                    "6def3e7d-fd71-4e10-ab5a-9b2cbb20f2fc"
+                                                    "672d4aac-7a89-4377-8446-4dcb029482b5"
                                                     "292C4988-2630-4FBB-935B-63B61A9DD2CD"
                                                     "cc9b95e2-87fe-4c39-b61c-9b8efb7a5e79"
                                                     "55a387b9-9bd2-427f-809e-b8a6d2100237")))
