@@ -3290,6 +3290,7 @@ to manually apply it again.
                          :background nil)
 
      (add-to-list 'paren-face-modes 'js-mode)
+     (add-to-list 'paren-face-modes 'lisp-data-mode)
      (add-to-list 'paren-face-modes 'typescript-mode)
      (add-to-list 'paren-face-modes 'yaml-mode)
      (font-lock-add-keywords 'js-mode `((,(rx (any ":")) 0 'parenthesis)))
