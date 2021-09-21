@@ -2,7 +2,7 @@
 ;;; Commentary:
 
 ;; Provide a declarative syntax for declaring org-capture templates using files.
-;; Each template file should begin with at least one emacs-lisp src block,
+;; Each template file should begin with at least one lisp-data src block,
 ;; describing the metadata for the template.
 
 ;;; Code:
@@ -47,7 +47,7 @@
 
 (defun org-templates--parse (path nodes)
   (-let* ((parsed (org-ml-get-children nodes))
-          (match-src-block '(:and src-block (:language "emacs-lisp")))
+          (match-src-block '(:and src-block (:language "lisp-data")))
           (initial-src-blocks (org-ml-match `(:any * ,match-src-block) (car parsed)))
           (template (cons (org-ml-match-delete `(:any * ,match-src-block)
                                                (car parsed))
