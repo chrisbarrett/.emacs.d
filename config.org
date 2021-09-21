@@ -2910,6 +2910,7 @@ See:
     :preface
     (progn
       (autoload 'ivy-exit-with-action "ivy")
+      (defvar-local deadgrep--search-type 'string)
 
       (defun deadgrep-from-ivy ()
         (interactive)
