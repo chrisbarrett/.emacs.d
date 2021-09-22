@@ -128,6 +128,10 @@ sessions."
     (timekeep--set-latest-client-choice choice)
     (ht-get nodes choice)))
 
+(defun timekeep-read-client-name ()
+  (completing-read "Client: " (ht-keys (timekeep--client-nodes)) nil t nil 'timekeep--choose-buffer-history
+                   (timekeep--latest-client-choice)))
+
 (defun timekeep--get-node-by-name (name)
   (ht-get (timekeep--client-nodes) name))
 
