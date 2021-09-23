@@ -142,16 +142,16 @@ sessions."
       (timekeep--get-node-by-name client))))
 
 (defun timekeep--clocktree-headline (buffer)
-  (with-current-buffer buffer
-    (save-excursion
-      (save-restriction
-        (widen)
-        (let ((marker (org-roam-capture-find-or-create-olp (list timekeep-default-headline-name
-                                                                 (format-time-string "%Y %W")))))
-          (goto-char (marker-position marker))
-          (while (ignore-errors (org-move-subtree-up) (point))
-            t)
-          (point))))))
+  (let ((heading (list timekeep-default-headline-name
+                       (format-time-string "%Y %W"))))
+    (with-current-buffer buffer
+      (save-excursion
+        (save-restriction
+          (widen)
+          (org-with-point-at (org-roam-capture-find-or-create-olp heading)
+            (while (ignore-errors (org-move-subtree-up) (point)))))
+        ;; Now that the headings has been reordered, go there again.
+        (marker-position (org-roam-capture-find-or-create-olp heading))))))
 
 (defun timekeep--punch-in-for-node (node)
   (with-current-buffer (org-roam-node-find-noselect node)
