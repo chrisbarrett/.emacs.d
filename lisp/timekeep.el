@@ -244,15 +244,25 @@ used."
 (defun timekeep-start (&optional arg)
   "Start a timekeeping session.
 
-Clocks in on the default timekeeep headline for a client and
-changes the behaviour of clocking commands.
+The previous clock is resumed by default.
 
-Remembers the last client chosen by default. With a prefix ARG,
-prompt for the client to use."
+With single prefix ARG, or if there is no previous clock, clock
+in on the default headline for the current client.
+
+With two prefix args, select from a list of recently clocked
+tasks.
+
+With three prefix args, prompt for the client to use and clock in
+on the default headline for that client."
   (interactive "P")
-  (save-restriction
-    (widen)
-    (timekeep--clock-in-on-default arg))
+  (cond
+   ((equal arg '(32))
+    (timekeep--clock-in-on-default t))
+   ((or (equal arg '(4)) (null org-clock-history))
+    (timekeep--clock-in-on-default))
+   (t
+    (org-clock-in-last (when (equal arg '(16))
+                         '(4)))))
 
   (when (derived-mode-p 'org-agenda-mode)
     ;; Swap agenda due to context change.
