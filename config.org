@@ -4066,7 +4066,7 @@ See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
 #+begin_src emacs-lisp
   (use-package smartparens
     :config
-    (sp-with-modes sp-lisp-modes
+    (sp-with-modes (cons 'lisp-data-mode sp-lisp-modes)
       (sp-local-pair "(" nil
                      :pre-handlers '(config-smartparens-add-space-before-sexp-insertion)
                      :post-handlers '(config-smartparens-add-space-after-sexp-insertion))
