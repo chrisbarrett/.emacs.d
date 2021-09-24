@@ -3000,6 +3000,28 @@ Hide =./= and =../= when finding files.
     (advice-add #'counsel-find-file :around #'config-ivy-with-empty-ivy-extra-directories))
 #+end_src
 
+*** =all-the-icons-ivy-rich= - display icons for all buffers in ivy
+
+#+begin_src emacs-lisp
+  (use-package all-the-icons-ivy-rich
+    :demand t
+    :custom
+    (all-the-icons-ivy-rich-icon t)
+    (all-the-icons-ivy-rich-color-icon t)
+    (all-the-icons-ivy-rich-project t)
+    (inhibit-compacting-font-caches t)
+    :config
+    (all-the-icons-ivy-rich-mode +1))
+
+  (use-package ivy-rich
+    :demand t
+    :custom
+    (ivy-rich-path-style 'abbrev)
+    :config
+    (ivy-rich-mode +1)
+    (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line))
+#+end_src
+
 ** =swiper= - In-buffer search UI
 
 #+begin_src emacs-lisp

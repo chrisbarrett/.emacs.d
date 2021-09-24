@@ -6,6 +6,7 @@
     with epkgs;
     let
       fromOverlay = [
+        all-the-icons-ivy-rich
         auctex
         bibtex-completion
         browse-at-remote
