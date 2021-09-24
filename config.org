@@ -951,6 +951,7 @@ Configure Emacs so that each paragraph may have a difference text direction.
   (use-package recentf
     :hook (after-init . recentf-mode)
     :custom
+    (recentf-filename-handlers '(abbreviate-file-name))
     (recentf-max-saved-items 100))
 #+end_src
 
