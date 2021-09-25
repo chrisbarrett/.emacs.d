@@ -305,6 +305,8 @@ See: [[https://github.com/noctuid/general.el][noctuid/general.el]]
   (require 'dash)
   (require 'f)
   (require 'subr-x)
+  (require 'seq)
+  (require 'seq-extras)
 #+end_src
 
 ** Load =cl= early to avoid warnings caused by reorganised functions in Emacs 27+
