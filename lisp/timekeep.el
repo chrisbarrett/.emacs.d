@@ -261,8 +261,10 @@ on the default headline for that client."
    ((or (equal arg '(4)) (null org-clock-history))
     (timekeep--clock-in-on-default))
    (t
-    (org-clock-in-last (when (equal arg '(16))
-                         '(4)))))
+    (condition-case _
+        (org-clock-in-last (when (equal arg '(16))
+                           '(4)))
+      (error (timekeep--clock-in-on-default)))))
 
   (when (derived-mode-p 'org-agenda-mode)
     ;; Swap agenda due to context change.
