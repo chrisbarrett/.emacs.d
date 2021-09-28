@@ -2,12 +2,12 @@
 #+title: Emacs Configuration
 #+author: Chris Barrett
 #+property: header-args :results silent
-#+property: header-args:emacs-lisp :tangle "config.el"
+#+property: header-args:emacs-lisp :tangle "config.el" :lexical yes
 #+startup: fold
 
 * Early Init
 :PROPERTIES:
-:header-args:emacs-lisp: :tangle "early-init.el"
+:header-args:emacs-lisp: :tangle "early-init.el" :lexical yes
 :END:
 
 #+begin_src emacs-lisp
