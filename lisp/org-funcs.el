@@ -172,58 +172,6 @@ TAGS are the tags to use when displaying the list."
       (cadr match)
     (org-cliplink-retrieve-title-synchronously url)))
 
-(defconst org-funcs--domain-to-verb-alist
-  '(("audible.com" . "Listen to")
-    ("goodreads.com" . "Read")
-    ("netflix.com" . "Watch")
-    ("vimeo.com" . "Watch")
-    ("youtube.com" . "Watch")))
-
-(defun org-funcs--parse-github-repo-from-url (url)
-  (cadr (s-match (rx "github.com/" (group (+? nonl) "/" (+ (not (any "/?")))))
-                 url)))
-
-(defvar org-funcs-work-repos nil)
-
-(defun org-funcs--work-related-url-p (url)
-  (let ((host (url-host (url-generic-parse-url url))))
-    (or
-     (string-match-p (rx (or "atlassian.com"))
-                     host)
-     (when-let* ((repo (org-funcs--parse-github-repo-from-url url)))
-       (seq-contains-p org-funcs-work-repos repo)))))
-
-(defun org-funcs-read-url-for-capture (&optional url title)
-  "Return a URL capture template string for use with `org-capture'.
-
-URL and TITLE are added to the template.
-
-If NOTIFY-P is set, a desktop notification is displayed."
-  (interactive
-   (let* ((url (org-funcs-read-url))
-          (guess (org-funcs-guess-or-retrieve-title url))
-          (title (read-string "Title: " guess)))
-     (list url title)))
-
-  (let* ((domain (string-remove-prefix "www." (url-host (url-generic-parse-url url))))
-         (verb (alist-get domain org-funcs--domain-to-verb-alist "Review" nil #'equal))
-         (tags (if (org-funcs--work-related-url-p url) (format ":%s:" (timekeep-work-tag)) "")))
-    (format "* TODO %s [[%s][%s]]     %s"
-            verb
-            url
-            (org-link-escape (or title url))
-            tags)))
-
-(defun org-funcs-capture-link ()
-  "Context-sensitive link capture."
-  (if (derived-mode-p 'mu4e-view-mode 'mu4e-headers-mode)
-      (progn
-        (org-store-link nil)
-        "* TODO Review %a (email)")
-    (call-interactively #'org-funcs-read-url-for-capture)))
-
-(defvar org-funcs--pdf-download-timeout-seconds 30)
-
 (defconst org-funcs--wkhtmltopdf-error-buffer-name "*wkhtmltopdf errors*")
 
 (defun org-funcs--update-wkhtmltopdf-error-buffer (output)
