@@ -75,6 +75,7 @@
         orderless
         org
         org-bullets
+        org-cliplink
         org-contrib
         org-ml
         org-ql
