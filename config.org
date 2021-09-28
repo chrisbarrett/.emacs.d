@@ -5362,6 +5362,7 @@ Normally newlines are reflowed automatically.
     (org-imenu-depth 4)
     (org-indirect-buffer-display 'current-window)
     (org-link-elisp-confirm-function 'y-or-n-p)
+    (org-image-actual-width nil)
     (org-return-follows-link t)
 
     :config
