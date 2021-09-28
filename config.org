@@ -1388,28 +1388,7 @@ See: [[https://lists.gnu.org/archive/html/help-gnu-emacs/2014-07/msg00135.html][
     (insert str))
 #+end_src
 
-Define a command for reversing the characters in the current region.
-
-#+begin_src emacs-lisp
-  (unless (fboundp 'reverse-characters)
-    (defun reverse-characters (beg end)
-      "Reverse the characters in the region from BEG to END.
-  Interactively, reverse the characters in the current region."
-      (interactive "*r")
-      (insert
-       (reverse
-        (delete-and-extract-region
-         beg end)))))
-#+end_src
-
-** Indentation
-
-*** Automatically indent when inserting newlines
-
-#+begin_src emacs-lisp
-  (general-define-key :keymaps '(text-mode-map prog-mode-map)
-    "RET" #'comment-indent-new-line)
-#+end_src
+Define a command for reversing the characters isrc
 
 *** Define a command to indent every line in the buffer
 
@@ -5448,7 +5427,10 @@ Normally newlines are reflowed automatically.
     org-funcs-todo-list
     org-funcs-read-url-for-capture
     org-funcs-url-to-reference
-    org-funcs-toggle-priority)
+    org-funcs-toggle-priority
+    :general
+    (:keymaps 'org-mode-map :states '(normal insert emacs)
+     "C-c l" 'org-funcs-insert-url-as-link))
 #+end_src
 
 ** =evil-org= - Improve Evil integration with org-mode

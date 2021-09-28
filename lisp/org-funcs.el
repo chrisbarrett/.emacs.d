@@ -172,6 +172,16 @@ TAGS are the tags to use when displaying the list."
       (cadr match)
     (org-cliplink-retrieve-title-synchronously url)))
 
+(defun org-funcs-insert-url-as-link (url)
+  "Insert an orgmode link at point for URL."
+  (interactive (list (org-funcs-read-url)))
+  (let* ((title (org-funcs-guess-or-retrieve-title url))
+         (escaped-title (s-replace-all '(("[" . "(")
+                                         ("]" . ")"))
+                                       title)))
+    (just-one-space)
+    (insert (format "[[%s][%s]]" url escaped-title))))
+
 (defconst org-funcs--wkhtmltopdf-error-buffer-name "*wkhtmltopdf errors*")
 
 (defun org-funcs--update-wkhtmltopdf-error-buffer (output)
