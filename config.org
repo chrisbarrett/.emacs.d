@@ -5539,6 +5539,7 @@ Automatically commit attachments to git.
 
 #+begin_src emacs-lisp
   (use-package org-attach
+    :demand t
     :after org
     :config (require 'org-attach-git)
     :custom
