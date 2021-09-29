@@ -175,12 +175,14 @@ TAGS are the tags to use when displaying the list."
 (defun org-funcs-insert-url-as-link (url)
   "Insert an orgmode link at point for URL."
   (interactive (list (org-funcs-read-url)))
-  (let* ((title (org-funcs-guess-or-retrieve-title url))
-         (escaped-title (s-replace-all '(("[" . "(")
-                                         ("]" . ")"))
-                                       title)))
-    (just-one-space)
-    (insert (format "[[%s][%s]]" url escaped-title))))
+  (save-match-data
+    (let* ((title (org-funcs-guess-or-retrieve-title url))
+           (escaped-title (s-replace-all '(("[" . "(")
+                                           ("]" . ")"))
+                                         title)))
+      (unless (thing-at-point-looking-at (rx bol (* space)))
+        (just-one-space))
+      (insert (format "[[%s][%s]]" url escaped-title)))))
 
 (defconst org-funcs--wkhtmltopdf-error-buffer-name "*wkhtmltopdf errors*")
 
