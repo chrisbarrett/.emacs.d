@@ -6108,6 +6108,7 @@ Ensure we use dired rather than the Finder on macOS.
     (org-roam-directory (f-join paths-org-directory "roam/"))
     (org-roam-v2-ack t)
     (org-roam-verbose nil)
+    (org-roam-extract-new-file-path "%<%Y-%m-%d--%H-%M-%S>.org")
     (org-roam-capture-templates
      '(("d" "default" plain "%?" :if-new
         (file+head "%<%Y-%m-%d--%H-%M-%S>.org" "#+title: ${title}\n")
@@ -6154,7 +6155,6 @@ Ensure we use dired rather than the Finder on macOS.
             (delete-other-windows)
             (current-buffer))))
 #+end_src
-
 
 *** Define shared paths used across packages
 
