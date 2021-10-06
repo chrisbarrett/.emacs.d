@@ -310,16 +310,18 @@ handles file titles, IDs and tags better."
       (let ((title (org-get-heading))
             (tags (org-get-tags))
             (id (org-id-get-create)))
-        (org-cut-subtree)
-        (insert (concat "- "
-                        (org-link-make-string (format "id:%s" id) title)
-                        "\n"))
-        (save-buffer)
-        (with-current-buffer (find-file-noselect dest-file)
-          (org-paste-subtree)
-          (org-roam-promote-entire-buffer)
-          (org-funcs--set-file-tags (-union (org-funcs--file-tags) tags))
-          (save-buffer))))))
+
+        (atomic-change-group
+          (org-cut-subtree)
+          (insert (concat "- "
+                          (org-link-make-string (format "id:%s" id) title)
+                          "\n"))
+          (save-buffer)
+          (with-current-buffer (find-file-noselect dest-file)
+            (org-paste-subtree)
+            (org-roam-promote-entire-buffer)
+            (org-funcs--set-file-tags (-union (org-funcs--file-tags) tags))
+            (save-buffer)))))))
 
 (provide 'org-funcs)
 
