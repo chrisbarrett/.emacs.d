@@ -313,9 +313,8 @@ handles file titles, IDs and tags better."
 
         (atomic-change-group
           (org-cut-subtree)
-          (insert (concat "- "
-                          (org-link-make-string (format "id:%s" id) title)
-                          "\n"))
+          (insert (org-link-make-string (format "id:%s" id) title))
+          (newline)
           (save-buffer)
           (with-current-buffer (find-file-noselect dest-file)
             (org-paste-subtree)
