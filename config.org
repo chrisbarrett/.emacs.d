@@ -6134,7 +6134,7 @@ Ensure we use dired rather than the Finder on macOS.
     ">" '(org-roam-dailies-find-next-note :wk "next daily")
     "J" '(org-roam-dailies-goto-date :wk "goto daily...")
 
-    "E" '(org-roam-extract-subtree :wk "extract subtree to roam file...")
+    "E" '(org-funcs-roam-extract-subtree :wk "extract subtree to roam file...")
 
     "l" '(nil :wk "alias")
     "l a" '(org-roam-alias-add :wk "add alias")

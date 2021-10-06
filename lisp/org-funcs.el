@@ -262,6 +262,65 @@ Optional argument SHOW-PDF determines whether to show the downloaded PDF."
                     (lambda ()
                       (setq status 'timeout)))))
 
+(defun org-funcs--file-tags ()
+  (save-match-data
+    (org-with-wide-buffer
+     (goto-char (point-min))
+     (when (search-forward-regexp (rx bol "#+filetags:" (group (+ nonl)))
+                                  nil
+                                  t)
+       (split-string (string-trim (substring-no-properties (match-string 1))) ":" t)))))
+
+(defun org-funcs--set-file-tags (tags)
+  (org-with-wide-buffer
+   (goto-char (point-min))
+   (unless (search-forward-regexp (rx bol "#+filetags:" (group (* nonl))) nil t)
+     (cond ((search-forward-regexp (rx bol "#+title:"))
+            (goto-char (line-end-position))
+            (insert "\n#+filetags:"))
+           (t
+            (insert "#+filetags:\n"))))
+
+   (let ((formatted (if tags
+                        (format ":%s:" (string-join tags ":"))
+                      "")))
+     (save-match-data
+       (goto-char (point-min))
+       (when (search-forward-regexp (rx bol "#+filetags:" (group (* nonl))))
+         (replace-region-contents (match-beginning 1) (match-end 1)
+                                  (lambda ()
+                                    (concat " " formatted))))))))
+
+(defun org-funcs-roam-extract-subtree ()
+  "Convert current subtree at point to a node, and extract it into a new file.
+
+It's a re-implementation of `org-roam-extract-subtree', but
+handles file titles, IDs and tags better."
+  (interactive)
+  (let ((dest-file (expand-file-name (format-time-string "%Y-%M-%d--%H-%M-%S.org"))))
+    (save-excursion
+      (org-back-to-heading-or-point-min t)
+      (when (bobp) (user-error "Already a top-level node"))
+
+      (save-buffer)
+      (org-roam-db-update-file)
+      (when (file-exists-p dest-file)
+        (user-error "%s exists. Aborting" dest-file))
+
+      (let ((title (org-get-heading))
+            (tags (org-get-tags))
+            (id (org-id-get-create)))
+        (org-cut-subtree)
+        (insert (concat "- "
+                        (org-link-make-string (format "id:%s" id) title)
+                        "\n"))
+        (save-buffer)
+        (with-current-buffer (find-file-noselect dest-file)
+          (org-paste-subtree)
+          (org-roam-promote-entire-buffer)
+          (org-funcs--set-file-tags (-union (org-funcs--file-tags) tags))
+          (save-buffer))))))
+
 (provide 'org-funcs)
 
 ;;; org-funcs.el ends here
