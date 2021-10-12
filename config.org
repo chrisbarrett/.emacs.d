@@ -6035,6 +6035,7 @@ Ensure we use dired rather than the Finder on macOS.
      "M-RET" 'org-agenda-show-and-scroll-up
      "C-f" 'evil-scroll-page-down
      "C-b" 'evil-scroll-page-up
+     [remap save-buffer] 'org-save-all-org-buffers
      ;; Restore bindings for search buffers
      "+" 'org-agenda-manipulate-query-add
      "`" 'org-agenda-manipulate-query-add-re
