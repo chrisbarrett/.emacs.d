@@ -5852,7 +5852,7 @@ cookie or 'cleared', which indicates no special priority.
 
 ** Latex
 
-Use Tectonic as org-mode's LaTeX compiler.
+*** Use Tectonic as org-mode's primary LaTeX compiler
 
 #+begin_src emacs-lisp
   (use-package org
@@ -5862,7 +5862,7 @@ Use Tectonic as org-mode's LaTeX compiler.
     (org-latex-pdf-process (list (concat (getenv "NIX_EMACS_TEX_PROGRAM") " --outdir %o %f"))))
 #+end_src
 
-Set some default LaTeX packages.
+*** Set some default LaTeX packages
 
 #+begin_src emacs-lisp
   (use-package org
