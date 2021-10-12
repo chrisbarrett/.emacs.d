@@ -6162,8 +6162,6 @@ Ensure we use dired rather than the Finder on macOS.
 
 #+begin_src emacs-lisp
   (defvar config-org-roam-bibliography-notes-directory (f-join paths-org-directory "roam" "notes"))
-  (defvar config-org-roam-bibliography-path (f-join paths-org-directory "bibliography.bib"))
-  (defvar config-org-roam-bibnotes-file (f-join config-org-roam-bibliography-notes-directory "index.org"))
 
   (defconst config-org-roam--default-heading-title "TODO Link literature notes to zettel in org-roam")
 
@@ -6234,7 +6232,7 @@ Ensure we use dired rather than the Finder on macOS.
   (use-package bibtex-completion
     :custom
     (bibtex-completion-notes-path config-org-roam-bibliography-notes-directory)
-    (bibtex-completion-bibliography config-org-roam-bibliography-path)
+    (bibtex-completion-bibliography (f-join paths-org-directory "bibliography.bib"))
     (bibtex-completion-pdf-field "file")
     (bibtex-completion-notes-template-multiple-files config-org-roam--notes-file-template))
 #+end_src
@@ -6350,10 +6348,7 @@ buffers the same, no matter how I create them.
   (use-package org-ref
     :custom
     ((org-ref-completion-library 'org-ref-helm-cite)
-     (org-ref-pdf-directory (f-join org-directory "pdfs/"))
      (org-ref-get-pdf-filename-function 'org-ref-get-pdf-filename-helm-bibtex)
-     (org-ref-default-bibliography (list config-org-roam-bibliography-path))
-     (org-ref-bibliography-notes config-org-roam-bibnotes-file)
      (org-ref-note-title-format (string-trim-left "
   * TODO %y - %t
   :PROPERTIES:
