@@ -5871,6 +5871,29 @@ cookie or 'cleared', which indicates no special priority.
     :config
     (plist-put org-format-latex-options :scale 1.7))
 #+end_src
+
+*** Make ~C-c C-c~ toggle LaTeX fragment preview for editing
+
+#+begin_src emacs-lisp
+  (use-package org
+    :config
+    (defun config-org-at-latex-fragment-p ()
+      (let ((datum (org-element-context)))
+        (and (memq (org-element-type datum) '(latex-environment latex-fragment)))))
+
+    (defun config-org-at-latex-preview-p ()
+      (seq-find
+       (lambda (ov)
+         (eq (overlay-get ov 'org-overlay-type) 'org-latex-overlay))
+       (overlays-at (point))))
+
+    (defun config-org-maybe-toggle-latex-fragment ()
+      (when (or (config-org-at-latex-preview-p) (config-org-at-latex-fragment-p))
+        (org-latex-preview)))
+
+    (add-hook 'org-ctrl-c-ctrl-c-hook #'config-org-maybe-toggle-latex-fragment))
+#+end_src
+
 *** Set some default LaTeX packages
 
 #+begin_src emacs-lisp
