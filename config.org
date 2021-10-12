@@ -6411,10 +6411,6 @@ buffers the same, no matter how I create them.
   (use-package orgtbl-aggregate
     :after (org)
     :demand t)
-
-  (use-package org-insert-dblock
-    :demand t
-    :after (org))
 #+end_src
 
 ** =ox-koma-letter= - Export backend for letters via latex
