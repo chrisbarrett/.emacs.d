@@ -5862,6 +5862,15 @@ cookie or 'cleared', which indicates no special priority.
     (org-latex-pdf-process (list (concat (getenv "NIX_EMACS_TEX_PROGRAM") " -Z shell-escape --outdir=%o %f"))))
 #+end_src
 
+*** Make latex previews look good on high-DPI screens
+
+#+begin_src emacs-lisp
+  (use-package org
+    :custom
+    (org-latex-create-formula-image-program 'dvisvgm)
+    :config
+    (plist-put org-format-latex-options :scale 1.7))
+#+end_src
 *** Set some default LaTeX packages
 
 #+begin_src emacs-lisp
