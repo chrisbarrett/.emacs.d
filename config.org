@@ -5650,6 +5650,19 @@ Limit refile depth and restrict to specific candidates.
     (org-refile-target-verify-function 'org-funcs-refile-verify-function))
 #+end_src
 
+** Automatically remove deleted files from agenda
+
+#+begin_src emacs-lisp
+  (use-package org
+    :config
+    (defun config-org--always-remove-missing-agenda-files (file)
+      (unless (file-exists-p file)
+        (org-remove-file file)
+        (throw 'nextfile t)))
+
+    (advice-add 'org-check-agenda-file :override #'config-org--always-remove-missing-agenda-files))
+#+end_src
+
 ** Logging & clocking
 
 #+begin_src emacs-lisp
