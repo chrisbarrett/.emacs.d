@@ -5495,6 +5495,7 @@ Automatically enter insert state when inserting new headings or using
     (org-cycle-separator-lines 0)
     (org-hide-emphasis-markers nil)
     (org-startup-indented t)
+    (org-startup-with-latex-preview t)
     (org-startup-folded 'content)
     (org-startup-shrink-all-tables t)
     (org-startup-with-inline-images t))
