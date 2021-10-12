@@ -5859,7 +5859,7 @@ cookie or 'cleared', which indicates no special priority.
     :custom
     (org-latex-compiler (getenv "NIX_EMACS_TEX_PROGRAM"))
     (org-latex-compilers (list (getenv "NIX_EMACS_TEX_PROGRAM")))
-    (org-latex-pdf-process (list (concat (getenv "NIX_EMACS_TEX_PROGRAM") " --outdir %o %f"))))
+    (org-latex-pdf-process (list (concat (getenv "NIX_EMACS_TEX_PROGRAM") " -Z shell-escape --outdir=%o %f"))))
 #+end_src
 
 *** Set some default LaTeX packages
