@@ -2664,6 +2664,7 @@ See:
 #+begin_src emacs-lisp
   (leader-set-key :infix "n"
     "" '(nil :wk "narrow")
+    "e" '(edit-indirect-region :wk "edit (indirect)")
     "f" '(narrow-to-defun :wk "defun")
     "r" '(narrow-to-region :wk "region")
     "w" 'widen
