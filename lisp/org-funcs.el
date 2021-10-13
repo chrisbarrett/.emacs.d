@@ -322,6 +322,35 @@ handles file titles, IDs and tags better."
             (org-funcs--set-file-tags (-union (org-funcs--file-tags) tags))
             (save-buffer)))))))
 
+
+(defun org-funcs-read-tags-filter (&optional default)
+  (let* ((input (read-string "[+-]Tags: " default 'org-funcs-read-tags-filter-history))
+         (tags (split-string input (rx (+ (any space ":"))) t)))
+    (seq-reduce (lambda (acc tag)
+                  (if (string-prefix-p "-" tag)
+                      (push (s-chop-prefix "-" tag) (plist-get acc :exclude))
+                    (push (s-chop-prefix "+" tag) (plist-get acc :include)))
+                  acc)
+                tags
+                '(:include nil
+                  :exclude nil))))
+
+(defun org-funcs-roam-node-find (&optional arg)
+  "Find an org-roam node. See `org-roam-node-find'.
+
+With optional prefix ARG, prompt for a tags filter."
+  (interactive "P")
+  (let ((filter
+         (if arg
+             (-let [(&plist :include :exclude) (org-funcs-read-tags-filter "-dailies ")]
+               (lambda (node)
+                 (let ((tags (org-roam-node-tags node)))
+                   (and (if exclude (null (seq-intersection tags exclude)) t)
+                        (if include (seq-intersection tags include) t)))))
+           (lambda (node)
+             (not (seq-contains-p (org-roam-node-tags node) "dailies"))))))
+    (org-roam-node-find arg nil filter)))
+
 (provide 'org-funcs)
 
 ;;; org-funcs.el ends here

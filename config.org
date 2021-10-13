@@ -2693,7 +2693,7 @@ See:
     "k" '(org-capture :wk "capture...")
     "l" '(org-store-link :wk "store link")
     "s" '(org-search-view :wk "search...")
-    "f" '(org-roam-node-find :wk "roam file...")
+    "f" '(org-funcs-roam-node-find :wk "roam file...")
     "n" '(org-roam-dailies-goto-today :wk "dailies: today")
     "T" '(org-roam-dailies-goto-tomorrow :wk "dailies: tomorrow")
     "y" '(org-roam-dailies-goto-yesterday :wk "dailies: yesterday")
