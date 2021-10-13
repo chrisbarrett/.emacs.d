@@ -158,7 +158,7 @@ TAGS are the tags to use when displaying the list."
            (cons (current-kill 0 t) kill-ring)))
 
 (defun org-funcs-read-url (&optional prompt default)
-  (let* ((default (or default (thing-at-point-url-at-point) (org-funcs--last-url-kill)))
+  (let* ((default (string-trim (or default (thing-at-point-url-at-point) (org-funcs--last-url-kill))))
          (prompt (or prompt "URL"))
          (input (read-string (concat (if default (format "%s (default %s)" prompt default) prompt) ": ")
                              nil nil default)))
