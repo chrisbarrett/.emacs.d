@@ -111,6 +111,8 @@
         ws-butler
         yaml-mode
         yasnippet
+        websocket
+        simple-httpd
       ];
 
       extraPackages = rec {
@@ -154,6 +156,14 @@
           rev = "6c2c1a91c1830e03110487867734137f5698904a";
           sha256 = "1gvalalk27kvvm1ysj8vpjdky3sfw8jvympv9vkkr3dby8b2apwa";
           buildInputs = [ org ];
+        };
+
+        org-roam-ui = github {
+          name = "org-roam-ui";
+          owner = "org-roam";
+          rev = "ce08e92ef245961c25d1b0febb5983fcc5c2809e";
+          sha256 = "0pqz8pp2v0jcjzpyrkckbj6ha9lvi219z5qaa73hn9206ayiy4f0";
+          buildInputs = [ org-roam f websocket simple-httpd ];
         };
       };
     in
