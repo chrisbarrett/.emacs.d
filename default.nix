@@ -62,9 +62,10 @@ let
       , buildInputs ? [ ]
       , patches ? [ ]
       , preBuild ? ""
+      , postInstall ? ""
       }:
       pkgs.callPackage ./builder.nix {
-        inherit emacs name buildInputs patches preBuild;
+        inherit emacs name buildInputs patches preBuild postInstall;
         src = pkgs.fetchFromGitHub { inherit sha256 repo rev owner; };
       };
 

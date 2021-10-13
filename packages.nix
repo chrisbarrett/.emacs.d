@@ -164,6 +164,14 @@
           rev = "ce08e92ef245961c25d1b0febb5983fcc5c2809e";
           sha256 = "0pqz8pp2v0jcjzpyrkckbj6ha9lvi219z5qaa73hn9206ayiy4f0";
           buildInputs = [ org-roam f websocket simple-httpd ];
+          postInstall = ''
+            SITE_LISP="$out/share/emacs/site-lisp"
+            DEST_DIR="$SITE_LISP/elpa/org-roam-ui"
+
+            mkdir -p "$DEST_DIR"
+            mv "$SITE_LISP/org-roam-ui".* "$DEST_DIR"
+            cp -r out "$DEST_DIR/out"
+          '';
         };
       };
     in

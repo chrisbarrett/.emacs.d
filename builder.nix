@@ -6,6 +6,7 @@
 , buildInputs ? [ ]
 , patches ? [ ]
 , preBuild ? ""
+, postInstall ? ""
 }:
 
 stdenv.mkDerivation {
@@ -28,6 +29,7 @@ stdenv.mkDerivation {
   installPhase = ''
     mkdir -p $out/share/emacs/site-lisp
     install *.el* $out/share/emacs/site-lisp
+    ${postInstall}
   '';
   meta = {
     description = "Emacs projects from the Internet that just compile .el files";
