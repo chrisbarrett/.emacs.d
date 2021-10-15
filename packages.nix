@@ -42,7 +42,7 @@
         flycheck-ledger
         flycheck-package
         flycheck-plantuml
-        # forge
+        forge
         format-all
         general
         git-auto-commit-mode
@@ -181,5 +181,14 @@
   overrides = self: super: rec {
     counsel = withPatches super.counsel [ ./patches/counsel.patch ];
     markdown-mode = withPatches super.markdown-mode [ ./patches/markdown-mode.patch ];
+
+    # KLUDGE: yaml from melpa fails to build, so we need to supply our own
+    # version.
+    yaml = github {
+      name = "yaml.el";
+      owner = "zkry";
+      rev = "84b88c9ed178af16da18b230c1f61c57cefedf28";
+      sha256 = "13fjxrr7iyfagbm21p5is5jw1zv56ns2mnac145v8lqli6mrr5gx";
+    };
   };
 }
