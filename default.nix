@@ -18,7 +18,7 @@ in
   }
   # Version of nixpkgs that determines 3rd-party Lisp package versions.
 , lispPkgs ? nixpkgsWithOverlays {
-    emacsOverlayRev = "5076ac601d815803ab3afbfa00638abb79dabd4d";
+    emacsOverlayRev = "dcdb2e20a30c851b204cd0ab7a7d4745c6af7ff6";
   }
 }:
 
