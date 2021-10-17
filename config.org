@@ -6445,7 +6445,7 @@ buffers the same, no matter how I create them.
 
 #+begin_src emacs-lisp
   (use-package timekeep
-    :commands (timekeep-start timekeep-stop)
+    :commands (timekeep-start timekeep-stop timekeep-find-client-buffer)
     :general ("<f12>" (general-predicate-dispatch 'timekeep-start
                         (and (fboundp 'org-clocking-p) (org-clocking-p)) 'timekeep-stop))
     :custom
