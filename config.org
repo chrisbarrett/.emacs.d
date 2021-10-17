@@ -5909,6 +5909,13 @@ cookie or 'cleared', which indicates no special priority.
     (add-to-list 'org-latex-default-packages-alist '("colorlinks=true" "hyperref" nil)))
 #+end_src
 
+*** =org-fragtog= - Automatically toggle fragment at point
+
+#+begin_src emacs-lisp
+  (use-package org-fragtog
+    :hook (org-mode . org-fragtog-mode))
+#+end_src
+
 ** =org-crypt= - Encrypted file content
 
 #+begin_src emacs-lisp

@@ -77,6 +77,7 @@
         org-bullets
         org-cliplink
         org-contrib
+        org-fragtog
         org-ml
         org-ql
         org-ref
