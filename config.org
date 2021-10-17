@@ -5911,6 +5911,18 @@ cookie or 'cleared', which indicates no special priority.
     (add-to-list 'org-latex-default-packages-alist '("colorlinks=true" "hyperref" nil)))
 #+end_src
 
+*** Make latex fragments adapt to colour theme changes
+
+#+begin_src emacs-lisp
+  (use-package org-latex-themed-previews
+    :after org
+    :demand t
+    :custom
+    (org-preview-latex-image-directory (f-join paths-cache-directory "org" "latex-previews"))
+    :config
+    (org-latex-themed-previews-mode +1))
+#+end_src
+
 *** =org-fragtog= - Automatically toggle fragment at point
 
 #+begin_src emacs-lisp
