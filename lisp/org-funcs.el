@@ -204,6 +204,8 @@ TAGS are the tags to use when displaying the list."
       (let ((bibtex-expand-strings t))
         (reftex-get-bib-field "=key=" (bibtex-parse-entry t))))))
 
+(defvar org-funcs--pdf-download-timeout-seconds 30)
+
 (defun org-funcs-url-to-reference (url &optional show-pdf)
   "Create a PDF of URL and add it to the bibliography.
 
