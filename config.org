@@ -5911,6 +5911,16 @@ cookie or 'cleared', which indicates no special priority.
     (add-to-list 'org-latex-default-packages-alist '("colorlinks=true" "hyperref" nil)))
 #+end_src
 
+*** Don't apply =org-block= face to latex snippets
+
+#+begin_src emacs-lisp
+  (use-package org-src
+    :after org
+    :demand t
+    :config
+    (add-to-list 'org-src-block-faces '("latex" (:inherit default :extend t))))
+#+end_src
+
 *** Make latex fragments adapt to colour theme changes
 
 #+begin_src emacs-lisp
