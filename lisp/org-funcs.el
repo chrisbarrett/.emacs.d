@@ -182,7 +182,8 @@ TAGS are the tags to use when displaying the list."
                                          title)))
       (unless (thing-at-point-looking-at (rx bol (* space)))
         (just-one-space))
-      (insert (format "[[%s][%s]]" url escaped-title)))))
+      (insert (format "[[%s][%s]]" url escaped-title))
+      (just-one-space))))
 
 (defconst org-funcs--wkhtmltopdf-error-buffer-name "*wkhtmltopdf errors*")
 
