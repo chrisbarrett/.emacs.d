@@ -5450,6 +5450,7 @@ Normally newlines are reflowed automatically.
     :hook (org-mode . evil-org-mode)
     :custom
     (evil-org-key-theme '(additional
+                          return
                           calendar
                           navigation
                           textobjects
