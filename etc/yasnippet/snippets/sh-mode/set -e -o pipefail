@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: set -e -o pipefail
+# key: set
+# condition: (yas-funcs-bolp)
+# --
+set -e -o pipefail
