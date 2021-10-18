@@ -5462,13 +5462,13 @@ Normally newlines are reflowed automatically.
   (use-package org-capture
     :after org-funcs
     :config
-    (org-funcs-update-capture-templates '(("c" "Note for currently clocked heading"
+    (org-funcs-update-capture-templates '(("c" "Clocking")
+                                          ("cn" "Note for currently clocked heading"
                                            plain
                                            (clock)
                                            (function org-funcs-capture-note-to-clocked-heading)
                                            :immediate-finish t))))
 #+end_src
-
 
 ** Evil state improvements
 
