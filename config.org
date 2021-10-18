@@ -5435,7 +5435,7 @@ Normally newlines are reflowed automatically.
     :commands
     org-funcs-agenda-dwim
     org-funcs-todo-list
-    org-funcs-read-url-for-capture
+    org-funcs-read-url
     org-funcs-url-to-reference
     org-funcs-toggle-priority
     :general
@@ -6458,7 +6458,11 @@ buffers the same, no matter how I create them.
 
 #+begin_src emacs-lisp
   (use-package timekeep
-    :commands (timekeep-start timekeep-stop timekeep-find-client-buffer)
+    :commands
+    timekeep-start
+    timekeep-stop
+    timekeep-find-client-buffer
+    timekeep-read-client-name
     :general ("<f12>" (general-predicate-dispatch 'timekeep-start
                         (and (fboundp 'org-clocking-p) (org-clocking-p)) 'timekeep-stop))
     :custom
