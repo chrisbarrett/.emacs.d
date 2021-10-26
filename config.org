@@ -2234,6 +2234,18 @@ with Nix won't work. Manually add language servers to the path here.
                                      "--stdio")))
 #+end_src
 
+** =lsp-ui= - Additional package providing richer UI elements for lsp-mode
+
+#+begin_src emacs-lisp
+  (use-package lsp-ui
+    :after lsp-mode
+    :general
+    (:keymaps 'lsp-ui-doc-mode-map
+     [remap lsp-describe-thing-at-point] 'lsp-ui-show)
+    :custom
+    (lsp-ui-doc-enable nil))
+#+end_src
+
 * Set up leader keys
 
 Note that we ensure evil is loaded first before binding any keys below,

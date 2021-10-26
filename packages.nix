@@ -64,6 +64,7 @@
         ledger-mode
         link-hint
         lsp-mode
+        lsp-ui
         magit
         magit-popup
         markdown-mode
