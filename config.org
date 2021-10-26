@@ -2170,6 +2170,70 @@ compatibility.
     :commands (evil-iedit-state/iedit-mode))
 #+end_src
 
+* =lsp-mode= - language-server support
+
+** Inject language servers into exec-path on Darwin
+macOS prevents PATH being modified for graphical apps, so the wrapper set up
+with Nix won't work. Manually add language servers to the path here.
+
+#+begin_src emacs-lisp
+  (when (equal system-type 'darwin)
+    (dolist (dir (split-string (getenv "NIX_EMACS_DARWIN_PATH_EXTRAS") ":"))
+      (push dir exec-path))
+    (setq exec-path (seq-uniq exec-path))
+
+    (setenv "PATH" (string-join exec-path ":")))
+#+end_src
+
+** Set which modes use LSP
+
+#+begin_src emacs-lisp
+  (defconst lsp-enabled-modes
+    '(js-mode
+      json-mode
+      sh-mode
+      terraform-mode
+      typescript-mode
+      yaml-mode))
+
+  (dolist (mode lsp-enabled-modes)
+    (add-hook (intern (format "%s-hook" mode))
+              'lsp-deferred))
+#+end_src
+
+** Configure lsp-mode variables
+
+#+begin_src emacs-lisp
+  (use-package lsp-mode
+    :commands (lsp lsp-deferred)
+    :init
+    (defun lsp-iedit-highlights-evil-state ()
+      "Adapt evil iedit for LSP command."
+      (interactive)
+      (lsp-iedit-highlights)
+      (evil-iedit-state))
+
+    :general
+    (:keymaps 'lsp-mode-map
+     "C-c C-c" 'lsp-execute-code-action
+     [remap evil-iedit-state/iedit-mode] 'lsp-iedit-highlights-evil-state
+     [remap evil-lookup] 'lsp-describe-thing-at-point
+     [remap jump-to-definition] 'lsp-find-definition)
+    :custom
+    (lsp-headerline-breadcrumb-enable nil)
+    (lsp-modeline-code-actions-enable nil)
+    (lsp-modeline-diagnostics-enable nil)
+    (lsp-modeline-workspace-status-enable nil)
+    (lsp-auto-execute-action nil)
+    (lsp-enable-on-type-formatting nil)
+    (lsp-restart 'auto-restart)
+    (lsp-groovy-server-file (getenv "NIX_EMACS_GROOVY_LANGUAGE_SERVER_JAR"))
+    (lsp-eslint-validate '("typescript" "javascript" "javascriptreact"))
+    (lsp-eslint-server-command (list (getenv "NIX_EMACS_LSP_ESLINT_NODE_PATH")
+                                     (getenv "NIX_EMACS_ESLINT_SERVER_SCRIPT")
+                                     "--stdio")))
+#+end_src
+
 * Set up leader keys
 
 Note that we ensure evil is loaded first before binding any keys below,
@@ -2660,6 +2724,19 @@ See:
     "b" #'kill-this-buffer
     "w" #'delete-window
     "r" #'counsel-yank-pop)
+#+end_src
+
+*** ~l~ - LSP
+
+#+begin_src emacs-lisp
+  (leader-set-key :infix "l"
+    "" '(:keymap lsp-command-map :package lsp-mode :wk "lsp"))
+
+  (use-package lsp-mode
+    :custom
+    (lsp-keymap-prefix "SPC l")
+    :hook
+    (lsp-mode . lsp-enable-which-key-integration))
 #+end_src
 
 *** ~n~ - Narrowing
@@ -4385,7 +4462,7 @@ files.
     (typescript-indent-level 2))
 #+end_src
 
-*** =tide= - Provides IDE functionality for TypeScript
+*** =tide= - Provides IDE functionality for TypeScript           :disabled:
 
 Tide is currently more polished than the TypeScript language server.
 

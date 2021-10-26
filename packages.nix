@@ -63,6 +63,7 @@
         latex-preview-pane
         ledger-mode
         link-hint
+        lsp-mode
         magit
         magit-popup
         markdown-mode

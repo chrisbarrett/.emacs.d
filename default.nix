@@ -78,8 +78,11 @@ let
     (builder.overrideScope' packages.overrides).emacsWithPackages
       packages.packages;
 
+  languageServers = pkgs.callPackage ./language-servers { };
+
   customPathEntries = strings.concatStringsSep ":" [
     "${requiredPrograms}/bin"
+    "${languageServers}/bin"
     "${pkgs.jdk}/bin"
   ];
 
@@ -93,11 +96,15 @@ pkgs.symlinkJoin {
       if [ -f "$program" ]; then
         wrapProgram "$program" \
           --prefix PATH ":" "${customPathEntries}" \
-          --set NIX_EMACS_SRC_DIR "${emacs}/share/emacs/src/" \
-          --set NIX_EMACS_TEX_PROGRAM "${pkgs.tectonic}/bin/tectonic" \
-          --set NIX_EMACS_PLANTUML_JAR "${pkgs.plantuml}/lib/plantuml.jar" \
+          --set NIX_EMACS_DARWIN_PATH_EXTRAS "${customPathEntries}" \
+          --set NIX_EMACS_ESLINT_SERVER_SCRIPT "${languageServers}/lib/eslintServer.js" \
+          --set NIX_EMACS_GROOVY_LANGUAGE_SERVER_JAR "${languageServers}/lib/groovy-ls/groovy-ls.jar" \
+          --set NIX_EMACS_LSP_ESLINT_NODE_PATH "${pkgs.nodejs}/bin/node" \
           --set NIX_EMACS_MU_BINARY "${pkgs.mu}/bin/mu" \
           --set NIX_EMACS_MU_LISP_DIR "${pkgs.mu}/share/emacs/site-lisp/mu4e" \
+          --set NIX_EMACS_PLANTUML_JAR "${pkgs.plantuml}/lib/plantuml.jar" \
+          --set NIX_EMACS_SRC_DIR "${emacs}/share/emacs/src/" \
+          --set NIX_EMACS_TEX_PROGRAM "${pkgs.tectonic}/bin/tectonic" \
           --set JAVA_HOME "${pkgs.jdk}"
       fi
     done
