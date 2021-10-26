@@ -2191,6 +2191,7 @@ with Nix won't work. Manually add language servers to the path here.
   (defconst lsp-enabled-modes
     '(js-mode
       json-mode
+      graphql-mode
       sh-mode
       terraform-mode
       typescript-mode
