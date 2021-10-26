@@ -2751,7 +2751,13 @@ See:
 #+begin_src emacs-lisp
   (leader-set-key :infix "l"
     "" '(:keymap lsp-command-map :package lsp-mode :wk "lsp"))
+#+end_src
 
+
+**** Use which-key replacements                                 :disabled:
+Disabled for now since this breaks insert state in evil :/
+
+#+begin_src emacs-lisp
   (use-package lsp-mode
     :custom
     (lsp-keymap-prefix "SPC l")
