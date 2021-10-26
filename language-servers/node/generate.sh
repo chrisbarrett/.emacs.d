@@ -11,7 +11,8 @@ PACKAGE_ARRAY='[
   "typescript-language-server",
   "vscode-css-languageserver-bin",
   "vscode-html-languageserver-bin",
-  "vscode-json-languageserver"
+  "vscode-json-languageserver",
+  "yaml-language-server"
 ]'
 
 NODE2NIX=$(nix-build '<nixpkgs>' --no-out-link -A 'nodePackages.node2nix')/bin/node2nix

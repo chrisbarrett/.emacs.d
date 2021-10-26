@@ -2452,6 +2452,15 @@ let
         sha512 = "MsvtOrfG9ZcrOwAW+Qi+F6HbD0CWXEh9ou77uOb7FM2WPhwT7smM833PzanhJLsgXjN89Ir6V2PczXNnMpwKhw==";
       };
     };
+    "request-light-0.2.5" = {
+      name = "request-light";
+      packageName = "request-light";
+      version = "0.2.5";
+      src = fetchurl {
+        url = "https://registry.npmjs.org/request-light/-/request-light-0.2.5.tgz";
+        sha512 = "eBEh+GzJAftUnex6tcL6eV2JCifY0+sZMIUpUPOVXbs2nV5hla4ZMmO3icYKGuGVuQ2zHE9evh4OrRcH4iyYYw==";
+      };
+    };
     "request-light-0.4.0" = {
       name = "request-light";
       packageName = "request-light";
@@ -3370,6 +3379,15 @@ let
         sha512 = "r3vXyErRCYJ7wg28yvBY5VSoAF8ZvlcW9/BwUzEtUsjvX/DKs24dIkuwjtuprwJJHsbyUbLApepYTR1BN4uHrg==";
       };
     };
+    "yaml-2.0.0-8" = {
+      name = "yaml";
+      packageName = "yaml";
+      version = "2.0.0-8";
+      src = fetchurl {
+        url = "https://registry.npmjs.org/yaml/-/yaml-2.0.0-8.tgz";
+        sha512 = "QaYgJZMfWD6fKN/EYMk6w1oLWPCr1xj9QaPSZW5qkDb3y8nGCXhy2Ono+AF4F+CSL/vGcqswcAT0BaS//pgD2A==";
+      };
+    };
     "yargs-15.4.1" = {
       name = "yargs";
       packageName = "yargs";
@@ -4171,6 +4189,47 @@ in
     buildInputs = globalBuildInputs;
     meta = {
       description = "JSON language server";
+      license = "MIT";
+    };
+    production = true;
+    bypassCache = true;
+    reconstructLock = true;
+  };
+  yaml-language-server = nodeEnv.buildNodePackage {
+    name = "yaml-language-server";
+    packageName = "yaml-language-server";
+    version = "1.0.0";
+    src = fetchurl {
+      url = "https://registry.npmjs.org/yaml-language-server/-/yaml-language-server-1.0.0.tgz";
+      sha512 = "Sp3+CRfH3eiL+wWiUrchTQ+SJWKDlyCGpPxqyxzH9J+KeQ29HeRXY43x8W3lB1mlN0uUp2vlErYlgu2cUpJ6uA==";
+    };
+    dependencies = [
+      sources."agent-base-4.3.0"
+      sources."debug-3.1.0"
+      sources."es6-promise-4.2.8"
+      sources."es6-promisify-5.0.0"
+      sources."http-proxy-agent-2.1.0"
+      sources."https-proxy-agent-2.2.4"
+      sources."jsonc-parser-3.0.0"
+      sources."ms-2.0.0"
+      (sources."request-light-0.2.5" // {
+        dependencies = [
+          sources."vscode-nls-4.1.2"
+        ];
+      })
+      sources."vscode-json-languageservice-4.1.9"
+      sources."vscode-jsonrpc-6.0.0"
+      sources."vscode-languageserver-7.0.0"
+      sources."vscode-languageserver-protocol-3.16.0"
+      sources."vscode-languageserver-textdocument-1.0.2"
+      sources."vscode-languageserver-types-3.16.0"
+      sources."vscode-nls-5.0.0"
+      sources."vscode-uri-3.0.2"
+      sources."yaml-2.0.0-8"
+    ];
+    buildInputs = globalBuildInputs;
+    meta = {
+      description = "YAML language server";
       license = "MIT";
     };
     production = true;
