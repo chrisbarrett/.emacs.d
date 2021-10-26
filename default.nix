@@ -59,6 +59,7 @@ let
     groovy = pkgs.callPackage ./language-servers/groovy-ls.nix { };
     html = nodePackages.vscode-html-languageserver-bin;
     json = nodePackages.vscode-json-languageserver;
+    nix = rnix-lsp;
     openapi = pkgs.callPackage ./language-servers/aml-ls.nix { };
     terraform = terraform-lsp;
     typescript = nodePackages.typescript-language-server;
