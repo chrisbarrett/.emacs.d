@@ -3,7 +3,7 @@ let
   node-language-servers = lib.attrsets.attrValues
     (lib.attrsets.filterAttrs
       (_name: lib.attrsets.isDerivation)
-      (pkgs.callPackage ./node { }));
+      (pkgs.callPackage ./node/override.nix { }));
 
   aml-ls = pkgs.callPackage ./aml-ls.nix { };
   groovy-ls = pkgs.callPackage ./groovy-ls.nix { };
