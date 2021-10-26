@@ -1,6 +1,10 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 let
-  node = pkgs.callPackage ./node { };
+  node-language-servers = lib.attrsets.attrValues
+    (lib.attrsets.filterAttrs
+      (_name: lib.attrsets.isDerivation)
+      (pkgs.callPackage ./node { }));
+
   aml-ls = pkgs.callPackage ./aml-ls.nix { };
   groovy-ls = pkgs.callPackage ./groovy-ls.nix { };
   terraform-ls = pkgs.callPackage ./terraform-ls.nix { };
@@ -8,16 +12,7 @@ let
 in
 pkgs.symlinkJoin {
   name = "language-servers";
-  paths = [
-    node.bash-language-server
-    node.dockerfile-language-server-nodejs
-    node.eslint
-    node.graphql-language-service-cli
-    node.typescript
-    node.typescript-language-server
-    node.vscode-css-languageserver-bin
-    node.vscode-html-languageserver-bin
-    node.vscode-json-languageserver
+  paths = node-language-servers ++ [
     aml-ls
     groovy-ls
     vscode-eslint
