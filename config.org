@@ -5087,6 +5087,7 @@ Teach the autofill function in Latex buffers not to fill in certain contexts.
         (:executable "terragrunt")
         (:install (macos "brew install terragrunt"))
         (:languages "Terragrunt")
+        (:features)
         (:format (format-all--buffer-easy executable "fmt" "-no-color" "-"))))
 
     (add-to-list 'format-all-default-formatters 'terragrunt-fmt))
