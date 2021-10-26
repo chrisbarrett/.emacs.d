@@ -6231,6 +6231,26 @@ Ensure we use dired rather than the Finder on macOS.
     (advice-add 'org-agenda-redo :after #'config-org--draw-separator))
 #+end_src
 
+*** Make priority inherited
+
+#+begin_src emacs-lisp
+  (defun config-org-inherited-priority (s)
+    (save-match-data
+      (cond
+       ((string-match org-priority-regexp s)
+        (* 1000 (- org-priority-lowest
+                   (org-priority-to-value (match-string 2 s)))))
+       ((not (org-up-heading-safe))
+        (* 1000 (- org-priority-lowest org-priority-default)))
+       (t
+        (config-org-inherited-priority (org-get-heading))))))
+
+  (use-package org-agenda
+    :custom
+    (org-priority-get-priority-function #'config-org-inherited-priority))
+#+end_src
+
+
 ** =org-roam= - Personal wiki & research tooling
 
 #+begin_src emacs-lisp
