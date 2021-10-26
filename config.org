@@ -2228,6 +2228,7 @@ with Nix won't work. Manually add language servers to the path here.
     (lsp-auto-execute-action nil)
     (lsp-enable-on-type-formatting nil)
     (lsp-restart 'auto-restart)
+    (lsp-clients-typescript-tls-path (getenv "NIX_EMACS_TS_LANGUAGE_SERVER"))
     (lsp-groovy-server-file (getenv "NIX_EMACS_GROOVY_LANGUAGE_SERVER_JAR"))
     (lsp-eslint-validate '("typescript" "javascript" "javascriptreact"))
     (lsp-eslint-server-command (list (getenv "NIX_EMACS_LSP_ESLINT_NODE_PATH")
