@@ -1,6 +1,7 @@
 { pkgs, ... }:
 let
   node = pkgs.callPackage ./node { };
+  aml-ls = pkgs.callPackage ./aml-ls.nix { };
   groovy-ls = pkgs.callPackage ./groovy-ls.nix { };
   terraform-ls = pkgs.callPackage ./terraform-ls.nix { };
   vscode-eslint = pkgs.callPackage ./vscode-eslint.nix { };
@@ -17,6 +18,7 @@ pkgs.symlinkJoin {
     node.vscode-css-languageserver-bin
     node.vscode-html-languageserver-bin
     node.vscode-json-languageserver
+    aml-ls
     groovy-ls
     vscode-eslint
   ];
