@@ -23,7 +23,7 @@ in
 }:
 
 let
-  inherit (pkgs.lib) strings;
+  inherit (pkgs.lib) strings attrsets;
 
   emacs = pkgs.emacsGcc.overrideAttrs (old: {
     patches = old.patches ++ [
@@ -47,7 +47,22 @@ let
       nixpkgs-fmt
       ripgrep
       sqlite
+      jdk
     ];
+  };
+
+  languageServers = with pkgs; {
+    bash = nodePackages.bash-language-server;
+    css = nodePackages.vscode-css-languageserver-bin;
+    eslint = vscode-extensions.dbaeumer.vscode-eslint;
+    graphql = vscode-extensions.graphql.vscode-graphql;
+    groovy = pkgs.callPackage ./language-servers/groovy-ls.nix { };
+    html = nodePackages.vscode-html-languageserver-bin;
+    json = nodePackages.vscode-json-languageserver;
+    openapi = pkgs.callPackage ./language-servers/aml-ls.nix { };
+    terraform = terraform-lsp;
+    typescript = nodePackages.typescript-language-server;
+    yaml = nodePackages.yaml-language-server;
   };
 
   packages = pkgs.callPackage ./packages.nix rec {
@@ -78,13 +93,10 @@ let
     (builder.overrideScope' packages.overrides).emacsWithPackages
       packages.packages;
 
-  languageServers = pkgs.callPackage ./language-servers { };
-
-  customPathEntries = strings.concatStringsSep ":" [
-    "${requiredPrograms}/bin"
-    "${languageServers}/bin"
-    "${pkgs.jdk}/bin"
-  ];
+  customPathEntries =
+    let paths = [ "${requiredPrograms}/bin" ] ++ (map (pkg: "${pkg}/bin") (attrsets.attrValues languageServers));
+    in
+    strings.concatStringsSep ":" paths;
 
 in
 pkgs.symlinkJoin {
@@ -96,10 +108,12 @@ pkgs.symlinkJoin {
       if [ -f "$program" ]; then
         wrapProgram "$program" \
           --prefix PATH ":" "${customPathEntries}" \
+          --set NIX_EMACS_AML_LANGUAGE_SERVER_JAR "${languageServers.openapi}/lib/aml-ls/als-server.jar" \
           --set NIX_EMACS_DARWIN_PATH_EXTRAS "${customPathEntries}" \
-          --set NIX_EMACS_ESLINT_SERVER_SCRIPT "${languageServers}/lib/eslintServer.js" \
-          --set NIX_EMACS_GROOVY_LANGUAGE_SERVER_JAR "${languageServers}/lib/groovy-ls/groovy-ls.jar" \
+          --set NIX_EMACS_ESLINT_SERVER_SCRIPT "${languageServers.eslint}/lib/eslintServer.js" \
+          --set NIX_EMACS_GROOVY_LANGUAGE_SERVER_JAR "${languageServers.groovy}/lib/groovy-ls/groovy-ls.jar" \
           --set NIX_EMACS_LSP_ESLINT_NODE_PATH "${pkgs.nodejs}/bin/node" \
+          --set NIX_EMACS_TS_LANGUAGE_SERVER "${languageServers.typescript}/bin/typescript-language-server" \
           --set NIX_EMACS_MU_BINARY "${pkgs.mu}/bin/mu" \
           --set NIX_EMACS_MU_LISP_DIR "${pkgs.mu}/share/emacs/site-lisp/mu4e" \
           --set NIX_EMACS_PLANTUML_JAR "${pkgs.plantuml}/lib/plantuml.jar" \
