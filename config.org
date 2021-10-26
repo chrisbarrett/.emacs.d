@@ -2245,7 +2245,10 @@ with Nix won't work. Manually add language servers to the path here.
      [remap counsel-imenu] 'lsp-ui-imenu)
     :custom
     (lsp-ui-imenu-auto-refresh 'after-save)
-    (lsp-ui-doc-enable nil))
+    (lsp-ui-doc-enable nil)
+    :hook
+    (json-mode . lsp-ui-doc-mode)
+    (yaml-mode . lsp-ui-doc-mode))
 #+end_src
 
 * Set up leader keys
