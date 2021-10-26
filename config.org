@@ -3193,7 +3193,6 @@ after editing actions have changed what windows are shown.
     (popper-mode-line nil)
     (popper-group-function 'popper-group-by-projectile)
     (popper-reference-buffers (list (rx bol "*Messages*")
-                                    (rx bol "*tide-documentation*")
                                     (rx bol "*ielm*")
                                     (rx bol "*" (? "Async ") "Shell Command")
                                     'help-mode
@@ -4460,40 +4459,6 @@ files.
     ("\\.ts\\.snap\\'" . typescript-mode)
     :custom
     (typescript-indent-level 2))
-#+end_src
-
-*** =tide= - Provides IDE functionality for TypeScript           :disabled:
-
-Tide is currently more polished than the TypeScript language server.
-
-#+begin_src emacs-lisp
-  (use-package tide
-    :after (company flycheck)
-    :preface
-    (defun tide-maybe-enable ()
-      (unless (derived-mode-p 'json-mode)
-        (require 'tide)
-        (tide-setup)
-        (add-hook 'before-save-hook 'tide-format-before-save nil t)
-        (tide-hl-identifier-mode +1)))
-
-    :hook
-    (typescript-mode . tide-maybe-enable)
-    (js-mode . tide-maybe-enable)
-
-    :general
-    (:states '(normal insert emacs) :keymaps 'tide-mode-map
-     "M-." 'tide-jump-to-definition)
-
-    :config
-    (defun config-js--tide-help-evil-compat (buf)
-      (with-current-buffer buf
-        (evil-motion-state))
-      buf)
-    (advice-add 'tide-make-help-buffer :filter-return #'config-js--tide-help-evil-compat)
-
-    (with-eval-after-load 'flycheck
-      (flycheck-add-next-checker 'typescript-tide '(warning . javascript-eslint) t)))
 #+end_src
 
 ** =nix-mode= Configure support for the Nix language

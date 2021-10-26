@@ -100,7 +100,6 @@
         smartparens
         smex
         terraform-mode
-        tide
         ts
         typescript-mode
         undo-tree
