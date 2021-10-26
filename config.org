@@ -2240,9 +2240,11 @@ with Nix won't work. Manually add language servers to the path here.
   (use-package lsp-ui
     :after lsp-mode
     :general
-    (:keymaps 'lsp-ui-doc-mode-map
-     [remap lsp-describe-thing-at-point] 'lsp-ui-show)
+    (:keymaps 'lsp-ui-mode-map
+     [remap lsp-describe-thing-at-point] 'lsp-ui-show
+     [remap counsel-imenu] 'lsp-ui-imenu)
     :custom
+    (lsp-ui-imenu-auto-refresh 'after-save)
     (lsp-ui-doc-enable nil))
 #+end_src
 
@@ -2323,7 +2325,10 @@ See:
     "D" '(dired-other-window :wk "dired (other)")
     "S" '(deadgrep :wk "rg (deadgrep)")
     "d" #'dired
-    "i" '(counsel-imenu :wk "imenu")
+    "i" (list (general-predicate-dispatch 'counsel-imenu
+                (bound-and-true-p lsp-ui-mode) 'lsp-ui-imenu
+                (derived-mode-p 'lsp-ui-imenu-mode) 'lsp-ui-imenu--kill)
+              :wk "imenu")
     "q" '(delete-window :wk "delete window")
     "r" 'ivy-resume
     "s" '(evil-iedit-state/iedit-mode :wk "iedit")
