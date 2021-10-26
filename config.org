@@ -3861,6 +3861,7 @@ structured way.
 
 See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
 
+*** Set general variables
 #+begin_src emacs-lisp
   (use-package smartparens
     :hook
@@ -3890,7 +3891,6 @@ See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
     (smartparens-global-strict-mode +1)
     (show-smartparens-global-mode +1))
 #+end_src
-
 
 *** Load macros and functions at compile time so I can use them in this config
 
@@ -3933,7 +3933,7 @@ See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
           (insert " ")))))
 #+end_src
 
-*** Define pairs that I want in all language modes
+*** Define the pairs to use by default in all modes
 
 #+begin_src emacs-lisp
   (use-package smartparens
@@ -4089,9 +4089,16 @@ See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
                      :post-handlers '(config-smartparens-add-space-after-sexp-insertion))))
 #+end_src
 
-*** Markdown & org-mode
+*** Don't pad curly-braces in markdown, org, and latex
 
-Make checkbox insertion a little smarter.
+#+begin_src emacs-lisp
+  (use-package smartparens
+    :config
+    (sp-with-modes '(org-mode markdown-mode gfm-mode latex-mode)
+      (sp-local-pair "{" "}" :pre-handlers nil)))
+#+end_src
+
+*** Make checkbox insertion smarter for org-mode and markdown
 
 #+begin_src emacs-lisp
   (use-package smartparens
@@ -4111,6 +4118,7 @@ Make checkbox insertion a little smarter.
     (sp-with-modes '(org-mode markdown-mode gfm-mode)
       (sp-local-pair "[" "]" :post-handlers '(config-smartparens--format-checkitem))))
 #+end_src
+
 
 ** =elisp-mode= - Emacs Lisp
 
