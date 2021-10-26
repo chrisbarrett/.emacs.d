@@ -1,0 +1,13 @@
+[
+  "bash-language-server",
+  "dockerfile-language-server-nodejs",
+  "eslint",
+  "flow-bin",
+  "graphql-language-service-cli",
+  "typescript",
+  "typescript-language-server",
+  "vscode-css-languageserver-bin",
+  "vscode-html-languageserver-bin",
+  "vscode-json-languageserver",
+  "yaml-language-server"
+]
