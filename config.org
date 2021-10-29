@@ -2408,6 +2408,7 @@ See:
     "" '(nil :wk "apps")
     "c" #'quick-calc
     "C" #'full-calc
+    "e" #'eshell
     "m" #'mu4e
     "p" #'pass
     "r" (general-predicate-dispatch 'profiler-start
