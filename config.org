@@ -2215,6 +2215,8 @@ with Nix won't work. Manually add language servers to the path here.
                                 (hash-table-keys (lsp--workspace-server-capabilities workspace))))
                             (lsp-workspaces))))
 
+    (autoload 'evil-iedit-state "evil-iedit-state")
+
     (defun lsp-maybe-use-lsp-edit ()
       (interactive)
       (let ((capabilities (lsp-buffer-capabilities)))
