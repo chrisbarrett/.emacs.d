@@ -2208,28 +2208,9 @@ with Nix won't work. Manually add language servers to the path here.
 #+begin_src emacs-lisp
   (use-package lsp-mode
     :commands (lsp lsp-deferred)
-    :init
-    (defun lsp-buffer-capabilities ()
-      (seq-uniq (seq-mapcat (lambda (workspace)
-                              (when (seq-contains-p (lsp--workspace-buffers workspace) (current-buffer))
-                                (hash-table-keys (lsp--workspace-server-capabilities workspace))))
-                            (lsp-workspaces))))
-
-    (autoload 'evil-iedit-state "evil-iedit-state")
-
-    (defun lsp-maybe-use-lsp-edit ()
-      (interactive)
-      (let ((capabilities (lsp-buffer-capabilities)))
-        (cond ((seq-contains-p capabilities "documentHighlightProvider")
-               (lsp-iedit-highlights)
-               (evil-iedit-state))
-              (t
-               (evil-iedit-state/iedit-mode)))))
-
     :general
     (:keymaps 'lsp-mode-map
      "C-c C-c" 'lsp-execute-code-action
-     [remap evil-iedit-state/iedit-mode] 'lsp-maybe-use-lsp-edit
      [remap evil-lookup] 'lsp-describe-thing-at-point
      [remap jump-to-definition] 'lsp-find-definition)
     :custom
