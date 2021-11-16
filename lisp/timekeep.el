@@ -263,7 +263,7 @@ on the default headline for that client."
    (t
     (condition-case _
         (org-clock-in-last (when (equal arg '(16))
-                           '(4)))
+                             '(4)))
       (error (timekeep--clock-in-on-default)))))
 
   (when (derived-mode-p 'org-agenda-mode)
