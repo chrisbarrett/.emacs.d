@@ -34,7 +34,7 @@
 ;; - If there is no parent, clock in to a default task so that time
 ;;   is still tracked.
 
-;; Customize `timekeep-clients-alist' to define which roam nodes are
+;; Customize `timekeep-clients' to define which roam nodes are
 ;; used.
 
 ;; Adapted from http://doc.norang.ca/org-mode.html#Clocking
@@ -53,22 +53,6 @@
   "Functions for managing client timekeeping with org-clock."
   :group 'productivity
   :prefix "timekeep-")
-
-(defcustom timekeep-clients-alist nil
-  "Alist mapping org tags to IDs.
-
-Tags are expected to be file tags, applied to todos for that
-client. The ID is the org-roam node for the client's notes file.
-
-For example:
-
-  (setq timekeep-clients-alist '((\"Foo\" . \"<UUID-1>\")
-                                 (\"Bar\" . \"<UUID-2>\")))
-
-This form defines two clients and their corresponding IDs (taken
-from the PROPERTY drawer)."
-  :group 'timekeep
-  :type '(alist :key-type string :value-type string))
 
 (defcustom timekeep-default-headline-name "Planning & Meetings"
   "The name of the heading to clock in to if not working on a specific task.
@@ -91,55 +75,86 @@ sessions."
   :type 'file)
 
 
+;; Client specification
 
-(eval-and-compile
-  (let ((cache nil))
-    (defun timekeep--latest-client-choice ()
-      (unless cache
-        (ignore-errors
-          (setq cache (f-read-text timekeep-cache-file 'utf-8))))
-      cache)
+(defcustom timekeep-clients nil
+  "List of clients with their associated data for invoicing.
 
-    (defun timekeep--set-latest-client-choice (node-title)
-      (setq cache node-title)
-      (f-write-text cache 'utf-8 timekeep-cache-file)))
+Each value is a plist with at lesat the following keys:
 
-  (let ((cache))
-    (defun timekeep--client-nodes ()
-      (when (or (null cache)
-                (hash-table-empty-p cache))
-        (let* ((client-node-ids (seq-map 'cdr timekeep-clients-alist))
-               (nodes (ht-values (seq-reduce (lambda (acc it)
-                                               (let ((id (org-roam-node-id it)))
-                                                 (when (member id client-node-ids)
-                                                   (ht-set acc id it)))
-                                               acc)
-                                             (org-roam-node-list)
-                                             (ht-create)))))
-          (setq cache (ht-from-alist (seq-map (lambda (node)
-                                                (cons (org-roam-node-title node) node))
-                                              nodes)))))
-      cache)))
+:name (required) - A human-readable name for the client (used in prompts).
 
-(defun timekeep--choose-client-node ()
-  (let* ((nodes (timekeep--client-nodes))
-         (choice (completing-read "Client: " (ht-keys nodes) nil t nil 'timekeep--choose-buffer-history
-                                  (timekeep--latest-client-choice))))
-    (timekeep--set-latest-client-choice choice)
-    (ht-get nodes choice)))
+:roam-id (required) - The ID is the org-roam node for the client's notes file."
+  :group 'timekeep
+  :type '(alist :key-type string :value-type (plist :value-type string)))
+
+(defun timekeep-find (attr value)
+  (seq-find (lambda (it) (equal (plist-get it attr) value))
+            timekeep-clients))
+
+(defun timekeep-list (attr)
+  (seq-map (lambda (it) (plist-get it attr))
+           timekeep-clients))
+
+
+;; Choosing client specification by name
+
+(defvar timekeep--last-client-name nil)
+
+(defun timekeep--last-client-name ()
+  (unless timekeep--last-client-name
+    (ignore-errors
+      (setq timekeep--last-client-name (f-read-text timekeep-cache-file 'utf-8))))
+  timekeep--last-client-name)
+
+(defun timekeep--set-latest-client-name (client-name)
+  (setq timekeep--last-client-name client-name)
+  (f-write-text client-name 'utf-8 timekeep-cache-file))
 
 (defun timekeep-read-client-name ()
-  (completing-read "Client: " (ht-keys (timekeep--client-nodes)) nil t nil 'timekeep--choose-buffer-history
-                   (timekeep--latest-client-choice)))
+  (let ((choice (completing-read "Client: " (timekeep-list :name) nil t nil 'timekeep--choose-buffer-history
+                                 (timekeep--last-client-name))))
+    (timekeep--set-latest-client-name choice)
+    choice))
 
-(defun timekeep--get-node-by-name (name)
+(defun timekeep-choose-client ()
+  (timekeep-find :name (timekeep-read-client-name)))
+
+
+;; Org-roam file & node lookup for clients
+
+(defvar timekeep--client-nodes nil)
+
+(defun timekeep--client-nodes ()
+  (when (or (null timekeep--client-nodes)
+            (hash-table-empty-p timekeep--client-nodes))
+    (let* ((ids (timekeep-list :roam-id))
+           (nodes (ht-values (seq-reduce (lambda (acc it)
+                                           (let ((id (org-roam-node-id it)))
+                                             (when (member id ids)
+                                               (ht-set acc id it)))
+                                           acc)
+                                         (org-roam-node-list)
+                                         (ht-create)))))
+      (setq timekeep--client-nodes (ht-from-alist (seq-map (lambda (node)
+                                                             (cons (org-roam-node-title node) node))
+                                                           nodes)))))
+  timekeep--client-nodes)
+
+(defun timekeep-client-node-files ()
+  (seq-map #'org-roam-node-file (ht-values (timekeep--client-nodes))))
+
+(defun timekeep-find-roam-node-by-name (name)
   (ht-get (timekeep--client-nodes) name))
 
-(defun timekeep--latest-client-node-maybe-prompt (&optional ask)
-  (let ((client (timekeep--latest-client-choice)))
-    (if (or ask (null client))
-        (timekeep--choose-client-node)
-      (timekeep--get-node-by-name client))))
+(defun timekeep-last-roam-node (&optional ask)
+  (let ((client (timekeep--last-client-name)))
+    (timekeep-find-roam-node-by-name (if (or ask (null client))
+                                         (timekeep-read-client-name)
+                                       client))))
+
+
+;; Clocking
 
 (defun timekeep--clocktree-headline (buffer)
   (let ((heading (list timekeep-default-headline-name
@@ -160,11 +175,8 @@ sessions."
 
 (defvar timekeep--session-active-p nil)
 
-(defun timekeep--clock-in-on-default (&optional prompt-for-client)
-  (timekeep--punch-in-for-node
-   (if prompt-for-client
-       (timekeep--choose-client-node)
-     (timekeep--get-node-by-name (timekeep--latest-client-choice)))))
+(defun timekeep--clock-in-on-default (&optional ask)
+  (timekeep--punch-in-for-node (timekeep-last-roam-node ask)))
 
 (defun timekeep--ancestor-todo-pos ()
   (let (ancestor-todo)
@@ -182,13 +194,10 @@ sessions."
         (timekeep--clock-in-on-default)))))
 
 (defun timekeep--on-clock-in ()
-  (let ((files (ht-map (lambda (_key node)
-                         (cons (org-roam-node-file node)
-                               node))
-                       (timekeep--client-nodes))))
-    (when-let* ((node (alist-get (buffer-file-name) files nil nil #'equal)))
-      (timekeep--set-latest-client-choice (org-roam-node-title node))
-      (setq timekeep--session-active-p t))))
+  (-when-let* ((id (org-roam-id-at-point))
+              ((&plist :name) (timekeep-find :roam-id id)))
+    (timekeep--set-latest-client-name name)
+    (setq timekeep--session-active-p t)))
 
 (defun timekeep--on-clock-out ()
   (when (and timekeep--session-active-p
@@ -202,7 +211,7 @@ sessions."
 (defun timekeep--heading-function ()
   (let ((headline (substring-no-properties (org-get-heading t t t t))))
     (format "%s/%s"
-            (timekeep--latest-client-choice)
+            (timekeep--last-client-name)
             (with-temp-buffer
               (insert headline)
               (org-mode)
@@ -226,7 +235,7 @@ When this mode is active, clocking out behaves differently:
 - If there is no parent, clock in to a default task so that time
   is still tracked.
 
-Customize `timekeep-clients-alist' to define which roam nodes are
+Customize `timekeep-clients' to define which roam nodes are
 used."
   :group 'timekeep
   :global t
@@ -286,40 +295,31 @@ on the default headline for that client."
 
 ;;;###autoload
 (defun timekeep-capture-target ()
-  (org-roam-node-visit (timekeep--latest-client-node-maybe-prompt))
+  (org-roam-node-visit (timekeep-last-roam-node))
   (widen)
   (goto-char (point-max)))
 
 ;;;###autoload
 (defun timekeep-meeting-capture-target ()
-  (org-roam-node-visit (timekeep--latest-client-node-maybe-prompt))
+  (org-roam-node-visit (timekeep-last-roam-node))
   (widen)
   (goto-char (timekeep--clocktree-headline (current-buffer))))
 
-(defun timekeep--choose-tag-for-node-id (id)
-  (or (car (seq-find (lambda (it) (equal (cdr it) id))
-                     timekeep-clients-alist))
-      (completing-read "Tag: " (seq-map 'car timekeep-clients-alist))))
-
 ;;;###autoload
 (defun timekeep-work-tag ()
-  (timekeep--choose-tag-for-node-id
-   (org-roam-node-id
-    (timekeep--latest-client-node-maybe-prompt))))
+  (let* ((id (org-roam-node-id (timekeep-last-roam-node)))
+         (client (timekeep-find :roam-id id)))
+    (plist-get client :tag)))
 
 ;;;###autoload
-(defun timekeep-client-files ()
-  (seq-map #'org-roam-node-file (ht-values (timekeep--client-nodes))))
-
-;;;###autoload
-(defun timekeep-find-client-buffer (&optional arg)
+(defun timekeep-find-client-buffer (&optional ask)
   "Open the org-roam buffer for the current client.
 
-With prefix arg ARG, prompt for the client to open."
+With prefix arg ASK, prompt for the client to open."
   (interactive "P")
   (switch-to-buffer
    (org-roam-node-find-noselect
-    (timekeep--latest-client-node-maybe-prompt arg))))
+    (timekeep-last-roam-node ask))))
 
 (provide 'timekeep)
 
