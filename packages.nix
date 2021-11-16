@@ -118,12 +118,6 @@
       ];
 
       extraPackages = rec {
-        dired-plus = emacsmirror {
-          name = "dired-plus";
-          rev = "91ce389584b766985efe5821bf0d4143d9cd965b";
-          sha256 = "179kmv2za7ajq4b3aqpl83ny1dkvplf1bp65dqyyk9bc3jqli97p";
-        };
-
         hide-comnt = emacsmirror {
           name = "hide-comnt";
           rev = "d1e94f5152f20b2dc7b0d42898c1db37e5be57a6";

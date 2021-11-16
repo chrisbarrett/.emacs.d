@@ -3506,6 +3506,7 @@ to manually apply it again.
 
 #+begin_src emacs-lisp
   (use-package dired
+    :hook (dired-mode . dired-hide-details-mode)
     :general
     (:states 'normal :keymaps 'dired-mode-map
      "$" #'end-of-line
@@ -3523,6 +3524,8 @@ to manually apply it again.
     (add-hook 'dired-mode-hook #'hl-line-mode)
     (put 'dired-find-alternate-file 'disabled nil))
 #+end_src
+
+*** Set leader keys
 
 #+begin_src emacs-lisp
   (mode-leader-set-key :keymaps 'dired-mode-map
@@ -3553,7 +3556,6 @@ to manually apply it again.
     "d /" '(dired-do-search :wk "search"))
 #+end_src
 
-
 *** Put directories first in sort order
 
 #+begin_src emacs-lisp
@@ -3581,21 +3583,6 @@ to manually apply it again.
     (:states 'normal
      :keymaps 'wdired-mode-map "^" #'evil-first-non-blank
      :keymaps 'dired-mode-map "C-c C-e" #'wdired-change-to-wdired-mode))
-#+end_src
-
-*** Hide file flags
-
-Use =dired+= to hide file flags.
-
-#+begin_src emacs-lisp
-  (use-package dired+
-    :hook (dired-mode . dired-hide-details-mode)
-    :custom
-    (diredp-wrap-around-flag nil)
-    :general
-    (:states 'normal :keymaps 'dired-mode-map
-     "j" #'diredp-next-line
-     "k" #'diredp-previous-line))
 #+end_src
 
 *** Toggle visibility of hidden files
