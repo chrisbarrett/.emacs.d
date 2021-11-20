@@ -3592,6 +3592,8 @@ dot).
 
 #+begin_src emacs-lisp
   (use-package dired-x
+    :demand t
+    :after dired
     :hook (dired-mode . dired-omit-mode)
     :general
     (:states 'normal :keymaps 'dired-mode-map "h" #'dired-omit-mode)
