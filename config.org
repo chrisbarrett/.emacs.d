@@ -3516,7 +3516,7 @@ of =projectile=. Use =projectile= until the builtin functionality is more comple
     :hook (after-init . projectile-mode)
     :custom
     (projectile-project-search-path paths-project-directories)
-    (projectile-switch-project-action #'dired)
+    (projectile-switch-project-action (lambda () (dired default-directory)))
     (projectile-enable-caching t)
     (projectile-create-missing-test-files t)
     (projectile-globally-ignored-files '("TAGS" ".DS_Store"))
