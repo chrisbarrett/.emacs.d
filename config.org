@@ -3071,7 +3071,6 @@ ivy.
     (ivy-flx-limit 2000)
 
     :config
-    (require 'nano-counsel nil t)
     (advice-add 'ivy--queue-exhibit :around #'advice-ignore-errors)
     (ivy-mode +1)
 
