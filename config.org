@@ -1260,6 +1260,24 @@ Configure how =ediff= should display windows when started.
 
 *** TODO Suppress eldoc when point is at a flycheck error
 
+** =M-n= to end in =completing-read= will use the thing at point
+
+#+begin_src emacs-lisp
+  (autoload 'ffap-guesser "ffap")
+
+  (defun config--minibuffer-default-add-function ()
+    (with-selected-window (minibuffer-selected-window)
+      (delete-dups
+       (delq nil
+             (list (thing-at-point 'symbol)
+                   (thing-at-point 'list)
+                   (ffap-guesser)
+                   (thing-at-point-url-at-point))))))
+
+  (setq minibuffer-default-add-function #'config--minibuffer-default-add-function)
+#+end_src
+
+
 * Better eval-expression
 
 Define an alternative version of =eval-expression= that uses =emacs-lisp-mode= to
