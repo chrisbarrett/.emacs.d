@@ -3025,7 +3025,30 @@ Enable =wgrep=, which provides editable grep buffers.
 
 * Prompts and UI enhancements
 
-** =ivy= - completion framework
+** =historian= - Persistent input history
+
+=historian= remembers your choices in completion menus.
+
+#+begin_src emacs-lisp
+  (use-package historian
+    :after (ivy)
+    :demand t
+    :config (historian-mode +1))
+#+end_src
+
+** =orderless= - order-insensitive matching algorithm
+
+https://github.com/oantolin/orderless
+
+#+begin_src emacs-lisp
+  (use-package orderless
+    :custom
+    (completion-styles '(orderless)))
+#+end_src
+
+** Ivy & friends
+
+*** =ivy= - completion framework
 
 =ivy= is a package that provides incremental completion, similar to =helm= or =ido=,
 but actively maintained. =flx= is used as the fuzzy-matching indexer backend for
@@ -3078,7 +3101,7 @@ ivy.
     (setq ivy-height 20))
 #+end_src
 
-*** Hide boring files from completions
+**** Hide boring files from completions
 
 Hide =./= and =../= when finding files.
 
@@ -3092,7 +3115,7 @@ Hide =./= and =../= when finding files.
     (advice-add #'counsel-find-file :around #'config-ivy-with-empty-ivy-extra-directories))
 #+end_src
 
-*** =all-the-icons-ivy-rich= - display icons for all buffers in ivy
+**** =all-the-icons-ivy-rich= - display icons for all buffers in ivy
 
 #+begin_src emacs-lisp
   (use-package all-the-icons-ivy-rich
@@ -3114,14 +3137,14 @@ Hide =./= and =../= when finding files.
     (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line))
 #+end_src
 
-** =swiper= - In-buffer search UI
+*** =swiper= - In-buffer search UI
 
 #+begin_src emacs-lisp
   (use-package swiper
     :general (:states 'normal "/" 'swiper))
 #+end_src
 
-** =counsel= - Better completions built on =ivy=
+*** =counsel= - Better completions built on =ivy=
 
 #+begin_src emacs-lisp
   (use-package counsel
@@ -3140,18 +3163,7 @@ Hide =./= and =../= when finding files.
     (counsel-mode +1))
 #+end_src
 
-** =historian= - Persistent input history
-
-=historian= remembers your choices in completion menus.
-
-#+begin_src emacs-lisp
-  (use-package historian
-    :after (ivy)
-    :demand t
-    :config (historian-mode +1))
-#+end_src
-
-** =ivy-historian= - integrates =historian= with =ivy=.
+*** =ivy-historian= - integrates =historian= with =ivy=.
 
 #+begin_src emacs-lisp
   (use-package ivy-historian
@@ -3167,14 +3179,11 @@ Hide =./= and =../= when finding files.
     (ivy-historian-mode 1))
 #+end_src
 
-** =orderless= - order-insensitive matching algorithm
-
-https://github.com/oantolin/orderless
+*** Integrate =orderless= with ivy
 
 #+begin_src emacs-lisp
   (use-package orderless
     :custom
-    (completion-styles '(orderless))
     (ivy-re-builders-alist '((t . orderless-ivy-re-builder))))
 #+end_src
 
