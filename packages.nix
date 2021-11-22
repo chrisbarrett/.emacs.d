@@ -13,8 +13,7 @@
         bufler
         company
         company-auctex
-        counsel
-        counsel-projectile
+        consult
         dash
         deadgrep
         default-text-scale
@@ -57,8 +56,6 @@
         hl-todo
         htmlize
         ibuffer-projectile
-        ivy
-        ivy-historian
         json-mode
         latex-preview-pane
         ledger-mode
@@ -67,6 +64,7 @@
         lsp-ui
         magit
         magit-popup
+        marginalia
         markdown-mode
         memoize
         messages-are-flowing
@@ -97,6 +95,7 @@
         projectile
         rainbow-mode
         rotate
+        selectrum
         shut-up
         smartparens
         smex
@@ -175,7 +174,6 @@
 
   # Apply any patches needed here.
   overrides = self: super: rec {
-    counsel = withPatches super.counsel [ ./patches/counsel.patch ];
     markdown-mode = withPatches super.markdown-mode [ ./patches/markdown-mode.patch ];
 
     # KLUDGE: yaml from melpa fails to build, so we need to supply our own
