@@ -3056,6 +3056,32 @@ https://github.com/oantolin/orderless
     (selectrum-highlight-candidates-function #'orderless-highlight-matches))
 #+end_src
 
+*** KLUDGE: Use C-h in find-file to traverse up a dir
+
+It would be nice if this was an out-of-the-box thing.
+
+See: [[https://github.com/raxod502/selectrum/issues/498#issuecomment-876424791][Add dedicated command to move up a directory in find-file · Issue #498 · raxo...]]
+
+#+begin_src emacs-lisp
+  (defun selectrum-up (&optional arg)
+    (interactive "p")
+    (save-restriction
+      (narrow-to-region (minibuffer-prompt-end) (point-max))
+      (let ((start (point)))
+        (forward-sexp (- (or arg 1)))
+        (delete-region start (point)))))
+#+end_src
+
+#+begin_src emacs-lisp
+  (use-package selectrum
+    :general
+    (:keymaps 'selectrum-minibuffer-map "C-h" 'selectrum-up))
+#+end_src
+
+**** TODO Teach find-file to understand =~= and =//=
+
+**** TODO Teach find-file how to navigate up past the home dir
+
 *** =consult= - Commands built on top of selectrum
 
 #+begin_src emacs-lisp
