@@ -3601,6 +3601,14 @@ See: https://github.com/magit/magit/commit/26e064e1d78acb4d4d422a0a5743609612863
     (setq magit-git-executable (expand-file-name "~/.nix-profile/bin/git")))
 #+end_src
 
+*** Compatibility with selectrum
+
+#+begin_src emacs-lisp
+  (use-package magit
+    :after (selectrum)
+    (setq magit-completing-read-function #'selectrum-completing-read))
+#+end_src
+
 ** =forge= - teaches =magit= how to work with pull requests and issues
 :LOGBOOK:
 - Note taken on [2021-08-07 Sat 15:27] \\
