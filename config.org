@@ -6206,7 +6206,7 @@ Ensure we use dired rather than the Finder on macOS.
     "k x" '(org-roam-tag-remove :wk "remove tag"))
 #+end_src
 
-*** Use today's org-roam file for initial buffer
+*** Open my index roam file as the initial buffer
 
 #+begin_src emacs-lisp
   (autoload 'org-roam-dailies-goto-today "org-roam-dailies")
@@ -6215,6 +6215,7 @@ Ensure we use dired rather than the Finder on macOS.
         (lambda ()
           (let ((inhibit-redisplay t))
             (org-roam-dailies-goto-today)
+            (org-roam-node-visit (org-roam-node-from-id "0F0670F7-A280-4DD5-8FAC-1DB3D38CD37F"))
             (delete-other-windows)
             (current-buffer))))
 #+end_src
