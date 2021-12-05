@@ -1289,8 +1289,8 @@ See: [[https://lists.gnu.org/archive/html/help-gnu-emacs/2014-07/msg00135.html][
   (defvar eval-expression-interactively-map
     (let ((map (make-sparse-keymap)))
       (set-keymap-parent map read-expression-map)
-      (define-key map (kbd "<escape>") #'minibuffer-keyboard-quit)
-      (define-key map (kbd "C-g") #'minibuffer-keyboard-quit)
+      (define-key map (kbd "<escape>") #'abort-minibuffers)
+      (define-key map (kbd "C-g") #'abort-minibuffers)
       map))
 
   (defun eval-expression-interactively--read (prompt &optional initial-contents)
