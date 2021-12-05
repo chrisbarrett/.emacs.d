@@ -14,6 +14,7 @@
         company
         company-auctex
         consult
+        csv-mode
         dash
         deadgrep
         default-text-scale
