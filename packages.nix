@@ -75,10 +75,10 @@
         no-littering
         orderless
         org
-        org-bullets
         org-cliplink
         org-contrib
         org-fragtog
+        org-superstar
         org-ml
         org-ql
         org-ref

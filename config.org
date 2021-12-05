@@ -5501,18 +5501,14 @@ Automatically enter insert state when inserting new headings or using
 *** =org-bullets= - Use pretty UTF-8 bullet characters for headlines
 
 #+begin_src emacs-lisp
-  (use-package org-bullets
-    :hook (org-mode . org-bullets-mode)
+  (use-package org-superstar
+    :hook (org-mode . org-superstar-mode)
     :custom
-    (org-bullets-bullet-list '("○"))
-
+    (org-superstar-headline-bullets-list '("○"))
+    (org-indent-mode-turns-on-hiding-stars nil)
+    (org-superstar-leading-bullet ?\s)
     :config
-    (defun org-bullets-redraw (&rest _)
-      (dolist (buf (buffer-list))
-        (with-current-buffer buf
-          (when (derived-mode-p 'org-mode)
-            (font-lock-flush (point-min) (point-max))))))
-    (add-hook 'after-theme-change-functions #'org-bullets-redraw))
+    (setf (alist-get 45 org-superstar-item-bullet-alist) ?•))
 #+end_src
 
 ** Attachments
