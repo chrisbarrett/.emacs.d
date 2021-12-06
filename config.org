@@ -5374,9 +5374,9 @@ Normally newlines are reflowed automatically.
 
     "u" '(nil :wk "org-roam-ui")
     "u f" '(org-roam-ui-follow-mode :wk "toggle follow")
-    "u o" '(orui-open :wk "open in browser")
-    "u z" '(orui-node-zoom :wk "zoom")
-    "u l" '(orui-node-local :wk "local")
+    "u o" '(org-roam-ui-open :wk "open in browser")
+    "u z" '(org-roam-ui-node-zoom :wk "zoom")
+    "u l" '(org-roam-ui-node-local :wk "local")
 
     "c" '(org-clock-display :wk "clock overlays")
     "i" '(org-id-get-create :wk "get/create heading ID")
