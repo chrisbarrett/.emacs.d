@@ -428,6 +428,12 @@ applications. The following functions will be invoked by those scripts over
 
 * Definitions needed for config
 
+** Org-roam index
+
+#+begin_src emacs-lisp
+  (defconst org-roam-index-node-id "0F0670F7-A280-4DD5-8FAC-1DB3D38CD37F")
+#+end_src
+
 ** =display-buffer= variables
 
 #+begin_src emacs-lisp
@@ -2807,6 +2813,10 @@ Disabled for now since this breaks insert state in evil :/
 #+begin_src emacs-lisp
   (autoload 'org-ref-bibtex-hydra/body "org-ref-bibtex")
 
+  (defun jump-to-index-file ()
+    (interactive)
+    (org-roam-node-visit (org-roam-node-from-id org-roam-index-node-id)))
+
   (leader-set-key :infix "o"
     "" '(nil :wk "org")
     "SPC" '(org-roam-dailies-capture-today :wk "capture note...")
@@ -2819,6 +2829,8 @@ Disabled for now since this breaks insert state in evil :/
     "c o" '(timekeep-stop :wk "punch out")
     "c r" '(org-resolve-clocks :wk "resolve clocks")
     "c g" '(org-clock-goto :wk "goto last clock")
+
+    "i" '(jump-to-index-file :wk "index file")
 
     "k" '(org-capture :wk "capture...")
     "l" '(org-store-link :wk "store link")
@@ -6210,7 +6222,7 @@ Ensure we use dired rather than the Finder on macOS.
   (defun initial-buffers ()
     (interactive)
     (let ((inhibit-redisplay t))
-      (org-roam-node-visit (org-roam-node-from-id "0F0670F7-A280-4DD5-8FAC-1DB3D38CD37F"))
+      (org-roam-node-visit (org-roam-node-from-id org-roam-index-node-id))
       (delete-other-windows)
       (goto-char (point-min))
       (current-buffer)))
