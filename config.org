@@ -3056,7 +3056,8 @@ https://github.com/oantolin/orderless
 
 #+begin_src emacs-lisp
   (use-package selectrum
-    :hook (after-init . selectrum-mode))
+    :hook (after-init . selectrum-mode)
+    :general (:keymaps 'selectrum-minibuffer-map "C-<return>" 'selectrum-submit-exact-input))
 #+end_src
 
 *** Integrate =selectrum= with =orderless=
