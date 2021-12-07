@@ -96,6 +96,7 @@
         popper
         projectile
         rainbow-mode
+        request
         rotate
         selectrum
         shut-up
