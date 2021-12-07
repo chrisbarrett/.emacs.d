@@ -163,9 +163,10 @@ TAGS are the tags to use when displaying the list."
          (prompt (or prompt "URL"))
          (input (read-string (concat (if default (format "%s (default %s)" prompt default) prompt) ": ")
                              nil nil default)))
-    (if (string-match-p (rx "http" (? "s") "://") input)
-        input
-      (org-funcs-read-url prompt default))))
+    (substring-no-properties
+     (if (string-match-p (rx "http" (? "s") "://") input)
+         input
+       (org-funcs-read-url prompt default)))))
 
 (defun org-funcs-guess-or-retrieve-title (url)
   (if-let* ((match (s-match (rx "github.com/" (group (+? nonl) (or "/issues/" "/pull/") (+ digit) eol))
