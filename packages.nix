@@ -78,13 +78,13 @@
         org-cliplink
         org-contrib
         org-fragtog
-        org-superstar
         org-ml
         org-ql
         org-ref
         org-roam
         org-roam-bibtex
         org-roam-ui
+        org-superstar
         orgtbl-aggregate
         ox-gfm
         page-break-lines
@@ -100,6 +100,7 @@
         rotate
         selectrum
         shut-up
+        simple-httpd
         smartparens
         smex
         terraform-mode
@@ -109,14 +110,13 @@
         unfill
         use-package
         volatile-highlights
+        websocket
         wgrep
         which-key
         world-time-mode
         ws-butler
         yaml-mode
         yasnippet
-        websocket
-        simple-httpd
       ];
 
       extraPackages = rec {
