@@ -16,6 +16,4 @@ rec {
       inherit emacs name buildInputs patches preBuild;
       src = pkgs.fetchFromGitHub { inherit sha256 repo rev owner; };
     };
-
-  withPatches = pkg: patches: pkg.overrideAttrs (attrs: { inherit patches; });
 }
