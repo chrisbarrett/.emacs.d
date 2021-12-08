@@ -5504,7 +5504,7 @@ Automatically enter insert state when inserting new headings or using
 *** Use bullet characters for list items
 
 #+begin_src emacs-lisp
-  (use-package org-mode
+  (use-package org
     :config
     (font-lock-add-keywords 'org-mode
                             `((,(rx bol (* space) (group "-") (+ space))
