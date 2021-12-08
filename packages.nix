@@ -131,14 +131,6 @@
           rev = "4a6b93c170169594e1e8ea60cd799a1a88a969da";
           sha256 = "1xzmx7m1qbl3b1x6yq1db1a108xqaa64ljfv1hdw763zmy4kc6m0";
         };
-
-        org-noter = github {
-          name = "org-noter";
-          owner = "chrisbarrett";
-          rev = "6c2c1a91c1830e03110487867734137f5698904a";
-          sha256 = "1gvalalk27kvvm1ysj8vpjdky3sfw8jvympv9vkkr3dby8b2apwa";
-          buildInputs = [ org ];
-        };
       };
     in
     fromOverlay ++ lib.attrsets.attrValues extraPackages;
