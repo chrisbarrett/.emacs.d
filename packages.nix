@@ -1,4 +1,4 @@
-{ lib, emacsmirror, ... }: epkgs: with epkgs; [
+{ emacsmirror, ... }: epkgs: with epkgs; [
   all-the-icons-ivy-rich
   auctex
   bibtex-completion
