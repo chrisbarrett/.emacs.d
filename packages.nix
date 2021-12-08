@@ -132,22 +132,6 @@
           sha256 = "1xzmx7m1qbl3b1x6yq1db1a108xqaa64ljfv1hdw763zmy4kc6m0";
         };
 
-        mu4e-dashboard = github {
-          name = "mu4e-dashboard";
-          owner = "rougier";
-          rev = "40b2d48da55b7ac841d62737ea9cdf54e8442cf3";
-          sha256 = "1i94gdyk9f5c2vyr184znr54cbvg6apcq38l2389m3h8lxg1m5na";
-          buildInputs = [ pkgs.mu ];
-        };
-
-        mu4e-thread-folding = github {
-          name = "mu4e-thread-folding";
-          owner = "rougier";
-          rev = "c6915585263a744b4da4a0e334393150603136dc";
-          sha256 = "0fki9506q42fz6a86pnx2ll3kl25d6nh4b735c323abnwjirjd50";
-          buildInputs = [ pkgs.mu ];
-        };
-
         org-noter = github {
           name = "org-noter";
           owner = "chrisbarrett";
