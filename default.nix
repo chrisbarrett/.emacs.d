@@ -47,7 +47,6 @@ let
       nixpkgs-fmt
       ripgrep
       sqlite
-      jdk
     ];
   };
 
@@ -56,11 +55,9 @@ let
     css = nodePackages.vscode-css-languageserver-bin;
     eslint = vscode-extensions.dbaeumer.vscode-eslint;
     graphql = vscode-extensions.graphql.vscode-graphql;
-    groovy = pkgs.callPackage ./language-servers/groovy-ls.nix { };
     html = nodePackages.vscode-html-languageserver-bin;
     json = nodePackages.vscode-json-languageserver;
     nix = rnix-lsp;
-    openapi = pkgs.callPackage ./language-servers/aml-ls.nix { };
     terraform = terraform-lsp;
     typescript = nodePackages.typescript-language-server;
     yaml = nodePackages.yaml-language-server;
@@ -109,18 +106,14 @@ pkgs.symlinkJoin {
       if [ -f "$program" ]; then
         wrapProgram "$program" \
           --prefix PATH ":" "${customPathEntries}" \
-          --set NIX_EMACS_AML_LANGUAGE_SERVER_JAR "${languageServers.openapi}/lib/aml-ls/als-server.jar" \
           --set NIX_EMACS_DARWIN_PATH_EXTRAS "${customPathEntries}" \
           --set NIX_EMACS_ESLINT_SERVER_SCRIPT "${languageServers.eslint}/lib/eslintServer.js" \
-          --set NIX_EMACS_GROOVY_LANGUAGE_SERVER_JAR "${languageServers.groovy}/lib/groovy-ls/groovy-ls.jar" \
           --set NIX_EMACS_LSP_ESLINT_NODE_PATH "${pkgs.nodejs}/bin/node" \
           --set NIX_EMACS_TS_LANGUAGE_SERVER "${languageServers.typescript}/bin/typescript-language-server" \
           --set NIX_EMACS_MU_BINARY "${pkgs.mu}/bin/mu" \
           --set NIX_EMACS_MU_LISP_DIR "${pkgs.mu}/share/emacs/site-lisp/mu4e" \
-          --set NIX_EMACS_PLANTUML_JAR "${pkgs.plantuml}/lib/plantuml.jar" \
           --set NIX_EMACS_SRC_DIR "${emacs}/share/emacs/src/" \
-          --set NIX_EMACS_TEX_PROGRAM "${pkgs.tectonic}/bin/tectonic" \
-          --set JAVA_HOME "${pkgs.jdk}"
+          --set NIX_EMACS_TEX_PROGRAM "${pkgs.tectonic}/bin/tectonic"
       fi
     done
   '';
