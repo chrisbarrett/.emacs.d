@@ -95,9 +95,9 @@ let
     let paths = [ "${requiredPrograms}/bin" ] ++ (map (pkg: "${pkg}/bin") (attrsets.attrValues languageServers));
     in
     strings.concatStringsSep ":" paths;
-
 in
-pkgs.symlinkJoin {
+pkgs.symlinkJoin
+{
   name = "emacs-wrapped";
   buildInputs = [ pkgs.makeWrapper ];
   paths = [ emacsWithPackages ];
