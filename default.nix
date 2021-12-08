@@ -54,7 +54,6 @@ let
 
   packages = pkgs.callPackage ./packages.nix (pkgs.callPackage ./builders { });
   emacsEnv = lispPkgs.emacsPackagesNgGen emacs;
-  emacsWithPackages = (emacsEnv.overrideScope' packages.overrides).emacsWithPackages packages.packages;
 
   customPathEntries =
     let paths = [ "${requiredPrograms}/bin" ] ++ (map (pkg: "${pkg}/bin") (attrsets.attrValues languageServers));
@@ -65,7 +64,7 @@ pkgs.symlinkJoin
 {
   name = "emacs-wrapped";
   buildInputs = [ pkgs.makeWrapper ];
-  paths = [ emacsWithPackages ];
+  paths = [ (emacsEnv.emacsWithPackages packages) ];
   postBuild = ''
     for program in "$out/Applications/Emacs.app/Contents/MacOS/Emacs" "$out/bin/emacs"; do
       if [ -f "$program" ]; then
