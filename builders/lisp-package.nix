@@ -1,12 +1,11 @@
 { stdenv
-, lib
+, pkgs
 , emacs
 , name
 , src
 , buildInputs ? [ ]
 , patches ? [ ]
 , preBuild ? ""
-, postInstall ? ""
 }:
 
 stdenv.mkDerivation {
@@ -17,10 +16,8 @@ stdenv.mkDerivation {
   buildInputs = [ emacs ] ++ buildInputs;
   buildPhase = ''
     ${preBuild}
-    ARGS=$(find ${
-      lib.concatStrings
-      (builtins.map (arg: arg + "/share/emacs/site-lisp ") buildInputs)
-    } \
+    ARGS=$(find ${pkgs.lib.concatStrings
+                  (builtins.map (arg: arg + "/share/emacs/site-lisp ") buildInputs)} \
                  -type d -exec echo -L {} \;)
     mkdir $out
     export HOME=$out
@@ -29,11 +26,10 @@ stdenv.mkDerivation {
   installPhase = ''
     mkdir -p $out/share/emacs/site-lisp
     install *.el* $out/share/emacs/site-lisp
-    ${postInstall}
   '';
   meta = {
     description = "Emacs projects from the Internet that just compile .el files";
     homepage = http://www.emacswiki.org;
-    platforms = lib.platforms.all;
+    platforms = pkgs.lib.platforms.all;
   };
 }

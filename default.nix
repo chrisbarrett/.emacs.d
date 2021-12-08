@@ -52,33 +52,9 @@ let
     yaml = nodePackages.yaml-language-server;
   };
 
-  packages = pkgs.callPackage ./packages.nix rec {
-    emacsmirror = args: github (args // { owner = "emacsmirror"; });
-
-    github =
-      { name
-      , repo ? name
-      , rev
-      , owner
-      , sha256
-      , buildInputs ? [ ]
-      , patches ? [ ]
-      , preBuild ? ""
-      , postInstall ? ""
-      }:
-      pkgs.callPackage ./builder.nix {
-        inherit emacs name buildInputs patches preBuild postInstall;
-        src = pkgs.fetchFromGitHub { inherit sha256 repo rev owner; };
-      };
-
-    withPatches = pkg: patches: pkg.overrideAttrs (attrs: { inherit patches; });
-  };
-
-  builder = lispPkgs.emacsPackagesNgGen emacs;
-
-  emacsWithPackages =
-    (builder.overrideScope' packages.overrides).emacsWithPackages
-      packages.packages;
+  packages = pkgs.callPackage ./packages.nix (pkgs.callPackage ./builders { });
+  emacsEnv = lispPkgs.emacsPackagesNgGen emacs;
+  emacsWithPackages = (emacsEnv.overrideScope' packages.overrides).emacsWithPackages packages.packages;
 
   customPathEntries =
     let paths = [ "${requiredPrograms}/bin" ] ++ (map (pkg: "${pkg}/bin") (attrsets.attrValues languageServers));

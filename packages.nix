@@ -1,4 +1,4 @@
-{ pkgs, lib, github, emacsmirror, withPatches }: {
+{ lib, github, emacsmirror, withPatches, ... }: {
   # Set the packages to bake in to emacs. The versions of packages are
   # determined by `emacs-overlay`, but can be overridden in the `overrides`
   # binding later in this file.
