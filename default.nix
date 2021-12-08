@@ -14,28 +14,17 @@ in
 {
   # Version of nixpkgs used for building binaries and Emacs itself.
   pkgs ? nixpkgsWithOverlays {
-    emacsOverlayRev = "f6da7e363211fb0247785651489e5825ee8f29c6";
+    emacsOverlayRev = "c77eefc7683c6c56694e4516f6bd5fc6b3b0cf48";
   }
   # Version of nixpkgs that determines 3rd-party Lisp package versions.
 , lispPkgs ? nixpkgsWithOverlays {
-    emacsOverlayRev = "f6da7e363211fb0247785651489e5825ee8f29c6";
+    emacsOverlayRev = "c77eefc7683c6c56694e4516f6bd5fc6b3b0cf48";
   }
+, emacs ? pkgs.emacsGcc
 }:
 
 let
   inherit (pkgs.lib) strings attrsets;
-
-  emacs = pkgs.emacsGcc.overrideAttrs (old: {
-    patches = old.patches ++ [
-      ./patches/emacs/0001-optional-org-gnus.patch
-      ./patches/emacs/0002-dont-warn-on-archives.patch
-    ];
-
-    postInstall = ''
-      ${old.postInstall}
-      cp -r $src/src $out/share/emacs/src
-    '';
-  });
 
   # Additional programs to be injected into Emacs' environment.
 
