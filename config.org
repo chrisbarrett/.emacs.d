@@ -5430,7 +5430,11 @@ Normally newlines are reflowed automatically.
     org-funcs-toggle-priority
     :general
     (:keymaps 'org-mode-map :states '(normal insert emacs)
-     "C-c l" 'org-funcs-insert-url-as-link))
+     "C-c l" 'org-funcs-insert-url-as-link)
+    :config
+    (add-hook 'org-mode-hook
+              (lambda ()
+                (add-hook 'before-save-hook 'org-funcs-format-before-save nil t))))
 #+end_src
 
 ** =evil-org= - Improve Evil integration with org-mode
