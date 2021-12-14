@@ -10,6 +10,7 @@
 
 ;;; Code:
 
+(require 'async)
 (require 'dash)
 (require 'f)
 (require 'ht)
