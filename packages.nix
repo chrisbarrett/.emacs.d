@@ -79,6 +79,7 @@
   org-roam-ui
   org-superstar
   orgtbl-aggregate
+  origami
   ox-gfm
   page-break-lines
   paren-face

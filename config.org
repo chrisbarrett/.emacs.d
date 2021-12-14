@@ -4437,8 +4437,18 @@ files.
     (add-hook 'yaml-mode-hook #'disable-autofill))
 #+end_src
 
-** =json-mode= - JSON editing support
+*** =origami= - code folding
+#+begin_src emacs-lisp
+  (use-package origami
+    :hook (yaml-mode . origami-mode)
+    :general
+    (:states 'normal :keymaps 'origami-mode-map
+     "TAB" 'origami-recursively-toggle-node
+     "S-<tab>" 'origami-toggle-all-nodes))
+#+end_src
 
+
+** =json-mode= - JSON editing support
 #+begin_src emacs-lisp
   (use-package json-mode
     :commands (json-mode)
