@@ -6042,9 +6042,7 @@ buffers the same, no matter how I create them.
   :PAGES: %p
   :DOI: %D
   :URL: %U
-  :END:
-
-  "))
+  :END:\n\n"))
      (org-ref-notes-directory config-org-roam-bibliography-notes-directory)
      (org-ref-notes-function 'orb-edit-notes)
      ;; Make detection regexps a little more robust.
