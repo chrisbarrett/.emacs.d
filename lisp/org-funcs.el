@@ -391,9 +391,6 @@ exist after each headings's drawers."
                          nil
                        'tree)))
 
-(defun org-funcs-format-before-save ()
-  (org-funcs-fix-blank-lines t))
-
 (provide 'org-funcs)
 
 ;;; org-funcs.el ends here
