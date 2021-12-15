@@ -348,6 +348,9 @@ Load host-specific settings, which are not checked into version control.
                             '(org-link ((t :inherit link :bold nil)) t)
                             '(mode-line ((t :inherit default)))
                             '(font-lock-keyword-face ((t :weight normal :bold nil)) t)
+                            '(org-block ((t :background nil)))
+                            '(org-block-begin-line ((t :inherit font-lock-comment-face :background nil :weight light :italic nil :bold nil)))
+                            '(org-block-end-line ((t :inherit font-lock-comment-face :background nil :weight light :italic nil :bold nil)))
                             '(org-roam-link ((t :inherit org-link :underline nil)) t))
 
     (with-eval-after-load 'doom-solarized-light-theme
