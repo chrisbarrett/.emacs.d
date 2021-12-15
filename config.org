@@ -1562,6 +1562,11 @@ These functions are used in the definitions of snippets.
     (let ((line (buffer-substring (line-beginning-position) (line-end-position))))
       (string-match-p (rx bol (* space) (* word) (* space) eol)
                       line)))
+
+  (defmacro yas-funcs-line-rx-p (&rest rx-forms)
+    `(let ((line (buffer-substring (line-beginning-position) (line-end-position))))
+       (string-match-p (rx-to-string '(and ,@rx-forms))
+                       line)))
 #+end_src
 
 **** emacs-lisp
@@ -1661,6 +1666,13 @@ These functions are used in the definitions of snippets.
         (search-backward-regexp (rx bol (* space) symbol-start "describe" symbol-end) nil t))))
 #+end_src
 
+*** Don't warn if snippet modifies buffer
+I sometimes want to do just-one-space. There's no nice way to do this. The hacky
+solution other is to add an inline lisp call inline to =just-one-space=.
+
+#+begin_src emacs-lisp
+  (add-to-list 'warning-suppress-types '(yasnippet backquote-change))
+#+end_src
 
 ** =editorconfig= - Support editorconfig files
 #+begin_src emacs-lisp
