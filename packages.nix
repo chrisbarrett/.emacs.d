@@ -70,6 +70,7 @@
   org
   org-cliplink
   org-contrib
+  org-download
   org-fragtog
   org-ml
   org-ql

@@ -6120,6 +6120,41 @@ buffers the same, no matter how I create them.
     :after ox)
 #+end_src
 
+** =org-download= - Easily attach images
+Attach images to org buffers via GUI drag-and-drop.
+#+begin_src emacs-lisp
+  (use-package org-download
+    :hook (org-mode . org-download-enable)
+    :custom
+    (org-download-method 'attach)
+    (org-download-annotate-function (-const ""))
+    :config
+    ;; HACK Redefine to fix throw in org-attach.
+    (defun org-download-image (link)
+      "Save image at address LINK to `org-download--dir'."
+      (interactive "sUrl: ")
+      (let* ((link-and-ext (org-download--parse-link link))
+             (filename
+              (cond ((and (eq major-mode 'org-mode) (eq org-download-method 'attach))
+                     (let ((org-download-image-dir (org-attach-dir t))
+                           org-download-heading-lvl)
+                       (apply #'org-download--fullname link-and-ext)))
+                    ((fboundp org-download-method)
+                     (funcall org-download-method link))
+                    (t
+                     (apply #'org-download--fullname link-and-ext)))))
+        (setq org-download-path-last-file filename)
+        (org-download--image link filename)
+        (when (org-download-org-mode-p)
+          (when (eq org-download-method 'attach)
+            (ignore-errors
+              (org-attach-attach filename nil 'none)))
+          (org-download-insert-link link filename))
+        (when (and (eq org-download-delete-image-after-download t)
+                   (not (url-handler-file-remote-p (current-kill 0))))
+          (delete-file link delete-by-moving-to-trash)))))
+#+end_src
+
 ** Add a link type for opening macOS GUI applications
 #+begin_src emacs-lisp
   (use-package org
