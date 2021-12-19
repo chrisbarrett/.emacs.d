@@ -354,6 +354,7 @@ Load host-specific settings, which are not checked into version control.
            (outline-heading `((t :weight bold :foreground nil))))
       (custom-theme-set-faces 'user
                               `(org-document-title ,title)
+                              `(org-roam-header-line ((t :inherit org-document-title)))
                               `(outline-1 ,(append-faces outline-heading title))
                               `(outline-2 ,outline-heading)
                               `(outline-3 ,outline-heading)
