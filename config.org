@@ -5239,11 +5239,7 @@ Automatically enter insert state when inserting new headings or using
     (org-indent-mode-turns-on-hiding-stars nil)
     (org-superstar-headline-bullets-list '(?○))
     (org-superstar-leading-bullet ?\s)
-    (org-superstar-special-todo-items t)
-    (org-superstar-todo-bullet-alist '(("TODO" . ?☐)
-                                       ("WAIT" . ?◹)
-                                       ("CANCELLED" . ?☒)
-                                       ("DONE" . ?☑)))
+    (org-superstar-special-todo-items 'hide)
     :config
     (setf (alist-get 45 org-superstar-item-bullet-alist) ?•))
 #+end_src
