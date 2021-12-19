@@ -375,6 +375,7 @@ Load host-specific settings, which are not checked into version control.
                             '(highlight ((t :inherit nil :foreground nil :background nil :bold t)))
                             `(org-drawer ,block-markup)
                             '(org-document-info-keyword ((t :italic t)) t)
+                            '(org-list-dt ((t :italic t :foreground nil)))
                             '(org-meta-line ((t :italic t)) t)
                             '(org-roam-tag ((t :italic t)) t)
                             '(org-agenda-done ((t :inherit org-done :bold nil)) t)
