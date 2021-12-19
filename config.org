@@ -398,10 +398,12 @@ Load host-specific settings, which are not checked into version control.
     :config
     (with-eval-after-load 'doom-solarized-light-theme
       (custom-theme-set-faces 'doom-solarized-light
+                              '(org-superstar-header-bullet ((t :foreground "#96A7A9")))
                               '(mu4e-highlight-face ((t :foreground "#268bd2")) t)))
 
     (with-eval-after-load 'doom-one-theme
       (custom-theme-set-faces 'doom-one
+                              '(org-superstar-header-bullet ((t :foreground "#5B6268")))
                               '(mu4e-highlight-face ((t :foreground "#51afef")) t)))
 
     (load-theme (choose-by-system-theme :light 'doom-solarized-light :dark 'doom-one) t))
