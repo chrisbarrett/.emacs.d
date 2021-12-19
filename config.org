@@ -5227,7 +5227,7 @@ Automatically enter insert state when inserting new headings or using
   (use-package org
     :custom
     (org-cycle-separator-lines 0)
-    (org-hide-emphasis-markers nil)
+    (org-hide-emphasis-markers t)
     (org-startup-indented t)
     (org-startup-with-latex-preview t)
     (org-startup-folded 'content)
