@@ -95,7 +95,7 @@ Disable window chrome that doesn't make sense in a keyboard-driven UI.
 
 * Debugging
 Hook into the startup lifecycle to report useful debugging information. Note
-that these leverage the ~DEPTH~ so that subsequent functions added to
+that these leverage the ~DEPTH~ argument so that subsequent functions added to
 ~after-init-hook~ are still wrapped correctly.
 
 ** Show profiler report if startup took too long
