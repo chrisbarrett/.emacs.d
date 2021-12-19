@@ -1514,7 +1514,7 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
   (use-package emojify
     :hook (after-init . global-emojify-mode)
     :custom
-    (emojify-emoji-styles '(github unicode))
+    (emojify-emoji-styles '(github))
     (emojify-program-contexts '(comments))
     (emojify-point-entered-behaviour 'uncover)
     (emojify-user-emojis
