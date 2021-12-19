@@ -359,11 +359,11 @@ With optional prefix ARG, prompt for a tags filter."
 
 
 
-(defun org-funcs-fix-blank-lines (&optional prefix)
+(defun org-funcs-fix-blank-lines (&optional scope)
   "Ensure that blank lines exist between headings and their contents.
-With prefix, operate on whole buffer. Ensures that blank lines
-exist after each headings's drawers."
-  (interactive "P")
+
+SCOPE is as defined by `org-map-entries'."
+  (interactive (list (if (equal (buffer-name) "archive.org") 'tree 'file)))
   (org-map-entries (lambda ()
                      (org-with-wide-buffer
                       ;; `org-map-entries' narrows the buffer, which prevents us from seeing
@@ -387,9 +387,8 @@ exist after each headings's drawers."
                        (delete-blank-lines)
                        (when (and (eobp) (not (thing-at-point-looking-at "\n")))
                          (insert "\n"))))
-                   t (if prefix
-                         nil
-                       'tree)))
+                   t
+                   scope))
 
 (provide 'org-funcs)
 

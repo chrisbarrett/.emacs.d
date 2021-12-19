@@ -5164,8 +5164,7 @@ Normally newlines are reflowed automatically.
   (autoload 'org-funcs-fix-blank-lines "org-funcs")
 
   (defun config-org-format-on-save ()
-      (unless (equal (buffer-file-name) "archive.org")
-        (add-hook 'before-save-hook (lambda () (org-funcs-fix-blank-lines t)) nil t)))
+    (add-hook 'before-save-hook #'org-funcs-fix-blank-lines nil t))
 
   (add-hook 'org-mode-hook #'config-org-format-on-save)
 #+end_src
