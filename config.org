@@ -277,6 +277,7 @@ See: [[https://github.com/noctuid/general.el][noctuid/general.el]]
   (require 'subr-x)
   (require 'seq)
   (require 'seq-extras (expand-file-name "lisp/seq-extras.el" user-emacs-directory))
+  (require 'ht)
 #+end_src
 
 ** Load =cl= early to avoid warnings caused by reorganised functions in Emacs 27+
@@ -340,18 +341,42 @@ Load host-specific settings, which are not checked into version control.
     (add-to-list 'custom-theme-load-path (file-name-directory (locate-library "doom-themes")))
     :config
 
-    (custom-theme-set-faces 'user
-                            '(highlight ((t :inherit nil :foreground nil :background nil :bold t)))
-                            '(org-drawer ((t :inherit org-special-keyword)))
-                            '(org-roam-tag ((t :italic t)) t)
-                            '(org-agenda-done ((t :inherit org-done :bold nil)) t)
-                            '(org-link ((t :inherit link :bold nil)) t)
-                            '(mode-line ((t :inherit default)))
-                            '(font-lock-keyword-face ((t :weight normal :bold nil)) t)
-                            '(org-block ((t :background nil)))
-                            '(org-block-begin-line ((t :inherit font-lock-comment-face :background nil :weight light :italic nil :bold nil)))
-                            '(org-block-end-line ((t :inherit font-lock-comment-face :background nil :weight light :italic nil :bold nil)))
-                            '(org-roam-link ((t :inherit org-link :underline nil)) t))
+    (defun append-faces (&rest specs)
+      `((t ,@(ht-to-plist (seq-reduce
+                           (pcase-lambda (acc `((,_pred . ,attrs)))
+                             (ht-merge acc (ht-from-plist attrs)))
+                           specs
+                           (ht-create))))))
+
+    (let* ((headline-size (floor (* 1.2 (face-attribute 'default :height))))
+           (title `((t :height ,headline-size)))
+           (block-markup `((t :inherit font-lock-comment-face :italic t :background nil :weight light :bold nil)))
+           (outline-heading `((t :weight bold :foreground nil))))
+      (custom-theme-set-faces 'user
+                              `(org-document-title ,title)
+                              `(outline-1 ,(append-faces outline-heading title))
+                              `(outline-2 ,outline-heading)
+                              `(outline-3 ,outline-heading)
+                              `(outline-4 ,outline-heading)
+                              `(outline-5 ,outline-heading)
+                              `(outline-6 ,outline-heading)
+                              `(outline-7 ,outline-heading)
+                              `(outline-8 ,outline-heading)
+                              `(org-agenda-structure ,(append-faces outline-heading title))
+                              '(highlight ((t :inherit nil :foreground nil :background nil :bold t)))
+                              `(org-drawer ,block-markup)
+                              '(org-document-info-keyword ((t :italic t)) t)
+                              '(org-meta-line ((t :italic t)) t)
+                              '(org-roam-tag ((t :italic t)) t)
+                              '(org-agenda-done ((t :inherit org-done :bold nil)) t)
+                              '(org-link ((t :inherit link :bold nil)) t)
+                              '(org-todo ((t :weight light :italic t)))
+                              '(mode-line ((t :inherit default)))
+                              '(font-lock-keyword-face ((t :weight normal :bold nil)) t)
+                              `(org-block-begin-line ,block-markup)
+                              '(org-block ((t :background nil)))
+                              `(org-block-end-line ,block-markup)
+                              '(org-roam-link ((t :underline t)) t)))
 
     (with-eval-after-load 'doom-solarized-light-theme
       (custom-theme-set-faces 'doom-solarized-light
