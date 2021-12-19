@@ -5861,8 +5861,16 @@ Ensure we use dired rather than the Finder on macOS.
 
 *** Set leader keys
 #+begin_src emacs-lisp
+  (defun display-backlinks ()
+    "Refresh and show the org-roam buffer."
+    (interactive)
+    (when-let* ((buf (get-buffer org-roam-buffer)))
+      (with-current-buffer buf
+        (org-roam-buffer-refresh)))
+    (org-roam-buffer-toggle))
+
   (mode-leader-set-key :keymaps 'org-mode-map
-    "<tab>" '(org-roam-buffer-toggle :wk "backlinks")
+    "<tab>" '(display-backlinks :wk "backlinks")
     "<" '(org-roam-dailies-find-previous-note :wk "prev daily")
     ">" '(org-roam-dailies-find-next-note :wk "next daily")
     "J" '(org-roam-dailies-goto-date :wk "goto daily...")
