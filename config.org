@@ -5,10 +5,19 @@
 #+property: header-args:emacs-lisp :tangle "config.el" :lexical yes
 #+startup: fold
 
+This file uses org-mode's tangle functionality to create both the
+=early-init.el= and =init.el= files used by Emacs during the startup sequence.
+
+Headings can be tagged with =:disabled:= to 'comment-out' those blocks.
+
 * Early Init
 :PROPERTIES:
 :header-args:emacs-lisp: :tangle "early-init.el" :lexical yes
 :END:
+=early-init.el= is used to set certain variables very early in the startup
+sequence. This lisp is evaluated before the graphical context and package
+manager are initialised.
+
 #+begin_src emacs-lisp
   ;;; early-init.el -- Run at the beginning of Emacs startup sequence.  -*- lexical-binding: t; buffer-read-only: t; -*-
 
@@ -27,13 +36,18 @@
 
 ** Crank up the max size of subprocess output to read.
 This is needed for language servers to perform well, since they communicate
-using large chunks of JSON.
+using large chunks of JSON. See:
+- [[https://emacs-lsp.github.io/lsp-mode/page/performance/][Performance - LSP Mode - LSP support for Emacs]]
 
 #+begin_src emacs-lisp
   (setq read-process-output-max (* 1024 1024))
 #+end_src
 
 ** Make this checkout directory the value for ~user-emacs-directory~
+This makes it possible to run a version of this config checked out to a git
+worktree, for instance, and have all lisp config resolved relative to this
+early-init file.
+
 #+begin_src emacs-lisp
   (setq user-emacs-directory (file-name-directory (or load-file-name (buffer-file-name))))
 #+end_src
@@ -96,7 +110,7 @@ Disable window chrome that doesn't make sense in a keyboard-driven UI.
 * Debugging
 Hook into the startup lifecycle to report useful debugging information. Note
 that these leverage the ~DEPTH~ argument so that subsequent functions added to
-~after-init-hook~ are still wrapped correctly.
+~after-init-hook~ are still ordered correctly.
 
 ** Show profiler report if startup took too long
 #+begin_src emacs-lisp
