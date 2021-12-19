@@ -3,6 +3,7 @@
 ;;; Code:
 
 (require 'f)
+(require 'org-element)
 
 (defconst org-roam-gc-prompt-before-deleting-p nil
   "Whether to prompt before removing files when run interactively.")
@@ -16,11 +17,14 @@
       (widen)
       (save-excursion
         (goto-char (point-min))
-        (while (string-match-p (rx bol "#+")
-                               (buffer-substring (line-beginning-position)
-                                                 (line-end-position)))
-          (forward-line 1))
-        (string-blank-p (buffer-substring (point) (point-max)))))))
+        (while (equal 'property-drawer (org-element-type (org-element-at-point)))
+          (org-forward-element))
+        (while (and (equal 'keyword (org-element-type (org-element-at-point)))
+                    (ignore-errors
+                      (org-forward-element)
+                      t)))
+        (or (eobp)
+            (string-blank-p (buffer-substring (1+ (point)) (point-max))))))))
 
 (defun org-roam-gc--empty-file-content-p (file)
   (with-temp-buffer
@@ -65,11 +69,11 @@ removing files."
   (interactive "p")
   (let ((count
          (thread-last (org-roam-gc-dailies-files)
-           (seq-filter #'org-roam-gc--empty-file-content-p)
-           (seq-filter (lambda (file)
-                         (org-roam-gc--remove-file file (and interactive
-                                                             org-roam-gc-prompt-before-deleting-p))))
-           (length))))
+                      (seq-filter #'org-roam-gc--empty-file-content-p)
+                      (seq-filter (lambda (file)
+                                    (org-roam-gc--remove-file file (and interactive
+                                                                        org-roam-gc-prompt-before-deleting-p))))
+                      (length))))
     (cond
      (interactive
       (message "Deleted %s file%s" count (if (eq 1 count) "" "s")))
