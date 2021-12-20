@@ -5247,7 +5247,7 @@ Automatically enter insert state when inserting new headings or using
     (org-hide-emphasis-markers t)
     (org-startup-indented t)
     (org-startup-with-latex-preview t)
-    (org-startup-folded 'content)
+    (org-startup-folded 'showall)
     (org-startup-shrink-all-tables t)
     (org-startup-with-inline-images t))
 #+end_src
