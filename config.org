@@ -5873,6 +5873,24 @@ Ensure we use dired rather than the Finder on macOS.
     (org-priority-get-priority-function #'config-org-inherited-priority))
 #+end_src
 
+*** Search for and update agenda files automatically
+Search org files in a couple of blessed locations for open TODOs using [[https://github.com/BurntSushi/ripgrep][ripgrep]].
+Populate the agenda with these files.
+
+#+begin_src emacs-lisp
+  (let ((process))
+    (defun config-org-update-agenda-files-by-rg ()
+      (unless (and process (process-live-p process))
+        (let ((default-directory org-directory))
+          (setq process
+                (start-process-shell-command "update-org-agenda-files" nil "rg --files-with-matches '^[*]+ +(TODO|WAIT)' roam tasks -g '!roam/daily' > org-agenda-files"))))))
+
+  (defun config-org-setup-agenda-updates ()
+    (when (derived-mode-p 'org-mode)
+      (config-org-update-agenda-files-by-rg)))
+
+  (add-hook 'after-save-hook #'config-org-setup-agenda-updates)
+#+end_src
 
 ** =org-roam= - Personal wiki & research tooling
 #+begin_src emacs-lisp
