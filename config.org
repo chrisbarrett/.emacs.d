@@ -5261,7 +5261,7 @@ Automatically enter insert state when inserting new headings or using
                                (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•")))))))
 #+end_src
 
-*** =org-bullets= - Use pretty UTF-8 bullet characters for headlines
+*** =org-superstar= - Improve display of headlines
 #+begin_src emacs-lisp
   (use-package org-superstar
     :hook (org-mode . org-superstar-mode)
