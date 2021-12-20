@@ -325,7 +325,8 @@ handles file titles, IDs and tags better."
           (with-current-buffer (find-file-noselect dest-file)
             (org-paste-subtree)
             (org-roam-promote-entire-buffer)
-            (org-funcs--set-file-tags (-union (org-funcs--file-tags) tags))
+            (when-let* ((tags (-union (org-funcs--file-tags) tags)))
+              (org-funcs--set-file-tags tags))
             (save-buffer)))))))
 
 
