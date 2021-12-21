@@ -2123,6 +2123,7 @@ with Nix won't work. Manually add language servers to the path here.
     :general
     (:keymaps 'lsp-mode-map
      "C-c C-c" 'lsp-execute-code-action
+     "C-c r" 'lsp-rename
      [remap evil-lookup] 'lsp-describe-thing-at-point
      [remap jump-to-definition] 'lsp-find-definition)
     :custom
