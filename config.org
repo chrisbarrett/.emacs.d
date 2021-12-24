@@ -5162,6 +5162,15 @@ Normally newlines are reflowed automatically.
       (add-to-list 'org-id-files file)))
 #+end_src
 
+** Tweak flyspell verification function
+#+begin_src emacs-lisp
+  (defun config-org-ignore-formulae (result)
+    (when result
+      (not (equal 'org-formula (get-text-property (point) 'face)))))
+
+  (advice-add #'org-mode-flyspell-verify :filter-return #'config-org-ignore-formulae)
+#+end_src
+
 ** =org-funcs= - org functions used throughout config
 #+begin_src emacs-lisp
   (use-package org-funcs
