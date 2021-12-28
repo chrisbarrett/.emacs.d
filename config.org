@@ -444,6 +444,14 @@ applications. The following functions will be invoked by those scripts over
       (apply f args)))
 #+end_src
 
+** Run a hook when the theme changes
+#+begin_src emacs-lisp
+  (defun config-run-after-load-theme-hook (theme &rest _)
+    (run-hook-with-args 'after-load-theme-functions theme))
+
+  (advice-add 'load-theme :after #'config-run-after-load-theme-hook)
+#+end_src
+
 * Definitions needed for config
 
 ** Org-roam index
@@ -6300,6 +6308,18 @@ buffers the same, no matter how I create them.
     (org-roam-ui-follow t)
     (org-roam-ui-update-on-save t)
     (org-roam-ui-open-on-start t))
+#+end_src
+
+*** Keep org-roam-ui in sync as themes change
+#+begin_src emacs-lisp
+  (use-package org-roam-ui
+    :config
+    (defun config-update-org-roam-ui-theme (&rest _)
+      (when (and (bound-and-true-p org-roam-ui-ws-socket)
+                 (websocket-openp org-roam-ui-ws-socket))
+        (org-roam-ui-sync-theme)))
+
+    (add-hook 'after-load-theme-functions #'config-update-org-roam-ui-theme))
 #+end_src
 
 ** Fix buffer promotion function
