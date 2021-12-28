@@ -6145,6 +6145,15 @@ Attach images to org buffers via GUI drag-and-drop.
                            (org-roam-node-file node))))
 #+end_src
 
+** Apply a created date property to new nodes
+#+begin_src emacs-lisp
+  (defun config-org-roam-set-created-timestamp ()
+    (org-set-property "CREATED" (format-time-string "%F %A %R ")))
+
+  (add-hook 'org-roam-capture-new-node-hook #'config-org-roam-set-created-timestamp)
+#+end_src
+
+
 ** =bibtex= - maintain a bibliography
 #+begin_src emacs-lisp
   (use-package bibtex
