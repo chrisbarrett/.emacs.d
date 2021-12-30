@@ -5986,6 +5986,12 @@ Attach images to org buffers via GUI drag-and-drop.
           (delete-file link delete-by-moving-to-trash)))))
 #+end_src
 
+** =org-pretty-table= - use unicode box characters for org tables
+#+begin_src emacs-lisp
+  (use-package org-pretty-table
+    :hook (org-mode . org-pretty-table-mode))
+#+end_src
+
 ** Add a link type for opening macOS GUI applications
 #+begin_src emacs-lisp
   (use-package org

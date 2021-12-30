@@ -1,4 +1,4 @@
-{ emacsmirror, ... }: epkgs: with epkgs; [
+{ emacsmirror, github, ... }: epkgs: with epkgs; [
   all-the-icons-ivy-rich
   auctex
   bibtex-completion
@@ -113,6 +113,13 @@
   ws-butler
   yaml-mode
   yasnippet
+
+  (github {
+    name = "org-pretty-table";
+    owner = "Fuco1";
+    rev = "7bd68b420d3402826fea16ee5099d04aa9879b78";
+    sha256 = "1lxs94318mvp49swrrb4p87b61qsy61ak8al3msqv1am69wyflsf";
+  })
 
   (emacsmirror {
     name = "hide-comnt";
