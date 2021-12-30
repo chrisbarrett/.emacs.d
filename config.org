@@ -5992,6 +5992,22 @@ Attach images to org buffers via GUI drag-and-drop.
     :hook (org-mode . org-pretty-table-mode))
 #+end_src
 
+** =org-appear= - automatically reveal hidden org elements at point
+This makes it much easier to edit text using emphasis markers correctly.
+#+begin_src emacs-lisp
+  (use-package org-appear
+    :hook (org-mode . org-appear-mode)
+    :custom
+    (org-appear-autoemphasis t)
+    (org-appear-autokeywords t)
+    (org-appear-autolinks nil)
+    (org-hidden-keywords '(title))
+    :config
+    ;; for proper first-time setup, `org-appear--set-elements'
+    ;; needs to be run after other hooks have acted.
+    (run-at-time nil nil #'org-appear--set-elements))
+#+end_src
+
 ** Add a link type for opening macOS GUI applications
 #+begin_src emacs-lisp
   (use-package org

@@ -69,6 +69,7 @@
   no-littering
   orderless
   org
+  org-appear
   org-cliplink
   org-contrib
   org-download
