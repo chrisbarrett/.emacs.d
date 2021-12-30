@@ -5118,6 +5118,15 @@ Normally newlines are reflowed automatically.
      "C-c o" 'org-table-toggle-coordinate-overlays))
 #+end_src
 
+** TODO Get org-ellipsis working
+I want something like the following:
+#+begin_src emacs-lisp
+  (setq org-ellipsis " ▾ ")
+#+end_src
+
+However, the ellipses aren't rendering with this set for some reason. :/ It's
+probably a package incompatibility.
+
 ** Set up major-mode leader keybindings
 #+begin_src emacs-lisp
   ;; https://stackoverflow.com/a/28031539
