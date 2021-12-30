@@ -5583,6 +5583,7 @@ cookie or 'cleared', which indicates no special priority.
     (org-babel-load-languages '((emacs-lisp . t)
                                 (sql . t)
                                 (python . t)
+                                (http . t)
                                 (calc . t)
                                 (shell . t)))
     (org-babel-python-command (executable-find "python3")))

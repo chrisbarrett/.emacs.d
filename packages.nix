@@ -68,6 +68,7 @@
   nix-mode
   no-littering
   orderless
+  ob-http
   org
   org-appear
   org-cliplink
