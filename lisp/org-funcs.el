@@ -72,6 +72,16 @@
   (or (outline-next-heading)
       (goto-char (point-max))))
 
+(defun org-funcs--skipping-ignored-p ()
+  (when-let* ((prop (-some->> (org-entry-get-with-inheritance "AGENDA_SKIP") (downcase))))
+    (cond
+     ((string-match-p (rx bos "ignore" eos) prop)
+      t)
+     ((and (string-match-p (rx bos "scheduled" eos) (downcase prop))
+           (not (org-get-scheduled-time (point) t)))
+      nil
+      t))))
+
 (defun org-funcs-skip-item-if-timestamp ()
   "Skip the item if it has a scheduled or deadline timestamp."
   (when (org-funcs--scheduled-or-deadline-p)
@@ -107,6 +117,9 @@
 
 (defun org-funcs-skip-items-already-in-agenda ()
   (cond
+   ((org-funcs--skipping-ignored-p)
+    nil)
+
    ;; Don't show things that will naturally show in the agenda.
    ((or (org-funcs--scheduled-or-deadline-p) (org-funcs--parent-scheduled-in-future-p))
     (org-funcs--skip-heading-safe))

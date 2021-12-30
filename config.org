@@ -5795,6 +5795,15 @@ Ensure we use dired rather than the Finder on macOS.
 #+end_src
 
 *** Define agenda views
+Define an agenda view that changes depending on whether I'm clocked in or not
+(by invoking =org-funcs-agenda-dwim=). The presence of a running clock means I'm
+in a work context.
+
+The todos shown in the agenda are aggressively filtered using skip functions, so
+that subtasks are preferred. This is used to model GTD-style /next actions/.
+Filtering can be suppressed for a specific tree by setting the =AGENDA_SKIP=
+property to =ignore= or =scheduled=.
+
 #+begin_src emacs-lisp
   (use-package org-agenda
     :custom
