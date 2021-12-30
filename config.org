@@ -6014,7 +6014,6 @@ This makes it much easier to edit text using emphasis markers correctly.
     (org-appear-autoemphasis t)
     (org-appear-autokeywords t)
     (org-appear-autolinks nil)
-    (org-hidden-keywords '(title))
     :config
     ;; for proper first-time setup, `org-appear--set-elements'
     ;; needs to be run after other hooks have acted.
