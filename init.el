@@ -84,6 +84,9 @@
               (cond ((member "disabled" (org-get-tags))
                      (when tangle-debug
                        (message "Init files: Skipping:\n%s" body)))
+                    ((member (org-get-todo-state) '("CANCELLED" "TODO"))
+                     (when tangle-debug
+                       (message "Init files: Skipping todo:\n%s" body)))
                     (t
                      (let* ((block-info (org-babel-get-src-block-info t))
                             (output-file (cdr (assq :tangle (nth 2 block-info)))))
