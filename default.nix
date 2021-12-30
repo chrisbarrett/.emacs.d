@@ -32,6 +32,7 @@ let
     name = "emacs-required-programs";
     paths = with pkgs; [
       (aspellWithDicts (ps: [ ps.en ]))
+      delta
       multimarkdown
       nixpkgs-fmt
       ripgrep

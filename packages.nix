@@ -57,6 +57,7 @@
   lsp-mode
   lsp-ui
   magit
+  magit-delta
   magit-popup
   marginalia
   markdown-mode
