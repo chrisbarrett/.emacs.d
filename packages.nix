@@ -1,7 +1,6 @@
 { emacsmirror, github, ... }: epkgs: with epkgs; [
   all-the-icons-ivy-rich
   auctex
-  bibtex-completion
   browse-at-remote
   bufler
   company
@@ -41,7 +40,6 @@
   git-auto-commit-mode
   graphql-mode
   hcl-mode
-  helm-bibtex
   helpful
   hide-mode-line
   highlight-indent-guides
@@ -77,9 +75,7 @@
   org-fragtog
   org-ml
   org-ql
-  org-ref
   org-roam
-  org-roam-bibtex
   org-roam-ui
   org-superstar
   org-transclusion

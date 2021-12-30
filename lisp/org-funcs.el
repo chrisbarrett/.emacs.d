@@ -19,7 +19,6 @@
 
 (cl-eval-when (compile)
   (require 'org)
-  (require 'org-ref)
   (require 'org-roam)
   (require 'org-agenda)
   (require 'org-clock)
@@ -29,8 +28,6 @@
 (autoload 'org-cliplink-retrieve-title-synchronously "org-cliplink")
 (autoload 'org-project-p "org-project")
 (autoload 'org-project-skip-stuck-projects "org-project")
-(autoload 'org-ref-url-html-to-bibtex "org-ref-url-utils")
-(autoload 'xml-parse-string "xml")
 
 
 ;; Capture template helpers
@@ -197,86 +194,6 @@ TAGS are the tags to use when displaying the list."
         (just-one-space))
       (insert (format "[[%s][%s]]" url escaped-title))
       (just-one-space))))
-
-(defconst org-funcs--wkhtmltopdf-error-buffer-name "*wkhtmltopdf errors*")
-
-(defun org-funcs--update-wkhtmltopdf-error-buffer (output)
-  (with-current-buffer (get-buffer-create org-funcs--wkhtmltopdf-error-buffer-name)
-    (let ((inhibit-read-only t))
-      (erase-buffer)
-      (insert output))
-    (read-only-mode +1)
-    (current-buffer)))
-
-(defvar org-funcs-wkhtmltopdf-program "wkhtmltopdf")
-
-(defun org-funcs--key-of-latest-bib-entry (bibfile)
-  (with-current-buffer (find-file bibfile)
-    (save-excursion
-      (goto-char (point-max))
-      (bibtex-beginning-of-entry)
-      (let ((bibtex-expand-strings t))
-        (reftex-get-bib-field "=key=" (bibtex-parse-entry t))))))
-
-(defvar org-funcs--pdf-download-timeout-seconds 30)
-
-(defun org-funcs-url-to-reference (url &optional show-pdf)
-  "Create a PDF of URL and add it to the bibliography.
-
-Optional argument SHOW-PDF determines whether to show the downloaded PDF."
-  (interactive (list (org-funcs-read-url "Add reference to URL")
-                     t))
-  (require 'org-ref)
-  (let* ((url (car (split-string url "?")))
-         (bibfile (car (org-ref-find-bibliography)))
-         (tmpfile (make-temp-file "wkhtmltopdf_" nil ".pdf"))
-         (reporter (make-progress-reporter "Downloading PDF"))
-         (status)
-         (process
-          (async-start-process "wkhtmltopdf"
-                               org-funcs-wkhtmltopdf-program
-                               (lambda (_proc)
-                                 (setq status 'done))
-                               "--log-level" "warn"
-                               url
-                               tmpfile))
-         (buf (process-buffer process)))
-
-    (cl-labels ((cleanup-on-error ()
-                                  (progress-reporter-done reporter)
-                                  (let ((cause (with-current-buffer buf (buffer-string))))
-                                    (org-funcs--update-wkhtmltopdf-error-buffer cause))
-                                  (ignore-errors
-                                    (delete-file tmpfile))
-                                  (ignore-errors
-                                    (kill-buffer (process-buffer process))))
-                (go ()
-                    (pcase-exhaustive status
-                      ('timeout
-                       (cleanup-on-error)
-                       (message "PDF creation timed out. See %s for details." org-funcs--wkhtmltopdf-error-buffer-name))
-                      ((guard (process-live-p process))
-                       (progress-reporter-update reporter)
-                       (run-with-timer 0.5 nil #'go))
-                      ((or 'done (guard (< 0 (f-size tmpfile))))
-                       (progress-reporter-done reporter)
-                       ;; Append an entry to the bibfile.
-                       (org-ref-url-html-to-bibtex bibfile url)
-                       (let* ((key (org-funcs--key-of-latest-bib-entry bibfile))
-                              (target (f-join org-ref-pdf-directory (format  "%s.pdf" key))))
-                         (rename-file tmpfile target)
-                         (when show-pdf
-                           (find-file target))
-                         (message "PDF downloaded to %s" target)))
-                      (_
-                       (cleanup-on-error)
-                       (message "PDF download failed. See %s for details." org-funcs--wkhtmltopdf-error-buffer-name)))))
-      (go))
-
-    (run-with-timer org-funcs--pdf-download-timeout-seconds
-                    nil
-                    (lambda ()
-                      (setq status 'timeout)))))
 
 (defun org-funcs--file-tags ()
   (save-match-data
