@@ -5837,18 +5837,6 @@ property to =ignore= or =scheduled=.
            (org-agenda-archives-mode t)))))))
 #+end_src
 
-
-*** Easily exclude on-hold tasks
-#+begin_src emacs-lisp
-  (use-package org-agenda
-    :config
-    (defun org-funcs-exclude-tasks-on-hold (tag)
-      (and (equal tag "hold") (concat "-" tag)))
-
-    :custom
-    (org-agenda-auto-exclude-function #'org-funcs-exclude-tasks-on-hold))
-#+end_src
-
 *** Reveal context around item on ~TAB~
 #+begin_src emacs-lisp
   (use-package org-agenda

@@ -61,9 +61,6 @@
       (org-agenda nil "w")
     (org-agenda nil "p")))
 
-(defun org-funcs-exclude-tasks-on-hold (tag)
-  (and (equal tag "hold") (concat "-" tag)))
-
 (defun org-funcs--scheduled-or-deadline-p ()
   (or (org-get-scheduled-time (point))
       (org-get-deadline-time (point))))
