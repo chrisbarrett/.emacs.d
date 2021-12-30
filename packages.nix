@@ -82,6 +82,7 @@
   org-roam-bibtex
   org-roam-ui
   org-superstar
+  org-transclusion
   orgtbl-aggregate
   origami
   ox-gfm

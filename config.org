@@ -384,6 +384,7 @@ Load host-specific settings, which are not checked into version control.
                             '(org-done ((t :weight light :italic t)))
                             '(mode-line ((t :inherit default)))
                             '(font-lock-keyword-face ((t :weight normal :bold nil)) t)
+                            `(org-transclusion-keyword ((t :inherit org-meta-line)))
                             `(org-block-begin-line ,block-markup)
                             '(org-block ((t :background nil)))
                             `(org-block-end-line ,block-markup)))
@@ -6091,6 +6092,13 @@ This makes it much easier to edit text using emphasis markers correctly.
 
     "E" '(org-funcs-roam-extract-subtree :wk "extract subtree to roam file...")
 
+    "i" '(nil :wk "transclusion")
+    "i a" '(org-transclusion-add :wk "add")
+    "i A" '(org-transclusion-add-all :wk "add all")
+    "i i" '(org-transclusion-make-from-link :wk "make from link...")
+    "i x" '(org-transclusion-remove :wk "remove")
+    "i X" '(org-transclusion-remove :wk "remove all")
+
     "l" '(nil :wk "alias")
     "l a" '(org-roam-alias-add :wk "add alias")
     "l x" '(org-roam-alias-remove :wk "remove alias")
@@ -6355,6 +6363,74 @@ buffers the same, no matter how I create them.
         (org-roam-ui-sync-theme)))
 
     (add-hook 'after-load-theme-functions #'config-update-org-roam-ui-theme))
+#+end_src
+
+** =org-transclusion= - share trees across org files
+#+begin_src emacs-lisp
+  (use-package org-transclusion
+    :hook (org-mode . org-transclusion-mode)
+    :config
+    (add-to-list 'org-transclusion-extensions 'org-transclusion-indent-mode)
+    (require 'org-transclusion-indent-mode)
+    :general
+    (:keymaps 'org-transclusion-map :states '(motion normal)
+     "TAB" 'org-cycle
+     "<" 'org-transclusion-demote-subtree
+     ">" 'org-transclusion-promote-subtree
+     "O" 'org-transclusion-move-to-source
+     "x" 'org-transclusion-remove
+     "e" 'org-transclusion-live-sync-start
+     "g" 'org-transclusion-refresh
+     "o" 'org-transclusion-open-source))
+#+end_src
+
+*** =evil-org= compatibility
+We want to use =org-transclusion= commands instead of the evil ones where
+appropriate. Iterate through the evil-org-mode keymap and apply advice to each
+top-level function we find.
+
+There's probably a saner way to do this.
+
+#+begin_src emacs-lisp
+  (defun org-transclusion-local-map-passthrough (fn &rest args)
+    (if-let* ((local-fn (and (equal (get-text-property (point) 'local-map) org-transclusion-map)
+                             (lookup-key org-transclusion-map (char-to-string last-input-event)))))
+        (call-interactively local-fn)
+      (apply fn args)))
+
+  (use-package org-transclusion
+    :after evil-org
+    :config
+    (dolist (state '(motion normal))
+      (let* ((keymap (alist-get 'evil-org-mode (evil-state-minor-mode-keymaps state)))
+             (bindings (seq-filter (lambda (it) (and (consp it)
+                                                (characterp (car it))
+                                                (functionp (cdr it))))
+                                   keymap))
+             (commands (seq-map #'cdr bindings)))
+        (dolist (command commands)
+          (advice-add command :around #'org-transclusion-local-map-passthrough)))))
+#+end_src
+
+*** Support deleting whole headlines containing transclusions
+When using structural editing commands, I don't want to have to think about whether a headline is a transclusion or not.
+#+begin_src emacs-lisp
+  (defun config-org-at-writable-subtree-p ()
+    (org-with-wide-buffer
+     (cond
+      ((org-at-heading-p)
+       (not (get-text-property (point) 'read-only)))
+      (t
+       (org-previous-visible-heading 1)
+       (not (get-text-property (point) 'read-only))))))
+
+  (defun config-maybe-ignore-transclusion-read-only (fn &rest args)
+    (let ((inhibit-read-only (config-org-at-writable-subtree-p)))
+      (apply fn args)))
+
+  (use-package org-transclusion
+    :config
+    (advice-add 'org-cut-subtree :around #'config-maybe-ignore-transclusion-read-only))
 #+end_src
 
 ** Fix buffer promotion function
