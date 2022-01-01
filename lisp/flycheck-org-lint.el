@@ -11,6 +11,7 @@
   (flycheck-prepare-emacs-lisp-form
     (require 'org)
     (require 'org-attach)
+    (require 'ol)
     (let ((source (car command-line-args-left))
           (process-default-directory default-directory))
       (with-temp-buffer
@@ -19,12 +20,9 @@
         (setq default-directory process-default-directory)
         (delay-mode-hooks (org-mode))
         (setq delayed-mode-hooks nil)
-        (dolist (err (org-lint))
-          (let ((inf (cl-second err)))
-            (princ (elt inf 0))
-            (princ ": ")
-            (princ (elt inf 2))
-            (terpri)))))))
+        (pcase-dolist (`(,_ [,line ,level ,error]) (org-lint))
+          (princ (format "%s: %s - %s" line level error))
+          (terpri))))))
 
 (defconst flycheck-org-lint-variables
   '(org-directory
@@ -54,7 +52,8 @@
             "--eval" (eval flycheck-org-lint-form)
             "--" source)
   :error-patterns
-  ((error line-start line ": " (message) line-end))
+  ((warning line-start line ": low - " (message) line-end)
+   (error line-start line ": " (+? word) " - " (message) line-end))
   :modes org-mode)
 
 (provide 'flycheck-org-lint)
