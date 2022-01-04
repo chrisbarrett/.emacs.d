@@ -6174,7 +6174,9 @@ This makes it much easier to edit text using emphasis markers correctly.
 ** Apply a created date property to new nodes
 #+begin_src emacs-lisp
   (defun config-org-roam-set-created-timestamp ()
-    (org-set-property "CREATED" (format-time-string "%F %A %R ")))
+    (org-with-wide-buffer
+     (unless (org-entry-get (point) "CREATED")
+       (org-set-property "CREATED" (format-time-string "%F %A %R ")))))
 
   (add-hook 'org-roam-capture-new-node-hook #'config-org-roam-set-created-timestamp)
 #+end_src
