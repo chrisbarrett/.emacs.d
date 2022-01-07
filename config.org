@@ -6142,7 +6142,7 @@ This makes it much easier to edit text using emphasis markers correctly.
   (setq initial-buffer-choice #'initial-buffers)
 #+end_src
 
-** Automatically clean up empty dailies
+** =org-roam-gc= - Automatically clean up empty dailies
 #+begin_src emacs-lisp
   (use-package org-roam-gc
     :after org-roam
