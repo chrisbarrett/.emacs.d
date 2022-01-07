@@ -39,8 +39,12 @@
 (defconst org-roam-review-maturity-values '("seedling" "evergreen" "budding"))
 
 
-;; We maintain a cache file for snappy reviews. Define plumbing commands for
-;; cache here.
+;;; Define cache operations
+
+;; Maintain a cache file to ensure review sessions are as responsive as
+;; possible.
+
+;; Define plumbing commands for cache here.
 
 (defvar org-roam-review--cache nil)
 
@@ -48,7 +52,7 @@
   (unless org-roam-review--cache
     (setq org-roam-review--cache
           (or (ignore-errors (read (f-read-text org-roam-review-cache-file)))
-              (make-hash-table))))
+              (make-hash-table :test #'equal))))
   org-roam-review--cache)
 
 (defun org-roam-review--cache-mutate (fn)
@@ -62,7 +66,6 @@
   (when (file-exists-p org-roam-review-cache-file)
     (delete-file org-roam-review-cache-file)))
 
-
 ;; Define cache-management porcelain in terms of plumbing.
 
 (defun org-roam-review--props-in-buffer ()
@@ -120,25 +123,57 @@
 
 
 
+;;; Review buffers
+
+(define-derived-mode org-roam-review-mode org-roam-mode "Org-roam-review"
+  "Major mode for displaying relevant information about Org-roam
+nodes for review."
+  :group 'org-roam-review)
+
+(defun org-roam-review--create-review-buffer (title filtered-cache)
+  (let ((buf (get-buffer-create "*org-roam-review*")))
+    (with-current-buffer buf
+      (let ((inhibit-read-only t))
+        (erase-buffer)
+        (org-roam-review-mode)
+        (org-roam-buffer-set-header-line-format title)
+
+        (magit-insert-section (org-roam-review)
+          (magit-insert-heading)
+          (maphash (-lambda (_ (&plist :id))
+                     (when-let* ((node (org-roam-node-from-id id)))
+                       (org-roam-node-insert-section
+                        :source-node node
+                        :point 0
+                        :properties nil))
+                     (insert ?\n))
+                   filtered-cache))
+        (goto-char 0))
+      (let ((children (oref magit-root-section children)))
+        (mapc 'magit-section-hide children)))
+    (display-buffer buf)))
+
 ;;;###autoload
 (defun org-roam-review ()
   (interactive)
-  (let ((matches (org-roam-review--cache-collect
-                  (-lambda (_ (value &as &plist :review))
-                    (when review
-                      (let ((date (org-read-date review)))
-                        (when (org-time-less-p nil date)
-                          value)))))))
-    (pp-display-expression matches "*due notes*")))
+  (org-roam-review--create-review-buffer
+   "Due notes"
+   (org-roam-review--cache-collect
+    (-lambda (_ (value &as &plist :review))
+      (when review
+        (let ((date (org-read-date review)))
+          (when (org-time-less-p nil date)
+            value)))))))
 
 ;;;###autoload
 (defun org-roam-review-pending ()
   (interactive)
-  (let ((matches (org-roam-review--cache-collect
-                  (-lambda (_ (value &as &plist :maturity :review))
-                    (unless (and review maturity)
-                      value)))))
-    (pp-display-expression matches "*pending notes*")))
+  (org-roam-review--create-review-buffer
+   "Pending notes"
+   (org-roam-review--cache-collect
+    (-lambda (_ (value &as &plist :maturity :review))
+      (unless (and review maturity)
+        value)))))
 
 
 
@@ -172,10 +207,10 @@
 
 
 ;;;###autoload
-(define-minor-mode org-roam-review-mode
+(define-minor-mode org-roam-review-cache-mode
   "Minor mode to enable book-keeping used for notes reviews"
   :group 'org-roam-review
-  (if org-roam-review-mode
+  (if org-roam-review-cache-mode
       (add-hook 'after-save-hook #'org-roam-review--cache-update nil t)
     (remove-hook 'after-save-hook #'org-roam-review--cache-update t)))
 

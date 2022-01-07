@@ -2710,6 +2710,7 @@ Disabled for now since this breaks insert state in evil :/
     "d" '(org-roam-dailies-goto-date :wk "dailies: date...")
 
     "r" '(org-roam-review :wk "review notes")
+    "R" '(org-roam-review-pending :wk "review pending notes")
     "p" '(org-funcs-goto-todos :wk "todos")
     "g" '(org-capture-goto-last-stored :wk "last captured")
     "t" '(org-funcs-todo-list :wk "todo list")
@@ -6154,7 +6155,7 @@ This makes it much easier to edit text using emphasis markers correctly.
 ** =org-roam-review= - spaced-repetition implementation for org-roam notes
 #+begin_src emacs-lisp
   (use-package org-roam-review
-    :hook (org-mode . org-roam-review-mode)
+    :hook (org-mode . org-roam-review-cache-mode)
     :custom
     (org-roam-review-cache-file (f-join paths-cache-directory "org-roam-review"))
     :general
