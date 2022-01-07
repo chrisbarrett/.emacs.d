@@ -342,7 +342,7 @@ Load host-specific settings, which are not checked into version control.
     (load-file-with-stats user-site-file))
 #+end_src
 
-* Colour theme
+* :paintbrush: Colour theme
 
 ** Define a quick-and-dirty utility for smashing face specs together
 #+begin_src emacs-lisp
@@ -2158,7 +2158,7 @@ with Nix won't work. Manually add language servers to the path here.
     (yaml-mode . lsp-ui-doc-mode))
 #+end_src
 
-* Set up leader keys
+* :keyboard: Set up leader keys
 Note that we ensure evil is loaded first before binding any keys below,
 otherwise =general= is pathologically slow.
 
@@ -5070,7 +5070,7 @@ Normally newlines are reflowed automatically.
     :hook (message-mode . setup-hard-newlines))
 #+end_src
 
-* =org-mode= - Org document format & editing support
+* :writing-hand: =org-mode= - Org document format & editing support
 
 ** Set general org-mode variables
 #+begin_src emacs-lisp
@@ -6052,7 +6052,7 @@ This makes it much easier to edit text using emphasis markers correctly.
                              :complete #'org-link-complete-app))
 #+end_src
 
-* =org-roam= - Personal wiki & research tooling
+* :notebook: =org-roam= - Personal wiki & research tooling
 #+begin_src emacs-lisp
   (use-package org-roam
     :commands
