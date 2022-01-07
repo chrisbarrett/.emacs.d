@@ -371,6 +371,8 @@ Load host-specific settings, which are not checked into version control.
                             `(outline-6 ,outline-heading)
                             `(outline-7 ,outline-heading)
                             `(outline-8 ,outline-heading)
+                            `(org-roam-title ((t :inherit outline-2 :weight semi-bold)))
+                            `(org-roam-olp ((t :inherit org-roam-title :weight bold)))
                             `(org-agenda-structure ,(append-faces outline-heading title))
                             '(link ((t :weight unspecified)) t)
                             '(highlight ((t :inherit nil :foreground nil :background nil :bold t)))
