@@ -1539,13 +1539,6 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
     (emojify-emoji-styles '(github))
     (emojify-program-contexts '(comments))
     (emojify-point-entered-behaviour 'uncover)
-    (emojify-user-emojis
-     '((":check:" . (("emoji" . ":white_check_mark:")
-                     ("name" . "White Heavy Check Mark")
-                     ("unicode" . "✅")
-                     ("image" . "2705.png")
-                     ("style" . "github")))))
-
     :config
     (defun emojify-at-org-drawer-p (&rest _)
       (when (derived-mode-p 'org-mode 'org-agenda-mode)
