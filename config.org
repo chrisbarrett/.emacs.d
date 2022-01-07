@@ -6082,7 +6082,7 @@ This makes it much easier to edit text using emphasis markers correctly.
         :unnarrowed t)))
     (org-roam-dailies-capture-templates
      '(("d" "default" entry "* %?" :target
-        (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d %A>\n#+filetags: dailies\n"))))
+        (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d %A>\n#+filetags: :dailies:\n"))))
 
     :config
     (org-roam-setup)
