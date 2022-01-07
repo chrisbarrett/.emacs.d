@@ -4066,7 +4066,6 @@ Display =ielm= in a side window.
      :states '(motion normal insert)
      "C-c C-<return>" 'pp-eval-last-sexp
      "C-c <return>" 'pp-eval-last-sexp
-     "C-c e" 'pp-macroexpand-last-sexp
      "C-c C-e" 'pp-macroexpand-last-sexp))
 #+end_src
 
