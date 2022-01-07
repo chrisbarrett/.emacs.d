@@ -250,7 +250,7 @@ handles file titles, IDs and tags better."
           (newline)
           (save-buffer)
           (with-current-buffer (find-file-noselect dest-file)
-            (org-paste-subtree)
+            (org-paste-subtree nil nil nil t)
             (org-roam-promote-entire-buffer)
             (when-let* ((tags (-union (org-funcs--file-tags) tags)))
               (org-funcs--set-file-tags tags))
