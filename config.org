@@ -6155,6 +6155,9 @@ This makes it much easier to edit text using emphasis markers correctly.
 ** =org-roam-review= - spaced-repetition implementation for org-roam notes
 #+begin_src emacs-lisp
   (use-package org-roam-review
+    :hook (org-mode . org-roam-review-mode)
+    :custom
+    (org-roam-review-cache-file (f-join paths-cache-directory "org-roam-review"))
     :general
     (:states '(insert normal) :keymap 'org-mode-map
      "C-c r r" '(org-roam-review :wk "review...")

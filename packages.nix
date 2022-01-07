@@ -72,6 +72,7 @@
   org-cliplink
   org-contrib
   org-download
+  org-drill
   org-fragtog
   org-ml
   org-ql
