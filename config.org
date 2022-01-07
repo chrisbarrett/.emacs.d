@@ -824,6 +824,11 @@ than paginating through the buffer.
   (setq scroll-conservatively 101)
 #+end_src
 
+** Disable font-panel keybinding in macOS
+#+begin_src emacs-lisp
+  (global-set-key (kbd "s-t") nil)
+#+end_src
+
 ** =comint= - Base package for interpreter inferior processes
 #+begin_src emacs-lisp
   (use-package comint
