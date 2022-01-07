@@ -6077,7 +6077,7 @@ This makes it much easier to edit text using emphasis markers correctly.
     (org-roam-extract-new-file-path "%<%Y-%m-%d--%H-%M-%S>.org")
     (org-roam-capture-templates
      '(("d" "default" plain "%?" :if-new
-        (file+head "%<%Y-%m-%d--%H-%M-%S>.org" "#+title: ${title}\n")
+        (file+head "%<%Y-%m-%d--%H-%M-%S>.org" "#+title: ${title}\n#+filetags: :budding:\n")
         :immediate-finish t
         :unnarrowed t)))
     (org-roam-dailies-capture-templates
