@@ -240,7 +240,7 @@ handles file titles, IDs and tags better."
       (when (file-exists-p dest-file)
         (user-error "%s exists. Aborting" dest-file))
 
-      (let ((title (org-get-heading))
+      (let ((title (org-link-display-format (org-get-heading)))
             (tags (org-get-tags))
             (id (org-id-get-create)))
 
