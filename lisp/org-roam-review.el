@@ -26,6 +26,7 @@
 (require 'org-roam)
 (require 'org-roam-dailies)
 (require 'f)
+(require 'ht)
 
 (defgroup org-roam-review nil
   "Extends org-roam with spaced-repetition review of notes."
@@ -52,14 +53,14 @@
 (defun org-roam-review--cache ()
   (unless org-roam-review--cache
     (setq org-roam-review--cache
-          (or (ignore-errors (read (f-read-text org-roam-review-cache-file)))
+          (or (ignore-errors (ht-from-alist (read (f-read-text org-roam-review-cache-file))))
               (make-hash-table :test #'equal))))
   org-roam-review--cache)
 
 (defun org-roam-review--cache-mutate (fn)
   (let ((cache (org-roam-review--cache)))
     (funcall fn cache)
-    (f-write-text (prin1-to-string cache t) 'utf-8 org-roam-review-cache-file)
+    (f-write-text (prin1-to-string (ht-to-alist cache) t) 'utf-8 org-roam-review-cache-file)
     cache))
 
 (defun org-roam-review--cache-clear ()
