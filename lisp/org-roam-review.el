@@ -40,6 +40,12 @@
 
 (defconst org-roam-review-maturity-values '("seedling" "evergreen" "budding"))
 
+(defcustom org-roam-review-ignored-tags '()
+  "A list of tags that define a note should not be considered a
+candidate for reviews."
+  :group 'org-roam-review
+  :type '(list string))
+
 
 ;;; Define cache operations
 
@@ -87,7 +93,9 @@
                                                           (encode-time))))
                                  (list :next-review next-review))
                                (when-let* ((maturity (org-entry-get (point) "MATURITY")))
-                                 (list :maturity maturity)))))
+                                 (list :maturity maturity))
+                               (when-let* ((tags (org-roam-review--file-or-headline-tags)))
+                                 (list :tags tags)))))
            (push item acc)))
        (nreverse acc)))))
 
@@ -111,18 +119,31 @@
              table)
     table))
 
+(defun org-roam-review--file-or-headline-tags ()
+  (if (org-before-first-heading-p)
+      org-file-tags
+    (org-get-tags)))
+
+(defun org-roam-review--cache-roam-files ()
+  (f-files org-roam-directory
+           (lambda (file)
+             (with-temp-buffer
+               (insert-file-contents file)
+               (setq-local major-mode 'org-mode)
+               (org-set-regexps-and-options)
+               (let ((skip-p (or (org-roam-dailies--daily-note-p file)
+                                 (seq-intersection org-roam-review-ignored-tags (org-roam-review--file-or-headline-tags)))))
+                 (unless skip-p
+                   (org-roam-review--cache-mutate #'org-roam-review--update-by-props-in-buffer)))))
+           t))
+
 ;;;###autoload
 (defun org-roam-review-cache-rebuild ()
   "Rebuild the evergreen notes cache."
   (interactive)
   (org-roam-review--cache-clear)
-  (f-files org-roam-directory
-           (lambda (file)
-             (with-temp-buffer
-               (insert-file-contents file)
-               (unless (org-roam-dailies--daily-note-p file)
-                 (org-roam-review--cache-mutate #'org-roam-review--update-by-props-in-buffer))))
-           t)
+  (org-roam-review--cache-roam-files)
+  ;; Write back to disk.
   (org-roam-review--cache-mutate #'ignore)
   (message "Rebuilt evergreen notes index."))
 
@@ -141,7 +162,7 @@
 nodes for review."
   :group 'org-roam-review)
 
-(defun org-roam-review--insert-review-section (node)
+(defun org-roam-review--insert-note-section (node)
   (magit-insert-section section (org-roam-node-section)
     (insert (propertize (org-roam-node-title node)
                         'font-lock-face 'org-roam-title))
@@ -149,11 +170,10 @@ nodes for review."
     (oset section node node)
     (magit-insert-section section (org-roam-preview-section)
       (insert (org-roam-fontify-like-in-org-mode
-               (org-roam-preview-get-contents (org-roam-node-file node) 0))
-              "\n")
+               (org-roam-preview-get-contents (org-roam-node-file node) 0)))
       (oset section file (org-roam-node-file node))
       (oset section point 0)
-      (insert ?\n))))
+      (insert "\n\n"))))
 
 (defun org-roam-review--create-review-buffer (title instructions filtered-cache)
   (let ((buf (get-buffer-create "*org-roam-review*")))
@@ -178,7 +198,7 @@ nodes for review."
                  (magit-insert-heading)
                  (maphash (-lambda (_ (&plist :id))
                             (when-let* ((node (org-roam-node-from-id id)))
-                              (org-roam-review--insert-review-section node)))
+                              (org-roam-review--insert-note-section node)))
                           filtered-cache))
                (goto-char 0)
                (let ((children (oref magit-root-section children)))
@@ -197,27 +217,29 @@ Read each note and add new thoughts and connections, then mark
 them as reviewed with `org-roam-review-accept',
 `org-roam-review-bury' or by updating their maturity."
    (org-roam-review--cache-collect
-    (-lambda (_ (value &as &plist :next-review))
-      (when (and next-review (or
-                              (time-equal-p next-review nil)
-                              (time-less-p next-review nil)))
-        value)))))
+    (-lambda (_ (value &as &plist :next-review :tags))
+      (unless (seq-intersection tags org-roam-review-ignored-tags)
+        (when (and next-review (or
+                                (time-equal-p next-review nil)
+                                (time-less-p next-review nil)))
+          value))))))
 
 ;;;###autoload
-(defun org-roam-review-pending ()
+(defun org-roam-review-list-uncategorised ()
   "List notes missing required properties to be used for reviews.
 
 This is useful for migrating notes into the spaced repetition
 system."
   (interactive)
   (org-roam-review--create-review-buffer
-   "Pending Notes"
-   "The notes below are missing the properties required for reviews.
-Read each note in the list and set their maturity."
+   "Uncategorised Notes"
+   "The notes below are missing the properties needed to be included
+in reviews. Categorise them as appropriate."
    (org-roam-review--cache-collect
-    (-lambda (_ (value &as &plist :maturity :next-review))
-      (unless (and next-review maturity)
-        value)))))
+    (-lambda (_ (value &as &plist :maturity :next-review :tags))
+      (unless (seq-intersection tags org-roam-review-ignored-tags)
+        (unless (and next-review maturity)
+          value))))))
 
 
 
