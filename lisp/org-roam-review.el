@@ -269,6 +269,7 @@ Read each note in the list and set their maturity."
          (org-roam-tag-remove org-roam-review-maturity-values))
        (org-roam-tag-add (list maturity))
 
+       (save-buffer)
        (message "Maturity set to '%s'. Review scheduled for %s" maturity next-review)))))
 
 ;;;###autoload
