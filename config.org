@@ -5104,7 +5104,6 @@ Normally newlines are reflowed automatically.
      "C-c /" 'org-tags-view)
     (:states '(insert) :keymaps 'org-mode-map
      "<tab>" (general-predicate-dispatch 'org-cycle
-               (eq ?: (char-before)) 'emojify-insert-emoji
                (yas--templates-for-key-at-point) 'yas-expand))
     (:states '(emacs normal) :keymaps 'org-mode-map
      "<backtab>" 'org-global-cycle
