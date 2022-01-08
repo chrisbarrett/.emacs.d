@@ -60,7 +60,7 @@
 (defun org-roam-review--cache-mutate (fn)
   (let ((cache (org-roam-review--cache)))
     (funcall fn cache)
-    (f-write-text (prin1-to-string (ht-to-alist cache) t) 'utf-8 org-roam-review-cache-file)
+    (f-write-text (prin1-to-string (ht-to-alist cache)) 'utf-8 org-roam-review-cache-file)
     cache))
 
 (defun org-roam-review--cache-clear ()
@@ -123,6 +123,7 @@
                (unless (org-roam-dailies--daily-note-p file)
                  (org-roam-review--cache-mutate #'org-roam-review--update-by-props-in-buffer))))
            t)
+  (org-roam-review--cache-mutate #'ignore)
   (message "Rebuilt evergreen notes index."))
 
 ;;;###autoload
@@ -192,13 +193,15 @@ nodes for review."
   (org-roam-review--create-review-buffer
    "Due Notes"
    "The notes below are due for review.
-Read each note and add new thoughts and connections,
-then mark them as reviewed by setting their maturity."
+Read each note and add new thoughts and connections, then mark
+them as reviewed with `org-roam-review-accept',
+`org-roam-review-bury' or by updating their maturity."
    (org-roam-review--cache-collect
     (-lambda (_ (value &as &plist :next-review))
-      (when next-review
-        (when (org-time-less-p (org-parse-time-string next-review) nil)
-          value))))))
+      (when (and next-review (or
+                              (time-equal-p next-review nil)
+                              (time-less-p next-review nil)))
+        value)))))
 
 ;;;###autoload
 (defun org-roam-review-pending ()
@@ -216,16 +219,16 @@ Read each note in the list and set their maturity."
       (unless (and next-review maturity)
         value)))))
 
+
 
 
-(defun org-roam-review--update-next-review (&optional quality)
+(defun org-roam-review--update-next-review (quality)
   "Adapted from org-drill.
 
 - only use sm5 algorithm for simplicity
 - use properties instead of SCHEDULED.
 - remove support for 'weighting' a note."
-  (-let* ((quality (or quality 4))
-          (ofmatrix org-drill-sm5-optimal-factor-matrix)
+  (-let* ((ofmatrix org-drill-sm5-optimal-factor-matrix)
           ((last-interval repetitions failures total-repeats meanq ease) (org-drill-get-item-data))
           ((next-interval repetitions ease failures meanq total-repeats new-ofmatrix)
            (org-drill-determine-next-interval-sm5 last-interval repetitions
@@ -242,8 +245,9 @@ Read each note in the list and set their maturity."
       (org-set-property "NEXT_REVIEW" next-review)
       next-review)))
 
-(defun org-roam-review--update-note (maturity)
+(defun org-roam-review--update-note (maturity bury)
   (cl-assert (member maturity org-roam-review-maturity-values))
+  (cl-assert (derived-mode-p 'org-mode))
   (atomic-change-group
     (org-with-wide-buffer
      (when (org-roam-dailies--daily-note-p)
@@ -256,7 +260,11 @@ Read each note in the list and set their maturity."
      (org-set-property "MATURITY" maturity)
      (org-set-property "LAST_REVIEW" (org-format-time-string "[%Y-%m-%d %a]"))
 
-     (let ((next-review (org-roam-review--update-next-review)))
+     (let* (
+            ;; High score means the note appears less often--in
+            ;; spaced-repetition learning, it's been 'learned'.
+            (score (if bury 5 3))
+            (next-review (org-roam-review--update-next-review score)))
        (ignore-errors
          (org-roam-tag-remove org-roam-review-maturity-values))
        (org-roam-tag-add (list maturity))
@@ -264,22 +272,45 @@ Read each note in the list and set their maturity."
        (message "Maturity set to '%s'. Review scheduled for %s" maturity next-review)))))
 
 ;;;###autoload
-(defun org-roam-review-set-budding ()
-  "Set the current note as a 'budding' note."
+(defun org-roam-review-accept ()
+  "Confirm review of the current note."
   (interactive)
-  (org-roam-review--update-note "budding"))
+  (let ((maturity (org-entry-get (point) "MATURITY")))
+    (org-roam-review--update-note maturity nil)))
 
 ;;;###autoload
-(defun org-roam-review-set-seedling ()
-  "Set the current note as a 'seedling' note."
+(defun org-roam-review-bury ()
+  "Confirm review of the current note and bury it."
   (interactive)
-  (org-roam-review--update-note "seedling"))
+  (let ((maturity (org-entry-get (point) "MATURITY")))
+    (org-roam-review--update-note maturity 'bury)))
 
 ;;;###autoload
-(defun org-roam-review-set-evergreen ()
-  "Set the current note as a 'evergreen' note."
-  (interactive)
-  (org-roam-review--update-note "evergreen"))
+(defun org-roam-review-set-budding (&optional bury)
+  "Set the current note as a 'budding' note and confirm it's been reviewed.
+
+With prefix arg BURY, the note is less likely to be surfaced in
+the future."
+  (interactive "P")
+  (org-roam-review--update-note "budding" bury))
+
+;;;###autoload
+(defun org-roam-review-set-seedling (&optional bury)
+  "Set the current note as a 'seedling' note and confirm it's been reviewed.
+
+With prefix arg BURY, the note is less likely to be surfaced in
+the future."
+  (interactive "P")
+  (org-roam-review--update-note "seedling" bury))
+
+;;;###autoload
+(defun org-roam-review-set-evergreen (&optional bury)
+  "Set the current note as a 'evergreen' note and confirm it's been reviewed.
+
+With prefix arg BURY, the note is less likely to be surfaced in
+the future."
+  (interactive "P")
+  (org-roam-review--update-note "evergreen" bury))
 
 
 
