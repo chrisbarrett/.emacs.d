@@ -123,18 +123,19 @@ candidate for reviews."
      (goto-char (point-min))
      (let ((acc))
        (while (search-forward-regexp (org-re-property "ID") nil t)
-         (let* ((id (match-string-no-properties 3))
-                (item (make-org-roam-review-note
-                       :id id
-                       :next-review (-some->> (org-entry-get (point) "NEXT_REVIEW")
-                                      (org-parse-time-string)
-                                      (encode-time))
-                       :last-review (-some->> (org-entry-get (point) "LAST_REVIEW")
-                                      (org-parse-time-string)
-                                      (encode-time))
-                       :maturity (org-entry-get (point) "MATURITY")
-                       :tags (org-roam-review--file-or-headline-tags))))
-           (push item acc)))
+         (unless (org-entry-get (point) "REVIEW_EXCLUDED")
+           (let* ((id (match-string-no-properties 3))
+                  (item (make-org-roam-review-note
+                         :id id
+                         :next-review (-some->> (org-entry-get (point) "NEXT_REVIEW")
+                                        (org-parse-time-string)
+                                        (encode-time))
+                         :last-review (-some->> (org-entry-get (point) "LAST_REVIEW")
+                                        (org-parse-time-string)
+                                        (encode-time))
+                         :maturity (org-entry-get (point) "MATURITY")
+                         :tags (org-roam-review--file-or-headline-tags))))
+             (push item acc))))
        (nreverse acc)))))
 
 (defun org-roam-review--update-by-props-in-buffer (cache)
@@ -451,6 +452,39 @@ With prefix arg BURY, the note is less likely to be surfaced in
 the future."
   (interactive "P")
   (org-roam-review--update-note "evergreen" bury))
+
+(defconst org-roam-review--properties
+  '("LAST_REVIEW"
+    "NEXT_REVIEW"
+    "MATURITY"
+    "DRILL_LAST_INTERVAL"
+    "DRILL_REPEATS_SINCE_FAIL"
+    "DRILL_TOTAL_REPEATS"
+    "DRILL_FAILURE_COUNT"
+    "DRILL_AVERAGE_QUALITY"
+    "DRILL_EASE")
+  "List of properties managed by `org-roam-review'.")
+
+;;;###autoload
+(defun org-roam-review-set-excluded ()
+  "Exclude this note from reviews.
+
+This is useful for notes that are not Evergreens, e.g. notes
+about people or literature notes.
+
+This sets a special property, REVIEW_EXCLUDED, to indicate that
+it is not a candidate for reviews."
+  (interactive)
+  (atomic-change-group
+    (org-with-wide-buffer
+     (if-let* ((id (org-entry-get (point) "ID" t)))
+         (org-id-goto id)
+       (error "No ID property for tree at point"))
+     (ignore-errors
+       (org-roam-tag-remove org-roam-review-maturity-values))
+     (org-set-property "REVIEW_EXCLUDED" "t")
+     (dolist (name org-roam-review--properties)
+       (org-delete-property name)))))
 
 (provide 'org-roam-review)
 
