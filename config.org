@@ -1761,6 +1761,12 @@ See: [[https://github.com/wbolster/emacs-direnv][wbolster/emacs-direnv]]
     (css-mode . rainbow-mode))
 #+end_src
 
+** =string-inflection= - Command to change string case at point
+#+begin_src emacs-lisp
+  (use-package string-inflection
+    :general ("M-s" 'string-inflection-all-cycle))
+#+end_src
+
 * =evil= - Vim-style modal editing
 =evil= provides macros that I want to use in ~:config~ blocks, so teach the
 byte-compiler about them to avoid warnings.

@@ -99,6 +99,7 @@
   simple-httpd
   smartparens
   smex
+  string-inflection
   terraform-mode
   ts
   typescript-mode
