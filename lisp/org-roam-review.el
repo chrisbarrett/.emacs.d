@@ -280,7 +280,6 @@ them as reviewed with `org-roam-review-accept',
 (defun org-roam-review-list-categorised ()
   "List all evergreen notes categorised by maturity."
   (interactive)
-  ;; TODO: categorise
   (org-roam-review--create-review-buffer
    :title "Evergreen Notes"
    :instructions "The notes below are categorised by maturity."
