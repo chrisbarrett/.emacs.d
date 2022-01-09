@@ -39,3 +39,6 @@
 
 (modify-all-frames-parameters '((vertical-scroll-bars)
                                 (name . "Emacs")))
+
+
+(setq source-directory (expand-file-name emacs-version (getenv "NIX_EMACS_SRC_DIR")))

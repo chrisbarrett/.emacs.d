@@ -95,6 +95,11 @@ Disable window chrome that doesn't make sense in a keyboard-driven UI.
                                   (name . "Emacs")))
 #+end_src
 
+** Set source directory
+#+begin_src emacs-lisp
+  (setq source-directory (expand-file-name emacs-version (getenv "NIX_EMACS_SRC_DIR")))
+#+end_src
+
 * File header
 #+begin_src emacs-lisp
   ;;; config.el -- User init file for Emacs.  -*- lexical-binding: t; buffer-read-only: t; -*-
@@ -506,13 +511,6 @@ applications. The following functions will be invoked by those scripts over
 #+end_src
 
 * Customise builtin features
-
-** Set C source directory to use the source files from the Nix build
-#+begin_src emacs-lisp
-  (use-package find-func
-    :custom
-    (find-function-C-source-directory (getenv "NIX_EMACS_SRC_DIR")))
-#+end_src
 
 ** Always use one-char =y-or-n-p=
 #+begin_src emacs-lisp

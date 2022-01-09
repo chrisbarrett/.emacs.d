@@ -78,7 +78,7 @@ pkgs.symlinkJoin
           --set NIX_EMACS_TS_LANGUAGE_SERVER "${languageServers.typescript}/bin/typescript-language-server" \
           --set NIX_EMACS_MU_BINARY "${pkgs.mu}/bin/mu" \
           --set NIX_EMACS_MU_LISP_DIR "${pkgs.mu}/share/emacs/site-lisp/mu4e" \
-          --set NIX_EMACS_SRC_DIR "${emacs}/share/emacs/src/" \
+          --set NIX_EMACS_SRC_DIR "${emacs}/share/emacs" \
           --set NIX_EMACS_TEX_PROGRAM "${pkgs.tectonic}/bin/tectonic"
       fi
     done
