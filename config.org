@@ -99,6 +99,11 @@ Disable window chrome that doesn't make sense in a keyboard-driven UI.
 #+end_src
 
 ** Set source directory
+Set the location where Emacs looks for its C source files. This is needed to
+view the definitions of special forms implemented in C.
+
+The path to sources in the nix-store is injected via an environment variable.
+
 #+begin_src emacs-lisp
   (setq source-directory (expand-file-name emacs-version (getenv "NIX_EMACS_SRC_DIR")))
 #+end_src
