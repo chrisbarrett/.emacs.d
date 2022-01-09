@@ -6210,7 +6210,7 @@ This makes it much easier to edit text using emphasis markers correctly.
   (defun config-org-roam-set-created-timestamp ()
     (org-with-wide-buffer
      (unless (org-entry-get (point) "CREATED")
-       (org-set-property "CREATED" (format-time-string "%F %A %R ")))))
+       (org-set-property "CREATED" (format-time-string (org-time-stamp-format t t))))))
 
   (add-hook 'org-roam-capture-new-node-hook #'config-org-roam-set-created-timestamp)
 #+end_src
