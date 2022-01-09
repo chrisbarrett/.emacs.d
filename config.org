@@ -6160,6 +6160,7 @@ This makes it much easier to edit text using emphasis markers correctly.
     (org-roam-review-ignored-tags '("person" "client" "project" "lit_notes" "flat" "accounts"))
     :general
     (:states '(normal) :keymaps 'org-roam-review-mode-map
+     "TAB" 'magit-section-cycle
      "g r" 'org-roam-review-refresh)
     (:states '(insert normal) :keymaps 'org-mode-map
      "C-c r r" '(org-roam-review-accept :wk "accept")

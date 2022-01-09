@@ -188,6 +188,7 @@ candidate for reviews."
 
 (defvar org-roam-review-mode-map
   (let ((keymap (make-sparse-keymap)))
+    (define-key keymap (kbd "TAB") #'magit-section-cycle)
     (define-key keymap (kbd "g") #'org-roam-review-refresh)
     keymap))
 
@@ -198,9 +199,8 @@ nodes for review."
 
 (defun org-roam-review--insert-note (node)
   (magit-insert-section section (org-roam-node-section)
-    (insert (propertize (org-roam-node-title node)
-                        'font-lock-face 'org-roam-title))
-    (magit-insert-heading)
+    (magit-insert-heading (propertize (org-roam-node-title node)
+                                      'font-lock-face 'org-roam-title))
     (oset section node node)
     (magit-insert-section section (org-roam-preview-section)
       (insert (org-roam-fontify-like-in-org-mode
@@ -223,14 +223,6 @@ nodes for review."
         (setq-local org-roam-review-buffer-refresh-command refresh-command)
 
         (cl-labels ((insert-notes (notes)
-                                  (when instructions
-                                    (magit-insert-section (org-roam-review-instructions)
-                                      (let ((start (point)))
-                                        (insert instructions)
-                                        (fill-region start (point)))
-                                      (newline 2)))
-
-
                                   (let ((section (magit-insert-section (org-roam-review)
                                                    (magit-insert-heading)
                                                    (mapc (-lambda ((&plist :id))
@@ -238,9 +230,24 @@ nodes for review."
                                                              (org-roam-review--insert-note node)))
                                                          notes))))
                                     (mapc #'magit-section-hide (oref section children)))))
+
+          (when (and instructions notes)
+            (magit-insert-section (org-roam-review-instructions)
+              (let ((start (point)))
+                (insert (propertize instructions 'font-lock-face 'font-lock-comment-face))
+                (fill-region start (point)))
+              (newline 2)))
+
           (cond ((null notes)
                  (insert (or placeholder org-roam-review-default-placeholder))
                  (newline))
+                (group-on
+                 (mapc (-lambda ((key . group))
+                         (magit-insert-section (org-roam-review-note-group)
+                           (magit-insert-heading (propertize key 'font-lock-face 'magit-section-heading))
+                           (insert-notes group)
+                           (insert "\n")))
+                       (seq-group-by group-on notes)))
                 (t
                  (insert-notes notes))))
         (goto-char (point-min))))
@@ -289,7 +296,12 @@ them as reviewed with `org-roam-review-accept',
              (when (and (not (org-roam-review--note-ignored-p note))
                         (org-roam-review--note-maturity note))
                note)))
-   :group-on #'org-roam-review--note-maturity))
+   :group-on (lambda (note)
+               (pcase (org-roam-review--note-maturity note)
+                 ("budding" "Budding 🪴")
+                 ("seedling" "Seedling 🌱")
+                 ("evergreen" "Evergreen 🌲")
+                 (value value)))))
 
 ;;;###autoload
 (defun org-roam-review-list-uncategorised ()
@@ -309,7 +321,6 @@ needed to be included in reviews. Categorise them as appropriate."
                          (org-roam-review--note-maturity note)
                          (org-roam-review--note-has-next-review-p note))
                note)))))
-
 
 
 
