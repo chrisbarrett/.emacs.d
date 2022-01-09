@@ -482,14 +482,20 @@ it is not a candidate for reviews."
   (interactive)
   (atomic-change-group
     (org-with-wide-buffer
-     (if-let* ((id (org-entry-get (point) "ID" t)))
-         (org-find-property "ID" id)
-       (error "No ID property for tree at point"))
-     (ignore-errors
-       (org-roam-tag-remove org-roam-review-maturity-values))
-     (org-set-property "REVIEW_EXCLUDED" "t")
-     (dolist (name org-roam-review--properties)
-       (org-delete-property name)))))
+     (let ((id (org-entry-get (point) "ID" t)))
+       (unless id
+         (error "No ID property for tree at point"))
+
+       (org-find-property "ID" id)
+       (ignore-errors
+         (org-roam-tag-remove org-roam-review-maturity-values))
+       (org-set-property "REVIEW_EXCLUDED" "t")
+       (dolist (name org-roam-review--properties)
+         (org-delete-property name))
+       (save-buffer)
+
+       (let ((title (org-roam-node-title (org-roam-node-from-id id))))
+         (message "Excluded note `%s' from reviews" title))))))
 
 (provide 'org-roam-review)
 
