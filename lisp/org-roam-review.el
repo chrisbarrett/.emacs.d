@@ -258,6 +258,14 @@ categorised by their maturity."
       (org-roam-review-list-categorised)
     (org-roam-review-list-due)))
 
+(defun org-roam-review--maturity-header-for-note (note)
+  (pcase (org-roam-review-note-maturity note)
+    ("budding" "Budding 🪴")
+    ("seedling" "Seedling 🌱")
+    ("evergreen" "Evergreen 🌲")
+    (value value)))
+
+
 ;;;###autoload
 (defun org-roam-review-list-due ()
   "List notes that are due for review."
@@ -270,6 +278,7 @@ them as reviewed with `org-roam-review-accept',
 `org-roam-review-bury' or by updating their maturity."
    :placeholder (concat (propertize "You're up-to-date!" 'face 'font-lock-comment-face) " 😸")
    :refresh-command #'org-roam-review-list-due
+   :group-on #'org-roam-review--maturity-header-for-note
    :notes (org-roam-review--cache-collect
            (lambda (note)
              (when (and (not (org-roam-review-note-ignored-p note))
@@ -284,17 +293,12 @@ them as reviewed with `org-roam-review-accept',
    :title "Evergreen Notes"
    :instructions "The notes below are categorised by maturity."
    :refresh-command #'org-roam-review-list-categorised
+   :group-on #'org-roam-review--maturity-header-for-note
    :notes (org-roam-review--cache-collect
            (lambda (note)
              (when (and (not (org-roam-review-note-ignored-p note))
                         (org-roam-review-note-maturity note))
-               note)))
-   :group-on (lambda (note)
-               (pcase (org-roam-review-note-maturity note)
-                 ("budding" "Budding 🪴")
-                 ("seedling" "Seedling 🌱")
-                 ("evergreen" "Evergreen 🌲")
-                 (value value)))))
+               note)))))
 
 ;;;###autoload
 (defun org-roam-review-list-uncategorised ()
