@@ -230,17 +230,16 @@ nodes for review."
                      (fill-region start (point)))
                    (newline 2)))
 
-               (magit-insert-section (org-roam-review)
-                 (magit-insert-heading)
-                 (maphash (-lambda (_ (&plist :id))
-                            (when-let* ((node (org-roam-node-from-id id)))
-                              (org-roam-review--insert-note node)))
-                          notes))
-               (goto-char 0)
-               (let ((children (oref magit-root-section children)))
-                 (mapc 'magit-section-hide children)))))
 
-      (goto-char (point-min)))
+               (let ((section (magit-insert-section (org-roam-review)
+                                (magit-insert-heading)
+                                (maphash (-lambda (_ (&plist :id))
+                                           (when-let* ((node (org-roam-node-from-id id)))
+                                             (org-roam-review--insert-note node)))
+                                         notes))))
+
+                 (mapc #'magit-section-hide (oref section children)))))
+        (goto-char (point-min))))
     (display-buffer buf)))
 
 ;;;###autoload
