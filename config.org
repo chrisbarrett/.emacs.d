@@ -18,6 +18,9 @@ Headings can be tagged with =:disabled:= to 'comment-out' those blocks.
 sequence. This lisp is evaluated before the graphical context and package
 manager are initialised.
 
+The tangled file is checked in to git to ensure this Emacs config starts up
+correctly from a fresh checkout.
+
 #+begin_src emacs-lisp
   ;;; early-init.el -- Run at the beginning of Emacs startup sequence.  -*- lexical-binding: t; buffer-read-only: t; -*-
 
