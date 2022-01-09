@@ -28,21 +28,26 @@
 ;; your notes by category, which is useful for getting a quick overview of your
 ;; Evergreens.
 
-;; Example configuration (assuming evil-mode):
+;; Example configuration:
 ;;
-;;    (use-package org-roam-review
-;;      :hook (org-mode . org-roam-review-cache-mode)
-;;      (org-roam-review-ignored-tags '("person" "client" "project" "lit_notes"))
-;;      :general
-;;      (:states '(normal) :keymaps 'org-roam-review-mode-map
-;;       "TAB" 'magit-section-cycle
-;;       "g r" 'org-roam-review-refresh)
-;;      (:states '(insert normal) :keymaps 'org-mode-map
-;;       "C-c r r" '(org-roam-review-accept :wk "accept")
-;;       "C-c r x" '(org-roam-review-bury :wk "bury")
-;;       "C-c r b" '(org-roam-review-set-budding :wk "set budding")
-;;       "C-c r s" '(org-roam-review-set-seedling :wk "set seedling")
-;;       "C-c r e" '(org-roam-review-set-evergreen :wk "set evergreen")))
+;;     (use-package org-roam-review
+;;       :hook
+;;       (org-mode . org-roam-review-cache-mode)
+;;       (org-roam-capture-new-node . org-roam-review-set-seedling)
+;;       :custom
+;;       (org-roam-review-ignored-tags '("person" "client" "project" "lit_notes"))
+;;       :general
+;;       ;; optional bindings for evil-mode compatability.
+;;       (:states '(normal) :keymaps 'org-roam-review-mode-map
+;;        "TAB" 'magit-section-cycle
+;;        "g r" 'org-roam-review-refresh)
+;;       (:keymaps 'org-mode-map
+;;        "C-c r r" '(org-roam-review-accept :wk "accept")
+;;        "C-c r u" '(org-roam-review-bury :wk "bury")
+;;        "C-c r x" '(org-roam-review-set-excluded :wk "set excluded")
+;;        "C-c r b" '(org-roam-review-set-budding :wk "set budding")
+;;        "C-c r s" '(org-roam-review-set-seedling :wk "set seedling")
+;;        "C-c r e" '(org-roam-review-set-evergreen :wk "set evergreen")))
 
 ;;; Code:
 
