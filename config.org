@@ -6157,7 +6157,7 @@ This makes it much easier to edit text using emphasis markers correctly.
     :hook (org-mode . org-roam-review-cache-mode)
     :custom
     (org-roam-review-cache-file (f-join paths-cache-directory "org-roam-review"))
-    (org-roam-review-ignored-tags '("person" "client" "project" "lit_notes" "flat"))
+    (org-roam-review-ignored-tags '("person" "client" "project" "lit_notes" "flat" "accounts"))
     :general
     (:states '(normal) :keymaps 'org-roam-review-mode-map
      "g r" 'org-roam-review-refresh)
