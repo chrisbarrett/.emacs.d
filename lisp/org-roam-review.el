@@ -165,6 +165,14 @@ candidate for reviews."
   (pp-display-expression (org-roam-review--cache)
                          "*org-roam-review cache*"))
 
+;;;###autoload
+(define-minor-mode org-roam-review-cache-mode
+  "Minor mode to enable book-keeping used for notes reviews"
+  :group 'org-roam-review
+  (if org-roam-review-cache-mode
+      (add-hook 'after-save-hook #'org-roam-review--cache-update nil t)
+    (remove-hook 'after-save-hook #'org-roam-review--cache-update t)))
+
 
 ;;; Review buffers
 
@@ -411,16 +419,6 @@ With prefix arg BURY, the note is less likely to be surfaced in
 the future."
   (interactive "P")
   (org-roam-review--update-note "evergreen" bury))
-
-
-
-;;;###autoload
-(define-minor-mode org-roam-review-cache-mode
-  "Minor mode to enable book-keeping used for notes reviews"
-  :group 'org-roam-review
-  (if org-roam-review-cache-mode
-      (add-hook 'after-save-hook #'org-roam-review--cache-update nil t)
-    (remove-hook 'after-save-hook #'org-roam-review--cache-update t)))
 
 (provide 'org-roam-review)
 
