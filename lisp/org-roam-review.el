@@ -175,6 +175,22 @@ candidate for reviews."
 
 ;;; Review buffers
 
+(defvar-local org-roam-review-buffer-refresh-command nil)
+
+(defun org-roam-review-refresh ()
+  "Rebuild the review buffer."
+  (interactive)
+  (with-current-buffer (get-buffer-create "*org-roam-review*")
+    (unless org-roam-review-buffer-refresh-command
+      (error "Refresh command not defined"))
+    (call-interactively org-roam-review-buffer-refresh-command))
+  (message "Buffer refreshed"))
+
+(defvar org-roam-review-mode-map
+  (let ((keymap (make-sparse-keymap)))
+    (define-key keymap (kbd "g") #'org-roam-review-refresh)
+    keymap))
+
 (define-derived-mode org-roam-review-mode org-roam-mode "Org-roam-review"
   "Major mode for displaying relevant information about Org-roam
 nodes for review."
@@ -193,13 +209,15 @@ nodes for review."
       (oset section point 0)
       (insert "\n\n"))))
 
-(cl-defun org-roam-review--create-review-buffer (&key title instructions notes (group-on nil))
+(cl-defun org-roam-review--create-review-buffer (&key title instructions notes group-on refresh-command)
+  (cl-assert (and title instructions notes refresh-command))
   (let ((buf (get-buffer-create "*org-roam-review*")))
     (with-current-buffer buf
       (let ((inhibit-read-only t))
         (erase-buffer)
         (org-roam-review-mode)
         (org-roam-buffer-set-header-line-format title)
+        (setq-local org-roam-review-buffer-refresh-command refresh-command)
 
         (cond ((hash-table-empty-p notes)
                (insert (concat (propertize "You're up-to-date!" 'face 'font-lock-comment-face) " 😸"))
@@ -246,6 +264,7 @@ categorised by their maturity."
 Read each note and add new thoughts and connections, then mark
 them as reviewed with `org-roam-review-accept',
 `org-roam-review-bury' or by updating their maturity."
+   :refresh-command #'org-roam-review-list-due
    :notes (org-roam-review--cache-collect
            (lambda (note)
              (when (and (not (org-roam-review--note-ignored-p note))
@@ -260,6 +279,7 @@ them as reviewed with `org-roam-review-accept',
   (org-roam-review--create-review-buffer
    :title "Evergreen Notes"
    :instructions "The notes below are categorised by maturity."
+   :refresh-command #'org-roam-review-list-categorised
    :notes (org-roam-review--cache-collect
            (lambda (note)
              (when (and (not (org-roam-review--note-ignored-p note))
@@ -278,6 +298,7 @@ system."
    :title "Uncategorised Notes"
    :instructions "The notes below are missing the properties
 needed to be included in reviews. Categorise them as appropriate."
+   :refresh-command #'org-roam-review-list-uncategorised
    :notes (org-roam-review--cache-collect
            (lambda (note)
              (unless (or (org-roam-review--note-ignored-p note)
