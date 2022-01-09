@@ -2708,7 +2708,7 @@ Disabled for now since this breaks insert state in evil :/
     "d" '(org-roam-dailies-goto-date :wk "dailies: date...")
 
     "r" '(org-roam-review :wk "review notes")
-    "R" '(org-roam-review-list-uncategorised :wk "uncategorised notes")
+    "u" '(org-roam-review-list-uncategorised :wk "uncategorised notes")
     "p" '(org-funcs-goto-todos :wk "todos")
     "g" '(org-capture-goto-last-stored :wk "last captured")
     "t" '(org-funcs-todo-list :wk "todo list")
