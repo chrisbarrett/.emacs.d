@@ -122,13 +122,18 @@ candidate for reviews."
 
 ;; Define cache-management porcelain in terms of plumbing.
 
+(defun org-roam-review--note-at-point-excluded-p ()
+  (save-match-data
+    (org-entry-get (point) "REVIEW_EXCLUDED")))
+
+
 (defun org-roam-review-notes-from-this-buffer ()
   (org-with-wide-buffer
    (save-match-data
      (goto-char (point-min))
      (let ((acc))
        (while (search-forward-regexp (org-re-property "ID") nil t)
-         (unless (org-entry-get (point) "REVIEW_EXCLUDED")
+         (unless (org-roam-review--note-at-point-excluded-p)
            (let* ((id (match-string-no-properties 3))
                   (item (make-org-roam-review-note
                          :id id
@@ -143,9 +148,22 @@ candidate for reviews."
              (push item acc))))
        (nreverse acc)))))
 
+(defun org-roam-review-excluded-note-ids-from-this-buffer ()
+  (org-with-wide-buffer
+   (save-match-data
+     (goto-char (point-min))
+     (let ((acc))
+       (while (search-forward-regexp (org-re-property "ID") nil t)
+         (when (org-roam-review--note-at-point-excluded-p)
+           (let ((id (match-string-no-properties 3)))
+             (push id acc))))
+       (nreverse acc)))))
+
 (defun org-roam-review--update-by-props-in-buffer (cache)
   (dolist (note (org-roam-review-notes-from-this-buffer))
-    (puthash (org-roam-review-note-id note) note cache)))
+    (puthash (org-roam-review-note-id note) note cache))
+  (dolist (id (org-roam-review-excluded-note-ids-from-this-buffer))
+    (remhash id cache)))
 
 (defun org-roam-review--cache-update ()
   "Update the evergreen notes cache from `after-save-hook'."
