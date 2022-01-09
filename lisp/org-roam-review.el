@@ -402,7 +402,7 @@ the future."
 
 ;;;###autoload
 (defun org-roam-review-set-evergreen (&optional bury)
-  "Set the current note as a 'evergreen' note and confirm it's been reviewed.
+  "Set the current note as an 'evergreen' note and confirm it's been reviewed.
 
 With prefix arg BURY, the note is less likely to be surfaced in
 the future."
