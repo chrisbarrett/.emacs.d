@@ -394,7 +394,7 @@ needed to be included in reviews. Categorise them as appropriate."
        (user-error "Cannot set maturity on daily file"))
 
      (if-let* ((id (org-entry-get (point) "ID" t)))
-         (org-id-goto id)
+         (org-find-property "ID" id)
        (error "No ID property for tree at point"))
 
      (org-set-property "MATURITY" maturity)
@@ -478,7 +478,7 @@ it is not a candidate for reviews."
   (atomic-change-group
     (org-with-wide-buffer
      (if-let* ((id (org-entry-get (point) "ID" t)))
-         (org-id-goto id)
+         (org-find-property "ID" id)
        (error "No ID property for tree at point"))
      (ignore-errors
        (org-roam-tag-remove org-roam-review-maturity-values))
