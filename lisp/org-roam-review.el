@@ -117,7 +117,7 @@ candidate for reviews."
                    (puthash key result table)
                  (remhash key table)))
              table)
-    table))
+    (hash-table-values table)))
 
 (defun org-roam-review--file-or-headline-tags ()
   (if (org-before-first-heading-p)
@@ -209,8 +209,11 @@ nodes for review."
       (oset section point 0)
       (insert "\n\n"))))
 
+(defvar org-roam-review-default-placeholder
+  (propertize "(None)" 'face 'font-lock-comment-face))
+
 (cl-defun org-roam-review--create-review-buffer (&key title instructions notes group-on refresh-command placeholder)
-  (cl-assert (and title instructions notes refresh-command))
+  (cl-assert (and title instructions refresh-command))
   (let ((buf (get-buffer-create "*org-roam-review*")))
     (with-current-buffer buf
       (let ((inhibit-read-only t))
@@ -230,14 +233,13 @@ nodes for review."
 
                                   (let ((section (magit-insert-section (org-roam-review)
                                                    (magit-insert-heading)
-                                                   (maphash (-lambda (_ (&plist :id))
-                                                              (when-let* ((node (org-roam-node-from-id id)))
-                                                                (org-roam-review--insert-note node)))
-                                                            notes))))
-
+                                                   (mapc (-lambda ((&plist :id))
+                                                           (when-let* ((node (org-roam-node-from-id id)))
+                                                             (org-roam-review--insert-note node)))
+                                                         notes))))
                                     (mapc #'magit-section-hide (oref section children)))))
-          (cond ((hash-table-empty-p notes)
-                 (insert (or placeholder (propertize "(None)" 'face 'font-lock-comment-face)))
+          (cond ((null notes)
+                 (insert (or placeholder org-roam-review-default-placeholder))
                  (newline))
                 (t
                  (insert-notes notes))))
