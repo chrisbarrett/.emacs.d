@@ -402,6 +402,7 @@ needed to be included in reviews. Categorise them as appropriate."
          (org-find-property "ID" id)
        (error "No ID property for tree at point"))
 
+     (org-delete-property "REVIEW_EXCLUDED")
      (org-set-property "MATURITY" maturity)
      (org-set-property "LAST_REVIEW" (org-format-time-string "[%Y-%m-%d %a]"))
 
