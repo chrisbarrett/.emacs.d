@@ -18,6 +18,32 @@
 ;; this program. If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
+
+;; Provides commands to categorise and review org-roam notes for Evergreen
+;; note-taking. Notes are surfaced using the spaced-repetition algorithm from
+;; org-drill.
+
+;; The main entrypoint is `M-x org-roam-review', which shows your notes due for
+;; review and refinement. With a prefix argument, that command will list all
+;; your notes by category, which is useful for getting a quick overview of your
+;; Evergreens.
+
+;; Example configuration (assuming evil-mode):
+;;
+;;    (use-package org-roam-review
+;;      :hook (org-mode . org-roam-review-cache-mode)
+;;      (org-roam-review-ignored-tags '("person" "client" "project" "lit_notes"))
+;;      :general
+;;      (:states '(normal) :keymaps 'org-roam-review-mode-map
+;;       "TAB" 'magit-section-cycle
+;;       "g r" 'org-roam-review-refresh)
+;;      (:states '(insert normal) :keymaps 'org-mode-map
+;;       "C-c r r" '(org-roam-review-accept :wk "accept")
+;;       "C-c r x" '(org-roam-review-bury :wk "bury")
+;;       "C-c r b" '(org-roam-review-set-budding :wk "set budding")
+;;       "C-c r s" '(org-roam-review-set-seedling :wk "set seedling")
+;;       "C-c r e" '(org-roam-review-set-evergreen :wk "set evergreen")))
+
 ;;; Code:
 
 (require 'dash)
