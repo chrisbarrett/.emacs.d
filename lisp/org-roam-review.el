@@ -224,25 +224,26 @@ candidate for reviews."
 nodes for review."
   :group 'org-roam-review)
 
-(defun org-roam-review--insert-node (node)
+(defun org-roam-review--insert-node (node &optional skip-preview-p)
   (magit-insert-section section (org-roam-node-section)
     (magit-insert-heading (propertize (org-roam-node-title node)
                                       'font-lock-face 'org-roam-title))
     (oset section node node)
-    (magit-insert-section section (org-roam-preview-section)
-      (let ((content (org-roam-fontify-like-in-org-mode
-                      (org-roam-preview-get-contents (org-roam-node-file node) 0))))
-        (insert (if (string-blank-p (string-trim-left content))
-                    (propertize "(Empty)" 'font-lock-face 'font-lock-comment-face)
+    (unless skip-preview-p
+      (magit-insert-section section (org-roam-preview-section)
+        (let ((content (org-roam-fontify-like-in-org-mode
+                        (org-roam-preview-get-contents (org-roam-node-file node) 0))))
+          (insert (if (string-blank-p (string-trim-left content))
+                      (propertize "(Empty)" 'font-lock-face 'font-lock-comment-face)
                     content)))
-      (oset section file (org-roam-node-file node))
-      (oset section point 0)
-      (insert "\n\n"))))
+        (oset section file (org-roam-node-file node))
+        (oset section point 0)
+        (insert "\n\n")))))
 
 (defvar org-roam-review-default-placeholder
   (propertize "(None)" 'face 'font-lock-comment-face))
 
-(cl-defun org-roam-review--create-review-buffer (&key title instructions notes group-on refresh-command placeholder)
+(cl-defun org-roam-review--create-review-buffer (&key title instructions notes group-on refresh-command placeholder skip-previews-p)
   (cl-assert (and title instructions refresh-command))
   (let ((buf (get-buffer-create "*org-roam-review*")))
     (with-current-buffer buf
@@ -256,9 +257,9 @@ nodes for review."
                                   (let ((section (magit-insert-section (org-roam-review)
                                                    (magit-insert-heading)
                                                    (mapc (lambda (note)
-                                                           (-some->> (org-roam-review-note-id note)
-                                                             (org-roam-node-from-id)
-                                                             (org-roam-review--insert-node)))
+                                                           (when-let* ((id (org-roam-review-note-id note))
+                                                                       (node (org-roam-node-from-id id)))
+                                                             (org-roam-review--insert-node node skip-previews-p)))
                                                          notes))))
                                     (mapc #'magit-section-hide (oref section children)))))
 
@@ -350,6 +351,7 @@ system."
    :instructions "The notes below are missing the properties
 needed to be included in reviews. Categorise them as appropriate."
    :refresh-command #'org-roam-review-list-uncategorised
+   :skip-previews-p t
    :notes (org-roam-review--cache-collect
            (lambda (note)
              (unless (or (org-roam-review-note-ignored-p note)
