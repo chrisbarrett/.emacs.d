@@ -6166,7 +6166,9 @@ This makes it much easier to edit text using emphasis markers correctly.
 ** =org-roam-review= - spaced-repetition implementation for org-roam notes
 #+begin_src emacs-lisp
   (use-package org-roam-review
-    :hook (org-mode . org-roam-review-cache-mode)
+    :hook
+    (org-mode . org-roam-review-cache-mode)
+    (org-roam-capture-new-node . org-roam-review-set-seedling)
     :custom
     (org-roam-review-cache-file (f-join paths-cache-directory "org-roam-review"))
     (org-roam-review-ignored-tags '("person" "client" "project" "lit_notes" "flat" "accounts"))
