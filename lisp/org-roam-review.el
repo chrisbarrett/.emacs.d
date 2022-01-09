@@ -209,7 +209,7 @@ nodes for review."
       (oset section point 0)
       (insert "\n\n"))))
 
-(cl-defun org-roam-review--create-review-buffer (&key title instructions notes group-on refresh-command)
+(cl-defun org-roam-review--create-review-buffer (&key title instructions notes group-on refresh-command placeholder)
   (cl-assert (and title instructions notes refresh-command))
   (let ((buf (get-buffer-create "*org-roam-review*")))
     (with-current-buffer buf
@@ -219,26 +219,28 @@ nodes for review."
         (org-roam-buffer-set-header-line-format title)
         (setq-local org-roam-review-buffer-refresh-command refresh-command)
 
-        (cond ((hash-table-empty-p notes)
-               (insert (concat (propertize "You're up-to-date!" 'face 'font-lock-comment-face) " 😸"))
-               (newline))
-              (t
-               (when instructions
-                 (magit-insert-section (org-roam-review-instructions)
-                   (let ((start (point)))
-                     (insert instructions)
-                     (fill-region start (point)))
-                   (newline 2)))
+        (cl-labels ((insert-notes (notes)
+                                  (when instructions
+                                    (magit-insert-section (org-roam-review-instructions)
+                                      (let ((start (point)))
+                                        (insert instructions)
+                                        (fill-region start (point)))
+                                      (newline 2)))
 
 
-               (let ((section (magit-insert-section (org-roam-review)
-                                (magit-insert-heading)
-                                (maphash (-lambda (_ (&plist :id))
-                                           (when-let* ((node (org-roam-node-from-id id)))
-                                             (org-roam-review--insert-note node)))
-                                         notes))))
+                                  (let ((section (magit-insert-section (org-roam-review)
+                                                   (magit-insert-heading)
+                                                   (maphash (-lambda (_ (&plist :id))
+                                                              (when-let* ((node (org-roam-node-from-id id)))
+                                                                (org-roam-review--insert-note node)))
+                                                            notes))))
 
-                 (mapc #'magit-section-hide (oref section children)))))
+                                    (mapc #'magit-section-hide (oref section children)))))
+          (cond ((hash-table-empty-p notes)
+                 (insert (or placeholder (propertize "(None)" 'face 'font-lock-comment-face)))
+                 (newline))
+                (t
+                 (insert-notes notes))))
         (goto-char (point-min))))
     (display-buffer buf)))
 
@@ -263,6 +265,7 @@ categorised by their maturity."
 Read each note and add new thoughts and connections, then mark
 them as reviewed with `org-roam-review-accept',
 `org-roam-review-bury' or by updating their maturity."
+   :placeholder (concat (propertize "You're up-to-date!" 'face 'font-lock-comment-face) " 😸")
    :refresh-command #'org-roam-review-list-due
    :notes (org-roam-review--cache-collect
            (lambda (note)
