@@ -112,8 +112,8 @@ candidate for reviews."
 
 (defun org-roam-review--cache-collect (fn)
   (let ((table (copy-hash-table (org-roam-review--cache))))
-    (maphash (lambda (key value)
-               (if-let* ((result (funcall fn key value)))
+    (maphash (lambda (key note)
+               (if-let* ((result (funcall fn note)))
                    (puthash key result table)
                  (remhash key table)))
              table)
@@ -153,6 +153,24 @@ candidate for reviews."
   (interactive)
   (pp-display-expression (org-roam-review--cache)
                          "*org-roam-review cache*"))
+
+;;; Note accessors
+
+(defun org-roam-review--note-ignored-p (note)
+  (-let [(&plist :tags) note]
+    (seq-intersection tags org-roam-review-ignored-tags)))
+
+(defun org-roam-review--note-due-p (note)
+  (-let [(value &as &plist :next-review) note]
+    (and next-review (or
+                      (time-equal-p next-review nil)
+                      (time-less-p next-review nil)))))
+
+(defun org-roam-review--note-maturity (note)
+  (plist-get note :maturity))
+
+(defun org-roam-review--note-has-next-review-p (note)
+  (plist-get note :next-review))
 
 
 ;;; Review buffers
@@ -162,7 +180,7 @@ candidate for reviews."
 nodes for review."
   :group 'org-roam-review)
 
-(defun org-roam-review--insert-note-section (node)
+(defun org-roam-review--insert-note (node)
   (magit-insert-section section (org-roam-node-section)
     (insert (propertize (org-roam-node-title node)
                         'font-lock-face 'org-roam-title))
@@ -175,7 +193,7 @@ nodes for review."
       (oset section point 0)
       (insert "\n\n"))))
 
-(defun org-roam-review--create-review-buffer (title instructions filtered-cache)
+(cl-defun org-roam-review--create-review-buffer (&key title instructions notes (group-on nil))
   (let ((buf (get-buffer-create "*org-roam-review*")))
     (with-current-buffer buf
       (let ((inhibit-read-only t))
@@ -183,7 +201,7 @@ nodes for review."
         (org-roam-review-mode)
         (org-roam-buffer-set-header-line-format title)
 
-        (cond ((hash-table-empty-p filtered-cache)
+        (cond ((hash-table-empty-p notes)
                (insert (concat (propertize "You're up-to-date!" 'face 'font-lock-comment-face) " 😸"))
                (newline))
               (t
@@ -198,31 +216,56 @@ nodes for review."
                  (magit-insert-heading)
                  (maphash (-lambda (_ (&plist :id))
                             (when-let* ((node (org-roam-node-from-id id)))
-                              (org-roam-review--insert-note-section node)))
-                          filtered-cache))
+                              (org-roam-review--insert-note node)))
+                          notes))
                (goto-char 0)
                (let ((children (oref magit-root-section children)))
-                 (mapc 'magit-section-hide children))))))
+                 (mapc 'magit-section-hide children)))))
 
+      (goto-char (point-min)))
     (display-buffer buf)))
 
 ;;;###autoload
-(defun org-roam-review ()
+(defun org-roam-review (&optional all)
+  "List notes that are due for review.
+
+With optional prefix arg ALL, list all evergreen notes
+categorised by their maturity."
+  (interactive "P")
+  (if all
+      (org-roam-review-list-categorised)
+    (org-roam-review-list-due)))
+
+;;;###autoload
+(defun org-roam-review-list-due ()
   "List notes that are due for review."
   (interactive)
   (org-roam-review--create-review-buffer
-   "Due Notes"
-   "The notes below are due for review.
+   :title "Due Notes"
+   :instructions "The notes below are due for review.
 Read each note and add new thoughts and connections, then mark
 them as reviewed with `org-roam-review-accept',
 `org-roam-review-bury' or by updating their maturity."
-   (org-roam-review--cache-collect
-    (-lambda (_ (value &as &plist :next-review :tags))
-      (unless (seq-intersection tags org-roam-review-ignored-tags)
-        (when (and next-review (or
-                                (time-equal-p next-review nil)
-                                (time-less-p next-review nil)))
-          value))))))
+   :notes (org-roam-review--cache-collect
+           (lambda (note)
+             (when (and (not (org-roam-review--note-ignored-p note))
+                        (org-roam-review--note-due-p note))
+               note)))))
+
+;;;###autoload
+(defun org-roam-review-list-categorised ()
+  "List all evergreen notes categorised by maturity."
+  (interactive)
+  ;; TODO: categorise
+  (org-roam-review--create-review-buffer
+   :title "Evergreen Notes"
+   :instructions "The notes below are categorised by maturity."
+   :notes (org-roam-review--cache-collect
+           (lambda (note)
+             (when (and (not (org-roam-review--note-ignored-p note))
+                        (org-roam-review--note-maturity note))
+               note)))
+   :group-on #'org-roam-review--note-maturity))
 
 ;;;###autoload
 (defun org-roam-review-list-uncategorised ()
@@ -232,14 +275,15 @@ This is useful for migrating notes into the spaced repetition
 system."
   (interactive)
   (org-roam-review--create-review-buffer
-   "Uncategorised Notes"
-   "The notes below are missing the properties needed to be included
-in reviews. Categorise them as appropriate."
-   (org-roam-review--cache-collect
-    (-lambda (_ (value &as &plist :maturity :next-review :tags))
-      (unless (seq-intersection tags org-roam-review-ignored-tags)
-        (unless (and next-review maturity)
-          value))))))
+   :title "Uncategorised Notes"
+   :instructions "The notes below are missing the properties
+needed to be included in reviews. Categorise them as appropriate."
+   :notes (org-roam-review--cache-collect
+           (lambda (note)
+             (unless (or (org-roam-review--note-ignored-p note)
+                         (org-roam-review--note-maturity note)
+                         (org-roam-review--note-has-next-review-p note))
+               note)))))
 
 
 
