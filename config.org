@@ -405,8 +405,8 @@ Load host-specific settings, which are not checked into version control.
                             `(org-block-end-line ,block-markup)))
 #+end_src
 
-Something weird is going on with the link faces that prevents the setting above
-from sticking. Re-evaluate that spec to force to work around.
+KLUDGE: Something weird is going on with the link faces that prevents the
+setting above from sticking. Re-evaluate that spec.
 
 #+begin_src emacs-lisp
   (add-hook 'org-mode-hook
