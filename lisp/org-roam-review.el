@@ -230,8 +230,11 @@ nodes for review."
                                       'font-lock-face 'org-roam-title))
     (oset section node node)
     (magit-insert-section section (org-roam-preview-section)
-      (insert (org-roam-fontify-like-in-org-mode
-               (org-roam-preview-get-contents (org-roam-node-file node) 0)))
+      (let ((content (org-roam-fontify-like-in-org-mode
+                      (org-roam-preview-get-contents (org-roam-node-file node) 0))))
+        (insert (if (string-blank-p (string-trim-left content))
+                    (propertize "(Empty)" 'font-lock-face 'font-lock-comment-face)
+                    content)))
       (oset section file (org-roam-node-file node))
       (oset section point 0)
       (insert "\n\n"))))
@@ -273,7 +276,7 @@ nodes for review."
                  (magit-insert-section (org-roam-review-notes)
                    (mapc (-lambda ((key . group))
                            (magit-insert-section (org-roam-review-note-group)
-                             (magit-insert-heading (propertize key 'font-lock-face 'magit-section-heading))
+                             (insert (propertize key 'font-lock-face 'magit-section-heading))
                              (insert-notes group)
                              (insert "\n")))
                          (seq-group-by group-on notes))))
