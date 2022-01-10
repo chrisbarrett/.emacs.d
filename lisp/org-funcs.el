@@ -254,7 +254,8 @@ handles file titles, IDs and tags better."
             (org-roam-promote-entire-buffer)
             (when-let* ((tags (-union (org-funcs--file-tags) tags)))
               (org-funcs--set-file-tags tags))
-            (save-buffer)))))))
+            (save-buffer)
+            (run-hook-with-args 'org-roam-capture-new-node-hook)))))))
 
 
 (defun org-funcs-read-tags-filter (&optional default)
