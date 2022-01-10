@@ -122,10 +122,11 @@ candidate for reviews."
 
 ;; Define cache-management porcelain in terms of plumbing.
 
-(defun org-roam-review--note-at-point-excluded-p ()
-  (save-match-data
-    (org-entry-get (point) "REVIEW_EXCLUDED")))
-
+(defun org-roam-review--cache-skip-note-p ()
+  (org-with-wide-buffer
+   (or (org-entry-get (point) "REVIEW_EXCLUDED")
+       (org-roam-dailies--daily-note-p)
+       (seq-intersection org-roam-review-ignored-tags (org-roam-review--file-or-headline-tags)))))
 
 (defun org-roam-review-notes-from-this-buffer ()
   (org-with-wide-buffer
@@ -133,7 +134,7 @@ candidate for reviews."
      (goto-char (point-min))
      (let ((acc))
        (while (search-forward-regexp (org-re-property "ID") nil t)
-         (unless (org-roam-review--note-at-point-excluded-p)
+         (unless (org-roam-review--cache-skip-note-p)
            (let* ((id (match-string-no-properties 3))
                   (item (make-org-roam-review-note
                          :id id
@@ -154,7 +155,7 @@ candidate for reviews."
      (goto-char (point-min))
      (let ((acc))
        (while (search-forward-regexp (org-re-property "ID") nil t)
-         (when (org-roam-review--note-at-point-excluded-p)
+         (when (org-roam-review--cache-skip-note-p)
            (let ((id (match-string-no-properties 3)))
              (push id acc))))
        (nreverse acc)))))
@@ -168,7 +169,7 @@ candidate for reviews."
 (defun org-roam-review--cache-update ()
   "Update the evergreen notes cache from `after-save-hook'."
   (when (and (derived-mode-p 'org-mode)
-             (not (org-roam-dailies--daily-note-p (buffer-file-name))))
+             (not (org-roam-dailies--daily-note-p)))
     (org-roam-review--cache-mutate #'org-roam-review--update-by-props-in-buffer)))
 
 (defun org-roam-review--cache-collect (fn)
@@ -192,10 +193,8 @@ candidate for reviews."
                (insert-file-contents file)
                (setq-local major-mode 'org-mode)
                (org-set-regexps-and-options)
-               (let ((skip-p (or (org-roam-dailies--daily-note-p file)
-                                 (seq-intersection org-roam-review-ignored-tags (org-roam-review--file-or-headline-tags)))))
-                 (unless skip-p
-                   (org-roam-review--cache-mutate #'org-roam-review--update-by-props-in-buffer)))))
+               (unless (org-roam-review--cache-skip-note-p)
+                 (org-roam-review--cache-mutate #'org-roam-review--update-by-props-in-buffer))))
            t))
 
 ;;;###autoload
@@ -450,6 +449,11 @@ needed to be included in reviews. Categorise them as appropriate."
   (let ((maturity (org-entry-get (point) "MATURITY")))
     (org-roam-review--update-note maturity 'bury)))
 
+(defun org-roam-review--skip-note-for-maturity-assignment-p ()
+  (org-with-wide-buffer
+   (or (org-roam-dailies--daily-note-p)
+       (seq-intersection org-roam-review-ignored-tags (org-roam-review--file-or-headline-tags)))))
+
 ;;;###autoload
 (defun org-roam-review-set-budding (&optional bury)
   "Set the current note as a 'budding' note and confirm it's been reviewed.
@@ -457,7 +461,8 @@ needed to be included in reviews. Categorise them as appropriate."
 With prefix arg BURY, the note is less likely to be surfaced in
 the future."
   (interactive "P")
-  (org-roam-review--update-note "budding" bury))
+  (unless (org-roam-review--skip-note-for-maturity-assignment-p)
+    (org-roam-review--update-note "budding" bury)))
 
 ;;;###autoload
 (defun org-roam-review-set-seedling (&optional bury)
@@ -466,7 +471,8 @@ the future."
 With prefix arg BURY, the note is less likely to be surfaced in
 the future."
   (interactive "P")
-  (org-roam-review--update-note "seedling" bury))
+  (unless (org-roam-review--skip-note-for-maturity-assignment-p)
+    (org-roam-review--update-note "seedling" bury)))
 
 ;;;###autoload
 (defun org-roam-review-set-evergreen (&optional bury)
@@ -475,7 +481,8 @@ the future."
 With prefix arg BURY, the note is less likely to be surfaced in
 the future."
   (interactive "P")
-  (org-roam-review--update-note "evergreen" bury))
+  (unless (org-roam-review--skip-note-for-maturity-assignment-p)
+    (org-roam-review--update-note "evergreen" bury)))
 
 (defconst org-roam-review--properties
   '("LAST_REVIEW"
