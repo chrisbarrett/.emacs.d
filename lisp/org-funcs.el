@@ -152,6 +152,21 @@ TAGS are the tags to use when displaying the list."
   (org-roam-node-visit (org-roam-node-from-title-or-alias "Accounts")))
 
 
+(defun org-funcs-set-title (text)
+  (org-with-wide-buffer
+   (goto-char (point-min))
+   (save-match-data
+     (search-forward-regexp (rx bol "#+title:" (* space) (group (+ any)) eol))
+     (replace-match text t nil nil 1))))
+
+(defun org-funcs-title ()
+  (org-with-wide-buffer
+   (goto-char (point-min))
+   (save-match-data
+     (search-forward-regexp (rx bol "#+title:" (* space) (group (+ any)) eol))
+     (match-string 1 ))))
+
+
 ;; Capture utils
 
 (defun org-funcs-capture-note-to-clocked-heading ()
@@ -256,6 +271,9 @@ handles file titles, IDs and tags better."
             (when-let* ((tags (-difference '("dailies")
                                            (-union (org-funcs--file-tags) tags))))
               (org-funcs--set-file-tags tags))
+
+            (org-funcs-set-title title)
+
             (save-buffer)
             (run-hook-with-args 'org-roam-capture-new-node-hook)))))))
 
@@ -343,9 +361,15 @@ With optional prefix ARG, prompt for a tags filter."
   (org-with-wide-buffer
    (let ((id (org-entry-get (point) "ID" t)))
      (org-roam-review-remove-managed-properties-in-node id))
+
+   (let ((title (org-funcs-title)))
+     (unless (string-prefix-p "Outline" title)
+       (org-funcs-set-title (concat "Outline - " (string-trim title)))))
+
    (org-roam-tag-add '("outline"))
    (org-funcs--ensure-olp '("Metadata") org-funcs-outline-metadata-content)
    (org-funcs--ensure-olp '("Notes"))
+   (org-funcs--ensure-olp '("Related"))
    (save-buffer)))
 
 (provide 'org-funcs)
