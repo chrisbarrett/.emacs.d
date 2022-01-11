@@ -303,6 +303,16 @@ With optional prefix ARG, prompt for a tags filter."
              (not (seq-contains-p (org-roam-node-tags node) "dailies"))))))
     (org-roam-node-find arg nil filter)))
 
+(defun org-funcs-new-note ()
+  (let ((require-final-newline nil))
+    (find-file (expand-file-name (format-time-string "%Y-%m-%d--%H-%M-%S.org")
+                                 org-roam-directory))))
+
+(defun org-funcs-new-outline-note ()
+  (let ((require-final-newline nil))
+    (find-file (expand-file-name (format-time-string "outlines/%Y-%m-%d--%H-%M-%S.org")
+                                 org-roam-directory))))
+
 
 
 (defun org-funcs-fix-blank-lines ()
