@@ -5106,6 +5106,7 @@ Normally newlines are reflowed automatically.
     (org-return-follows-link t)
 
     :config
+    (add-hook 'org-mode-hook #'auto-fill-mode)
     (add-hook 'org-mode-hook #'auto-revert-mode)
     (add-hook 'org-mode-hook #'visual-line-mode)
 
