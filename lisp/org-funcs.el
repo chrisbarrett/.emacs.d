@@ -24,6 +24,7 @@
   (require 'org-clock)
   (require 'org-capture))
 
+(autoload 'org-roam-review-remove-managed-properties-in-node "org-roam-review")
 (autoload 'timekeep-work-tag "timekeep")
 (autoload 'org-cliplink-retrieve-title-synchronously "org-cliplink")
 (autoload 'org-project-p "org-project")
@@ -258,7 +259,6 @@ handles file titles, IDs and tags better."
             (save-buffer)
             (run-hook-with-args 'org-roam-capture-new-node-hook)))))))
 
-
 (defun org-funcs-read-tags-filter (&optional default)
   (let* ((input (read-string "[+-]Tags: " default 'org-funcs-read-tags-filter-history))
          (tags (split-string input (rx (+ (any space ":"))) t)))
@@ -318,6 +318,27 @@ With optional prefix ARG, prompt for a tags filter."
                            (insert "\n"))))
                      t
                      scope)))
+
+(defun org-funcs-set-outline ()
+  (interactive)
+  (save-match-data
+    (let ((id (org-entry-get (point) "ID" t)))
+      (org-roam-review-remove-managed-properties-in-node id))
+    (org-roam-tag-add '("outline"))
+    (let ((insert-metadata-p (null (save-excursion
+                                     (goto-char (point-min))
+                                     (search-forward-regexp (rx bol (+ "*") (* space) "Metadata" eow) nil t)))))
+      (org-roam-capture-find-or-create-olp '("Metadata"))
+      (when insert-metadata-p
+        (goto-char (point-min))
+        (search-forward-regexp (rx bol (+ "*") (* space) "Metadata" eow) nil t)
+        (insert "
+- URL ::
+- Author ::
+- Accessed ::
+")))
+    (org-roam-capture-find-or-create-olp '("Notes"))
+    (save-buffer)))
 
 (provide 'org-funcs)
 

@@ -5229,6 +5229,7 @@ probably a package incompatibility.
     org-funcs-toggle-priority
     :general
     (:keymaps 'org-mode-map :states '(normal insert emacs)
+     "C-c r o" '(org-funcs-set-outline :wk "set outline")
      "C-c l" 'org-funcs-insert-url-as-link))
 #+end_src
 

@@ -496,6 +496,15 @@ the future."
     "DRILL_EASE")
   "List of properties managed by `org-roam-review'.")
 
+(defun org-roam-review-remove-managed-properties-in-node (node-id)
+  (let ((message-log-max))
+    (org-with-wide-buffer
+     (org-find-property "ID" node-id)
+     (ignore-errors
+       (org-roam-tag-remove org-roam-review-maturity-values))
+     (dolist (name org-roam-review--properties)
+       (org-delete-property name)))))
+
 ;;;###autoload
 (defun org-roam-review-set-excluded ()
   "Exclude this note from reviews.
@@ -511,13 +520,9 @@ it is not a candidate for reviews."
      (let ((id (org-entry-get (point) "ID" t)))
        (unless id
          (error "No ID property for tree at point"))
-
+       (org-roam-review-remove-managed-properties-in-node id)
        (org-find-property "ID" id)
-       (ignore-errors
-         (org-roam-tag-remove org-roam-review-maturity-values))
        (org-set-property "REVIEW_EXCLUDED" "t")
-       (dolist (name org-roam-review--properties)
-         (org-delete-property name))
        (save-buffer)
 
        (let ((title (org-roam-node-title (org-roam-node-from-id id))))
