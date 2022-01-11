@@ -122,10 +122,10 @@ candidate for reviews."
 
 ;; Define cache-management porcelain in terms of plumbing.
 
-(defun org-roam-review--cache-skip-note-p ()
+(defun org-roam-review--cache-skip-note-p (&optional file)
   (org-with-wide-buffer
    (or (org-entry-get (point) "REVIEW_EXCLUDED")
-       (org-roam-dailies--daily-note-p)
+       (org-roam-review--daily-note-p file)
        (seq-intersection org-roam-review-ignored-tags (org-roam-review--file-or-headline-tags)))))
 
 (defun org-roam-review-notes-from-this-buffer ()
@@ -166,10 +166,20 @@ candidate for reviews."
   (dolist (id (org-roam-review-excluded-note-ids-from-this-buffer))
     (remhash id cache)))
 
+(defun org-roam-review--daily-note-p (&optional file)
+  "Test whether the current buffer is a daily note.
+
+This is a wrapper that makes sure org-roam-directory is well-formed.
+
+See:
+https://github.com/org-roam/org-roam/issues/2032"
+  (let ((org-roam-directory (string-remove-suffix org-roam-dailies-directory org-roam-directory)))
+    (org-roam-dailies--daily-note-p file)))
+
 (defun org-roam-review--cache-update ()
   "Update the evergreen notes cache from `after-save-hook'."
   (when (and (derived-mode-p 'org-mode)
-             (not (org-roam-dailies--daily-note-p)))
+             (not (org-roam-review--daily-note-p)))
     (org-roam-review--cache-mutate #'org-roam-review--update-by-props-in-buffer)))
 
 (defun org-roam-review--cache-collect (fn)
@@ -193,7 +203,7 @@ candidate for reviews."
                (insert-file-contents file)
                (setq-local major-mode 'org-mode)
                (org-set-regexps-and-options)
-               (unless (org-roam-review--cache-skip-note-p)
+               (unless (org-roam-review--cache-skip-note-p file)
                  (org-roam-review--cache-mutate #'org-roam-review--update-by-props-in-buffer))))
            t))
 
@@ -412,7 +422,7 @@ needed to be included in reviews. Categorise them as appropriate."
   (cl-assert (derived-mode-p 'org-mode))
   (atomic-change-group
     (org-with-wide-buffer
-     (when (org-roam-dailies--daily-note-p)
+     (when (org-roam-review--daily-note-p)
        (user-error "Cannot set maturity on daily file"))
 
      (if-let* ((id (org-entry-get (point) "ID" t)))
@@ -451,7 +461,7 @@ needed to be included in reviews. Categorise them as appropriate."
 
 (defun org-roam-review--skip-note-for-maturity-assignment-p ()
   (org-with-wide-buffer
-   (or (org-roam-dailies--daily-note-p)
+   (or (org-roam-review--daily-note-p)
        (seq-intersection org-roam-review-ignored-tags (org-roam-review--file-or-headline-tags)))))
 
 ;;;###autoload
