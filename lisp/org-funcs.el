@@ -248,8 +248,8 @@ handles file titles, IDs and tags better."
   (interactive)
   (let ((dest-file (expand-file-name (format-time-string "%Y-%m-%d--%H-%M-%S.org"))))
     (save-excursion
-      (org-back-to-heading-or-point-min t)
-      (when (bobp) (user-error "Already a top-level node"))
+      (when (org-before-first-heading-p)
+        (user-error "Already a top-level node"))
 
       (save-buffer)
       (org-roam-db-update-file)
@@ -268,12 +268,10 @@ handles file titles, IDs and tags better."
           (with-current-buffer (find-file-noselect dest-file)
             (org-paste-subtree nil nil nil t)
             (org-roam-promote-entire-buffer)
+            (org-funcs-set-title title)
             (when-let* ((tags (-difference (-union (org-funcs--file-tags) tags)
                                            '("dailies"))))
               (org-funcs--set-file-tags tags))
-
-            (org-funcs-set-title title)
-
             (save-buffer)
             (run-hook-with-args 'org-roam-capture-new-node-hook)))))))
 
