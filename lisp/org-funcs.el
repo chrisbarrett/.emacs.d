@@ -319,26 +319,34 @@ With optional prefix ARG, prompt for a tags filter."
                      t
                      scope)))
 
-(defun org-funcs-set-outline ()
-  (interactive)
-  (save-match-data
-    (let ((id (org-entry-get (point) "ID" t)))
-      (org-roam-review-remove-managed-properties-in-node id))
-    (org-roam-tag-add '("outline"))
-    (let ((insert-metadata-p (null (save-excursion
-                                     (goto-char (point-min))
-                                     (search-forward-regexp (rx bol (+ "*") (* space) "Metadata" eow) nil t)))))
-      (org-roam-capture-find-or-create-olp '("Metadata"))
-      (when insert-metadata-p
-        (goto-char (point-min))
-        (search-forward-regexp (rx bol (+ "*") (* space) "Metadata" eow) nil t)
-        (insert "
+(defun org-funcs--ensure-olp (olp &optional content)
+  (condition-case _
+      (org-find-olp olp t)
+    (error
+     (goto-char (point-min))
+     (org-with-point-at (org-roam-capture-find-or-create-olp olp)
+       (when content
+         (goto-char (line-end-position))
+         (newline)
+         (insert (string-trim content))
+         (newline)))))
+  (point))
+
+(defvar org-funcs-outline-metadata-content "
 - URL ::
 - Author ::
 - Accessed ::
-")))
-    (org-roam-capture-find-or-create-olp '("Notes"))
-    (save-buffer)))
+")
+
+(defun org-funcs-set-outline ()
+  (interactive)
+  (org-with-wide-buffer
+   (let ((id (org-entry-get (point) "ID" t)))
+     (org-roam-review-remove-managed-properties-in-node id))
+   (org-roam-tag-add '("outline"))
+   (org-funcs--ensure-olp '("Metadata") org-funcs-outline-metadata-content)
+   (org-funcs--ensure-olp '("Notes"))
+   (save-buffer)))
 
 (provide 'org-funcs)
 
