@@ -268,8 +268,8 @@ handles file titles, IDs and tags better."
           (with-current-buffer (find-file-noselect dest-file)
             (org-paste-subtree nil nil nil t)
             (org-roam-promote-entire-buffer)
-            (when-let* ((tags (-difference '("dailies")
-                                           (-union (org-funcs--file-tags) tags))))
+            (when-let* ((tags (-difference (-union (org-funcs--file-tags) tags)
+                                           '("dailies"))))
               (org-funcs--set-file-tags tags))
 
             (org-funcs-set-title title)
