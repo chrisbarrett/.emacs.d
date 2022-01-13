@@ -601,6 +601,19 @@ it is not a candidate for reviews."
        (let ((title (org-roam-node-title (org-roam-node-from-id id))))
          (message "Excluded note `%s' from reviews" title))))))
 
+;;;###autoload
+(defun org-roam-review-set-author ()
+  "Mark this note as an author note."
+  (interactive)
+  (atomic-change-group
+    (org-with-wide-buffer
+     (let ((id (org-entry-get (point) "ID" t)))
+       (unless id
+         (error "No ID property for tree at point"))
+       (org-roam-review-remove-managed-properties-in-node id)
+       (org-roam-tag-add '("author"))
+       (save-buffer)))))
+
 (provide 'org-roam-review)
 
 ;;; org-roam-review.el ends here
