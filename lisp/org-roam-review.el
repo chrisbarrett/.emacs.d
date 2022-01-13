@@ -92,7 +92,7 @@ candidate for reviews."
 
 (cl-defstruct org-roam-review-note
   "A cached org-roam note for use in the review buffer."
-  id tags next-review last-review maturity todo-keywords)
+  id tags next-review last-review maturity todo-keywords created)
 
 (defun org-roam-review-note-ignored-p (note)
   (seq-intersection (org-roam-review-note-tags note)
@@ -167,6 +167,9 @@ candidate for reviews."
                                         (org-parse-time-string)
                                         (encode-time))
                          :last-review (-some->> (org-entry-get (point) "LAST_REVIEW")
+                                        (org-parse-time-string)
+                                        (encode-time))
+                         :created (-some->> (org-entry-get (point) "CREATED")
                                         (org-parse-time-string)
                                         (encode-time))
                          :maturity (org-entry-get (point) "MATURITY")
