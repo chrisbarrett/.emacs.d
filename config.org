@@ -1562,6 +1562,14 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
     (add-to-list 'emojify-inhibit-functions #'emojify-at-org-drawer-p))
 #+end_src
 
+** =emoji= - Emacs' built-in emoji stuff
+#+begin_src emacs-lisp
+  (use-package emoji
+    :general
+    ("C-x /" 'emoji-search))
+#+end_src
+
+
 ** =yasnippet= - Text snippets
 =yasnippet= provides expandable text snippets. I use them extensively to cut
 down on typing.
