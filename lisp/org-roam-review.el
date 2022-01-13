@@ -93,7 +93,7 @@ candidate for reviews."
 
 (cl-defstruct org-roam-review-note
   "A cached org-roam note for use in the review buffer."
-  id tags next-review last-review maturity todo-keywords created)
+  id tags next-review last-review maturity todo-keywords created title)
 
 (defun org-roam-review-note-ignored-p (note)
   (seq-intersection (org-roam-review-note-tags note)
@@ -156,7 +156,12 @@ candidate for reviews."
   (org-with-wide-buffer
    (save-match-data
      (goto-char (point-min))
-     (let ((acc))
+     (let ((acc)
+           (buffer-title
+            (save-excursion
+              (search-forward-regexp (rx bol "#+title:" (* space) (group (+ any)) eol) nil t)
+              (match-string 1))))
+
        (while (search-forward-regexp (org-re-property "ID") nil t)
          (unless (org-roam-review--cache-skip-note-p file)
            (let* ((id (match-string-no-properties 3))
@@ -167,6 +172,7 @@ candidate for reviews."
                          :last-review (-some->> (org-entry-get (point) "LAST_REVIEW") (ts-parse-org))
                          :created (-some->> (org-entry-get (point) "CREATED") (ts-parse-org))
                          :maturity (org-entry-get (point) "MATURITY")
+                         :title (substring-no-properties (or (org-get-heading t t t) buffer-title))
                          :tags (org-roam-review--file-or-headline-tags))))
              (push item acc))))
        (nreverse acc)))))
