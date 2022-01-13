@@ -301,8 +301,37 @@ nodes for review."
 (defvar org-roam-review-default-placeholder
   (propertize "(None)" 'face 'font-lock-comment-face))
 
-(cl-defun org-roam-review--create-review-buffer (&key title instructions notes group-on refresh-command placeholder skip-previews-p)
-  (cl-assert (and title instructions refresh-command))
+(cl-defun org-roam-review--create-buffer (&key title instructions notes group-on refresh-command placeholder skip-previews-p)
+  "Create a note review buffer for the notes currently in the cache.
+
+
+The following keyword arguments are required:
+
+- TITLE is the header line for the buffer.
+
+- INSTRUCTIONS is a paragraph inserted below the title. It is
+  automatically paragraph-filled.
+
+- NOTES is a filter function called for each note. It should
+  return non-nil if the note is to be included in the buffer.
+
+- REFRESH-COMMAND is a function to be called when the user
+  refreshes the buffer via the key command. It will usually be a
+  symbol, the name of this command that is being declared using
+  `org-roam-review--create-buffer'.
+
+The following keyword arguments are optional:
+
+- PLACEHOLDER is a string to be shown if there are no notes to
+  display.
+
+- SKIP-PREVIEWS-P, when supplied, instructs the renderer to avoid
+  including preview sections for each note. This can speed up
+  generation of the buffer for large collections of notes.
+
+- GROUP-ON is a projection function that is passed a note and
+  should return a string to use for grouping the note."
+  (cl-assert (and notes title instructions refresh-command))
   (let ((buf (get-buffer-create "*org-roam-review*")))
     (with-current-buffer buf
       (let ((inhibit-read-only t))
@@ -368,7 +397,7 @@ categorised by their maturity."
 (defun org-roam-review-list-due ()
   "List notes that are due for review."
   (interactive)
-  (org-roam-review--create-review-buffer
+  (org-roam-review--create-buffer
    :title "Due Notes"
    :instructions "The notes below are due for review.
 Read each note and add new thoughts and connections, then mark
@@ -387,7 +416,7 @@ them as reviewed with `org-roam-review-accept',
 (defun org-roam-review-list-categorised ()
   "List all evergreen notes categorised by maturity."
   (interactive)
-  (org-roam-review--create-review-buffer
+  (org-roam-review--create-buffer
    :title "Evergreen Notes"
    :instructions "The notes below are categorised by maturity."
    :refresh-command #'org-roam-review-list-categorised
@@ -405,7 +434,7 @@ them as reviewed with `org-roam-review-accept',
 This is useful for migrating notes into the spaced repetition
 system."
   (interactive)
-  (org-roam-review--create-review-buffer
+  (org-roam-review--create-buffer
    :title "Uncategorised Notes"
    :instructions "The notes below are missing the properties
 needed to be included in reviews. Categorise them as appropriate."
@@ -423,7 +452,7 @@ needed to be included in reviews. Categorise them as appropriate."
 (defun org-roam-review-list-authors ()
   "List all author notes."
   (interactive)
-  (org-roam-review--create-review-buffer
+  (org-roam-review--create-buffer
    :title "Author Notes"
    :instructions "The list below contains notes tagged as authors."
    :refresh-command #'org-roam-review-list-authors
@@ -442,7 +471,7 @@ needed to be included in reviews. Categorise them as appropriate."
 (defun org-roam-review-list-outlines ()
   "List all outline notes."
   (interactive)
-  (org-roam-review--create-review-buffer
+  (org-roam-review--create-buffer
    :title "Outline Notes"
    :refresh-command #'org-roam-review-list-outlines
    :instructions "The notes below are outlines of sources,
@@ -458,7 +487,7 @@ grouped by whether they require further processing."
               (recently (ts-adjust 'hour -24 (ts-now))))
     (cond
      ((ts<= recently created)
-      "Recently")
+      "Recent")
      ((ts<= (ts-adjust 'day -3 recently) created)
       "Last 3 days")
      ((ts<= (ts-adjust 'day -7 recently) created)
@@ -468,7 +497,7 @@ grouped by whether they require further processing."
 (defun org-roam-review-list-recently-added ()
   "List notes that were created recently, grouped by time."
   (interactive)
-  (org-roam-review--create-review-buffer
+  (org-roam-review--create-buffer
    :title "Recently Created Notes"
    :refresh-command #'org-roam-review-list-recently-added
    :instructions "The notes below are sorted by when they were created."
