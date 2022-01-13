@@ -124,9 +124,10 @@ candidate for reviews."
 
 (defun org-roam-review--cache-skip-note-p (&optional file)
   (org-with-wide-buffer
-   (or (org-entry-get (point) "REVIEW_EXCLUDED")
-       (org-roam-review--daily-note-p file)
-       (seq-intersection org-roam-review-ignored-tags (org-roam-review--file-or-headline-tags)))))
+   (save-match-data
+     (or (org-entry-get (point) "REVIEW_EXCLUDED")
+         (org-roam-review--daily-note-p file)
+         (seq-intersection org-roam-review-ignored-tags (org-roam-review--file-or-headline-tags))))))
 
 (defun org-roam-review-notes-from-this-buffer ()
   (org-with-wide-buffer
