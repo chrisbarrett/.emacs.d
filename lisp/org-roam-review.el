@@ -480,7 +480,10 @@ grouped by whether they require further processing."
       (org-set-property "NEXT_REVIEW" next-review)
       next-review)))
 
-(defun org-roam-review--update-note (maturity bury)
+(defun org-roam-review--update-note (maturity score)
+  "Set the MATURITY and updated SCORE for a note.
+
+A higher score means that the note will appear less frequently."
   (cl-assert (member maturity org-roam-review-maturity-values))
   (cl-assert (derived-mode-p 'org-mode))
   (atomic-change-group
@@ -488,39 +491,36 @@ grouped by whether they require further processing."
      (when (org-roam-review--daily-note-p (buffer-file-name))
        (user-error "Cannot set maturity on daily file"))
 
-     (if-let* ((id (org-entry-get (point) "ID" t)))
-         (org-find-property "ID" id)
-       (error "No ID property for tree at point"))
+     (let ((id (org-entry-get (point) "ID" t)))
+       (unless id
+         (error "No ID property for tree at point"))
+       (goto-char (org-find-property "ID" id))
 
-     (org-delete-property "REVIEW_EXCLUDED")
-     (org-set-property "MATURITY" maturity)
-     (org-set-property "LAST_REVIEW" (org-format-time-string "[%Y-%m-%d %a]"))
+       (let ((next-review (org-roam-review--update-next-review score)))
+         (ignore-errors
+           (org-roam-tag-remove org-roam-review-maturity-values))
+         (org-roam-tag-add (list maturity))
 
-     (let* (
-            ;; High score means the note appears less often--in
-            ;; spaced-repetition learning, it's been 'learned'.
-            (score (if bury 5 3))
-            (next-review (org-roam-review--update-next-review score)))
-       (ignore-errors
-         (org-roam-tag-remove org-roam-review-maturity-values))
-       (org-roam-tag-add (list maturity))
+         (org-delete-property "REVIEW_EXCLUDED")
+         (org-set-property "MATURITY" maturity)
+         (org-set-property "LAST_REVIEW" (org-format-time-string "[%Y-%m-%d %a]"))
 
-       (save-buffer)
-       (message "Maturity set to '%s'. Review scheduled for %s" maturity next-review)))))
+         (save-buffer)
+         (message "Maturity set to '%s'. Review scheduled for %s" maturity next-review))))))
 
 ;;;###autoload
 (defun org-roam-review-accept ()
   "Confirm review of the current note."
   (interactive)
   (let ((maturity (org-entry-get (point) "MATURITY")))
-    (org-roam-review--update-note maturity nil)))
+    (org-roam-review--update-note maturity 3)))
 
 ;;;###autoload
 (defun org-roam-review-bury ()
   "Confirm review of the current note and bury it."
   (interactive)
   (let ((maturity (org-entry-get (point) "MATURITY")))
-    (org-roam-review--update-note maturity 'bury)))
+    (org-roam-review--update-note maturity 5)))
 
 (defun org-roam-review--skip-note-for-maturity-assignment-p ()
   (org-with-wide-buffer
@@ -535,7 +535,7 @@ With prefix arg BURY, the note is less likely to be surfaced in
 the future."
   (interactive "P")
   (unless (org-roam-review--skip-note-for-maturity-assignment-p)
-    (org-roam-review--update-note "budding" bury)))
+    (org-roam-review--update-note "budding" 3)))
 
 ;;;###autoload
 (defun org-roam-review-set-seedling (&optional bury)
@@ -545,7 +545,7 @@ With prefix arg BURY, the note is less likely to be surfaced in
 the future."
   (interactive "P")
   (unless (org-roam-review--skip-note-for-maturity-assignment-p)
-    (org-roam-review--update-note "seedling" bury)))
+    (org-roam-review--update-note "seedling" 1)))
 
 ;;;###autoload
 (defun org-roam-review-set-evergreen (&optional bury)
@@ -555,7 +555,7 @@ With prefix arg BURY, the note is less likely to be surfaced in
 the future."
   (interactive "P")
   (unless (org-roam-review--skip-note-for-maturity-assignment-p)
-    (org-roam-review--update-note "evergreen" bury)))
+    (org-roam-review--update-note "evergreen" 5)))
 
 (defconst org-roam-review--properties
   '("LAST_REVIEW"
