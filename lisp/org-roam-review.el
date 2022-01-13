@@ -122,20 +122,21 @@ candidate for reviews."
 
 ;; Define cache-management porcelain in terms of plumbing.
 
-(defun org-roam-review--cache-skip-note-p (&optional file)
+(defun org-roam-review--cache-skip-note-p (file)
+  (cl-assert file)
   (org-with-wide-buffer
    (save-match-data
      (or (org-entry-get (point) "REVIEW_EXCLUDED")
          (org-roam-review--daily-note-p file)
          (seq-intersection org-roam-review-ignored-tags (org-roam-review--file-or-headline-tags))))))
 
-(defun org-roam-review-notes-from-this-buffer ()
+(defun org-roam-review-notes-from-this-buffer (file)
   (org-with-wide-buffer
    (save-match-data
      (goto-char (point-min))
      (let ((acc))
        (while (search-forward-regexp (org-re-property "ID") nil t)
-         (unless (org-roam-review--cache-skip-note-p)
+         (unless (org-roam-review--cache-skip-note-p file)
            (let* ((id (match-string-no-properties 3))
                   (item (make-org-roam-review-note
                          :id id
@@ -150,21 +151,21 @@ candidate for reviews."
              (push item acc))))
        (nreverse acc)))))
 
-(defun org-roam-review-excluded-note-ids-from-this-buffer ()
+(defun org-roam-review-excluded-note-ids-from-this-buffer (file)
   (org-with-wide-buffer
    (save-match-data
      (goto-char (point-min))
      (let ((acc))
        (while (search-forward-regexp (org-re-property "ID") nil t)
-         (when (org-roam-review--cache-skip-note-p)
+         (when (org-roam-review--cache-skip-note-p file)
            (let ((id (match-string-no-properties 3)))
              (push id acc))))
        (nreverse acc)))))
 
-(defun org-roam-review--update-by-props-in-buffer (cache)
-  (dolist (note (org-roam-review-notes-from-this-buffer))
+(defun org-roam-review--update-by-props-in-buffer (cache file)
+  (dolist (note (org-roam-review-notes-from-this-buffer file))
     (puthash (org-roam-review-note-id note) note cache))
-  (dolist (id (org-roam-review-excluded-note-ids-from-this-buffer))
+  (dolist (id (org-roam-review-excluded-note-ids-from-this-buffer file))
     (remhash id cache)))
 
 (defun org-roam-review--daily-note-p (&optional file)
@@ -174,6 +175,7 @@ This is a wrapper that makes sure org-roam-directory is well-formed.
 
 See:
 https://github.com/org-roam/org-roam/issues/2032"
+  (cl-assert (or file (buffer-file-name)))
   (let ((org-roam-directory (string-remove-suffix org-roam-dailies-directory org-roam-directory)))
     (org-roam-dailies--daily-note-p file)))
 
@@ -181,7 +183,8 @@ https://github.com/org-roam/org-roam/issues/2032"
   "Update the evergreen notes cache from `after-save-hook'."
   (when (and (derived-mode-p 'org-mode)
              (not (org-roam-review--daily-note-p)))
-    (org-roam-review--cache-mutate #'org-roam-review--update-by-props-in-buffer)))
+    (org-roam-review--cache-mutate (lambda (cache)
+                                     (org-roam-review--update-by-props-in-buffer cache (buffer-file-name))))))
 
 (defun org-roam-review--cache-collect (fn)
   (let ((table (copy-hash-table (org-roam-review--cache))))
@@ -205,7 +208,8 @@ https://github.com/org-roam/org-roam/issues/2032"
                (setq-local major-mode 'org-mode)
                (org-set-regexps-and-options)
                (unless (org-roam-review--cache-skip-note-p file)
-                 (org-roam-review--cache-mutate #'org-roam-review--update-by-props-in-buffer))))
+                 (org-roam-review--cache-mutate (lambda (cache)
+                                                  (org-roam-review--update-by-props-in-buffer cache file))))))
            t))
 
 ;;;###autoload
