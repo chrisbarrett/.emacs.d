@@ -72,20 +72,32 @@
 (defconst org-roam-review-maturity-values '("seedling" "evergreen" "budding"))
 
 (defcustom org-roam-review-ignored-tags '()
+  "A list of tags that define a note should not be imported."
+  :group 'org-roam-review
+  :type '(list string))
+
+(defcustom org-roam-review-extra-ignored-tags-for-review '("outline")
   "A list of tags that define a note should not be considered a
 candidate for reviews."
   :group 'org-roam-review
   :type '(list string))
+
+(defcustom org-roam-review-pending-todo-keywords '("WAIT" "TODO")
+  "Org TODO keywords representing pending todos in outline files."
+  :group 'org-roam-review
+  :type '(repeat string))
 
 
 ;;; Cached note type & accessors
 
 (cl-defstruct org-roam-review-note
   "A cached org-roam note for use in the review buffer."
-  id tags next-review last-review maturity)
+  id tags next-review last-review maturity todo-keywords)
 
 (defun org-roam-review-note-ignored-p (note)
-  (seq-intersection (org-roam-review-note-tags note) org-roam-review-ignored-tags))
+  (seq-intersection (org-roam-review-note-tags note)
+                    (append org-roam-review-ignored-tags
+                            org-roam-review-extra-ignored-tags-for-review)))
 
 (defun org-roam-review-note-due-p (note)
   (when-let* ((next-review (org-roam-review-note-next-review note)))
@@ -130,6 +142,16 @@ candidate for reviews."
          (org-roam-review--daily-note-p file)
          (seq-intersection org-roam-review-ignored-tags (org-roam-review--file-or-headline-tags))))))
 
+(defun org-roam-review--todo-keywords-in-buffer ()
+  (save-excursion
+    (save-match-data
+      (let ((acc)
+            (case-fold-search))
+        (goto-char (point-min))
+        (while (search-forward-regexp org-todo-regexp nil t)
+          (push (match-string-no-properties 1) acc))
+        (seq-uniq acc)))))
+
 (defun org-roam-review-notes-from-this-buffer (file)
   (org-with-wide-buffer
    (save-match-data
@@ -140,6 +162,7 @@ candidate for reviews."
            (let* ((id (match-string-no-properties 3))
                   (item (make-org-roam-review-note
                          :id id
+                         :todo-keywords (org-roam-review--todo-keywords-in-buffer)
                          :next-review (-some->> (org-entry-get (point) "NEXT_REVIEW")
                                         (org-parse-time-string)
                                         (encode-time))
@@ -168,7 +191,7 @@ candidate for reviews."
   (dolist (id (org-roam-review-excluded-note-ids-from-this-buffer file))
     (remhash id cache)))
 
-(defun org-roam-review--daily-note-p (&optional file)
+(defun org-roam-review--daily-note-p (file)
   "Test whether the current buffer is a daily note.
 
 This is a wrapper that makes sure org-roam-directory is well-formed.
@@ -182,7 +205,7 @@ https://github.com/org-roam/org-roam/issues/2032"
 (defun org-roam-review--cache-update ()
   "Update the evergreen notes cache from `after-save-hook'."
   (when (and (derived-mode-p 'org-mode)
-             (not (org-roam-review--daily-note-p)))
+             (not (org-roam-review--daily-note-p (buffer-file-name))))
     (org-roam-review--cache-mutate (lambda (cache)
                                      (org-roam-review--update-by-props-in-buffer cache (buffer-file-name))))))
 
@@ -398,6 +421,40 @@ needed to be included in reviews. Categorise them as appropriate."
                          (org-roam-review-note-next-review note))
                note)))))
 
+;;;###autoload
+(defun org-roam-review-list-authors ()
+  "List all author notes."
+  (interactive)
+  (org-roam-review--create-review-buffer
+   :title "Author Notes"
+   :instructions "The list below contains notes tagged as authors."
+   :refresh-command #'org-roam-review-list-authors
+   :notes (org-roam-review--cache-collect
+           (lambda (note)
+             (when (seq-contains-p (org-roam-review-note-tags note) "author")
+               note)))))
+
+(defun org-roam-review--note-todo-presence (note)
+  (if (seq-intersection (org-roam-review-note-todo-keywords note)
+                        org-roam-review-pending-todo-keywords)
+      "Pending Todos"
+    "Processed"))
+
+;;;###autoload
+(defun org-roam-review-list-outlines ()
+  "List all outline notes."
+  (interactive)
+  (org-roam-review--create-review-buffer
+   :title "Outline Notes"
+   :refresh-command #'org-roam-review-list-outlines
+   :instructions "The notes below are outlines of sources,
+grouped by whether they require further processing."
+   :group-on #'org-roam-review--note-todo-presence
+   :notes (org-roam-review--cache-collect
+           (lambda (note)
+             (when (seq-contains-p (org-roam-review-note-tags note) "outline")
+               note)))))
+
 
 
 (defun org-roam-review--update-next-review (quality)
@@ -428,7 +485,7 @@ needed to be included in reviews. Categorise them as appropriate."
   (cl-assert (derived-mode-p 'org-mode))
   (atomic-change-group
     (org-with-wide-buffer
-     (when (org-roam-review--daily-note-p)
+     (when (org-roam-review--daily-note-p (buffer-file-name))
        (user-error "Cannot set maturity on daily file"))
 
      (if-let* ((id (org-entry-get (point) "ID" t)))
@@ -467,7 +524,7 @@ needed to be included in reviews. Categorise them as appropriate."
 
 (defun org-roam-review--skip-note-for-maturity-assignment-p ()
   (org-with-wide-buffer
-   (or (org-roam-review--daily-note-p)
+   (or (org-roam-review--daily-note-p (buffer-file-name))
        (seq-intersection org-roam-review-ignored-tags (org-roam-review--file-or-headline-tags)))))
 
 ;;;###autoload
