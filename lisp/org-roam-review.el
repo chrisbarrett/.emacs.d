@@ -558,7 +558,7 @@ With prefix arg BURY, the note is less likely to be surfaced in
 the future."
   (interactive "P")
   (unless (org-roam-review--skip-note-for-maturity-assignment-p)
-    (org-roam-review--update-note "budding" 3)))
+    (org-roam-review--update-note "budding" (if bury 5 3))))
 
 ;;;###autoload
 (defun org-roam-review-set-seedling (&optional bury)
@@ -568,7 +568,7 @@ With prefix arg BURY, the note is less likely to be surfaced in
 the future."
   (interactive "P")
   (unless (org-roam-review--skip-note-for-maturity-assignment-p)
-    (org-roam-review--update-note "seedling" 1)))
+    (org-roam-review--update-note "seedling" (if bury 5 1))))
 
 ;;;###autoload
 (defun org-roam-review-set-evergreen (&optional bury)
@@ -578,7 +578,7 @@ With prefix arg BURY, the note is less likely to be surfaced in
 the future."
   (interactive "P")
   (unless (org-roam-review--skip-note-for-maturity-assignment-p)
-    (org-roam-review--update-note "evergreen" 5)))
+    (org-roam-review--update-note "evergreen" (if bury 5 4))))
 
 (defconst org-roam-review--properties
   '("LAST_REVIEW"
