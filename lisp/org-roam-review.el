@@ -330,7 +330,18 @@ The following keyword arguments are optional:
   generation of the buffer for large collections of notes.
 
 - GROUP-ON is a projection function that is passed a note and
-  should return a string to use for grouping the note."
+  should return one of:
+
+    - nil, meaning the note should be omitted
+
+    - a string to use for grouping the note
+
+    - a cons of `(GROUP-NAME . GROUP-PRIORITY)', where:
+
+        - GROUP-NAME is the string for grouping the note
+
+        - GROUP-PRIORITY is a number used to order group in the
+          buffer."
   (cl-assert (and notes title instructions refresh-command))
   (let ((buf (get-buffer-create "*org-roam-review*")))
     (with-current-buffer buf
@@ -362,13 +373,17 @@ The following keyword arguments are optional:
                  (newline))
                 (group-on
                  (magit-insert-section (org-roam-review-notes)
-                   (mapc (-lambda ((key . group))
-                           (when key
-                             (magit-insert-section (org-roam-review-note-group)
-                               (insert (propertize key 'font-lock-face 'magit-section-heading))
-                               (insert-notes group)
-                               (insert "\n"))))
-                         (seq-group-by group-on notes))))
+                   (->> (seq-group-by group-on notes)
+                        (-sort (-lambda ((l . _) (r . _))
+                                 (when-let ((left-priority (if (stringp l) 0 (cdr l)))
+                                            (right-priority (if (stringp r) 0 (cdr r))))
+                                   (<= left-priority right-priority))))
+                        (mapc (-lambda ((key . group))
+                                (when key
+                                  (magit-insert-section (org-roam-review-note-group)
+                                    (insert (propertize (if (stringp key) key (car key)) 'font-lock-face 'magit-section-heading))
+                                    (insert-notes group)
+                                    (insert "\n"))))))))
                 (t
                  (insert-notes notes))))
         (goto-char (point-min))))
@@ -391,7 +406,6 @@ categorised by their maturity."
     ("seedling" "Seedling 🌱")
     ("evergreen" "Evergreen 🌲")
     (value value)))
-
 
 ;;;###autoload
 (defun org-roam-review-list-due ()
