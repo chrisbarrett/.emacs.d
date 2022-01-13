@@ -5884,7 +5884,7 @@ property to =ignore= or =scheduled=.
                           ((org-agenda-overriding-header "Stuck Projects")
                            (org-agenda-skip-function #'org-project-skip-non-stuck-projects))))))
        `(("p" "personal agenda" ,views
-          ((org-agenda-tag-filter-preset '("-someday" "-ignore" "-work"))
+          ((org-agenda-tag-filter-preset '("-someday" "-ignore" "-work" "-outline"))
            (org-agenda-archives-mode t)))
          ("w" "work agenda" ,views
           ((org-agenda-clockreport-mode t)
