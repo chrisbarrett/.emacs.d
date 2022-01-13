@@ -2722,8 +2722,12 @@ Disabled for now since this breaks insert state in evil :/
     "y" '(org-roam-dailies-goto-yesterday :wk "dailies: yesterday")
     "d" '(org-roam-dailies-goto-date :wk "dailies: date...")
 
-    "r" '(org-roam-review :wk "review notes")
-    "u" '(org-roam-review-list-uncategorised :wk "uncategorised notes")
+    "r" '(nil :wk "review...")
+    "ra" '(org-roam-review-list-authors :wk "review authors")
+    "ro" '(org-roam-review-list-outlines :wk "review outlines")
+    "rr" '(org-roam-review :wk "review due evergreens")
+    "ru" '(org-roam-review-list-uncategorised :wk "uncategorised notes")
+
     "p" '(org-funcs-goto-todos :wk "todos")
     "g" '(org-capture-goto-last-stored :wk "last captured")
     "t" '(org-funcs-todo-list :wk "todo list")
