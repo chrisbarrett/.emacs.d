@@ -334,10 +334,11 @@ nodes for review."
                 (group-on
                  (magit-insert-section (org-roam-review-notes)
                    (mapc (-lambda ((key . group))
-                           (magit-insert-section (org-roam-review-note-group)
-                             (insert (propertize key 'font-lock-face 'magit-section-heading))
-                             (insert-notes group)
-                             (insert "\n")))
+                           (when key
+                             (magit-insert-section (org-roam-review-note-group)
+                               (insert (propertize key 'font-lock-face 'magit-section-heading))
+                               (insert-notes group)
+                               (insert "\n"))))
                          (seq-group-by group-on notes))))
                 (t
                  (insert-notes notes))))
@@ -450,6 +451,31 @@ grouped by whether they require further processing."
    :notes (org-roam-review--cache-collect
            (lambda (note)
              (when (seq-contains-p (org-roam-review-note-tags note) "outline")
+               note)))))
+
+(defun org-roam-review--note-added-group (note)
+  (when-let* ((created (org-roam-review-note-created note))
+              (recently (ts-adjust 'hour -24 (ts-now))))
+    (cond
+     ((ts<= recently created)
+      "Recently")
+     ((ts<= (ts-adjust 'day -3 recently) created)
+      "Last 3 days")
+     ((ts<= (ts-adjust 'day -7 recently) created)
+      "Last week"))))
+
+;;;###autoload
+(defun org-roam-review-list-recently-added ()
+  "List notes that were created recently, grouped by time."
+  (interactive)
+  (org-roam-review--create-review-buffer
+   :title "Recently Created Notes"
+   :refresh-command #'org-roam-review-list-recently-added
+   :instructions "The notes below are sorted by when they were created."
+   :group-on #'org-roam-review--note-added-group
+   :notes (org-roam-review--cache-collect
+           (lambda (note)
+             (unless (seq-intersection (org-roam-review-note-tags note) org-roam-review-ignored-tags)
                note)))))
 
 

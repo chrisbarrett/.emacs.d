@@ -2732,6 +2732,7 @@ Disabled for now since this breaks insert state in evil :/
 
     "r" '(nil :wk "review...")
     "ra" '(org-roam-review-list-authors :wk "review authors")
+    "rd" '(org-roam-review-list-recently-added :wk "recently added")
     "ro" '(org-roam-review-list-outlines :wk "review outlines")
     "rr" '(org-roam-review :wk "review due evergreens")
     "ru" '(org-roam-review-list-uncategorised :wk "uncategorised notes")
