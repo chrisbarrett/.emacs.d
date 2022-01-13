@@ -402,9 +402,9 @@ categorised by their maturity."
 
 (defun org-roam-review--maturity-header-for-note (note)
   (pcase (org-roam-review-note-maturity note)
-    ("budding" "Budding 🪴")
-    ("seedling" "Seedling 🌱")
-    ("evergreen" "Evergreen 🌲")
+    ("seedling" (cons "Seedling 🌱" 3))
+    ("budding" (cons "Budding 🪴" 2))
+    ("evergreen" (cons "Evergreen 🌲" 1))
     (value value)))
 
 ;;;###autoload
@@ -478,8 +478,8 @@ needed to be included in reviews. Categorise them as appropriate."
 (defun org-roam-review--note-todo-presence (note)
   (if (seq-intersection (org-roam-review-note-todo-keywords note)
                         org-roam-review-pending-todo-keywords)
-      "Pending Todos"
-    "Processed"))
+      (cons "Unfinished" 1)
+    (cons "Complete" 2)))
 
 ;;;###autoload
 (defun org-roam-review-list-outlines ()
@@ -501,11 +501,11 @@ grouped by whether they require further processing."
               (recently (ts-adjust 'hour -24 (ts-now))))
     (cond
      ((ts<= recently created)
-      "Recent")
+      (cons "Recent" 1))
      ((ts<= (ts-adjust 'day -3 recently) created)
-      "Last 3 days")
+      (cons "Last 3 days" 2))
      ((ts<= (ts-adjust 'day -7 recently) created)
-      "Last week"))))
+      (cons "Last week" 3)))))
 
 ;;;###autoload
 (defun org-roam-review-list-recently-added ()
