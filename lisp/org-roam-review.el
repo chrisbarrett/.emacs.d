@@ -308,7 +308,7 @@ nodes for review."
 (defvar org-roam-review-default-placeholder
   (propertize "(None)" 'face 'font-lock-comment-face))
 
-(cl-defun org-roam-review--create-buffer (&key title instructions notes group-on refresh-command placeholder skip-previews-p)
+(cl-defun org-roam-review--create-buffer (&key title instructions notes group-on refresh-command placeholder skip-previews-p sort)
   "Create a note review buffer for the notes currently in the cache.
 
 
@@ -348,7 +348,11 @@ The following keyword arguments are optional:
         - GROUP-NAME is the string for grouping the note
 
         - GROUP-PRIORITY is a number used to order group in the
-          buffer."
+          buffer.
+
+- SORT is a projection function that is passed two notes within a
+  group and returns non-nil if the first element should sort
+  before the second."
   (cl-assert (and notes title instructions refresh-command))
   (let ((buf (get-buffer-create "*org-roam-review*")))
     (with-current-buffer buf
@@ -389,7 +393,7 @@ The following keyword arguments are optional:
                                 (when key
                                   (magit-insert-section (org-roam-review-note-group)
                                     (insert (propertize (if (stringp key) key (car key)) 'font-lock-face 'magit-section-heading))
-                                    (insert-notes group)
+                                    (insert-notes (-sort (or sort (-const t)) group))
                                     (insert "\n"))))))))
                 (t
                  (insert-notes notes))))
@@ -427,6 +431,7 @@ them as reviewed with `org-roam-review-accept',
    :placeholder (concat (propertize "You're up-to-date!" 'face 'font-lock-comment-face) " 😸")
    :refresh-command #'org-roam-review-list-due
    :group-on #'org-roam-review--maturity-header-for-note
+   :sort (-on #'ts< #'org-roam-review-note-next-review)
    :notes (org-roam-review--cache-collect
            (lambda (note)
              (when (and (not (org-roam-review-note-ignored-p note))
@@ -442,6 +447,7 @@ them as reviewed with `org-roam-review-accept',
    :instructions "The notes below are categorised by maturity."
    :refresh-command #'org-roam-review-list-categorised
    :group-on #'org-roam-review--maturity-header-for-note
+   :sort (-on #'string-lessp #'org-roam-review-note-title)
    :notes (org-roam-review--cache-collect
            (lambda (note)
              (when (and (not (org-roam-review-note-ignored-p note))
@@ -461,6 +467,7 @@ system."
 needed to be included in reviews. Categorise them as appropriate."
    :refresh-command #'org-roam-review-list-uncategorised
    :skip-previews-p t
+   :sort (-on #'string-lessp #'org-roam-review-note-title)
    :notes (org-roam-review--cache-collect
            (lambda (note)
              (unless (or (org-roam-review-note-ignored-p note)
@@ -477,6 +484,7 @@ needed to be included in reviews. Categorise them as appropriate."
    :title "Author Notes"
    :instructions "The list below contains notes tagged as authors."
    :refresh-command #'org-roam-review-list-authors
+   :sort (-on #'string-lessp #'org-roam-review-note-title)
    :notes (org-roam-review--cache-collect
            (lambda (note)
              (when (seq-contains-p (org-roam-review-note-tags note) "author")
@@ -498,6 +506,7 @@ needed to be included in reviews. Categorise them as appropriate."
    :instructions "The notes below are outlines of sources,
 grouped by whether they require further processing."
    :group-on #'org-roam-review--note-todo-presence
+   :sort (-on #'string-lessp #'org-roam-review-note-title)
    :notes (org-roam-review--cache-collect
            (lambda (note)
              (when (seq-contains-p (org-roam-review-note-tags note) "outline")
@@ -523,6 +532,7 @@ grouped by whether they require further processing."
    :refresh-command #'org-roam-review-list-recently-added
    :instructions "The notes below are sorted by when they were created."
    :group-on #'org-roam-review--note-added-group
+   :sort (-on #'string-lessp #'org-roam-review-note-title)
    :notes (org-roam-review--cache-collect
            (lambda (note)
              (unless (seq-intersection (org-roam-review-note-tags note) org-roam-review-ignored-tags)
