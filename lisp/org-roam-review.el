@@ -393,6 +393,7 @@ needed to be included in reviews. Categorise them as appropriate."
    :notes (org-roam-review--cache-collect
            (lambda (note)
              (unless (or (org-roam-review-note-ignored-p note)
+                         (seq-contains-p (org-roam-review-note-tags note) "outline")
                          (org-roam-review-note-maturity note)
                          (org-roam-review-note-next-review note))
                note)))))
