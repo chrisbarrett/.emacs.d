@@ -58,6 +58,7 @@
 (require 'org-roam-dailies)
 (require 'f)
 (require 'ht)
+(require 'ts)
 
 (defgroup org-roam-review nil
   "Extends org-roam with spaced-repetition review of notes."
@@ -101,8 +102,7 @@ candidate for reviews."
 
 (defun org-roam-review-note-due-p (note)
   (when-let* ((next-review (org-roam-review-note-next-review note)))
-    (or (time-equal-p next-review nil)
-        (time-less-p next-review nil))))
+    (ts<= next-review (ts-now))))
 
 
 ;;; Define cache operations
@@ -163,15 +163,9 @@ candidate for reviews."
                   (item (make-org-roam-review-note
                          :id id
                          :todo-keywords (org-roam-review--todo-keywords-in-buffer)
-                         :next-review (-some->> (org-entry-get (point) "NEXT_REVIEW")
-                                        (org-parse-time-string)
-                                        (encode-time))
-                         :last-review (-some->> (org-entry-get (point) "LAST_REVIEW")
-                                        (org-parse-time-string)
-                                        (encode-time))
-                         :created (-some->> (org-entry-get (point) "CREATED")
-                                        (org-parse-time-string)
-                                        (encode-time))
+                         :next-review (-some->> (org-entry-get (point) "NEXT_REVIEW") (ts-parse-org))
+                         :last-review (-some->> (org-entry-get (point) "LAST_REVIEW") (ts-parse-org))
+                         :created (-some->> (org-entry-get (point) "CREATED") (ts-parse-org))
                          :maturity (org-entry-get (point) "MATURITY")
                          :tags (org-roam-review--file-or-headline-tags))))
              (push item acc))))
@@ -475,11 +469,11 @@ grouped by whether they require further processing."
           (next-interval (if (cl-minusp next-interval)
                              next-interval
                            (max 1.0 (+ last-interval (- next-interval last-interval)))))
-          (new-time (time-add (current-time) (days-to-time (round next-interval)))))
+          (new-time (ts-adjust 'day next-interval (ts-now))))
     (setq org-drill-sm5-optimal-factor-matrix new-ofmatrix)
     (org-drill-store-item-data next-interval repetitions failures total-repeats meanq ease)
 
-    (let ((next-review (org-format-time-string "[%Y-%m-%d %a]" new-time)))
+    (let ((next-review (ts-format "[%Y-%m-%d %a]" new-time)))
       (org-set-property "NEXT_REVIEW" next-review)
       next-review)))
 
