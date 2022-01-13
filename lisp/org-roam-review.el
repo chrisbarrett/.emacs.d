@@ -222,9 +222,10 @@ https://github.com/org-roam/org-roam/issues/2032"
     (hash-table-values table)))
 
 (defun org-roam-review--file-or-headline-tags ()
-  (if (org-before-first-heading-p)
-      org-file-tags
-    (org-get-tags)))
+  (seq-map #'substring-no-properties
+           (if (org-before-first-heading-p)
+               org-file-tags
+             (org-get-tags))))
 
 (defun org-roam-review--cache-roam-files ()
   (f-files org-roam-directory
