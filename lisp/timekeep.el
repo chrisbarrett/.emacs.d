@@ -195,7 +195,7 @@ Each value is a plist with at lesat the following keys:
 
 (defun timekeep--on-clock-in ()
   (-when-let* ((id (org-roam-id-at-point))
-              ((&plist :name) (timekeep-find :roam-id id)))
+               ((&plist :name) (timekeep-find :roam-id id)))
     (timekeep--set-latest-client-name name)
     (setq timekeep--session-active-p t)))
 
