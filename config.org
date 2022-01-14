@@ -6226,7 +6226,8 @@ This makes it much easier to edit text using emphasis markers correctly.
     (defun config-org-roam--ensure-ids ()
       (add-hook 'after-save-hook
                 (lambda ()
-                  (org-id-add-location id (buffer-file-name)))
+                  (when-let* ((id (org-entry-get-with-inheritance "ID")))
+                    (org-id-add-location id (buffer-file-name))))
                 nil t))
 
     (add-hook 'org-mode-hook #'config-org-roam--ensure-ids))
