@@ -138,7 +138,7 @@ candidate for reviews."
   (cl-assert file)
   (org-with-wide-buffer
    (save-match-data
-     (or (org-entry-get (point) "REVIEW_EXCLUDED")
+     (or (org-entry-get-with-inheritance "REVIEW_EXCLUDED")
          (org-roam-review--daily-note-p file)
          (seq-intersection org-roam-review-ignored-tags (org-roam-review--file-or-headline-tags))))))
 
@@ -168,10 +168,10 @@ candidate for reviews."
                   (item (make-org-roam-review-note
                          :id id
                          :todo-keywords (org-roam-review--todo-keywords-in-buffer)
-                         :next-review (-some->> (org-entry-get (point) "NEXT_REVIEW") (ts-parse-org))
-                         :last-review (-some->> (org-entry-get (point) "LAST_REVIEW") (ts-parse-org))
-                         :created (-some->> (org-entry-get (point) "CREATED") (ts-parse-org))
-                         :maturity (org-entry-get (point) "MATURITY")
+                         :next-review (-some->> (org-entry-get-with-inheritance "NEXT_REVIEW") (ts-parse-org))
+                         :last-review (-some->> (org-entry-get-with-inheritance "LAST_REVIEW") (ts-parse-org))
+                         :created (-some->> (org-entry-get-with-inheritance "CREATED") (ts-parse-org))
+                         :maturity (org-entry-get-with-inheritance "MATURITY")
                          :title (substring-no-properties (or (org-get-heading t t t) buffer-title))
                          :tags (org-roam-review--file-or-headline-tags))))
              (push item acc))))
@@ -584,7 +584,7 @@ A higher score means that the note will appear less frequently."
      (when (org-roam-review--daily-note-p (buffer-file-name))
        (user-error "Cannot set maturity on daily file"))
 
-     (let ((id (org-entry-get (point) "ID" t)))
+     (let ((id (org-entry-get-with-inheritance "ID" t)))
        (unless id
          (error "No ID property for tree at point"))
        (goto-char (org-find-property "ID" id))
@@ -605,14 +605,14 @@ A higher score means that the note will appear less frequently."
 (defun org-roam-review-accept ()
   "Confirm review of the current note."
   (interactive)
-  (let ((maturity (org-entry-get (point) "MATURITY")))
+  (let ((maturity (org-entry-get-with-inheritance "MATURITY")))
     (org-roam-review--update-note maturity 3)))
 
 ;;;###autoload
 (defun org-roam-review-bury ()
   "Confirm review of the current note and bury it."
   (interactive)
-  (let ((maturity (org-entry-get (point) "MATURITY")))
+  (let ((maturity (org-entry-get-with-inheritance "MATURITY")))
     (org-roam-review--update-note maturity 5)))
 
 (defun org-roam-review--skip-note-for-maturity-assignment-p ()
@@ -683,7 +683,7 @@ it is not a candidate for reviews."
   (interactive)
   (atomic-change-group
     (org-with-wide-buffer
-     (let ((id (org-entry-get (point) "ID" t)))
+     (let ((id (org-entry-get-with-inheritance "ID" t)))
        (unless id
          (error "No ID property for tree at point"))
        (org-roam-review-remove-managed-properties-in-node id)
@@ -700,7 +700,7 @@ it is not a candidate for reviews."
   (interactive)
   (atomic-change-group
     (org-with-wide-buffer
-     (let ((id (org-entry-get (point) "ID" t)))
+     (let ((id (org-entry-get-with-inheritance "ID" t)))
        (unless id
          (error "No ID property for tree at point"))
        (org-roam-review-remove-managed-properties-in-node id)
