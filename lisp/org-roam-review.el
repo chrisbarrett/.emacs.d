@@ -552,9 +552,9 @@ grouped by whether they require further processing."
            (org-drill-determine-next-interval-sm5 last-interval repetitions
                                                   ease quality failures
                                                   meanq total-repeats ofmatrix))
-          (next-interval (if (cl-minusp next-interval)
-                             next-interval
-                           (max 1.0 (+ last-interval (- next-interval last-interval)))))
+          (next-interval (round (if (cl-minusp next-interval)
+                                    next-interval
+                                  (max 1.0 (+ last-interval (- next-interval last-interval))))))
           (new-time (ts-adjust 'day next-interval (ts-now))))
     (setq org-drill-sm5-optimal-factor-matrix new-ofmatrix)
     (org-drill-store-item-data next-interval repetitions failures total-repeats meanq ease)
