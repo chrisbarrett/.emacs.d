@@ -606,14 +606,16 @@ A higher score means that the note will appear less frequently."
   "Confirm review of the current note."
   (interactive)
   (let ((maturity (org-entry-get-with-inheritance "MATURITY")))
-    (org-roam-review--update-note maturity 3)))
+    (org-roam-review--update-note maturity 3))
+  (kill-buffer))
 
 ;;;###autoload
 (defun org-roam-review-bury ()
   "Confirm review of the current note and bury it."
   (interactive)
   (let ((maturity (org-entry-get-with-inheritance "MATURITY")))
-    (org-roam-review--update-note maturity 5)))
+    (org-roam-review--update-note maturity 5))
+  (kill-buffer))
 
 (defun org-roam-review--skip-note-for-maturity-assignment-p ()
   (org-with-wide-buffer
