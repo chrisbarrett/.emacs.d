@@ -665,8 +665,8 @@ the future."
 (defun org-roam-review-set-excluded ()
   "Exclude this note from reviews.
 
-This is useful for notes that are not Evergreens, e.g. notes
-about people or literature notes.
+This is useful for notes that are not Evergreens, e.g. wiki-style
+notes that aren't expected to be refined over time.
 
 This sets a special property, REVIEW_EXCLUDED, to indicate that
 it is not a candidate for reviews."
