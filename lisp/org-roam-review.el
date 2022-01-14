@@ -395,10 +395,8 @@ The following keyword arguments are optional:
                 (group-on
                  (magit-insert-section (org-roam-review-notes)
                    (->> (seq-group-by group-on notes)
-                        (-sort (-lambda ((l . _) (r . _))
-                                 (when-let ((left-priority (if (stringp l) 0 (cdr l)))
-                                            (right-priority (if (stringp r) 0 (cdr r))))
-                                   (<= left-priority right-priority))))
+                        (-sort (-on #'<= (-lambda ((key . _))
+                                           (if (stringp key) key (or (cdr key) 0)))))
                         (mapc (-lambda ((key . group))
                                 (when key
                                   (magit-insert-section (org-roam-review-note-group)
