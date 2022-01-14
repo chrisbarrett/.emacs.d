@@ -282,12 +282,22 @@ https://github.com/org-roam/org-roam/issues/2032"
   (let ((keymap (make-sparse-keymap)))
     (define-key keymap (kbd "TAB") #'magit-section-cycle)
     (define-key keymap (kbd "g") #'org-roam-review-refresh)
+    (define-key keymap [remap org-roam-buffer-refresh] #'org-roam-review-refresh)
     keymap))
+
+(defun org-roam-review--refresh-buffer-override (fn &rest args)
+  (message "Advice called")
+  (if (equal (buffer-name) org-roam-buffer)
+      (apply fn args)
+    (call-interactively 'org-roam-review-refresh)))
 
 (define-derived-mode org-roam-review-mode org-roam-mode "Org-roam-review"
   "Major mode for displaying relevant information about Org-roam
 nodes for review."
-  :group 'org-roam-review)
+  :group 'org-roam-review
+  ;; HACK: avoid all calls to org-roam-buffer-review if we're in a review
+  ;; buffer, since it will error.
+  (advice-add 'org-roam-buffer-refresh :around #'org-roam-review--refresh-buffer-override))
 
 (defun org-roam-review--insert-node (node &optional skip-preview-p)
   (magit-insert-section section (org-roam-node-section)
