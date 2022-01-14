@@ -6221,7 +6221,15 @@ This makes it much easier to edit text using emphasis markers correctly.
     :config
     (dolist (node (org-roam-node-list))
       (org-id-add-location (org-roam-node-id node)
-                           (org-roam-node-file node))))
+                           (org-roam-node-file node)))
+
+    (defun config-org-roam--ensure-ids ()
+      (add-hook 'after-save-hook
+                (lambda ()
+                  (org-id-add-location id (buffer-file-name)))
+                nil t))
+
+    (add-hook 'org-mode-hook #'config-org-roam--ensure-ids))
 #+end_src
 
 ** Apply a created date property to new nodes
