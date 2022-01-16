@@ -400,7 +400,10 @@ The following keyword arguments are optional:
                         (mapc (-lambda ((key . group))
                                 (when (and key group)
                                   (magit-insert-section (org-roam-review-note-group)
-                                    (insert (propertize (if (stringp key) key (car key)) 'font-lock-face 'magit-section-heading))
+                                    (let ((header (format "%s (%s)"
+                                                          (if (stringp key) key (car key))
+                                                          (length group))))
+                                      (insert (propertize header 'font-lock-face 'magit-section-heading)))
                                     (insert-notes (-sort (or sort (-const t)) group))
                                     (insert "\n"))))))))
                 (t
