@@ -398,7 +398,7 @@ The following keyword arguments are optional:
                         (-sort (-on #'<= (-lambda ((key . _))
                                            (if (stringp key) key (or (cdr key) 0)))))
                         (mapc (-lambda ((key . group))
-                                (when key
+                                (when (and key group)
                                   (magit-insert-section (org-roam-review-note-group)
                                     (insert (propertize (if (stringp key) key (car key)) 'font-lock-face 'magit-section-heading))
                                     (insert-notes (-sort (or sort (-const t)) group))
