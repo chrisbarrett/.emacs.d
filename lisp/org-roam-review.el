@@ -318,7 +318,8 @@ nodes for review."
 (defvar org-roam-review-default-placeholder
   (propertize "(None)" 'face 'font-lock-comment-face))
 
-(cl-defun org-roam-review--create-buffer (&key title instructions notes group-on refresh-command placeholder skip-previews-p sort)
+(cl-defun org-roam-review--create-buffer (&key title instructions group-on refresh-command placeholder skip-previews-p sort
+                                               (notes nil notes-supplied-p))
   "Create a note review buffer for the notes currently in the cache.
 
 
@@ -329,8 +330,7 @@ The following keyword arguments are required:
 - INSTRUCTIONS is a paragraph inserted below the title. It is
   automatically paragraph-filled.
 
-- NOTES is a filter function called for each note. It should
-  return non-nil if the note is to be included in the buffer.
+- NOTES is a list of notes to display (which is possibly empty).
 
 - REFRESH-COMMAND is a function to be called when the user
   refreshes the buffer via the key command. It will usually be a
@@ -363,7 +363,7 @@ The following keyword arguments are optional:
 - SORT is a projection function that is passed two notes within a
   group and returns non-nil if the first element should sort
   before the second."
-  (cl-assert (and notes title instructions refresh-command))
+  (cl-assert (and notes-supplied-p title instructions refresh-command))
   (let ((buf (get-buffer-create "*org-roam-review*")))
     (with-current-buffer buf
       (let ((inhibit-read-only t))
