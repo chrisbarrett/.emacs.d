@@ -207,11 +207,7 @@ Each value is a plist with at lesat the following keys:
   (let ((headline (substring-no-properties (org-get-heading t t t t))))
     (format "%s/%s"
             (timekeep--last-client-name)
-            (with-temp-buffer
-              (insert headline)
-              (org-mode)
-              (font-lock-ensure)
-              (buffer-string)))))
+            (org-link-display-format headline))))
 
 ;;;###autoload
 (define-minor-mode timekeep-mode
