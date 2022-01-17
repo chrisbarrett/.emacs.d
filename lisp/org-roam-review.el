@@ -315,6 +315,13 @@ nodes for review."
         (oset section point 0)
         (insert "\n\n")))))
 
+(defun org-roam-review--insert-notes (notes skip-previews-p)
+  (mapc (lambda (note)
+          (when-let* ((id (org-roam-review-note-id note))
+                      (node (org-roam-node-from-id id)))
+            (org-roam-review--insert-node node skip-previews-p)))
+        notes))
+
 (defvar org-roam-review-default-placeholder
   (propertize "(None)" 'face 'font-lock-comment-face))
 
@@ -372,41 +379,33 @@ The following keyword arguments are optional:
         (org-roam-buffer-set-header-line-format title)
         (setq-local org-roam-review-buffer-refresh-command refresh-command)
 
-        (cl-labels ((insert-notes (notes)
-                                  (magit-insert-section (org-roam-review)
-                                    (magit-insert-heading)
-                                    (mapc (lambda (note)
-                                            (when-let* ((id (org-roam-review-note-id note))
-                                                        (node (org-roam-node-from-id id)))
-                                              (org-roam-review--insert-node node skip-previews-p)))
-                                          notes))))
+        (when (and instructions notes)
+          (magit-insert-section (org-roam-review-instructions)
+            (let ((start (point)))
+              (insert (propertize instructions 'font-lock-face 'font-lock-comment-face))
+              (fill-region start (point)))
+            (newline 2)))
 
-          (when (and instructions notes)
-            (magit-insert-section (org-roam-review-instructions)
-              (let ((start (point)))
-                (insert (propertize instructions 'font-lock-face 'font-lock-comment-face))
-                (fill-region start (point)))
-              (newline 2)))
-
-          (cond ((null notes)
-                 (insert (or placeholder org-roam-review-default-placeholder))
-                 (newline))
-                (group-on
-                 (magit-insert-section (org-roam-review-notes)
-                   (->> (seq-group-by group-on notes)
-                        (-sort (-on #'<= (-lambda ((key . _))
-                                           (if (stringp key) key (or (cdr key) 0)))))
-                        (mapc (-lambda ((key . group))
-                                (when (and key group)
-                                  (magit-insert-section (org-roam-review-note-group)
-                                    (let ((header (format "%s (%s)"
-                                                          (if (stringp key) key (car key))
-                                                          (length group))))
-                                      (insert (propertize header 'font-lock-face 'magit-section-heading)))
-                                    (insert-notes (-sort (or sort (-const t)) group))
-                                    (insert "\n"))))))))
-                (t
-                 (insert-notes notes))))
+        (cond ((null notes)
+               (insert (or placeholder org-roam-review-default-placeholder))
+               (newline))
+              (group-on
+               (magit-insert-section (org-roam-review-notes)
+                 (->> (seq-group-by group-on notes)
+                      (-sort (-on #'<= (-lambda ((key . _))
+                                         (if (stringp key) key (or (cdr key) 0)))))
+                      (mapc (-lambda ((key . group))
+                              (when (and key group)
+                                (magit-insert-section (org-roam-review-note-group)
+                                  (let ((header (format "%s (%s)"
+                                                        (if (stringp key) key (car key))
+                                                        (length group))))
+                                    (magit-insert-heading (propertize header 'font-lock-face 'magit-section-heading)))
+                                  (org-roam-review--insert-notes (-sort (or sort (-const t)) group)
+                                                                 skip-previews-p)
+                                  (insert "\n"))))))))
+              (t
+               (org-roam-review--insert-notes notes skip-previews-p)))
         (goto-char (point-min))))
     (display-buffer buf)))
 
