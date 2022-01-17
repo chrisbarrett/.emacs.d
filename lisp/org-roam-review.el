@@ -317,15 +317,21 @@ nodes for review."
         (oset section point 0)
         (insert "\n\n")))))
 
-(defun org-roam-review--insert-notes (notes skip-previews-p)
-  (mapc (lambda (note)
-          (when-let* ((id (org-roam-review-note-id note))
-                      (node (org-roam-node-from-id id)))
-            (org-roam-review--insert-node node skip-previews-p)))
-        notes))
-
 (defvar org-roam-review-default-placeholder
   (propertize "(None)" 'face 'font-lock-comment-face))
+
+(defun org-roam-review--insert-notes (notes skip-previews-p placeholder)
+  (if-let* ((nodes (nreverse (seq-reduce (lambda (acc note)
+                                           (if-let* ((node (-some->> note
+                                                             (org-roam-review-note-id)
+                                                             (org-roam-node-from-id))))
+                                               (cons node acc)
+                                             acc))
+                                         notes nil))))
+      (dolist (node nodes)
+        (org-roam-review--insert-node node skip-previews-p))
+    (insert (or placeholder org-roam-review-default-placeholder))
+    (newline)))
 
 (cl-defun org-roam-review--create-buffer (&key title instructions group-on refresh-command placeholder skip-previews-p sort
                                                (notes nil notes-supplied-p))
@@ -403,10 +409,12 @@ The following keyword arguments are optional:
                                                (length group))))
                            (magit-insert-heading (propertize header 'font-lock-face 'magit-section-heading)))
                          (org-roam-review--insert-notes (-sort (or sort (-const t)) group)
-                                                        skip-previews-p)
+                                                        skip-previews-p
+                                                        placeholder)
                          (insert "\n"))))))
                 (t
-                 (org-roam-review--insert-notes notes skip-previews-p))))
+                 (org-roam-review--insert-notes (-sort (or sort (-const t)) notes)
+                                                skip-previews-p placeholder))))
         (goto-char (point-min))))
     (display-buffer buf)))
 
