@@ -604,10 +604,11 @@ A higher score means that the note will appear less frequently."
   (org-roam-review--refresh-buffer-if-live))
 
 (defun org-roam-review--refresh-buffer-if-live ()
-  (let ((buf (get-buffer org-roam-review-buffer-name)))
-    (when (buffer-live-p buf)
-      (with-current-buffer buf
-        (call-interactively org-roam-review-buffer-refresh-command)))))
+  (save-window-excursion
+    (let ((buf (get-buffer org-roam-review-buffer-name)))
+      (when (buffer-live-p buf)
+        (with-current-buffer buf
+          (call-interactively org-roam-review-buffer-refresh-command))))))
 
 (defun org-roam-review--kill-buffer-for-completed-review ()
   (let ((review-buf (get-buffer org-roam-review-buffer-name)))
