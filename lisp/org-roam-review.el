@@ -615,6 +615,7 @@ A higher score means that the note will appear less frequently."
             (when (equal review-buf (window-buffer win))
               (delete-window win)))
           (window-list))
+    (save-buffer)
     (kill-buffer)
     (-some->> review-buf
       (display-buffer)
