@@ -710,7 +710,7 @@ it is not a candidate for reviews."
        (unless id
          (error "No ID property for tree at point"))
        (org-roam-review-remove-managed-properties-in-node id)
-       (org-find-property "ID" id)
+       (goto-char (org-find-property "ID" id))
        (org-set-property "REVIEW_EXCLUDED" "t")
        (save-buffer)
 
