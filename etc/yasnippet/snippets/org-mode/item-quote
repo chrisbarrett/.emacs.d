@@ -3,7 +3,7 @@
 # key: q
 # condition: (yas-funcs-line-rx-p bol (* space) "-" (* space) "q" (* space) eol)
 # --
-`(just-one-space)`Quote: ${1:source}
+`(just-one-space)`Quote:
     #+begin_quote
       $0
     #+end_quote
