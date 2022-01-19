@@ -264,7 +264,11 @@ on the default headline for that client."
   (cond
    ((equal arg '(32))
     (timekeep--clock-in-on-default t))
-   ((or (equal arg '(4)) (null org-clock-history))
+   ((or (equal arg '(4))
+        (null org-clock-history)
+        ;; Would attempt to clock into the parent of the default heading?
+        (org-with-point-at (car org-clock-history)
+          (equal timekeep-default-headline-name (org-get-heading t t t t))))
     (timekeep--clock-in-on-default))
    (t
     (condition-case _
