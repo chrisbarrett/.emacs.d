@@ -6088,6 +6088,16 @@ This makes it much easier to edit text using emphasis markers correctly.
                              :complete #'org-link-complete-app))
 #+end_src
 
+** Keep org-mode abbrevs in =org-directory=
+#+begin_src emacs-lisp
+  (defun config-set-up-org-abbrevs ()
+    (setq-local abbrev-file-name (f-join org-directory "abbrev.el"))
+    (read-abbrev-file nil t)
+    (abbrev-mode +1))
+
+  (add-hook 'org-mode-hook #'config-set-up-org-abbrevs)
+#+end_src
+
 * :notebook: =org-roam= - Personal wiki & research tooling
 #+begin_src emacs-lisp
   (use-package org-roam
