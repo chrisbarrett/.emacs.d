@@ -696,12 +696,11 @@ the future."
 
 (defun org-roam-review-remove-managed-properties-in-node (node-id)
   (let ((message-log-max))
-    (org-with-wide-buffer
-     (org-find-property "ID" node-id)
-     (ignore-errors
-       (org-roam-tag-remove org-roam-review-maturity-values))
-     (dolist (name org-roam-review--properties)
-       (org-delete-property name)))))
+    (org-with-point-at (org-find-property "ID" node-id)
+      (ignore-errors
+        (org-roam-tag-remove org-roam-review-maturity-values))
+      (dolist (name org-roam-review--properties)
+        (org-delete-property name)))))
 
 ;;;###autoload
 (defun org-roam-review-set-excluded ()
