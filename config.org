@@ -6194,7 +6194,9 @@ This makes it much easier to edit text using emphasis markers correctly.
     :general
     (:states '(normal) :keymaps 'org-roam-review-mode-map
      "TAB" 'magit-section-cycle
-     "g r" 'org-roam-review-refresh)
+     "g r" 'org-roam-review-refresh
+     [remap evil-next-line] 'evil-next-visual-line
+     [remap evil-previous-line] 'evil-previous-visual-line)
     (:keymaps 'org-mode-map
      "C-c r r" '(org-roam-review-accept :wk "accept")
      "C-c r u" '(org-roam-review-bury :wk "bury")
