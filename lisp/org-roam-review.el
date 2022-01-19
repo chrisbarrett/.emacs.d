@@ -587,27 +587,24 @@ grouped by whether they require further processing."
 A higher score means that the note will appear less frequently."
   (cl-assert (member maturity org-roam-review-maturity-values))
   (cl-assert (derived-mode-p 'org-mode))
-  (atomic-change-group
-    (org-with-wide-buffer
-     (when (org-roam-review--daily-note-p (buffer-file-name))
-       (user-error "Cannot set maturity on daily file"))
+  (when (org-roam-review--daily-note-p (buffer-file-name))
+    (user-error "Cannot set maturity on daily file"))
+  (let ((id (org-entry-get-with-inheritance "ID" t)))
+    (unless id
+      (error "No ID property for tree at point"))
+    (org-with-point-at (org-find-property "ID" id)
+      (atomic-change-group
+        (let ((next-review (org-roam-review--update-next-review score)))
+          (ignore-errors
+            (org-roam-tag-remove org-roam-review-maturity-values))
+          (org-roam-tag-add (list maturity))
 
-     (let ((id (org-entry-get-with-inheritance "ID" t)))
-       (unless id
-         (error "No ID property for tree at point"))
-       (goto-char (org-find-property "ID" id))
+          (org-delete-property "REVIEW_EXCLUDED")
+          (org-set-property "MATURITY" maturity)
+          (org-set-property "LAST_REVIEW" (org-format-time-string "[%Y-%m-%d %a]"))
 
-       (let ((next-review (org-roam-review--update-next-review score)))
-         (ignore-errors
-           (org-roam-tag-remove org-roam-review-maturity-values))
-         (org-roam-tag-add (list maturity))
-
-         (org-delete-property "REVIEW_EXCLUDED")
-         (org-set-property "MATURITY" maturity)
-         (org-set-property "LAST_REVIEW" (org-format-time-string "[%Y-%m-%d %a]"))
-
-         (save-buffer)
-         (message "Maturity set to '%s'. Review scheduled for %s" maturity next-review)))))
+          (save-buffer)
+          (message "Maturity set to '%s'. Review scheduled for %s" maturity next-review)))))
   (org-roam-review--refresh-buffer-if-live))
 
 (defun org-roam-review--refresh-buffer-if-live ()
@@ -712,18 +709,17 @@ notes that aren't expected to be refined over time.
 This sets a special property, REVIEW_EXCLUDED, to indicate that
 it is not a candidate for reviews."
   (interactive)
-  (atomic-change-group
-    (org-with-wide-buffer
-     (let ((id (org-entry-get-with-inheritance "ID" t)))
-       (unless id
-         (error "No ID property for tree at point"))
-       (org-roam-review-remove-managed-properties-in-node id)
-       (goto-char (org-find-property "ID" id))
-       (org-set-property "REVIEW_EXCLUDED" "t")
-       (save-buffer)
+  (let ((id (org-entry-get-with-inheritance "ID" t)))
+    (unless id
+      (error "No ID property for tree at point"))
+    (org-with-point-at (org-find-property "ID" id)
+      (atomic-change-group
+        (org-roam-review-remove-managed-properties-in-node id)
+        (org-set-property "REVIEW_EXCLUDED" "t"))
+      (save-buffer))
 
-       (let ((title (org-roam-node-title (org-roam-node-from-id id))))
-         (message "Excluded note `%s' from reviews" title))))))
+    (let ((title (org-roam-node-title (org-roam-node-from-id id))))
+      (message "Excluded note `%s' from reviews" title))))
 
 ;;;###autoload
 (defun org-roam-review-set-author ()
