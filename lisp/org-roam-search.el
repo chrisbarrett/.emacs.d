@@ -32,6 +32,16 @@
 (require 'memoize)
 (require 'org-roam)
 
+(defgroup org-roam-search nil
+  "Notes search interface for org-roam"
+  :group 'productivity
+  :prefix "org-roam-search-")
+
+(defface org-roam-search-highlight
+  `((t (:inherit highlight)))
+  "Face for hits for a search term."
+  :group 'magit-faces)
+
 (defun org-roam-search--replace-links-in-string (str)
   (save-match-data
     (with-temp-buffer
