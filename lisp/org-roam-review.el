@@ -91,9 +91,42 @@ candidate for reviews."
 
 ;;; Cached note type & accessors
 
-(cl-defstruct org-roam-review-note
-  "A cached org-roam note for use in the review buffer."
-  id tags next-review last-review maturity todo-keywords created title)
+(defconst org-roam-review-note-required-keys
+  '(:id :title :file))
+
+(defun org-roam-review--plist-keys (plist)
+  (seq-map #'car (-partition-all 2 plist)))
+
+(defun org-roam-review-note-p (note)
+  (when (listp note)
+    (let ((keys (org-roam-review--plist-keys note)))
+      (and (null (seq-difference org-roam-review-note-required-keys keys))
+           (seq-every-p (lambda (key)
+                          (plist-get note key))
+                        org-roam-review-note-required-keys)))))
+
+(defmacro org-roam-review-note-define-getter (name)
+  (cl-assert (symbolp name))
+  (let ((keyword (intern (format ":%s" name))))
+    `(defun ,(intern (format "org-roam-review-note-%s" name)) (note)
+       ,(format "Generated accessor for `%s' key in an org-roam-review-note plist." keyword)
+       (cl-assert (org-roam-review-note-p note))
+       (plist-get note ,keyword))))
+
+(defun org-roam-review-note-create (&rest keys)
+  (cl-assert (seq-every-p #'keywordp (org-roam-review--plist-keys keys)))
+  (cl-assert (org-roam-review-note-p keys))
+  keys)
+
+(org-roam-review-note-define-getter id)
+(org-roam-review-note-define-getter title)
+(org-roam-review-note-define-getter file)
+(org-roam-review-note-define-getter tags)
+(org-roam-review-note-define-getter next-review)
+(org-roam-review-note-define-getter last-review)
+(org-roam-review-note-define-getter maturity)
+(org-roam-review-note-define-getter todo-keywords)
+(org-roam-review-note-define-getter created)
 
 (defun org-roam-review-note-ignored-p (note)
   (seq-intersection (org-roam-review-note-tags note)
@@ -165,8 +198,9 @@ candidate for reviews."
        (while (search-forward-regexp (org-re-property "ID") nil t)
          (unless (org-roam-review--cache-skip-note-p file)
            (let* ((id (match-string-no-properties 3))
-                  (item (make-org-roam-review-note
+                  (item (org-roam-review-note-create
                          :id id
+                         :file file
                          :todo-keywords (org-roam-review--todo-keywords-in-buffer)
                          :next-review (-some->> (org-entry-get-with-inheritance "NEXT_REVIEW") (ts-parse-org))
                          :last-review (-some->> (org-entry-get-with-inheritance "LAST_REVIEW") (ts-parse-org))
@@ -253,7 +287,7 @@ https://github.com/org-roam/org-roam/issues/2032"
 (defun org-roam-review-cache-show ()
   "Show the contents the evegreen notes cache for debugging."
   (interactive)
-  (pp-display-expression (org-roam-review--cache)
+  (pp-display-expression (ht-to-plist (org-roam-review--cache))
                          "*org-roam-review cache*"))
 
 ;;;###autoload
