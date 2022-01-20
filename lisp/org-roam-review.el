@@ -452,7 +452,7 @@ The following keyword arguments are optional:
                 (t
                  (org-roam-review--insert-notes (-sort (or sort (-const t)) notes) placeholder))))
         (goto-char (point-min))))
-    (display-buffer buf)))
+    buf))
 
 ;;;###autoload
 (defun org-roam-review (&optional all)
@@ -476,37 +476,39 @@ categorised by their maturity."
 (defun org-roam-review-list-due ()
   "List notes that are due for review."
   (interactive)
-  (org-roam-review--create-buffer
-   :title "Due Notes"
-   :instructions "The notes below are due for review.
+  (display-buffer
+   (org-roam-review--create-buffer
+    :title "Due Notes"
+    :instructions "The notes below are due for review.
 Read each note and add new thoughts and connections, then mark
 them as reviewed with `org-roam-review-accept',
 `org-roam-review-bury' or by updating their maturity."
-   :placeholder (concat (propertize "You're up-to-date!" 'face 'font-lock-comment-face) " 😸")
-   :refresh-command #'org-roam-review-list-due
-   :group-on #'org-roam-review--maturity-header-for-note
-   :sort (-on #'ts< #'org-roam-review-note-next-review)
-   :notes (org-roam-review--cache-collect
-           (lambda (note)
-             (when (and (not (org-roam-review-note-ignored-p note))
-                        (org-roam-review-note-due-p note))
-               note)))))
+    :placeholder (concat (propertize "You're up-to-date!" 'face 'font-lock-comment-face) " 😸")
+    :refresh-command #'org-roam-review-list-due
+    :group-on #'org-roam-review--maturity-header-for-note
+    :sort (-on #'ts< #'org-roam-review-note-next-review)
+    :notes (org-roam-review--cache-collect
+            (lambda (note)
+              (when (and (not (org-roam-review-note-ignored-p note))
+                         (org-roam-review-note-due-p note))
+                note))))))
 
 ;;;###autoload
 (defun org-roam-review-list-categorised ()
   "List all evergreen notes categorised by maturity."
   (interactive)
-  (org-roam-review--create-buffer
-   :title "Evergreen Notes"
-   :instructions "The notes below are categorised by maturity."
-   :refresh-command #'org-roam-review-list-categorised
-   :group-on #'org-roam-review--maturity-header-for-note
-   :sort (-on #'string-lessp #'org-roam-review-note-title)
-   :notes (org-roam-review--cache-collect
-           (lambda (note)
-             (when (and (not (org-roam-review-note-ignored-p note))
-                        (org-roam-review-note-maturity note))
-               note)))))
+  (display-buffer
+   (org-roam-review--create-buffer
+    :title "Evergreen Notes"
+    :instructions "The notes below are categorised by maturity."
+    :refresh-command #'org-roam-review-list-categorised
+    :group-on #'org-roam-review--maturity-header-for-note
+    :sort (-on #'string-lessp #'org-roam-review-note-title)
+    :notes (org-roam-review--cache-collect
+            (lambda (note)
+              (when (and (not (org-roam-review-note-ignored-p note))
+                         (org-roam-review-note-maturity note))
+                note))))))
 
 ;;;###autoload
 (defun org-roam-review-list-uncategorised ()
@@ -515,33 +517,35 @@ them as reviewed with `org-roam-review-accept',
 This is useful for migrating notes into the spaced repetition
 system."
   (interactive)
-  (org-roam-review--create-buffer
-   :title "Uncategorised Notes"
-   :instructions "The notes below are missing the properties
+  (display-buffer
+   (org-roam-review--create-buffer
+    :title "Uncategorised Notes"
+    :instructions "The notes below are missing the properties
 needed to be included in reviews. Categorise them as appropriate."
-   :refresh-command #'org-roam-review-list-uncategorised
-   :sort (-on #'string-lessp #'org-roam-review-note-title)
-   :notes (org-roam-review--cache-collect
-           (lambda (note)
-             (unless (or (org-roam-review-note-ignored-p note)
-                         (seq-contains-p (org-roam-review-note-tags note) "outline")
-                         (org-roam-review-note-maturity note)
-                         (org-roam-review-note-next-review note))
-               note)))))
+    :refresh-command #'org-roam-review-list-uncategorised
+    :sort (-on #'string-lessp #'org-roam-review-note-title)
+    :notes (org-roam-review--cache-collect
+            (lambda (note)
+              (unless (or (org-roam-review-note-ignored-p note)
+                          (seq-contains-p (org-roam-review-note-tags note) "outline")
+                          (org-roam-review-note-maturity note)
+                          (org-roam-review-note-next-review note))
+                note))))))
 
 ;;;###autoload
 (defun org-roam-review-list-authors ()
   "List all author notes."
   (interactive)
-  (org-roam-review--create-buffer
-   :title "Author Notes"
-   :instructions "The list below contains notes tagged as authors."
-   :refresh-command #'org-roam-review-list-authors
-   :sort (-on #'string-lessp #'org-roam-review-note-title)
-   :notes (org-roam-review--cache-collect
-           (lambda (note)
-             (when (seq-contains-p (org-roam-review-note-tags note) "author")
-               note)))))
+  (display-buffer
+   (org-roam-review--create-buffer
+    :title "Author Notes"
+    :instructions "The list below contains notes tagged as authors."
+    :refresh-command #'org-roam-review-list-authors
+    :sort (-on #'string-lessp #'org-roam-review-note-title)
+    :notes (org-roam-review--cache-collect
+            (lambda (note)
+              (when (seq-contains-p (org-roam-review-note-tags note) "author")
+                note))))))
 
 (defun org-roam-review--note-todo-presence (note)
   (if (seq-intersection (org-roam-review-note-todo-keywords note)
@@ -553,17 +557,18 @@ needed to be included in reviews. Categorise them as appropriate."
 (defun org-roam-review-list-outlines ()
   "List all outline notes."
   (interactive)
-  (org-roam-review--create-buffer
-   :title "Outline Notes"
-   :refresh-command #'org-roam-review-list-outlines
-   :instructions "The notes below are outlines of sources,
+  (display-buffer
+   (org-roam-review--create-buffer
+    :title "Outline Notes"
+    :refresh-command #'org-roam-review-list-outlines
+    :instructions "The notes below are outlines of sources,
 grouped by whether they require further processing."
-   :group-on #'org-roam-review--note-todo-presence
-   :sort (-on #'string-lessp #'org-roam-review-note-title)
-   :notes (org-roam-review--cache-collect
-           (lambda (note)
-             (when (seq-contains-p (org-roam-review-note-tags note) "outline")
-               note)))))
+    :group-on #'org-roam-review--note-todo-presence
+    :sort (-on #'string-lessp #'org-roam-review-note-title)
+    :notes (org-roam-review--cache-collect
+            (lambda (note)
+              (when (seq-contains-p (org-roam-review-note-tags note) "outline")
+                note))))))
 
 (defun org-roam-review--note-added-group (note)
   (when-let* ((created (org-roam-review-note-created note))
@@ -580,16 +585,17 @@ grouped by whether they require further processing."
 (defun org-roam-review-list-recently-added ()
   "List notes that were created recently, grouped by time."
   (interactive)
-  (org-roam-review--create-buffer
-   :title "Recently Created Notes"
-   :refresh-command #'org-roam-review-list-recently-added
-   :instructions "The notes below are sorted by when they were created."
-   :group-on #'org-roam-review--note-added-group
-   :sort (-on #'string-lessp #'org-roam-review-note-title)
-   :notes (org-roam-review--cache-collect
-           (lambda (note)
-             (unless (seq-intersection (org-roam-review-note-tags note) org-roam-review-ignored-tags)
-               note)))))
+  (display-buffer
+   (org-roam-review--create-buffer
+    :title "Recently Created Notes"
+    :refresh-command #'org-roam-review-list-recently-added
+    :instructions "The notes below are sorted by when they were created."
+    :group-on #'org-roam-review--note-added-group
+    :sort (-on #'string-lessp #'org-roam-review-note-title)
+    :notes (org-roam-review--cache-collect
+            (lambda (note)
+              (unless (seq-intersection (org-roam-review-note-tags note) org-roam-review-ignored-tags)
+                note))))))
 
 
 
