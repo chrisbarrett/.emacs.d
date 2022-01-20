@@ -42,6 +42,8 @@
   "Face for hits for a search term."
   :group 'magit-faces)
 
+(defvar org-roam-search-title-search-byte-limit 1024)
+
 (defun org-roam-search--replace-links-in-string (str)
   (save-match-data
     (with-temp-buffer
@@ -67,8 +69,6 @@
     (if transform
         (org-roam-search--replace-links-in-string line)
       (org-roam-search--format-group-title filename))))
-
-(defconst org-roam-search-title-search-byte-limit 1024)
 
 (defun org-roam-search--lookup-title (file)
   (with-temp-buffer
@@ -128,6 +128,7 @@ BUILDER is the command argument builder."
           (funcall async (nreverse result))))
        (t (funcall async action))))))
 
+;;;###autoload
 (defun org-roam-search (&optional initial)
   "Search for regexp with rg in `org-roam-directory' with INITIAL input."
   (interactive)
@@ -147,6 +148,8 @@ BUILDER is the command argument builder."
      :group #'org-roam-search--candidate-group
      :history '(:input consult--grep-history)
      :sort nil)))
+
+
 
 (provide 'org-roam-search)
 
