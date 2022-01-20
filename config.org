@@ -2734,7 +2734,7 @@ Disabled for now since this breaks insert state in evil :/
 
     "k" '(org-capture :wk "capture...")
     "l" '(org-store-link :wk "store link")
-    "s" '(org-search-view :wk "search...")
+    "s" '(org-roam-search-view :wk "search...")
     "f" '(org-funcs-roam-node-find :wk "roam file...")
     "n" '(org-roam-dailies-goto-today :wk "dailies: today")
     "T" '(org-roam-dailies-goto-tomorrow :wk "dailies: tomorrow")
@@ -6386,7 +6386,7 @@ property drawer and the title. Advise it to fix that.
 ** =org-roam-search= - a search interface that works better with org-roam
 #+begin_src emacs-lisp
   (use-package org-roam-search
-    :commands (org-roam-search))
+    :commands (org-roam-search org-roam-search-view))
 #+end_src
 
 * Load Lisp from other locations

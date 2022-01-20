@@ -28,9 +28,11 @@
 
 ;;; Code:
 
+(require 'async)
 (require 'consult)
 (require 'memoize)
 (require 'org-roam)
+(require 'org-roam-review)
 
 (defgroup org-roam-search nil
   "Notes search interface for org-roam"
@@ -150,6 +152,78 @@ BUILDER is the command argument builder."
      :sort nil)))
 
 
+
+(defun org-roam-search--find-nodes-for-file (file)
+  (seq-filter (lambda (node)
+                (equal file (org-roam-node-file node)))
+              (org-roam-node-list)))
+
+(defun org-roam-search--nodes-for-files (files)
+  (seq-uniq
+   (seq-mapcat (lambda (file)
+                 (org-roam-search--find-nodes-for-file file))
+               files)))
+
+(defun org-roam-search-notes-from-nodes (nodes)
+  (seq-uniq (seq-mapcat (lambda (node)
+                          (when-let* ((file (org-roam-node-file node)))
+                            (with-temp-buffer
+                              (let ((major-mode 'org-mode))
+                                (org-set-regexps-and-options))
+                              (insert-file-contents-literally file)
+                              (org-roam-review-notes-from-buffer (current-buffer) file))))
+                        nodes)))
+
+(defun org-roam-search--process-rg-output (buf)
+  (let* ((output (with-current-buffer buf
+                   (buffer-substring (point-min) (point-max))))
+         (lines (split-string (string-trim output) "\n")))
+    (seq-map (lambda (it) (expand-file-name it org-roam-directory)) lines)))
+
+(defun org-roam-search--highlight-matches (regexp)
+  (save-excursion
+    (goto-char (point-min))
+    (save-match-data
+      (while (search-forward-regexp regexp nil t)
+        (unless (seq-contains-p (face-at-point nil t) 'magit-heading)
+          (let ((overlay (make-overlay (let ((pt (match-beginning 0)))
+                                         (goto-char pt)
+                                         (min pt (or (car (save-match-data (bounds-of-thing-at-point 'word)))
+                                                     (line-end-position))))
+                                       (let ((pt (match-end 0)))
+                                         (goto-char pt)
+                                         (max pt (or (cdr (save-match-data(bounds-of-thing-at-point 'word)))
+                                                     (line-beginning-position)))))))
+            (overlay-put overlay 'face 'org-roam-search-highlight)))))))
+
+(defvar org-roam-search-view-query-history nil)
+
+
+;;;###autoload
+(defun org-roam-search-view (query)
+  "Search `org-roam-directory' for notes matching a query.
+
+QUERY is a PRCE regexp string that will be passed to ripgrep."
+  (interactive (list
+                (let* ((default (car org-roam-search-view-query-history))
+                       (prompt (format "Search Roam%s: " (if default (format " (default \"%s\")" default) ""))))
+                  (read-string prompt nil 'org-roam-search-view-query-history org-roam-search-view-query-history))))
+  (async-start-process "ripgrep" "rg"
+                       (lambda (proc)
+                         (let* ((files (org-roam-search--process-rg-output (process-buffer proc)))
+                                (buf (org-roam-review--create-buffer
+                                      :title (format "Search Results: %s" query)
+                                      :placeholder "No search results"
+                                      :refresh-command (lambda ()
+                                                         (interactive)
+                                                         (org-roam-search-view query))
+                                      :group-on #'org-roam-review--maturity-header-for-note
+                                      :sort (-on #'ts< (lambda (it) (or (org-roam-review-note-created it) (ts-now))))
+                                      :notes (org-roam-search-notes-from-nodes (org-roam-search--nodes-for-files files)))))
+                           (with-current-buffer buf
+                             (org-roam-search--highlight-matches query))
+                           (display-buffer buf)))
+                       "-l" query org-roam-directory))
 
 (provide 'org-roam-search)
 
