@@ -360,7 +360,10 @@ nodes for review."
 (defvar org-roam-review-default-placeholder
   (propertize "(None)" 'face 'font-lock-comment-face))
 
-(defun org-roam-review--insert-notes (notes skip-previews-p placeholder)
+(defconst org-roam-review-max-previews-per-group
+  50)
+
+(defun org-roam-review--insert-notes (notes placeholder)
   (if-let* ((nodes (nreverse (seq-reduce (lambda (acc note)
                                            (if-let* ((node (-some->> note
                                                              (org-roam-review-note-id)
@@ -368,12 +371,13 @@ nodes for review."
                                                (cons node acc)
                                              acc))
                                          notes nil))))
-      (dolist (node nodes)
-        (org-roam-review--insert-node node skip-previews-p))
+      (--each-indexed nodes
+        (let ((skip-preview-p (> (1+ it-index) org-roam-review-max-previews-per-group)))
+          (org-roam-review--insert-node it skip-preview-p)))
     (insert (or placeholder org-roam-review-default-placeholder))
     (newline)))
 
-(cl-defun org-roam-review--create-buffer (&key title instructions group-on refresh-command placeholder skip-previews-p sort
+(cl-defun org-roam-review--create-buffer (&key title instructions group-on refresh-command placeholder sort
                                                (notes nil notes-supplied-p))
   "Create a note review buffer for the notes currently in the cache.
 
@@ -397,10 +401,6 @@ The following keyword arguments are optional:
 - PLACEHOLDER is a string to be shown if there are no notes to
   display.
 
-- SKIP-PREVIEWS-P, when supplied, instructs the renderer to avoid
-  including preview sections for each note. This can speed up
-  generation of the buffer for large collections of notes.
-
 - GROUP-ON is a projection function that is passed a note and
   should return one of:
 
@@ -418,7 +418,7 @@ The following keyword arguments are optional:
 - SORT is a projection function that is passed two notes within a
   group and returns non-nil if the first element should sort
   before the second."
-  (cl-assert (and notes-supplied-p title instructions refresh-command))
+  (cl-assert (and notes-supplied-p title refresh-command))
   (let ((buf (get-buffer-create org-roam-review-buffer-name)))
     (with-current-buffer buf
       (let ((inhibit-read-only t))
@@ -447,13 +447,10 @@ The following keyword arguments are optional:
                                                (if (stringp key) key (car key))
                                                (length group))))
                            (magit-insert-heading (propertize header 'font-lock-face 'magit-section-heading)))
-                         (org-roam-review--insert-notes (-sort (or sort (-const t)) group)
-                                                        skip-previews-p
-                                                        placeholder)
+                         (org-roam-review--insert-notes (-sort (or sort (-const t)) group) placeholder)
                          (insert "\n"))))))
                 (t
-                 (org-roam-review--insert-notes (-sort (or sort (-const t)) notes)
-                                                skip-previews-p placeholder))))
+                 (org-roam-review--insert-notes (-sort (or sort (-const t)) notes) placeholder))))
         (goto-char (point-min))))
     (display-buffer buf)))
 
@@ -523,7 +520,6 @@ system."
    :instructions "The notes below are missing the properties
 needed to be included in reviews. Categorise them as appropriate."
    :refresh-command #'org-roam-review-list-uncategorised
-   :skip-previews-p t
    :sort (-on #'string-lessp #'org-roam-review-note-title)
    :notes (org-roam-review--cache-collect
            (lambda (note)
