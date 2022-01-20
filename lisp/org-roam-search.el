@@ -78,6 +78,46 @@
 (ignore-errors
   (memoize 'org-roam-search--format-group-title 60))
 
+;; HACK: brutal copy-pasta to tweak two expressions in `consult--grep-format' to
+;; make outputs more readable.
+(defun org-roam-search--format-results (async builder)
+  "Return ASYNC function highlighting grep match results.
+BUILDER is the command argument builder."
+  (let ((highlight))
+    (lambda (action)
+      (cond
+       ((stringp action)
+        (setq highlight (plist-get (funcall builder action) :highlight))
+        (funcall async action))
+       ((consp action)
+        (let (result)
+          (save-match-data
+            (dolist (str action)
+              (when (and (string-match consult--grep-match-regexp str)
+                         ;; Filter out empty context lines
+                         (or (/= (aref str (match-beginning 3)) ?-)
+                             (/= (match-end 0) (length str))))
+                (let* ((file (match-string 1 str))
+                       (line (format "%4s" (match-string 2 str)))
+                       (ctx (= (aref str (match-beginning 3)) ?-))
+                       (sep (if ctx "-" " "))
+                       (content (substring str (match-end 0)))
+                       (file-len (length file))
+                       (line-len (length line)))
+                  (when (> (length content) consult-grep-max-columns)
+                    (setq content (substring content 0 consult-grep-max-columns)))
+                  (when highlight
+                    (funcall highlight content))
+                  (setq str (concat file sep line sep content))
+                  ;; Store file name in order to avoid allocations in `consult--grep-group'
+                  (add-text-properties 0 file-len `(face consult-file consult--grep-file ,file) str)
+                  (put-text-property (1+ file-len) (+ 1 file-len line-len) 'face 'consult-line-number str)
+                  (when ctx
+                    (add-face-text-property (+ 2 file-len line-len) (length str) 'consult-grep-context 'append str))
+                  (push str result)))))
+          (funcall async (nreverse result))))
+       (t (funcall async action))))))
+
 (defun org-roam-search (&optional initial)
   "Search for regexp with rg in `org-roam-directory' with INITIAL input."
   (interactive)
@@ -85,7 +125,7 @@
          (read-process-output-max (max read-process-output-max (* 1024 1024))))
     (consult--read
      (consult--async-command #'consult--ripgrep-builder
-       (consult--grep-format #'consult--ripgrep-builder)
+       (org-roam-search--format-results #'consult--ripgrep-builder)
        :file-handler t)
      :prompt "Search Roam: "
      :lookup #'consult--lookup-member
