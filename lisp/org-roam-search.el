@@ -33,6 +33,7 @@
 (require 'memoize)
 (require 'org-roam)
 (require 'org-roam-review)
+(require 'pcre2el)
 
 (defgroup org-roam-search nil
   "Notes search interface for org-roam"
@@ -184,17 +185,18 @@ BUILDER is the command argument builder."
   (save-excursion
     (goto-char (point-min))
     (save-match-data
-      (while (search-forward-regexp regexp nil t)
-        (unless (seq-contains-p (face-at-point nil t) 'magit-heading)
-          (let ((overlay (make-overlay (let ((pt (match-beginning 0)))
-                                         (goto-char pt)
-                                         (min pt (or (car (save-match-data (bounds-of-thing-at-point 'word)))
-                                                     (line-end-position))))
-                                       (let ((pt (match-end 0)))
-                                         (goto-char pt)
-                                         (max pt (or (cdr (save-match-data(bounds-of-thing-at-point 'word)))
-                                                     (line-beginning-position)))))))
-            (overlay-put overlay 'face 'org-roam-search-highlight)))))))
+      (let ((transpiled-regexp (pcre-to-elisp regexp)))
+        (while (search-forward-regexp transpiled-regexp nil t)
+          (unless (seq-contains-p (face-at-point nil t) 'magit-heading)
+            (let ((overlay (make-overlay (let ((pt (match-beginning 0)))
+                                           (goto-char pt)
+                                           (min pt (or (car (save-match-data (bounds-of-thing-at-point 'word)))
+                                                       (line-end-position))))
+                                         (let ((pt (match-end 0)))
+                                           (goto-char pt)
+                                           (max pt (or (cdr (save-match-data(bounds-of-thing-at-point 'word)))
+                                                       (line-beginning-position)))))))
+              (overlay-put overlay 'face 'org-roam-search-highlight))))))))
 
 (defvar org-roam-search-view-query-history nil)
 
@@ -206,8 +208,12 @@ BUILDER is the command argument builder."
 QUERY is a PRCE regexp string that will be passed to ripgrep."
   (interactive (list
                 (let* ((default (car org-roam-search-view-query-history))
-                       (prompt (format "Search Roam%s: " (if default (format " (default \"%s\")" default) ""))))
-                  (read-string prompt nil 'org-roam-search-view-query-history org-roam-search-view-query-history))))
+                       (prompt (format "Search Roam%s: " (if default (format " (default \"%s\")" default) "")))
+                       (input (string-trim (read-string prompt nil 'org-roam-search-view-query-history org-roam-search-view-query-history))))
+                  (if (and (string-match-p (rx "|") input)
+                           (not (string-prefix-p "(" input)))
+                      (format "(%s)" input)
+                    input))))
   (async-start-process "ripgrep" "rg"
                        (lambda (proc)
                          (let* ((files (org-roam-search--process-rg-output (process-buffer proc)))

@@ -86,6 +86,7 @@
   page-break-lines
   paren-face
   pass
+  pcre2el
   pdf-tools
   plantuml-mode
   poporg
