@@ -223,7 +223,9 @@ QUERY is a PRCE regexp string that will be passed to ripgrep."
                            (with-current-buffer buf
                              (org-roam-search--highlight-matches query))
                            (display-buffer buf)))
-                       "-l" query org-roam-directory))
+                       "--smart-case"
+                       "--files-with-matches"
+                       query org-roam-directory))
 
 (provide 'org-roam-search)
 
