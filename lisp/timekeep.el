@@ -160,14 +160,12 @@ Each value is a plist with at lesat the following keys:
   (let ((heading (list timekeep-default-headline-name
                        (format-time-string "%Y %W"))))
     (with-current-buffer buffer
-      (save-excursion
-        (save-restriction
-          (widen)
-          (org-with-point-at (org-roam-capture-find-or-create-olp heading)
-            (org-up-heading-all 1)
-            (org-sort-entries nil ?A)))
-        ;; Now that the headings have been reordered, go there again.
-        (marker-position (org-roam-capture-find-or-create-olp heading))))))
+      (org-with-wide-buffer
+       (org-with-point-at (org-roam-capture-find-or-create-olp heading)
+         (org-up-heading-all 1)
+         (org-sort-entries nil ?A))
+       ;; Now that the headings have been reordered, go there again.
+       (marker-position (org-roam-capture-find-or-create-olp heading))))))
 
 (defun timekeep--punch-in-for-node (node)
   (with-current-buffer (org-roam-node-find-noselect node)
@@ -187,12 +185,10 @@ Each value is a plist with at lesat the following keys:
     ancestor-todo))
 
 (defun timekeep--clock-in-on-parent ()
-  (save-excursion
-    (save-restriction
-      (widen)
-      (if-let* ((ancestor-todo (timekeep--ancestor-todo-pos)))
-          (org-with-point-at ancestor-todo (org-clock-in))
-        (timekeep--clock-in-on-default)))))
+  (org-with-wide-buffer
+   (if-let* ((ancestor-todo (timekeep--ancestor-todo-pos)))
+       (org-with-point-at ancestor-todo (org-clock-in))
+     (timekeep--clock-in-on-default))))
 
 (defun timekeep--on-clock-in ()
   (-when-let* ((id (org-roam-id-at-point))
