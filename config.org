@@ -379,6 +379,7 @@ Load host-specific settings, which are not checked into version control.
                             `(org-document-title ,title)
                             `(org-roam-header-line ((t :inherit org-document-title)))
                             `(selectrum-group-title ((t :inherit magit-section-heading)))
+                            `(consult-line-number ((t :inherit font-lock-comment-face)))
                             `(outline-1 ,(append-faces outline-heading title))
                             `(outline-2 ,outline-heading)
                             `(outline-3 ,outline-heading)
