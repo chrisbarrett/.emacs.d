@@ -2249,7 +2249,12 @@ See:
           (derived-mode-p 'org-mode) 'org-edit-special
           (and (derived-mode-p 'markdown-mode) (markdown-code-block-at-point-p)) 'markdown-edit-code-block
           (bound-and-true-p org-src-mode) 'org-edit-src-exit)
-    "/" '(consult-ripgrep :wk "rg")
+    "/" (list (general-predicate-dispatch 'consult-ripgrep
+                (and (bound-and-true-p org-roam-directory)
+                     (or (f-same-p default-directory org-roam-directory)
+                         (f-child-of-p default-directory org-roam-directory)))
+                'org-roam-search)
+              :wk "search...")
     ":" '(eval-expression-interactively :wk "eval")
     "<tab>" (list (general-predicate-dispatch 'alternate-buffer
                     (and (bound-and-true-p popper-popup-status) (memq popper-popup-status '(popup user-popup))) 'popper-cycle)
@@ -6373,6 +6378,12 @@ property drawer and the title. Advise it to fix that.
            (insert str))))))
 
   (advice-add 'org-roam-promote-entire-buffer :after 'config-org-roam-cleanup-after-promote-entire-buffer)
+#+end_src
+
+** =org-roam-search= - a search interface that works better with org-roam
+#+begin_src emacs-lisp
+  (use-package org-roam-search
+    :commands (org-roam-search))
 #+end_src
 
 * Load Lisp from other locations
