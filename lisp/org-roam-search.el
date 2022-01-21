@@ -187,7 +187,7 @@ BUILDER is the command argument builder."
     (save-match-data
       (let ((transpiled-regexp (pcre-to-elisp regexp)))
         (while (search-forward-regexp transpiled-regexp nil t)
-          (unless (seq-contains-p (face-at-point nil t) 'magit-heading)
+          (unless (seq-contains-p (face-at-point nil t) 'magit-section-heading)
             (let ((overlay (make-overlay (let ((pt (match-beginning 0)))
                                            (goto-char pt)
                                            (min pt (or (car (save-match-data (bounds-of-thing-at-point 'word)))
