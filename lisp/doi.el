@@ -30,9 +30,11 @@
 (defvar url-http-end-of-headers nil)
 
 (plist-define doi
-  :required (:doi :url :title :type :published)
-  :optional (:isbn :publisher))
+  :required (:doi :url :title :type :published :authors)
+  :optional (:isbn :publisher :edition))
 
+(plist-define doi-author
+  :required (:given :family :sequence))
 (defun doi-parse-from-json (json)
   (-let* (((&plist :URL :ISBN [isbn] :title :publisher :DOI :type :published) json)
           ((&plist :date-parts [[year month day]]) published)
