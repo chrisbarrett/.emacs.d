@@ -220,6 +220,7 @@ QUERY is a PRCE regexp string that will be passed to ripgrep."
                                 (buf (org-roam-review--create-buffer
                                       :title (format "Search Results: %s" query)
                                       :placeholder "No search results"
+                                      :buffer-name "*org-roam-search*"
                                       :refresh-command (lambda ()
                                                          (interactive)
                                                          (org-roam-search-view query))

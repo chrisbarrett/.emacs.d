@@ -307,8 +307,6 @@ https://github.com/org-roam/org-roam/issues/2032"
 
 ;;; Review buffers
 
-(defvar org-roam-review-buffer-name "*org-roam-review*")
-
 (defvar-local org-roam-review-buffer-refresh-command nil)
 
 (defun org-roam-review-refresh ()
@@ -378,6 +376,7 @@ nodes for review."
     (newline)))
 
 (cl-defun org-roam-review--create-buffer (&key title instructions group-on refresh-command placeholder sort
+                                               (buffer-name "*org-roam-review*")
                                                (notes nil notes-supplied-p))
   "Create a note review buffer for the notes currently in the cache.
 
@@ -401,6 +400,8 @@ The following keyword arguments are optional:
 - PLACEHOLDER is a string to be shown if there are no notes to
   display.
 
+- BUFFER-NAME is the name to use for the created buffer.
+
 - GROUP-ON is a projection function that is passed a note and
   should return one of:
 
@@ -419,7 +420,7 @@ The following keyword arguments are optional:
   group and returns non-nil if the first element should sort
   before the second."
   (cl-assert (and notes-supplied-p title refresh-command))
-  (let ((buf (get-buffer-create org-roam-review-buffer-name)))
+  (let ((buf (get-buffer-create buffer-name)))
     (with-current-buffer buf
       (let ((inhibit-read-only t))
         (erase-buffer)
@@ -646,17 +647,23 @@ A higher score means that the note will appear less frequently."
 
           (save-buffer)
           (message "Maturity set to '%s'. Review scheduled for %s" maturity next-review)))))
-  (org-roam-review--refresh-buffer-if-live))
+  (org-roam-review--refresh-buffers))
 
-(defun org-roam-review--refresh-buffer-if-live ()
+(defun org-roam-review-buffers ()
+  (seq-filter (lambda (buf)
+                (and (buffer-live-p buf)
+                     (with-current-buffer buf
+                       (derived-mode-p 'org-roam-review-mode))))
+              (buffer-list)))
+
+(defun org-roam-review--refresh-buffers ()
   (save-window-excursion
-    (let ((buf (get-buffer org-roam-review-buffer-name)))
-      (when (buffer-live-p buf)
-        (with-current-buffer buf
-          (call-interactively org-roam-review-buffer-refresh-command))))))
+    (dolist (buf (org-roam-review-buffers))
+      (with-current-buffer buf
+        (call-interactively org-roam-review-buffer-refresh-command)))))
 
 (defun org-roam-review--kill-buffer-for-completed-review ()
-  (let ((review-buf (get-buffer org-roam-review-buffer-name)))
+  (let ((review-buf (get-buffer "*org-roam-review*")))
     (mapc (lambda (win)
             (when (equal review-buf (window-buffer win))
               (delete-window win)))
@@ -674,7 +681,7 @@ A higher score means that the note will appear less frequently."
   (when-let* ((maturity (org-entry-get-with-inheritance "MATURITY")))
     (org-roam-review--update-note maturity 3))
   (org-roam-review--kill-buffer-for-completed-review)
-  (org-roam-review--refresh-buffer-if-live))
+  (org-roam-review--refresh-buffers))
 
 ;;;###autoload
 (defun org-roam-review-bury ()
@@ -683,7 +690,7 @@ A higher score means that the note will appear less frequently."
   (when-let* ((maturity (org-entry-get-with-inheritance "MATURITY")))
     (org-roam-review--update-note maturity 5))
   (org-roam-review--kill-buffer-for-completed-review)
-  (org-roam-review--refresh-buffer-if-live))
+  (org-roam-review--refresh-buffers))
 
 (defun org-roam-review--skip-note-for-maturity-assignment-p ()
   (org-with-wide-buffer
