@@ -31,21 +31,22 @@
 
 (plist-define doi
   :required (:doi :url :title :type :published :authors)
-  :optional (:isbn :publisher :edition))
+  :optional (:isbn :publisher :edition-number))
 
 (plist-define doi-author
   :required (:given :family :sequence))
+
+(defun doi--downcase-symbol (sym)
+  (intern (downcase (symbol-name sym))))
+
 (defun doi-parse-from-json (json)
-  (-let* (((&plist :URL :ISBN [isbn] :title :publisher :DOI :type :published) json)
+  (-let* (((json &as &plist :isbn [isbn] :author :published) (plist-map-keys #'doi--downcase-symbol json))
           ((&plist :date-parts [[year month day]]) published)
           (published (ts-parse (format "%s-%s-%s" year month day))))
-    (doi-create :doi DOI
-                :title title
-                :isbn isbn
-                :url URL
-                :publisher publisher
-                :type type
-                :published published)))
+    (apply 'doi-create (append (list :authors (seq-map (-applify #'doi-author-create) author)
+                                     :isbn isbn
+                                     :published published)
+                               json))))
 
 (defun doi-retrieve (url)
   (let ((url-request-method "GET")
