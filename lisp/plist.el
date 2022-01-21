@@ -32,6 +32,12 @@
       (puthash key (plist-get plist key) res))
     (ht-to-plist res)))
 
+(defun plist-map-keys (fn plist)
+  (let ((pairs (ht-map (lambda (k v)
+                         (list (funcall fn k) v))
+                       (ht-from-plist plist))))
+    (apply 'append pairs)))
+
 (defun plist--pred-name-for-type (type)
   (intern (format "%s-p" type)))
 
