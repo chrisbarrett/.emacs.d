@@ -21,9 +21,16 @@
 ;;; Code:
 
 (require 'dash)
+(require 'ht)
 
 (defun plist-keys (plist)
   (seq-map #'car (-partition-all 2 plist)))
+
+(defun plist-pick (keys plist)
+  (let ((res (ht-create)))
+    (dolist (key keys)
+      (puthash key (plist-get plist key) res))
+    (ht-to-plist res)))
 
 (defun plist--pred-name-for-type (type)
   (intern (format "%s-p" type)))
@@ -54,22 +61,24 @@
          (cl-assert (,pred-fn ,type)))
        (plist-get ,type ,key))))
 
-(defmacro plist-define-create (type)
+(defmacro plist-define-create (type keys)
   (cl-assert (symbolp type))
+  (cl-assert (listp keys))
   `(defun ,(intern (format "%s-create" type)) (&rest attrs)
      (cl-assert (,(plist--pred-name-for-type type) attrs))
-     attrs))
+     (plist-pick ',keys attrs)))
 
 (cl-defmacro plist-define (type &key required optional)
   (declare (indent 1))
   (cl-assert (symbolp type))
   (cl-assert (listp required))
   (cl-assert (listp optional))
-  `(progn
-     (plist-define-predicate ,type ,required)
-     (plist-define-create ,type)
-     ,@(seq-map (lambda (it) `(plist-define-getter ,type ,it))
-                (seq-union required optional))))
+  (let ((keys (seq-union required optional)))
+    `(progn
+       (plist-define-predicate ,type ,required)
+       (plist-define-create ,type ,keys)
+       ,@(seq-map (lambda (it) `(plist-define-getter ,type ,it))
+                  keys))))
 
 (provide 'plist)
 
