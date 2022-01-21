@@ -59,6 +59,7 @@
 (require 'f)
 (require 'ht)
 (require 'ts)
+(require 'plist)
 
 (defgroup org-roam-review nil
   "Extends org-roam with spaced-repetition review of notes."
@@ -91,42 +92,9 @@ candidate for reviews."
 
 ;;; Cached note type & accessors
 
-(defconst org-roam-review-note-required-keys
-  '(:id :title :file))
-
-(defun org-roam-review--plist-keys (plist)
-  (seq-map #'car (-partition-all 2 plist)))
-
-(defun org-roam-review-note-p (note)
-  (when (listp note)
-    (let ((keys (org-roam-review--plist-keys note)))
-      (and (null (seq-difference org-roam-review-note-required-keys keys))
-           (seq-every-p (lambda (key)
-                          (plist-get note key))
-                        org-roam-review-note-required-keys)))))
-
-(defmacro org-roam-review-note-define-getter (name)
-  (cl-assert (symbolp name))
-  (let ((keyword (intern (format ":%s" name))))
-    `(defun ,(intern (format "org-roam-review-note-%s" name)) (note)
-       ,(format "Generated accessor for `%s' key in an org-roam-review-note plist." keyword)
-       (cl-assert (org-roam-review-note-p note))
-       (plist-get note ,keyword))))
-
-(defun org-roam-review-note-create (&rest keys)
-  (cl-assert (seq-every-p #'keywordp (org-roam-review--plist-keys keys)))
-  (cl-assert (org-roam-review-note-p keys))
-  keys)
-
-(org-roam-review-note-define-getter id)
-(org-roam-review-note-define-getter title)
-(org-roam-review-note-define-getter file)
-(org-roam-review-note-define-getter tags)
-(org-roam-review-note-define-getter next-review)
-(org-roam-review-note-define-getter last-review)
-(org-roam-review-note-define-getter maturity)
-(org-roam-review-note-define-getter todo-keywords)
-(org-roam-review-note-define-getter created)
+(plist-define org-roam-review-note
+  :required (:id :title :file)
+  :optional (:tags :next-review :last-review :maturity :todo-keywords :created))
 
 (defun org-roam-review-note-ignored-p (note)
   (seq-intersection (org-roam-review-note-tags note)
