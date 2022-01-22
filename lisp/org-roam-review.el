@@ -307,21 +307,24 @@ nodes for review."
   ;; buffer, since it will error.
   (advice-add 'org-roam-buffer-refresh :around #'org-roam-review--refresh-buffer-override))
 
-(defun org-roam-review--insert-node (node &optional skip-preview-p)
+(defun org-roam-review-insert-preview (node)
+  (let ((content (org-roam-fontify-like-in-org-mode
+                  (org-roam-preview-get-contents (org-roam-node-file node) 0))))
+    (magit-insert-section section (org-roam-preview-section)
+      (insert (if (string-blank-p (string-trim-left content))
+                  (propertize "(Empty)" 'font-lock-face 'font-lock-comment-face)
+                content))
+      (oset section file (org-roam-node-file node))
+      (oset section point 0)
+      (insert "\n\n"))))
+
+(defun org-roam-review--insert-node (node skip-preview-p insert-preview-fn)
   (magit-insert-section section (org-roam-node-section nil t)
     (magit-insert-heading (propertize (org-roam-node-title node)
                                       'font-lock-face 'org-roam-title))
     (oset section node node)
     (unless skip-preview-p
-      (magit-insert-section section (org-roam-preview-section)
-        (let ((content (org-roam-fontify-like-in-org-mode
-                        (org-roam-preview-get-contents (org-roam-node-file node) 0))))
-          (insert (if (string-blank-p (string-trim-left content))
-                      (propertize "(Empty)" 'font-lock-face 'font-lock-comment-face)
-                    content)))
-        (oset section file (org-roam-node-file node))
-        (oset section point 0)
-        (insert "\n\n")))))
+      (funcall insert-preview-fn node))))
 
 (defvar org-roam-review-default-placeholder
   (propertize "(None)" 'face 'font-lock-comment-face))
@@ -329,7 +332,7 @@ nodes for review."
 (defconst org-roam-review-max-previews-per-group
   50)
 
-(defun org-roam-review--insert-notes (notes placeholder)
+(defun org-roam-review--insert-notes (notes placeholder insert-preview-fn)
   (if-let* ((nodes (nreverse (seq-reduce (lambda (acc note)
                                            (if-let* ((node (-some->> note
                                                              (org-roam-review-note-id)
@@ -339,13 +342,15 @@ nodes for review."
                                          notes nil))))
       (--each-indexed nodes
         (let ((skip-preview-p (> (1+ it-index) org-roam-review-max-previews-per-group)))
-          (org-roam-review--insert-node it skip-preview-p)))
+          (org-roam-review--insert-node it skip-preview-p insert-preview-fn)))
     (insert (or placeholder org-roam-review-default-placeholder))
     (newline)))
 
-(cl-defun org-roam-review--create-buffer (&key title instructions group-on refresh-command placeholder sort
-                                               (buffer-name "*org-roam-review*")
-                                               (notes nil notes-supplied-p))
+(cl-defun org-roam-review--create-buffer
+    (&key title instructions group-on refresh-command placeholder sort
+          (buffer-name "*org-roam-review*")
+          (insert-preview-fn 'org-roam-review-insert-preview)
+          (notes nil notes-supplied-p))
   "Create a note review buffer for the notes currently in the cache.
 
 
@@ -369,6 +374,9 @@ The following keyword arguments are optional:
   display.
 
 - BUFFER-NAME is the name to use for the created buffer.
+
+- INSERT-PREVIEW-FN is a function that takes a node and is
+  expected to insert a preview using the magit-section API.
 
 - GROUP-ON is a projection function that is passed a note and
   should return one of:
@@ -416,10 +424,10 @@ The following keyword arguments are optional:
                                                (if (stringp key) key (car key))
                                                (length group))))
                            (magit-insert-heading (propertize header 'font-lock-face 'magit-section-heading)))
-                         (org-roam-review--insert-notes (-sort (or sort (-const t)) group) placeholder)
+                         (org-roam-review--insert-notes (-sort (or sort (-const t)) group) placeholder insert-preview-fn)
                          (insert "\n"))))))
                 (t
-                 (org-roam-review--insert-notes (-sort (or sort (-const t)) notes) placeholder))))
+                 (org-roam-review--insert-notes (-sort (or sort (-const t)) notes) placeholder insert-preview-fn))))
         (goto-char (point-min))))
     buf))
 
