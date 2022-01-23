@@ -343,14 +343,12 @@ nodes for review."
       (insert "\n\n"))))
 
 (defun org-roam-review--insert-node (node skip-preview-p insert-preview-fn)
-  (atomic-change-group
-    (magit-insert-section section (org-roam-node-section nil t)
-      (magit-insert-heading (propertize (org-roam-node-title node)
-                                        'font-lock-face 'magit-section-secondary-heading))
-      (oset section node node)
-      (unless skip-preview-p
-        (funcall insert-preview-fn node))))
-  t)
+  (magit-insert-section section (org-roam-node-section nil t)
+    (magit-insert-heading (propertize (org-roam-node-title node)
+                                      'font-lock-face 'magit-section-secondary-heading))
+    (oset section node node)
+    (unless skip-preview-p
+      (funcall insert-preview-fn node))))
 
 (defvar org-roam-review-default-placeholder
   (propertize "(None)" 'face 'font-lock-comment-face))
@@ -359,23 +357,18 @@ nodes for review."
   50)
 
 (defun org-roam-review--insert-notes (notes placeholder insert-preview-fn)
-  (let ((skipped-notes 0))
-    (if-let* ((nodes (nreverse (seq-reduce (lambda (acc note)
-                                             (if-let* ((node (-some->> note
-                                                               (org-roam-review-note-id)
-                                                               (org-roam-node-from-id))))
-                                                 (cons node acc)
-                                               acc))
-                                           notes nil))))
-        (--each-indexed nodes
-          (let ((skip-preview-p (> (1+ it-index) org-roam-review-max-previews-per-group)))
-            (or (catch 'skip
-                  (org-roam-review--insert-node it skip-preview-p insert-preview-fn))
-                (cl-incf skipped-notes))))
-
-      (insert (or placeholder org-roam-review-default-placeholder))
-      (newline))
-    (list :skipped-notes skipped-notes)))
+  (if-let* ((nodes (nreverse (seq-reduce (lambda (acc note)
+                                           (if-let* ((node (-some->> note
+                                                             (org-roam-review-note-id)
+                                                             (org-roam-node-from-id))))
+                                               (cons node acc)
+                                             acc))
+                                         notes nil))))
+      (--each-indexed nodes
+        (let ((skip-preview-p (> (1+ it-index) org-roam-review-max-previews-per-group)))
+          (org-roam-review--insert-node it skip-preview-p insert-preview-fn)))
+    (insert (or placeholder org-roam-review-default-placeholder))
+    (newline)))
 
 (cl-defun org-roam-review--create-buffer
     (&key title instructions group-on refresh-command placeholder sort
@@ -451,16 +444,12 @@ The following keyword arguments are optional:
                    (pcase-dolist (`(,key . ,group) grouped)
                      (when (and key group)
                        (magit-insert-section (org-roam-review-note-group)
-                         (insert (propertize (if (stringp key) key (car key)) 'font-lock-face 'magit-section-heading))
-                         (let ((marker (point-marker)))
-                           (magit-insert-heading)
-                           (-let [(&plist :skipped-notes)
-                                  (org-roam-review--insert-notes (-sort (or sort (-const t)) group) placeholder insert-preview-fn)]
-                             (insert "\n")
-                             ;; Update number of entries based taking skipped items into account
-                             (save-excursion
-                               (goto-char (marker-position marker))
-                               (insert (format " (%s)" (- (length group) skipped-notes)))))))))))
+                         (let ((header (format "%s (%s)"
+                                               (if (stringp key) key (car key))
+                                               (length group))))
+                           (magit-insert-heading (propertize header 'font-lock-face 'magit-section-heading)))
+                         (org-roam-review--insert-notes (-sort (or sort (-const t)) group) placeholder insert-preview-fn)
+                         (insert "\n"))))))
                 (t
                  (org-roam-review--insert-notes (-sort (or sort (-const t)) notes) placeholder insert-preview-fn))))
         (goto-char (point-min))))

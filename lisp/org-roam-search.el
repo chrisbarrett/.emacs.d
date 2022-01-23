@@ -227,9 +227,7 @@ BUILDER is the command argument builder."
 
 (defun org-roam-search-make-insert-preview-fn (search-regexp)
   (lambda (node)
-    (let ((hits-in-file (org-roam-search--match-previews search-regexp node)))
-      (cond
-       (hits-in-file
+    (if-let* ((hits-in-file (org-roam-search--match-previews search-regexp node)))
         (--each-indexed hits-in-file
           (magit-insert-section section (org-roam-preview-section)
             (-let [(&plist :olp :preview :pos) it]
@@ -241,12 +239,9 @@ BUILDER is the command argument builder."
               (insert preview)
               (oset section file (org-roam-node-file node))
               (oset section point pos)
-              (insert "\n\n")))))
-       ((string-match-p search-regexp (org-roam-node-title node))
-        (insert (propertize "(Matched title)" 'font-lock-face 'font-lock-comment-face))
-        (insert "\n\n"))
-       (t
-        (throw 'skip nil))))))
+              (insert "\n\n"))))
+      (insert (propertize "(Matched title)" 'font-lock-face 'font-lock-comment-face))
+      (insert "\n\n"))))
 
 (defvar org-roam-search-view-query-history nil)
 
