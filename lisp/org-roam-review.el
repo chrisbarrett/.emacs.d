@@ -335,7 +335,7 @@ nodes for review."
 (defun org-roam-review--insert-node (node skip-preview-p insert-preview-fn)
   (magit-insert-section section (org-roam-node-section nil t)
     (magit-insert-heading (propertize (org-roam-node-title node)
-                                      'font-lock-face 'org-roam-title))
+                                      'font-lock-face 'magit-section-secondary-heading))
     (oset section node node)
     (unless skip-preview-p
       (funcall insert-preview-fn node))))

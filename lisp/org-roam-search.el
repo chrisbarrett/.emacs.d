@@ -233,7 +233,7 @@ BUILDER is the command argument builder."
             (-let [(&plist :olp :preview :pos) it]
               (when olp
                 (let ((start (point)))
-                  (insert (propertize (string-join olp " > ") 'face 'magit-section-secondary-heading))
+                  (insert (propertize (string-join olp " > ") 'face 'org-roam-title))
                   (fill-region start (point)))
                 (insert "\n"))
               (insert preview)
