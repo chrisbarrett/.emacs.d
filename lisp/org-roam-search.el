@@ -205,7 +205,7 @@ BUILDER is the command argument builder."
         (insert-file-contents (org-roam-node-file node))
         ;; NOTE: Use outline-mode instead of org-mode because it's much lighter.
         ;; We need org/outline-mode to get the OLP of hits as we search.
-        (org-mode)
+        (outline-mode)
         (goto-char (point-min))
         (org-roam-end-of-meta-data t)
         (while (search-forward-regexp search-regexp nil t)
