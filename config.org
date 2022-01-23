@@ -3083,7 +3083,8 @@ options.
     :hook (after-init . global-company-mode)
 
     :general
-    ([remap completion-at-point] #'company-manual-begin
+    (:keymaps '(prog-mode-map text-mode-map)
+     [remap completion-at-point] #'company-manual-begin
      [remap complete-symbol] #'company-manual-begin)
     (:states '(insert normal emacs) :keymaps 'company-active-map
      "S-<return>" #'company-complete
