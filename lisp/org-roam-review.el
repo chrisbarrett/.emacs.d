@@ -309,7 +309,6 @@ interactively. Extra messages will be logged."
     keymap))
 
 (defun org-roam-review--refresh-buffer-override (fn &rest args)
-  (message "Advice called")
   (if (equal (buffer-name) org-roam-buffer)
       (apply fn args)
     (call-interactively 'org-roam-review-refresh)))
