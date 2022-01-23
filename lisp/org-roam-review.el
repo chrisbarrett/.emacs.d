@@ -322,14 +322,23 @@ nodes for review."
   (advice-add 'org-roam-buffer-refresh :around #'org-roam-review--refresh-buffer-override))
 
 (defun org-roam-review-insert-preview (node)
-  (let ((content (org-roam-fontify-like-in-org-mode
-                  (org-roam-preview-get-contents (org-roam-node-file node) 0))))
+  (let (start content)
+    (with-temp-buffer
+      (insert-file-contents-literally (org-roam-node-file node))
+      (goto-char (point-min))
+      (org-roam-end-of-meta-data t)
+      (setq start (point))
+      (org-next-visible-heading 1)
+      (setq content
+            (org-roam-fontify-like-in-org-mode
+             (string-trim (buffer-substring-no-properties start (point))))))
+
     (magit-insert-section section (org-roam-preview-section)
       (insert (if (string-blank-p (string-trim-left content))
                   (propertize "(Empty)" 'font-lock-face 'font-lock-comment-face)
                 content))
       (oset section file (org-roam-node-file node))
-      (oset section point 0)
+      (oset section point start)
       (insert "\n\n"))))
 
 (defun org-roam-review--insert-node (node skip-preview-p insert-preview-fn)
