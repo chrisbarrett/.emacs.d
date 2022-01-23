@@ -277,14 +277,28 @@ https://github.com/org-roam/org-roam/issues/2032"
 
 (defvar-local org-roam-review-buffer-refresh-command nil)
 
-(defun org-roam-review-refresh ()
-  "Rebuild the review buffer."
-  (interactive)
-  (with-current-buffer (get-buffer-create "*org-roam-review*")
-    (unless org-roam-review-buffer-refresh-command
-      (error "Refresh command not defined"))
-    (call-interactively org-roam-review-buffer-refresh-command))
-  (message "Buffer refreshed"))
+(defun org-roam-review-buffers ()
+  (seq-filter (lambda (buf)
+                (and (buffer-live-p buf)
+                     (with-current-buffer buf
+                       (derived-mode-p 'org-roam-review-mode))))
+              (buffer-list)))
+
+(defun org-roam-review-refresh (&optional interactive-p)
+  "Rebuild the review buffer.
+
+INTERACTIVE-P indicates that the function was called
+interactively. Extra messages will be logged."
+  (interactive "P")
+  (dolist (buf (org-roam-review-buffers))
+    (with-current-buffer buf
+      (unless org-roam-review-buffer-refresh-command
+        (error "Refresh command not defined"))
+      (if (commandp org-roam-review-buffer-refresh-command)
+          (call-interactively org-roam-review-buffer-refresh-command)
+        (funcall org-roam-review-buffer-refresh-command))))
+  (when interactive-p
+    (message "Buffer refreshed")))
 
 (defvar org-roam-review-mode-map
   (let ((keymap (make-sparse-keymap)))
@@ -623,20 +637,7 @@ A higher score means that the note will appear less frequently."
 
           (save-buffer)
           (message "Maturity set to '%s'. Review scheduled for %s" maturity next-review)))))
-  (org-roam-review--refresh-buffers))
-
-(defun org-roam-review-buffers ()
-  (seq-filter (lambda (buf)
-                (and (buffer-live-p buf)
-                     (with-current-buffer buf
-                       (derived-mode-p 'org-roam-review-mode))))
-              (buffer-list)))
-
-(defun org-roam-review--refresh-buffers ()
-  (save-window-excursion
-    (dolist (buf (org-roam-review-buffers))
-      (with-current-buffer buf
-        (call-interactively org-roam-review-buffer-refresh-command)))))
+  (org-roam-review-refresh))
 
 (defun org-roam-review--kill-buffer-for-completed-review ()
   (let ((review-buf (get-buffer "*org-roam-review*")))
@@ -657,7 +658,7 @@ A higher score means that the note will appear less frequently."
   (when-let* ((maturity (org-entry-get-with-inheritance "MATURITY")))
     (org-roam-review--update-note maturity 3))
   (org-roam-review--kill-buffer-for-completed-review)
-  (org-roam-review--refresh-buffers))
+  (org-roam-review-refresh))
 
 ;;;###autoload
 (defun org-roam-review-bury ()
@@ -666,7 +667,7 @@ A higher score means that the note will appear less frequently."
   (when-let* ((maturity (org-entry-get-with-inheritance "MATURITY")))
     (org-roam-review--update-note maturity 5))
   (org-roam-review--kill-buffer-for-completed-review)
-  (org-roam-review--refresh-buffers))
+  (org-roam-review-refresh))
 
 (defun org-roam-review--skip-note-for-maturity-assignment-p ()
   (org-with-wide-buffer

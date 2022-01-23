@@ -198,8 +198,39 @@ BUILDER is the command argument builder."
                                                        (line-beginning-position)))))))
               (overlay-put overlay 'face 'org-roam-search-highlight))))))))
 
-(defvar org-roam-search-view-query-history nil)
+(defun org-roam-search--match-previews (search-regexp node)
+  (let ((hits))
+    (save-match-data
+      (with-temp-buffer
+        (insert-file-contents-literally (org-roam-node-file node))
+        (goto-char (point-min))
+        (org-roam-end-of-meta-data t)
+        (while (search-forward-regexp search-regexp nil t)
+          (let ((hit (list :pos (match-beginning 0)
+                           :preview
+                           ;; Extracted from implementation of
+                           ;; `org-roam-preview-get-contents'
+                           (let ((s (funcall org-roam-preview-function)))
+                             (dolist (fn org-roam-preview-postprocess-functions)
+                               (setq s (funcall fn s)))
+                             (org-roam-fontify-like-in-org-mode s)))))
+            (push hit hits)))))
+    (nreverse hits)))
 
+(defun org-roam-search-make-insert-preview-fn (search-regexp)
+  (lambda (node)
+    (if-let* ((preview-hits (org-roam-search--match-previews search-regexp node)))
+        (dolist (hit preview-hits)
+          (magit-insert-section section (org-roam-preview-section)
+            (-let [(&plist :preview :pos) hit]
+              (insert preview)
+              (oset section file (org-roam-node-file node))
+              (oset section point pos)
+              (insert "\n\n"))))
+      (insert (propertize "(Matched title)" 'font-lock-face 'font-lock-comment-face))
+      (insert "\n\n"))))
+
+(defvar org-roam-search-view-query-history nil)
 
 ;;;###autoload
 (defun org-roam-search-view (query)
@@ -221,11 +252,10 @@ QUERY is a PRCE regexp string that will be passed to ripgrep."
                                       :title (format "Search Results: %s" query)
                                       :placeholder "No search results"
                                       :buffer-name "*org-roam-search*"
-                                      :refresh-command (lambda ()
-                                                         (interactive)
-                                                         (org-roam-search-view query))
+                                      :refresh-command (lambda () (org-roam-search-view query))
                                       :group-on #'org-roam-review--maturity-header-for-note
                                       :sort (-on #'ts< (lambda (it) (or (org-roam-review-note-created it) (ts-now))))
+                                      :insert-preview-fn (org-roam-search-make-insert-preview-fn query)
                                       :notes (org-roam-search-notes-from-nodes (org-roam-search--nodes-for-files files)))))
                            (with-current-buffer buf
                              (org-roam-search--highlight-matches query))
