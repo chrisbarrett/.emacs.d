@@ -203,10 +203,14 @@ BUILDER is the command argument builder."
     (save-match-data
       (with-temp-buffer
         (insert-file-contents-literally (org-roam-node-file node))
+        ;; NOTE: Use outline-mode instead of org-mode because it's much lighter.
+        ;; We need org/outline-mode to get the OLP of hits as we search.
+        (org-mode)
         (goto-char (point-min))
         (org-roam-end-of-meta-data t)
         (while (search-forward-regexp search-regexp nil t)
           (let ((hit (list :pos (match-beginning 0)
+                           :olp (ignore-errors (org-get-outline-path t t))
                            :preview
                            ;; Extracted from implementation of
                            ;; `org-roam-preview-get-contents'
@@ -215,14 +219,23 @@ BUILDER is the command argument builder."
                                (setq s (funcall fn s)))
                              (org-roam-fontify-like-in-org-mode s)))))
             (push hit hits)))))
-    (nreverse hits)))
+    (->> (nreverse hits)
+         ;; Take the first hit from each outline
+         (seq-group-by (lambda (it) (plist-get it :olp)))
+         (ht-from-alist)
+         (ht-map (lambda (_key values) (car values))))))
 
 (defun org-roam-search-make-insert-preview-fn (search-regexp)
   (lambda (node)
-    (if-let* ((preview-hits (org-roam-search--match-previews search-regexp node)))
-        (dolist (hit preview-hits)
+    (if-let* ((hits-in-file (org-roam-search--match-previews search-regexp node)))
+        (--each-indexed hits-in-file
           (magit-insert-section section (org-roam-preview-section)
-            (-let [(&plist :preview :pos) hit]
+            (-let [(&plist :olp :preview :pos) it]
+              (when olp
+                (let ((start (point)))
+                  (insert (propertize (string-join olp " > ") 'face 'magit-section-secondary-heading))
+                  (fill-region start (point)))
+                (insert "\n"))
               (insert preview)
               (oset section file (org-roam-node-file node))
               (oset section point pos)
