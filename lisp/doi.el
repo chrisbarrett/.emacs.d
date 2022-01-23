@@ -42,19 +42,25 @@
 (defun doi-parse-from-json (json)
   (-let* (((json &as &plist :isbn [isbn] :author :published) (plist-map-keys #'doi--downcase-symbol json))
           ((&plist :date-parts [[year month day]]) published)
-          (published (ts-parse (format "%s-%s-%s" year month day))))
-    (apply 'doi-create (append (list :authors (seq-map (-applify #'doi-author-create) author)
-                                     :isbn isbn
-                                     :published published)
-                               json))))
+          (published (ts-parse (format "%4i-%02i-%02i" year month day)))
+          (attrs (ht-merge (ht-from-plist json)
+                           (ht-from-plist (list :authors (seq-map (-applify #'doi-author-create) author)
+                                                :isbn isbn
+                                                :published published)))))
+    (apply 'doi-create (ht-to-plist attrs))))
 
-(defun doi-retrieve (url)
+(defun doi--request-json (url)
   (let ((url-request-method "GET")
         (url-mime-accept-string "application/citeproc+json"))
-    (with-current-buffer (url-retrieve-synchronously (concat doi-base-url url))
-      (let ((json (json-parse-string (buffer-substring url-http-end-of-headers (point-max))
-                                     :object-type 'plist)))
-        (doi-parse-from-json json)))))
+    (with-current-buffer (url-retrieve-synchronously
+                          (if (string-prefix-p "http" url)
+                              url
+                            (concat doi-base-url url)))
+      (json-parse-string (buffer-substring url-http-end-of-headers (point-max))
+                         :object-type 'plist))))
+
+(defun doi-retrieve (url)
+  (doi-parse-from-json (doi--request-json url)))
 
 (provide 'doi)
 
