@@ -325,7 +325,7 @@ nodes for review."
 (defun org-roam-review-insert-preview (node)
   (let (start content)
     (with-temp-buffer
-      (insert-file-contents-literally (org-roam-node-file node))
+      (insert-file-contents (org-roam-node-file node))
       (goto-char (point-min))
       (org-roam-end-of-meta-data t)
       (setq start (point))

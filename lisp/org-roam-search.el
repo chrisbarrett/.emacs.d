@@ -75,7 +75,7 @@
 
 (defun org-roam-search--lookup-title (file)
   (with-temp-buffer
-    (insert-file-contents-literally (expand-file-name file org-roam-directory) nil nil org-roam-search-title-search-byte-limit)
+    (insert-file-contents (expand-file-name file org-roam-directory) nil nil org-roam-search-title-search-byte-limit)
     (goto-char (point-min))
     (if (search-forward-regexp (rx bol "#+title:" (* space) (group (+ any)) eol))
         (match-string 1)
@@ -171,7 +171,7 @@ BUILDER is the command argument builder."
                             (with-temp-buffer
                               (let ((major-mode 'org-mode))
                                 (org-set-regexps-and-options))
-                              (insert-file-contents-literally file)
+                              (insert-file-contents file)
                               (org-roam-review-notes-from-buffer (current-buffer) file))))
                         nodes)))
 
@@ -202,7 +202,7 @@ BUILDER is the command argument builder."
   (let ((hits))
     (save-match-data
       (with-temp-buffer
-        (insert-file-contents-literally (org-roam-node-file node))
+        (insert-file-contents (org-roam-node-file node))
         ;; NOTE: Use outline-mode instead of org-mode because it's much lighter.
         ;; We need org/outline-mode to get the OLP of hits as we search.
         (org-mode)
