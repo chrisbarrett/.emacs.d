@@ -89,6 +89,10 @@ candidate for reviews."
   :group 'org-roam-review
   :type '(repeat string))
 
+(defvar org-roam-review-note-accepted-hook nil)
+(defvar org-roam-review-note-buried-hook nil)
+(defvar org-roam-review-note-processed-hook nil)
+
 
 ;;; Cached note type & accessors
 
@@ -667,6 +671,8 @@ A higher score means that the note will appear less frequently."
   (when-let* ((maturity (org-entry-get-with-inheritance "MATURITY")))
     (org-roam-review--update-note maturity 3))
   (org-roam-review--kill-buffer-for-completed-review)
+  (run-hooks 'org-roam-review-note-accepted-hook)
+  (run-hooks 'org-roam-review-note-processed-hook)
   (org-roam-review-refresh))
 
 ;;;###autoload
@@ -676,6 +682,8 @@ A higher score means that the note will appear less frequently."
   (when-let* ((maturity (org-entry-get-with-inheritance "MATURITY")))
     (org-roam-review--update-note maturity 5))
   (org-roam-review--kill-buffer-for-completed-review)
+  (run-hooks 'org-roam-review-note-buried-hook)
+  (run-hooks 'org-roam-review-note-processed-hook)
   (org-roam-review-refresh))
 
 (defun org-roam-review--skip-note-for-maturity-assignment-p ()
