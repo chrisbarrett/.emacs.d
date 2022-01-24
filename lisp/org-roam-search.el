@@ -152,6 +152,8 @@ BUILDER is the command argument builder."
      :history '(:input consult--grep-history)
      :sort nil)))
 
+(defvar org-roam-search-buffer-name "*org-roam-search*")
+
 
 
 (defun org-roam-search--find-nodes-for-file (file)
@@ -270,7 +272,7 @@ QUERY is a PRCE regexp string that will be passed to ripgrep."
                                 (buf (org-roam-review--create-buffer
                                       :title (format "Search Results: %s" query)
                                       :placeholder "No search results"
-                                      :buffer-name "*org-roam-search*"
+                                      :buffer-name org-roam-search-buffer-name
                                       :refresh-command (lambda () (org-roam-search-view query))
                                       :group-on #'org-roam-review--maturity-header-for-note
                                       :sort (-on #'ts< (lambda (it) (or (org-roam-review-note-created it) (ts-now))))
@@ -282,6 +284,12 @@ QUERY is a PRCE regexp string that will be passed to ripgrep."
                        "--smart-case"
                        "--files-with-matches"
                        query org-roam-directory))
+
+(defun org-roam-search--kill-buffer ()
+  (when-let* ((buf (get-buffer org-roam-search-buffer-name)))
+    (kill-buffer buf)))
+
+(add-hook 'org-roam-review-note-processed-hook #'org-roam-search--kill-buffer)
 
 (provide 'org-roam-search)
 
