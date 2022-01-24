@@ -6227,7 +6227,14 @@ This makes it much easier to edit text using emphasis markers correctly.
      "C-c r a" '(org-roam-review-set-author :wk "set author")
      "C-c r b" '(org-roam-review-set-budding :wk "set budding")
      "C-c r s" '(org-roam-review-set-seedling :wk "set seedling")
-     "C-c r e" '(org-roam-review-set-evergreen :wk "set evergreen")))
+     "C-c r e" '(org-roam-review-set-evergreen :wk "set evergreen"))
+    :config
+    (add-to-list 'display-buffer-alist
+                 `(,(rx bos "*org-roam-review*" eos)
+                   (display-buffer-reuse-window display-buffer-in-side-window)
+                   (slot . ,display-buffer-slot-diagnostics)
+                   (side . left)
+                   (window-width . 82))))
 #+end_src
 
 ** Customise how the org-roam buffer is displayed
@@ -6389,7 +6396,14 @@ property drawer and the title. Advise it to fix that.
 ** =org-roam-search= - a search interface that works better with org-roam
 #+begin_src emacs-lisp
   (use-package org-roam-search
-    :commands (org-roam-search org-roam-search-view))
+    :commands (org-roam-search org-roam-search-view)
+    :config
+    (add-to-list 'display-buffer-alist
+                 `(,(rx bos "*org-roam-search*" eos)
+                   (display-buffer-reuse-window display-buffer-in-side-window)
+                   (slot . ,display-buffer-slot-diagnostics)
+                   (side . left)
+                   (window-width . 82))))
 #+end_src
 
 * Load Lisp from other locations
