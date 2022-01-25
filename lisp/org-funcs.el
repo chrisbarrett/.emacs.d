@@ -202,7 +202,8 @@ TAGS are the tags to use when displaying the list."
   "Insert an orgmode link at point for URL."
   (interactive (list (org-funcs-read-url)))
   (save-match-data
-    (let* ((title (org-funcs-guess-or-retrieve-title url))
+    (let* ((title (or (org-funcs-guess-or-retrieve-title url)
+                      (read-string "Title: ")))
            (escaped-title (s-replace-all '(("[" . "(")
                                            ("]" . ")"))
                                          title)))
