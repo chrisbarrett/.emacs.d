@@ -6302,112 +6302,100 @@ property drawer and the title. Advise it to fix that.
            config--display-buffer-fallback)))
 #+end_src
 
+** Define helper to update =display-buffer-alist= entries
+#+begin_src emacs-lisp
+  (defun display-buffer-set (regexp-or-predicate actions)
+    (setf (alist-get regexp-or-predicate display-buffer-alist nil nil #'equal) actions))
+#+end_src
+
+
 ** compilation
 #+begin_src emacs-lisp
-  (add-to-list 'display-buffer-alist
-                  `(,(rx bos "*compilation*" eos)
-                    (display-buffer-in-side-window)
-                    (side . bottom)
-                    (window-height . 0.4)))
+  (display-buffer-set (rx bos "*compilation*" eos)
+                      '((display-buffer-in-side-window)
+                        (side . bottom)
+                        (window-height . 0.4)))
 #+end_src
 
 ** lisp debugger
 #+begin_src emacs-lisp
-  (add-to-list 'display-buffer-alist
-               `((,(rx bos "*Backtrace*" eos)
-                  (display-buffer-in-side-window)
-                  (side . bottom)
-                  (window-height . 0.4))))
+  (display-buffer-set (rx bos "*Backtrace*" eos)
+                      '((display-buffer-in-side-window)
+                        (side . bottom)
+                        (window-height . 0.4)))
 #+end_src
 
 ** =flycheck=
 #+begin_src emacs-lisp
-  (add-to-list 'display-buffer-alist
-               `(,(rx bos "*Flycheck errors*" eos)
-                 (display-buffer-in-side-window)
-                 (side . bottom)
-                 (window-height . 0.4)))
+  (display-buffer-set (rx bos "*Flycheck errors*" eos)
+                      '((display-buffer-in-side-window)
+                        (side . bottom)
+                        (window-height . 0.4)))
 #+end_src
 
 ** help
 #+begin_src emacs-lisp
-  (add-to-list 'display-buffer-alist
-               `(,(rx bos "*Help*" eos)
-                 (display-buffer-reuse-window display-buffer-pop-up-window)
-                 (side . right)
-                 (window-width . 80)))
-#+end_src
-
-#+begin_src emacs-lisp
-  (add-to-list 'display-buffer-alist
-               `(,(rx bos "*helpful ")
-                 (display-buffer-pop-up-window)
-                 (side . right)
-                 (window-width . 0.5)))
+  (display-buffer-set (rx bos (or (and "*Help*" eos)
+                                  "*helpful "))
+                      '((display-buffer-pop-up-window)
+                        (side . right)
+                        (window-width . 80)))
 #+end_src
 
 ** =ielm=
 #+begin_src emacs-lisp
-  (add-to-list 'display-buffer-alist
-               `(,(rx bos "*ielm*" eos)
-                 (display-buffer-in-side-window)
-                 (slot . 1)
-                 (side . right)
-                 (window-width . 80)))
+  (display-buffer-set (rx bos "*ielm*" eos)
+                      '((display-buffer-in-side-window)
+                        (slot . 1)
+                        (side . right)
+                        (window-width . 80)))
 #+end_src
 
 ** ledger
 #+begin_src emacs-lisp
-  (add-to-list 'display-buffer-alist
-               `(,(rx bos "*Ledger Report*" eos)
-                 (display-buffer-pop-up-window)))
+  (display-buffer-set (rx bos "*Ledger Report*" eos)
+                      '((display-buffer-pop-up-window)))
 #+end_src
 
 ** mu4e
 #+begin_src emacs-lisp
-  (add-to-list 'display-buffer-alist
-               `(,(rx bos " *mu4e-main*" eos)
-                 (display-buffer-fullframe)))
+  (display-buffer-set (rx bos " *mu4e-main*" eos)
+                      '((display-buffer-fullframe)))
 #+end_src
 
 ** nix-repl
 #+begin_src emacs-lisp
-  (add-to-list 'display-buffer-alist
-               `(,(rx bos "*Nix-REPL*" eos)
-                 (display-buffer-at-bottom)
-                 (window-height   . 0.4)))
+  (display-buffer-set (rx bos "*Nix-REPL*" eos)
+                      '((display-buffer-at-bottom)
+                        (window-height   . 0.4)))
 #+end_src
 
 ** pass
 #+begin_src emacs-lisp
-  (add-to-list 'display-buffer-alist
-                 `(,(rx bos "*Password-Store*" eos)
-                   (display-buffer-fullframe)))
+  (display-buffer-set (rx bos "*Password-Store*" eos)
+                      '((display-buffer-fullframe)))
 #+end_src
 
 ** org-roam
 #+begin_src emacs-lisp
-  (add-to-list 'display-buffer-alist
-                 `(,(rx bos "*org-roam*" eos)
-                   (display-buffer-in-side-window)
-                   (side . right)
-                   (window-width . 82)))
+  (display-buffer-set (rx bos "*org-roam*" eos)
+                      '((display-buffer-in-side-window)
+                        (side . right)
+                        (window-width . fit-window-to-buffer)))
 #+end_src
 
 ** org-roam-review
 #+begin_src emacs-lisp
-  (add-to-list 'display-buffer-alist
-               `(,(rx bos "*org-roam-review*" eos)
-                 (display-buffer-fullframe)))
+  (display-buffer-set (rx bos "*org-roam-review*" eos)
+                      '((display-buffer-fullframe)))
 #+end_src
 
 ** org-roam-search
 #+begin_src emacs-lisp
-  (add-to-list 'display-buffer-alist
-                 `(,(rx bos "*org-roam-search*" eos)
-                   (display-buffer-in-side-window)
-                   (side . right)
-                   (window-width . 82)))
+  (display-buffer-set (rx bos "*org-roam-search*" eos)
+                      '((display-buffer-in-side-window)
+                        (side . right)
+                        (window-width . fit-window-to-buffer)))
 #+end_src
 
 * File postamble
