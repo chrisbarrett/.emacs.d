@@ -5045,9 +5045,7 @@ Either with =eww= or the default system browser.
   (use-package mu4e
     :config
     ;; View html message in eww. `av` in view to activate
-    (add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
-    ;; View html message in external browser. `a&` in view to activate
-    (add-to-list 'mu4e-view-actions '("&viewInExternalBrowser" . config-mail--view-in-external-browser-action) t))
+    (add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t))
 #+end_src
 
 *** Define a smart refile action for ~r~
