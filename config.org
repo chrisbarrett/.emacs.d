@@ -919,7 +919,6 @@ Configure Emacs so that each paragraph may have a difference text direction.
   (setq display-buffer-fallback-action
         '((display-buffer--maybe-same-window
            display-buffer-reuse-window
-           display-buffer-pop-up-window
            display-buffer-in-previous-window
            display-buffer-use-some-window
            config--display-buffer-fallback)))
