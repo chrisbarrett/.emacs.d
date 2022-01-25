@@ -242,14 +242,14 @@ https://github.com/org-roam/org-roam/issues/2032"
            (lambda (file)
              (when (f-ext-p file "org")
                (with-temp-buffer
-                 (insert-file-contents file)
-                 (setq-local major-mode 'org-mode)
-                 (org-set-regexps-and-options)
-                 (unless (org-roam-review--cache-skip-note-p file)
-                   (org-roam-review--cache-mutate (lambda (cache)
-                                                    (org-roam-review--update-by-props-in-buffer cache
-                                                                                                (current-buffer)
-                                                                                                file)))))))
+                 (let ((org-inhibit-startup t))
+                   (insert-file-contents file)
+                   (org-mode)
+                   (unless (org-roam-review--cache-skip-note-p file)
+                     (org-roam-review--cache-mutate (lambda (cache)
+                                                      (org-roam-review--update-by-props-in-buffer cache
+                                                                                                  (current-buffer)
+                                                                                                  file))))))))
            t))
 
 ;;;###autoload
