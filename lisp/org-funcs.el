@@ -288,21 +288,12 @@ handles file titles, IDs and tags better."
                 '(:include nil
                   :exclude nil))))
 
-(defun org-funcs-roam-node-find (&optional arg)
-  "Find an org-roam node. See `org-roam-node-find'.
-
-With optional prefix ARG, prompt for a tags filter."
+(defun org-funcs-roam-node-find (&optional other-window)
+  "Find an org-roam node. See `org-roam-node-find'."
   (interactive "P")
-  (let ((filter
-         (if arg
-             (-let [(&plist :include :exclude) (org-funcs-read-tags-filter "-dailies ")]
-               (lambda (node)
-                 (let ((tags (org-roam-node-tags node)))
-                   (and (if exclude (null (seq-intersection tags exclude)) t)
-                        (if include (seq-intersection tags include) t)))))
-           (lambda (node)
-             (not (seq-contains-p (org-roam-node-tags node) "dailies"))))))
-    (org-roam-node-find arg nil filter)))
+  (let ((filter (lambda (node)
+                  (not (seq-contains-p (org-roam-node-tags node) "dailies")))))
+    (org-roam-node-find other-window nil filter)))
 
 (defun org-funcs-new-note ()
   (let ((require-final-newline nil))
