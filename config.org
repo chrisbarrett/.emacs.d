@@ -3033,9 +3033,11 @@ after editing actions have changed what windows are shown.
     :custom
     (popper-mode-line nil)
     (popper-group-function 'popper-group-by-projectile)
-    (popper-reference-buffers (list (rx bol "*Messages*")
-                                    (rx bol "*ielm*")
+    (popper-reference-buffers (list (rx bol "*Messages*" eol)
+                                    (rx bol "*ielm*" eol)
                                     (rx bol "*" (? "Async ") "Shell Command")
+                                    'org-roam-mode
+                                    'org-roam-review-mode
                                     'help-mode
                                     'occur-mode
                                     'compilation-mode)))
