@@ -6195,6 +6195,9 @@ This makes it much easier to edit text using emphasis markers correctly.
     "k" '(nil :wk "tags")
     "k a" '(org-roam-tag-add :wk "add tag")
     "k x" '(org-roam-tag-remove :wk "remove tag"))
+
+  (mode-leader-set-key :keymaps 'org-roam-mode-map :states '(motion normal)
+    "<tab>" '(quit-window :wk "hide"))
 #+end_src
 
 ** Open my index roam file as the initial buffer
