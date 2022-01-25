@@ -6148,6 +6148,12 @@ This makes it much easier to edit text using emphasis markers correctly.
 
     :config
     (org-roam-setup)
+    (add-to-list 'display-buffer-alist
+                 `(,(rx bos "*org-roam*" eos)
+                   (display-buffer-in-side-window)
+                   (slot . ,display-buffer-slot-documents)
+                   (side . right)
+                   (window-width . 82)))
 
     :general
     (:states '(insert normal) :keymap 'org-mode-map
@@ -6241,20 +6247,7 @@ This makes it much easier to edit text using emphasis markers correctly.
     :config
     (add-to-list 'display-buffer-alist
                  `(,(rx bos "*org-roam-review*" eos)
-                   (display-buffer-reuse-window display-buffer-in-side-window)
-                   (slot . ,display-buffer-slot-diagnostics)
-                   (side . left)
-                   (window-width . 82))))
-#+end_src
-
-** Customise how the org-roam buffer is displayed
-#+begin_src emacs-lisp
-  (add-to-list 'display-buffer-alist
-               '(("\\*org-roam\\*"
-                  (display-buffer-in-direction)
-                  (direction . right)
-                  (window-width . 0.33)
-                  (window-height . fit-window-to-buffer))))
+                   (display-buffer-fullframe))))
 #+end_src
 
 ** Allow lookups to roam nodes from non-roam org files
@@ -6407,12 +6400,15 @@ property drawer and the title. Advise it to fix that.
 #+begin_src emacs-lisp
   (use-package org-roam-search
     :commands (org-roam-search org-roam-search-view)
+    :general
+    (:keymaps 'org-roam-mode-map :states '(normal motion)
+     "s" 'org-roam-search-view)
     :config
     (add-to-list 'display-buffer-alist
                  `(,(rx bos "*org-roam-search*" eos)
-                   (display-buffer-reuse-window display-buffer-in-side-window)
-                   (slot . ,display-buffer-slot-diagnostics)
-                   (side . left)
+                   (display-buffer-in-side-window)
+                   (slot . ,display-buffer-slot-documents)
+                   (side . right)
                    (window-width . 82))))
 #+end_src
 
