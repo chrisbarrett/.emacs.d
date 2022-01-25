@@ -3591,6 +3591,19 @@ repo, or copying the remote URL to the clipboard.
     (advice-add 'browse-at-remote-kill :after 'config-browse-at-remote--message-kill))
 #+end_src
 
+*** Default to =master= if there's no push remote set
+#+begin_src emacs-lisp
+  (defun config-browse-at-remote--master-as-default (fn local-branch &rest args)
+    (condition-case _
+        (apply fn local-branch args)
+      (error
+       (cons (car (browse-at-remote--get-remotes))
+             (seq-find (lambda (it) (seq-contains-p '("master" "main") it))
+                       (vc-git-branches))))))
+
+  (advice-add 'browse-at-remote--get-remote-branch :around #'config-browse-at-remote--master-as-default)
+#+end_src
+
 * Programming languages & text-modes
 
 ** =flycheck= - Syntax Checking & Linting
