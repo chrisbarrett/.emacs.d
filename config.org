@@ -2976,6 +2976,7 @@ after editing actions have changed what windows are shown.
     :custom
     (popper-mode-line nil)
     (popper-group-function 'popper-group-by-projectile)
+    (popper-display-control nil)
     (popper-reference-buffers (list (rx bol "*Messages*" eol)
                                     (rx bol "*ielm*" eol)
                                     (rx bol "*" (? "Async ") "Shell Command")
