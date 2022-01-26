@@ -111,8 +111,6 @@ candidate for reviews."
 (defvar org-roam-review-note-buried-hook nil)
 (defvar org-roam-review-note-processed-hook nil)
 
-(defvar org-roam-review--filter nil)
-
 
 ;;; Cached note type & accessors
 
@@ -293,6 +291,8 @@ https://github.com/org-roam/org-roam/issues/2032"
 
 
 ;;; Review buffers
+
+(defvar org-roam-review--filter nil)
 
 (defun org-roam-review-note-ignored-p (note)
   (let* ((tags (org-roam-review-note-tags note))
