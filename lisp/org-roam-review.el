@@ -325,9 +325,7 @@ interactively. Extra messages will be logged."
     (with-current-buffer buf
       (unless org-roam-review-buffer-refresh-command
         (error "Refresh command not defined"))
-      (if (commandp org-roam-review-buffer-refresh-command)
-          (call-interactively org-roam-review-buffer-refresh-command)
-        (funcall org-roam-review-buffer-refresh-command))))
+      (funcall org-roam-review-buffer-refresh-command)))
   (when interactive-p
     (message "Buffer refreshed")))
 
@@ -424,11 +422,52 @@ nodes for review."
     (insert (or placeholder org-roam-review-default-placeholder))
     (newline)))
 
+(cl-defun org-roam-review--render (&key title instructions group-on placeholder sort postprocess insert-preview-fn notes)
+  (let ((inhibit-read-only t))
+    (erase-buffer)
+    (org-roam-review-mode)
+    (org-roam-buffer-set-header-line-format title)
+    (magit-insert-section (root)
+      (when (and instructions notes)
+        (let ((start (point)))
+          (insert (propertize instructions 'font-lock-face 'org-roam-review-instructions))
+          (fill-region start (point)))
+        (newline 2))
+
+      (let ((forbidden-tags (seq-map (lambda (it) (format "-%s" it)) (org-roam-review-filter-forbidden org-roam-review--filter)))
+            (required-tags (seq-map (lambda (it) (format "+%s" it)) (org-roam-review-filter-required org-roam-review--filter))))
+        (when (or forbidden-tags required-tags)
+          (insert (concat (propertize "Filters:" 'face 'org-roam-review-filter-keyword)
+                          " "
+                          (propertize (string-join (append forbidden-tags required-tags) " ") 'face 'org-roam-review-filter)))
+          (newline 2)))
+
+      (cond ((null notes)
+             (insert (or placeholder org-roam-review-default-placeholder))
+             (newline))
+            (group-on
+             (let ((grouped (->> (seq-group-by group-on notes)
+                                 (-sort (-on #'<= (-lambda ((key . _))
+                                                    (if (stringp key) key (or (cdr key) 0))))))))
+               (pcase-dolist (`(,key . ,group) grouped)
+                 (when (and key group)
+                   (magit-insert-section (org-roam-review-note-group)
+                     (let ((header (format "%s (%s)"
+                                           (if (stringp key) key (car key))
+                                           (length group))))
+                       (magit-insert-heading (propertize header 'font-lock-face 'magit-section-heading)))
+                     (org-roam-review--insert-notes (-sort (or sort (-const t)) group) placeholder insert-preview-fn)
+                     (insert "\n"))))))
+            (t
+             (org-roam-review--insert-notes (-sort (or sort (-const t)) notes) placeholder insert-preview-fn))))
+    (goto-char (point-min))
+    (save-excursion
+      (when postprocess (funcall postprocess)))))
+
 (cl-defun org-roam-review-create-buffer
-    (&key title instructions group-on placeholder sort postprocess
+    (&key title instructions group-on placeholder sort postprocess notes
           (buffer-name "*org-roam-review*")
-          (insert-preview-fn 'org-roam-review-insert-preview)
-          notes)
+          (insert-preview-fn 'org-roam-review-insert-preview))
   "Create a note review buffer for the notes currently in the cache.
 
 
@@ -474,54 +513,21 @@ The following keyword arguments are optional:
   before the second."
   (cl-assert title)
   (cl-assert (functionp notes))
-  (let ((buf (get-buffer-create buffer-name)))
-    (cl-labels ((render-buffer
-                 ()
-                 (let ((notes (funcall notes)))
-                   (with-current-buffer buf
-                     (let ((inhibit-read-only t))
-                       (erase-buffer)
-                       (org-roam-review-mode)
-                       (org-roam-buffer-set-header-line-format title)
-                       (setq-local org-roam-review-buffer-refresh-command (lambda () (render-buffer)))
-                       (magit-insert-section (root)
-                         (when (and instructions notes)
-                           (let ((start (point)))
-                             (insert (propertize instructions 'font-lock-face 'org-roam-review-instructions))
-                             (fill-region start (point)))
-                           (newline 2))
-
-                         (let ((forbidden-tags (seq-map (lambda (it) (format "-%s" it)) (org-roam-review-filter-forbidden org-roam-review--filter)))
-                               (required-tags (seq-map (lambda (it) (format "+%s" it)) (org-roam-review-filter-required org-roam-review--filter))))
-                           (when (or forbidden-tags required-tags)
-                             (insert (concat (propertize "Filters:" 'face 'org-roam-review-filter-keyword)
-                                             " "
-                                             (propertize (string-join (append forbidden-tags required-tags) " ") 'face 'org-roam-review-filter)))
-                             (newline 2)))
-
-                         (cond ((null notes)
-                                (insert (or placeholder org-roam-review-default-placeholder))
-                                (newline))
-                               (group-on
-                                (let ((grouped (->> (seq-group-by group-on notes)
-                                                    (-sort (-on #'<= (-lambda ((key . _))
-                                                                       (if (stringp key) key (or (cdr key) 0))))))))
-                                  (pcase-dolist (`(,key . ,group) grouped)
-                                    (when (and key group)
-                                      (magit-insert-section (org-roam-review-note-group)
-                                        (let ((header (format "%s (%s)"
-                                                              (if (stringp key) key (car key))
-                                                              (length group))))
-                                          (magit-insert-heading (propertize header 'font-lock-face 'magit-section-heading)))
-                                        (org-roam-review--insert-notes (-sort (or sort (-const t)) group) placeholder insert-preview-fn)
-                                        (insert "\n"))))))
-                               (t
-                                (org-roam-review--insert-notes (-sort (or sort (-const t)) notes) placeholder insert-preview-fn))))
-                       (goto-char (point-min))
-                       (save-excursion
-                         (when postprocess (funcall postprocess)))
-                       buf)))))
-      (render-buffer))))
+  (let (render)
+    (setq render
+          (lambda (updated-notes)
+            (with-current-buffer (get-buffer-create buffer-name)
+              (org-roam-review--render :title title
+                                       :instructions instructions
+                                       :notes updated-notes
+                                       :group-on group-on
+                                       :placeholder placeholder
+                                       :sort sort
+                                       :postprocess postprocess
+                                       :insert-preview-fn insert-preview-fn)
+              (setq-local org-roam-review-buffer-refresh-command (lambda () (funcall render (funcall notes))))
+              (current-buffer))))
+    (funcall render (funcall notes))))
 
 ;;;###autoload
 (defun org-roam-review (&optional all)
@@ -647,10 +653,12 @@ needed to be included in reviews. Categorise them as appropriate."
 grouped by whether they require further processing."
     :group-on #'org-roam-review--note-todo-presence
     :sort (-on #'string-lessp #'org-roam-review-note-title)
-    :notes (org-roam-review--cache-collect
-            (lambda (note)
-              (when (seq-contains-p (org-roam-review-note-tags note) "outline")
-                note))))))
+    :notes
+    (lambda ()
+      (org-roam-review--cache-collect
+       (lambda (note)
+         (when (seq-contains-p (org-roam-review-note-tags note) "outline")
+           note)))))))
 
 (defun org-roam-review--note-added-group (note)
   (when-let* ((created (org-roam-review-note-created note))
