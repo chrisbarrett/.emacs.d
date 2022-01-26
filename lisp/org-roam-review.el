@@ -78,7 +78,7 @@
   :group 'org-roam-review
   :type '(list string))
 
-(defcustom org-roam-review-extra-ignored-tags-for-review '("outline")
+(defcustom org-roam-review-tags-ignored-for-review-buffer '("outline")
   "A list of tags that define a note should not be considered a
 candidate for reviews."
   :group 'org-roam-review
@@ -500,6 +500,8 @@ them as reviewed with `org-roam-review-accept',
     :notes (org-roam-review--cache-collect
             (lambda (note)
               (when (and (not (org-roam-review-note-ignored-p note))
+                         (null (seq-intersection (org-roam-review-note-tags note)
+                                                 org-roam-review-tags-ignored-for-review-buffer))
                          (org-roam-review-note-due-p note))
                 note))))))
 
@@ -538,6 +540,8 @@ needed to be included in reviews. Categorise them as appropriate."
             (lambda (note)
               (unless (or (org-roam-review-note-ignored-p note)
                           (seq-contains-p (org-roam-review-note-tags note) "outline")
+                          (seq-intersection (org-roam-review-note-tags note)
+                                            org-roam-review-tags-ignored-for-review-buffer)
                           (org-roam-review-note-maturity note)
                           (org-roam-review-note-next-review note))
                 note))))))
