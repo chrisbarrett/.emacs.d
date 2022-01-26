@@ -402,8 +402,7 @@ nodes for review."
     (newline)))
 
 (cl-defun org-roam-review--create-buffer
-    (&key title instructions group-on placeholder sort
-          (filter org-roam-review--filter)
+    (&key title instructions group-on placeholder sort postprocess
           (buffer-name "*org-roam-review*")
           (insert-preview-fn 'org-roam-review-insert-preview)
           (notes nil notes-supplied-p))
@@ -425,15 +424,10 @@ The following keyword arguments are optional:
 - PLACEHOLDER is a string to be shown if there are no notes to
   display.
 
-- REFRESH-COMMAND is a function to be called when the user
-  refreshes the buffer via the key command. It will usually be a
-  symbol, the name of this command that is being declared using
-  `org-roam-review--create-buffer'.
+- POSTPROCESS is a function called after the buffer has been
+  populated.
 
 - BUFFER-NAME is the name to use for the created buffer.
-
-- FILTER is an `org-roam-review-filter' that was applied to the
-  given notes.
 
 - INSERT-PREVIEW-FN is a function that takes a node and is
   expected to insert a preview using the magit-section API.
@@ -473,8 +467,8 @@ The following keyword arguments are optional:
                              (fill-region start (point)))
                            (newline 2))
 
-                         (let ((forbidden-tags (seq-map (lambda (it) (format "-%s" it)) (org-roam-review-filter-forbidden filter)))
-                               (required-tags (seq-map (lambda (it) (format "+%s" it)) (org-roam-review-filter-required filter))))
+                         (let ((forbidden-tags (seq-map (lambda (it) (format "-%s" it)) (org-roam-review-filter-forbidden org-roam-review--filter)))
+                               (required-tags (seq-map (lambda (it) (format "+%s" it)) (org-roam-review-filter-required org-roam-review--filter))))
                            (when (or forbidden-tags required-tags)
                              (insert (format "Filter: %s" (string-join (append forbidden-tags required-tags) " ")))
                              (newline 2)))
@@ -498,6 +492,8 @@ The following keyword arguments are optional:
                                (t
                                 (org-roam-review--insert-notes (-sort (or sort (-const t)) notes) placeholder insert-preview-fn))))
                        (goto-char (point-min))
+                       (save-excursion
+                         (when postprocess (funcall postprocess)))
                        buf)))))
       (render-buffer))))
 

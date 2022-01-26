@@ -254,6 +254,21 @@ BUILDER is the command argument builder."
 
 (defvar org-roam-search-view-query-history nil)
 
+(defun org-roam-search--ripgrep-for-notes (query)
+  (let (done notes)
+    (async-start-process "ripgrep" "rg"
+                         (lambda (proc)
+                           (let* ((files (org-roam-search--process-rg-output (process-buffer proc))))
+                             (setq notes
+                                   (org-roam-search-notes-from-nodes (org-roam-search--nodes-for-files files)))
+                             (setq done t)))
+                         "--smart-case"
+                         "--files-with-matches"
+                         query org-roam-directory)
+    (while (not done)
+      (sit-for 0.01))
+    notes))
+
 ;;;###autoload
 (defun org-roam-search-view (query)
   "Search `org-roam-directory' for notes matching a query.
@@ -267,25 +282,20 @@ QUERY is a PRCE regexp string that will be passed to ripgrep."
                            (not (string-prefix-p "(" input)))
                       (format "(%s)" input)
                     input))))
-  (async-start-process "ripgrep" "rg"
-                       (lambda (proc)
-                         (let* ((files (org-roam-search--process-rg-output (process-buffer proc)))
-                                (buf (org-roam-review--create-buffer
-                                      :title (format "Search Results: %s" query)
-                                      :placeholder "No search results"
-                                      :buffer-name org-roam-search-buffer-name
-                                      :group-on #'org-roam-review--maturity-header-for-note
-                                      :sort (-on #'ts< (lambda (it) (or (org-roam-review-note-created it) (ts-now))))
-                                      :insert-preview-fn (org-roam-search-make-insert-preview-fn query)
-                                      :notes
-                                      (lambda ()
-                                        (org-roam-search-notes-from-nodes (org-roam-search--nodes-for-files files))))))
-                           (with-current-buffer buf
-                             (org-roam-search--highlight-matches query))
-                           (display-buffer buf)))
-                       "--smart-case"
-                       "--files-with-matches"
-                       query org-roam-directory))
+  (org-roam-review-display-buffer-and-select
+   (org-roam-review--create-buffer
+    :title (format "Search Results: %s" query)
+    :placeholder "No search results"
+    :buffer-name org-roam-search-buffer-name
+    :group-on #'org-roam-review--maturity-header-for-note
+    :sort (-on #'ts< (lambda (it) (or (org-roam-review-note-created it) (ts-now))))
+    :insert-preview-fn (org-roam-search-make-insert-preview-fn query)
+    :notes
+    (lambda ()
+      (org-roam-search--ripgrep-for-notes query))
+    :postprocess
+    (lambda ()
+      (org-roam-search--highlight-matches query)))))
 
 (defun org-roam-search--kill-buffer ()
   (when-let* ((buf (get-buffer org-roam-search-buffer-name)))
