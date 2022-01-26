@@ -86,23 +86,36 @@
          (,validator ,type))
        (plist-get ,type ,key))))
 
-(defmacro plist-define-create (type keys)
+(defun plist--format-create-fn-arglist (required optional)
+  (if (or required optional)
+      (format "\n\n\(fn &key %s)"
+              (string-join (append (seq-map (lambda (it) (upcase (string-remove-prefix ":" (symbol-name it)))) required)
+                                   (seq-map (lambda (it) (format "[%s]" (upcase (string-remove-prefix ":" (symbol-name it))))) optional))
+                           " "))
+    ""))
+
+
+(defmacro plist-define-create (type required optional)
   (cl-assert (symbolp type))
-  (cl-assert (listp keys))
+  (cl-assert (listp required))
+  (cl-assert (listp optional))
   `(defun ,(intern (format "%s-create" type)) (&rest attrs)
+     ,(format "Construct a value of type `%s'.%s"
+              type (plist--format-create-fn-arglist required optional))
      (,(plist--validator-for-type type) attrs)
-     (plist-pick ',keys attrs)))
+     (plist-pick ',(seq-union required optional) attrs)))
 
 (cl-defmacro plist-define (type &key required optional)
   (declare (indent 1))
   (cl-assert (symbolp type))
   (cl-assert (listp required))
   (cl-assert (listp optional))
+  (cl-assert (null (seq-intersection required optional)))
   (let ((keys (seq-union required optional)))
     `(progn
        (plist-define-predicate ,type ,required)
        (plist-define-validator ,type ,required)
-       (plist-define-create ,type ,keys)
+       (plist-define-create ,type ,required ,optional)
        ,@(seq-map (lambda (it) `(plist-define-getter ,type ,it))
                   keys))))
 
