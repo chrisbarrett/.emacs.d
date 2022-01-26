@@ -196,7 +196,7 @@ BUILDER is the command argument builder."
                                                        (line-end-position))))
                                          (let ((pt (match-end 0)))
                                            (goto-char pt)
-                                           (max pt (or (cdr (save-match-data(bounds-of-thing-at-point 'word)))
+                                           (max pt (or (cdr (save-match-data (bounds-of-thing-at-point 'word)))
                                                        (line-beginning-position)))))))
               (overlay-put overlay 'face 'org-roam-search-highlight))))))))
 
