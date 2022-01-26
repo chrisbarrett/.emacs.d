@@ -286,7 +286,7 @@ QUERY is a PRCE regexp string that will be passed to ripgrep."
                       (format "(%s)" input)
                     input))))
   (org-roam-review-display-buffer-and-select
-   (org-roam-review--create-buffer
+   (org-roam-review-create-buffer
     :title (format "Search Results: %s" query)
     :placeholder "No search results"
     :buffer-name org-roam-search-buffer-name

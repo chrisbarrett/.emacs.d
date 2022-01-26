@@ -424,11 +424,11 @@ nodes for review."
     (insert (or placeholder org-roam-review-default-placeholder))
     (newline)))
 
-(cl-defun org-roam-review--create-buffer
+(cl-defun org-roam-review-create-buffer
     (&key title instructions group-on placeholder sort postprocess
           (buffer-name "*org-roam-review*")
           (insert-preview-fn 'org-roam-review-insert-preview)
-          (notes nil notes-supplied-p))
+          notes)
   "Create a note review buffer for the notes currently in the cache.
 
 
@@ -439,8 +439,8 @@ The following keyword arguments are required:
 - INSTRUCTIONS is a paragraph inserted below the title. It is
   automatically paragraph-filled.
 
-- NOTES is a list of notes to display (which is possibly empty),
-  or a function returning a list of notes.
+- NOTES is a function returning a list of notes to display (which
+  is possibly empty).
 
 The following keyword arguments are optional:
 
@@ -472,11 +472,12 @@ The following keyword arguments are optional:
 - SORT is a projection function that is passed two notes within a
   group and returns non-nil if the first element should sort
   before the second."
-  (cl-assert (and notes-supplied-p title))
+  (cl-assert title)
+  (cl-assert (functionp notes))
   (let ((buf (get-buffer-create buffer-name)))
     (cl-labels ((render-buffer
                  ()
-                 (let ((notes (if (functionp notes) (funcall notes) notes)))
+                 (let ((notes (funcall notes)))
                    (with-current-buffer buf
                      (let ((inhibit-read-only t))
                        (erase-buffer)
@@ -551,7 +552,7 @@ categorised by their maturity."
   "List notes that are due for review."
   (interactive)
   (org-roam-review-display-buffer-and-select
-   (org-roam-review--create-buffer
+   (org-roam-review-create-buffer
     :title "Due Notes"
     :instructions "The notes below are due for review.
 Read each note and add new thoughts and connections, then mark
@@ -575,7 +576,7 @@ them as reviewed with `org-roam-review-accept',
   "List all evergreen notes categorised by maturity."
   (interactive)
   (org-roam-review-display-buffer-and-select
-   (org-roam-review--create-buffer
+   (org-roam-review-create-buffer
     :title "Evergreen Notes"
     :instructions "The notes below are categorised by maturity."
     :group-on #'org-roam-review--maturity-header-for-note
@@ -596,7 +597,7 @@ This is useful for migrating notes into the spaced repetition
 system."
   (interactive)
   (org-roam-review-display-buffer-and-select
-   (org-roam-review--create-buffer
+   (org-roam-review-create-buffer
     :title "Uncategorised Notes"
     :instructions "The notes below are missing the properties
 needed to be included in reviews. Categorise them as appropriate."
@@ -618,7 +619,7 @@ needed to be included in reviews. Categorise them as appropriate."
   "List all author notes."
   (interactive)
   (org-roam-review-display-buffer-and-select
-   (org-roam-review--create-buffer
+   (org-roam-review-create-buffer
     :title "Author Notes"
     :instructions "The list below contains notes tagged as authors."
     :sort (-on #'string-lessp #'org-roam-review-note-title)
@@ -640,7 +641,7 @@ needed to be included in reviews. Categorise them as appropriate."
   "List all outline notes."
   (interactive)
   (org-roam-review-display-buffer-and-select
-   (org-roam-review--create-buffer
+   (org-roam-review-create-buffer
     :title "Outline Notes"
     :instructions "The notes below are outlines of sources,
 grouped by whether they require further processing."
@@ -667,7 +668,7 @@ grouped by whether they require further processing."
   "List notes that were created recently, grouped by time."
   (interactive)
   (org-roam-review-display-buffer-and-select
-   (org-roam-review--create-buffer
+   (org-roam-review-create-buffer
     :title "Recently Created Notes"
     :instructions "The notes below are sorted by when they were created."
     :group-on #'org-roam-review--note-added-group
