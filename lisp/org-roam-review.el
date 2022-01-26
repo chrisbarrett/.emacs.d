@@ -93,6 +93,8 @@ candidate for reviews."
 (defvar org-roam-review-note-buried-hook nil)
 (defvar org-roam-review-note-processed-hook nil)
 
+(defvar org-roam-review--filter nil)
+
 
 ;;; Cached note type & accessors
 
@@ -100,14 +102,8 @@ candidate for reviews."
   :required (:id :title :file)
   :optional (:tags :next-review :last-review :maturity :todo-keywords :created))
 
-(defun org-roam-review-note-ignored-p (note)
-  (seq-intersection (org-roam-review-note-tags note)
-                    (append org-roam-review-ignored-tags
-                            org-roam-review-extra-ignored-tags-for-review)))
-
-(defun org-roam-review-note-due-p (note)
-  (when-let* ((next-review (org-roam-review-note-next-review note)))
-    (ts<= next-review (ts-now))))
+(plist-define org-roam-review-filter
+  :optional (:required :forbidden))
 
 
 ;;; Define cache operations
@@ -280,6 +276,19 @@ https://github.com/org-roam/org-roam/issues/2032"
 
 ;;; Review buffers
 
+(defun org-roam-review-note-ignored-p (note)
+  (let* ((tags (org-roam-review-note-tags note))
+         (forbidden-tags (append org-roam-review-ignored-tags
+                                 (org-roam-review-filter-forbidden org-roam-review--filter)))
+         (required-tags (org-roam-review-filter-required org-roam-review--filter)))
+    (or (seq-intersection tags forbidden-tags)
+        (seq-difference required-tags tags))))
+
+(defun org-roam-review-note-due-p (note)
+  (when-let* ((next-review (org-roam-review-note-next-review note)))
+    (ts<= next-review (ts-now))))
+
+
 (defvar-local org-roam-review-buffer-refresh-command nil)
 
 (defun org-roam-review-buffers ()
@@ -305,8 +314,28 @@ interactively. Extra messages will be logged."
   (when interactive-p
     (message "Buffer refreshed")))
 
+(defun org-roam-review--read-tags-filter ()
+  (-let* ((current-filter
+           (string-join (append
+                         (seq-map (lambda (it) (concat "-" it)) (org-roam-review-filter-forbidden org-roam-review--filter))
+                         (org-roam-review-filter-required org-roam-review--filter))
+                        " "))
+          (input (read-string "Tags filter (+/-): " current-filter))
+          ((forbidden required) (-separate (lambda (it) (string-prefix-p "-" it))
+                                           (split-string input " " t))))
+    (org-roam-review-filter-create :forbidden (seq-map (lambda (it) (string-remove-prefix "-" it))
+                                                       forbidden)
+                                   :required (seq-map (lambda (it) (string-remove-prefix "+" it))
+                                                      required))))
+
+(defun org-roam-review-modify-tags (tags-filter)
+  (interactive (list (org-roam-review--read-tags-filter)))
+  (setq org-roam-review--filter tags-filter)
+  (org-roam-review-refresh t))
+
 (defvar org-roam-review-mode-map
   (let ((keymap (make-sparse-keymap)))
+    (define-key keymap (kbd "/") #'org-roam-review-modify-tags)
     (define-key keymap (kbd "TAB") #'magit-section-cycle)
     (define-key keymap (kbd "g") #'org-roam-review-refresh)
     (define-key keymap [remap org-roam-buffer-refresh] #'org-roam-review-refresh)

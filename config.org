@@ -6089,6 +6089,7 @@ This makes it much easier to edit text using emphasis markers correctly.
     (org-roam-review-tags-ignored-for-review-buffer '("outline" "author" "person" "accounts" "flat"))
     :general
     (:states '(normal) :keymaps 'org-roam-review-mode-map
+     "/" 'org-roam-review-modify-tags
      "TAB" 'magit-section-cycle
      "g r" 'org-roam-review-refresh
      [remap evil-next-line] 'evil-next-visual-line
