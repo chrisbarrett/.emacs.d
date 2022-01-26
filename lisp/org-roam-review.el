@@ -296,8 +296,7 @@ https://github.com/org-roam/org-roam/issues/2032"
 
 (defun org-roam-review-note-ignored-p (note)
   (let* ((tags (org-roam-review-note-tags note))
-         (forbidden-tags (append org-roam-review-ignored-tags
-                                 (org-roam-review-filter-forbidden org-roam-review--filter)))
+         (forbidden-tags (org-roam-review-filter-forbidden org-roam-review--filter))
          (required-tags (org-roam-review-filter-required org-roam-review--filter)))
     (or (seq-intersection tags forbidden-tags)
         (seq-difference required-tags tags))))
