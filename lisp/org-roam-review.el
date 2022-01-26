@@ -427,7 +427,7 @@ nodes for review."
     (erase-buffer)
     (org-roam-review-mode)
     (org-roam-buffer-set-header-line-format title)
-    (magit-insert-section (root)
+    (magit-insert-section root (root)
       (when (and instructions notes)
         (let ((start (point)))
           (insert (propertize instructions 'font-lock-face 'org-roam-review-instructions))
@@ -442,27 +442,31 @@ nodes for review."
                           (propertize (string-join (append forbidden-tags required-tags) " ") 'face 'org-roam-review-filter)))
           (newline 2)))
 
-      (cond ((null notes)
-             (insert (or placeholder org-roam-review-default-placeholder))
-             (newline))
-            (group-on
-             (let ((grouped (->> (seq-group-by group-on notes)
-                                 (-sort (-on #'<= (-lambda ((key . _))
-                                                    (if (stringp key) key (or (cdr key) 0))))))))
-               (pcase-dolist (`(,key . ,group) grouped)
-                 (when (and key group)
-                   (magit-insert-section (org-roam-review-note-group)
-                     (let ((header (format "%s (%s)"
-                                           (if (stringp key) key (car key))
-                                           (length group))))
-                       (magit-insert-heading (propertize header 'font-lock-face 'magit-section-heading)))
-                     (org-roam-review--insert-notes (-sort (or sort (-const t)) group) placeholder insert-preview-fn)
-                     (insert "\n"))))))
-            (t
-             (org-roam-review--insert-notes (-sort (or sort (-const t)) notes) placeholder insert-preview-fn))))
-    (goto-char (point-min))
-    (save-excursion
-      (when postprocess (funcall postprocess)))))
+      (let ((start-of-content (point)))
+
+        (cond ((null notes)
+               (insert (or placeholder org-roam-review-default-placeholder))
+               (newline))
+              (group-on
+               (let ((grouped (->> (seq-group-by group-on notes)
+                                   (-sort (-on #'<= (-lambda ((key . _))
+                                                      (if (stringp key) key (or (cdr key) 0))))))))
+                 (pcase-dolist (`(,key . ,group) grouped)
+                   (when (and key group)
+                     (magit-insert-section section (org-roam-review-note-group)
+                       (oset section parent root)
+                       (let ((header (format "%s (%s)"
+                                             (if (stringp key) key (car key))
+                                             (length group))))
+                         (magit-insert-heading (propertize header 'font-lock-face 'magit-section-heading)))
+                       (org-roam-review--insert-notes (-sort (or sort (-const t)) group) placeholder insert-preview-fn)
+                       (insert "\n"))))))
+              (t
+               (org-roam-review--insert-notes (-sort (or sort (-const t)) notes) placeholder insert-preview-fn)))
+        (goto-char (point-min))
+        (save-excursion
+          (when postprocess (funcall postprocess)))
+        (goto-char start-of-content)))))
 
 (cl-defun org-roam-review-create-buffer
     (&key title instructions group-on placeholder sort postprocess notes
