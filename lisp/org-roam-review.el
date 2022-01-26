@@ -346,7 +346,12 @@ interactively. Extra messages will be logged."
                                                       required))))
 
 (defun org-roam-review-modify-tags (tags-filter)
-  (interactive (list (org-roam-review--read-tags-filter)))
+  "Read a tags filter interactively.
+
+When called with a `C-u' prefix arg, clear the current filter."
+  (interactive (list
+                (unless current-prefix-arg
+                  (org-roam-review--read-tags-filter))))
   (setq org-roam-review--filter tags-filter)
   (org-roam-review-refresh t))
 
