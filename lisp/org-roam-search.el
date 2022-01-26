@@ -168,14 +168,16 @@ BUILDER is the command argument builder."
                files)))
 
 (defun org-roam-search-notes-from-nodes (nodes)
-  (seq-uniq (seq-mapcat (lambda (node)
-                          (when-let* ((file (org-roam-node-file node)))
-                            (with-temp-buffer
-                              (let ((major-mode 'org-mode))
-                                (org-set-regexps-and-options))
-                              (insert-file-contents file)
-                              (org-roam-review-notes-from-buffer (current-buffer) file))))
-                        nodes)))
+  (->> nodes
+   (seq-mapcat (lambda (node)
+                 (when-let* ((file (org-roam-node-file node)))
+                   (with-temp-buffer
+                     (insert-file-contents file)
+                     (let ((org-inhibit-startup t))
+                       (org-mode))
+                     (org-roam-review-notes-from-buffer (current-buffer) file)))))
+   (seq-uniq)
+   (seq-remove #'org-roam-review-note-ignored-p)))
 
 (defun org-roam-search--process-rg-output (buf)
   (let* ((output (with-current-buffer buf
