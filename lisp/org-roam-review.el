@@ -89,6 +89,24 @@ candidate for reviews."
   :group 'org-roam-review
   :type '(repeat string))
 
+(defface org-roam-review-instructions
+  '((t
+     (:inherit font-lock-comment-face)))
+  "Face for instructional information in a review buffer."
+  :group 'org-roam-review)
+
+(defface org-roam-review-filter
+  '((t
+     (:inherit org-tag)))
+  "Face for filter information in a review buffer."
+  :group 'org-roam-review)
+
+(defface org-roam-review-filter-keyword
+  '((t
+     (:inherit org-document-info-keyword)))
+  "Face for the filter information keyword in a review buffer."
+  :group 'org-roam-review)
+
 (defvar org-roam-review-note-accepted-hook nil)
 (defvar org-roam-review-note-buried-hook nil)
 (defvar org-roam-review-note-processed-hook nil)
@@ -463,14 +481,16 @@ The following keyword arguments are optional:
                        (magit-insert-section (root)
                          (when (and instructions notes)
                            (let ((start (point)))
-                             (insert (propertize instructions 'font-lock-face 'font-lock-comment-face))
+                             (insert (propertize instructions 'font-lock-face 'org-roam-review-instructions))
                              (fill-region start (point)))
                            (newline 2))
 
                          (let ((forbidden-tags (seq-map (lambda (it) (format "-%s" it)) (org-roam-review-filter-forbidden org-roam-review--filter)))
                                (required-tags (seq-map (lambda (it) (format "+%s" it)) (org-roam-review-filter-required org-roam-review--filter))))
                            (when (or forbidden-tags required-tags)
-                             (insert (format "Filter: %s" (string-join (append forbidden-tags required-tags) " ")))
+                             (insert (concat (propertize "Filters:" 'face 'org-roam-review-filter-keyword)
+                                             " "
+                                             (propertize (string-join (append forbidden-tags required-tags) " ") 'face 'org-roam-review-filter)))
                              (newline 2)))
 
                          (cond ((null notes)

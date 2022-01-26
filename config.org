@@ -382,6 +382,7 @@ Load host-specific settings, which are not checked into version control.
                             `(selectrum-group-title ((t :inherit magit-section-heading)))
                             `(consult-line-number ((t :inherit font-lock-comment-face)))
                             `(shortdoc-section ((t :inherit fixed-pitch)))
+                            `(org-roam-review-filter ((t :inherit magit-section-heading :bold nil)))
                             `(outline-1 ,(append-faces outline-heading title))
                             `(outline-2 ,outline-heading)
                             `(outline-3 ,outline-heading)
