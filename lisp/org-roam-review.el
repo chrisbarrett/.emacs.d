@@ -404,6 +404,7 @@ nodes for review."
 
 (cl-defun org-roam-review--create-buffer
     (&key title instructions group-on refresh-command placeholder sort
+          (filter org-roam-review--filter)
           (buffer-name "*org-roam-review*")
           (insert-preview-fn 'org-roam-review-insert-preview)
           (notes nil notes-supplied-p))
@@ -430,6 +431,9 @@ The following keyword arguments are optional:
   display.
 
 - BUFFER-NAME is the name to use for the created buffer.
+
+- FILTER is an `org-roam-review-filter' that was applied to the
+  given notes.
 
 - INSERT-PREVIEW-FN is a function that takes a node and is
   expected to insert a preview using the magit-section API.
@@ -465,6 +469,12 @@ The following keyword arguments are optional:
               (insert (propertize instructions 'font-lock-face 'font-lock-comment-face))
               (fill-region start (point)))
             (newline 2))
+
+          (let ((forbidden-tags (seq-map (lambda (it) (format "-%s" it)) (org-roam-review-filter-forbidden filter)))
+                (required-tags (seq-map (lambda (it) (format "+%s" it)) (org-roam-review-filter-required filter))))
+            (when (or forbidden-tags required-tags)
+              (insert (format "Filter: %s" (string-join (append forbidden-tags required-tags) " ")))
+              (newline 2)))
 
           (cond ((null notes)
                  (insert (or placeholder org-roam-review-default-placeholder))
