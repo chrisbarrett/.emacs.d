@@ -277,7 +277,9 @@ QUERY is a PRCE regexp string that will be passed to ripgrep."
                                       :group-on #'org-roam-review--maturity-header-for-note
                                       :sort (-on #'ts< (lambda (it) (or (org-roam-review-note-created it) (ts-now))))
                                       :insert-preview-fn (org-roam-search-make-insert-preview-fn query)
-                                      :notes (org-roam-search-notes-from-nodes (org-roam-search--nodes-for-files files)))))
+                                      :notes
+                                      (lambda ()
+                                        (org-roam-search-notes-from-nodes (org-roam-search--nodes-for-files files))))))
                            (with-current-buffer buf
                              (org-roam-search--highlight-matches query))
                            (display-buffer buf)))

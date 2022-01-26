@@ -417,7 +417,8 @@ The following keyword arguments are required:
 - INSTRUCTIONS is a paragraph inserted below the title. It is
   automatically paragraph-filled.
 
-- NOTES is a list of notes to display (which is possibly empty).
+- NOTES is a list of notes to display (which is possibly empty),
+  or a function returning a list of notes.
 
 The following keyword arguments are optional:
 
@@ -458,45 +459,46 @@ The following keyword arguments are optional:
   (let ((buf (get-buffer-create buffer-name)))
     (cl-labels ((render-buffer
                  ()
-                 (with-current-buffer buf
-                   (let ((inhibit-read-only t))
-                     (erase-buffer)
-                     (org-roam-review-mode)
-                     (org-roam-buffer-set-header-line-format title)
-                     (setq-local org-roam-review-buffer-refresh-command (lambda () (render-buffer)))
-                     (magit-insert-section (root)
-                       (when (and instructions notes)
-                         (let ((start (point)))
-                           (insert (propertize instructions 'font-lock-face 'font-lock-comment-face))
-                           (fill-region start (point)))
-                         (newline 2))
+                 (let ((notes (if (functionp notes) (funcall notes) notes)))
+                   (with-current-buffer buf
+                     (let ((inhibit-read-only t))
+                       (erase-buffer)
+                       (org-roam-review-mode)
+                       (org-roam-buffer-set-header-line-format title)
+                       (setq-local org-roam-review-buffer-refresh-command (lambda () (render-buffer)))
+                       (magit-insert-section (root)
+                         (when (and instructions notes)
+                           (let ((start (point)))
+                             (insert (propertize instructions 'font-lock-face 'font-lock-comment-face))
+                             (fill-region start (point)))
+                           (newline 2))
 
-                       (let ((forbidden-tags (seq-map (lambda (it) (format "-%s" it)) (org-roam-review-filter-forbidden filter)))
-                             (required-tags (seq-map (lambda (it) (format "+%s" it)) (org-roam-review-filter-required filter))))
-                         (when (or forbidden-tags required-tags)
-                           (insert (format "Filter: %s" (string-join (append forbidden-tags required-tags) " ")))
-                           (newline 2)))
+                         (let ((forbidden-tags (seq-map (lambda (it) (format "-%s" it)) (org-roam-review-filter-forbidden filter)))
+                               (required-tags (seq-map (lambda (it) (format "+%s" it)) (org-roam-review-filter-required filter))))
+                           (when (or forbidden-tags required-tags)
+                             (insert (format "Filter: %s" (string-join (append forbidden-tags required-tags) " ")))
+                             (newline 2)))
 
-                       (cond ((null notes)
-                              (insert (or placeholder org-roam-review-default-placeholder))
-                              (newline))
-                             (group-on
-                              (let ((grouped (->> (seq-group-by group-on notes)
-                                                  (-sort (-on #'<= (-lambda ((key . _))
-                                                                     (if (stringp key) key (or (cdr key) 0))))))))
-                                (pcase-dolist (`(,key . ,group) grouped)
-                                  (when (and key group)
-                                    (magit-insert-section (org-roam-review-note-group)
-                                      (let ((header (format "%s (%s)"
-                                                            (if (stringp key) key (car key))
-                                                            (length group))))
-                                        (magit-insert-heading (propertize header 'font-lock-face 'magit-section-heading)))
-                                      (org-roam-review--insert-notes (-sort (or sort (-const t)) group) placeholder insert-preview-fn)
-                                      (insert "\n"))))))
-                             (t
-                              (org-roam-review--insert-notes (-sort (or sort (-const t)) notes) placeholder insert-preview-fn))))
-                     (goto-char (point-min))
-                     buf))))
+                         (cond ((null notes)
+                                (insert (or placeholder org-roam-review-default-placeholder))
+                                (newline))
+                               (group-on
+                                (let ((grouped (->> (seq-group-by group-on notes)
+                                                    (-sort (-on #'<= (-lambda ((key . _))
+                                                                       (if (stringp key) key (or (cdr key) 0))))))))
+                                  (pcase-dolist (`(,key . ,group) grouped)
+                                    (when (and key group)
+                                      (magit-insert-section (org-roam-review-note-group)
+                                        (let ((header (format "%s (%s)"
+                                                              (if (stringp key) key (car key))
+                                                              (length group))))
+                                          (magit-insert-heading (propertize header 'font-lock-face 'magit-section-heading)))
+                                        (org-roam-review--insert-notes (-sort (or sort (-const t)) group) placeholder insert-preview-fn)
+                                        (insert "\n"))))))
+                               (t
+                                (org-roam-review--insert-notes (-sort (or sort (-const t)) notes) placeholder insert-preview-fn))))
+                       (goto-char (point-min))
+                       buf)))))
       (render-buffer))))
 
 ;;;###autoload
@@ -537,13 +539,15 @@ them as reviewed with `org-roam-review-accept',
     :placeholder (concat (propertize "You're up-to-date!" 'face 'font-lock-comment-face) " 😸")
     :group-on #'org-roam-review--maturity-header-for-note
     :sort (-on #'ts< #'org-roam-review-note-next-review)
-    :notes (org-roam-review--cache-collect
-            (lambda (note)
-              (when (and (not (org-roam-review-note-ignored-p note))
-                         (null (seq-intersection (org-roam-review-note-tags note)
-                                                 org-roam-review-tags-ignored-for-review-buffer))
-                         (org-roam-review-note-due-p note))
-                note))))))
+    :notes
+    (lambda ()
+      (org-roam-review--cache-collect
+       (lambda (note)
+         (when (and (not (org-roam-review-note-ignored-p note))
+                    (null (seq-intersection (org-roam-review-note-tags note)
+                                            org-roam-review-tags-ignored-for-review-buffer))
+                    (org-roam-review-note-due-p note))
+           note)))))))
 
 ;;;###autoload
 (defun org-roam-review-list-categorised ()
@@ -555,11 +559,13 @@ them as reviewed with `org-roam-review-accept',
     :instructions "The notes below are categorised by maturity."
     :group-on #'org-roam-review--maturity-header-for-note
     :sort (-on #'string-lessp #'org-roam-review-note-title)
-    :notes (org-roam-review--cache-collect
-            (lambda (note)
-              (when (and (not (org-roam-review-note-ignored-p note))
-                         (org-roam-review-note-maturity note))
-                note))))))
+    :notes
+    (lambda ()
+      (org-roam-review--cache-collect
+       (lambda (note)
+         (when (and (not (org-roam-review-note-ignored-p note))
+                    (org-roam-review-note-maturity note))
+           note)))))))
 
 ;;;###autoload
 (defun org-roam-review-list-uncategorised ()
@@ -574,15 +580,17 @@ system."
     :instructions "The notes below are missing the properties
 needed to be included in reviews. Categorise them as appropriate."
     :sort (-on #'string-lessp #'org-roam-review-note-title)
-    :notes (org-roam-review--cache-collect
-            (lambda (note)
-              (unless (or (org-roam-review-note-ignored-p note)
-                          (seq-contains-p (org-roam-review-note-tags note) "outline")
-                          (seq-intersection (org-roam-review-note-tags note)
-                                            org-roam-review-tags-ignored-for-review-buffer)
-                          (org-roam-review-note-maturity note)
-                          (org-roam-review-note-next-review note))
-                note))))))
+    :notes
+    (lambda ()
+      (org-roam-review--cache-collect
+       (lambda (note)
+         (unless (or (org-roam-review-note-ignored-p note)
+                     (seq-contains-p (org-roam-review-note-tags note) "outline")
+                     (seq-intersection (org-roam-review-note-tags note)
+                                       org-roam-review-tags-ignored-for-review-buffer)
+                     (org-roam-review-note-maturity note)
+                     (org-roam-review-note-next-review note))
+           note)))))))
 
 ;;;###autoload
 (defun org-roam-review-list-authors ()
@@ -593,10 +601,12 @@ needed to be included in reviews. Categorise them as appropriate."
     :title "Author Notes"
     :instructions "The list below contains notes tagged as authors."
     :sort (-on #'string-lessp #'org-roam-review-note-title)
-    :notes (org-roam-review--cache-collect
-            (lambda (note)
-              (when (seq-contains-p (org-roam-review-note-tags note) "author")
-                note))))))
+    :notes
+    (lambda ()
+      (org-roam-review--cache-collect
+       (lambda (note)
+         (when (seq-contains-p (org-roam-review-note-tags note) "author")
+           note)))))))
 
 (defun org-roam-review--note-todo-presence (note)
   (if (seq-intersection (org-roam-review-note-todo-keywords note)
@@ -641,10 +651,12 @@ grouped by whether they require further processing."
     :instructions "The notes below are sorted by when they were created."
     :group-on #'org-roam-review--note-added-group
     :sort (-on #'string-lessp #'org-roam-review-note-title)
-    :notes (org-roam-review--cache-collect
-            (lambda (note)
-              (unless (seq-intersection (org-roam-review-note-tags note) org-roam-review-ignored-tags)
-                note))))))
+    :notes
+    (lambda ()
+      (org-roam-review--cache-collect
+       (lambda (note)
+         (unless (seq-intersection (org-roam-review-note-tags note) org-roam-review-ignored-tags)
+           note)))))))
 
 
 
