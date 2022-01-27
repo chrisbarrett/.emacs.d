@@ -1500,7 +1500,8 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
   (use-package emojify
     :hook (after-init . global-emojify-mode)
     :custom
-    (emojify-emoji-styles '(github))
+    (emojify-emoji-styles '(unicode))
+    (emojify-emoji-styles '(unicode github))
     (emojify-program-contexts '(comments))
     (emojify-point-entered-behaviour 'uncover)
     :config
@@ -1511,6 +1512,14 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
           (or (org-at-drawer-p) (org-at-property-p)))))
 
     (add-to-list 'emojify-inhibit-functions #'emojify-at-org-drawer-p))
+#+end_src
+
+*** Remove checkbox unicode emoji that conflicts with org-superstar
+#+begin_src emacs-lisp
+  (defun config-emojify-modify-emojis ()
+    (remhash "☑" emojify-emojis))
+
+  (add-hook 'emojify-mode-hook #'config-emojify-modify-emojis)
 #+end_src
 
 ** =emoji= - Emacs' built-in emoji stuff
