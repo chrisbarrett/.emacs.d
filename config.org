@@ -1500,8 +1500,8 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
   (use-package emojify
     :hook (after-init . global-emojify-mode)
     :custom
-    (emojify-display-style 'unicode)
-    (emojify-emoji-styles '(unicode github))
+    (emojify-display-style 'image)
+    (emojify-emoji-styles '(github))
     (emojify-program-contexts '(comments))
     (emojify-point-entered-behaviour 'uncover)
     :config
@@ -5984,7 +5984,7 @@ This makes it much easier to edit text using emphasis markers correctly.
 
 ** Keep abbrevs in =org-directory=
 #+begin_src emacs-lisp
-  (setq abbrev-file-name (f-join org-directory "abbrev.el"))
+  (setq abbrev-file-name (f-join paths-org-directory "abbrev.el"))
 #+end_src
 
 * :notebook: =org-roam= - Personal wiki & research tooling
