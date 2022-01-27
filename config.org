@@ -3403,8 +3403,13 @@ of =projectile=. Use =projectile= until the builtin functionality is more comple
 #+begin_src emacs-lisp
   (use-package magit
     :general
-    (:keymaps 'transient-base-map "<escape>" #'transient-quit-one
-     :states 'normal :keymaps 'magit-refs-mode-map "." #'magit-branch-and-checkout)
+    (:keymaps 'transient-base-map
+     "<escape>" #'transient-quit-one)
+    (:states 'normal :keymaps 'magit-refs-mode-map
+     "." #'magit-branch-and-checkout)
+    (:states 'motion :keymaps 'magit-section-mode-map
+     [remap evil-next-line] 'next-line
+     [remap evil-previous-line] 'previous-line)
     :custom
     (magit-repository-directories (--map (cons it 1) paths-project-directories))
     (magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1)
