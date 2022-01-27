@@ -6311,6 +6311,7 @@ property drawer and the title. Advise it to fix that.
            display-buffer-reuse-window
            display-buffer-in-previous-window
            display-buffer-use-some-window
+           display-buffer-pop-up-window
            config--display-buffer-fallback)))
 #+end_src
 
