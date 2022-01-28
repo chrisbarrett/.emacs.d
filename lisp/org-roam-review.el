@@ -89,6 +89,11 @@ candidate for reviews."
   :group 'org-roam-review
   :type '(repeat string))
 
+(defcustom org-roam-review-show-instructions-p t
+  "Whether to show instructions in review buffers."
+  :group 'org-roam-review
+  :type 'boolean)
+
 (defface org-roam-review-instructions
   '((t
      (:inherit font-lock-comment-face)))
@@ -427,7 +432,7 @@ nodes for review."
     (org-roam-review-mode)
     (org-roam-buffer-set-header-line-format title)
     (magit-insert-section root (root)
-      (when (and instructions notes)
+      (when (and org-roam-review-show-instructions-p instructions notes)
         (let ((start (point)))
           (insert (propertize instructions 'font-lock-face 'org-roam-review-instructions))
           (fill-region start (point)))
