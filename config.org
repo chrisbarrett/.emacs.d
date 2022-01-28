@@ -6095,6 +6095,7 @@ This makes it much easier to edit text using emphasis markers correctly.
     (org-mode . org-roam-review-cache-mode)
     (org-roam-capture-new-node . org-roam-review-set-seedling)
     :custom
+    (org-roam-review-show-instructions-p nil)
     (org-roam-review-cache-file (f-join paths-cache-directory "org-roam-review"))
     (org-roam-review-ignored-tags '("project" "client"))
     (org-roam-review-tags-ignored-for-review-buffer '("dailies" "outline" "author" "person" "accounts" "flat"))
