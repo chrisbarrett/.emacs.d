@@ -247,7 +247,7 @@ TAGS are the tags to use when displaying the list."
 It's a re-implementation of `org-roam-extract-subtree', but
 handles file titles, IDs and tags better."
   (interactive)
-  (let ((dest-file (expand-file-name (format-time-string "%Y-%m-%d--%H-%M-%S.org"))))
+  (let ((dest-file (expand-file-name (format-time-string "%Y-%m-%d--%H-%M-%S.org") org-roam-directory)))
     (save-excursion
       (when (org-before-first-heading-p)
         (user-error "Already a top-level node"))
