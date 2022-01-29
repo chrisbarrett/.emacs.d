@@ -3996,7 +3996,7 @@ Use =elisp-slime-nav= to go to definition in Emacs Lisp.
   (use-package elisp-slime-nav
     :hook (emacs-lisp-mode . elisp-slime-nav-mode)
     :general
-    (:keymaps 'emacs-lisp-mode-map :states 'normal
+    (:keymaps 'elisp-slime-nav-mode-map :states 'normal
      "M-." #'elisp-slime-nav-find-elisp-thing-at-point))
 #+end_src
 
