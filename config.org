@@ -355,7 +355,7 @@ Load host-specific settings, which are not checked into version control.
     (load-file-with-stats user-site-file))
 #+end_src
 
-* :paintbrush: Colour theme
+* 🖌️ Colour theme
 
 ** Define a quick-and-dirty utility for smashing face specs together
 #+begin_src emacs-lisp
@@ -2145,7 +2145,7 @@ with Nix won't work. Manually add language servers to the path here.
     (yaml-mode . lsp-ui-doc-mode))
 #+end_src
 
-* :keyboard: Set up leader keys
+* ⌨️ Set up leader keys
 Note that we ensure evil is loaded first before binding any keys below,
 otherwise =general= is pathologically slow.
 
@@ -5004,7 +5004,7 @@ Normally newlines are reflowed automatically.
     :hook (message-mode . setup-hard-newlines))
 #+end_src
 
-* :writing-hand: =org-mode= - Org document format & editing support
+* ✍🏻 =org-mode= - Org document format & editing support
 
 ** Set general org-mode variables
 #+begin_src emacs-lisp
@@ -5993,7 +5993,7 @@ This makes it much easier to edit text using emphasis markers correctly.
   (setq abbrev-file-name (f-join paths-org-directory "abbrev.el"))
 #+end_src
 
-* :notebook: =org-roam= - Personal wiki & research tooling
+* 📓 =org-roam= - Personal wiki & research tooling
 #+begin_src emacs-lisp
   (use-package org-roam
     :commands
@@ -6286,7 +6286,7 @@ property drawer and the title. Advise it to fix that.
       (load (expand-file-name "init.el" paths-ledger-lisp-directory) t)))
 #+end_src
 
-* display-buffer customisations
+* 🪟 display-buffer customisations
 
 ** Define a full-frame display-buffer action
 #+begin_src emacs-lisp
