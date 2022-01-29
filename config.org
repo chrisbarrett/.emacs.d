@@ -3950,6 +3950,8 @@ See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
     (:keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map)
      "C-c C-c" #'eval-defun
      "C-c C-b" #'eval-buffer)
+    (:keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map) :states '(normal visual insert)
+     "M-." 'xref-find-definitions)
     (:states 'visual
      :keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map)
      "C-c C-c" #'eval-region))
@@ -3990,7 +3992,7 @@ See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
     "v" '(debugger-toggle-locals :wk "toggle locals"))
 #+end_src
 
-*** =elisp-slime-nav= - Code navigation
+*** =elisp-slime-nav= - Code navigation                            :disabled:
 Use =elisp-slime-nav= to go to definition in Emacs Lisp.
 #+begin_src emacs-lisp
   (use-package elisp-slime-nav
@@ -4005,7 +4007,9 @@ Use =elisp-slime-nav= to go to definition in Emacs Lisp.
   (use-package helpful
     :general
     (:keymaps '(emacs-lisp-mode-map helpful-mode-map) :states '(motion normal)
-     "K" 'helpful-at-point))
+     "K" 'helpful-at-point)
+    (:keymaps 'elisp-slime-nav-mode-map :states '(motion normal)
+     "K" nil))
 #+end_src
 
 *** =ielm= - Emacs Lisp REPL
