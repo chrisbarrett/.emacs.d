@@ -432,12 +432,14 @@ setting above from sticking. Re-evaluate that spec.
     :config
     (with-eval-after-load 'doom-solarized-light-theme
       (custom-theme-set-faces 'doom-solarized-light
+                              '(org-transclusion-fringe ((t :foreground "#859900" :weight bold)))
                               '(org-roam-search-highlight ((t :foreground "#859900" :background "#e5e3b5" :weight bold)))
                               '(org-superstar-header-bullet ((t :foreground "#96A7A9")))
                               '(mu4e-highlight-face ((t :foreground "#268bd2")) t)))
 
     (with-eval-after-load 'doom-one-theme
       (custom-theme-set-faces 'doom-one
+                              '(org-transclusion-fringe ((t :foreground "#98be65" :weight bold)))
                               '(org-roam-search-highlight ((t :foreground "#98be65" :background "#3e493d" :weight bold)))
                               '(org-superstar-header-bullet ((t :foreground "#5B6268")))
                               '(mu4e-highlight-face ((t :foreground "#51afef")) t)))
