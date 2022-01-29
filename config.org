@@ -6327,15 +6327,17 @@ property drawer and the title. Advise it to fix that.
 ** compilation
 #+begin_src emacs-lisp
   (display-buffer-set (rx bos "*compilation*" eos)
-                      '((display-buffer-in-side-window)
+                      '((display-buffer-in-direction)
                         (side . bottom)
+                        (inhibit-same-window . t)
                         (window-height . 0.4)))
 #+end_src
 
 ** lisp debugger
 #+begin_src emacs-lisp
   (display-buffer-set (rx bos "*Backtrace*" eos)
-                      '((display-buffer-in-side-window)
+                      '((display-buffer-in-direction)
+                        (inhibit-same-window . t)
                         (side . bottom)
                         (window-height . 0.4)))
 #+end_src
@@ -6344,6 +6346,7 @@ property drawer and the title. Advise it to fix that.
 #+begin_src emacs-lisp
   (display-buffer-set (rx bos "*Flycheck errors*" eos)
                       '((display-buffer-in-side-window)
+                        (inhibit-same-window . t)
                         (side . bottom)
                         (window-height . 0.4)))
 #+end_src
@@ -6352,24 +6355,31 @@ property drawer and the title. Advise it to fix that.
 #+begin_src emacs-lisp
   (display-buffer-set (rx bos (or (and "*Help*" eos)
                                   "*helpful "))
-                      '((display-buffer-pop-up-window)
-                        (side . right)
+                      '((display-buffer-reuse-mode-window
+                         display-buffer-pop-up-window)
+                        (dedicated . t)
+                        (modes . (helpful-mode help-mode Info-mode))
+                        (side . rightmost)
                         (window-width . 80)))
 #+end_src
 
 ** =ielm=
 #+begin_src emacs-lisp
   (display-buffer-set (rx bos "*ielm*" eos)
-                      '((display-buffer-in-side-window)
+                      '((display-buffer-in-direction)
+                        (inhibit-same-window . t)
                         (slot . 1)
-                        (side . right)
+                        (side . rightmost)
                         (window-width . 80)))
 #+end_src
 
 ** ledger
 #+begin_src emacs-lisp
   (display-buffer-set (rx bos "*Ledger Report*" eos)
-                      '((display-buffer-pop-up-window)))
+                      '((display-buffer-in-direction)
+                        (inhibit-same-window . t)
+                        (side . rightmost)
+                        (window-width . fit-window-to-buffer)))
 #+end_src
 
 ** mu4e
@@ -6382,6 +6392,7 @@ property drawer and the title. Advise it to fix that.
 #+begin_src emacs-lisp
   (display-buffer-set (rx bos "*Nix-REPL*" eos)
                       '((display-buffer-at-bottom)
+                        (inhibit-same-window . t)
                         (window-height   . 0.4)))
 #+end_src
 
@@ -6394,8 +6405,9 @@ property drawer and the title. Advise it to fix that.
 ** org-roam
 #+begin_src emacs-lisp
   (display-buffer-set (rx bos "*org-roam*" eos)
-                      '((display-buffer-in-side-window)
-                        (side . right)
+                      '((display-buffer-in-direction)
+                        (inhibit-same-window . t)
+                        (side . rightmost)
                         (window-width . fit-window-to-buffer)))
 #+end_src
 
@@ -6408,8 +6420,9 @@ property drawer and the title. Advise it to fix that.
 ** org-roam-search
 #+begin_src emacs-lisp
   (display-buffer-set (rx bos "*org-roam-search*" eos)
-                      '((display-buffer-in-side-window)
-                        (side . right)
+                      '((display-buffer-in-direction)
+                        (inhibit-same-window . t)
+                        (side . rightmost)
                         (window-width . fit-window-to-buffer)))
 #+end_src
 
