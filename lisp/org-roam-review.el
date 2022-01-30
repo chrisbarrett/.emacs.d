@@ -438,7 +438,35 @@ nodes for review."
     (insert (or placeholder org-roam-review-default-placeholder))
     (newline)))
 
-(cl-defun org-roam-review--render (&key title instructions group-on placeholder sort postprocess insert-preview-fn notes)
+(plist-define org-roam-review-render-args
+  :optional (:group-on :notes :placeholder :sort)
+  :required (:insert-preview-fn :root))
+
+(cl-defun org-roam-review--insert-notes-fn-default (args)
+  (-let* (((&plist :group-on :notes :placeholder :sort :insert-preview-fn :root) args)
+          (sort (or sort (-const t))))
+    (cond
+     ((null notes)
+      (insert (or placeholder org-roam-review-default-placeholder))
+      (newline))
+     (group-on
+      (let ((grouped (->> (seq-group-by group-on notes)
+                          (-sort (-on #'<= (-lambda ((key . _))
+                                             (if (stringp key) key (or (cdr key) 0))))))))
+        (pcase-dolist (`(,key . ,group) grouped)
+          (when (and key group)
+            (magit-insert-section section (org-roam-review-note-group)
+              (oset section parent root)
+              (let ((header (format "%s (%s)"
+                                    (if (stringp key) key (car key))
+                                    (length group))))
+                (magit-insert-heading (propertize header 'font-lock-face 'magit-section-heading)))
+              (org-roam-review--insert-notes (-sort sort group) placeholder insert-preview-fn)
+              (insert "\n"))))))
+     (t
+      (org-roam-review--insert-notes (-sort sort notes) placeholder insert-preview-fn)))))
+
+(cl-defun org-roam-review--render (&key insert-notes-fn title instructions group-on placeholder sort postprocess insert-preview-fn notes)
   (let ((inhibit-read-only t))
     (erase-buffer)
     (org-roam-review-mode)
@@ -459,26 +487,13 @@ nodes for review."
           (newline 2)))
 
       (let ((start-of-content (point)))
-
-        (cond ((null notes)
-               (insert (or placeholder org-roam-review-default-placeholder))
-               (newline))
-              (group-on
-               (let ((grouped (->> (seq-group-by group-on notes)
-                                   (-sort (-on #'<= (-lambda ((key . _))
-                                                      (if (stringp key) key (or (cdr key) 0))))))))
-                 (pcase-dolist (`(,key . ,group) grouped)
-                   (when (and key group)
-                     (magit-insert-section section (org-roam-review-note-group)
-                       (oset section parent root)
-                       (let ((header (format "%s (%s)"
-                                             (if (stringp key) key (car key))
-                                             (length group))))
-                         (magit-insert-heading (propertize header 'font-lock-face 'magit-section-heading)))
-                       (org-roam-review--insert-notes (-sort (or sort (-const t)) group) placeholder insert-preview-fn)
-                       (insert "\n"))))))
-              (t
-               (org-roam-review--insert-notes (-sort (or sort (-const t)) notes) placeholder insert-preview-fn)))
+        (funcall insert-notes-fn
+                 (org-roam-review-render-args-create :notes notes
+                                                     :group-on group-on
+                                                     :sort sort
+                                                     :root root
+                                                     :placeholder placeholder
+                                                     :insert-preview-fn insert-preview-fn))
         (goto-char (point-min))
         (save-excursion
           (when postprocess (funcall postprocess)))
@@ -487,6 +502,7 @@ nodes for review."
 (cl-defun org-roam-review-create-buffer
     (&key title instructions group-on placeholder sort postprocess notes
           (buffer-name "*org-roam-review*")
+          (insert-notes-fn 'org-roam-review--insert-notes-fn-default)
           (insert-preview-fn 'org-roam-review-insert-preview))
   "Create a note review buffer for the notes currently in the cache.
 
@@ -510,6 +526,11 @@ The following keyword arguments are optional:
   populated.
 
 - BUFFER-NAME is the name to use for the created buffer.
+
+- INSERT-NOTES-FN is a function taking a plist of type
+  `org-roam-review-render-args' to override the default render
+  behaviour for notes. It is expected to insert a rendered
+  representation of notes using the magit-section API.
 
 - INSERT-PREVIEW-FN is a function that takes a node and is
   expected to insert a preview using the magit-section API.
@@ -543,6 +564,7 @@ The following keyword arguments are optional:
                                        :group-on group-on
                                        :placeholder placeholder
                                        :sort sort
+                                       :insert-notes-fn insert-notes-fn
                                        :postprocess postprocess
                                        :insert-preview-fn insert-preview-fn)
               (setq-local org-roam-review-buffer-refresh-command (lambda () (funcall render (funcall notes))))
