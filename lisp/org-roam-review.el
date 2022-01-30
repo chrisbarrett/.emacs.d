@@ -126,6 +126,18 @@ candidate for reviews."
 (plist-define org-roam-review-filter
   :optional (:required :forbidden))
 
+(defun org-roam-review-notes-from-nodes (nodes)
+  (->> nodes
+       (seq-mapcat (lambda (node)
+                     (when-let* ((file (org-roam-node-file node)))
+                       (with-temp-buffer
+                         (insert-file-contents file)
+                         (let ((org-inhibit-startup t))
+                           (org-mode))
+                         (org-roam-review-notes-from-buffer (current-buffer) file)))))
+       (seq-uniq)
+       (seq-remove #'org-roam-review-note-ignored-p)))
+
 
 ;;; Define cache operations
 

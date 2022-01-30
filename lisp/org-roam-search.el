@@ -167,18 +167,6 @@ BUILDER is the command argument builder."
                  (org-roam-search--find-nodes-for-file file))
                files)))
 
-(defun org-roam-search-notes-from-nodes (nodes)
-  (->> nodes
-       (seq-mapcat (lambda (node)
-                     (when-let* ((file (org-roam-node-file node)))
-                       (with-temp-buffer
-                         (insert-file-contents file)
-                         (let ((org-inhibit-startup t))
-                           (org-mode))
-                         (org-roam-review-notes-from-buffer (current-buffer) file)))))
-       (seq-uniq)
-       (seq-remove #'org-roam-review-note-ignored-p)))
-
 (defun org-roam-search--process-rg-output (buf)
   (let* ((output (with-current-buffer buf
                    (buffer-substring (point-min) (point-max))))
@@ -263,7 +251,7 @@ BUILDER is the command argument builder."
                          (lambda (proc)
                            (let* ((files (org-roam-search--process-rg-output (process-buffer proc))))
                              (setq notes
-                                   (org-roam-search-notes-from-nodes (org-roam-search--nodes-for-files files)))
+                                   (org-roam-review-notes-from-nodes (org-roam-search--nodes-for-files files)))
                              (setq done t)))
                          "--smart-case"
                          "--files-with-matches"
