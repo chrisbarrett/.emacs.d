@@ -2703,6 +2703,7 @@ Disabled for now since this breaks insert state in evil :/
     "ro" '(org-roam-review-list-outlines :wk "review outlines")
     "rr" '(org-roam-review :wk "review due evergreens")
     "ru" '(org-roam-review-list-uncategorised :wk "uncategorised notes")
+    "rl" '(org-roam-links-view :wk "show links")
 
     "p" '(org-funcs-goto-todos :wk "todos")
     "g" '(org-capture-goto-last-stored :wk "last captured")
@@ -6277,6 +6278,12 @@ property drawer and the title. Advise it to fix that.
      "s" 'org-roam-search-view))
 #+end_src
 
+** =org-roam-links= - show a graph of links for a node
+#+begin_src emacs-lisp
+  (use-package org-roam-links
+    :commands (org-roam-links-view))
+#+end_src
+
 * Load Lisp from other locations
 #+begin_src emacs-lisp
   (use-package org
@@ -6426,6 +6433,15 @@ property drawer and the title. Advise it to fix that.
 ** org-roam-search
 #+begin_src emacs-lisp
   (display-buffer-set (rx bos "*org-roam-search*" eos)
+                      '((display-buffer-in-direction)
+                        (inhibit-same-window . t)
+                        (side . rightmost)
+                        (window-width . fit-window-to-buffer)))
+#+end_src
+
+** org-roam-links
+#+begin_src emacs-lisp
+  (display-buffer-set (rx bos "*org-roam-links*" eos)
                       '((display-buffer-in-direction)
                         (inhibit-same-window . t)
                         (side . rightmost)

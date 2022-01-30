@@ -390,22 +390,30 @@ nodes for review."
   ;; buffer, since it will error.
   (advice-add 'org-roam-buffer-refresh :around #'org-roam-review--refresh-buffer-override))
 
-(defun org-roam-review-insert-preview (node)
-  (let (start content)
+(defvar org-roam-review-indent-width 2)
+
+(defun org-roam-review-indent-string (str depth)
+  (replace-regexp-in-string (rx bol) (make-string (* depth org-roam-review-indent-width) 32)
+                            str))
+
+(defun org-roam-review-insert-preview (node &optional hidden-p depth)
+  (let ((depth (or depth 0))
+        start
+        content)
     (with-temp-buffer
       (insert-file-contents (org-roam-node-file node))
       (goto-char (point-min))
       (org-roam-end-of-meta-data t)
       (setq start (point))
       (org-next-visible-heading 1)
-      (setq content
-            (org-roam-fontify-like-in-org-mode
-             (string-trim (buffer-substring-no-properties start (point))))))
+      (setq content (org-roam-fontify-like-in-org-mode
+                     (string-trim (buffer-substring-no-properties start (point))))))
 
-    (magit-insert-section section (org-roam-preview-section)
-      (insert (if (string-blank-p (string-trim-left content))
-                  (propertize "(Empty)" 'font-lock-face 'font-lock-comment-face)
-                content))
+    (magit-insert-section section (org-roam-preview-section nil hidden-p)
+      (insert (org-roam-review-indent-string (if (string-blank-p (string-trim-left content))
+                                                  (propertize "(Empty)" 'font-lock-face 'font-lock-comment-face)
+                                                content)
+                                              depth))
       (oset section file (org-roam-node-file node))
       (oset section point start)
       (insert "\n\n"))))
