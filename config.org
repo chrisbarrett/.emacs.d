@@ -6180,9 +6180,6 @@ This makes it much easier to edit text using emphasis markers correctly.
 #+begin_src emacs-lisp
   (use-package org-transclusion
     :hook (org-mode . org-transclusion-mode)
-    :config
-    (add-to-list 'org-transclusion-extensions 'org-transclusion-indent-mode)
-    (require 'org-transclusion-indent-mode)
     :general
     (:keymaps 'org-transclusion-map :states '(motion normal)
      "TAB" 'org-cycle
@@ -6242,6 +6239,27 @@ When using structural editing commands, I don't want to have to think about whet
   (use-package org-transclusion
     :config
     (advice-add 'org-cut-subtree :around #'config-maybe-ignore-transclusion-read-only))
+#+end_src
+
+*** =org-indent= compatibility
+Note that the out-of-the-box implementation doesn't appear to work, so set up
+the advice manually.
+
+#+begin_src emacs-lisp
+  (use-package org-transclusion-indent-mode
+    :after org-transclusion
+    :demand t
+    :config
+    (defun config-org-indent-transclusion-compat (fn &rest args)
+      (advice-add #'org-indent-set-line-properties
+                  :override
+                  #'org-transclusion-indent-set-line-properties-ad)
+      (apply fn args)
+      (advice-remove #'org-indent-set-line-properties
+                     #'org-transclusion-indent-set-line-properties-ad))
+
+    (advice-add #'org-indent-add-properties :around
+                #'config-org-indent-transclusion-compat))
 #+end_src
 
 ** Fix buffer promotion function
