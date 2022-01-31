@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: transclude (content)
+# key: tc
+# condition: (yas-funcs-bolp)
+# --
+#+transclude: `(org-roam-node-insert)` :only-contents

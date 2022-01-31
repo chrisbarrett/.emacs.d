@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
-# name: transclude
-# key: tc
+# name: transclude (incl heading)
+# key: tt
 # condition: (yas-funcs-bolp)
 # --
-#+transclude: `(org-roam-node-insert)`
+#+transclude: `(org-roam-node-insert)` :level 1
