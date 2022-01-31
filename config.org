@@ -6054,6 +6054,8 @@ This makes it much easier to edit text using emphasis markers correctly.
 
     "i" '(nil :wk "transclusion")
     "i a" '(org-transclusion-add :wk "add")
+    "i e" '(org-transclusion-live-sync-start :wk "edit")
+    "i o" '(org-transclusion-move-to-source :wk "goto source")
     "i A" '(org-transclusion-add-all :wk "add all")
     "i i" '(org-transclusion-make-from-link :wk "make from link...")
     "i x" '(org-transclusion-remove :wk "remove")
@@ -6183,13 +6185,8 @@ This makes it much easier to edit text using emphasis markers correctly.
     :general
     (:keymaps 'org-transclusion-map :states '(motion normal)
      "TAB" 'org-cycle
-     "<" 'org-transclusion-demote-subtree
-     ">" 'org-transclusion-promote-subtree
-     "O" 'org-transclusion-move-to-source
-     "x" 'org-transclusion-remove
-     "e" 'org-transclusion-live-sync-start
-     "g" 'org-transclusion-refresh
-     "o" 'org-transclusion-open-source))
+     [remap evil-org->] 'org-transclusion-demote-subtree
+     [remap evil-org-<] 'org-transclusion-promote-subtree))
 #+end_src
 
 *** =evil-org= compatibility
