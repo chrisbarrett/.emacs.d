@@ -100,23 +100,26 @@ When called interactively, prompt the user for DEPTH."
                        (maphash (lambda (id children)
                                   (when-let* ((node (ht-get nodes id))
                                               (note-exists-p (seq-find (lambda (it) (equal id (org-roam-review-note-id it))) notes)))
-                                    (magit-insert-section section (org-roam-preview-section)
-                                      (oset section parent root)
-                                      (oset section point (org-roam-node-point node))
-                                      (oset section file (org-roam-node-file node))
-                                      (let* ((seen-p (gethash id seen-ids))
-                                             (face
-                                              (cond
-                                               ((zerop depth) 'magit-section-heading)
-                                               (seen-p 'font-lock-comment-face)
-                                               (t 'magit-section-secondary-heading)))
-                                             (heading (propertize (org-roam-node-title node) 'font-lock-face face)))
+                                    (let ((self-reference-p (equal (org-roam-node-id node)
+                                                                   (org-roam-node-id start-node))))
+                                      (unless (and (zerop depth) self-reference-p)
+                                        (magit-insert-section section (org-roam-preview-section)
+                                          (oset section parent root)
+                                          (oset section point (org-roam-node-point node))
+                                          (oset section file (org-roam-node-file node))
+                                          (let* ((seen-p (gethash id seen-ids))
+                                                 (face
+                                                  (cond
+                                                   ((zerop depth) 'magit-section-heading)
+                                                   (seen-p 'font-lock-comment-face)
+                                                   (t 'magit-section-secondary-heading)))
+                                                 (heading (propertize (org-roam-node-title node) 'font-lock-face face)))
 
-                                        (magit-insert-heading (org-roam-review-indent-string heading depth))
-                                        (unless seen-p
-                                          (puthash id t seen-ids)
-                                          (when children
-                                            (render-at-depth children (1+ depth))))))))
+                                            (magit-insert-heading (org-roam-review-indent-string heading depth))
+                                            (unless seen-p
+                                              (puthash id t seen-ids)
+                                              (when children
+                                                (render-at-depth children (1+ depth))))))))))
                                 tree)))
             (render-at-depth tree 0))))))))
 
