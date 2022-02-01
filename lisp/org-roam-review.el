@@ -126,7 +126,7 @@ candidate for reviews."
 (plist-define org-roam-review-filter
   :optional (:required :forbidden))
 
-(defun org-roam-review-notes-from-nodes (nodes)
+(defun org-roam-review-notes-from-nodes (nodes &optional all)
   (->> nodes
        (seq-mapcat (lambda (node)
                      (when-let* ((file (org-roam-node-file node)))
@@ -134,9 +134,13 @@ candidate for reviews."
                          (insert-file-contents file)
                          (let ((org-inhibit-startup t))
                            (org-mode))
-                         (org-roam-review-notes-from-buffer (current-buffer) file)))))
+                         (org-roam-review-notes-from-buffer (current-buffer) file all)))))
        (seq-uniq)
        (seq-remove #'org-roam-review-note-ignored-p)))
+
+(defun org-roam-review-notes-from-backlinks (backlinks &optional all)
+  (org-roam-review-notes-from-nodes (seq-map #'org-roam-backlink-source-node backlinks)
+                                    all))
 
 
 ;;; Define cache operations
@@ -186,7 +190,7 @@ candidate for reviews."
           (push (match-string-no-properties 1) acc))
         (seq-uniq acc)))))
 
-(defun org-roam-review-notes-from-buffer (buf file)
+(defun org-roam-review-notes-from-buffer (buf file &optional all)
   (with-current-buffer  buf
     (org-with-wide-buffer
      (save-match-data
@@ -198,7 +202,8 @@ candidate for reviews."
                 (match-string 1))))
 
          (while (search-forward-regexp (org-re-property "ID") nil t)
-           (unless (org-roam-review--cache-skip-note-p file)
+           (unless (and (not all)
+                        (org-roam-review--cache-skip-note-p file))
              (let* ((id (match-string-no-properties 3))
                     (item (org-roam-review-note-create
                            :id id
