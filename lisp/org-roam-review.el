@@ -112,6 +112,17 @@ candidate for reviews."
   "Face for the filter information keyword in a review buffer."
   :group 'org-roam-review)
 
+(defface org-roam-review-heading
+  '((t (org-level-2 :bold t)))
+  "Face for headings in review buffers."
+  :group 'org-roam-review)
+
+(defface org-roam-review-heading-separator
+  '((t
+     (:inherit org-level-2)))
+  "Face for heading separators in review buffers."
+  :group 'org-roam-review)
+
 (defvar org-roam-review-note-accepted-hook nil)
 (defvar org-roam-review-note-buried-hook nil)
 (defvar org-roam-review-note-processed-hook nil)
@@ -407,19 +418,32 @@ nodes for review."
         start
         content)
     (with-temp-buffer
+      (let ((org-inhibit-startup t))
+        (org-mode))
       (insert-file-contents (org-roam-node-file node))
-      (goto-char (point-min))
+      (when-let ((pos (org-roam-node-point node)))
+        (goto-char pos))
       (org-roam-end-of-meta-data t)
-      (setq start (point))
-      (org-next-visible-heading 1)
-      (setq content (org-roam-fontify-like-in-org-mode
-                     (string-trim (buffer-substring-no-properties start (point))))))
+      (when (org-at-heading-p)
+        (forward-line 1))
+      (setq start (line-beginning-position))
+      (let ((heading (when-let* ((path (ignore-errors (org-get-outline-path t))))
+                       (->> path
+                            (seq-map (lambda (it) (propertize it 'font-lock-face 'org-roam-review-heading)))
+                            (-interpose (propertize " > " 'font-lock-face 'org-roam-review-heading-separator))
+                            (apply 'concat)
+                            (s-append "\n")))))
+
+        (org-next-visible-heading 1)
+        (setq content (concat heading
+                              (org-roam-fontify-like-in-org-mode
+                               (string-trim (buffer-substring-no-properties start (point))))))))
 
     (magit-insert-section section (org-roam-preview-section nil hidden-p)
       (insert (org-roam-review-indent-string (if (string-blank-p (string-trim-left content))
-                                                  (propertize "(Empty)" 'font-lock-face 'font-lock-comment-face)
-                                                content)
-                                              depth))
+                                                 (propertize "(Empty)" 'font-lock-face 'font-lock-comment-face)
+                                               content)
+                                             depth))
       (oset section file (org-roam-node-file node))
       (oset section point start)
       (insert "\n\n"))))
