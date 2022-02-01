@@ -6259,6 +6259,11 @@ the advice manually.
                 #'config-org-indent-transclusion-compat))
 #+end_src
 
+*** Trim trailing newlines
+#+begin_src emacs-lisp
+  (advice-add 'org-transclusion-content-format-org :filter-return #'string-trim-right)
+#+end_src
+
 ** Fix buffer promotion function
 =org-roam-promote-entire-buffer= will leave stranded content between the top-level
 property drawer and the title. Advise it to fix that.
