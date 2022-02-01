@@ -71,7 +71,9 @@
 When called interactively, prompt the user for DEPTH."
   (interactive (when current-prefix-arg (list (read-number "Depth: " 2))))
   (-let* ((start-node (or (org-roam-node-at-point)
-                          (org-roam-node-read)))
+                          (let ((node (org-roam-node-read)))
+                            (org-roam-node-visit node)
+                            node)))
           (title (org-roam-node-title start-node))
           (short-title (substring title 0 (min (length title) org-roam-links-max-title-length)))
           (short-title (if (equal title short-title) title (concat short-title "…")))
