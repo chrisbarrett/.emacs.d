@@ -160,12 +160,7 @@ Each value is a plist with at lesat the following keys:
   (let ((heading (list timekeep-default-headline-name
                        (format-time-string "%Y %W"))))
     (with-current-buffer buffer
-      (org-with-wide-buffer
-       (org-with-point-at (org-roam-capture-find-or-create-olp heading)
-         (org-up-heading-all 1)
-         (org-sort-entries nil ?A))
-       ;; Now that the headings have been reordered, go there again.
-       (marker-position (org-roam-capture-find-or-create-olp heading))))))
+      (org-roam-capture-find-or-create-olp heading))))
 
 (defun timekeep--punch-in-for-node (node)
   (with-current-buffer (org-roam-node-find-noselect node)
