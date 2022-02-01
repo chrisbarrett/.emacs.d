@@ -125,6 +125,29 @@ When called interactively, prompt the user for DEPTH."
                                 tree)))
             (render-at-depth tree 0))))))))
 
+;;;###autoload
+(defun org-roam-links-backlinks-view ()
+  "Show backlinks for an org-roam buffer."
+  (interactive)
+  (-let* ((start-node (or (org-roam-node-at-point)
+                          (let ((node (org-roam-node-read)))
+                            (org-roam-node-visit node)
+                            node)))
+          (title (org-roam-node-title start-node))
+          (short-title (substring title 0 (min (length title) org-roam-links-max-title-length)))
+          (short-title (if (equal title short-title) title (concat short-title "…"))))
+    (org-roam-review-display-buffer-and-select
+     (org-roam-review-create-buffer
+      :title (format "Backlinks for “%s\”" short-title)
+      :instructions "Below are the backlinks for the current node."
+      :placeholder "No backlinked notes"
+      :buffer-name "*org-roam-links*"
+      :notes
+      (lambda ()
+        (seq-filter (lambda (note)
+                      (not (org-roam-review-note-ignored-p note)))
+                    (org-roam-review-notes-from-backlinks (org-roam-backlinks-get start-node)
+                                                          'all)))))))
 
 (provide 'org-roam-links)
 
