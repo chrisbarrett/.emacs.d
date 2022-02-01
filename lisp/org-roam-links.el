@@ -94,6 +94,7 @@ When called interactively, prompt the user for DEPTH."
         (let ((seen-ids (ht-create))
               (nodes (org-roam-links-graph-nodes graph))
               (tree (org-roam-links-graph-tree graph)))
+          (puthash (org-roam-node-id start-node) t seen-ids)
           (cl-labels ((render-at-depth
                        (tree depth)
                        (maphash (lambda (id children)
@@ -110,10 +111,12 @@ When called interactively, prompt the user for DEPTH."
                                                (seen-p 'font-lock-comment-face)
                                                (t 'magit-section-secondary-heading)))
                                              (heading (propertize (org-roam-node-title node) 'font-lock-face face)))
-                                        (magit-insert-heading (org-roam-review-indent-string heading depth)))
-                                      (puthash id t seen-ids)
-                                      (when children
-                                        (render-at-depth children (1+ depth))))))
+
+                                        (magit-insert-heading (org-roam-review-indent-string heading depth))
+                                        (unless seen-p
+                                          (puthash id t seen-ids)
+                                          (when children
+                                            (render-at-depth children (1+ depth))))))))
                                 tree)))
             (render-at-depth tree 0))))))))
 
