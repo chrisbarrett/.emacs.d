@@ -132,7 +132,7 @@ candidate for reviews."
 
 (plist-define org-roam-review-note
   :required (:id :title :file)
-  :optional (:tags :next-review :last-review :maturity :todo-keywords :created))
+  :optional (:tags :local-tags :next-review :last-review :maturity :todo-keywords :created))
 
 (plist-define org-roam-review-filter
   :optional (:required :forbidden))
@@ -225,6 +225,7 @@ candidate for reviews."
                            :created (-some->> (org-entry-get-with-inheritance "CREATED") (ts-parse-org))
                            :maturity (org-entry-get-with-inheritance "MATURITY")
                            :title (substring-no-properties (or (org-get-heading t t t) buffer-title))
+                           :local-tags (org-roam-review--file-or-headline-tags 'local)
                            :tags (org-roam-review--file-or-headline-tags))))
                (push item acc))))
          (nreverse acc))))))
@@ -276,11 +277,11 @@ https://github.com/org-roam/org-roam/issues/2032"
              table)
     (hash-table-values table)))
 
-(defun org-roam-review--file-or-headline-tags ()
+(defun org-roam-review--file-or-headline-tags (&optional local)
   (seq-map #'substring-no-properties
            (if (org-before-first-heading-p)
                org-file-tags
-             (org-get-tags))))
+             (org-get-tags nil local))))
 
 (defun org-roam-review--cache-roam-files ()
   (f-files org-roam-directory
@@ -703,7 +704,7 @@ needed to be included in reviews. Categorise them as appropriate."
       (org-roam-review--cache-collect
        (lambda (note)
          (unless (or (org-roam-review-note-ignored-p note)
-                     (seq-contains-p (org-roam-review-note-tags note) "outline")
+                     (seq-contains-p (org-roam-review-note-local-tags note) "outline")
                      (seq-intersection (org-roam-review-note-tags note)
                                        org-roam-review-tags-ignored-for-review-buffer)
                      (org-roam-review-note-maturity note)
@@ -747,7 +748,7 @@ grouped by whether they require further processing."
     (lambda ()
       (org-roam-review--cache-collect
        (lambda (note)
-         (when (seq-contains-p (org-roam-review-note-tags note) "outline")
+         (when (seq-contains-p (org-roam-review-note-local-tags note) "outline")
            note)))))))
 
 (defun org-roam-review--note-added-group (note)
