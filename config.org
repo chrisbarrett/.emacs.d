@@ -6251,6 +6251,17 @@ the advice manually.
                  #'config-org-transclusion-trim))
 #+end_src
 
+*** Teach org-open-link to open transclusions
+#+begin_src emacs-lisp
+  (defun config-org-transclusion-try-follow-link ()
+    (when (and (require 'org-transclusion nil t)
+               (org-transclusion-within-transclusion-p))
+      (org-transclusion-open-source t)
+      t))
+
+  (add-hook 'org-open-at-point-functions 'config-org-transclusion-try-follow-link)
+#+end_src
+
 ** Fix buffer promotion function
 =org-roam-promote-entire-buffer= will leave stranded content between the top-level
 property drawer and the title. Advise it to fix that.
