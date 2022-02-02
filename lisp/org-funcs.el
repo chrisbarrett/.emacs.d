@@ -270,8 +270,10 @@ handles file titles, IDs and tags better."
             (org-paste-subtree nil nil nil t)
             (org-roam-promote-entire-buffer)
             (org-funcs-set-title title)
+            (require 'org-roam-review)
             (when-let* ((tags (-difference (-union (org-funcs--file-tags) tags)
-                                           '("dailies"))))
+                                           (-union org-roam-review-ignored-tags
+                                                   org-roam-review-maturity-values))))
               (org-funcs--set-file-tags tags))
             (save-buffer)
             (run-hook-with-args 'org-roam-capture-new-node-hook)))))))
