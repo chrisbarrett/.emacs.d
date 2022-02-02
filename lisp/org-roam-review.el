@@ -413,10 +413,12 @@ nodes for review."
   (replace-regexp-in-string (rx bol) (make-string (* depth org-roam-review-indent-width) 32)
                             str))
 
-(defun org-roam-review-insert-preview (node &optional hidden-p depth)
-  (let ((depth (or depth 0))
-        start
-        content)
+(plist-define org-roam-review-preview
+  :required (:content)
+  :optional (:start :heading))
+
+(defun org-roam-review--format-preview (node)
+  (let (content heading start)
     (with-temp-buffer
       (let ((org-inhibit-startup t))
         (org-mode))
@@ -427,19 +429,27 @@ nodes for review."
       (when (org-at-heading-p)
         (forward-line 1))
       (setq start (line-beginning-position))
-      (let ((heading (when-let* ((path (ignore-errors (org-get-outline-path t))))
-                       (->> path
-                            (seq-map (lambda (it) (propertize it 'font-lock-face 'org-roam-review-heading)))
-                            (-interpose (propertize " > " 'font-lock-face 'org-roam-review-heading-separator))
-                            (apply 'concat)
-                            (s-append "\n")))))
+      (setq heading
+            (when-let* ((path (ignore-errors (org-get-outline-path t))))
+              (->> path
+                   (seq-map (lambda (it) (propertize it 'font-lock-face 'org-roam-review-heading)))
+                   (-interpose (propertize " > " 'font-lock-face 'org-roam-review-heading-separator))
+                   (apply 'concat)
+                   (s-append "\n"))))
+      (org-next-visible-heading 1)
+      (setq content (org-roam-fontify-like-in-org-mode
+                     (string-trim (buffer-substring-no-properties start (point))))))
+    (org-roam-review-preview-create
+     :content content
+     :start start
+     :heading heading)))
 
-        (org-next-visible-heading 1)
-        (setq content (concat heading
-                              (org-roam-fontify-like-in-org-mode
-                               (string-trim (buffer-substring-no-properties start (point))))))))
-
+(defun org-roam-review-insert-preview (node &optional hidden-p depth)
+  (-let ((depth (or depth 0))
+         ((&plist :content :heading :start) (org-roam-review--format-preview node)))
     (magit-insert-section section (org-roam-preview-section nil hidden-p)
+      (when heading
+        (magit-insert-heading (org-roam-review-indent-string heading depth)))
       (insert (org-roam-review-indent-string (if (string-blank-p (string-trim-left content))
                                                  (propertize "(Empty)" 'font-lock-face 'font-lock-comment-face)
                                                content)
