@@ -7,6 +7,7 @@
 ;;; Code:
 
 (require 'org)
+(require 'org-transclusion)
 
 (defgroup org-format nil
   "Automatically format org buffers on save."
@@ -39,13 +40,23 @@
                         (ensure-empty-lines org-format-blank-lines-before-heading))
 
                        (forward-line)
-                       (unless (org-at-heading-p)
+                       (unless (or (org-at-heading-p)
+                                   (org-transclusion-within-transclusion-p))
                          (ensure-empty-lines org-format-blank-lines-before-meta)
 
                          (org-end-of-meta-data t)
                          (ensure-empty-lines org-format-blank-lines-before-content)))
                      t
-                     scope)))
+                     scope)
+
+    ;; Format transcluded headings as if they were really there.
+    (org-with-wide-buffer
+     (goto-char (point-min))
+     (while (search-forward-regexp (rx bol "#+transclude:") nil t)
+       (save-excursion
+         (unless (search-forward ":only-content" (line-end-position) t)
+           (goto-char (line-beginning-position))
+           (ensure-empty-lines org-format-blank-lines-before-heading)))))))
 
 (define-minor-mode org-format-on-save-mode
   "Minor mode to enable formatting on buffer save in org-mode."
