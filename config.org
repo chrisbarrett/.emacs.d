@@ -5159,16 +5159,6 @@ probably a package incompatibility.
      "C-c l" 'org-funcs-insert-url-as-link))
 #+end_src
 
-** Format org buffers on save
-#+begin_src emacs-lisp
-  (autoload 'org-funcs-fix-blank-lines "org-funcs")
-
-  (defun config-org-format-on-save ()
-    (add-hook 'before-save-hook #'org-funcs-fix-blank-lines nil t))
-
-  (add-hook 'org-mode-hook #'config-org-format-on-save)
-#+end_src
-
 ** =evil-org= - Improve Evil integration with org-mode
 #+begin_src emacs-lisp
   (use-package evil-org
@@ -5314,8 +5304,8 @@ Save org buffers automatically after certain operations.
 org headings.
 
 #+begin_src emacs-lisp
-  (use-package org-format-headings
-    :commands (org-format-all-headings org-format-heading))
+  (use-package org-format
+    :hook (org-mode . org-format-on-save-mode))
 #+end_src
 
 *** Load =org-export= packages

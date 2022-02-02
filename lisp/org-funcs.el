@@ -307,36 +307,6 @@ handles file titles, IDs and tags better."
 
 
 
-(defun org-funcs-fix-blank-lines ()
-  "Ensure that blank lines exist between headings and their contents."
-  (interactive)
-  (let ((scope (if (equal (buffer-name) "archive.org") 'tree 'file)))
-    (org-map-entries (lambda ()
-                       (org-with-wide-buffer
-                        ;; `org-map-entries' narrows the buffer, which prevents us from seeing
-                        ;; newlines before the current heading, so we do this part widened.
-                        (while (not (looking-back "\n\n" nil))
-                          ;; Insert blank lines before heading.
-                          (insert "\n")))
-                       (let ((end (org-entry-end-position)))
-                         ;; Insert blank lines before entry content
-                         (forward-line)
-                         (while (and (org-at-planning-p)
-                                     (< (point) (point-max)))
-                           ;; Skip planning lines
-                           (forward-line))
-                         (while (re-search-forward org-drawer-regexp end t)
-                           ;; Skip drawers. You might think that `org-at-drawer-p' would suffice, but
-                           ;; for some reason it doesn't work correctly when operating on hidden text.
-                           ;; This works, taken from `org-agenda-get-some-entry-text'.
-                           (re-search-forward "^[ \t]*:END:.*\n?" end t)
-                           (goto-char (match-end 0)))
-                         (delete-blank-lines)
-                         (when (and (eobp) (not (thing-at-point-looking-at "\n")))
-                           (insert "\n"))))
-                     t
-                     scope)))
-
 (defun org-funcs--ensure-olp (olp &optional content)
   (condition-case _
       (org-find-olp olp t)
