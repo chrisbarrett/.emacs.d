@@ -40,9 +40,6 @@ Useful for replacing references to people with username, etc."
 (defun ox-slack--bold (_bold contents _info)
   (format "*%s*" contents))
 
-(defun ox-slack--link (link _contents _info)
-  (org-element-property :raw-link link))
-
 (defun ox-slack--strike-through (_italic contents _info)
   (format "~%s~" contents))
 
@@ -86,7 +83,6 @@ channel."
                                                       (headline . ox-slack--markup-headline)
                                                       (italic . ox-slack--italic)
                                                       (item . ox-slack--item)
-                                                      (link . ox-slack--link)
                                                       (src-block . ox-slack--fixed-width-block)
                                                       (strike-through . ox-slack--strike-through)
                                                       (timestamp . ox-slack--timestamp)
