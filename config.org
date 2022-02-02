@@ -6243,7 +6243,12 @@ the advice manually.
 
 *** Trim trailing newlines
 #+begin_src emacs-lisp
-  (advice-add 'org-transclusion-content-format-org :filter-return #'string-trim-right)
+  (defun config-org-transclusion-trim (_ content)
+    (concat (string-trim content) "\n"))
+
+  (with-eval-after-load 'org-transclusion
+    (add-to-list 'org-transclusion-content-format-functions
+                 #'config-org-transclusion-trim))
 #+end_src
 
 ** Fix buffer promotion function
