@@ -307,43 +307,6 @@ handles file titles, IDs and tags better."
     (find-file (expand-file-name (format-time-string "outlines/%Y-%m-%d--%H-%M-%S.org")
                                  org-roam-directory))))
 
-
-
-(defun org-funcs--ensure-olp (olp &optional content)
-  (condition-case _
-      (org-find-olp olp t)
-    (error
-     (goto-char (point-min))
-     (org-with-point-at (org-roam-capture-find-or-create-olp olp)
-       (when content
-         (goto-char (line-end-position))
-         (newline)
-         (insert (string-trim content))
-         (newline)))))
-  (point))
-
-(defvar org-funcs-outline-metadata-content "
-- URL ::
-- Author ::
-- Accessed ::
-")
-
-(defun org-funcs-set-outline ()
-  (interactive)
-  (org-with-wide-buffer
-   (let ((id (org-entry-get (point) "ID" t)))
-     (org-roam-review-remove-managed-properties-in-node id))
-
-   (let ((title (org-funcs-title)))
-     (unless (string-prefix-p "Outline" title)
-       (org-funcs-set-title (concat "Outline - " (string-trim title)))))
-
-   (org-roam-tag-add '("outline"))
-   (org-funcs--ensure-olp '("Metadata") org-funcs-outline-metadata-content)
-   (org-funcs--ensure-olp '("Notes"))
-   (org-funcs--ensure-olp '("Related"))
-   (save-buffer)))
-
 (provide 'org-funcs)
 
 ;;; org-funcs.el ends here
