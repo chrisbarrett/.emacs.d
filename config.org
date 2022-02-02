@@ -72,7 +72,6 @@ increase settings. We will set final values at the end of the startup sequence.
   (setq gc-cons-percentage 0.7)
 #+end_src
 
-
 ** Put the ELN cache directory in an XDG-conformant place
 #+begin_src emacs-lisp
   (when (boundp 'comp-eln-load-path)
@@ -679,7 +678,6 @@ I don't use sentence-based commands that often anyway.
   (setq ring-bell-function #'ignore)
 #+end_src
 
-
 *** Don't pollute directories with lockfiles
 I only run one instance of Emacs and never need to prevent concurrent file access.
 #+begin_src emacs-lisp
@@ -1190,7 +1188,6 @@ Configure how =ediff= should display windows when started.
   (setq minibuffer-default-add-function #'config--minibuffer-default-add-function)
 #+end_src
 
-
 * Better eval-expression
 Define an alternative version of =eval-expression= that uses =emacs-lisp-mode= to
 provide font-locking, and handles =smartparens= better.
@@ -1533,7 +1530,6 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
     :general
     ("C-x /" 'emoji-search))
 #+end_src
-
 
 ** =yasnippet= - Text snippets
 =yasnippet= provides expandable text snippets. I use them extensively to cut
@@ -1955,7 +1951,6 @@ show the cursor in deselected windows.
     :config
     (put 'link-hint-org-link :vars '(org-mode org-agenda-mode)))
 #+end_src
-
 
 ** =evil-surround= - Teach =evil= how to wrap objects with matched pairs
 #+begin_src emacs-lisp
@@ -2647,7 +2642,6 @@ See:
     "" '(:keymap lsp-command-map :package lsp-mode :wk "lsp"))
 #+end_src
 
-
 **** Use which-key replacements                                 :disabled:
 Disabled for now since this breaks insert state in evil :/
 #+begin_src emacs-lisp
@@ -3016,7 +3010,6 @@ any special language-level support.
               :states 'insert
               [remap evil-complete-previous] 'hippie-expand))
 #+end_src
-
 
 *** Set the default heuristic for completing symbols
 #+begin_src emacs-lisp
@@ -3649,7 +3642,6 @@ See: [[https://www.flycheck.org/en/latest/][flycheck.org]]
     (flycheck-mode-line '(:eval (flycheck-custom-mode-line-status-text))))
 #+end_src
 
-
 *** Projectile integration                                       :disabled:
 Automatically re-check all buffers belonging to a project on save. This ensures
 diagnostics do not go stale.
@@ -3946,7 +3938,6 @@ See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
       (sp-local-pair "[" "]" :post-handlers '(config-smartparens--format-checkitem))))
 #+end_src
 
-
 ** =elisp-mode= - Emacs Lisp
 #+begin_src emacs-lisp
   (use-package elisp-mode
@@ -4197,7 +4188,6 @@ files.
      "TAB" 'origami-recursively-toggle-node
      "S-<tab>" 'origami-toggle-all-nodes))
 #+end_src
-
 
 ** =json-mode= - JSON editing support
 #+begin_src emacs-lisp
@@ -6147,7 +6137,6 @@ This makes it much easier to edit text using emphasis markers correctly.
   (add-hook 'org-roam-capture-new-node-hook #'config-org-roam-set-created-timestamp)
 #+end_src
 
-
 ** =org-roam-ui= - Web browser interface to org-roam
 #+begin_src emacs-lisp
   (use-package org-roam-ui
@@ -6348,7 +6337,6 @@ property drawer and the title. Advise it to fix that.
   (defun display-buffer-set (regexp-or-predicate actions)
     (setf (alist-get regexp-or-predicate display-buffer-alist nil nil #'equal) actions))
 #+end_src
-
 
 ** compilation
 #+begin_src emacs-lisp
