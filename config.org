@@ -6269,6 +6269,22 @@ rid of it.
   (add-hook 'org-open-at-point-functions 'config-org-transclusion-try-follow-link)
 #+end_src
 
+*** Teach M-left and M-right to promote & demote
+#+begin_src emacs-lisp
+  (defun config-org-transclusion-promote ()
+    (when (and (require 'org-transclusion nil t)
+               (org-transclusion-within-transclusion-p))
+      (org-transclusion-promote-subtree)))
+
+  (defun config-org-transclusion-demote ()
+    (when (and (require 'org-transclusion nil t)
+               (org-transclusion-within-transclusion-p))
+      (org-transclusion-demote-subtree)))
+
+  (add-hook 'org-metaleft-hook #'config-org-transclusion-promote)
+  (add-hook 'org-metaright-hook #'config-org-transclusion-demote)
+#+end_src
+
 ** Fix buffer promotion function
 =org-roam-promote-entire-buffer= will leave stranded content between the top-level
 property drawer and the title. Advise it to fix that.
