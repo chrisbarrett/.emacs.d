@@ -6241,6 +6241,13 @@ the advice manually.
                 #'config-org-indent-transclusion-compat))
 #+end_src
 
+Additionally, org-indent is totally borked by the source block fringe. Just get
+rid of it.
+
+#+begin_src emacs-lisp
+  (advice-add 'org-transclusion-propertize-source :around #'ignore)
+#+end_src
+
 *** Trim trailing newlines
 #+begin_src emacs-lisp
   (defun config-org-transclusion-trim (_ content)
