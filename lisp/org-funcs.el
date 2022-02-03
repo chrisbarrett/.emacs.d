@@ -257,13 +257,13 @@ handles file titles, IDs and tags better."
       (when (file-exists-p dest-file)
         (user-error "%s exists. Aborting" dest-file))
 
-      (let ((title (org-link-display-format (org-get-heading)))
+      (let ((title (org-get-heading))
             (tags (org-get-tags))
             (id (org-id-get-create)))
 
         (atomic-change-group
           (org-cut-subtree)
-          (insert (org-link-make-string (format "id:%s" id) title))
+          (insert (org-link-make-string (format "id:%s" id) (org-link-display-format title)))
           (newline)
           (save-buffer)
           (with-current-buffer (find-file-noselect dest-file)
