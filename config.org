@@ -6311,6 +6311,17 @@ property drawer and the title. Advise it to fix that.
   (advice-add 'org-roam-promote-entire-buffer :after 'config-org-roam-cleanup-after-promote-entire-buffer)
 #+end_src
 
+*** Teach ~C-c C-c~ to refresh
+#+begin_src emacs-lisp
+  (defun config-org-transclusion-refresh-at-point ()
+    (when (org-transclusion-within-transclusion-p)
+      (org-transclusion-refresh)
+      (message "Refreshed transclusion.")
+      t))
+
+  (add-hook 'org-ctrl-c-ctrl-c-hook #'config-org-transclusion-refresh-at-point)
+#+end_src
+
 ** =org-roam-search= - a search interface that works better with org-roam
 #+begin_src emacs-lisp
   (use-package org-roam-search
