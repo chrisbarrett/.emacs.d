@@ -6286,7 +6286,7 @@ rid of it.
   (add-hook 'org-metaright-hook #'config-org-transclusion-demote)
 #+end_src
 
-** Fix buffer promotion function
+*** Fix buffer promotion function
 =org-roam-promote-entire-buffer= will leave stranded content between the top-level
 property drawer and the title. Advise it to fix that.
 
