@@ -6162,6 +6162,8 @@ This makes it much easier to edit text using emphasis markers correctly.
 #+begin_src emacs-lisp
   (use-package org-transclusion
     :hook (org-mode . org-transclusion-mode)
+    :custom
+    (org-transclusion-exclude-elements '(property-drawer keyword))
     :general
     (:keymaps 'org-transclusion-map :states '(motion normal)
      "TAB" 'org-cycle
