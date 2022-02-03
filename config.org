@@ -6262,6 +6262,7 @@ rid of it.
   (defun config-org-transclusion-try-follow-link ()
     (when (and (require 'org-transclusion nil t)
                (org-transclusion-within-transclusion-p))
+      (xref-push-marker-stack)
       (org-transclusion-open-source t)
       t))
 
