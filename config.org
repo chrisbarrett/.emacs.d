@@ -620,12 +620,10 @@ I don't use sentence-based commands that often anyway.
 #+end_src
 
 *** Use UTF-8 everywhere by default
+Source: [[https://www.reddit.com/r/emacs/comments/siuvpu/isnt_there_a_better_way_to_set_utf8/hvbns5f/?utm_source=reddit&utm_medium=web2x&context=3][Isn't there a better way to set UTF-8 ? : emacs]]
+
 #+begin_src emacs-lisp
-  (prefer-coding-system 'utf-8)
-  (set-default-coding-systems 'utf-8)
-  (set-terminal-coding-system 'utf-8)
-  (set-keyboard-coding-system 'utf-8)
-  (set-language-environment 'utf-8)
+  (set-language-environment "UTF-8")
 #+end_src
 
 ** Whitespace handling
