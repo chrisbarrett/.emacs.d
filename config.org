@@ -6322,6 +6322,20 @@ property drawer and the title. Advise it to fix that.
   (add-hook 'org-ctrl-c-ctrl-c-hook #'config-org-transclusion-refresh-at-point)
 #+end_src
 
+*** Fix indentation after save, refreshing and live sync
+#+begin_src emacs-lisp
+  (defun config-org-transclusion-apply-indentation (&rest _)
+    (when (org-transclusion-within-transclusion-p)
+      (when-let* ((start-marker (get-text-property (point) 'org-transclusion-beg-mkr))
+                  (end-marker (get-text-property (point) 'org-transclusion-end-mkr)))
+        (org-translusion-indent-add-properties (marker-position start-marker)
+                                               (marker-position end-marker)))))
+
+  (advice-add 'org-transclusion-refresh :after #'config-org-transclusion-apply-indentation)
+  (advice-add 'org-transclusion-live-sync-exit :after #'config-org-transclusion-apply-indentation)
+  (advice-add 'org-transclusion-add :after #'config-org-transclusion-apply-indentation)
+#+end_src
+
 ** =org-roam-search= - a search interface that works better with org-roam
 #+begin_src emacs-lisp
   (use-package org-roam-search
