@@ -6165,6 +6165,11 @@ This makes it much easier to edit text using emphasis markers correctly.
     :custom
     (org-transclusion-exclude-elements '(property-drawer keyword))
     :general
+    (:keymaps 'org-transclusion-map
+     "C-c C-e" 'org-transclusion-live-sync-start)
+    (:keymaps 'org-transclusion-live-sync-map
+     "C-c C-e" 'org-transclusion-live-sync-exit
+     [remap save-buffer] 'org-transclusion-live-sync-exit)
     (:keymaps 'org-transclusion-map :states '(motion normal)
      "TAB" 'org-cycle
      [remap evil-org->] 'org-transclusion-demote-subtree
