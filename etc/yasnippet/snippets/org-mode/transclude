@@ -3,4 +3,4 @@
 # key: tt
 # condition: (yas-funcs-bolp)
 # --
-#+transclude: `(org-roam-node-insert)` :level 1
+#+transclude: `(org-funcs-read-roam-node-link)` :level 1

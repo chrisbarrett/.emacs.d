@@ -309,6 +309,12 @@ handles file titles, IDs and tags better."
     (find-file (expand-file-name (format-time-string "outlines/%Y-%m-%d--%H-%M-%S.org")
                                  org-roam-directory))))
 
+(defun org-funcs-read-roam-node-link ()
+  (let ((node (org-roam-node-read)))
+    (format "[[id:%s][%s]]"
+            (org-roam-node-id node)
+            (org-roam-node-formatted node))))
+
 (provide 'org-funcs)
 
 ;;; org-funcs.el ends here
