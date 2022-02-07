@@ -470,7 +470,24 @@ applications. The following functions will be invoked by those scripts over
 Use a header line instead of a mode line.
 
 #+begin_src emacs-lisp
-  (setq-default header-line-format mode-line-format)
+  (defvar selected-window-for-mode-line-format)
+
+  (defun update-selected-window-for-mode-line-format (windows)
+    (when (not (minibuffer-window-active-p (frame-selected-window)))
+      (setq selected-window-for-mode-line-format (selected-window))))
+
+  (add-function :before pre-redisplay-function #'update-selected-window-for-mode-line-format)
+
+  (defconst mode-line-selected-window-indicator '(:eval (if (equal (get-buffer-window) selected-window-for-mode-line-format)
+                                                            "● "
+                                                          "   ")))
+
+  (setq-default header-line-format
+                (let ((env-info 'mode-line-modified)
+                      (buffer-info '(mode-line-frame-identification mode-line-buffer-identification "   " mode-line-position))
+                      (additional-info '(mode-line-modes mode-line-misc-info)))
+                  `("%e" mode-line-front-space mode-line-selected-window-indicator ,env-info ,@buffer-info (vc-mode vc-mode) "  " ,@additional-info mode-line-end-spaces)))
+
   (setq-default mode-line-format nil)
 #+end_src
 
