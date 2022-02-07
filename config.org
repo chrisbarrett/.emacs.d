@@ -6054,6 +6054,24 @@ This makes it much easier to edit text using emphasis markers correctly.
     "<tab>" '(quit-window :wk "hide"))
 #+end_src
 
+** Use title for buffer notes identification
+#+begin_src emacs-lisp
+  (defun config-org-roam-set-buffer-identification ()
+    (unless org-inhibit-startup
+      (when (and (buffer-file-name) (f-descendant-of-p (buffer-file-name)
+                                                       org-roam-directory))
+        (when-let* ((title
+                     (ignore-errors
+                       (save-excursion
+                         (goto-char (point-min))
+                         (org-roam-node-title (org-roam-node-at-point))))))
+          (setq-local mode-line-buffer-identification
+                      (propertize title 'face 'mode-line-highlight
+                                  'help-echo (buffer-file-name)))))))
+
+  (add-hook 'org-mode-hook #'config-org-roam-set-buffer-identification)
+#+end_src
+
 ** Open my index roam file as the initial buffer
 #+begin_src emacs-lisp
   (autoload 'org-roam-dailies-goto-today "org-roam-dailies")
