@@ -466,6 +466,35 @@ applications. The following functions will be invoked by those scripts over
     (load-theme 'doom-one t))
 #+end_src
 
+* mode-line and header-line
+Use a header line instead of a mode line.
+
+#+begin_src emacs-lisp
+  (setq-default header-line-format mode-line-format)
+  (setq-default mode-line-format nil)
+#+end_src
+
+** =minions= - Hides most minor modes behind a menu
+#+begin_src emacs-lisp
+  (use-package minions
+    :demand t
+    :custom
+    (minions-mode-line-lighter "...")
+    (minions-direct '(auto-revert-mode git-auto-commit-mode flycheck-mode))
+    :config
+    (define-minor-mode minions-header-line-mode
+      "Change the display of minor modes in the header line."
+      :global t
+      (if minions-header-line-mode
+          (setq-default header-line-format
+                        (cl-subst 'minions-mode-line-modes
+                                  'mode-line-modes
+                                  (default-value 'header-line-format)
+                                  :test #'equal))
+        (cl-nsubst 'mode-line-modes 'minions-mode-line-modes header-line-format)))
+    (minions-header-line-mode +1))
+#+end_src
+
 * Common advice
 #+begin_src emacs-lisp
   (defun advice-ignore-errors (f &rest args)
@@ -3201,17 +3230,6 @@ to manually apply it again.
   (use-package default-text-scale
     :custom
     (default-text-scale-amount 30))
-#+end_src
-
-** =minions= - Hides most minor modes behind a menu
-#+begin_src emacs-lisp
-  (use-package minions
-    :demand t
-    :custom
-    (minions-mode-line-lighter "...")
-    (minions-direct '(auto-revert-mode git-auto-commit-mode flycheck-mode))
-    :config
-    (minions-mode +1))
 #+end_src
 
 * File & Buffer management
