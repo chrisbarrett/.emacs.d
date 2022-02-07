@@ -37,8 +37,16 @@
                       '(tool-bar-mode . nil)
                       '(scroll-bar-mode nil))
 
-(modify-all-frames-parameters '((vertical-scroll-bars)
-                                (name . "Emacs")))
+(modify-all-frames-parameters '((vertical-scroll-bars)))
+
+
+(setq frame-title-format "Emacs")
+
+
+(when (equal system-type 'darwin)
+  (setq ns-use-proxy-icon nil)
+  (modify-all-frames-parameters '((ns-appearance . dark)
+                                  (ns-transparent-titlebar . t))))
 
 
 (setq source-directory (expand-file-name emacs-version (getenv "NIX_EMACS_SRC_DIR")))

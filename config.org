@@ -93,8 +93,22 @@ Disable window chrome that doesn't make sense in a keyboard-driven UI.
                         '(tool-bar-mode . nil)
                         '(scroll-bar-mode nil))
 
-  (modify-all-frames-parameters '((vertical-scroll-bars)
-                                  (name . "Emacs")))
+  (modify-all-frames-parameters '((vertical-scroll-bars)))
+#+end_src
+
+** Customise the titlebar
+
+*** Show just 'Emacs' for window manager title bar
+#+begin_src emacs-lisp
+  (setq frame-title-format "Emacs")
+#+end_src
+
+*** Make the title bar more natural in macOS
+#+begin_src emacs-lisp
+  (when (equal system-type 'darwin)
+    (setq ns-use-proxy-icon nil)
+    (modify-all-frames-parameters '((ns-appearance . dark)
+                                    (ns-transparent-titlebar . t))))
 #+end_src
 
 ** Set source directory
@@ -576,11 +590,6 @@ Use a header line instead of a mode line.
 #+begin_src emacs-lisp
   (setq eval-expression-print-length nil)
   (setq eval-expression-print-level nil)
-#+end_src
-
-** Use 'Emacs', rather than the selected buffer, as the window manager's title for frames
-#+begin_src emacs-lisp
-  (setq frame-title-format "Emacs")
 #+end_src
 
 ** Instantly display current keystrokes in mini buffer
