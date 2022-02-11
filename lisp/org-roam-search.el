@@ -246,18 +246,15 @@ BUILDER is the command argument builder."
 (defvar org-roam-search-view-query-history nil)
 
 (defun org-roam-search--ripgrep-for-notes (query)
-  (let (done notes)
-    (async-start-process "ripgrep" "rg"
-                         (lambda (proc)
-                           (let* ((files (org-roam-search--process-rg-output (process-buffer proc))))
-                             (setq notes
-                                   (org-roam-review-notes-from-nodes (org-roam-search--nodes-for-files files)))
-                             (setq done t)))
-                         "--smart-case"
-                         "--files-with-matches"
-                         query org-roam-directory)
-    (while (not done)
-      (sit-for 0.01))
+  (let (notes)
+    (async-wait
+     (async-start-process "ripgrep" "rg"
+                          (lambda (proc)
+                            (let* ((files (org-roam-search--process-rg-output (process-buffer proc))))
+                              (setq notes (org-roam-review-notes-from-nodes (org-roam-search--nodes-for-files files)))))
+                          "--smart-case"
+                          "--files-with-matches"
+                          query org-roam-directory))
     notes))
 
 ;;;###autoload
