@@ -132,7 +132,8 @@ candidate for reviews."
 
 (plist-define org-roam-review-note
   :required (:id :title :file)
-  :optional (:tags :local-tags :next-review :last-review :maturity :todo-keywords :created))
+  :optional (:tags :local-tags :next-review :last-review :maturity
+             :todo-keywords :created :level))
 
 (plist-define org-roam-review-filter
   :optional (:required :forbidden))
@@ -219,6 +220,9 @@ candidate for reviews."
                     (item (org-roam-review-note-create
                            :id id
                            :file file
+                           :level (if (org-before-first-heading-p)
+                                      0
+                                    (car (org-heading-components)))
                            :todo-keywords (org-roam-review--todo-keywords-in-buffer)
                            :next-review (-some->> (org-entry-get-with-inheritance "NEXT_REVIEW") (ts-parse-org))
                            :last-review (-some->> (org-entry-get-with-inheritance "LAST_REVIEW") (ts-parse-org))
