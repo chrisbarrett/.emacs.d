@@ -27,6 +27,7 @@
 ;;; Code:
 
 (require 'dash)
+(require 'org-roam-note)
 (require 'org-roam-review)
 
 (defun org-roam-links-get (node)
@@ -89,8 +90,8 @@ When called interactively, prompt the user for DEPTH."
       (lambda ()
         (setq graph (org-roam-links-graph start-node depth))
         (seq-filter (lambda (note)
-                      (not (org-roam-review-note-ignored-p note)))
-                    (org-roam-review-notes-from-nodes (ht-values (org-roam-links-graph-nodes graph)))))
+                      (not (org-roam-note-ignored-p note)))
+                    (org-roam-notes-from-nodes (ht-values (org-roam-links-graph-nodes graph)))))
       :insert-notes-fn
       (-lambda ((&plist :root :notes))
         (let ((seen-ids (ht-create))
@@ -101,7 +102,7 @@ When called interactively, prompt the user for DEPTH."
                        (tree depth)
                        (maphash (lambda (id children)
                                   (when-let* ((node (ht-get nodes id))
-                                              (note-exists-p (seq-find (lambda (it) (equal id (org-roam-review-note-id it))) notes)))
+                                              (note-exists-p (seq-find (lambda (it) (equal id (org-roam-note-id it))) notes)))
                                     (let ((self-reference-p (equal (org-roam-node-id node)
                                                                    (org-roam-node-id start-node))))
                                       (unless (and (zerop depth) self-reference-p)
@@ -145,8 +146,8 @@ When called interactively, prompt the user for DEPTH."
       :notes
       (lambda ()
         (seq-filter (lambda (note)
-                      (not (org-roam-review-note-ignored-p note)))
-                    (org-roam-review-notes-from-backlinks (org-roam-backlinks-get start-node)
+                      (not (org-roam-note-ignored-p note)))
+                    (org-roam-notes-from-backlinks (org-roam-backlinks-get start-node)
                                                           'all)))))))
 
 (provide 'org-roam-links)

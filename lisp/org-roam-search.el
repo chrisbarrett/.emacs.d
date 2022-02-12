@@ -181,8 +181,8 @@ BUILDER is the command argument builder."
         (while (search-forward-regexp transpiled-regexp nil t)
           (unless (seq-intersection (face-at-point nil t) '(magit-section-heading
                                                             org-roam-review-instructions
-                                                            org-roam-review-filter
-                                                            org-roam-review-filter-keyword))
+                                                            org-roam-note-filter
+                                                            org-roam-note-filter-keyword))
             (let ((overlay (make-overlay (let ((pt (match-beginning 0)))
                                            (goto-char pt)
                                            (min pt (or (car (save-match-data (bounds-of-thing-at-point 'word)))
@@ -251,7 +251,7 @@ BUILDER is the command argument builder."
      (async-start-process "ripgrep" "rg"
                           (lambda (proc)
                             (let* ((files (org-roam-search--process-rg-output (process-buffer proc))))
-                              (setq notes (org-roam-review-notes-from-nodes (org-roam-search--nodes-for-files files)))))
+                              (setq notes (org-roam-notes-from-nodes (org-roam-search--nodes-for-files files)))))
                           "--smart-case"
                           "--files-with-matches"
                           query org-roam-directory))
@@ -276,7 +276,7 @@ QUERY is a PRCE regexp string that will be passed to ripgrep."
     :placeholder "No search results"
     :buffer-name org-roam-search-buffer-name
     :group-on #'org-roam-review--maturity-header-for-note
-    :sort (-on #'ts< (lambda (it) (or (org-roam-review-note-created it) (ts-now))))
+    :sort (-on #'ts< (lambda (it) (or (org-roam-note-created it) (ts-now))))
     :insert-preview-fn (org-roam-search-make-insert-preview-fn query)
     :notes
     (lambda ()
@@ -289,7 +289,7 @@ QUERY is a PRCE regexp string that will be passed to ripgrep."
   (when-let* ((buf (get-buffer org-roam-search-buffer-name)))
     (kill-buffer buf)))
 
-(add-hook 'org-roam-review-note-processed-hook #'org-roam-search--kill-buffer)
+(add-hook 'org-roam-note-processed-hook #'org-roam-search--kill-buffer)
 
 (provide 'org-roam-search)
 

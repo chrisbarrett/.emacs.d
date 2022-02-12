@@ -32,10 +32,10 @@
 ;;
 ;;     (use-package org-roam-review
 ;;       :hook
-;;       (org-mode . org-roam-review-cache-mode)
+;;       (org-mode . org-roam-note-cache-mode)
 ;;       (org-roam-capture-new-node . org-roam-review-set-seedling)
 ;;       :custom
-;;       (org-roam-review-ignored-tags '("person" "client" "project" "lit_notes"))
+;;       (org-roam-note-ignored-tags '("person" "client" "project" "lit_notes"))
 ;;       :general
 ;;       ;; optional bindings for evil-mode compatability.
 ;;       (:states '(normal) :keymaps 'org-roam-review-mode-map
@@ -51,32 +51,15 @@
 
 ;;; Code:
 
-(require 'dash)
-(require 'org)
+(require 'org-roam-note)
 (require 'org-drill)
-(require 'org-roam)
-(require 'org-roam-dailies)
-(require 'f)
-(require 'ht)
-(require 'ts)
-(require 'plist)
 
 (defgroup org-roam-review nil
   "Extends org-roam with spaced-repetition review of notes."
   :group 'productivity
   :prefix "org-roam-review-")
 
-(defcustom org-roam-review-cache-file "~/org/.org-roam-review"
-  "Location of the cache file for quickly finding review files."
-  :group 'org-roam-review
-  :type 'file)
-
 (defconst org-roam-review-maturity-values '("seedling" "evergreen" "budding"))
-
-(defcustom org-roam-review-ignored-tags '()
-  "A list of tags that define a note should not be imported."
-  :group 'org-roam-review
-  :type '(list string))
 
 (defcustom org-roam-review-tags-ignored-for-review-buffer '("outline")
   "A list of tags that define a note should not be considered a
@@ -100,18 +83,6 @@ candidate for reviews."
   "Face for instructional information in a review buffer."
   :group 'org-roam-review)
 
-(defface org-roam-review-filter
-  '((t
-     (:inherit org-tag)))
-  "Face for filter information in a review buffer."
-  :group 'org-roam-review)
-
-(defface org-roam-review-filter-keyword
-  '((t
-     (:inherit org-document-info-keyword)))
-  "Face for the filter information keyword in a review buffer."
-  :group 'org-roam-review)
-
 (defface org-roam-review-heading
   '((t (org-level-2 :bold t)))
   "Face for headings in review buffers."
@@ -123,224 +94,17 @@ candidate for reviews."
   "Face for heading separators in review buffers."
   :group 'org-roam-review)
 
-(defvar org-roam-review-note-accepted-hook nil)
-(defvar org-roam-review-note-buried-hook nil)
-(defvar org-roam-review-note-processed-hook nil)
+(defvar org-roam-note-accepted-hook nil)
+(defvar org-roam-note-buried-hook nil)
+(defvar org-roam-note-processed-hook nil)
 
 
-;;; Cached note type & accessors
-
-(plist-define org-roam-review-note
-  :required (:id :title :file)
-  :optional (:tags :local-tags :next-review :last-review :maturity
-             :todo-keywords :created :level))
-
-(plist-define org-roam-review-filter
-  :optional (:required :forbidden))
-
-(defun org-roam-review-notes-from-nodes (nodes &optional all)
-  (->> nodes
-       (seq-mapcat (lambda (node)
-                     (when-let* ((file (org-roam-node-file node)))
-                       (with-temp-buffer
-                         (insert-file-contents file)
-                         (let ((org-inhibit-startup t))
-                           (org-mode))
-                         (org-roam-review-notes-from-buffer (current-buffer) file all)))))
-       (seq-uniq)
-       (seq-remove #'org-roam-review-note-ignored-p)))
-
-(defun org-roam-review-notes-from-backlinks (backlinks &optional all)
-  (org-roam-review-notes-from-nodes (seq-map #'org-roam-backlink-source-node backlinks)
-                                    all))
-
-
-;;; Define cache operations
-
-;; Maintain a cache file to ensure review sessions are as responsive as
-;; possible.
-
-;; Define plumbing commands for cache here.
-
-(defvar org-roam-review--cache nil)
-
-(defun org-roam-review--cache ()
-  (unless org-roam-review--cache
-    (setq org-roam-review--cache
-          (or (ignore-errors (ht-from-alist (read (f-read-text org-roam-review-cache-file))))
-              (make-hash-table :test #'equal))))
-  org-roam-review--cache)
-
-(defun org-roam-review--cache-mutate (fn)
-  (let ((cache (org-roam-review--cache)))
-    (funcall fn cache)
-    (f-write-text (prin1-to-string (ht-to-alist cache)) 'utf-8 org-roam-review-cache-file)
-    cache))
-
-(defun org-roam-review--cache-clear ()
-  (setq org-roam-review--cache nil)
-  (when (file-exists-p org-roam-review-cache-file)
-    (delete-file org-roam-review-cache-file)))
-
-;; Define cache-management porcelain in terms of plumbing.
-
-(defun org-roam-review--cache-skip-note-p (file)
-  (cl-assert file)
-  (org-with-wide-buffer
-   (save-match-data
-     (or (org-entry-get-with-inheritance "REVIEW_EXCLUDED")
-         (org-roam-review--daily-note-p file)
-         (seq-intersection org-roam-review-ignored-tags (org-roam-review--file-or-headline-tags))))))
-
-(defun org-roam-review--todo-keywords-in-buffer ()
-  (save-excursion
-    (save-match-data
-      (let ((acc)
-            (case-fold-search))
-        (goto-char (point-min))
-        (while (search-forward-regexp org-todo-regexp nil t)
-          (push (match-string-no-properties 1) acc))
-        (seq-uniq acc)))))
-
-(defun org-roam-review-notes-from-buffer (buf file &optional all)
-  (with-current-buffer  buf
-    (org-with-wide-buffer
-     (save-match-data
-       (goto-char (point-min))
-       (let ((acc)
-             (buffer-title
-              (save-excursion
-                (search-forward-regexp (rx bol "#+title:" (* space) (group (+ any)) eol) nil t)
-                (match-string 1))))
-
-         (while (search-forward-regexp (org-re-property "ID") nil t)
-           (unless (and (not all)
-                        (org-roam-review--cache-skip-note-p file))
-             (let* ((id (match-string-no-properties 3))
-                    (item (org-roam-review-note-create
-                           :id id
-                           :file file
-                           :level (if (org-before-first-heading-p)
-                                      0
-                                    (car (org-heading-components)))
-                           :todo-keywords (org-roam-review--todo-keywords-in-buffer)
-                           :next-review (-some->> (org-entry-get-with-inheritance "NEXT_REVIEW") (ts-parse-org))
-                           :last-review (-some->> (org-entry-get-with-inheritance "LAST_REVIEW") (ts-parse-org))
-                           :created (-some->> (org-entry-get-with-inheritance "CREATED") (ts-parse-org))
-                           :maturity (org-entry-get-with-inheritance "MATURITY")
-                           :title (substring-no-properties (or (org-get-heading t t t) buffer-title))
-                           :local-tags (org-roam-review--file-or-headline-tags 'local)
-                           :tags (org-roam-review--file-or-headline-tags))))
-               (push item acc))))
-         (nreverse acc))))))
-
-(defun org-roam-review-excluded-note-ids-from-buffer (buf file)
-  (with-current-buffer buf
-    (org-with-wide-buffer
-     (save-match-data
-       (goto-char (point-min))
-       (let ((acc))
-         (while (search-forward-regexp (org-re-property "ID") nil t)
-           (when (org-roam-review--cache-skip-note-p file)
-             (let ((id (match-string-no-properties 3)))
-               (push id acc))))
-         (nreverse acc))))))
-
-(defun org-roam-review--update-by-props-in-buffer (cache buf file)
-  (dolist (note (org-roam-review-notes-from-buffer buf file))
-    (puthash (org-roam-review-note-id note) note cache))
-  (dolist (id (org-roam-review-excluded-note-ids-from-buffer buf file))
-    (remhash id cache)))
-
-(defun org-roam-review--daily-note-p (file)
-  "Test whether the current buffer is a daily note.
-
-This is a wrapper that makes sure org-roam-directory is well-formed.
-
-See:
-https://github.com/org-roam/org-roam/issues/2032"
-  (cl-assert (or file (buffer-file-name)))
-  (let ((org-roam-directory (string-remove-suffix org-roam-dailies-directory org-roam-directory)))
-    (org-roam-dailies--daily-note-p file)))
-
-(defun org-roam-review--cache-update ()
-  "Update the evergreen notes cache from `after-save-hook'."
-  (when (and (derived-mode-p 'org-mode)
-             (not (org-roam-review--daily-note-p (buffer-file-name))))
-    (org-roam-review--cache-mutate (lambda (cache)
-                                     (org-roam-review--update-by-props-in-buffer cache
-                                                                                 (current-buffer)
-                                                                                 (buffer-file-name))))))
-
-(defun org-roam-review--cache-collect (fn)
-  (let ((table (copy-hash-table (org-roam-review--cache))))
-    (maphash (lambda (key note)
-               (if-let* ((result (funcall fn note)))
-                   (puthash key result table)
-                 (remhash key table)))
-             table)
-    (hash-table-values table)))
-
-(defun org-roam-review--file-or-headline-tags (&optional local)
-  (seq-map #'substring-no-properties
-           (if (org-before-first-heading-p)
-               org-file-tags
-             (org-get-tags nil local))))
-
-(defun org-roam-review--cache-roam-files ()
-  (f-files org-roam-directory
-           (lambda (file)
-             (when (f-ext-p file "org")
-               (with-temp-buffer
-                 (let ((org-inhibit-startup t))
-                   (insert-file-contents file)
-                   (org-mode)
-                   (unless (org-roam-review--cache-skip-note-p file)
-                     (org-roam-review--cache-mutate (lambda (cache)
-                                                      (org-roam-review--update-by-props-in-buffer cache
-                                                                                                  (current-buffer)
-                                                                                                  file))))))))
-           t))
-
-;;;###autoload
-(defun org-roam-review-cache-rebuild ()
-  "Rebuild the evergreen notes cache."
-  (interactive)
-  (org-roam-review--cache-clear)
-  (org-roam-review--cache-roam-files)
-  ;; Write back to disk.
-  (org-roam-review--cache-mutate #'ignore)
-  (message "Rebuilt evergreen notes index."))
-
-;;;###autoload
-(defun org-roam-review-cache-show ()
-  "Show the contents the evegreen notes cache for debugging."
-  (interactive)
-  (pp-display-expression (ht-to-plist (org-roam-review--cache))
-                         "*org-roam-review cache*"))
-
-;;;###autoload
-(define-minor-mode org-roam-review-cache-mode
-  "Minor mode to enable book-keeping used for notes reviews"
-  :group 'org-roam-review
-  (if org-roam-review-cache-mode
-      (add-hook 'after-save-hook #'org-roam-review--cache-update nil t)
-    (remove-hook 'after-save-hook #'org-roam-review--cache-update t)))
 
 
 ;;; Review buffers
 
-(defvar org-roam-review--filter nil)
-
-(defun org-roam-review-note-ignored-p (note)
-  (let* ((tags (org-roam-review-note-tags note))
-         (forbidden-tags (org-roam-review-filter-forbidden org-roam-review--filter))
-         (required-tags (org-roam-review-filter-required org-roam-review--filter)))
-    (or (seq-intersection tags forbidden-tags)
-        (seq-difference required-tags tags))))
-
-(defun org-roam-review-note-due-p (note)
-  (when-let* ((next-review (org-roam-review-note-next-review note)))
+(defun org-roam-note-due-p (note)
+  (when-let* ((next-review (org-roam-note-next-review note)))
     (ts<= next-review (ts-now))))
 
 (defvar-local org-roam-review-buffer-refresh-command nil)
@@ -369,14 +133,14 @@ interactively. Extra messages will be logged."
 (defun org-roam-review--read-tags-filter ()
   (-let* ((current-filter
            (string-join (append
-                         (seq-map (lambda (it) (concat "-" it)) (org-roam-review-filter-forbidden org-roam-review--filter))
-                         (org-roam-review-filter-required org-roam-review--filter))
+                         (seq-map (lambda (it) (concat "-" it)) (org-roam-note-filter-forbidden org-roam-note-last-filter))
+                         (org-roam-note-filter-required org-roam-note-last-filter))
                         " "))
           (input (read-string "Tags filter (+/-): " (unless  (string-blank-p current-filter)
                                                       (concat current-filter " "))))
           ((forbidden required) (-separate (lambda (it) (string-prefix-p "-" it))
                                            (split-string input " " t))))
-    (org-roam-review-filter-create :forbidden (seq-map (lambda (it) (string-remove-prefix "-" it))
+    (org-roam-note-filter-create :forbidden (seq-map (lambda (it) (string-remove-prefix "-" it))
                                                        forbidden)
                                    :required (seq-map (lambda (it) (string-remove-prefix "+" it))
                                                       required))))
@@ -388,7 +152,7 @@ When called with a `C-u' prefix arg, clear the current filter."
   (interactive (list
                 (unless current-prefix-arg
                   (org-roam-review--read-tags-filter))))
-  (setq org-roam-review--filter tags-filter)
+  (setq org-roam-note-last-filter tags-filter)
   (org-roam-review-refresh t))
 
 (defvar org-roam-review-mode-map
@@ -480,7 +244,7 @@ nodes for review."
 (defun org-roam-review--insert-notes (notes placeholder insert-preview-fn)
   (if-let* ((nodes (nreverse (seq-reduce (lambda (acc note)
                                            (if-let* ((node (-some->> note
-                                                             (org-roam-review-note-id)
+                                                             (org-roam-note-id)
                                                              (org-roam-node-from-id))))
                                                (cons node acc)
                                              acc))
@@ -508,7 +272,7 @@ nodes for review."
                                              (if (stringp key) key (or (cdr key) 0))))))))
         (pcase-dolist (`(,key . ,group) grouped)
           (when (and key group)
-            (magit-insert-section section (org-roam-review-note-group)
+            (magit-insert-section section (org-roam-note-group)
               (oset section parent root)
               (let ((header (format "%s (%s)"
                                     (if (stringp key) key (car key))
@@ -531,12 +295,12 @@ nodes for review."
           (fill-region start (point)))
         (newline 2))
 
-      (let ((forbidden-tags (seq-map (lambda (it) (format "-%s" it)) (org-roam-review-filter-forbidden org-roam-review--filter)))
-            (required-tags (seq-map (lambda (it) (format "+%s" it)) (org-roam-review-filter-required org-roam-review--filter))))
+      (let ((forbidden-tags (seq-map (lambda (it) (format "-%s" it)) (org-roam-note-filter-forbidden org-roam-note-last-filter)))
+            (required-tags (seq-map (lambda (it) (format "+%s" it)) (org-roam-note-filter-required org-roam-note-last-filter))))
         (when (or forbidden-tags required-tags)
-          (insert (concat (propertize "Filters:" 'face 'org-roam-review-filter-keyword)
+          (insert (concat (propertize "Filters:" 'face 'org-roam-note-filter-keyword)
                           " "
-                          (propertize (string-join (append forbidden-tags required-tags) " ") 'face 'org-roam-review-filter)))
+                          (propertize (string-join (append forbidden-tags required-tags) " ") 'face 'org-roam-note-filter)))
           (newline 2)))
 
       (let ((start-of-content (point)))
@@ -636,7 +400,7 @@ categorised by their maturity."
     (org-roam-review-list-due)))
 
 (defun org-roam-review--maturity-header-for-note (note)
-  (pcase (org-roam-review-note-maturity note)
+  (pcase (org-roam-note-maturity note)
     ("seedling" (cons "Seedling 🌱" 3))
     ("budding" (cons "Budding 🪴" 2))
     ("evergreen" (cons "Evergreen 🌲" 1))
@@ -661,16 +425,16 @@ them as reviewed with `org-roam-review-accept',
 `org-roam-review-bury' or by updating their maturity."
     :placeholder (concat (propertize "You're up-to-date!" 'face 'font-lock-comment-face) " 😸")
     :group-on #'org-roam-review--maturity-header-for-note
-    :sort (-on #'ts< #'org-roam-review-note-next-review)
+    :sort (-on #'ts< #'org-roam-note-next-review)
     :notes
     (lambda ()
-      (org-roam-review--cache-collect
+      (org-roam-note-cache-collect
        (lambda (note)
-         (when (and (not (org-roam-review-note-ignored-p note))
-                    (zerop (org-roam-review-note-level note))
-                    (null (seq-intersection (org-roam-review-note-tags note)
+         (when (and (not (org-roam-note-ignored-p note))
+                    (zerop (org-roam-note-level note))
+                    (null (seq-intersection (org-roam-note-tags note)
                                             org-roam-review-tags-ignored-for-review-buffer))
-                    (org-roam-review-note-due-p note))
+                    (org-roam-note-due-p note))
            note)))))))
 
 ;;;###autoload
@@ -682,13 +446,13 @@ them as reviewed with `org-roam-review-accept',
     :title "Evergreen Notes"
     :instructions "The notes below are categorised by maturity."
     :group-on #'org-roam-review--maturity-header-for-note
-    :sort (-on #'string-lessp #'org-roam-review-note-title)
+    :sort (-on #'string-lessp #'org-roam-note-title)
     :notes
     (lambda ()
-      (org-roam-review--cache-collect
+      (org-roam-note-cache-collect
        (lambda (note)
-         (when (and (not (org-roam-review-note-ignored-p note))
-                    (org-roam-review-note-maturity note))
+         (when (and (not (org-roam-note-ignored-p note))
+                    (org-roam-note-maturity note))
            note)))))))
 
 ;;;###autoload
@@ -703,17 +467,17 @@ system."
     :title "Uncategorised Notes"
     :instructions "The notes below are missing the properties
 needed to be included in reviews. Categorise them as appropriate."
-    :sort (-on #'string-lessp #'org-roam-review-note-title)
+    :sort (-on #'string-lessp #'org-roam-note-title)
     :notes
     (lambda ()
-      (org-roam-review--cache-collect
+      (org-roam-note-cache-collect
        (lambda (note)
-         (unless (or (org-roam-review-note-ignored-p note)
-                     (seq-contains-p (org-roam-review-note-local-tags note) "outline")
-                     (seq-intersection (org-roam-review-note-tags note)
+         (unless (or (org-roam-note-ignored-p note)
+                     (seq-contains-p (org-roam-note-local-tags note) "outline")
+                     (seq-intersection (org-roam-note-tags note)
                                        org-roam-review-tags-ignored-for-review-buffer)
-                     (org-roam-review-note-maturity note)
-                     (org-roam-review-note-next-review note))
+                     (org-roam-note-maturity note)
+                     (org-roam-note-next-review note))
            note)))))))
 
 ;;;###autoload
@@ -724,16 +488,16 @@ needed to be included in reviews. Categorise them as appropriate."
    (org-roam-review-create-buffer
     :title "Author Notes"
     :instructions "The list below contains notes tagged as authors."
-    :sort (-on #'string-lessp #'org-roam-review-note-title)
+    :sort (-on #'string-lessp #'org-roam-note-title)
     :notes
     (lambda ()
-      (org-roam-review--cache-collect
+      (org-roam-note-cache-collect
        (lambda (note)
-         (when (seq-contains-p (org-roam-review-note-tags note) "author")
+         (when (seq-contains-p (org-roam-note-tags note) "author")
            note)))))))
 
 (defun org-roam-review--note-todo-presence (note)
-  (if (seq-intersection (org-roam-review-note-todo-keywords note)
+  (if (seq-intersection (org-roam-note-todo-keywords note)
                         org-roam-review-pending-todo-keywords)
       (cons "Unfinished" 1)
     (cons "Complete" 2)))
@@ -748,16 +512,16 @@ needed to be included in reviews. Categorise them as appropriate."
     :instructions "The notes below are outlines of sources,
 grouped by whether they require further processing."
     :group-on #'org-roam-review--note-todo-presence
-    :sort (-on #'string-lessp #'org-roam-review-note-title)
+    :sort (-on #'string-lessp #'org-roam-note-title)
     :notes
     (lambda ()
-      (org-roam-review--cache-collect
+      (org-roam-note-cache-collect
        (lambda (note)
-         (when (seq-contains-p (org-roam-review-note-local-tags note) "outline")
+         (when (seq-contains-p (org-roam-note-local-tags note) "outline")
            note)))))))
 
 (defun org-roam-review--note-added-group (note)
-  (when-let* ((created (org-roam-review-note-created note))
+  (when-let* ((created (org-roam-note-created note))
               (recently (ts-adjust 'hour -24 (ts-now))))
     (cond
      ((ts<= recently created)
@@ -776,12 +540,12 @@ grouped by whether they require further processing."
     :title "Recently Created Notes"
     :instructions "The notes below are sorted by when they were created."
     :group-on #'org-roam-review--note-added-group
-    :sort (-on #'string-lessp #'org-roam-review-note-title)
+    :sort (-on #'string-lessp #'org-roam-note-title)
     :notes
     (lambda ()
-      (org-roam-review--cache-collect
+      (org-roam-note-cache-collect
        (lambda (note)
-         (unless (seq-intersection (org-roam-review-note-tags note) org-roam-review-ignored-tags)
+         (unless (seq-intersection (org-roam-note-tags note) org-roam-note-ignored-tags)
            note)))))))
 
 
@@ -815,7 +579,7 @@ grouped by whether they require further processing."
 A higher score means that the note will appear less frequently."
   (cl-assert (member maturity org-roam-review-maturity-values))
   (cl-assert (derived-mode-p 'org-mode))
-  (when (org-roam-review--daily-note-p (buffer-file-name))
+  (when (org-roam-note--daily-note-p (buffer-file-name))
     (user-error "Cannot set maturity on daily file"))
   (let ((id (org-entry-get-with-inheritance "ID" t)))
     (unless id
@@ -854,8 +618,8 @@ A higher score means that the note will appear less frequently."
   (when-let* ((maturity (org-entry-get-with-inheritance "MATURITY")))
     (org-roam-review--update-note maturity 3))
   (org-roam-review--kill-buffer-for-completed-review)
-  (run-hooks 'org-roam-review-note-accepted-hook)
-  (run-hooks 'org-roam-review-note-processed-hook)
+  (run-hooks 'org-roam-note-accepted-hook)
+  (run-hooks 'org-roam-note-processed-hook)
   (org-roam-review-refresh))
 
 ;;;###autoload
@@ -865,14 +629,14 @@ A higher score means that the note will appear less frequently."
   (when-let* ((maturity (org-entry-get-with-inheritance "MATURITY")))
     (org-roam-review--update-note maturity 5))
   (org-roam-review--kill-buffer-for-completed-review)
-  (run-hooks 'org-roam-review-note-buried-hook)
-  (run-hooks 'org-roam-review-note-processed-hook)
+  (run-hooks 'org-roam-note-buried-hook)
+  (run-hooks 'org-roam-note-processed-hook)
   (org-roam-review-refresh))
 
 (defun org-roam-review--skip-note-for-maturity-assignment-p ()
   (org-with-wide-buffer
-   (or (org-roam-review--daily-note-p (buffer-file-name))
-       (seq-intersection org-roam-review-ignored-tags (org-roam-review--file-or-headline-tags)))))
+   (or (org-roam-note--daily-note-p (buffer-file-name))
+       (seq-intersection org-roam-note-ignored-tags (org-roam-note-file-or-headline-tags)))))
 
 ;;;###autoload
 (defun org-roam-review-set-budding (&optional bury)
