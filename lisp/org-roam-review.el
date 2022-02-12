@@ -667,6 +667,7 @@ them as reviewed with `org-roam-review-accept',
       (org-roam-review--cache-collect
        (lambda (note)
          (when (and (not (org-roam-review-note-ignored-p note))
+                    (zerop (org-roam-review-note-level note))
                     (null (seq-intersection (org-roam-review-note-tags note)
                                             org-roam-review-tags-ignored-for-review-buffer))
                     (org-roam-review-note-due-p note))
