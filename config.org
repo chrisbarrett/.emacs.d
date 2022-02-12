@@ -6127,7 +6127,8 @@ This makes it much easier to edit text using emphasis markers correctly.
       (org-roam-node-visit (org-roam-node-from-id org-roam-index-node-id))
       (delete-other-windows)
       (goto-char (point-min))
-      (org-roam-review)))
+      (org-roam-review)
+      (current-buffer)))
 
   (setq initial-buffer-choice #'initial-buffers)
 #+end_src
