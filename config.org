@@ -5544,6 +5544,7 @@ cookie or 'cleared', which indicates no special priority.
   (use-package org
     :custom
     (org-export-backends '(ascii html latex odt slack gfm))
+    (org-export-with-toc nil)
     (org-html-html5-fancy t)
     (org-html-postamble nil)
     (org-export-exclude-tags '("noexport" "ignore"))
