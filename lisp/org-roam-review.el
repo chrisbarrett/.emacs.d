@@ -615,11 +615,20 @@ A higher score means that the note will appear less frequently."
 
 (defmacro org-roam-review--visiting-note-at-point (&rest body)
   (declare (indent 0))
-  `(let ((node (org-roam-node-at-point t)))
-     (with-current-buffer (find-file-noselect (org-roam-node-file node))
-       (save-excursion
-         (goto-char (org-roam-node-point node))
-         ,@body))))
+  `(let* ((node (org-roam-node-at-point t))
+          (file (org-roam-node-file node)))
+     (cond
+      (file
+       (with-current-buffer (find-file-noselect file)
+         (save-excursion
+           (goto-char (org-roam-node-point node))
+           ,@body)))
+      ((derived-mode-p 'org-mode)
+       (org-with-wide-buffer
+         (point-min)
+         ,@body))
+      (t
+       (error "Invalid context for visiting node")))))
 
 ;;;###autoload
 (defun org-roam-review-accept ()
