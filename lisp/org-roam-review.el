@@ -141,9 +141,9 @@ interactively. Extra messages will be logged."
           ((forbidden required) (-separate (lambda (it) (string-prefix-p "-" it))
                                            (split-string input " " t))))
     (org-roam-note-filter-create :forbidden (seq-map (lambda (it) (string-remove-prefix "-" it))
-                                                       forbidden)
-                                   :required (seq-map (lambda (it) (string-remove-prefix "+" it))
-                                                      required))))
+                                                     forbidden)
+                                 :required (seq-map (lambda (it) (string-remove-prefix "+" it))
+                                                    required))))
 
 (defun org-roam-review-modify-tags (tags-filter)
   "Read a tags filter interactively.
@@ -581,9 +581,9 @@ A higher score means that the note will appear less frequently."
   (cl-assert (derived-mode-p 'org-mode))
   (when (org-roam-note--daily-note-p (buffer-file-name))
     (user-error "Cannot set maturity on daily file"))
-  (let ((id (org-entry-get-with-inheritance "ID" t)))
+  (let ((id (org-entry-get (point-min) "ID")))
     (unless id
-      (error "No ID property for tree at point"))
+      (error "Not visiting an Evergreen Note--no ID property found"))
     (org-with-point-at (org-find-property "ID" id)
       (atomic-change-group
         (let ((next-review (org-roam-review--update-next-review score)))
@@ -698,9 +698,9 @@ notes that aren't expected to be refined over time.
 This sets a special property, REVIEW_EXCLUDED, to indicate that
 it is not a candidate for reviews."
   (interactive)
-  (let ((id (org-entry-get-with-inheritance "ID" t)))
+  (let ((id (org-entry-get (point-min) "ID")))
     (unless id
-      (error "No ID property for tree at point"))
+      (error "No ID in buffer"))
     (org-with-point-at (org-find-property "ID" id)
       (atomic-change-group
         (org-roam-review-remove-managed-properties-in-node id)
@@ -716,9 +716,9 @@ it is not a candidate for reviews."
   (interactive)
   (atomic-change-group
     (org-with-wide-buffer
-     (let ((id (org-entry-get-with-inheritance "ID" t)))
+     (let ((id (org-entry-get (point-min) "ID")))
        (unless id
-         (error "No ID property for tree at point"))
+         (error "No ID in buffer"))
        (org-roam-review-remove-managed-properties-in-node id)
        (org-roam-tag-add '("author"))
        (save-buffer)))))
