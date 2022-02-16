@@ -99,8 +99,6 @@ candidate for reviews."
 (defvar org-roam-note-processed-hook nil)
 
 
-
-
 ;;; Review buffers
 
 (defun org-roam-note-due-p (note)
