@@ -6421,6 +6421,27 @@ property drawer and the title. Advise it to fix that.
     :commands (org-roam-links-view org-roam-links-backlinks-view))
 #+end_src
 
+** Exclude transcluded headings from org-roam previews
+#+begin_src emacs-lisp
+  (use-package org-roam
+    :init
+    (defun config-org-roam-preview-function ()
+      (let ((beg (progn (org-roam-end-of-meta-data t)
+                        (point)))
+            (end (progn (org-next-visible-heading 1)
+                        (point))))
+        (->> (buffer-substring-no-properties beg end)
+             (s-lines)
+             (seq-filter (lambda (it)
+                           (if (string-match-p (rx bol (* space) "#+transclude:") it)
+                               (string-match-p ":only-contents" it)
+                             t)))
+             (s-join "\n")
+             (string-trim))))
+    :custom
+    (org-roam-preview-function #'config-org-roam-preview-function))
+#+end_src
+
 * Load Lisp from other locations
 #+begin_src emacs-lisp
   (use-package org
