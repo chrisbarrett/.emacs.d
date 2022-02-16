@@ -90,7 +90,7 @@
 
 (defun org-roam-notes-from-backlinks (backlinks &optional all)
   (org-roam-notes-from-nodes (seq-map #'org-roam-backlink-source-node backlinks)
-                                    all))
+                             all))
 
 
 ;;; Define cache operations
@@ -207,9 +207,9 @@ https://github.com/org-roam/org-roam/issues/2032"
   (when (and (derived-mode-p 'org-mode)
              (not (org-roam-note--daily-note-p (buffer-file-name))))
     (org-roam-note--cache-mutate (lambda (cache)
-                                     (org-roam-note--update-by-props-in-buffer cache
-                                                                                 (current-buffer)
-                                                                                 (buffer-file-name))))))
+                                   (org-roam-note--update-by-props-in-buffer cache
+                                                                             (current-buffer)
+                                                                             (buffer-file-name))))))
 
 (defun org-roam-note-cache-collect (fn)
   (let ((table (copy-hash-table (org-roam-note--cache))))
@@ -236,9 +236,9 @@ https://github.com/org-roam/org-roam/issues/2032"
                    (org-mode)
                    (unless (org-roam-note--cache-skip-note-p file)
                      (org-roam-note--cache-mutate (lambda (cache)
-                                                      (org-roam-note--update-by-props-in-buffer cache
-                                                                                                  (current-buffer)
-                                                                                                  file))))))))
+                                                    (org-roam-note--update-by-props-in-buffer cache
+                                                                                              (current-buffer)
+                                                                                              file))))))))
            t))
 
 ;;;###autoload
