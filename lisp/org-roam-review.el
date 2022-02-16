@@ -160,6 +160,9 @@ When called with a `C-u' prefix arg, clear the current filter."
     (define-key keymap (kbd "/") #'org-roam-review-modify-tags)
     (define-key keymap (kbd "TAB") #'magit-section-cycle)
     (define-key keymap (kbd "g") #'org-roam-review-refresh)
+    (define-key keymap (kbd "C-c r r") #'org-roam-review-accept)
+    (define-key keymap (kbd "C-c r u") #'org-roam-review-bury)
+    (define-key keymap (kbd "C-c r x") #'org-roam-review-set-excluded)
     (define-key keymap [remap org-roam-buffer-refresh] #'org-roam-review-refresh)
     keymap))
 
@@ -601,37 +604,48 @@ A higher score means that the note will appear less frequently."
 
 (defun org-roam-review--kill-buffer-for-completed-review ()
   (let ((review-buf (get-buffer "*org-roam-review*")))
-    (mapc (lambda (win)
-            (when (equal review-buf (window-buffer win))
-              (delete-window win)))
-          (window-list))
+    (when (< 1 (length (window-list)))
+      (mapc (lambda (win)
+              (when (equal review-buf (window-buffer win))
+                (delete-window win)))
+            (window-list)))
     (save-buffer)
     (kill-buffer)
     (-some->> review-buf
       (org-roam-review-display-buffer-and-select)
       (select-window))))
 
+(defmacro org-roam-review--visiting-note-at-point (&rest body)
+  (declare (indent 0))
+  `(let ((node (org-roam-node-at-point t)))
+     (with-current-buffer (find-file-noselect (org-roam-node-file node))
+       (save-excursion
+         (goto-char (org-roam-node-point node))
+         ,@body))))
+
 ;;;###autoload
 (defun org-roam-review-accept ()
   "Confirm review of the current note."
   (interactive)
-  (when-let* ((maturity (org-entry-get-with-inheritance "MATURITY")))
-    (org-roam-review--update-note maturity 3))
-  (org-roam-review--kill-buffer-for-completed-review)
-  (run-hooks 'org-roam-note-accepted-hook)
-  (run-hooks 'org-roam-note-processed-hook)
-  (org-roam-review-refresh))
+  (org-roam-review--visiting-note-at-point
+    (when-let* ((maturity (org-entry-get-with-inheritance "MATURITY")))
+      (org-roam-review--update-note maturity 3))
+    (org-roam-review--kill-buffer-for-completed-review)
+    (run-hooks 'org-roam-note-accepted-hook)
+    (run-hooks 'org-roam-note-processed-hook)
+    (org-roam-review-refresh)))
 
 ;;;###autoload
 (defun org-roam-review-bury ()
   "Confirm review of the current note and bury it."
   (interactive)
-  (when-let* ((maturity (org-entry-get-with-inheritance "MATURITY")))
-    (org-roam-review--update-note maturity 5))
-  (org-roam-review--kill-buffer-for-completed-review)
-  (run-hooks 'org-roam-note-buried-hook)
-  (run-hooks 'org-roam-note-processed-hook)
-  (org-roam-review-refresh))
+  (org-roam-review--visiting-note-at-point
+    (when-let* ((maturity (org-entry-get-with-inheritance "MATURITY")))
+      (org-roam-review--update-note maturity 5))
+    (org-roam-review--kill-buffer-for-completed-review)
+    (run-hooks 'org-roam-note-buried-hook)
+    (run-hooks 'org-roam-note-processed-hook)
+    (org-roam-review-refresh)))
 
 (defun org-roam-review--skip-note-for-maturity-assignment-p ()
   (org-with-wide-buffer
@@ -645,8 +659,9 @@ A higher score means that the note will appear less frequently."
 With prefix arg BURY, the note is less likely to be surfaced in
 the future."
   (interactive "P")
-  (unless (org-roam-review--skip-note-for-maturity-assignment-p)
-    (org-roam-review--update-note "budding" (if bury 5 3))))
+  (org-roam-review--visiting-note-at-point
+    (unless (org-roam-review--skip-note-for-maturity-assignment-p)
+      (org-roam-review--update-note "budding" (if bury 5 3)))))
 
 ;;;###autoload
 (defun org-roam-review-set-seedling (&optional bury)
@@ -655,8 +670,9 @@ the future."
 With prefix arg BURY, the note is less likely to be surfaced in
 the future."
   (interactive "P")
-  (unless (org-roam-review--skip-note-for-maturity-assignment-p)
-    (org-roam-review--update-note "seedling" (if bury 5 1))))
+  (org-roam-review--visiting-note-at-point
+    (unless (org-roam-review--skip-note-for-maturity-assignment-p)
+      (org-roam-review--update-note "seedling" (if bury 5 1)))))
 
 ;;;###autoload
 (defun org-roam-review-set-evergreen (&optional bury)
@@ -665,8 +681,9 @@ the future."
 With prefix arg BURY, the note is less likely to be surfaced in
 the future."
   (interactive "P")
-  (unless (org-roam-review--skip-note-for-maturity-assignment-p)
-    (org-roam-review--update-note "evergreen" (if bury 5 4))))
+  (org-roam-review--visiting-note-at-point
+    (unless (org-roam-review--skip-note-for-maturity-assignment-p)
+      (org-roam-review--update-note "evergreen" (if bury 5 4)))))
 
 (defconst org-roam-review--properties
   '("LAST_REVIEW"
@@ -698,30 +715,32 @@ notes that aren't expected to be refined over time.
 This sets a special property, REVIEW_EXCLUDED, to indicate that
 it is not a candidate for reviews."
   (interactive)
-  (let ((id (org-entry-get (point-min) "ID")))
-    (unless id
-      (error "No ID in buffer"))
-    (org-with-point-at (org-find-property "ID" id)
-      (atomic-change-group
-        (org-roam-review-remove-managed-properties-in-node id)
-        (org-set-property "REVIEW_EXCLUDED" "t"))
-      (save-buffer))
+  (org-roam-review--visiting-note-at-point
+    (let ((id (org-entry-get (point-min) "ID")))
+      (unless id
+        (error "No ID in buffer"))
+      (org-with-point-at (org-find-property "ID" id)
+        (atomic-change-group
+          (org-roam-review-remove-managed-properties-in-node id)
+          (org-set-property "REVIEW_EXCLUDED" "t"))
+        (save-buffer))
 
-    (let ((title (org-roam-node-title (org-roam-node-from-id id))))
-      (message "Excluded note `%s' from reviews" title))))
+      (let ((title (org-roam-node-title (org-roam-node-from-id id))))
+        (message "Excluded note `%s' from reviews" title)))))
 
 ;;;###autoload
 (defun org-roam-review-set-author ()
   "Mark this note as an author note."
   (interactive)
-  (atomic-change-group
-    (org-with-wide-buffer
-     (let ((id (org-entry-get (point-min) "ID")))
-       (unless id
-         (error "No ID in buffer"))
-       (org-roam-review-remove-managed-properties-in-node id)
-       (org-roam-tag-add '("author"))
-       (save-buffer)))))
+  (org-roam-review--visiting-note-at-point
+    (atomic-change-group
+      (org-with-wide-buffer
+       (let ((id (org-entry-get (point-min) "ID")))
+         (unless id
+           (error "No ID in buffer"))
+         (org-roam-review-remove-managed-properties-in-node id)
+         (org-roam-tag-add '("author"))
+         (save-buffer))))))
 
 (provide 'org-roam-review)
 
