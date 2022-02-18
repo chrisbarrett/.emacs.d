@@ -16,6 +16,7 @@
 (require 'ht)
 (require 'seq)
 (require 'thingatpt)
+(require 'org-roam-review)
 
 (cl-eval-when (compile)
   (require 'org)
@@ -272,7 +273,7 @@ handles file titles, IDs and tags better."
             (org-funcs-set-title title)
             (require 'org-roam-review)
             (when-let* ((tags (-difference (-union (org-funcs--file-tags) tags)
-                                           (-union org-roam-review-ignored-tags
+                                           (-union org-roam-note-ignored-tags
                                                    org-roam-review-maturity-values))))
               (org-funcs--set-file-tags tags))
             (save-buffer)
