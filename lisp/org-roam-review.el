@@ -600,8 +600,8 @@ A higher score means that the note will appear less frequently."
            ,@body)))
       ((derived-mode-p 'org-mode)
        (org-with-wide-buffer
-         (point-min)
-         ,@body))
+        (point-min)
+        ,@body))
       (t
        (error "Invalid context for visiting node")))))
 
