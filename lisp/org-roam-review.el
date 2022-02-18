@@ -199,12 +199,14 @@ nodes for review."
       (insert "\n\n"))))
 
 (defun org-roam-review--insert-node (node skip-preview-p insert-preview-fn)
-  (magit-insert-section section (org-roam-node-section nil t)
-    (magit-insert-heading (propertize (org-roam-node-title node)
-                                      'font-lock-face 'magit-section-secondary-heading))
-    (oset section node node)
-    (unless skip-preview-p
-      (funcall insert-preview-fn node))))
+  (catch 'skip
+    (atomic-change-group
+      (magit-insert-section section (org-roam-node-section nil t)
+        (magit-insert-heading (propertize (org-roam-node-title node)
+                                          'font-lock-face 'magit-section-secondary-heading))
+        (oset section node node)
+        (unless skip-preview-p
+          (funcall insert-preview-fn node))))))
 
 (defvar org-roam-review-default-placeholder
   (propertize "(None)" 'face 'font-lock-comment-face))
@@ -325,7 +327,9 @@ The following keyword arguments are optional:
   representation of notes using the magit-section API.
 
 - INSERT-PREVIEW-FN is a function that takes a node and is
-  expected to insert a preview using the magit-section API.
+  expected to insert a preview using the magit-section API. As a
+  special case, throwing an error with a `skip' tag will cause
+  insertion of this entry to be skipped.
 
 - GROUP-ON is a projection function that is passed a note and
   should return one of:
