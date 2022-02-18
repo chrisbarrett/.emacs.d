@@ -333,9 +333,7 @@ handles file titles, IDs and tags better."
   "Find an org-roam node. See `org-roam-node-find'."
   (interactive "P")
   (let ((filter (lambda (node)
-                  (and
-                   (zerop (org-roam-node-level node))
-                   (not (seq-contains-p (org-roam-node-tags node) "dailies"))))))
+                  (not (seq-contains-p (org-roam-node-tags node) "dailies")))))
     (org-roam-node-find other-window nil filter)))
 
 (defun org-funcs-new-note ()
