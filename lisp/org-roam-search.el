@@ -240,8 +240,7 @@ BUILDER is the command argument builder."
         (insert (propertize "(Matched title)" 'font-lock-face 'font-lock-comment-face))
         (insert "\n\n"))
        (t
-        (insert (propertize "(Matched tags or metadata)" 'font-lock-face 'font-lock-comment-face))
-        (insert "\n\n"))))))
+        (throw 'skip nil))))))
 
 (defvar org-roam-search-view-query-history nil)
 
