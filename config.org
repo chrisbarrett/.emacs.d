@@ -2063,6 +2063,11 @@ show the cursor in deselected windows.
     (evil-collection-init))
 #+end_src
 
+*** Add alias for renamed function
+#+begin_src emacs-lisp
+  (defalias 'mu4e--main-action-str 'mu4e~main-action-str)
+#+end_src
+
 ** =evil-args= - Text motions for function parameter lists
 #+begin_src emacs-lisp
   (use-package evil-args
