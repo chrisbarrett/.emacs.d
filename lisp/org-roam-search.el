@@ -274,6 +274,7 @@ QUERY is a PRCE regexp string that will be passed to ripgrep."
    (org-roam-review-create-buffer
     :title (format "Search Results: %s" query)
     :placeholder "No search results"
+    :inhibit-auto-refresh t
     :buffer-name org-roam-search-buffer-name
     :group-on #'org-roam-review--maturity-header-for-note
     :sort (-on #'ts< (lambda (it) (or (org-roam-note-created it) (ts-now))))
