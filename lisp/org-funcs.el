@@ -152,6 +152,44 @@ TAGS are the tags to use when displaying the list."
   (interactive)
   (org-roam-node-visit (org-roam-node-from-title-or-alias "Accounts")))
 
+(defun org-funcs-inline-note (src-node dest-node)
+  "Inline the contents of one org-roam note into another, removing the original."
+  (interactive
+   (let* ((src (org-roam-node-read (-some->> (org-roam-node-at-point) (org-roam-node-title)) nil nil t "Source: "))
+          (dest (org-roam-node-read nil (lambda (node)
+                                          (and
+                                           (not (equal (org-roam-node-id node) (org-roam-node-id src)))
+                                           (zerop (org-roam-node-level node))
+                                           (not (seq-contains-p (org-roam-node-tags node) "dailies"))))
+                                    nil t "Destination: ")))
+     (list src dest)))
+
+  (let* ((org-inhibit-startup t)
+         (src-buffer (find-file-noselect (org-roam-node-file src-node)))
+         (content
+          (with-current-buffer src-buffer
+            (org-with-wide-buffer
+             (goto-char (point-min))
+             (org-roam-end-of-meta-data t)
+             (buffer-substring (point) (point-max))))))
+    (find-file (org-roam-node-file dest-node))
+    (org-with-wide-buffer
+     (goto-char (point-max))
+     (ensure-empty-lines 2)
+     (insert (format "* %s\n" (org-roam-node-title src-node)))
+     (org-set-property "ID" (org-roam-node-id src-node))
+     (save-restriction
+       (narrow-to-region (point) (point-max))
+       (insert content)
+       (org-map-entries 'org-do-promote)))
+    (delete-file (org-roam-node-file src-node))
+    (save-buffer)
+    (when (buffer-live-p src-buffer)
+      (kill-buffer src-buffer)))
+
+  (org-roam-node-visit dest-node)
+  (message "Inlined note successfully"))
+
 
 (defun org-funcs-set-title (text)
   (org-with-wide-buffer
