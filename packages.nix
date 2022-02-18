@@ -79,7 +79,6 @@
   org-roam
   org-roam-ui
   org-superstar
-  org-transclusion
   orgtbl-aggregate
   origami
   ox-gfm
@@ -115,6 +114,14 @@
   ws-butler
   yaml-mode
   yasnippet
+
+  # KLUDGE: overlay version currently fails to build.
+  (github {
+    name = "org-transclusion";
+    owner = "nobiot";
+    rev = "ccc0aaa72732ea633bf52bcc8a0345cd3ac178fd";
+    sha256 = "0sqs5gi58ngrjqpx35ff4q6lhgz32bcsxb9jkamw0rn18qp92w3p";
+  })
 
   (github {
     name = "org-pretty-table";
