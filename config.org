@@ -532,6 +532,13 @@ Use a header line instead of a mode line.
   (defun advice-ignore-errors (f &rest args)
     (ignore-errors
       (apply f args)))
+
+  (defun advice-inhibit-logging (f &rest args)
+    (let ((message-log-max))
+      (apply f args)))
+
+  (defun advice-clear-minibuffer (&rest _)
+    (message ""))
 #+end_src
 
 ** Run a hook when the theme changes
@@ -6442,6 +6449,12 @@ property drawer and the title. Advise it to fix that.
              (string-trim))))
     :custom
     (org-roam-preview-function #'config-org-roam-preview-function))
+#+end_src
+
+** Silence transclusion messages
+#+begin_src emacs-lisp
+  (advice-add 'org-transclusion-add-all :around #'advice-inhibit-logging)
+  (advice-add 'org-transclusion-add-all :after #'advice-clear-minibuffer)
 #+end_src
 
 * Load Lisp from other locations
