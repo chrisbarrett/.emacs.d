@@ -6322,7 +6322,7 @@ rid of it.
 
 *** Trim trailing newlines
 #+begin_src emacs-lisp
-  (defun config-org-transclusion-trim (_ content)
+  (defun config-org-transclusion-trim (_ content &rest _)
     (concat (string-trim content) "\n"))
 
   (with-eval-after-load 'org-transclusion
