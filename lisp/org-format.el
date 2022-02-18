@@ -58,12 +58,16 @@
            (goto-char (line-beginning-position))
            (ensure-empty-lines org-format-blank-lines-before-heading)))))))
 
+;; NB: Set this higher than the default to avoid interfering with things like
+;; org-transclusion, etc.
+(defvar org-format-on-save-mode-hook-depth 95)
+
 (define-minor-mode org-format-on-save-mode
   "Minor mode to enable formatting on buffer save in org-mode."
   :lighter nil
   (cond
    (org-format-on-save-mode
-    (add-hook 'before-save-hook 'org-format-all-headings nil t))
+    (add-hook 'before-save-hook 'org-format-all-headings org-format-on-save-mode-hook-depth t))
    (t
     (remove-hook 'before-save-hook 'org-format-all-headings t))))
 
