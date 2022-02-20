@@ -163,9 +163,11 @@ Each value is a plist with at lesat the following keys:
       (org-roam-capture-find-or-create-olp heading))))
 
 (defun timekeep--punch-in-for-node (node)
-  (with-current-buffer (org-roam-node-find-noselect node)
-    (org-with-point-at (timekeep--clocktree-headline (current-buffer))
-      (org-clock-in '(16)))))
+  (save-window-excursion
+    (save-excursion
+      (org-roam-node-visit node)
+      (org-with-point-at (timekeep--clocktree-headline (current-buffer))
+        (org-clock-in '(16))))))
 
 (defvar timekeep--session-active-p nil)
 
@@ -309,9 +311,7 @@ on the default headline for that client."
 
 With prefix arg ASK, prompt for the client to open."
   (interactive "P")
-  (switch-to-buffer
-   (org-roam-node-find-noselect
-    (timekeep-last-roam-node ask))))
+  (org-roam-node-visit (timekeep-last-roam-node ask)))
 
 (provide 'timekeep)
 
