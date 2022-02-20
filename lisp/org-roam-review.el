@@ -530,6 +530,10 @@ grouped by whether they require further processing."
 
 
 
+(defvar org-roam-review--maturity-score-revisit 1)
+(defvar org-roam-review--maturity-score-ok 3)
+(defvar org-roam-review--maturity-score-bury 5)
+
 (defun org-roam-review--update-next-review (quality)
   "Adapted from org-drill.
 
@@ -615,7 +619,7 @@ A higher score means that the note will appear less frequently."
   (interactive)
   (org-roam-review--visiting-note-at-point
     (when-let* ((maturity (org-entry-get-with-inheritance "MATURITY")))
-      (org-roam-review--update-note maturity 3))
+      (org-roam-review--update-note maturity org-roam-review--maturity-score-ok))
     (org-roam-review--kill-buffer-for-completed-review)
     (run-hooks 'org-roam-note-accepted-hook)
     (run-hooks 'org-roam-note-processed-hook)
@@ -627,7 +631,7 @@ A higher score means that the note will appear less frequently."
   (interactive)
   (org-roam-review--visiting-note-at-point
     (when-let* ((maturity (org-entry-get-with-inheritance "MATURITY")))
-      (org-roam-review--update-note maturity 5))
+      (org-roam-review--update-note maturity org-roam-review--maturity-score-bury))
     (org-roam-review--kill-buffer-for-completed-review)
     (run-hooks 'org-roam-note-buried-hook)
     (run-hooks 'org-roam-note-processed-hook)
@@ -645,9 +649,12 @@ A higher score means that the note will appear less frequently."
 With prefix arg BURY, the note is less likely to be surfaced in
 the future."
   (interactive "P")
-  (org-roam-review--visiting-note-at-point
-    (unless (org-roam-review--skip-note-for-maturity-assignment-p)
-      (org-roam-review--update-note "budding" (if bury 5 3)))))
+  (let ((score (if bury
+                   org-roam-review--maturity-score-bury
+                 org-roam-review--maturity-score-ok)))
+    (org-roam-review--visiting-note-at-point
+      (unless (org-roam-review--skip-note-for-maturity-assignment-p)
+        (org-roam-review--update-note "budding" score)))))
 
 ;;;###autoload
 (defun org-roam-review-set-seedling (&optional bury)
@@ -656,9 +663,12 @@ the future."
 With prefix arg BURY, the note is less likely to be surfaced in
 the future."
   (interactive "P")
-  (org-roam-review--visiting-note-at-point
-    (unless (org-roam-review--skip-note-for-maturity-assignment-p)
-      (org-roam-review--update-note "seedling" (if bury 5 1)))))
+  (let ((score (if bury
+                   org-roam-review--maturity-score-bury
+                 org-roam-review--maturity-score-revisit)))
+    (org-roam-review--visiting-note-at-point
+      (unless (org-roam-review--skip-note-for-maturity-assignment-p)
+        (org-roam-review--update-note "seedling" score)))))
 
 ;;;###autoload
 (defun org-roam-review-set-evergreen (&optional bury)
@@ -667,9 +677,12 @@ the future."
 With prefix arg BURY, the note is less likely to be surfaced in
 the future."
   (interactive "P")
-  (org-roam-review--visiting-note-at-point
-    (unless (org-roam-review--skip-note-for-maturity-assignment-p)
-      (org-roam-review--update-note "evergreen" (if bury 5 4)))))
+  (let ((score (if bury
+                   org-roam-review--maturity-score-bury
+                 org-roam-review--maturity-score-ok)))
+    (org-roam-review--visiting-note-at-point
+      (unless (org-roam-review--skip-note-for-maturity-assignment-p)
+        (org-roam-review--update-note "evergreen" score)))))
 
 (defconst org-roam-review--properties
   '("LAST_REVIEW"
