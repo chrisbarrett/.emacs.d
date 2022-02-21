@@ -3,7 +3,7 @@
 ;; Copyright (C) 2016  Chris Barrett
 
 ;; Author: Chris Barrett <chris+emacs@walrus.cool>
-;; Package-Requires: ((emacs "24") (s "1.10.0") (dash "2.12.0") (magit "2.12.1"))
+;; Package-Requires: ((emacs "24.3") (s "1.10.0") (magit "2.12.1"))
 
 ;; Version: 0.0.1
 
@@ -96,17 +96,20 @@
         (just-one-space)
         t))))
 
+(defvar-local git-commit-ticket-prefix-enabled t)
+
 ;;;###autoload
 (defun git-commit-ticket-prefix-insert ()
-  (let ((buf (current-buffer)))
-    ;; Run after `server-execute', which is run using
-    ;; a timer which starts immediately.
-    (run-with-timer 0.01 nil
-                    (lambda ()
-                      (when (git-commit-ticket-prefix-insert-ticket-number buf)
-                        (run-with-timer 0.1 nil
-                                        (lambda ()
-                                          (goto-char (line-end-position)))))))))
+  (when git-commit-ticket-prefix-enabled
+    (let ((buf (current-buffer)))
+      ;; Run after `server-execute', which is run using
+      ;; a timer which starts immediately.
+      (run-with-timer 0.01 nil
+                      (lambda ()
+                        (when (git-commit-ticket-prefix-insert-ticket-number buf)
+                          (run-with-timer 0.1 nil
+                                          (lambda ()
+                                            (goto-char (line-end-position))))))))))
 
 ;;;###autoload
 (defun git-commit-ticket-prefix-init ()
