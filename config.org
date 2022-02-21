@@ -1351,10 +1351,14 @@ See: [[https://lists.gnu.org/archive/html/help-gnu-emacs/2014-07/msg00135.html][
 
 ** Useful interactive functions
 #+begin_src emacs-lisp
-  (defun insert-uuid ()
-    "Insert a UUID at point."
-    (interactive "*")
-    (insert (string-trim (shell-command-to-string "uuidgen"))))
+  (defun insert-uuid (&optional upcase-p)
+    "Insert a UUID at point.
+
+  Prefix arg UPCASE-P determines whether the UUID is downcased or
+  upcased on insertion."
+    (interactive "*P")
+    (let ((uuid (string-trim (shell-command-to-string "uuidgen"))))
+      (insert (if upcase-p (upcase uuid) (downcase uuid)))))
 #+end_src
 
 #+begin_src emacs-lisp
