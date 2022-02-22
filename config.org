@@ -6360,15 +6360,26 @@ rid of it.
 
 *** Teach M-left and M-right to promote & demote
 #+begin_src emacs-lisp
+  (defun config-org-at-transclusion-keyword-p ()
+    (when-let* ((elm (org-element-at-point)))
+      (and (string= "keyword" (org-element-type elm))
+           (string= "TRANSCLUDE" (org-element-property :key elm)))))
+
   (defun config-org-transclusion-promote ()
-    (when (and (require 'org-transclusion nil t)
-               (org-transclusion-within-transclusion-p))
-      (org-transclusion-promote-subtree)))
+    (when (require 'org-transclusion nil t)
+      (cond
+       ((org-transclusion-within-transclusion-p)
+        (org-transclusion-promote-subtree))
+       ((config-org-at-transclusion-keyword-p)
+        (org-transclusion-add)))))
 
   (defun config-org-transclusion-demote ()
-    (when (and (require 'org-transclusion nil t)
-               (org-transclusion-within-transclusion-p))
-      (org-transclusion-demote-subtree)))
+    (when (require 'org-transclusion nil t)
+      (cond
+       ((org-transclusion-within-transclusion-p)
+        (org-transclusion-demote-subtree))
+       ((config-org-at-transclusion-keyword-p)
+        (org-transclusion-add)))))
 
   (add-hook 'org-metaleft-hook #'config-org-transclusion-promote)
   (add-hook 'org-metaright-hook #'config-org-transclusion-demote)
