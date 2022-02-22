@@ -181,7 +181,7 @@ TAGS are the tags to use when displaying the list."
      (save-restriction
        (narrow-to-region (point) (point-max))
        (insert content)
-       (org-map-entries 'org-do-promote)))
+       (org-map-entries 'org-do-demote)))
     (delete-file (org-roam-node-file src-node))
     (save-buffer)
     (when (buffer-live-p src-buffer)
