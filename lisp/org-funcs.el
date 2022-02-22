@@ -30,6 +30,7 @@
 (autoload 'org-cliplink-retrieve-title-synchronously "org-cliplink")
 (autoload 'org-project-p "org-project")
 (autoload 'org-project-skip-stuck-projects "org-project")
+(autoload 'org-transclusion-remove-all "org-transclusion")
 
 
 ;; Capture template helpers
@@ -301,6 +302,11 @@ handles file titles, IDs and tags better."
             (id (org-id-get-create)))
 
         (atomic-change-group
+          (save-restriction
+            (org-narrow-to-subtree)
+            (when (bound-and-true-p org-transclusion-mode)
+              (org-transclusion-remove-all t)))
+
           (org-cut-subtree)
           (insert (org-link-make-string (format "id:%s" id) (org-link-display-format title)))
           (newline)
@@ -313,7 +319,9 @@ handles file titles, IDs and tags better."
             (when-let* ((tags (-difference (-union (org-funcs--file-tags) tags)
                                            (-union org-roam-note-ignored-tags
                                                    org-roam-review-maturity-values))))
-              (org-funcs--set-file-tags tags))
+              (org-funcs--set-file-tags tags)
+              (when (bound-and-true-p org-transclusion-mode)
+                (org-transclusion-add-all)))
             (save-buffer)
             (run-hook-with-args 'org-roam-capture-new-node-hook)))))))
 
