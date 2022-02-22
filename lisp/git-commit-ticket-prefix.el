@@ -3,9 +3,6 @@
 ;; Copyright (C) 2016  Chris Barrett
 
 ;; Author: Chris Barrett <chris+emacs@walrus.cool>
-;; Package-Requires: ((emacs "24.3") (s "1.10.0") (magit "2.12.1"))
-
-;; Version: 0.0.1
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -27,39 +24,6 @@
 
 ;; It extracts the issue ticket number from the current branch name, and prepends
 ;; the ticket number to each commit messages.
-
-;;; Installation:
-
-;; This package depends on other packages on MELPA. Make sure you have MELPA
-;; configured as a package repository in your init.el:
-;;
-;;   (require 'package)
-;;
-;;   (setq package-archives
-;;         '(("gnu" . "https://elpa.gnu.org/packages/")
-;;           ("melpa" . "https://melpa.org/packages/")))
-;;
-;;   (package-initialize)
-;;
-;;   (unless package-archive-contents
-;;     (package-refresh-contents))
-;;
-;;
-;; Then, install this file with `M-x package-install-file <path-to-this-file>'.
-;;
-;; Add `(git-commit-ticket-prefix-init)' to your Emacs configuration to initialise the package.
-;;
-;;   (autoload 'git-commit-ticket-prefix-init 'git-commit-ticket-prefix)
-;;
-;;   (with-eval-after-load 'git-commit
-;;     (git-commit-ticket-prefix-init))
-;;
-;; Alternatively, if you use `use-package', the form below will do the right thing:
-;;
-;;   (use-package git-commit-ticket-prefix
-;;     :after git-commit
-;;     :commands git-commit-ticket-prefix-init
-;;     :config (git-commit-ticket-prefix-init))
 
 ;;; Code:
 
@@ -96,25 +60,26 @@
         (just-one-space)
         t))))
 
-(defvar-local git-commit-ticket-prefix-enabled t)
-
 ;;;###autoload
 (defun git-commit-ticket-prefix-insert ()
-  (when git-commit-ticket-prefix-enabled
-    (let ((buf (current-buffer)))
-      ;; Run after `server-execute', which is run using
-      ;; a timer which starts immediately.
-      (run-with-timer 0.01 nil
-                      (lambda ()
-                        (when (git-commit-ticket-prefix-insert-ticket-number buf)
-                          (run-with-timer 0.1 nil
-                                          (lambda ()
-                                            (goto-char (line-end-position))))))))))
+  (let ((buf (current-buffer)))
+    ;; Run after `server-execute', which is run using
+    ;; a timer which starts immediately.
+    (run-with-timer 0.01 nil
+                    (lambda ()
+                      (when (git-commit-ticket-prefix-insert-ticket-number buf)
+                        (run-with-timer 0.1 nil
+                                        (lambda ()
+                                          (goto-char (line-end-position)))))))))
 
 ;;;###autoload
-(defun git-commit-ticket-prefix-init ()
-  (add-hook 'git-commit-setup-hook #'git-commit-ticket-prefix-insert)
-  (define-key git-commit-mode-map (kbd "C-c C-a") #'git-commit-ticket-prefix-insert-ticket-number))
+(define-minor-mode git-commit-ticket-prefix-autoinsert-mode
+  "Minor mode enabling automatic insertion of ticket prefixes to commit messages."
+  :group 'git-commit-ticket-prefix
+  :global t
+  (if git-commit-ticket-prefix-autoinsert-mode
+      (add-hook 'git-commit-setup-hook #'git-commit-ticket-prefix-insert)
+    (remove-hook 'git-commit-setup-hook #'git-commit-ticket-prefix-insert)))
 
 (provide 'git-commit-ticket-prefix)
 

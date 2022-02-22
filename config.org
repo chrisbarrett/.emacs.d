@@ -3584,8 +3584,8 @@ See: https://github.com/magit/magit/commit/26e064e1d78acb4d4d422a0a5743609612863
 *** =git-commit-ticket-prefix= - Add ticket number to commit messaging
 #+begin_src emacs-lisp
   (use-package git-commit-ticket-prefix
-    :commands (git-commit-ticket-prefix-insert)
-    :hook (git-commit-setup . git-commit-ticket-prefix-insert))
+    :general (:keymaps 'git-commit-mode-map "C-c C-a"
+              'git-commit-ticket-prefix-insert-ticket-number))
 #+end_src
 
 ** =browse-at-remote= - Browse file at remote
