@@ -6287,25 +6287,25 @@ There's probably a saner way to do this.
           (advice-add command :around #'org-transclusion-local-map-passthrough)))))
 #+end_src
 
-*** Support deleting whole headlines containing transclusions
+*** Improve transclusion handling with structural editing commands.
 When using structural editing commands, I don't want to have to think about whether a headline is a transclusion or not.
 #+begin_src emacs-lisp
-  (defun config-org-at-writable-subtree-p ()
-    (org-with-wide-buffer
-     (cond
-      ((org-at-heading-p)
-       (not (get-text-property (point) 'read-only)))
-      (t
-       (org-previous-visible-heading 1)
-       (not (get-text-property (point) 'read-only))))))
+  (defun config-org-transclusion-strip-subtree (&rest _)
+    (when (require 'org-transclusion nil t)
+      (org-with-wide-buffer
+       (org-narrow-to-subtree)
+       (org-transclusion-remove-all t))))
 
-  (defun config-maybe-ignore-transclusion-read-only (fn &rest args)
-    (let ((inhibit-read-only (config-org-at-writable-subtree-p)))
-      (apply fn args)))
+  (defun config-org-transclusion-restore-subtree (&optional _ cut &rest _)
+    (when (require 'org-transclusion nil t)
+      (unless cut
+        (org-with-wide-buffer
+         (org-narrow-to-subtree)
+         (org-transclusion-add-all t)))))
 
-  (use-package org-transclusion
-    :config
-    (advice-add 'org-cut-subtree :around #'config-maybe-ignore-transclusion-read-only))
+  (advice-add 'org-copy-subtree :before #'config-org-transclusion-strip-subtree)
+  (advice-add 'org-copy-subtree :after #'config-org-transclusion-restore-subtree)
+  (advice-add 'org-paste-subtree :after #'config-org-transclusion-restore-subtree)
 #+end_src
 
 *** =org-indent= compatibility
