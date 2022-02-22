@@ -6385,31 +6385,6 @@ rid of it.
   (add-hook 'org-metaright-hook #'config-org-transclusion-demote)
 #+end_src
 
-*** Fix buffer promotion function
-=org-roam-promote-entire-buffer= will leave stranded content between the top-level
-property drawer and the title. Advise it to fix that.
-
-#+begin_src emacs-lisp
-  (defun config-org-roam-cleanup-after-promote-entire-buffer (&rest _)
-    (save-match-data
-      (org-with-wide-buffer
-       (goto-char (point-min))
-       (when (org-at-property-drawer-p)
-         (org-forward-element))
-       (unless (thing-at-point-looking-at (rx bol "#+title"))
-         (let* ((start (point))
-                (end (progn (search-forward-regexp (rx bol "#+title"))
-                            (match-beginning 0)))
-                (str (buffer-substring start end)))
-           (delete-region start end)
-           (while (org-at-keyword-p)
-             (org-forward-element))
-           (newline)
-           (insert str))))))
-
-  (advice-add 'org-roam-promote-entire-buffer :after 'config-org-roam-cleanup-after-promote-entire-buffer)
-#+end_src
-
 *** Teach ~C-c C-c~ to refresh
 #+begin_src emacs-lisp
   (defun config-org-transclusion-refresh-at-point ()
@@ -6433,6 +6408,31 @@ property drawer and the title. Advise it to fix that.
   (advice-add 'org-transclusion-refresh :after #'config-org-transclusion-apply-indentation)
   (advice-add 'org-transclusion-live-sync-exit :after #'config-org-transclusion-apply-indentation)
   (advice-add 'org-transclusion-add :after #'config-org-transclusion-apply-indentation)
+#+end_src
+
+** Fix buffer promotion function
+=org-roam-promote-entire-buffer= will leave stranded content between the top-level
+property drawer and the title. Advise it to fix that.
+
+#+begin_src emacs-lisp
+  (defun config-org-roam-cleanup-after-promote-entire-buffer (&rest _)
+    (save-match-data
+      (org-with-wide-buffer
+       (goto-char (point-min))
+       (when (org-at-property-drawer-p)
+         (org-forward-element))
+       (unless (thing-at-point-looking-at (rx bol "#+title"))
+         (let* ((start (point))
+                (end (progn (search-forward-regexp (rx bol "#+title"))
+                            (match-beginning 0)))
+                (str (buffer-substring start end)))
+           (delete-region start end)
+           (while (org-at-keyword-p)
+             (org-forward-element))
+           (newline)
+           (insert str))))))
+
+  (advice-add 'org-roam-promote-entire-buffer :after 'config-org-roam-cleanup-after-promote-entire-buffer)
 #+end_src
 
 ** =org-roam-search= - a search interface that works better with org-roam
