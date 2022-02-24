@@ -141,36 +141,40 @@
           (push (match-string-no-properties 1) acc))
         (seq-uniq acc)))))
 
+(defun org-roam-note--buffer-title ()
+  (org-with-wide-buffer
+   (save-match-data
+     (goto-char (point-min))
+     (when (search-forward-regexp (rx bol "#+title:" (* space) (group (+ any)) eol) nil t)
+       (match-string-no-properties 1)))))
+
+(defun org-roam-note-at-point ()
+  (when-let* ((id (org-entry-get-with-inheritance "ID")))
+    (org-roam-note-create
+     :id id
+     :file (buffer-file-name)
+     :level (if (org-before-first-heading-p)
+                0
+              (car (org-heading-components)))
+     :todo-keywords (org-roam-note--todo-keywords-in-buffer)
+     :next-review (-some->> (org-entry-get-with-inheritance "NEXT_REVIEW") (ts-parse-org))
+     :last-review (-some->> (org-entry-get-with-inheritance "LAST_REVIEW") (ts-parse-org))
+     :created (-some->> (org-entry-get-with-inheritance "CREATED") (ts-parse-org))
+     :maturity (org-entry-get-with-inheritance "MATURITY")
+     :title (substring-no-properties (or (org-get-heading t t t) (org-roam-note--buffer-title)))
+     :local-tags (org-roam-note-file-or-headline-tags 'local)
+     :tags (org-roam-note-file-or-headline-tags))))
+
 (defun org-roam-notes-from-buffer (buf file &optional all)
   (with-current-buffer  buf
     (org-with-wide-buffer
      (save-match-data
-       (goto-char (point-min))
-       (let ((acc)
-             (buffer-title
-              (save-excursion
-                (search-forward-regexp (rx bol "#+title:" (* space) (group (+ any)) eol) nil t)
-                (match-string 1))))
-
+       (let ((acc))
+         (goto-char (point-min))
          (while (search-forward-regexp (org-re-property "ID") nil t)
            (unless (and (not all)
                         (org-roam-note--cache-skip-note-p file))
-             (let* ((id (match-string-no-properties 3))
-                    (item (org-roam-note-create
-                           :id id
-                           :file file
-                           :level (if (org-before-first-heading-p)
-                                      0
-                                    (car (org-heading-components)))
-                           :todo-keywords (org-roam-note--todo-keywords-in-buffer)
-                           :next-review (-some->> (org-entry-get-with-inheritance "NEXT_REVIEW") (ts-parse-org))
-                           :last-review (-some->> (org-entry-get-with-inheritance "LAST_REVIEW") (ts-parse-org))
-                           :created (-some->> (org-entry-get-with-inheritance "CREATED") (ts-parse-org))
-                           :maturity (org-entry-get-with-inheritance "MATURITY")
-                           :title (substring-no-properties (or (org-get-heading t t t) buffer-title))
-                           :local-tags (org-roam-note-file-or-headline-tags 'local)
-                           :tags (org-roam-note-file-or-headline-tags))))
-               (push item acc))))
+             (push (org-roam-note-at-point) acc)))
          (nreverse acc))))))
 
 (defun org-roam-note-excluded-note-ids-from-buffer (buf file)
