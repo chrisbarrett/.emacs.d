@@ -6264,6 +6264,15 @@ This makes it much easier to edit text using emphasis markers correctly.
      [remap evil-org-<] 'org-transclusion-promote-subtree))
 #+end_src
 
+*** Don't transclude if org-inhibit-startup is set
+#+begin_src emacs-lisp
+  (defun config-disable-transclusion-when-inhibited-startup-on (fn &rest args)
+    (unless org-inhibit-startup
+      (apply fn args)))
+
+  (advice-add 'org-transclusion-add :around #'config-disable-transclusion-when-inhibited-startup-on)
+#+end_src
+
 *** =evil-org= compatibility
 We want to use =org-transclusion= commands instead of the evil ones where
 appropriate. Iterate through the evil-org-mode keymap and apply advice to each
