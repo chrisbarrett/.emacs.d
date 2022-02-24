@@ -148,11 +148,11 @@
      (when (search-forward-regexp (rx bol "#+title:" (* space) (group (+ any)) eol) nil t)
        (match-string-no-properties 1)))))
 
-(defun org-roam-note-at-point ()
+(defun org-roam-note-at-point (&optional file)
   (when-let* ((id (org-entry-get-with-inheritance "ID")))
     (org-roam-note-create
      :id id
-     :file (buffer-file-name)
+     :file (or file (buffer-file-name))
      :level (if (org-before-first-heading-p)
                 0
               (car (org-heading-components)))
@@ -183,7 +183,7 @@
          (while (search-forward-regexp (org-re-property "ID") nil t)
            (unless (and (not all)
                         (org-roam-note--cache-skip-note-p file))
-             (push (org-roam-note-at-point) acc)))
+             (push (org-roam-note-at-point file) acc)))
          (nreverse acc))))))
 
 (defun org-roam-note-excluded-note-ids-from-buffer (buf file)
