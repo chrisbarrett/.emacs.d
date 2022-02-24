@@ -211,11 +211,12 @@ BUILDER is the command argument builder."
         (--each-indexed hits-in-file
           (magit-insert-section section (org-roam-preview-section)
             (-let [(&plist :olp :preview :pos) it]
-              (when olp
-                (let ((start (point)))
-                  (insert (propertize (string-join olp " > ") 'face 'org-roam-title))
-                  (fill-region start (point)))
-                (insert "\n"))
+              (when (and olp (< 1 (length olp)))
+                (let ((start (point))
+                      (heading (propertize (string-join olp " > ") 'face 'org-roam-title)))
+                  (insert heading)
+                  (fill-region start (point))
+                  (insert "\n")))
               (insert preview)
               (oset section file (org-roam-node-file node))
               (oset section point pos)
