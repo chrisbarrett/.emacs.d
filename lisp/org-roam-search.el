@@ -231,8 +231,7 @@ BUILDER is the command argument builder."
 
 (defun org-roam-search--ripgrep-for-notes (query)
   (let ((reporter (make-progress-reporter "Searching notes"))
-        (notes (ht-create))
-        (hits (ht-create)))
+        (notes (ht-create)))
     (async-wait
      (async-start-process "ripgrep" "rg"
 
@@ -251,23 +250,16 @@ BUILDER is the command argument builder."
 
                                            (note (with-current-buffer (find-file-noselect (expand-file-name file org-roam-directory))
                                                    (goto-char pos)
-                                                   (org-roam-note-at-point)))
+                                                   (org-roam-note-at-point))))
 
-                                           (id (org-roam-note-id note)))
-
-                                (puthash id note notes)
-                                (push pos (gethash id hits)))
+                                (puthash (org-roam-note-id note) note notes))
                               (forward-line)))
 
                           "--smart-case"
                           "--json"
                           query org-roam-directory))
     (progress-reporter-done reporter)
-    (seq-map (lambda (note)
-               (let ((id (org-roam-note-id note)))
-                 (append `(:search-hits ,(gethash id hits))
-                         note)))
-             (ht-values notes))))
+    (ht-values notes)))
 
 ;;;###autoload
 (defun org-roam-search-view (query)
