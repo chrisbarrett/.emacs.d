@@ -165,6 +165,15 @@
      :local-tags (org-roam-note-file-or-headline-tags 'local)
      :tags (org-roam-note-file-or-headline-tags))))
 
+(defun org-roam-node-to-note (node)
+  (with-current-buffer (find-file-noselect (org-roam-node-file node))
+    (save-excursion
+      (goto-char (org-roam-node-point node))
+      (org-roam-node-at-point))))
+
+(defun org-roam-note-to-node (note)
+  (org-roam-node-from-id (org-roam-note-id note)))
+
 (defun org-roam-notes-from-buffer (buf file &optional all)
   (with-current-buffer  buf
     (org-with-wide-buffer
