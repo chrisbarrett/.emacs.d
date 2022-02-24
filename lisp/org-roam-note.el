@@ -65,7 +65,7 @@
 (plist-define org-roam-note
   :required (:id :title :file)
   :optional (:tags :local-tags :next-review :last-review :maturity
-             :todo-keywords :created :level))
+             :todo-keywords :created :level :file-id))
 
 (defvar org-roam-note-last-filter nil)
 
@@ -153,6 +153,7 @@
     (org-roam-note-create
      :id id
      :file (or file (buffer-file-name))
+     :file-id (org-entry-get (point-min) "ID")
      :level (if (org-before-first-heading-p)
                 0
               (car (org-heading-components)))
