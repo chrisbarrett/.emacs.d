@@ -30,6 +30,7 @@
 
 (require 'async)
 (require 'consult)
+(require 'dash)
 (require 'memoize)
 (require 'org-roam)
 (require 'org-roam-review)
@@ -156,23 +157,6 @@ BUILDER is the command argument builder."
 
 
 
-(defun org-roam-search--find-nodes-for-file (file)
-  (seq-filter (lambda (node)
-                (equal file (org-roam-node-file node)))
-              (org-roam-node-list)))
-
-(defun org-roam-search--nodes-for-files (files)
-  (seq-uniq
-   (seq-mapcat (lambda (file)
-                 (org-roam-search--find-nodes-for-file file))
-               files)))
-
-(defun org-roam-search--process-rg-output (buf)
-  (let* ((output (with-current-buffer buf
-                   (buffer-substring (point-min) (point-max))))
-         (lines (split-string (string-trim output) "\n")))
-    (seq-map (lambda (it) (expand-file-name it org-roam-directory)) lines)))
-
 (defun org-roam-search--highlight-matches (regexp)
   (save-excursion
     (goto-char (point-min))
@@ -245,16 +229,44 @@ BUILDER is the command argument builder."
 (defvar org-roam-search-view-query-history nil)
 
 (defun org-roam-search--ripgrep-for-notes (query)
-  (let (notes)
+  (let ((reporter (make-progress-reporter "Searching notes"))
+        (notes (ht-create))
+        (hits (ht-create)))
     (async-wait
      (async-start-process "ripgrep" "rg"
-                          (lambda (proc)
-                            (let* ((files (org-roam-search--process-rg-output (process-buffer proc))))
-                              (setq notes (org-roam-notes-from-nodes (org-roam-search--nodes-for-files files)))))
+
+                          (lambda (_)
+                            (goto-char (point-min))
+                            (while (not (eobp))
+                              (progress-reporter-update reporter)
+                              (-when-let* ((line (buffer-substring (line-beginning-position) (line-end-position)))
+
+                                           ((parsed &as &plist :type)
+                                            (json-parse-string line :object-type 'plist))
+
+                                           ((&plist :data (&plist :path (&plist :text file) :absolute_offset pos))
+                                            (when (equal "match" type)
+                                              parsed))
+
+                                           (note (with-current-buffer (find-file-noselect (expand-file-name file org-roam-directory))
+                                                   (goto-char pos)
+                                                   (org-roam-note-at-point)))
+
+                                           (id (org-roam-note-id note)))
+
+                                (puthash id note notes)
+                                (push pos (gethash id hits)))
+                              (forward-line)))
+
                           "--smart-case"
-                          "--files-with-matches"
+                          "--json"
                           query org-roam-directory))
-    notes))
+    (progress-reporter-done reporter)
+    (seq-map (lambda (note)
+               (let ((id (org-roam-note-id note)))
+                 (append `(:search-hits ,(gethash id hits))
+                         note)))
+             (ht-values notes))))
 
 ;;;###autoload
 (defun org-roam-search-view (query)
