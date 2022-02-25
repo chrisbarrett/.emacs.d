@@ -186,6 +186,7 @@ nodes for review."
                             str))
 
 (defun org-roam-review-insert-preview (node &optional hidden-p depth)
+  (cl-assert (org-roam-node-p node))
   (let* ((depth (or depth 0))
          (start (org-roam-node-point node))
          (content (org-roam-fontify-like-in-org-mode (org-roam-preview-get-contents (org-roam-node-file node) start))))
