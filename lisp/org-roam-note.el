@@ -169,11 +169,19 @@
      :local-tags (org-roam-note-file-or-headline-tags 'local)
      :tags (org-roam-note-file-or-headline-tags))))
 
-(defun org-roam-node-to-note (node)
-  (with-current-buffer (find-file-noselect (org-roam-node-file node))
-    (save-excursion
-      (goto-char (org-roam-node-point node))
-      (org-roam-node-at-point))))
+(defun org-roam-note-from-node (node)
+  (let* ((org-inhibit-startup t)
+         (file (org-roam-node-file node))
+         (already-open-p (get-file-buffer file))
+         (buf (find-file-noselect file)))
+    (unwind-protect
+        (with-current-buffer buf
+          (save-excursion
+            (goto-char (org-roam-node-point node))
+            (org-roam-note-at-point)))
+
+      (unless already-open-p
+        (kill-buffer buf)))))
 
 (defun org-roam-note-to-node (note)
   (org-roam-node-from-id (org-roam-note-id note)))
