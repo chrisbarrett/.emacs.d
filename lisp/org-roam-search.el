@@ -285,10 +285,7 @@ QUERY is a PRCE regexp string that will be passed to ripgrep."
     :insert-preview-fn (org-roam-search-make-insert-preview-fn query)
     :notes
     (lambda ()
-      (org-roam-search--ripgrep-for-notes query))
-    :postprocess
-    (lambda ()
-      (org-roam-search--highlight-matches query)))))
+      (org-roam-search--ripgrep-for-notes query)))))
 
 (defun org-roam-search--kill-buffer ()
   (when-let* ((buf (get-buffer org-roam-search-buffer-name)))

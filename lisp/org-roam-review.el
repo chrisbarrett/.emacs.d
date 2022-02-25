@@ -257,7 +257,7 @@ nodes for review."
      (t
       (org-roam-review--insert-notes (-sort sort notes) placeholder insert-preview-fn)))))
 
-(cl-defun org-roam-review--render (&key insert-notes-fn title instructions group-on placeholder sort postprocess insert-preview-fn notes)
+(cl-defun org-roam-review--render (&key insert-notes-fn title instructions group-on placeholder sort insert-preview-fn notes)
   (let ((inhibit-read-only t))
     (erase-buffer)
     (org-roam-review-mode)
@@ -285,13 +285,10 @@ nodes for review."
                                                      :root root
                                                      :placeholder placeholder
                                                      :insert-preview-fn insert-preview-fn))
-        (goto-char (point-min))
-        (save-excursion
-          (when postprocess (funcall postprocess)))
         (goto-char start-of-content)))))
 
 (cl-defun org-roam-review-create-buffer
-    (&key title instructions group-on placeholder sort postprocess notes inhibit-auto-refresh
+    (&key title instructions group-on placeholder sort notes inhibit-auto-refresh
           (buffer-name "*org-roam-review*")
           (insert-notes-fn 'org-roam-review--insert-notes-fn-default)
           (insert-preview-fn 'org-roam-review-insert-preview))
@@ -312,9 +309,6 @@ The following keyword arguments are optional:
 
 - PLACEHOLDER is a string to be shown if there are no notes to
   display.
-
-- POSTPROCESS is a function called after the buffer has been
-  populated.
 
 - INHIBIT-AUTO-REFRESH will prevent the buffer from being
   automatically refreshed as part of a mass review-buffer
@@ -362,7 +356,6 @@ The following keyword arguments are optional:
                                        :placeholder placeholder
                                        :sort sort
                                        :insert-notes-fn insert-notes-fn
-                                       :postprocess postprocess
                                        :insert-preview-fn insert-preview-fn)
               (setq-local org-roam-review-buffer-auto-refresh-inhibited-p inhibit-auto-refresh)
               (setq-local org-roam-review-buffer-refresh-command (lambda () (funcall render (funcall notes))))
