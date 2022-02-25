@@ -109,6 +109,9 @@
               (make-hash-table :test #'equal))))
   org-roam-note--cache)
 
+(defun org-roam-note-from-id (id)
+  (gethash id (org-roam-note--cache)))
+
 (defun org-roam-note--cache-mutate (fn)
   (let ((cache (org-roam-note--cache)))
     (funcall fn cache)
