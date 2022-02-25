@@ -273,7 +273,11 @@ BUILDER is the command argument builder."
           (when-let* ((top-note (-some->> file-id (org-roam-note-from-id)))
                       (heading (org-link-display-format (org-roam-note-title top-note))))
             (magit-insert-section section (org-roam-node-section)
-              (magit-insert-heading (propertize heading 'font-lock-face 'magit-section-heading))
+              (magit-insert-heading
+                (concat (propertize heading 'font-lock-face 'magit-section-heading)
+                                            " "
+                                            (when-let* ((mat (org-roam-note-maturity top-note)))
+                                              (alist-get mat org-roam-review-maturity-emoji-alist nil nil #'equal))))
               (oset section parent root)
 
               (let ((top-node (org-roam-node-from-id file-id)))

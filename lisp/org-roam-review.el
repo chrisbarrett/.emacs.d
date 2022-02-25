@@ -61,6 +61,11 @@
 
 (defconst org-roam-review-maturity-values '("seedling" "evergreen" "budding"))
 
+(defconst org-roam-review-maturity-emoji-alist
+  '(("seedling" . "🌱")
+    ("budding" . "🪴")
+    ("evergreen" . "🌲")))
+
 (defcustom org-roam-review-tags-ignored-for-review-buffer '("outline")
   "A list of tags that define a note should not be considered a
 candidate for reviews."
