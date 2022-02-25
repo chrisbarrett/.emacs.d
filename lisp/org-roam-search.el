@@ -261,6 +261,39 @@ BUILDER is the command argument builder."
     (progress-reporter-done reporter)
     (ht-values notes)))
 
+(defun org-roam-search--make-insert-notes-fn (query)
+  (-lambda ((&plist :notes :placeholder :root :insert-preview-fn))
+    (cond
+     ((null notes)
+      (insert placeholder)
+      (newline))
+     (t
+      (let ((search-hits (seq-map #'org-roam-note-id notes)))
+        (pcase-dolist (`(,file-id . ,group) (seq-group-by #'org-roam-note-file-id notes))
+          (when-let* ((top-note (-some->> file-id (org-roam-note-from-id)))
+                      (heading (org-link-display-format (org-roam-note-title top-note))))
+            (magit-insert-section section (org-roam-node-section)
+              (magit-insert-heading (propertize heading 'font-lock-face 'magit-section-heading))
+              (oset section parent root)
+
+              (let ((top-node (org-roam-node-from-id file-id)))
+                (oset section node top-node)
+                (when (seq-contains-p search-hits file-id)
+                  (org-roam-review-insert-preview top-node)))
+
+              (dolist (note group)
+                (let* ((note-id (org-roam-note-id note))
+                       (node (org-roam-node-from-id note-id)))
+                  (unless (equal note-id file-id)
+                    (atomic-change-group
+                      (magit-insert-section section (org-roam-node-section nil t)
+                        (magit-insert-heading (concat "  " (propertize (org-link-display-format (org-roam-note-title note))
+                                                                       'font-lock-face
+                                                                       'magit-section-secondary-heading)))
+                        (oset section node node)
+                        (funcall insert-preview-fn node nil 1))))))))))
+      (org-roam-search--highlight-matches query)))))
+
 ;;;###autoload
 (defun org-roam-search-view (query)
   "Search `org-roam-directory' for notes matching a query.
@@ -280,9 +313,7 @@ QUERY is a PRCE regexp string that will be passed to ripgrep."
     :placeholder "No search results"
     :inhibit-auto-refresh t
     :buffer-name org-roam-search-buffer-name
-    :group-on #'org-roam-review--maturity-header-for-note
-    :sort (-on #'ts< (lambda (it) (or (org-roam-note-created it) (ts-now))))
-    :insert-preview-fn (org-roam-search-make-insert-preview-fn query)
+    :insert-notes-fn (org-roam-search--make-insert-notes-fn query)
     :notes
     (lambda ()
       (org-roam-search--ripgrep-for-notes query)))))
