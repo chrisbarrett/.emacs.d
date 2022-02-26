@@ -39,14 +39,30 @@
 (defun doi--downcase-symbol (sym)
   (intern (downcase (symbol-name sym))))
 
+(defun doi--published-date (json)
+  (cl-labels ((parse-date-parts (vec)
+                                (-let* (((&plist :date-parts [date]) vec)
+                                        ((year month day) (seq-into date 'list)))
+                                  (ts-parse (format "%4i-%02i-%02i" year month (or day 1))))))
+    (-let [(&plist :published :published-print) json]
+      (or (ignore-errors (parse-date-parts published))
+          (parse-date-parts published-print)))))
+
+
+(defun doi--authors (json)
+  (-let [(&plist :author) json]
+    (seq-map (-applify #'doi-author-create) author)))
+
+(defun doi--isbn (json)
+  (-let [(&plist :isbn values) json]
+    (seq-first values)))
+
 (defun doi-parse-from-json (json)
-  (-let* (((json &as &plist :isbn [isbn] :author :published) (plist-map-keys #'doi--downcase-symbol json))
-          ((&plist :date-parts [[year month day]]) published)
-          (published (ts-parse (format "%4i-%02i-%02i" year month day)))
-          (attrs (ht-merge (ht-from-plist json)
-                           (ht-from-plist (list :authors (seq-map (-applify #'doi-author-create) author)
-                                                :isbn isbn
-                                                :published published)))))
+  (let* ((json (plist-map-keys #'doi--downcase-symbol json))
+         (attrs (ht-merge (ht-from-plist json)
+                          (ht-from-plist (list :authors (doi--authors json)
+                                               :isbn (doi--isbn json)
+                                               :published (doi--published-date json))))))
     (apply 'doi-create (ht-to-plist attrs))))
 
 (defun doi--request-json (url)
