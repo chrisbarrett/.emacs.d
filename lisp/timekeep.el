@@ -160,14 +160,16 @@ Each value is a plist with at lesat the following keys:
   (let ((heading (list timekeep-default-headline-name
                        (format-time-string "%Y %W"))))
     (with-current-buffer buffer
-      (org-roam-capture-find-or-create-olp heading))))
+      (org-with-wide-buffer
+       (org-roam-capture-find-or-create-olp heading)))))
 
 (defun timekeep--punch-in-for-node (node)
   (save-window-excursion
     (save-excursion
       (org-roam-node-visit node)
-      (org-with-point-at (timekeep--clocktree-headline (current-buffer))
-        (org-clock-in '(16))))))
+      (org-with-wide-buffer
+       (org-with-point-at (timekeep--clocktree-headline (current-buffer))
+         (org-clock-in '(16)))))))
 
 (defvar timekeep--session-active-p nil)
 
@@ -176,9 +178,10 @@ Each value is a plist with at lesat the following keys:
 
 (defun timekeep--ancestor-todo-pos ()
   (let (ancestor-todo)
-    (while (and (not ancestor-todo) (org-up-heading-safe))
-      (when (member (nth 2 (org-heading-components)) org-todo-keywords-1)
-        (setq ancestor-todo (point))))
+    (org-with-wide-buffer
+     (while (and (not ancestor-todo) (org-up-heading-safe))
+       (when (member (nth 2 (org-heading-components)) org-todo-keywords-1)
+         (setq ancestor-todo (point)))))
     ancestor-todo))
 
 (defun timekeep--clock-in-on-parent ()
@@ -188,10 +191,11 @@ Each value is a plist with at lesat the following keys:
      (timekeep--clock-in-on-default))))
 
 (defun timekeep--on-clock-in ()
-  (-when-let* ((id (org-roam-id-at-point))
-               ((&plist :name) (timekeep-find :roam-id id)))
-    (timekeep--set-latest-client-name name)
-    (setq timekeep--session-active-p t)))
+  (org-with-wide-buffer
+   (-when-let* ((id (org-roam-id-at-point))
+                ((&plist :name) (timekeep-find :roam-id id)))
+     (timekeep--set-latest-client-name name)
+     (setq timekeep--session-active-p t))))
 
 (defun timekeep--on-clock-out ()
   (when (and timekeep--session-active-p
