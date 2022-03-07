@@ -117,8 +117,14 @@ Each value is a plist with at lesat the following keys:
     (timekeep--set-latest-client-name choice)
     choice))
 
-(defun timekeep-choose-client ()
-  (timekeep-find :name (timekeep-read-client-name)))
+(defun timekeep-choose-client (&optional interactive-p)
+  "Choose the client to use for timekeeping."
+  (interactive (list t))
+  (let* ((name (timekeep-read-client-name))
+         (client (timekeep-find :name name)))
+    (when interactive-p
+      (message "Selected: %s" name))
+    client))
 
 
 ;; Org-roam file & node lookup for clients
