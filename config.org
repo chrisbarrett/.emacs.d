@@ -3667,7 +3667,7 @@ See: [[https://www.flycheck.org/en/latest/][flycheck.org]]
     (flycheck-global-modes '(not text-mode org-agenda-mode)))
 #+end_src
 
-*** =flycheck-org-lint= - Linting for org-mode buffers
+*** =flycheck-org-lint= - Linting for org-mode buffers             :disabled:
 #+begin_src emacs-lisp
   (use-package flycheck-org-lint
     :after flycheck
