@@ -6587,6 +6587,11 @@ property drawer and the title. Advise it to fix that.
                         (modes . (helpful-mode help-mode Info-mode))
                         (side . rightmost)
                         (window-width . 80)))
+
+  (display-buffer-set (rx bos "*lsp-help*" eos)
+                      '((display-buffer-at-bottom)
+                        (inhibit-same-window . t)
+                        (window-height   . 0.4)))
 #+end_src
 
 ** =ielm=
