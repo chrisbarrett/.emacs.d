@@ -1740,12 +1740,26 @@ These functions are used in the definitions of snippets.
         (""        "")
         ((guard (assoc (string-trim text) yas-funcs-js-import-to-module-alist))
          (cdr (assoc (string-trim text) yas-funcs-js-import-to-module-alist)))
-        ("VError"  "verror")
-        ("memoize" "promise-memoize")
-        ((or "aws" "AWS")       "aws-sdk")
-        ("_"       "lodash")
-        ("rt"      "runtypes")
-        ("thunk" "thunky/promise")
+        ("VError"
+         "verror")
+        ("memoize"
+         "promise-memoize")
+        ((or "aws" "AWS")
+         "aws-sdk")
+        ("_"
+         "lodash")
+        ("rt"
+         "runtypes")
+        ("z"
+         "zod")
+        ("thunk"
+         "thunky/promise")
+        ("cdk"
+         "aws-cdk-lib")
+        ("dynamodb"
+         "aws-cdk-lib/aws-dynamodb")
+        ("lambda"
+         "aws-cdk-lib/aws-lambda")
 
         ((guard (s-contains? "{" text))
          "")
