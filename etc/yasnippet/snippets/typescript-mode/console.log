@@ -3,4 +3,4 @@
 # key: log
 # condition: (and (yas-funcs-bolp) (not (yas-funcs-js-buffer-imports-logger-p)))
 # --
-console.log($0)
+console.log(${1:JSON.stringify($0, null, 2)})

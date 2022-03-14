@@ -1,7 +1,8 @@
 # -*- mode: snippet -*-
 # name: constructor
 # key: ctor
+# condition: (yas-funcs-bolp)
 # --
 constructor($1) {
-  ${1:$(yas-funcs-js-ctor-body yas-text)}
+  $0
 }
