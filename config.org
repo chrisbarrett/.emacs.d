@@ -1523,6 +1523,7 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
 #+begin_src emacs-lisp
   (use-package flyspell
     :hook
+    (markdown-mode . flyspell-mode)
     (org-mode . flyspell-mode)
     :custom
     (flyspell-issue-welcome-flag nil)
