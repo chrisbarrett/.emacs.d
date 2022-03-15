@@ -4829,8 +4829,7 @@ Configure =conf-mode= for use with more kinds of config files.
 #+begin_src emacs-lisp
   (use-package conf-mode
     :mode
-    ("\\.env\\.erb\\'" . conf-mode)
-    ("\\.conf\\.erb\\'" . conf-mode)
+    ("\\.env" . conf-mode)
     ("\\.kll\\'" . conf-mode))
 #+end_src
 
