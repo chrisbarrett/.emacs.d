@@ -1120,7 +1120,9 @@ system below.
      "C-p" 'Info-backward-node))
 #+end_src
 
-*** =info+= - adds extra functionality to Info
+*** =info+= - adds extra functionality to Info                     :disabled:
+Temporarily disabled because it throws an error on load.
+
 #+begin_src emacs-lisp
   (use-package info+
     :after info
