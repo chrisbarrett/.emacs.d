@@ -3684,7 +3684,7 @@ See: [[https://www.flycheck.org/en/latest/][flycheck.org]]
     (flycheck-global-modes '(not text-mode org-agenda-mode)))
 #+end_src
 
-*** =flycheck-org-lint= - Linting for org-mode buffers             :disabled:
+*** =flycheck-org-lint= - Linting for org-mode buffers           :disabled:
 #+begin_src emacs-lisp
   (use-package flycheck-org-lint
     :after flycheck
@@ -4070,7 +4070,7 @@ See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
     "v" '(debugger-toggle-locals :wk "toggle locals"))
 #+end_src
 
-*** =elisp-slime-nav= - Code navigation                            :disabled:
+*** =elisp-slime-nav= - Code navigation                          :disabled:
 Use =elisp-slime-nav= to go to definition in Emacs Lisp.
 #+begin_src emacs-lisp
   (use-package elisp-slime-nav
