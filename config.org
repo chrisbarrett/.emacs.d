@@ -687,6 +687,10 @@ Source: [[https://www.reddit.com/r/emacs/comments/siuvpu/isnt_there_a_better_way
 
 #+begin_src emacs-lisp
   (prefer-coding-system 'utf-8)
+  (setq-default buffer-file-coding-system 'utf-8)
+  (set-default-coding-systems 'utf-8)
+  (set-terminal-coding-system 'utf-8)
+  (set-keyboard-coding-system 'utf-8)
   (set-language-environment "UTF-8")
 #+end_src
 
