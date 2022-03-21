@@ -5502,8 +5502,7 @@ Exit minibuffer before adding notes.
     (org-archive-subtree-add-inherited-tags t))
 #+end_src
 
-Apply either an =@work= or =@personal= context when archiving.
-
+*** Apply either an =@work= or =@personal= context when archiving    :disabled:
 #+begin_src emacs-lisp
   (use-package org
     :config
