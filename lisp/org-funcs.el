@@ -170,11 +170,13 @@ TAGS are the tags to use when displaying the list."
          (content
           (with-current-buffer src-buffer
             (org-with-wide-buffer
+             (org-transclusion-remove-all)
              (goto-char (point-min))
              (org-roam-end-of-meta-data t)
              (buffer-substring (point) (point-max))))))
     (find-file (org-roam-node-file dest-node))
     (org-with-wide-buffer
+     (org-transclusion-remove-all)
      (goto-char (point-max))
      (ensure-empty-lines 2)
      (insert (format "* %s\n" (org-roam-node-title src-node)))
@@ -182,9 +184,14 @@ TAGS are the tags to use when displaying the list."
      (save-restriction
        (narrow-to-region (point) (point-max))
        (insert content)
-       (org-map-entries 'org-do-demote)))
+       (org-map-entries 'org-do-demote)
+       (goto-char (point-min))
+       (while (search-forward-regexp (rx bol "#+transclude:") nil t)
+         (org-transclusion-add)
+         (org-transclusion-promote-subtree))))
     (delete-file (org-roam-node-file src-node))
     (save-buffer)
+    (org-transclusion-add-all)
     (when (buffer-live-p src-buffer)
       (kill-buffer src-buffer)))
 
