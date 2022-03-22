@@ -30,6 +30,11 @@
 (require 'org-roam-note)
 (require 'org-roam-review)
 
+(defcustom org-roam-links-ignored-ids nil
+  "List of IDs that are 'boring' and should always be ignored."
+  :group 'org-roam-links
+  :type '(repeat string))
+
 (defun org-roam-links-get (node)
   (org-with-point-at (org-id-find (org-roam-node-id node) 'marker)
     (when (org-at-heading-p) (org-narrow-to-subtree))
@@ -49,9 +54,11 @@
 (defun org-roam-links-graph (node depth)
   "Return the linked nodes, and their links, up to DEPTH."
   (when (cl-plusp depth)
-    (let ((linked-nodes (append
-                         (seq-map #'org-roam-backlink-source-node (org-roam-backlinks-get node))
-                         (org-roam-links-get node)))
+    (let ((linked-nodes (seq-remove (lambda (it) (seq-contains-p org-roam-links-ignored-ids (org-roam-node-id it)))
+                         (append
+                          (seq-map #'org-roam-backlink-source-node (org-roam-backlinks-get node))
+                          (org-roam-links-get node))))
+
           (nodes (ht-create))
           (tree (ht-create)))
       (dolist (node linked-nodes)
