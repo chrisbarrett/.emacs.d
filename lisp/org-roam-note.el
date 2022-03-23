@@ -193,9 +193,9 @@
        (let ((acc))
          (goto-char (point-min))
          (while (search-forward-regexp (org-re-property "ID") nil t)
-           (unless (and (not all)
-                        (org-roam-note--cache-skip-note-p file))
-             (push (org-roam-note-at-point file) acc)))
+           (unless (and (not all) (org-roam-note--cache-skip-note-p file))
+             (when-let* ((note (org-roam-note-at-point file)))
+               (push note acc))))
          (nreverse acc))))))
 
 (defun org-roam-note-excluded-note-ids-from-buffer (buf file)
