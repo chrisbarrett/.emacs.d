@@ -239,11 +239,14 @@ TAGS are the tags to use when displaying the list."
          input
        (org-funcs-read-url prompt default)))))
 
+(defun org-funcs-simplified-title-for-url (url)
+  (when-let* ((match (s-match (rx "github.com/" (group (+? nonl) (or "/issues/" "/pull/") (+ digit) eol))
+                              url)))
+    (cadr match)))
+
 (defun org-funcs-guess-or-retrieve-title (url)
-  (if-let* ((match (s-match (rx "github.com/" (group (+? nonl) (or "/issues/" "/pull/") (+ digit) eol))
-                            url)))
-      (cadr match)
-    (org-cliplink-retrieve-title-synchronously url)))
+  (or (org-funcs-simplified-title-for-url url)
+      (org-cliplink-retrieve-title-synchronously url)))
 
 (defun org-funcs-insert-url-as-link (url)
   "Insert an orgmode link at point for URL."
