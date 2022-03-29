@@ -390,15 +390,35 @@ Load host-specific settings, which are not checked into version control.
          (block-markup `((t :inherit font-lock-comment-face :italic t :background nil :weight light :bold nil)))
          (outline-heading `((t :weight bold :foreground nil))))
     (custom-theme-set-faces 'user
-                            '(magit-header-line ((t :background nil :box nil)))
+                            `(org-transclusion-fringe
+                              ((((background dark))
+                                (:foreground ,(doom-blend "#282c34" "#51afef" 0.5) :weight bold ))
+                               (((background light))
+                                (:foreground ,(doom-blend "#FDF6E3" "#268bd2" 0.4) :weight bold))))
+                            `(org-roam-search-highlight
+                              ((((background dark))
+                                (:foreground "#98be65" :background "#3e493d" :weight bold :inherit magit-diff-added-highlight))
+                               (((background light))
+                                (:foreground "#859900" :background "#e5e3b5" :weight bold :inherit magit-diff-added-highlight))))
+                            `(org-superstar-header-bullet
+                              ((((background light))
+                                (:foreground "#96A7A9"))
+                               (((background dark))
+                                (:foreground "#5B6268"))))
+                            `(mu4e-highlight-face
+                              ((((background light))
+                                (:foreground "#268bd2"))
+                               (((background dark))
+                                (:foreground "#51afef"))))
                             `(org-agenda-clocking
                               ((((background dark))
                                 (:foreground ,dark-fg :extend t))
                                (((background light))
                                 (:foreground ,light-fg :extend t))))
+                            '(magit-header-line ((t :background nil :box nil)))
                             `(org-document-title ,title)
                             `(org-roam-header-line ((t :inherit org-document-title)))
-                            '(org-roam-search-highlight ((t :inherit magit-diff-added-highlight)))
+                            '(org-roam-search-highlight ((t )))
                             `(selectrum-group-title ((t :inherit magit-section-heading)))
                             `(consult-line-number ((t :inherit font-lock-comment-face)))
                             `(shortdoc-section ((t :inherit fixed-pitch)))
@@ -453,20 +473,6 @@ setting above from sticking. Re-evaluate that spec.
     (doom-themes-enable-bold t)
     (doom-themes-enable-italic t)
     :config
-    (with-eval-after-load 'doom-solarized-light-theme
-      (custom-theme-set-faces 'doom-solarized-light
-                              `(org-transclusion-fringe ((t :foreground ,(doom-blend "#FDF6E3" "#268bd2" 0.4) :weight bold)))
-                              '(org-roam-search-highlight ((t :foreground "#859900" :background "#e5e3b5" :weight bold)))
-                              '(org-superstar-header-bullet ((t :foreground "#96A7A9")))
-                              '(mu4e-highlight-face ((t :foreground "#268bd2")) t)))
-
-    (with-eval-after-load 'doom-one-theme
-      (custom-theme-set-faces 'doom-one
-                              `(org-transclusion-fringe ((t :foreground ,(doom-blend "#282c34" "#51afef" 0.5) :weight bold)))
-                              '(org-roam-search-highlight ((t :foreground "#98be65" :background "#3e493d" :weight bold)))
-                              '(org-superstar-header-bullet ((t :foreground "#5B6268")))
-                              '(mu4e-highlight-face ((t :foreground "#51afef")) t)))
-
     (load-theme (choose-by-system-theme :light 'doom-solarized-light :dark 'doom-one) t))
 #+end_src
 
