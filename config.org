@@ -1948,6 +1948,27 @@ etc.
       (evil-add-hjkl-bindings occur-mode-map)))
 #+end_src
 
+** Customise pdf navigation
+#+begin_src emacs-lisp
+  (use-package pdf-tools
+    :general
+    (:states '(normal) :keymaps 'pdf-view-mode-map
+     "+" 'pdf-view-enlarge
+     "-" 'pdf-view-shrink
+     "0" 'pdf-view-scale-reset
+     "j" 'pdf-view-next-line-or-next-page
+     "k" 'pdf-view-previous-line-or-previous-page
+     "n" 'pdf-view-next-page-command
+     "p" 'pdf-view-previous-page-command
+     "gr" 'revert-buffer
+     "gg" 'pdf-view-first-page
+     "gG" 'pdf-view-last-page
+     "J" 'pdf-view-goto-page
+     "q" 'kill-this-buffer)
+    :config
+    (evil-set-initial-state 'pdf-view-mode 'normal))
+#+end_src
+
 ** Archive navigation integration
 #+begin_src emacs-lisp
   (use-package evil
