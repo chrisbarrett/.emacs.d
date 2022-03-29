@@ -240,13 +240,15 @@ TAGS are the tags to use when displaying the list."
        (org-funcs-read-url prompt default)))))
 
 (defun org-funcs-simplified-title-for-url (url)
-  (when-let* ((match (s-match (rx "github.com/" (group (+? nonl) (or "/issues/" "/pull/") (+ digit) eol))
-                              url)))
-    (cadr match)))
+  (let ((query-params '(? "?" (* nonl))))
+    (cadr
+     (or (s-match (rx-to-string `(and "github.com/" (group (+? nonl) (or "/issues/" "/pull/") (+ digit)) ,query-params eol)) url)
+         (s-match (rx-to-string `(and "atlassian.net/browse/" (group (+? nonl)) ,query-params eol)) url)))))
 
 (defun org-funcs-guess-or-retrieve-title (url)
   (or (org-funcs-simplified-title-for-url url)
       (org-cliplink-retrieve-title-synchronously url)))
+
 
 (defun org-funcs-insert-url-as-link (url)
   "Insert an orgmode link at point for URL."
