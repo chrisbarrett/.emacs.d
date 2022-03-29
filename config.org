@@ -383,13 +383,19 @@ Load host-specific settings, which are not checked into version control.
 ** Define general theme settings
 #+begin_src emacs-lisp
   (let* ((default-height (face-attribute 'default :height))
+         (dark-fg "#bbc2cf")
+         (light-fg "#556b72")
          (headline-size (floor (* 1.2 default-height)))
          (title `((t :height ,headline-size)))
          (block-markup `((t :inherit font-lock-comment-face :italic t :background nil :weight light :bold nil)))
          (outline-heading `((t :weight bold :foreground nil))))
     (custom-theme-set-faces 'user
                             '(magit-header-line ((t :background nil :box nil)))
-                            '(org-agenda-clocking ((t :extend t)))
+                            `(org-agenda-clocking
+                              ((((background dark))
+                                (:foreground ,dark-fg :extend t))
+                               (((background light))
+                                (:foreground ,light-fg :extend t))))
                             `(org-document-title ,title)
                             `(org-roam-header-line ((t :inherit org-document-title)))
                             '(org-roam-search-highlight ((t :inherit magit-diff-added-highlight)))
