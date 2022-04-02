@@ -55,7 +55,7 @@ let
 
   builders = pkgs.callPackage ./builders { };
   packages = pkgs.callPackage ./packages.nix builders;
-  emacsEnv = (lispPkgs.emacsPackagesNgGen emacs).overrideScope' (import ./patches);
+  emacsEnv = (lispPkgs.emacsPackagesFor emacs).overrideScope' (import ./patches);
 
   customPathEntries =
     let paths = [ "${requiredPrograms}/bin" ] ++ (map (pkg: "${pkg}/bin") (attrsets.attrValues languageServers));
