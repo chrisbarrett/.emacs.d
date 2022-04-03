@@ -4898,7 +4898,6 @@ Configure =conf-mode= for use with more kinds of config files.
      "q" #'kill-this-buffer)
 
     :custom
-    (password-store-password-length 50)
     (pass-username-field "email"))
 #+end_src
 
