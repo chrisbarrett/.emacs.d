@@ -14,11 +14,11 @@ in
 {
   # Version of nixpkgs used for building binaries and Emacs itself.
   pkgs ? nixpkgsWithOverlays {
-    emacsOverlayRev = "c77eefc7683c6c56694e4516f6bd5fc6b3b0cf48";
+    emacsOverlayRev = "7f24256e2e5423ad21b1953977fa102aa3401dfb";
   }
   # Version of nixpkgs that determines 3rd-party Lisp package versions.
 , lispPkgs ? nixpkgsWithOverlays {
-    emacsOverlayRev = "b6f869b5fa8e5fc3ce7fe1741f440cd0558c84d0";
+    emacsOverlayRev = "7f24256e2e5423ad21b1953977fa102aa3401dfb";
   }
 , emacs ? pkgs.emacsGcc
 }:
