@@ -5417,10 +5417,6 @@ org headings.
     :hook (org-mode . org-format-on-save-mode))
 #+end_src
 
-**** TODO Fix org-format
-This has been broken by the removal of ensure-empty-lines (wherever that was
-defined.)
-
 *** Load =org-export= packages
 #+begin_src emacs-lisp
   (use-package ox-gfm

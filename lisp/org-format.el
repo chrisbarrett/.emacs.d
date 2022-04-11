@@ -29,6 +29,17 @@
   :group 'org-format
   :type 'integer)
 
+(defun org-format--ensure-empty-lines (n)
+  (save-excursion
+    (goto-char (line-beginning-position))
+    (unless (bobp)
+      (forward-char -1)
+      (let ((start (point)))
+        (when (search-backward-regexp (rx (not (any space "\n"))))
+          (forward-char 1)
+          (delete-region (point) start)))
+      (insert (make-string n ?\n)))))
+
 (defun org-format-all-headings ()
   "Ensure that blank lines exist between headings and their contents."
   (interactive)
@@ -37,15 +48,14 @@
                        ;; Widen so we can see space preceding the current
                        ;; headline.
                        (org-with-wide-buffer
-                        (ensure-empty-lines org-format-blank-lines-before-heading))
+                        (org-format--ensure-empty-lines org-format-blank-lines-before-heading))
 
-                       (forward-line)
                        (unless (or (org-at-heading-p)
                                    (org-transclusion-within-transclusion-p))
-                         (ensure-empty-lines org-format-blank-lines-before-meta)
+                         (org-format--ensure-empty-lines org-format-blank-lines-before-meta)
 
                          (org-end-of-meta-data t)
-                         (ensure-empty-lines org-format-blank-lines-before-content)))
+                         (org-format--ensure-empty-lines org-format-blank-lines-before-content)))
                      t
                      scope)
 
@@ -56,7 +66,7 @@
        (save-excursion
          (unless (search-forward ":only-content" (line-end-position) t)
            (goto-char (line-beginning-position))
-           (ensure-empty-lines org-format-blank-lines-before-heading)))))))
+           (org-format--ensure-empty-lines org-format-blank-lines-before-heading)))))))
 
 ;; NB: Set this higher than the default to avoid interfering with things like
 ;; org-transclusion, etc.
