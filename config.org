@@ -5409,7 +5409,7 @@ Save org buffers automatically after certain operations.
     (org-loop-over-headlines-in-active-region 'start-level))
 #+end_src
 
-=org-format-headings= provides some commands to clean up the whitespace around
+=org-format= provides some commands to clean up the whitespace around
 org headings.
 
 #+begin_src emacs-lisp
