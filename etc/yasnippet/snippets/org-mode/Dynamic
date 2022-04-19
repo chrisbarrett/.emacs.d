@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: Dynamic
+# key: dy
+# condition: (yas-funcs-bolp)
+# --
+* [[id:BBA271F7-56AA-4A88-B48A-DB2A7A979263][Dynamic]] - ${2:title}
+:PROPERTIES:
+:ID:       `(org-id-uuid)`
+:END:
