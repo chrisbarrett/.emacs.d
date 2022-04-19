@@ -178,7 +178,8 @@ TAGS are the tags to use when displaying the list."
     (org-with-wide-buffer
      (org-transclusion-remove-all)
      (goto-char (point-max))
-     (ensure-empty-lines 2)
+     (delete-blank-lines)
+     (insert "\n\n")
      (insert (format "* %s\n" (org-roam-node-title src-node)))
      (org-set-property "ID" (org-roam-node-id src-node))
      (save-restriction
