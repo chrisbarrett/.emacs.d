@@ -242,9 +242,13 @@ TAGS are the tags to use when displaying the list."
 
 (defun org-funcs-simplified-title-for-url (url)
   (let ((query-params '(? "?" (* nonl))))
-    (cadr
-     (or (s-match (rx-to-string `(and "github.com/" (group (+? nonl) (or "/issues/" "/pull/") (+ digit)) ,query-params eol)) url)
-         (s-match (rx-to-string `(and "atlassian.net/browse/" (group (+? nonl)) ,query-params eol)) url)))))
+    (or
+     (cadr
+      (or (s-match (rx-to-string `(and "github.com/" (group (+? nonl) (or "/issues/" "/pull/") (+ digit)) ,query-params eol)) url)
+          (s-match (rx-to-string `(and "atlassian.net/browse/" (group (+? nonl)) ,query-params eol)) url)))
+     (cond
+      ((string-match-p (rx bol "https://" (+? any) ".slack.com/") url)
+       "Slack link")))))
 
 (defun org-funcs-guess-or-retrieve-title (url)
   (or (org-funcs-simplified-title-for-url url)
