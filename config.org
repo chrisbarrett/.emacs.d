@@ -1564,6 +1564,8 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
 #+begin_src emacs-lisp
   (use-package undo-tree
     :hook (org-mode . undo-tree-mode)
+    :custom
+    (undo-tree-auto-save-history nil)
     :general
     ("C-x t" 'undo-tree-visualize)
     (:states 'normal :keymaps 'org-mode-map
