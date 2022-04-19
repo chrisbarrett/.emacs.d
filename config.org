@@ -3685,6 +3685,26 @@ repo, or copying the remote URL to the clipboard.
   (advice-add 'browse-at-remote--get-remote-branch :around #'config-browse-at-remote--master-as-default)
 #+end_src
 
+** =git-gutter= & =git-gutter-fringe= - Show git status in fringe
+Source: [[https://ianyepan.github.io/posts/emacs-git-gutter/][Git Gutter in Emacs | Ian Y.E. Pan]]
+
+#+begin_src emacs-lisp
+  (use-package git-gutter
+    :hook (after-init . global-git-gutter-mode)
+    :custom
+    (git-gutter:update-interval 0.02)
+    :config
+    (require 'git-gutter-fringe))
+#+end_src
+
+#+begin_src emacs-lisp
+  (use-package git-gutter-fringe
+    :config
+    (define-fringe-bitmap 'git-gutter-fr:added [224] nil nil '(center repeated))
+    (define-fringe-bitmap 'git-gutter-fr:modified [224] nil nil '(center repeated))
+    (define-fringe-bitmap 'git-gutter-fr:deleted [128 192 224 240] nil nil 'bottom))
+#+end_src
+
 * Programming languages & text-modes
 
 ** =flycheck= - Syntax Checking & Linting

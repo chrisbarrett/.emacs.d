@@ -38,6 +38,8 @@
   format-all
   general
   git-auto-commit-mode
+  git-gutter
+  git-gutter-fringe
   graphql-mode
   hcl-mode
   helpful
