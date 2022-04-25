@@ -6379,7 +6379,9 @@ This makes it much easier to edit text using emphasis markers correctly.
     (:keymaps 'org-transclusion-map :states '(motion normal)
      "TAB" 'org-cycle
      [remap evil-org->] 'org-transclusion-demote-subtree
-     [remap evil-org-<] 'org-transclusion-promote-subtree))
+     [remap evil-org-<] 'org-transclusion-promote-subtree)
+    :config
+    (define-fringe-bitmap 'org-transclusion-fringe-bitmap [224] nil nil '(center repeated)))
 #+end_src
 
 *** Don't transclude if org-inhibit-startup is set
