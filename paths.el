@@ -64,9 +64,9 @@ If argument INTERACTIVE-P is set, log additional information."
          (subdirs (f-directories paths-lisp-directory))
          (updated-load-path
           (thread-last (append main-dirs subdirs load-path)
-            (seq-uniq)
-            (seq-filter (lambda (it) (and it (file-directory-p it)
-                                          (not (f-same-p it user-emacs-directory))))))))
+                       (seq-uniq)
+                       (seq-filter (lambda (it) (and it (file-directory-p it)
+                                                (not (f-same-p it user-emacs-directory))))))))
     (setq load-path updated-load-path)
 
     (when interactive-p
