@@ -3749,6 +3749,49 @@ Source: [[https://ianyepan.github.io/posts/emacs-git-gutter/][Git Gutter in Emac
     (define-fringe-bitmap 'git-gutter-fr:deleted [128 192 224 240] nil nil 'bottom))
 #+end_src
 
+*** Prevent git-gutter clobbering transclusion indicators in the fringe
+
+#+begin_src emacs-lisp
+  (use-package git-gutter-fringe
+    :preface
+    (defun config-custom-git-gutter-fringe-fn (diffinfos)
+      "Insert fringe bitmaps for the diffs in DIFFINFOS."
+      (when git-gutter-fr:bitmap-references
+        (git-gutter:clear-gutter))
+      (save-excursion
+        (goto-char (point-min))
+        (cl-loop with curline = 1
+                 for info in diffinfos
+                 for start-line = (git-gutter-hunk-start-line info)
+                 for end-line = (git-gutter-hunk-end-line info)
+                 for type = (git-gutter-hunk-type info)
+                 do
+                 (let (beg end)
+                   (forward-line (- start-line curline))
+                   (setq beg (point))
+                   (if (eq type 'deleted)
+                       (progn
+                         (setq end beg))
+                     (forward-line (- end-line start-line))
+                     (setq end (point)))
+                   (unless
+                       (save-excursion
+                         (goto-char beg)
+                         (org-transclusion-within-transclusion-p))
+                     (let* ((sign (git-gutter-fr:select-sign type))
+                            (face (git-gutter-fr:select-face type))
+                            (reference (fringe-helper-insert-region
+                                        beg end sign git-gutter-fr:side face)))
+                       (overlay-put reference 'git-gutter t)
+                       (dolist (ov (overlays-in beg (1+ end)))
+                         (when (eq (overlay-get ov 'fringe-helper-parent) reference)
+                           (overlay-put ov 'git-gutter t)))
+                       (push reference git-gutter-fr:bitmap-references)))
+                   (setq curline end-line)))))
+    :config
+    (advice-add 'git-gutter-fr:view-diff-infos :override #'config-custom-git-gutter-fringe-fn))
+#+end_src
+
 * Programming languages & text-modes
 
 ** =flycheck= - Syntax Checking & Linting
