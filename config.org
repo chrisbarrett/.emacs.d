@@ -5386,6 +5386,7 @@ Automatically enter insert state when inserting new headings or using
 #+begin_src emacs-lisp
   (use-package org
     :custom
+    (org-hidden-keywords '(title author))
     (org-cycle-separator-lines 0)
     (org-hide-emphasis-markers t)
     (org-startup-indented t)
