@@ -29,6 +29,7 @@
   evil-org
   evil-surround
   f
+  fira-code-mode
   flx
   flycheck
   flycheck-ledger
