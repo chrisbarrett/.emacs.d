@@ -2107,6 +2107,21 @@ show the cursor in deselected windows.
                                  (?f . evil-surround-function))))
 #+end_src
 
+*** Prevent evil-surround from interfering with magit-section
+The Evil Surround keybinding interferes with selecting lines in a hunk and
+staging them in magit.
+
+#+begin_src emacs-lisp
+  (use-package evil-surround
+    :preface
+    (defun config-evil-surround-inhibit-in-magit-section-mode (&rest args)
+      (if (derived-mode-p 'magit-section-mode)
+          (list -1)
+        args))
+    :config
+    (advice-add 'evil-surround-mode :filter-args #'config-evil-surround-inhibit-in-magit-section-mode))
+#+end_src
+
 *** Define an extra =`sym'= pair for =emacs-lisp-mode=
 #+begin_src emacs-lisp
   (use-package evil-surround
