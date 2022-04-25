@@ -387,7 +387,7 @@ Load host-specific settings, which are not checked into version control.
          (light-fg "#556b72")
          (headline-size (floor (* 1.2 default-height)))
          (title `((t :height ,headline-size)))
-         (block-markup `((t :inherit font-lock-comment-face :italic t :background nil :weight light :bold nil)))
+         (block-markup `((t :inherit font-lock-comment-face :background nil :italic nil :weight light :bold nil)))
          (outline-heading `((t :weight bold :foreground nil))))
     (custom-theme-set-faces 'user
                             `(org-transclusion-fringe
