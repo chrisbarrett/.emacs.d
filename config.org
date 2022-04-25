@@ -1615,11 +1615,12 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
   (add-hook 'emojify-mode-hook #'config-emojify-modify-emojis)
 #+end_src
 
-** =emoji= - Emacs' built-in emoji stuff
+** =company-emoji= - Provide a nice interface for inserting emoji
 #+begin_src emacs-lisp
-  (use-package emoji
-    :general
-    ("C-x /" 'emoji-search))
+  (use-package company-emoji
+    :after company
+    :config
+    (add-to-list 'company-backends 'company-emoji))
 #+end_src
 
 ** =yasnippet= - Text snippets

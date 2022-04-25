@@ -5,6 +5,7 @@
   bufler
   company
   company-auctex
+  company-emoji
   company-posframe
   consult
   csv-mode
