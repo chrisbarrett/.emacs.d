@@ -3068,7 +3068,7 @@ See: [[https://github.com/raxod502/selectrum/issues/498#issuecomment-876424791][
 #+begin_src emacs-lisp
   (use-package consult
     :custom
-    (consult-project-root-function 'projectile-project-root)
+    (consult-project-function 'projectile-project-root)
     (xref-show-xrefs-function #'consult-xref)
     (xref-show-definitions-function #'consult-xref)
     :general (:states 'normal "/" 'consult-line))
