@@ -27,6 +27,7 @@
 (require 'f)
 (require 'ht)
 (require 'ts)
+(require 'pp)
 (require 'plist)
 
 (defgroup org-roam-note nil
@@ -216,8 +217,10 @@
   (dolist (id (org-roam-note-excluded-note-ids-from-buffer buf file))
     (remhash id cache)))
 
-(defun org-roam-note--daily-note-p (file)
-  "Test whether the current buffer is a daily note.
+(defun org-roam-note--daily-note-p (&optional file)
+  "Test whether FILE is a daily note.
+
+If FILE is not given, checks the current buffer.
 
 This is a wrapper that makes sure org-roam-directory is well-formed.
 
@@ -285,7 +288,7 @@ https://github.com/org-roam/org-roam/issues/2032"
 
 ;;;###autoload
 (define-minor-mode org-roam-note-cache-mode
-  "Minor mode to enable book-keeping used for notes reviews"
+  "Minor mode to enable book-keeping used for notes reviews."
   :group 'org-roam-note
   (if org-roam-note-cache-mode
       (add-hook 'after-save-hook #'org-roam-note--cache-update nil t)
