@@ -10,15 +10,16 @@ let
         }))
       ];
     };
+  revs = builtins.fromJSON (builtins.readFile ./emacs-overlay.json);
 in
 {
   # Version of nixpkgs used for building binaries and Emacs itself.
   pkgs ? nixpkgsWithOverlays {
-    emacsOverlayRev = "7f24256e2e5423ad21b1953977fa102aa3401dfb";
+    emacsOverlayRev = revs.pkgs;
   }
   # Version of nixpkgs that determines 3rd-party Lisp package versions.
 , lispPkgs ? nixpkgsWithOverlays {
-    emacsOverlayRev = "7f24256e2e5423ad21b1953977fa102aa3401dfb";
+    emacsOverlayRev = revs.lisp;
   }
 , emacs ? pkgs.emacsGcc
 }:
