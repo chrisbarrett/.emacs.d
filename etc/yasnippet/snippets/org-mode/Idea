@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: Idea
+# key: id
+# condition: (yas-funcs-bolp)
+# --
+* [[id:B4E4309B-F427-40CE-A177-E571CF79BBE7][Idea]] - ${2:title}
+:PROPERTIES:
+:ID:       `(org-id-uuid)`
+:END:
