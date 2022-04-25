@@ -3198,11 +3198,19 @@ to manually apply it again.
 #+begin_src emacs-lisp
   (use-package company
     :after evil-collection
+    :custom
+    (company-tooltip-minimum-width 40)
     :config
     (defun config-company--set-company-vars ()
       (define-key company-active-map (kbd "RET") #'company-complete-selection))
 
     (add-hook 'company-mode-hook #'config-company--set-company-vars))
+#+end_src
+
+*** =company-posframe= - use a child frame for completions
+#+begin_src emacs-lisp
+  (use-package company-posframe
+    :after company)
 #+end_src
 
 * Themeing

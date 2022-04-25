@@ -5,6 +5,7 @@
   bufler
   company
   company-auctex
+  company-posframe
   consult
   csv-mode
   dash
