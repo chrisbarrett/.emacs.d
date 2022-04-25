@@ -440,9 +440,7 @@ Load host-specific settings, which are not checked into version control.
                             '(link ((t :weight unspecified)) t)
                             '(highlight ((t :inherit nil :foreground nil :background nil :bold t)))
                             `(org-drawer ,block-markup)
-                            '(org-document-info-keyword ((t :italic nil)) t)
                             '(org-list-dt ((t :italic t :foreground nil)))
-                            '(org-meta-line ((t :italic nil)) t)
                             '(org-agenda-done ((t :inherit org-done :bold nil)) t)
                             '(org-todo ((t :weight light :italic t)))
                             '(org-done ((t :weight light :italic t)))
@@ -459,10 +457,14 @@ KLUDGE: Something weird is going on with the link faces that prevents the
 setting above from sticking. Re-evaluate that spec.
 
 #+begin_src emacs-lisp
-  (add-hook 'org-mode-hook
-            (lambda ()
-              (custom-theme-set-faces 'user
-                                      '(org-link ((t :weight unspecified :underline nil)) t))))
+  (defun config-hack-org-faces ()
+    (custom-theme-set-faces 'user
+                            '(org-document-info-keyword ((t :italic nil)) t)
+                            '(org-meta-line ((t :italic nil)) t)
+                            '(org-drawer ((t :italic nil)) t)
+                            '(org-link ((t :weight unspecified :underline nil)) t)))
+
+  (add-hook 'org-mode-hook #'config-hack-org-faces)
 #+end_src
 
 ** =doom-themes= - Enable appropriate theme for OS theme
