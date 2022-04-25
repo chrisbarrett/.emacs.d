@@ -3739,6 +3739,8 @@ Source: [[https://ianyepan.github.io/posts/emacs-git-gutter/][Git Gutter in Emac
     (require 'git-gutter-fringe))
 #+end_src
 
+*** Use the fringe for drawing hunk indicators
+
 #+begin_src emacs-lisp
   (use-package git-gutter-fringe
     :config
