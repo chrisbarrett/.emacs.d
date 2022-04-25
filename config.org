@@ -2260,6 +2260,16 @@ with Nix won't work. Manually add language servers to the path here.
                                      "--stdio")))
 #+end_src
 
+Make company completions more proactive when an lsp is active.
+
+#+begin_src emacs-lisp
+  (use-package lsp-mode
+    :init
+    (defun config-lsp-set-vars ()
+      (setq-local company-minimum-prefix-length 0))
+    :hook (lsp-mode . config-lsp-set-vars))
+#+end_src
+
 ** =lsp-ui= - Additional package providing richer UI elements for lsp-mode
 #+begin_src emacs-lisp
   (use-package lsp-ui
