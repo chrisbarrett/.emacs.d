@@ -46,6 +46,38 @@
                        (ht-from-plist plist))))
     (apply 'append pairs)))
 
+(defun plist-merge (p1 p2)
+  "Merge two plists, such that keys in `p2' override duplicates in `p1'."
+  (let* ((h1 (ht-from-plist p1))
+         (h2 (ht-from-plist p2))
+         (merged (ht-merge h1 h2)))
+    (ht-to-plist merged)))
+
+(defun plist-p (obj)
+  "Return t if OBJ is a list and appears to be a plist with keyword keys."
+  (and (listp obj)
+       (cl-evenp (length obj))
+       (seq-every-p #'keywordp (plist-keys obj))))
+
+(defun plist-equal (p1 p2)
+  "Test whether two plists are structurally equal.
+
+Values are compared using `equal', except directly nested plists,
+which are compared using `plist-equal' recursively."
+  (cl-assert (plist-p p1) t)
+  (cl-assert (plist-p p2) t)
+  (catch 'not-equal
+    (when (equal (length p1) (length p2))
+      (dolist (key (plist-keys p1))
+        (let ((v1 (plist-get p1 key))
+              (v2 (plist-get p2 key)))
+          (cond
+           ((equal v1 v2))
+           ((and (plist-p v1) (plist-p v2) (plist-equal v1 v2)))
+           (t
+            (throw 'not-equal nil)))))
+      t)))
+
 (defun plist--pred-name-for-type (type)
   (intern (format "%s-p" type)))
 
