@@ -2310,7 +2310,7 @@ Make company completions more proactive when an lsp is active.
   (use-package eshell
     :general
     (:states 'insert :keymaps 'eshell-mode-map
-     "TAB" 'completion-at-point
+     [remap indent-for-tab-command] 'completion-at-point
      "C-n" 'eshell-next-matching-input-from-input
      "C-p" 'eshell-previous-matching-input-from-input
      "C-a" 'eshell-bol
