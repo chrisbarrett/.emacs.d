@@ -2341,16 +2341,13 @@ Make company completions more proactive when an lsp is active.
 *** fasd
 #+begin_src emacs-lisp
   (defun eshell/j (&rest query)
-    (let* ((fasd (executable-find "fasd"))
-           (matches (thread-last (s-join " " query)
-                                 (format "%s -ld %s" fasd)
-                                 (shell-command-to-string)
-                                 (s-trim)
-                                 (s-lines)
-                                 (mapcar 's-trim))))
-      (message "Matches: %s" matches)
-      (when-let* ((dir (first matches)))
-        (eshell/cd dir))))
+    (let* ((command `("fasd" "-ld" ,@(mapcar #'shell-quote-argument query)))
+           (output (shell-command-to-string (string-join command " ")))
+           (matches (nreverse (split-string output "\n" t))))
+      (if-let* ((dir (car matches)))
+          (eshell/cd dir)
+        (let ((message-log-match))
+          (message "No fasd match")))))
 #+end_src
 
 *** git root
