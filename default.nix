@@ -21,7 +21,7 @@ in
 , lispPkgs ? nixpkgsWithOverlays {
     emacsOverlayRev = revs.lisp;
   }
-, emacs ? pkgs.emacsGcc
+, emacs ? pkgs.emacsNativeComp
 }:
 
 let
