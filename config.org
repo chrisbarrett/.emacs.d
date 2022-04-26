@@ -4507,6 +4507,8 @@ files.
     :mode
     ("\\.md\\'" . gfm-mode)
     ("\\.markdown\\'" . markdown-mode)
+    :hook
+    (markdown-mode . visual-line-mode)
 
     :general
     (:states 'normal :keymaps 'markdown-mode-map
