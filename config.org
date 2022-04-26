@@ -2304,6 +2304,69 @@ Make company completions more proactive when an lsp is active.
     (yaml-mode . lsp-ui-doc-mode))
 #+end_src
 
+* =eshell= - built-in rudimentary shell
+#+begin_src emacs-lisp
+  (use-package eshell
+    :general
+    (:states 'insert :keymaps 'eshell-mode-map
+     "TAB" 'completion-at-point
+     "C-n" 'eshell-next-matching-input-from-input
+     "C-p" 'eshell-previous-matching-input-from-input
+     "C-a" 'eshell-bol
+     "C-e" 'end-of-line))
+#+end_src
+
+** Prompt
+#+begin_src emacs-lisp
+  (use-package eshell
+    :custom
+    (eshell-prompt-function 'config-eshell-prompt)
+    (eshell-skip-prompt-function 'config-eshell-skip-prompt)
+    (eshell-prompt-regexp (rx bol (* (not (any "#$\n"))) space (any "#$λ") space))
+    :init
+    (defun config-eshell-skip-prompt ()
+      (goto-char (line-beginning-position))
+      (skip-chars-forward "#$λ "))
+
+    (defun config-eshell-prompt ()
+      (concat (propertize (abbreviate-file-name (eshell/pwd))
+                          'face 'font-lock-comment-face)
+              "\n"
+              (if (= (user-uid) 0) " # " " λ "))))
+#+end_src
+
+** Custom commands
+
+*** fasd
+#+begin_src emacs-lisp
+  (defun eshell/j (&rest query)
+    (let* ((fasd (executable-find "fasd"))
+           (matches (thread-last (s-join " " query)
+                                 (format "%s -ld %s" fasd)
+                                 (shell-command-to-string)
+                                 (s-trim)
+                                 (s-lines)
+                                 (mapcar 's-trim))))
+      (message "Matches: %s" matches)
+      (when-let* ((dir (first matches)))
+        (eshell/cd dir))))
+#+end_src
+
+*** git root
+#+begin_src emacs-lisp
+  (defun eshell/g ()
+    (let (message-log-max)
+      (if-let* ((dir (locate-dominating-file default-directory ".git")))
+          (progn
+            (message "Moving to git repository root")
+            (eshell/cd dir))
+        (if-let* ((dir (projectile-project-root)))
+            (progn
+              (message "Moving to project root")
+              (eshell/cd dir))
+          (user-error "Not in a project or git repo")))))
+#+end_src
+
 * ⌨️ Set up leader keys
 Note that we ensure evil is loaded first before binding any keys below,
 otherwise =general= is pathologically slow.
