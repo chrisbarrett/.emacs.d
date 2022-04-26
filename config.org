@@ -415,6 +415,7 @@ Load host-specific settings, which are not checked into version control.
                                 (:foreground ,dark-fg :extend t))
                                (((background light))
                                 (:foreground ,light-fg :extend t))))
+                            '(compilation-warning ((t :italic nil)))
                             '(magit-header-line ((t :background nil :box nil)))
                             `(org-document-title ,title)
                             `(org-roam-header-line ((t :inherit org-document-title)))
