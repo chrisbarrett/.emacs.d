@@ -3692,6 +3692,29 @@ See: https://github.com/magit/magit/commit/26e064e1d78acb4d4d422a0a5743609612863
     :hook (magit-mode . magit-delta-mode))
 #+end_src
 
+**** Conditionally disable to avoid slowdowns on large diffs
+See: [[https://github.com/dandavison/magit-delta/issues/9#issuecomment-795435781][Slowness relative to regular magit · Issue #9 · dandavison/magit-delta · GitHub]]
+
+#+begin_src emacs-lisp
+  (use-package magit-delta
+    :preface
+    (defconst config-magit-delta-max-buffer-length 50000)
+
+    (defun config-magit-delta-inhibit-for-large-diffs (fn &rest args)
+      (if (<= (point-max) config-magit-delta-max-buffer-length)
+          (apply fn args)
+        (magit-delta-mode -1)))
+
+    (defun config-magit-delta-maybe-reenable-for-refresh (&rest _args)
+      (when (and (not magit-delta-mode)
+                 (<= (point-max) config-magit-delta-max-buffer-length))
+        (magit-delta-mode +1)))
+
+    :config
+    (advice-add 'magit-delta-call-delta-and-convert-ansi-escape-sequences :around #'config-magit-delta-inhibit-for-large-diffs)
+    (add-hook 'magit-post-refresh-hook #'config-magit-delta-maybe-reenable-for-refresh))
+#+end_src
+
 ** =forge= - teaches =magit= how to work with pull requests and issues
 :LOGBOOK:
 - Note taken on [2021-08-07 Sat 15:27] \\
