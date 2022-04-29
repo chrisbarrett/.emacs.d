@@ -6307,7 +6307,7 @@ This makes it much easier to edit text using emphasis markers correctly.
       (vlc-player-play-file file))
 
     (defun org-link-complete-vlc-file ()
-      (concat "vlc:" (read-file-name "File: ")))
+      (concat "vlc:" (abbreviate-file-name (read-file-name "File: "))))
 
     (org-link-set-parameters "vlc"
                              :complete #'org-link-complete-vlc-file

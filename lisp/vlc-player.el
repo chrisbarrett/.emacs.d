@@ -73,7 +73,7 @@
     (define-key keymap (kbd "C-c C-q") #'vlc-player-bury-window)
     (define-key keymap (kbd "C-c q") #'vlc-player-bury-window)
     (define-key keymap (kbd "C-c C-h") #'vlc-player-cmd-seek-backward)
-    (define-key keymap (kbd "C-h") #'vlc-player-cmd-seek-forward)
+    (define-key keymap (kbd "C-h") #'vlc-player-cmd-seek-backward)
     (define-key keymap (kbd "C-c h") #'vlc-player-cmd-seek-backward)
     (define-key keymap (kbd "C-l") #'vlc-player-cmd-seek-forward)
     (define-key keymap (kbd "C-c C-l") #'vlc-player-cmd-seek-forward)
