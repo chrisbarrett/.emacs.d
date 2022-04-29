@@ -40,6 +40,16 @@
   :group 'vlc-player
   :type 'file)
 
+(defcustom vlc-player-seek-forward-seconds 5
+  "The number of seconds to advance when seekping forward."
+  :group 'vlc-player
+  :type 'numberp)
+
+(defcustom vlc-player-seek-backward-seconds 5
+  "The number of seconds to go back when seekping back."
+  :group 'vlc-player
+  :type 'numberp)
+
 
 
 (defconst vlc-player-buffer-name "*vlc*")
@@ -47,7 +57,7 @@
 (defconst vlc-player-mode-prompt-regexp (rx bol "> "))
 
 (defconst vlc-player-header-line-format
-  '((:eval (substitute-command-keys "Type \\[vlc-player-cmd-play-or-pause] to play/pause, \\[vlc-player-cmd-stop] to stop, and \\[vlc-player-bury-window] to exit"))))
+  '((:eval (substitute-command-keys "\\[vlc-player-play-file] to play a file, \\[vlc-player-cmd-play-or-pause] to play/pause, \\[vlc-player-cmd-stop] to stop, \\[vlc-player-bury-window] to exit, \\[vlc-player-cmd-seek-forward] to seek forward and \\[vlc-player-cmd-seek-backward] to seek backward."))))
 
 ;;;###autoload
 (defconst vlc-player-mode-map
@@ -62,6 +72,12 @@
     (define-key keymap (kbd "C-c f") #'vlc-player-play-file)
     (define-key keymap (kbd "C-c C-q") #'vlc-player-bury-window)
     (define-key keymap (kbd "C-c q") #'vlc-player-bury-window)
+    (define-key keymap (kbd "C-c C-h") #'vlc-player-cmd-seek-backward)
+    (define-key keymap (kbd "C-h") #'vlc-player-cmd-seek-forward)
+    (define-key keymap (kbd "C-c h") #'vlc-player-cmd-seek-backward)
+    (define-key keymap (kbd "C-l") #'vlc-player-cmd-seek-forward)
+    (define-key keymap (kbd "C-c C-l") #'vlc-player-cmd-seek-forward)
+    (define-key keymap (kbd "C-c l") #'vlc-player-cmd-seek-forward)
     keymap))
 
 (defun vlc-player-bury-window (&optional kill)
@@ -101,6 +117,22 @@ With prefix arg KILL, also quit VLC."
   (interactive)
   (vlc-player-send-command "pause")
   (message "Playing/pausing"))
+
+(defun vlc-player-cmd-seek-forward ()
+  "Step forward when playing.
+
+The amount to seek each keypress can be customized with
+`vlc-player-seek-forward-seconds'."
+  (interactive)
+  (vlc-player-send-command "seek" (format "+%s" vlc-player-seek-forward-seconds)))
+
+(defun vlc-player-cmd-seek-backward ()
+  "Step backward when playing.
+
+The amount to seek each keypress can be customized with
+`vlc-player-seek-backward-seconds'."
+  (interactive)
+  (vlc-player-send-command "seek" (format "-%s" vlc-player-seek-forward-seconds)))
 
 ;;;###autoload
 (defun vlc-player-play-file (file)
