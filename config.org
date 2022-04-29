@@ -6293,7 +6293,7 @@ This makes it much easier to edit text using emphasis markers correctly.
                              :complete #'org-link-complete-app))
 #+end_src
 
-** Add a link type for playing audio in VLC
+** Add a link type for playing audio files
 :PROPERTIES:
 :ID:       9058EF04-3653-49F7-9C93-A15D3A4C9B06
 :END:
@@ -6303,16 +6303,16 @@ This makes it much easier to edit text using emphasis markers correctly.
     (require 'ol)
     (require 'vlc-player)
 
-    (defun org-link-follow-vlc (file &optional _arg)
+    (defun org-link-follow-audio (file &optional _arg)
       (vlc-player)
       (vlc-player-play-file file))
 
-    (defun org-link-complete-vlc-file ()
-      (concat "vlc:" (abbreviate-file-name (read-file-name "File: "))))
+    (defun org-link-complete-audio-file ()
+      (concat "audio:" (abbreviate-file-name (read-file-name "File: "))))
 
-    (org-link-set-parameters "vlc"
-                             :complete #'org-link-complete-vlc-file
-                             :follow #'org-link-follow-vlc))
+    (org-link-set-parameters "audio"
+                             :complete #'org-link-complete-audio-file
+                             :follow #'org-link-follow-audio))
 #+end_src
 
 ** Keep abbrevs in =org-directory=
