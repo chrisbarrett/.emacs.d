@@ -6304,6 +6304,7 @@ This makes it much easier to edit text using emphasis markers correctly.
     (require 'vlc-player)
 
     (defun org-link-follow-vlc (file &optional _arg)
+      (vlc-player)
       (vlc-player-play-file file))
 
     (defun org-link-complete-vlc-file ()
