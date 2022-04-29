@@ -57,15 +57,14 @@
 (defconst vlc-player-mode-prompt-regexp (rx bol "> "))
 
 (defconst vlc-player-header-line-format
-  '((:eval (substitute-command-keys "\\[vlc-player-play-file] to play a file, \\[vlc-player-cmd-play-or-pause] to play/pause, \\[vlc-player-cmd-stop] to stop, \\[vlc-player-bury-window] to exit, \\[vlc-player-cmd-seek-forward] to seek forward and \\[vlc-player-cmd-seek-backward] to seek backward."))))
+  '((:eval (substitute-command-keys "\\[vlc-player-play-file] to play a file, \\[vlc-player-cmd-play-or-pause] to play/pause, \\[vlc-player-stop-and-bury] to exit, \\[vlc-player-bury-window] to hide the window, \\[vlc-player-cmd-seek-forward] to seek forward and \\[vlc-player-cmd-seek-backward] to seek backward."))))
 
 ;;;###autoload
 (defconst vlc-player-mode-map
   (let ((keymap (make-sparse-keymap)))
     (define-key keymap (kbd "C-SPC") #'vlc-player-cmd-play-or-pause)
     (define-key keymap (kbd "C-c SPC") #'vlc-player-cmd-play-or-pause)
-    (define-key keymap (kbd "C-c C-.") #'vlc-player-cmd-stop)
-    (define-key keymap (kbd "C-c .") #'vlc-player-cmd-stop)
+    (define-key keymap (kbd "C-c C-k") #'vlc-player-stop-and-bury)
     (define-key keymap (kbd "C-c o") #'vlc-player-play-file)
     (define-key keymap (kbd "C-c C-o") #'vlc-player-play-file)
     (define-key keymap (kbd "C-c C-f") #'vlc-player-play-file)
@@ -106,11 +105,13 @@ With prefix arg KILL, also quit VLC."
   (setq-local comint-prompt-read-only t)
   (setq-local comint-prompt-regexp vlc-player-mode-prompt-regexp))
 
-(defun vlc-player-cmd-stop ()
-  "Stop the running player."
-  (interactive)
+(defun vlc-player-stop-and-bury (&optional kill)
+  "Stop the running player and hide the player window.
+
+With prefix arg KILL, also exit VLC."
+  (interactive "P")
   (vlc-player-send-command "stop")
-  (message "Player stopped"))
+  (vlc-player-bury-window kill))
 
 (defun vlc-player-cmd-play-or-pause ()
   "Play or pause the running player."
