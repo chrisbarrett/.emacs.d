@@ -23,6 +23,7 @@
 
 ;;; Code:
 
+(require 'dash)
 (require 'comint)
 (require 'subr-x)
 
@@ -110,13 +111,13 @@ With prefix arg KILL, also quit VLC."
 
 With prefix arg KILL, also exit VLC."
   (interactive "P")
-  (vlc-player-send-command "stop")
+  (vlc-player-execute `(stop))
   (vlc-player-bury-window kill))
 
 (defun vlc-player-cmd-play-or-pause ()
   "Play or pause the running player."
   (interactive)
-  (vlc-player-send-command "pause")
+  (vlc-player-execute `(pause))
   (message "Playing/pausing"))
 
 (defun vlc-player-cmd-seek-forward ()
@@ -125,7 +126,7 @@ With prefix arg KILL, also exit VLC."
 The amount to seek each keypress can be customized with
 `vlc-player-seek-forward-seconds'."
   (interactive)
-  (vlc-player-send-command "seek" (format "+%s" vlc-player-seek-forward-seconds)))
+  (vlc-player-execute `(seek ,(format "+%s" vlc-player-seek-forward-seconds))))
 
 (defun vlc-player-cmd-seek-backward ()
   "Step backward when playing.
@@ -133,16 +134,23 @@ The amount to seek each keypress can be customized with
 The amount to seek each keypress can be customized with
 `vlc-player-seek-backward-seconds'."
   (interactive)
-  (vlc-player-send-command "seek" (format "-%s" vlc-player-seek-forward-seconds)))
+  (vlc-player-execute `(seek ,(format "-%s" vlc-player-seek-backward-seconds))))
+
+(defun vlc-player-cmd-seek (seconds)
+  "Seek to SECONDS in the currently playing stream."
+  (interactive "nSeconds: ")
+  (vlc-player-execute `(seek ,(number-to-string seconds))))
 
 ;;;###autoload
-(defun vlc-player-play-file (file)
-  "Play FILE in an inferior VLC player."
+(defun vlc-player-play-file (file &optional start)
+  "Play FILE in an inferior VLC player.
+
+START, if given, is the time in the stream (in seconds) to start at."
   (interactive "fFile: ")
   (vlc-player-buffer t)
-  (vlc-player-send-command "stop")
-  (vlc-player-send-command "clear")
-  (vlc-player-send-command "add" (expand-file-name file))
+  (vlc-player-execute `((clear)
+                        (add ,(expand-file-name file))
+                        ,(when start `(seek ,start))))
   (message "Playing %s" (abbreviate-file-name file)))
 
 (defun vlc-player--setup-buffer ()
@@ -159,17 +167,35 @@ The amount to seek each keypress can be customized with
       (vlc-player--setup-buffer))
     (current-buffer)))
 
-(defun vlc-player-send-command (command &rest args)
+(defun vlc-player--send-command-string (command-string)
   (if-let* ((buf (vlc-player-buffer))
             (proc (get-buffer-process buf)))
       (with-current-buffer buf
-        (let ((str (string-join (cons command args) " ")))
-          (goto-char (point-max))
-          (comint-delete-input)
-          (insert str)
-          (comint-send-input)
-          str))
+        (goto-char (point-max))
+        (comint-delete-input)
+        (insert command-string)
+        (comint-send-input))
     (error "VLC not running--check the *vlc* buffer")))
+
+(defun vlc-player--parse-command-or-commands (command-or-commands)
+  (--> command-or-commands
+       (if (listp (car it)) it (list it))
+       (-non-nil it)
+       (seq-map (lambda (sexp)
+                  (string-join (--map (format "%s" it) sexp) " "))
+                it)))
+
+(defun vlc-player-execute (command-or-commands)
+  "Send the inferior VLC process commands to execute together.
+
+COMMAND-OR-COMMANDS is a S-Expression. If the first entry is a
+symbol, it is interpreted to be a single command. If the first
+value is a list, it is interpreted to mean a list of commands to
+be and-ed and executed together."
+  (dolist (command-string (vlc-player--parse-command-or-commands command-or-commands))
+    (vlc-player--send-command-string command-string)
+    ;; KLUDGE: Give VLC a moment to recieve each command.
+    (sit-for 0.01)))
 
 
 
