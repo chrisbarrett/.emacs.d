@@ -6300,14 +6300,29 @@ This makes it much easier to edit text using emphasis markers correctly.
 #+begin_src emacs-lisp
   (use-package org
     :config
+    (require 'dash)
     (require 'ol)
     (require 'vlc-player)
-    (require 'dash)
+
+    (defun org-link--parse-audio-link-args (str)
+      (let ((kvps (split-string str (rx ",") t (rx (any space)))))
+        (--mapcat (-let [(arg value) (split-string it (rx "=") t (rx (any space)))]
+                    (pcase arg
+                      ("start"
+                       (list :start (string-to-number value)))
+                      ("end"
+                       (list :end (string-to-number value)))
+                      ("length"
+                       (list :length (string-to-number value)))
+                      (x
+                       (error "Unknown argument for audio links: %s" x))))
+                  kvps)))
 
     (defun org-link-follow-audio (file-and-args &optional _arg)
-      (-let [(file start) (split-string file-and-args (rx (any ":")))]
+      (-let [(file args) (split-string file-and-args (rx (any ":")))]
         (vlc-player)
-        (vlc-player-play-file file (and start (string-to-number start)))))
+        (apply #'vlc-player-play-file file (when args
+                                             (org-link--parse-audio-link-args args)))))
 
     (defun org-link-complete-audio-file ()
       (concat "audio:" (abbreviate-file-name (read-file-name "File: "))))
@@ -6956,6 +6971,14 @@ property drawer and the title. Advise it to fix that.
                         (inhibit-same-window . t)
                         (side . bottom)
                         (window-height . 0.1)))
+
+  (display-buffer-set (rx bos "*vlc-debug*" eos)
+                      '((display-buffer-reuse-mode-window
+                         display-buffer-pop-up-window)
+                        (dedicated . t)
+                        (modes . (helpful-mode help-mode Info-mode))
+                        (side . rightmost)
+                        (window-width . 80)))
 #+end_src
 
 * File postamble

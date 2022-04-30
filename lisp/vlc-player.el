@@ -23,8 +23,10 @@
 
 ;;; Code:
 
-(require 'dash)
+(require 'cl-lib)
 (require 'comint)
+(require 'dash)
+(require 'pp)
 (require 'subr-x)
 
 (defgroup vlc-player nil
@@ -50,6 +52,16 @@
   "The number of seconds to go back when seekping back."
   :group 'vlc-player
   :type 'numberp)
+
+
+;; Logging
+
+(defvar vlc-player--log nil)
+
+(defun vlc-player--log (str &rest args)
+  (when vlc-player--log
+    (let ((message-log-max))
+      (apply #'message str args))))
 
 
 
@@ -96,9 +108,9 @@ With prefix arg KILL, also quit VLC."
           (kill-buffer buf))))
     (pcase action
       ('bury
-       (message "VLC buffer buried"))
+       (vlc-player--log "VLC buffer buried"))
       ('kill
-       (message "Exited VLC")))))
+       (vlc-player--log "Exited VLC")))))
 
 ;;;###autoload
 (define-derived-mode vlc-player-mode comint-mode " VLC Player"
@@ -111,14 +123,19 @@ With prefix arg KILL, also quit VLC."
 
 With prefix arg KILL, also exit VLC."
   (interactive "P")
-  (vlc-player-execute `(stop))
+  (vlc-player--execute `(stop))
   (vlc-player-bury-window kill))
+
+(defun vlc-player-cmd-stop ()
+  "Stop the running player."
+  (interactive)
+  (vlc-player--execute `(stop)))
 
 (defun vlc-player-cmd-play-or-pause ()
   "Play or pause the running player."
   (interactive)
-  (vlc-player-execute `(pause))
-  (message "Playing/pausing"))
+  (vlc-player--execute `(pause))
+  (vlc-player--log "Playing/pausing"))
 
 (defun vlc-player-cmd-seek-forward ()
   "Step forward when playing.
@@ -126,7 +143,7 @@ With prefix arg KILL, also exit VLC."
 The amount to seek each keypress can be customized with
 `vlc-player-seek-forward-seconds'."
   (interactive)
-  (vlc-player-execute `(seek ,(format "+%s" vlc-player-seek-forward-seconds))))
+  (vlc-player--execute `(seek ,vlc-player-seek-forward-seconds)))
 
 (defun vlc-player-cmd-seek-backward ()
   "Step backward when playing.
@@ -134,24 +151,27 @@ The amount to seek each keypress can be customized with
 The amount to seek each keypress can be customized with
 `vlc-player-seek-backward-seconds'."
   (interactive)
-  (vlc-player-execute `(seek ,(format "-%s" vlc-player-seek-backward-seconds))))
+  (vlc-player--execute `(seek ,(- vlc-player-seek-backward-seconds))))
 
 (defun vlc-player-cmd-seek (seconds)
   "Seek to SECONDS in the currently playing stream."
   (interactive "nSeconds: ")
-  (vlc-player-execute `(seek ,(number-to-string seconds))))
+  (vlc-player--execute `(seek-to ,(number-to-string seconds))))
 
 ;;;###autoload
-(defun vlc-player-play-file (file &optional start)
+(cl-defun vlc-player-play-file (file &key start end length)
   "Play FILE in an inferior VLC player.
 
-START, if given, is the time in the stream (in seconds) to start at."
+START, END, and LENGTH are numbers taken to be seconds, allowing
+further control of the playback."
   (interactive "fFile: ")
   (vlc-player-buffer t)
-  (vlc-player-execute `((clear)
-                        (add ,(expand-file-name file))
-                        ,(when start `(seek ,start))))
-  (message "Playing %s" (abbreviate-file-name file)))
+  (vlc-player--execute `((clear)
+                         (add ,(expand-file-name file))
+                         ,(when start `(seek ,start))
+                         ,(when end `(stop-at ,(- end (or start 0))))
+                         ,(when length `(stop-at ,length))))
+  (vlc-player--log "Playing %s" (abbreviate-file-name file)))
 
 (defun vlc-player--setup-buffer ()
   (unless (comint-check-proc (current-buffer))
@@ -167,6 +187,49 @@ START, if given, is the time in the stream (in seconds) to start at."
       (vlc-player--setup-buffer))
     (current-buffer)))
 
+
+;; Command evaluator
+
+(defvar vlc-player--debug nil)
+
+(defvar vlc-player--last-file-played nil)
+
+(defun vlc-player--schedule-stop (file seconds)
+  (run-with-timer seconds nil (lambda ()
+                                (vlc-player--debug (format "Stopping %s" file))
+                                (when (equal vlc-player--last-file-played file)
+                                  (vlc-player-cmd-stop)))))
+
+(defun vlc-player--compile (command-or-commands)
+  (--> command-or-commands
+       (if (listp (car it)) it (list it))
+       (-non-nil it)
+       (seq-map (lambda (sexp)
+                  (pcase sexp
+                    (`(add ,file)
+                     (setq vlc-player--last-file-played file)
+                     (format "add %s" file))
+                    (`(seek ,seconds)
+                     (format "seek %s%s" (if (cl-plusp seconds) "+" "-") seconds))
+                    (`(seek-to ,seconds)
+                     (format "seek %s" seconds))
+                    (`(clear)
+                     (setq vlc-player--last-file-played nil)
+                     "clear")
+                    (`(stop)
+                     (setq vlc-player--last-file-played nil)
+                     "stop")
+                    (`(stop-at ,seconds)
+                     (unless vlc-player--last-file-played
+                       (error "Attempt to end playback without adding a file"))
+                     (list
+                      :name (format "stop-at(%s)" seconds)
+                      :fun (lambda ()
+                             (vlc-player--schedule-stop vlc-player--last-file-played seconds))))
+                    (sexp
+                     (string-join (--map (format "%s" it) sexp) " "))))
+                it)))
+
 (defun vlc-player--send-command-string (command-string)
   (if-let* ((buf (vlc-player-buffer))
             (proc (get-buffer-process buf)))
@@ -177,25 +240,45 @@ START, if given, is the time in the stream (in seconds) to start at."
         (comint-send-input))
     (error "VLC not running--check the *vlc* buffer")))
 
-(defun vlc-player--parse-command-or-commands (command-or-commands)
-  (--> command-or-commands
-       (if (listp (car it)) it (list it))
-       (-non-nil it)
-       (seq-map (lambda (sexp)
-                  (string-join (--map (format "%s" it) sexp) " "))
-                it)))
+(defun vlc-player--eval (command)
+  (cond ((and (listp command) (plist-get command :fun))
+         (-let [(&plist :fun :name) command]
+           (vlc-player--debug (format "Command: %s" (or name "<Function>")))
+           (funcall fun)))
+        ((stringp command)
+         (vlc-player--debug (format "Command: %s" command))
+         (vlc-player--send-command-string command)
+         ;; KLUDGE: Give VLC a moment to recieve each command.
+         (sit-for 0.01))
+        (t
+         (vlc-player--debug (format "Command: %s" command))
+         (error "Invalid VLC command %s" command))))
 
-(defun vlc-player-execute (command-or-commands)
+(defun vlc-player--debug (str)
+  (when vlc-player--debug
+    (let ((buf (get-buffer-create "*vlc-debug*")))
+      (with-current-buffer buf
+        (let ((inhibit-read-only t))
+          (goto-char (point-max))
+          (insert (propertize (format-time-string "%FT%T%z") 'face '(bold t)))
+          (insert "\n")
+          (insert (mapconcat (lambda (it) (format "  %s" it))
+                             (split-string str (rx (any "\n")) nil)
+                             "\n"))
+          (insert "\n"))
+        (read-only-mode +1))
+      (display-buffer buf))))
+
+(defun vlc-player--execute (command-or-commands)
   "Send the inferior VLC process commands to execute together.
 
 COMMAND-OR-COMMANDS is a S-Expression. If the first entry is a
 symbol, it is interpreted to be a single command. If the first
 value is a list, it is interpreted to mean a list of commands to
 be and-ed and executed together."
-  (dolist (command-string (vlc-player--parse-command-or-commands command-or-commands))
-    (vlc-player--send-command-string command-string)
-    ;; KLUDGE: Give VLC a moment to recieve each command.
-    (sit-for 0.01)))
+  (let ((compiled (vlc-player--compile command-or-commands)))
+    (dolist (command compiled)
+      (vlc-player--eval command))))
 
 
 
