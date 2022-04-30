@@ -6302,10 +6302,12 @@ This makes it much easier to edit text using emphasis markers correctly.
     :config
     (require 'ol)
     (require 'vlc-player)
+    (require 'dash)
 
-    (defun org-link-follow-audio (file &optional _arg)
-      (vlc-player)
-      (vlc-player-play-file file))
+    (defun org-link-follow-audio (file-and-args &optional _arg)
+      (-let [(file start) (split-string file-and-args (rx (any ":")))]
+        (vlc-player)
+        (vlc-player-play-file file (and start (string-to-number start)))))
 
     (defun org-link-complete-audio-file ()
       (concat "audio:" (abbreviate-file-name (read-file-name "File: "))))
