@@ -6300,23 +6300,37 @@ This makes it much easier to edit text using emphasis markers correctly.
 #+begin_src emacs-lisp
   (use-package org
     :config
+    (require 'cl-lib)
     (require 'dash)
     (require 'ol)
     (require 'vlc-player)
 
     (defun org-link--parse-audio-link-args (str)
-      (let ((kvps (split-string str (rx ",") t (rx (any space)))))
-        (--mapcat (-let [(arg value) (split-string it (rx "=") t (rx (any space)))]
-                    (pcase arg
-                      ("start"
-                       (list :start (string-to-number value)))
-                      ("end"
-                       (list :end (string-to-number value)))
-                      ("length"
-                       (list :length (string-to-number value)))
-                      (x
-                       (error "Unknown argument for audio links: %s" x))))
-                  kvps)))
+      (cl-labels ((parse-keyword-style (str)
+                                       (let ((kvps (split-string str (rx ",") t (rx (any space)))))
+                                         (--mapcat (-let [(arg value) (split-string it (rx "=") t (rx (any space)))]
+                                                     (pcase arg
+                                                       ("start"
+                                                        (list :start (string-to-number value)))
+                                                       ("end"
+                                                        (list :end (string-to-number value)))
+                                                       ("length"
+                                                        (list :length (string-to-number value)))))
+                                                   kvps)))
+                  (parse-short-style (str)
+                                     (-let [(whole start end length)
+                                            (s-match (rx bol
+                                                         (* space)
+                                                         (group (+ digit))
+                                                         (? (* space) "-" (* space) (group (+ digit)))
+                                                         (? (* space) "," (* space) (group (+ digit))))
+                                                     str)]
+                                       (list :start (-some->> start (string-to-number))
+                                             :end (-some->> end (string-to-number))
+                                             :length (-some->> length (string-to-number))))))
+        (or (parse-keyword-style str)
+            (parse-short-style str)
+            (error "Could not parse audio link arguments"))))
 
     (defun org-link-follow-audio (file-and-args &optional _arg)
       (-let [(file args) (split-string file-and-args (rx (any ":")))]
