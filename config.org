@@ -6321,9 +6321,9 @@ This makes it much easier to edit text using emphasis markers correctly.
                                      (-let [(whole start end length)
                                             (s-match (rx bol
                                                          (* space)
-                                                         (group (+ digit))
-                                                         (? (* space) "-" (* space) (group (+ digit)))
-                                                         (? (* space) "," (* space) (group (+ digit))))
+                                                         (group (+ digit) (? "." (+ digit)))
+                                                         (? (* space) "-" (* space) (group (+ digit) (? "." (+ digit))))
+                                                         (? (* space) "," (* space) (group (+ digit) (? "." (+ digit)))))
                                                      str)]
                                        (list :start (-some->> start (string-to-number))
                                              :end (-some->> end (string-to-number))
