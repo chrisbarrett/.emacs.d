@@ -123,7 +123,8 @@ With prefix arg KILL, also quit VLC."
 
 With prefix arg KILL, also exit VLC."
   (interactive "P")
-  (vlc-player--execute `(stop))
+  (ignore-errors
+    (vlc-player--execute `(stop)))
   (vlc-player-bury-window kill))
 
 (defun vlc-player-cmd-stop ()
@@ -165,26 +166,22 @@ The amount to seek each keypress can be customized with
 START, END, and LENGTH are numbers taken to be seconds, allowing
 further control of the playback."
   (interactive "fFile: ")
-  (vlc-player-buffer t)
-  (vlc-player--execute `((clear)
-                         (add ,(expand-file-name file))
-                         ,(when start `(seek ,start))
-                         ,(when end `(stop-at ,(- end (or start 0))))
-                         ,(when length `(stop-at ,length))))
+  (with-current-buffer (vlc-player-buffer)
+    (let ((inhibit-read-only t))
+      (erase-buffer))
+    (comint-exec (current-buffer) "vlc"  vlc-player-executable nil
+                 (append (list (expand-file-name file) "-I" "rc" "--play-and-stop")
+                         (when start (list (format "--start-time=%s" start)))
+                         (when end (list (format "--stop-time=%s" end)))
+                         (when length (list (format "--run-time=%s" length))))))
   (vlc-player--log "Playing %s" (abbreviate-file-name file)))
 
-(defun vlc-player--setup-buffer ()
-  (unless (comint-check-proc (current-buffer))
+(defun vlc-player-buffer ()
+  (with-current-buffer (get-buffer-create vlc-player-buffer-name)
     (unless (derived-mode-p 'vlc-player-mode)
       (vlc-player-mode))
-    (comint-exec (current-buffer) "vlc"  vlc-player-executable nil '("-I" "rc")))
-  (setq-local header-line-format vlc-player-header-line-format)
-  (force-mode-line-update))
-
-(defun vlc-player-buffer (&optional startup-enabled)
-  (with-current-buffer (get-buffer-create vlc-player-buffer-name)
-    (when startup-enabled
-      (vlc-player--setup-buffer))
+    (setq-local header-line-format vlc-player-header-line-format)
+    (force-mode-line-update)
     (current-buffer)))
 
 
@@ -192,46 +189,20 @@ further control of the playback."
 
 (defvar vlc-player--debug nil)
 
-(defvar vlc-player--playback-token nil)
-(defvar vlc-player--last-file-played nil)
-
-(defun vlc-player--schedule-stop (file seconds token)
-  (run-with-timer seconds nil (lambda ()
-                                (vlc-player--debug (format "Stopping %s (token: %s)" file token))
-                                (when (equal vlc-player--playback-token token)
-                                  (vlc-player-cmd-stop)))))
-
 (defun vlc-player--compile (command-or-commands)
   (--> command-or-commands
        (if (listp (car it)) it (list it))
        (-non-nil it)
        (seq-map (lambda (sexp)
                   (pcase sexp
-                    (`(add ,file)
-                     (setq vlc-player--playback-token (random))
-                     (setq vlc-player--last-file-played file)
-                     (format "add %s" file))
                     (`(seek ,seconds)
-                     (format "seek %s%s" (if (cl-plusp seconds) "+" "-") seconds))
+                     (format "seek %s%s" (if (cl-plusp seconds) "+" "") seconds))
                     (`(seek-to ,seconds)
                      (format "seek %s" seconds))
                     (`(clear)
-                     (setq vlc-player--last-file-played nil)
-                     (setq vlc-player--playback-token nil)
                      "clear")
                     (`(stop)
-                     (setq vlc-player--playback-token nil)
-                     (setq vlc-player--last-file-played nil)
                      "stop")
-                    (`(stop-at ,seconds)
-                     (let ((file vlc-player--last-file-played)
-                           (token vlc-player--playback-token))
-                       (unless (and file token)
-                         (error "Attempt to end playback without adding a file"))
-                       (list
-                        :name (format "stop-at(%s)" seconds)
-                        :fun (lambda ()
-                               (vlc-player--schedule-stop file seconds token)))))
                     (sexp
                      (string-join (--map (format "%s" it) sexp) " "))))
                 it)))
@@ -247,11 +218,7 @@ further control of the playback."
     (error "VLC not running--check the *vlc* buffer")))
 
 (defun vlc-player--eval (command)
-  (cond ((and (listp command) (plist-get command :fun))
-         (-let [(&plist :fun :name) command]
-           (vlc-player--debug (format "Command: %s" (or name "<Function>")))
-           (funcall fun)))
-        ((stringp command)
+  (cond ((stringp command)
          (vlc-player--debug (format "Command: %s" command))
          (vlc-player--send-command-string command)
          ;; KLUDGE: Give VLC a moment to recieve each command.
@@ -292,7 +259,7 @@ be and-ed and executed together."
 (defun vlc-player ()
   "Start or show the inferior VLC player."
   (interactive)
-  (when-let* ((win (display-buffer (vlc-player-buffer t))))
+  (when-let* ((win (display-buffer (vlc-player-buffer))))
     (select-window win)))
 
 (provide 'vlc-player)
