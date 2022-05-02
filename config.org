@@ -1041,6 +1041,7 @@ Set up LaTeX-style input method and add extra MULE rules for common chars.
       (when-let* ((quail-current-package (assoc "TeX" quail-package-alist)))
         (quail-defrule ";" (quail-lookup-key "\\"))
         (quail-define-rules ((append . t))
+                            ("\\ou" ?ů)
                             ("\\null" ?∅)
                             ("\\rarr" ?→)
                             ("\\larr" ?←)
