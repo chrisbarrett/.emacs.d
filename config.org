@@ -5148,22 +5148,6 @@ itself.
     :commands (mu4e mu4e-compose-new)
     :custom
     (mu4e-mu-binary (getenv "NIX_EMACS_MU_BINARY"))
-    (mu4e-bookmarks '(("flag:unread AND NOT (flag:trashed OR m:/walrus/Archive)"
-                       "Unread messages" ?u)
-                      ("d:today..now"
-                       "Today's messages" ?t)
-                      ("d:7d..now"
-                       "Last 7 days" ?w)
-                      ("d:30d..now"
-                       "Last 30 days" ?m)
-                      ("m:/walrus/Inbox"
-                       "Inbox" ?i)
-                      ("m:/walrus/Notifications AND d:14d..now"
-                       "Notifications" ?n)
-                      ("m:/walrus/Sent"
-                       "Sent messages" ?s)
-                      ("github"
-                       "Code & PRs" ?c)))
     (mu4e-attachment-dir (f-expand "~/Downloads"))
     (mu4e-context-policy 'pick-first)
     (mu4e-compose-context-policy 'ask-if-none)
