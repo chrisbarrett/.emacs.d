@@ -116,7 +116,7 @@
 (defun org-roam-note--cache-mutate (fn)
   (let ((cache (org-roam-note--cache)))
     (funcall fn cache)
-    (f-write-text (prin1-to-string (ht-to-alist cache)) 'utf-8 org-roam-note-cache-file)
+    (f-write-text (prin1-to-string (ht-to-alist cache)) 'prefer-utf-8 org-roam-note-cache-file)
     cache))
 
 (defun org-roam-note--cache-clear ()
