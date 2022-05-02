@@ -6329,14 +6329,20 @@ This makes it much easier to edit text using emphasis markers correctly.
                                              :end (-some->> end (string-to-number))
                                              :length (-some->> length (string-to-number))))))
         (or (parse-keyword-style str)
-            (parse-short-style str)
-            (error "Could not parse audio link arguments"))))
+            (parse-short-style str))))
 
     (defun org-link-follow-audio (file-and-args &optional _arg)
-      (-let [(file args) (split-string file-and-args (rx (any ":")))]
-        (vlc-player)
-        (apply #'vlc-player-play-file file (when args
-                                             (org-link--parse-audio-link-args args)))))
+      (-let* (((file args) (split-string file-and-args (rx (any ":"))))
+              ((parsed-args &as &plist :start :end :length)
+               (ignore-errors
+                 (org-link--parse-audio-link-args args)))
+              (duration (or length
+                            (ignore-errors
+                              (- end start)))))
+        (when (or (and duration (< 10 duration))
+                  (null duration))
+          (vlc-player))
+        (apply #'vlc-player-play-file file parsed-args)))
 
     (defun org-link-complete-audio-file ()
       (concat "audio:" (abbreviate-file-name (read-file-name "File: "))))
