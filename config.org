@@ -5511,25 +5511,62 @@ Automatically enter insert state when inserting new headings or using
     (org-hidden-keywords '(title author))
     (org-cycle-separator-lines 0)
     (org-hide-emphasis-markers t)
-    (org-startup-indented t)
     (org-startup-with-latex-preview nil)
     (org-startup-folded 'showall)
     (org-startup-shrink-all-tables t)
     (org-startup-with-inline-images t))
 #+end_src
 
-*** Use bullet characters for list items
+*** =org-format= - Format document on save
+=org-format= provides some commands to clean up the whitespace around
+org headings.
+
 #+begin_src emacs-lisp
-  (use-package org
-    :config
-    (font-lock-add-keywords 'org-mode
-                            `((,(rx bol (* space) (group "-") (+ space))
-                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•")))))))
+  (use-package org-format
+    :hook (org-mode . org-format-on-save-mode))
 #+end_src
 
-*** =org-superstar= - Improve display of headlines
+*** Styles
+#+begin_src emacs-lisp
+  (defvar config-org-style 'compact)
+  (cl-assert (member config-org-style '(compact
+                                        sparse)))
+#+end_src
+
+**** Style: Compact & Dense
+#+begin_src emacs-lisp
+  (use-package org
+    :if (equal config-org-style 'compact)
+    :custom
+    (org-startup-indented nil))
+#+end_src
+
+#+begin_src emacs-lisp
+  (use-package org-format
+    :if (equal config-org-style 'compact)
+    :custom
+    (org-format-blank-lines-before-heading 0))
+#+end_src
+
+**** Style: Sparse & Indented
+#+begin_src emacs-lisp
+  (use-package org
+    :if (equal config-org-style 'sparse)
+    :custom
+    (org-startup-indented t))
+#+end_src
+
+#+begin_src emacs-lisp
+  (use-package org-format
+    :if (equal config-org-style 'sparse)
+    :custom
+    (org-format-blank-lines-before-heading 1))
+#+end_src
+
+***** =org-superstar= - Improve display of headlines
 #+begin_src emacs-lisp
   (use-package org-superstar
+    :if (equal config-org-style 'sparse)
     :hook (org-mode . org-superstar-mode)
     :custom
     (org-indent-mode-turns-on-hiding-stars nil)
@@ -5542,6 +5579,15 @@ Automatically enter insert state when inserting new headings or using
                                        ("DONE" . ?☑)))
     :config
     (setf (alist-get 45 org-superstar-item-bullet-alist) ?•))
+#+end_src
+
+*** Use bullet characters for list items
+#+begin_src emacs-lisp
+  (use-package org
+    :config
+    (font-lock-add-keywords 'org-mode
+                            `((,(rx bol (* space) (group "-") (+ space))
+                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•")))))))
 #+end_src
 
 *** Don't show secondary selection when running ~org-show-todo-tree~
@@ -5592,14 +5638,6 @@ Save org buffers automatically after certain operations.
     (org-footnote-auto-adjust t)
     (org-insert-heading-respect-content t)
     (org-loop-over-headlines-in-active-region 'start-level))
-#+end_src
-
-=org-format= provides some commands to clean up the whitespace around
-org headings.
-
-#+begin_src emacs-lisp
-  (use-package org-format
-    :hook (org-mode . org-format-on-save-mode))
 #+end_src
 
 *** Load =org-export= packages
@@ -6451,6 +6489,21 @@ This makes it much easier to edit text using emphasis markers correctly.
       (current-buffer)))
 
   (setq initial-buffer-choice #'initial-buffers)
+#+end_src
+
+** Hack around removed cl-lib function
+#+begin_src emacs-lisp
+  (use-package org-roam
+    :config
+    (defun org-roam--h1-count ()
+      "Count level-1 headings in the current file."
+      (let ((h1-count 0))
+        (org-with-wide-buffer
+         (org-map-region (lambda ()
+                           (if (= (org-current-level) 1)
+                               (cl-incf h1-count)))
+                         (point-min) (point-max))
+         h1-count))))
 #+end_src
 
 ** =org-roam-gc= - Automatically clean up empty dailies
