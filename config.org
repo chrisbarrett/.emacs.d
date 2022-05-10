@@ -9,7 +9,6 @@ This file uses org-mode's tangle functionality to create both the
 =early-init.el= and =init.el= files used by Emacs during the startup sequence.
 
 Headings can be tagged with =:disabled:= to 'comment-out' those blocks.
-
 * Early Init
 :PROPERTIES:
 :header-args:emacs-lisp: :tangle "early-init.el" :lexical yes
@@ -31,12 +30,10 @@ correctly from a fresh checkout.
 
   ;;; Code:
 #+end_src
-
 ** Set an environment variable so children can detect that they're inside Emacs
 #+begin_src emacs-lisp
   (setenv "INSIDE_EMACS" "true")
 #+end_src
-
 ** Crank up the max size of subprocess output to read.
 This is needed for language servers to perform well, since they communicate
 using large chunks of JSON. See:
@@ -45,7 +42,6 @@ using large chunks of JSON. See:
 #+begin_src emacs-lisp
   (setq read-process-output-max (* 1024 1024))
 #+end_src
-
 ** Make this checkout directory the value for ~user-emacs-directory~
 This makes it possible to run a version of this config checked out to a git
 worktree, for instance, and have all lisp config resolved relative to this
@@ -54,7 +50,6 @@ early-init file.
 #+begin_src emacs-lisp
   (setq user-emacs-directory (file-name-directory (or load-file-name (buffer-file-name))))
 #+end_src
-
 ** Disable package.el to improve startup time
 Disable =package.el=, since it increases startup time and I use
 [[https://github.com/nix-community/emacs-overlay][nix-community/emacs-overlay]] to handle package installation.
@@ -62,7 +57,6 @@ Disable =package.el=, since it increases startup time and I use
 #+begin_src emacs-lisp
   (setq package-enable-at-startup nil)
 #+end_src
-
 ** Increase GC limit to reduce collections during startup
 Garbage collection runs slow down the Emacs startup sequence. Temporarily
 increase settings. We will set final values at the end of the startup sequence.
@@ -71,7 +65,6 @@ increase settings. We will set final values at the end of the startup sequence.
   (setq gc-cons-threshold most-positive-fixnum)
   (setq gc-cons-percentage 0.7)
 #+end_src
-
 ** Put the ELN cache directory in an XDG-conformant place
 #+begin_src emacs-lisp
   (when (boundp 'comp-eln-load-path)
@@ -79,13 +72,11 @@ increase settings. We will set final values at the end of the startup sequence.
       (mkdir cache-dir t)
       (add-to-list 'comp-eln-load-path cache-dir)))
 #+end_src
-
 ** Enable pixel-wise frame resizing
 This helps tiling window managers apply the right size to Emacs frames.
 #+begin_src emacs-lisp
   (setq frame-resize-pixelwise t)
 #+end_src
-
 ** Disable menu bars, etc
 Disable window chrome that doesn't make sense in a keyboard-driven UI.
 #+begin_src emacs-lisp
@@ -95,14 +86,11 @@ Disable window chrome that doesn't make sense in a keyboard-driven UI.
 
   (modify-all-frames-parameters '((vertical-scroll-bars)))
 #+end_src
-
 ** Customise the titlebar
-
 *** Show just 'Emacs' for window manager title bar
 #+begin_src emacs-lisp
   (setq frame-title-format "Emacs")
 #+end_src
-
 *** Make the title bar more natural in macOS
 #+begin_src emacs-lisp
   (when (equal system-type 'darwin)
@@ -110,7 +98,6 @@ Disable window chrome that doesn't make sense in a keyboard-driven UI.
     (modify-all-frames-parameters '((ns-appearance . dark)
                                     (ns-transparent-titlebar . t))))
 #+end_src
-
 ** Set source directory
 Set the location where Emacs looks for its C source files. This is needed to
 view the definitions of special forms implemented in C.
@@ -120,7 +107,6 @@ The path to sources in the nix-store is injected via an environment variable.
 #+begin_src emacs-lisp
   (setq source-directory (expand-file-name emacs-version (getenv "NIX_EMACS_SRC_DIR")))
 #+end_src
-
 * File header
 #+begin_src emacs-lisp
   ;;; config.el -- User init file for Emacs.  -*- lexical-binding: t; buffer-read-only: t; -*-
@@ -132,12 +118,10 @@ The path to sources in the nix-store is injected via an environment variable.
 
   ;;; Code:
 #+end_src
-
 * Debugging
 Hook into the startup lifecycle to report useful debugging information. Note
 that these leverage the ~DEPTH~ argument so that subsequent functions added to
 ~after-init-hook~ are still ordered correctly.
-
 ** Show profiler report if startup took too long
 #+begin_src emacs-lisp
   (require 'profiler)
@@ -166,7 +150,6 @@ that these leverage the ~DEPTH~ argument so that subsequent functions added to
     (add-hook 'after-init-hook #'config-start-debugger-on-startup -99)
     (add-hook 'after-init-hook #'config-stop-debugger-on-startup 99))
 #+end_src
-
 ** Enable debugging for duration of startup sequence
 #+begin_src emacs-lisp
   (setq debug-on-error t)
@@ -176,7 +159,6 @@ that these leverage the ~DEPTH~ argument so that subsequent functions added to
               (setq debug-on-error nil))
             98)
 #+end_src
-
 ** Log startup time duration
 Note that tests refer to ~total-startup-duration~, so it should not be inlined.
 #+begin_src emacs-lisp
@@ -196,9 +178,7 @@ Note that tests refer to ~total-startup-duration~, so it should not be inlined.
                                           total-startup-duration)))
             97)
 #+end_src
-
 * Startup
-
 ** Tune garbage collection
 See: [[https://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-threshold/][Why are you changing gc-cons-threshold?]]
 #+begin_src emacs-lisp
@@ -210,24 +190,20 @@ See: [[https://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-thre
   (defun config--enable-gc ()
     (setq gc-cons-threshold config-default-gc-threshold))
 #+end_src
-
 *** Restore GC settings after init sequence has completed
 #+begin_src emacs-lisp
   (add-hook 'after-init-hook #'config--enable-gc)
 #+end_src
-
 *** Prevent GCs during user input in the minibuffer
 #+begin_src emacs-lisp
   (add-hook 'minibuffer-setup-hook #'config--inhibit-gc)
   (add-hook 'minibuffer-exit-hook #'config--enable-gc)
 #+end_src
-
 ** Start server
 #+begin_src emacs-lisp
   (unless noninteractive
     (server-start))
 #+end_src
-
 ** Define a function to select a value depending on the current OS theme
 #+begin_src emacs-lisp
   (defun gtk-theme-class ()
@@ -257,7 +233,6 @@ See: [[https://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-thre
           dark
         light)))
 #+end_src
-
 ** Set background colour based on OS theme
 Set reasonable placeholder foreground and background colours until the theme is
 loaded. Use the current WM theme to determine whether to use light or dark colours.
@@ -266,7 +241,6 @@ loaded. Use the current WM theme to determine whether to use light or dark colou
   (set-background-color (choose-by-system-theme :dark "#282c34" :light "#FDF6E3"))
   (set-foreground-color (choose-by-system-theme :dark "#bbc2cf" :light "#556b72"))
 #+end_src
-
 ** =use-package= - DSL for Lisp package configuration
 See: [[https://github.com/jwiegley/use-package][jwiegley/use-package]]
 #+begin_src emacs-lisp
@@ -296,20 +270,17 @@ Define a helper function for loading files with =use-package='s timing functiona
          (when use-package-compute-statistics
            `((use-package-statistics-gather :config ',name nil))))))))
 #+end_src
-
 ** =general= - Provides a rich key-binding DSL supported by =use-package=
 See: [[https://github.com/noctuid/general.el][noctuid/general.el]]
 #+begin_src emacs-lisp
   (use-package general
     :demand t)
 #+end_src
-
 ** =delight= - Change or hide minor-mode lighters
 #+begin_src emacs-lisp
   (use-package delight
     :demand t)
 #+end_src
-
 ** Load features used often in config
 #+begin_src emacs-lisp
   (require 'dash)
@@ -319,25 +290,21 @@ See: [[https://github.com/noctuid/general.el][noctuid/general.el]]
   (require 'seq-extras (expand-file-name "lisp/seq-extras.el" user-emacs-directory))
   (require 'ht)
 #+end_src
-
 ** Load =cl= early to avoid warnings caused by reorganised functions in Emacs 27+
 #+begin_src emacs-lisp
   (with-no-warnings
     (require 'cl))
 #+end_src
-
 ** Load autoloads
 I slam all package autoloads into a single file and read them in here.
 #+begin_src emacs-lisp
   (load-file-with-stats (expand-file-name "config-autoloads.el" user-emacs-directory))
 #+end_src
-
 ** Configure paths and config layout
 #+begin_src emacs-lisp
   (require 'paths (ignore-errors (expand-file-name "paths.el" user-emacs-directory)))
   (paths-initialise)
 #+end_src
-
 *** Configure =no-littering= to use these paths
 Customises many packages to create a cleaner =.emacs.d= layout.
 See: [[https://github.com/emacscollective/no-littering][emacscollective/no-littering]]
@@ -349,7 +316,6 @@ See: [[https://github.com/emacscollective/no-littering][emacscollective/no-litte
     (setq no-littering-etc-directory paths-etc-directory)
     (setq no-littering-var-directory paths-cache-directory))
 #+end_src
-
 *** Teach =recentf= to use these paths
 #+begin_src emacs-lisp
   (use-package recentf
@@ -358,7 +324,6 @@ See: [[https://github.com/emacscollective/no-littering][emacscollective/no-litte
     (add-to-list 'recentf-exclude no-littering-etc-directory)
     (add-to-list 'recentf-exclude no-littering-var-directory))
 #+end_src
-
 ** Load site settings
 Load host-specific settings, which are not checked into version control.
 #+begin_src emacs-lisp
@@ -367,9 +332,7 @@ Load host-specific settings, which are not checked into version control.
   (when (file-exists-p user-site-file)
     (load-file-with-stats user-site-file))
 #+end_src
-
 * 🖌️ Colour theme
-
 ** Define a quick-and-dirty utility for smashing face specs together
 #+begin_src emacs-lisp
   (defun append-faces (&rest specs)
@@ -379,7 +342,6 @@ Load host-specific settings, which are not checked into version control.
                          specs
                          (ht-create))))))
 #+end_src
-
 ** Define general theme settings
 #+begin_src emacs-lisp
   (let* ((default-height (face-attribute 'default :height))
@@ -467,7 +429,6 @@ setting above from sticking. Re-evaluate that spec.
 
   (add-hook 'org-mode-hook #'config-hack-org-faces)
 #+end_src
-
 ** =doom-themes= - Enable appropriate theme for OS theme
 #+begin_src emacs-lisp
   (use-package doom-themes
@@ -478,7 +439,6 @@ setting above from sticking. Re-evaluate that spec.
     :config
     (load-theme (choose-by-system-theme :light 'doom-solarized-light :dark 'doom-one) t))
 #+end_src
-
 ** Define Lisp functions for switching theme via emacsclient
 I have =dark= and =light= scripts I execute to change theme across all my
 applications. The following functions will be invoked by those scripts over
@@ -495,7 +455,6 @@ applications. The following functions will be invoked by those scripts over
       (disable-theme theme))
     (load-theme 'doom-one t))
 #+end_src
-
 * mode-line and header-line
 Use a header line instead of a mode line.
 
@@ -520,7 +479,6 @@ Use a header line instead of a mode line.
 
   (setq-default mode-line-format nil)
 #+end_src
-
 ** =minions= - Hides most minor modes behind a menu
 #+begin_src emacs-lisp
   (use-package minions
@@ -541,7 +499,6 @@ Use a header line instead of a mode line.
         (cl-nsubst 'mode-line-modes 'minions-mode-line-modes header-line-format)))
     (minions-header-line-mode +1))
 #+end_src
-
 * Common advice
 #+begin_src emacs-lisp
   (defun advice-ignore-errors (f &rest args)
@@ -555,7 +512,6 @@ Use a header line instead of a mode line.
   (defun advice-clear-minibuffer (&rest _)
     (message ""))
 #+end_src
-
 ** Run a hook when the theme changes
 #+begin_src emacs-lisp
   (defun config-run-after-load-theme-hook (theme &rest _)
@@ -563,14 +519,11 @@ Use a header line instead of a mode line.
 
   (advice-add 'load-theme :after #'config-run-after-load-theme-hook)
 #+end_src
-
 * Definitions needed for config
-
 ** Org-roam index
 #+begin_src emacs-lisp
   (defconst org-roam-index-node-id "0F0670F7-A280-4DD5-8FAC-1DB3D38CD37F")
 #+end_src
-
 ** Utility functions
 #+begin_src emacs-lisp
   (defun face-ancestors (face)
@@ -596,55 +549,45 @@ Use a header line instead of a mode line.
              (line-end-position))))
       (list start end)))
 #+end_src
-
 * Customise builtin features
-
 ** Always use one-char =y-or-n-p=
 #+begin_src emacs-lisp
   (defalias #'yes-or-no-p #'y-or-n-p)
 #+end_src
-
 ** Don't use the system trash can
 #+begin_src emacs-lisp
   (setq delete-by-moving-to-trash nil)
 #+end_src
-
 ** Do not truncate the results of =eval-expression=
 #+begin_src emacs-lisp
   (setq eval-expression-print-length nil)
   (setq eval-expression-print-level nil)
 #+end_src
-
 ** Instantly display current keystrokes in mini buffer
 #+begin_src emacs-lisp
  (setq echo-keystrokes 0.02)
 #+end_src
-
 ** Save cookies to a cache file.
 #+begin_src emacs-lisp
   (use-package url
     :custom
     (url-cookie-file (expand-file-name "cookies" paths-cache-directory)))
 #+end_src
-
 ** Prefer more recent Lisp files to outdated ELC files when loading
 #+begin_src emacs-lisp
   (setq load-prefer-newer t)
 #+end_src
-
 ** Automatically disconnect insecure connections
 #+begin_src emacs-lisp
   (use-package nsm
     :custom
     (nsm-noninteractive t))
 #+end_src
-
 ** Disable file dialogs
 #+begin_src emacs-lisp
   (setq use-file-dialog nil)
   (setq use-dialog-box nil)
 #+end_src
-
 ** Enable useful commands that are disabled by default
 #+begin_src emacs-lisp
   (put 'narrow-to-region 'disabled nil)
@@ -652,42 +595,34 @@ Use a header line instead of a mode line.
   (put 'downcase-region 'disabled nil)
   (put 'erase-buffer 'disabled nil)
 #+end_src
-
 ** Set global keybindings for =toggle-debug-on-error= and friends
 #+begin_src emacs-lisp
   (general-define-key "C-c e e" 'toggle-debug-on-error)
   (general-define-key "C-c e q" 'toggle-debug-on-quit)
 #+end_src
-
 ** General file formatting
-
 *** Always insert a final newline, as per the Unix convention.
 #+begin_src emacs-lisp
   (setq require-final-newline t)
 #+end_src
-
 *** Set reasonable default indentation settings
 #+begin_src emacs-lisp
   (setq-default fill-column 80)
   (setq-default indent-tabs-mode nil)
 #+end_src
-
 *** Make scripts executable after save
 #+begin_src emacs-lisp
   (add-hook 'after-save-hook #'executable-make-buffer-file-executable-if-script-p)
 #+end_src
-
 *** Don't require two spaces to signal the end of a sentence
 I don't use sentence-based commands that often anyway.
 #+begin_src emacs-lisp
   (setq sentence-end-double-space nil)
 #+end_src
-
 *** Don't nag when trying to create a new file or buffer
 #+begin_src emacs-lisp
   (setq confirm-nonexistent-file-or-buffer nil)
 #+end_src
-
 *** Do not show =^M= chars in files containing mixed UNIX and DOS line endings
 #+begin_src emacs-lisp
   (defun config--hide-dos-eol ()
@@ -696,7 +631,6 @@ I don't use sentence-based commands that often anyway.
 
   (add-hook 'after-change-major-mode-hook #'config--hide-dos-eol)
 #+end_src
-
 *** Use UTF-8 everywhere by default
 Source: [[https://www.reddit.com/r/emacs/comments/siuvpu/isnt_there_a_better_way_to_set_utf8/hvbns5f/?utm_source=reddit&utm_medium=web2x&context=3][Isn't there a better way to set UTF-8 ? : emacs]]
 
@@ -708,9 +642,7 @@ Source: [[https://www.reddit.com/r/emacs/comments/siuvpu/isnt_there_a_better_way
   (set-keyboard-coding-system 'utf-8)
   (set-language-environment "UTF-8")
 #+end_src
-
 ** Whitespace handling
-
 *** Insert a leading space after comment start for new comment lines
 #+begin_src emacs-lisp
   (autoload 'thing-at-point-looking-at "thingatpt")
@@ -723,66 +655,54 @@ Source: [[https://www.reddit.com/r/emacs/comments/siuvpu/isnt_there_a_better_way
 
   (advice-add #'comment-indent-new-line :after #'config--comment-insert-space)
 #+end_src
-
 *** Bind =cycle-spacing= to ~M-SPC~
 #+begin_src emacs-lisp
   (general-define-key "M-SPC" 'cycle-spacing)
 #+end_src
-
 ** Disable unwanted features
-
 *** Inhibit the default startup screen
 #+begin_src emacs-lisp
   (setq initial-scratch-message nil)
   (setq inhibit-startup-message t)
   (setq initial-major-mode 'fundamental-mode)
 #+end_src
-
 *** Disable cursor blinking
 #+begin_src emacs-lisp
   (blink-cursor-mode -1)
 #+end_src
-
 *** Never show the useless hello file
 #+begin_src emacs-lisp
   (defalias #'view-hello-file #'ignore)
 #+end_src
-
 *** Unset 2-window scrolling shortcuts
 #+begin_src emacs-lisp
   (global-unset-key (kbd "<f2>"))
   (global-unset-key (kbd "S-<f2>"))
 #+end_src
-
 *** Disable audible bell
 #+begin_src emacs-lisp
   (setq ring-bell-function #'ignore)
 #+end_src
-
 *** Don't pollute directories with lockfiles
 I only run one instance of Emacs and never need to prevent concurrent file access.
 #+begin_src emacs-lisp
   (setq create-lockfiles nil)
 #+end_src
-
 *** Don't nag when following symlinks to files under version control
 #+begin_src emacs-lisp
   (setq vc-follow-symlinks t)
 #+end_src
-
 *** Don't try to ping things that look like domain names
 #+begin_src emacs-lisp
   (use-package ffap
     :custom
     (ffap-machine-p-known 'reject))
 #+end_src
-
 *** Disable warnings from obsolete advice system
 These are caused by packages and are generally not actionable by me.
 #+begin_src emacs-lisp
   (setq ad-redefinition-action 'accept)
 #+end_src
-
 *** Don't confirm before killing subprocesses on exit
 #+begin_src emacs-lisp
   (setq confirm-kill-processes nil)
@@ -793,12 +713,10 @@ These are caused by packages and are generally not actionable by me.
 
   (advice-add #'save-buffers-kill-emacs :around #'config--suppress-no-process-prompt)
 #+end_src
-
 *** Disable suspend-frame on C-z
 #+begin_src emacs-lisp
   (global-unset-key (kbd "C-z"))
 #+end_src
-
 ** Convert ANSI color codes to text properties in shell output
 #+begin_src emacs-lisp
   (autoload 'ansi-color-apply-on-region "ansi-color")
@@ -811,14 +729,11 @@ These are caused by packages and are generally not actionable by me.
 
   (advice-add #'display-message-or-buffer :before #'config--display-ansi-codes)
 #+end_src
-
 ** Minibuffer settings
-
 *** Keep a longer history by default
 #+begin_src emacs-lisp
   (setq history-length 1000)
 #+end_src
-
 *** Hide files with boring extensions from find-file
 #+begin_src emacs-lisp
   (defun config--ff-hide-boring-files-in-completion (result)
@@ -839,7 +754,6 @@ These are caused by packages and are generally not actionable by me.
 
   (advice-add #'completion--file-name-table :filter-return #'config--ff-hide-boring-files-in-completion)
 #+end_src
-
 *** Remove lingering =*completions*= buffer whenever we exit the minibuffer
 #+begin_src emacs-lisp
   (defun config--cleanup-completions-buffer ()
@@ -848,9 +762,7 @@ These are caused by packages and are generally not actionable by me.
 
   (add-hook 'minibuffer-exit-hook #'config--cleanup-completions-buffer)
 #+end_src
-
 ** Backup settings
-
 *** Disable backup files
 Meh, I use git.
 #+begin_src emacs-lisp
@@ -859,13 +771,11 @@ Meh, I use git.
   ;; (setq delete-old-versions t)
   ;; (setq version-control t)
 #+end_src
-
 *** Create autosave files inside the XDG cache directory.
 #+begin_src emacs-lisp
   (setq auto-save-file-name-transforms
         `((".*" ,(expand-file-name "auto-save" paths-cache-directory) t)))
 #+end_src
-
 ** Write custom settings to a separate file
 Keep custom settings in a separate file. This keeps =init.el= clean.
 #+begin_src emacs-lisp
@@ -874,20 +784,16 @@ Keep custom settings in a separate file. This keeps =init.el= clean.
   (when (file-exists-p custom-file)
     (load custom-file nil t))
 #+end_src
-
 ** Copy-paste & clipboard settings
-
 *** Share the Emacs kill ring with the host OS clipboard
 #+begin_src emacs-lisp
   (setq select-enable-clipboard t)
   (setq save-interprogram-paste-before-kill t)
 #+end_src
-
 *** Prevent duplicated entries in the kill ring
 #+begin_src emacs-lisp
   (setq kill-do-not-save-duplicates t)
 #+end_src
-
 *** Clean up whitespace when inserting yanked text
 #+begin_src emacs-lisp
   (defun config--yank-ws-cleanup (&rest _)
@@ -896,7 +802,6 @@ Keep custom settings in a separate file. This keeps =init.el= clean.
 
   (advice-add #'insert-for-yank :after #'config--yank-ws-cleanup)
 #+end_src
-
 ** Smooth scrolling
 Anchor the cursor to the top or bottom of the window during scrolling, rather
 than paginating through the buffer.
@@ -905,31 +810,25 @@ than paginating through the buffer.
   (setq scroll-preserve-screen-position t)
   (setq scroll-conservatively 101)
 #+end_src
-
 ** Disable font-panel keybinding in macOS
 #+begin_src emacs-lisp
   (global-set-key (kbd "s-t") nil)
 #+end_src
-
 ** =comint= - Base package for interpreter inferior processes
 #+begin_src emacs-lisp
   (use-package comint
     :custom
     (comint-prompt-read-only t))
 #+end_src
-
 ** Help
-
 *** Always focus on help windows
 #+begin_src emacs-lisp
   (setq help-window-select t)
 #+end_src
-
 *** Don't show 'press q to close' message
 #+begin_src emacs-lisp
   (advice-add 'help-window-display-message :override #'ignore)
 #+end_src
-
 ** =apropos= - searches for symbols matching a pattern
 Extend =apropos= to search for more kinds of symbols.
 #+begin_src emacs-lisp
@@ -937,14 +836,12 @@ Extend =apropos= to search for more kinds of symbols.
     :custom
     (apropos-do-all t))
 #+end_src
-
 ** =saveplace= - Persist the last location visited in a buffer
 #+begin_src emacs-lisp
   (use-package saveplace
     :demand t
     :config (save-place-mode +1))
 #+end_src
-
 ** =savehist= - Save the minibuffer history across sessions
 #+begin_src emacs-lisp
   (use-package savehist
@@ -956,14 +853,12 @@ Extend =apropos= to search for more kinds of symbols.
                                      search-ring
                                      regexp-search-ring)))
 #+end_src
-
 ** Bidirectional text editing
 Configure Emacs so that each paragraph may have a difference text direction.
 #+begin_src emacs-lisp
   (setq-default bidi-paragraph-separate-re "^")
   (setq-default bidi-paragraph-start-re "^")
 #+end_src
-
 ** Large file support
 #+begin_src emacs-lisp
   (defconst config--large-file-allowed-extensions
@@ -976,7 +871,6 @@ Configure Emacs so that each paragraph may have a difference text direction.
 
   (advice-add #'abort-if-file-too-large :around #'config--dont-abort-if-allowed-extension)
 #+end_src
-
 ** =recentf= - Recent files
 #+begin_src emacs-lisp
   (use-package recentf
@@ -985,7 +879,6 @@ Configure Emacs so that each paragraph may have a difference text direction.
     (recentf-filename-handlers '(abbreviate-file-name))
     (recentf-max-saved-items 100))
 #+end_src
-
 *** Specify which files to exclude
 #+begin_src emacs-lisp
   (use-package recentf
@@ -1028,7 +921,6 @@ Configure Emacs so that each paragraph may have a difference text direction.
                      (string-prefix-p d (file-truename f) ignore-case)))
                   config-recentf--abs-dirs))))
 #+end_src
-
 ** Multilingual input support
 Set up LaTeX-style input method and add extra MULE rules for common chars.
 #+begin_src emacs-lisp
@@ -1052,7 +944,6 @@ Set up LaTeX-style input method and add extra MULE rules for common chars.
                             ("\\rtack" ?⊢))))
     (add-hook 'input-method-activate-hook #'config-mule--set-tex-method-vars))
 #+end_src
-
 ** =autorevert= - Revert buffers automatically if the file changes on disk
 #+begin_src emacs-lisp
   (use-package autorevert
@@ -1061,13 +952,11 @@ Set up LaTeX-style input method and add extra MULE rules for common chars.
     :custom
     (auto-revert-verbose nil))
 #+end_src
-
 ** =goto-addr= - Turns URLs and mailto links into clickable buttons
 #+begin_src emacs-lisp
   (use-package goto-addr
     :hook (prog-mode . goto-address-prog-mode))
 #+end_src
-
 ** =shr= - Built-in HTML renderer
 #+begin_src emacs-lisp
   (use-package shr
@@ -1075,15 +964,12 @@ Set up LaTeX-style input method and add extra MULE rules for common chars.
     ;; Undefine key that prevents forward-word in evil
     (define-key shr-map (kbd "w") nil))
 #+end_src
-
 ** =hideshow= - Basic code folding
-
 *** Enable hideshow in all programming buffers
 #+begin_src emacs-lisp
   (use-package hideshow
     :hook (prog-mode . hs-minor-mode))
 #+end_src
-
 *** Use advice to ignore some boring errors
 #+begin_src emacs-lisp
   (use-package hideshow
@@ -1095,23 +981,19 @@ Set up LaTeX-style input method and add extra MULE rules for common chars.
     (advice-add 'hs-show-block :around #'advice-ignore-errors)
     (advice-add 'hs-toggle-hiding :around #'advice-ignore-errors))
 #+end_src
-
 ** =authinfo= - Store sensitive keys & passwords in an encrypted file
 #+begin_src emacs-lisp
   (use-package auth-source
     :custom
     (auth-sources '("~/.authinfo.gpg")))
 #+end_src
-
 ** =pixel-scroll= - Enables pixel-wise scrolling
 #+begin_src emacs-lisp
   (use-package pixel-scroll
     :demand t
     :config (pixel-scroll-mode +1))
 #+end_src
-
 ** Manuals
-
 *** =man= - Manpages
 #+begin_src emacs-lisp
   (use-package man
@@ -1119,7 +1001,6 @@ Set up LaTeX-style input method and add extra MULE rules for common chars.
               "M-n" #'Man-next-section
               "M-p" #'Man-previous-section))
 #+end_src
-
 *** =woman= - system manual page reader
 #+begin_src emacs-lisp
   (use-package woman
@@ -1127,7 +1008,6 @@ Set up LaTeX-style input method and add extra MULE rules for common chars.
     (woman-fill-frame t)
     (woman-default-indent 7))
 #+end_src
-
 *** =info= - Info manual system
 Emacs and many packages provide manuals in the =info= format. Configure this
 system below.
@@ -1139,7 +1019,6 @@ system below.
      "C-n" 'Info-forward-node
      "C-p" 'Info-backward-node))
 #+end_src
-
 *** =info+= - adds extra functionality to Info                     :disabled:
 Temporarily disabled because it throws an error on load.
 
@@ -1150,7 +1029,6 @@ Temporarily disabled because it throws an error on load.
     :custom
     (Info-fontify-angle-bracketed-flag nil))
 #+end_src
-
 ** Image viewing
 #+begin_src emacs-lisp
   (use-package image
@@ -1158,7 +1036,6 @@ Temporarily disabled because it throws an error on load.
               "-" #'image-decrease-size
               "+" #'image-increase-size))
 #+end_src
-
 ** =compile= - Mode for compilation buffers
 #+begin_src emacs-lisp
   (use-package compile
@@ -1168,7 +1045,6 @@ Temporarily disabled because it throws an error on load.
     (compilation-ask-about-save nil)
     (compilation-scroll-output 'first-error))
 #+end_src
-
 *** Colourise compilation output
 #+begin_src emacs-lisp
   (use-package compile
@@ -1182,7 +1058,6 @@ Temporarily disabled because it throws an error on load.
 
     (add-hook 'compilation-filter-hook 'colourise-compilation-output))
 #+end_src
-
 ** =ediff= - Interactive diff interface
 Configure how =ediff= should display windows when started.
 #+begin_src emacs-lisp
@@ -1191,7 +1066,6 @@ Configure how =ediff= should display windows when started.
     (ediff-window-setup-function #'ediff-setup-windows-plain)
     (ediff-split-window-function #'split-window-horizontally))
 #+end_src
-
 *** Teach =ediff= how to copy contents from both buffers in a three-way merge
 #+begin_src emacs-lisp
   (use-package ediff
@@ -1212,7 +1086,6 @@ Configure how =ediff= should display windows when started.
 
     (add-hook 'ediff-keymap-setup-hook #'config-ediff--setup-keybinds))
 #+end_src
-
 *** Reveal the context around the selected hunk when diffing org buffers
 #+begin_src emacs-lisp
   (use-package ediff
@@ -1229,7 +1102,6 @@ Configure how =ediff= should display windows when started.
     (advice-add 'ediff-next-difference :after #'config-ediff--org-reveal-around-difference)
     (advice-add 'ediff-previous-difference :after #'config-ediff--org-reveal-around-difference))
 #+end_src
-
 ** =world-time-mode= - World clock UI
 #+begin_src emacs-lisp
   (use-package world-time-mode
@@ -1245,7 +1117,6 @@ Configure how =ediff= should display windows when started.
     :config
     (add-hook 'world-time-table-mode-hook 'hl-line-mode))
 #+end_src
-
 ** =eldoc= - Show documentation in the minibuffer
 #+begin_src emacs-lisp
   (use-package eldoc
@@ -1253,9 +1124,7 @@ Configure how =ediff= should display windows when started.
     :custom
     (eldoc-idle-delay 0.2))
 #+end_src
-
 *** TODO Suppress eldoc when point is at a flycheck error
-
 ** =M-n= to end in =completing-read= will use the thing at point
 #+begin_src emacs-lisp
   (autoload 'ffap-guesser "ffap")
@@ -1271,7 +1140,6 @@ Configure how =ediff= should display windows when started.
 
   (setq minibuffer-default-add-function #'config--minibuffer-default-add-function)
 #+end_src
-
 * Better eval-expression
 Define an alternative version of =eval-expression= that uses =emacs-lisp-mode= to
 provide font-locking, and handles =smartparens= better.
@@ -1324,13 +1192,11 @@ See: [[https://lists.gnu.org/archive/html/help-gnu-emacs/2014-07/msg00135.html][
       (error
        (eval-expression expression arg))))
 #+end_src
-
 ** Bind this command to ~M-:~
 #+begin_src emacs-lisp
   (general-define-key :keymaps 'override :states '(normal motion visual)
     "M-:" 'eval-expression-interactively)
 #+end_src
-
 ** Use this command for evaluating expressions in the Lisp debugger too
 #+begin_src emacs-lisp
   (use-package debug
@@ -1342,9 +1208,7 @@ See: [[https://lists.gnu.org/archive/html/help-gnu-emacs/2014-07/msg00135.html][
                   (funcall f exp))
                 '((name . use-eval-expression-interactively--read))))
 #+end_src
-
 * Improve basic editing configuration for all modes
-
 ** Use control key to transpose lines up and down
 #+begin_src emacs-lisp
   (autoload 'org-move-item-down "org-list")
@@ -1374,7 +1238,6 @@ See: [[https://lists.gnu.org/archive/html/help-gnu-emacs/2014-07/msg00135.html][
   (global-set-key (kbd "C-<up>") #'transpose-line-up)
   (global-set-key (kbd "C-<down>") #'transpose-line-down)
 #+end_src
-
 ** Useful interactive functions
 #+begin_src emacs-lisp
   (defun insert-uuid (&optional upcase-p)
@@ -1403,7 +1266,6 @@ See: [[https://lists.gnu.org/archive/html/help-gnu-emacs/2014-07/msg00135.html][
 #+end_src
 
 Define a command for reversing the characters isrc
-
 *** Define a command to indent every line in the buffer
 This should really be a thing out-of-the-box.
 #+begin_src emacs-lisp
@@ -1415,7 +1277,6 @@ This should really be a thing out-of-the-box.
       (indent-region (point-min) (point-max) nil)
       (untabify (point-min) (point-max))))
 #+end_src
-
 *** Define a command to perform indentation in a context-sensitive way
 #+begin_src emacs-lisp
   (autoload 'lsp-format-region "lsp-mode")
@@ -1458,7 +1319,6 @@ This should really be a thing out-of-the-box.
 
   (define-key prog-mode-map (kbd "M-q") #'config-indent-dwim)
 #+end_src
-
 ** =ws-butler= - Automatic whitespace cleanup while editing
 #+begin_src emacs-lisp
   (use-package ws-butler
@@ -1466,26 +1326,22 @@ This should really be a thing out-of-the-box.
     (prog-mode . ws-butler-mode)
     (text-mode . ws-butler-mode))
 #+end_src
-
 ** =unfill= - Paragraph fill/unfill
 =unfill= provides a command that is the opposite of fill-paragraph.
 #+begin_src emacs-lisp
   (use-package unfill
     :commands (unfill-region unfill-paragraph unfill-toggle))
 #+end_src
-
 ** =align= - Provides useful functions for aligning text
 #+begin_src emacs-lisp
   (use-package align
     :general ("C-x a a" #'align-regexp))
 #+end_src
-
 ** =hide-comnt= - Toggle whether comments are visible
 #+begin_src emacs-lisp
   (use-package hide-comnt
     :commands (hide/show-comments-toggle))
 #+end_src
-
 ** =dumb-jump= - Generic jump-to-definition support
 =dump-jump= provides a good fallback for navigating to definitions in the absence
 of an LSP or semantic analysis.
@@ -1496,7 +1352,6 @@ of an LSP or semantic analysis.
     :custom
     (dumb-jump-selector 'completing-read))
 #+end_src
-
 ** =auto-insert= - File templates
 =autoinsert= provides file templates.
 #+begin_src emacs-lisp
@@ -1525,7 +1380,6 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
     (advice-add 'auto-insert :before (lambda (&rest _)
                                        (autoinsert-files-populate-templates))))
 #+end_src
-
 ** =ispell= - Spellchecking commands
 #+begin_src emacs-lisp
   (use-package ispell
@@ -1540,7 +1394,6 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
     (ispell-check-version)
     (setq ispell-dictionary-alist (ispell-find-aspell-dictionaries)))
 #+end_src
-
 ** =flyspell= - Incremental spellchecking
 #+begin_src emacs-lisp
   (use-package flyspell
@@ -1551,7 +1404,6 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
     (flyspell-issue-welcome-flag nil)
     (flyspell-default-dictionary "en_GB"))
 #+end_src
-
 *** Prevent =flyspell= from showing suggestions in more contexts
 #+begin_src emacs-lisp
   (use-package flyspell
@@ -1563,7 +1415,6 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
                                   '(org-link verb-header)))))
     (advice-add 'org-mode-flyspell-verify :filter-return #'flyspell-on-org-verify))
 #+end_src
-
 ** =undo-tree= - Visual graph for undo history
 #+begin_src emacs-lisp
   (use-package undo-tree
@@ -1576,7 +1427,6 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
      "C-r" 'undo-tree-redo
      "u" 'undo-tree-undo))
 #+end_src
-
 ** =format-all= - Generic format-on-save system
 #+begin_src emacs-lisp
   (use-package format-all
@@ -1590,7 +1440,6 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
     :custom
     (format-all-show-errors 'never))
 #+end_src
-
 ** =emojify= - Render emoji
 #+begin_src emacs-lisp
   (use-package emojify
@@ -1609,7 +1458,6 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
 
     (add-to-list 'emojify-inhibit-functions #'emojify-at-org-drawer-p))
 #+end_src
-
 *** Remove checkbox unicode emoji that conflicts with org-superstar
 #+begin_src emacs-lisp
   (defun config-emojify-modify-emojis ()
@@ -1617,7 +1465,6 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
 
   (add-hook 'emojify-mode-hook #'config-emojify-modify-emojis)
 #+end_src
-
 ** =company-emoji= - Provide a nice interface for inserting emoji
 #+begin_src emacs-lisp
   (use-package company-emoji
@@ -1625,7 +1472,6 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
     :config
     (add-to-list 'company-backends 'company-emoji))
 #+end_src
-
 ** =yasnippet= - Text snippets
 =yasnippet= provides expandable text snippets. I use them extensively to cut
 down on typing.
@@ -1660,7 +1506,6 @@ down on typing.
     :config
     (yas-global-mode +1))
 #+end_src
-
 *** Customise backwards cycling behaviour
 When cycling backward through fields, place point at the end of the previous field.
 #+begin_src emacs-lisp
@@ -1685,10 +1530,8 @@ When cycling backward through fields, place point at the end of the previous fie
     (advice-add 'yas-next-field :after #'yasnippet-goto-field-end)
     (advice-add 'yas-prev-field :after #'yasnippet-goto-field-end))
 #+end_src
-
 *** Snippet functions
 These functions are used in the definitions of snippets.
-
 **** General
 #+begin_src emacs-lisp
   (defun yas-funcs-bolp ()
@@ -1703,7 +1546,6 @@ These functions are used in the definitions of snippets.
        (string-match-p (rx-to-string '(and ,@rx-forms))
                        line)))
 #+end_src
-
 **** emacs-lisp
 #+begin_src emacs-lisp
   (defun yas-funcs-el-custom-group ()
@@ -1743,7 +1585,6 @@ These functions are used in the definitions of snippets.
   (defun yas-funcs-buttercup-file-p ()
     (string-match-p "^test-" (file-name-nondirectory (buffer-file-name))))
 #+end_src
-
 **** TypeScript/JavaScript
 #+begin_src emacs-lisp
   (defcustom yas-funcs-js-import-to-module-alist '()
@@ -1812,7 +1653,6 @@ These functions are used in the definitions of snippets.
       (save-excursion
         (search-backward-regexp (rx bol (* space) symbol-start "describe" symbol-end) nil t))))
 #+end_src
-
 *** Don't warn if snippet modifies buffer
 I sometimes want to do just-one-space. There's no nice way to do this. The hacky
 solution other is to add an inline lisp call inline to =just-one-space=.
@@ -1821,13 +1661,11 @@ solution other is to add an inline lisp call inline to =just-one-space=.
   (add-to-list 'warning-suppress-types 'yasnippet)
   (add-to-list 'warning-suppress-log-types 'yasnippet)
 #+end_src
-
 ** =editorconfig= - Support editorconfig files
 #+begin_src emacs-lisp
   (use-package editorconfig
     :hook (after-init . editorconfig-mode))
 #+end_src
-
 ** =direnv= - Support direnv files
 Teach Emacs how to load environment variables from [[https://direnv.net/][direnv]].
 See: [[https://github.com/wbolster/emacs-direnv][wbolster/emacs-direnv]]
@@ -1838,7 +1676,6 @@ See: [[https://github.com/wbolster/emacs-direnv][wbolster/emacs-direnv]]
     :custom
     (direnv-always-show-summary nil))
 #+end_src
-
 ** =rainbow-mode= - Apply colours to hex strings in buffers
 #+begin_src emacs-lisp
   (use-package rainbow-mode
@@ -1847,13 +1684,11 @@ See: [[https://github.com/wbolster/emacs-direnv][wbolster/emacs-direnv]]
     (emacs-lisp-mode . rainbow-mode)
     (css-mode . rainbow-mode))
 #+end_src
-
 ** =string-inflection= - Command to change string case at point
 #+begin_src emacs-lisp
   (use-package string-inflection
     :general ("M-s" 'string-inflection-all-cycle))
 #+end_src
-
 * =evil= - Vim-style modal editing
 =evil= provides macros that I want to use in ~:config~ blocks, so teach the
 byte-compiler about them to avoid warnings.
@@ -1862,7 +1697,6 @@ byte-compiler about them to avoid warnings.
   (cl-eval-when (compile)
     (require 'evil))
 #+end_src
-
 ** Customise global vars and keybindings
 #+begin_src emacs-lisp
   (autoload 'man-completing "man-completing")
@@ -1885,12 +1719,10 @@ byte-compiler about them to avoid warnings.
     :general
     (:states 'normal "go" #'browse-url-at-point))
 #+end_src
-
 ** Prevent visual state from updating the clipboard
 #+begin_src emacs-lisp
   (advice-add 'evil-visual-update-x-selection :override #'ignore)
 #+end_src
-
 ** Prevent evil's own keybindings from loading
 We use =evil-collection= to manage these instead.
 #+begin_src emacs-lisp
@@ -1899,7 +1731,6 @@ We use =evil-collection= to manage these instead.
     (evil-want-keybinding nil)
     (evil-want-integration t))
 #+end_src
-
 ** Execute macro bound to ~q~ with ~Q~
 Use =Q= in normal state to execute the macro bound to =q= register. This is a
 convenient way to quickly define a macro, then execute it immediately--just
@@ -1919,7 +1750,6 @@ double-tap =q= to record, then hit =Q= to execute.
                       1)))
       (evil-execute-macro count (evil-get-register ?Q t))))
 #+end_src
-
 ** Invert motions in RTL languages                                :disabled:
 Make motions make more sense by following RTL text direction in Arabic, Farsi
 etc.
@@ -1929,7 +1759,6 @@ etc.
     :after (evil)
     :demand t)
 #+end_src
-
 ** Customise navigation in help buffers
 #+begin_src emacs-lisp
   (use-package evil
@@ -1939,7 +1768,6 @@ etc.
      "^" 'help-go-back
      "gh" 'help-follow-symbol))
 #+end_src
-
 ** Customise initial states of different modes
 #+begin_src emacs-lisp
   (use-package evil
@@ -1966,7 +1794,6 @@ etc.
     (with-eval-after-load 'replace
       (evil-add-hjkl-bindings occur-mode-map)))
 #+end_src
-
 ** Customise pdf navigation
 #+begin_src emacs-lisp
   (use-package pdf-tools
@@ -1987,7 +1814,6 @@ etc.
     :config
     (evil-set-initial-state 'pdf-view-mode 'normal))
 #+end_src
-
 ** Archive navigation integration
 #+begin_src emacs-lisp
   (use-package evil
@@ -2013,7 +1839,6 @@ etc.
     :config
     (evil-set-initial-state 'archive-mode 'emacs))
 #+end_src
-
 ** =compilation= integration
 Disable ~h~ (help) binding in =compilation-mode=, which interferes with evil
 navigation.
@@ -2023,7 +1848,6 @@ navigation.
     :general (:states 'motion :keymaps 'compilation-mode-map
               "h" #'evil-backward-char))
 #+end_src
-
 ** =hydra= integration
 =evil= breaks cursor settings when combined with hydra. To work around this, never
 show the cursor in deselected windows.
@@ -2031,9 +1855,7 @@ show the cursor in deselected windows.
 #+begin_src emacs-lisp
   (setq-default cursor-in-non-selected-windows nil)
 #+end_src
-
 ** Spellchecker integration
-
 *** Add vim-style ~:spell~ and ~:nospell~ ex commands
 #+begin_src emacs-lisp
   (use-package evil
@@ -2051,7 +1873,6 @@ show the cursor in deselected windows.
     (evil-ex-define-cmd "nospell" #'evil-flyspell-off)
     (evil-ex-define-cmd "spell" #'evil-flyspell-on))
 #+end_src
-
 *** Add more key bindings to work with spell-checker from normal state
 #+begin_src emacs-lisp
   (use-package evil-ispell
@@ -2064,7 +1885,6 @@ show the cursor in deselected windows.
               "zn" #'evil-ispell-next-spelling-error
               "zp" #'evil-ispell-previous-spelling-error))
 #+end_src
-
 ** Use escape key as =keyboard-quit=
 #+begin_src emacs-lisp
   (general-define-key :keymaps '(minibuffer-local-map
@@ -2074,7 +1894,6 @@ show the cursor in deselected windows.
                                  minibuffer-local-isearch-map)
     "<escape>" 'keyboard-escape-quit)
 #+end_src
-
 ** =link-hint= - Teach =evil= how to navigate using links in org buffers and the agenda
 #+begin_src emacs-lisp
   (use-package link-hint
@@ -2082,7 +1901,6 @@ show the cursor in deselected windows.
     :config
     (put 'link-hint-org-link :vars '(org-mode org-agenda-mode)))
 #+end_src
-
 ** =evil-surround= - Teach =evil= how to wrap objects with matched pairs
 #+begin_src emacs-lisp
   (use-package evil-surround
@@ -2110,7 +1928,6 @@ show the cursor in deselected windows.
                                  (?< . evil-surround-read-tag)
                                  (?f . evil-surround-function))))
 #+end_src
-
 *** Prevent evil-surround from interfering with magit-section
 The Evil Surround keybinding interferes with selecting lines in a hunk and
 staging them in magit.
@@ -2125,7 +1942,6 @@ staging them in magit.
     :config
     (advice-add 'evil-surround-mode :filter-args #'config-evil-surround-inhibit-in-magit-section-mode))
 #+end_src
-
 *** Define an extra =`sym'= pair for =emacs-lisp-mode=
 #+begin_src emacs-lisp
   (use-package evil-surround
@@ -2137,7 +1953,6 @@ staging them in magit.
     :hook
     (emacs-lisp-mode-hook . config-evil--init-evil-surround-pairs))
 #+end_src
-
 ** =evil-collection= - Community-maintained bindings
 #+begin_src emacs-lisp
   (use-package evil-collection
@@ -2146,12 +1961,10 @@ staging them in magit.
     :config
     (evil-collection-init))
 #+end_src
-
 *** Add alias for renamed function
 #+begin_src emacs-lisp
   (defalias 'mu4e--main-action-str 'mu4e~main-action-str)
 #+end_src
-
 ** =evil-args= - Text motions for function parameter lists
 #+begin_src emacs-lisp
   (use-package evil-args
@@ -2161,7 +1974,6 @@ staging them in magit.
               :keymaps
               'evil-outer-text-objects-map "a" #'evil-outer-arg))
 #+end_src
-
 ** =evil-matchit= - Teach ~%~ how to match more kinds of pairs
 #+begin_src emacs-lisp
   (use-package evil-matchit
@@ -2170,7 +1982,6 @@ staging them in magit.
     :config
     (global-evil-matchit-mode +1))
 #+end_src
-
 ** =evil-numbers= - Use ~+~ and ~-~ to change number at point
 #+begin_src emacs-lisp
   (use-package evil-numbers
@@ -2180,7 +1991,6 @@ staging them in magit.
               "+" #'evil-numbers/inc-at-pt
               "-" #'evil-numbers/dec-at-pt))
 #+end_src
-
 ** Teach ~<~ and ~>~ to shift text in a context-sensitive way
 #+begin_src emacs-lisp
   (use-package evil
@@ -2206,7 +2016,6 @@ staging them in magit.
       (evil-normal-state)
       (evil-visual-restore)))
 #+end_src
-
 ** =evil-iedit-state= - Easy renaming of symbol at point
 =iedit= adds useful mass-renaming functionality. This package provides evil
 compatibility.
@@ -2215,15 +2024,12 @@ compatibility.
   (use-package evil-iedit-state
     :commands (evil-iedit-state/iedit-mode))
 #+end_src
-
 *** HACK: work around missing function
 https://github.com/syl20bnr/evil-iedit-state/issues/36
 #+begin_src emacs-lisp
   (defalias 'evil-redirect-digit-argument #'ignore)
 #+end_src
-
 * =lsp-mode= - language-server support
-
 ** Inject language servers into exec-path on Darwin
 macOS prevents PATH being modified for graphical apps, so the wrapper set up
 with Nix won't work. Manually add language servers to the path here.
@@ -2236,7 +2042,6 @@ with Nix won't work. Manually add language servers to the path here.
 
     (setenv "PATH" (string-join exec-path ":")))
 #+end_src
-
 ** Set which modes use LSP
 #+begin_src emacs-lisp
   (defconst lsp-enabled-modes
@@ -2253,7 +2058,6 @@ with Nix won't work. Manually add language servers to the path here.
     (add-hook (intern (format "%s-hook" mode))
               'lsp-deferred))
 #+end_src
-
 ** Configure lsp-mode variables
 #+begin_src emacs-lisp
   (use-package lsp-mode
@@ -2288,7 +2092,6 @@ Make company completions more proactive when an lsp is active.
       (setq-local company-minimum-prefix-length 0))
     :hook (lsp-mode . config-lsp-set-vars))
 #+end_src
-
 ** =lsp-ui= - Additional package providing richer UI elements for lsp-mode
 #+begin_src emacs-lisp
   (use-package lsp-ui
@@ -2305,7 +2108,6 @@ Make company completions more proactive when an lsp is active.
     (json-mode . lsp-ui-doc-mode)
     (yaml-mode . lsp-ui-doc-mode))
 #+end_src
-
 * =eshell= - built-in rudimentary shell
 #+begin_src emacs-lisp
   (use-package eshell
@@ -2317,7 +2119,6 @@ Make company completions more proactive when an lsp is active.
      "C-a" 'eshell-bol
      "C-e" 'end-of-line))
 #+end_src
-
 ** Prompt
 #+begin_src emacs-lisp
   (use-package eshell
@@ -2336,9 +2137,7 @@ Make company completions more proactive when an lsp is active.
               "\n"
               (if (= (user-uid) 0) " # " " λ "))))
 #+end_src
-
 ** Custom commands
-
 *** fasd
 #+begin_src emacs-lisp
   (defun eshell/j (&rest query)
@@ -2350,7 +2149,6 @@ Make company completions more proactive when an lsp is active.
         (let ((message-log-match))
           (message "No fasd match")))))
 #+end_src
-
 *** git root
 #+begin_src emacs-lisp
   (defun eshell/g ()
@@ -2365,7 +2163,6 @@ Make company completions more proactive when an lsp is active.
               (eshell/cd dir))
           (user-error "Not in a project or git repo")))))
 #+end_src
-
 * ⌨️ Set up leader keys
 Note that we ensure evil is loaded first before binding any keys below,
 otherwise =general= is pathologically slow.
@@ -2373,7 +2170,6 @@ otherwise =general= is pathologically slow.
 See:
 - [[https://github.com/noctuid/general.el/issues/180][general.el/issues/180]]
 - [[https://github.com/hlissner/doom-emacs/blob/3d21f4ef5ea79de77e32c85b6bdae18bee4d7d73/core/core-keybinds.el#L151][doom-emacs/core/core-keybinds.el]]
-
 ** Use ~SPC~ as the global leader key
 #+begin_src emacs-lisp
   (use-package general
@@ -2392,7 +2188,6 @@ See:
                                  '(normal motion visual)
                                  :prefix "SPC"))))
 #+end_src
-
 *** Top-level leader keybindings
 #+begin_src emacs-lisp
   (defun alternate-buffer (&optional window)
@@ -2455,7 +2250,6 @@ See:
     "u" '(universal-argument :wk "prefix arg")
     "x" '(execute-extended-command :wk "M-x"))
 #+end_src
-
 *** ~,~ - Parens
 #+begin_src emacs-lisp
   (leader-set-key :infix ","
@@ -2489,7 +2283,6 @@ See:
     "y" '(sp-copy-sexp :wk "copy (forward)")
     "Y" '(sp-backward-copy-sexp :wk "copy (back)"))
 #+end_src
-
 *** ~a~ - Applications
 #+begin_src emacs-lisp
   (defun profiler-stop-and-report (&optional continue-p)
@@ -2518,7 +2311,6 @@ See:
           (and (featurep 'profiler) (profiler-running-p)) 'profiler-stop-and-report)
     "w" #'world-time-list)
 #+end_src
-
 *** ~b~ - Buffers
 #+begin_src emacs-lisp
   (leader-set-key :infix "b"
@@ -2532,7 +2324,6 @@ See:
     "d" '(kill-current-buffer :wk "kill")
     "w" '(save-buffer :wk "save"))
 #+end_src
-
 *** ~c~ - Commenting
 #+begin_src emacs-lisp
   (autoload 'sp-mark-sexp "smartparens")
@@ -2551,7 +2342,6 @@ See:
     "r" '(comment-or-uncomment-region :wk "region")
     "s" '(comment-sexp :wk "sexp"))
 #+end_src
-
 *** ~e~ - Errors and Flycheck
 #+begin_src emacs-lisp
   (autoload 'flycheck-list-errors "flycheck")
@@ -2580,7 +2370,6 @@ See:
     "s" '(flycheck-select-checker :wk "select checker")
     "v" '(flycheck-verify-setup :wk "verify setup"))
 #+end_src
-
 *** ~f~ - Files
 #+begin_src emacs-lisp
   (autoload 'projectile-project-p "projectile")
@@ -2741,7 +2530,6 @@ See:
     "r" '(consult-recent-file :wk "recent files...")
     "R" '(rename-file-and-buffer :wk "rename..."))
 #+end_src
-
 *** ~g~ - Git & Goto
 #+begin_src emacs-lisp
   (require 's)
@@ -2826,7 +2614,6 @@ See:
     "m" '(xref-find-references :wk "find references")
     "SPC" 'pop-tag-mark)
 #+end_src
-
 *** ~h~ - Help
 #+begin_src emacs-lisp
   (leader-set-key :infix "h"
@@ -2847,7 +2634,6 @@ See:
     "f l" '(find-library :wk "lisp library...")
     "f v" '(find-variable :wk "variable..."))
 #+end_src
-
 *** ~k~ - Killing
 #+begin_src emacs-lisp
   (leader-set-key :infix "k"
@@ -2856,13 +2642,11 @@ See:
     "w" 'delete-window
     "r" 'consult-yank-pop)
 #+end_src
-
 *** ~l~ - LSP
 #+begin_src emacs-lisp
   (leader-set-key :infix "l"
     "" '(:keymap lsp-command-map :package lsp-mode :wk "lsp"))
 #+end_src
-
 **** Use which-key replacements                                 :disabled:
 Disabled for now since this breaks insert state in evil :/
 #+begin_src emacs-lisp
@@ -2872,7 +2656,6 @@ Disabled for now since this breaks insert state in evil :/
     :hook
     (lsp-mode . lsp-enable-which-key-integration))
 #+end_src
-
 *** ~n~ - Narrowing
 #+begin_src emacs-lisp
   (leader-set-key :infix "n"
@@ -2884,7 +2667,6 @@ Disabled for now since this breaks insert state in evil :/
     "s" '(org-narrow-to-subtree :wk "subtree")
     "S" '(org-tree-to-indirect-buffer :wk "tree to indirect buffer"))
 #+end_src
-
 *** ~o~ - org-mode
 #+begin_src emacs-lisp
   (defun jump-to-index-file ()
@@ -2929,7 +2711,6 @@ Disabled for now since this breaks insert state in evil :/
     "v" '(org-tags-view :wk "tags")
     "w" '(timekeep-find-client-buffer :wk "work"))
 #+end_src
-
 *** ~p~ - Projects
 #+begin_src emacs-lisp
   (leader-set-key :infix "p"
@@ -2948,7 +2729,6 @@ Disabled for now since this breaks insert state in evil :/
     "/" '(consult-ripgrep :wk "search (rg)")
     "r" '(projectile-replace :wk "replace"))
 #+end_src
-
 *** ~t~ - Toggles
 #+begin_src emacs-lisp
   (leader-set-key :infix "t"
@@ -2957,7 +2737,6 @@ Disabled for now since this breaks insert state in evil :/
     "c" '(hide/show-comments-toggle :wk "comments")
     "m" '(global-hide-mode-line-mode :wk "mode line"))
 #+end_src
-
 *** ~w~ - Windows
 #+begin_src emacs-lisp
   (defun split-window-horizontally-dwim (&optional arg)
@@ -3005,7 +2784,6 @@ Disabled for now since this breaks insert state in evil :/
     "o" '(delete-other-windows :wk "delete others")
     "t" '(toggle-window-dedication :wk "toggle dedication"))
 #+end_src
-
 *** ~y~ - Text snippets
 #+begin_src emacs-lisp
   (leader-set-key :infix "y"
@@ -3015,7 +2793,6 @@ Disabled for now since this breaks insert state in evil :/
     "f" '(yas-visit-snippet-file :wk "open...")
     "y" '(yas-insert-snippet :wk "insert..."))
 #+end_src
-
 *** ~z~ - Text Scale
 #+begin_src emacs-lisp
   (leader-set-key :infix "z"
@@ -3024,13 +2801,11 @@ Disabled for now since this breaks insert state in evil :/
     "-" '(default-text-scale-decrease :wk "decrease text scale")
     "=" '(default-text-scale-reset :wk "reset text scale"))
 #+end_src
-
 *** Unbind SPC in magit-section for compatability
 #+begin_src emacs-lisp
   (use-package magit-section
     :general (:keymaps 'magit-section-mode-map "SPC" nil))
 #+end_src
-
 ** Use ~,~ for mode-specific commands
 #+begin_src emacs-lisp
   (use-package general
@@ -3049,9 +2824,7 @@ Disabled for now since this breaks insert state in evil :/
                                  '(normal motion visual)
                                  :prefix ","))))
 #+end_src
-
 * Search & replace
-
 ** =deadgrep= - Ripgrep (=rg=) frontend
 #+begin_src emacs-lisp
   (use-package deadgrep
@@ -3061,7 +2834,6 @@ Disabled for now since this breaks insert state in evil :/
     :config
     (setq-default deadgrep--search-type 'regexp))
 #+end_src
-
 *** Use ~c~ in the =deadgrep= buffer to change the search term
 #+begin_src emacs-lisp
   (use-package deadgrep
@@ -3075,7 +2847,6 @@ Disabled for now since this breaks insert state in evil :/
     :general (:states 'normal :keymaps 'deadgrep-mode-map
               "c" #'config-deadgrep--requery))
 #+end_src
-
 *** Provide feedback in the echo area on entering and exiting =deadgrep-edit-mode=
 #+begin_src emacs-lisp
   (use-package deadgrep
@@ -3092,21 +2863,17 @@ Disabled for now since this breaks insert state in evil :/
     (advice-add 'deadgrep-mode :before #'config-deadgrep--on-exit-edit-mode)
     (advice-add 'deadgrep-edit-mode :after #'config-deadgrep--on-enter-edit-mode))
 #+end_src
-
 ** =wgrep= - Directly edit =grep= results
 Enable =wgrep=, which provides editable grep buffers.
 #+begin_src emacs-lisp
   (use-package wgrep)
 #+end_src
-
 * Prompts and UI enhancements
-
 ** =historian= - Persistent input history
 #+begin_src emacs-lisp
   (use-package historian
     :hook (after-init . historian-mode))
 #+end_src
-
 ** =orderless= - order-insensitive matching algorithm
 https://github.com/oantolin/orderless
 #+begin_src emacs-lisp
@@ -3114,14 +2881,12 @@ https://github.com/oantolin/orderless
     :custom
     (completion-styles '(orderless)))
 #+end_src
-
 ** =selectrum= - Incremental search and narrowing
 #+begin_src emacs-lisp
   (use-package selectrum
     :hook (after-init . selectrum-mode)
     :general (:keymaps 'selectrum-minibuffer-map "C-<return>" 'selectrum-submit-exact-input))
 #+end_src
-
 *** Integrate =selectrum= with =orderless=
 #+begin_src emacs-lisp
   (use-package orderless
@@ -3129,7 +2894,6 @@ https://github.com/oantolin/orderless
     (orderless-skip-highlighting (lambda () (bound-and-true-p selectrum-is-active)))
     (selectrum-highlight-candidates-function #'orderless-highlight-matches))
 #+end_src
-
 *** KLUDGE: Use C-h in find-file to traverse up a dir
 It would be nice if this was an out-of-the-box thing.
 See: [[https://github.com/raxod502/selectrum/issues/498#issuecomment-876424791][Add dedicated command to move up a directory in find-file · Issue #498 · raxo...]]
@@ -3149,11 +2913,8 @@ See: [[https://github.com/raxod502/selectrum/issues/498#issuecomment-876424791][
     :general
     (:keymaps 'selectrum-minibuffer-map "C-h" 'selectrum-up))
 #+end_src
-
 **** TODO Teach find-file to understand =~= and =//=
-
 **** TODO Teach find-file how to navigate up past the home dir
-
 *** =consult= - Commands built on top of selectrum
 #+begin_src emacs-lisp
   (use-package consult
@@ -3163,15 +2924,12 @@ See: [[https://github.com/raxod502/selectrum/issues/498#issuecomment-876424791][
     (xref-show-definitions-function #'consult-xref)
     :general (:states 'normal "/" 'consult-line))
 #+end_src
-
 ** =marginalia= - adds helpful annotations to completion prompts
 #+begin_src emacs-lisp
   (use-package marginalia
     :hook (after-init . marginalia-mode))
 #+end_src
-
 * Window management
-
 ** =winner= - Window state history
 =winner-mode= saves the window and buffer layout history, allowing you to cycle
 forward and back through layout states. This is useful for recovering a layout
@@ -3194,14 +2952,12 @@ after editing actions have changed what windows are shown.
                              "*Bufler*"
                              "*esh command on file*")))
 #+end_src
-
 ** =rotate= - Rotate buffers within window layout
 =rotate= provides handy commands for manipulating the window layout.
 #+begin_src emacs-lisp
   (use-package rotate
     :commands (rotate-layout))
 #+end_src
-
 ** =popper= - Categorise buffers for window assignments
 #+begin_src emacs-lisp
   (use-package popper
@@ -3219,13 +2975,10 @@ after editing actions have changed what windows are shown.
                                     'occur-mode
                                     'compilation-mode)))
 #+end_src
-
 * Text completion engines
-
 ** =hippie-expand= - generic text completion
 =hippie-expand= is a generic completion engine that works in most buffers without
 any special language-level support.
-
 *** Use =hippie-expand= as the default completion command for evil
 #+begin_src emacs-lisp
   (use-package hippie-exp
@@ -3233,7 +2986,6 @@ any special language-level support.
               :states 'insert
               [remap evil-complete-previous] 'hippie-expand))
 #+end_src
-
 *** Set the default heuristic for completing symbols
 #+begin_src emacs-lisp
   (use-package hippie-exp
@@ -3250,7 +3002,6 @@ any special language-level support.
        try-complete-lisp-symbol-partially
        try-complete-lisp-symbol)))
 #+end_src
-
 ** =company= - UI for selecting completions
 =company= is a general-purpose completion frontend, showing a popup of completion
 options.
@@ -3295,23 +3046,18 @@ to manually apply it again.
 
     (add-hook 'company-mode-hook #'config-company--set-company-vars))
 #+end_src
-
 *** =company-posframe= - use a child frame for completions
 #+begin_src emacs-lisp
   (use-package company-posframe
     :after company)
 #+end_src
-
 * Themeing
-
 ** =volatile-highlights= - Highlight pasted text
-
 *** Load at compile-time so macro expansions are available
 #+begin_src emacs-lisp
   (cl-eval-when (compile)
     (require 'volatile-highlights))
 #+end_src
-
 *** Configure the package
 #+begin_src emacs-lisp
   (use-package volatile-highlights
@@ -3321,7 +3067,6 @@ to manually apply it again.
     :config
     (volatile-highlights-mode))
 #+end_src
-
 *** Highlight text pasted by =evil= operations
 #+begin_src emacs-lisp
   (use-package volatile-highlights
@@ -3336,7 +3081,6 @@ to manually apply it again.
     (vhl/install-extension 'evil)
     (vhl/load-extension 'evil))
 #+end_src
-
 ** =highlight-thing= - Highlight the symbol at point
 #+begin_src emacs-lisp
   (use-package highlight-thing
@@ -3349,7 +3093,6 @@ to manually apply it again.
     :config
     (set-face-attribute 'highlight-thing nil :inherit 'highlight))
 #+end_src
-
 *** Suppress =highlight-thing= when hovering over certain kinds of symbols
 #+begin_src emacs-lisp
   (use-package highlight-thing
@@ -3368,7 +3111,6 @@ to manually apply it again.
     (advice-add 'highlight-thing-should-highlight-p :filter-return
                 #'config-highlight-thing--should-highlight-p))
 #+end_src
-
 ** =page-break-lines= - Show page breaks characters as a horizontal rule
 #+begin_src emacs-lisp
   (use-package page-break-lines
@@ -3376,7 +3118,6 @@ to manually apply it again.
     :custom
     (page-break-lines-modes '(prog-mode org-agenda-mode latex-mode help-mode)))
 #+end_src
-
 ** =paren-face= - Apply a specific face to parens
  #+begin_src emacs-lisp
    (use-package paren-face
@@ -3397,7 +3138,6 @@ to manually apply it again.
      (font-lock-add-keywords 'js-mode `((,(rx (any ":")) 0 'parenthesis)))
      (font-lock-add-keywords 'typescript-mode `((,(rx (any ":")) 0 'parenthesis))))
  #+end_src
-
 ** =hl-todo= - Highlight TODOs in comments
 #+begin_src emacs-lisp
   (use-package hl-todo
@@ -3418,7 +3158,6 @@ to manually apply it again.
                 "PATCH"
                 "NOTE"))))
 #+end_src
-
 ** =which-key= - Show keys after a delay on input
 #+begin_src emacs-lisp
   (use-package which-key
@@ -3427,22 +3166,18 @@ to manually apply it again.
     (which-key-sort-uppercase-first nil)
     (which-key-idle-delay 0.4))
 #+end_src
-
 ** =default-text-scale= - Commands for changing text scale for all buffers simultaneously
 #+begin_src emacs-lisp
   (use-package default-text-scale
     :custom
     (default-text-scale-amount 30))
 #+end_src
-
 ** =fira-code-mode= - Adds ligatures to fira-code
 #+begin_src emacs-lisp
   (use-package fira-code-mode
     :hook (prog-mode text-mode))
 #+end_src
-
 * File & Buffer management
-
 ** =bufler= - Better buffer list
 #+begin_src emacs-lisp
   (use-package bufler
@@ -3485,7 +3220,6 @@ to manually apply it again.
      "q" 'quit-window
      "s" 'bufler-list-buffer-save))
 #+end_src
-
 ** =dired= - Filesystem browsing
 =dired= is the builtin filesystem browser for Emacs.
 #+begin_src emacs-lisp
@@ -3508,7 +3242,6 @@ to manually apply it again.
     (add-hook 'dired-mode-hook #'hl-line-mode)
     (put 'dired-find-alternate-file 'disabled nil))
 #+end_src
-
 *** Set leader keys
 #+begin_src emacs-lisp
   (mode-leader-set-key :keymaps 'dired-mode-map
@@ -3538,7 +3271,6 @@ to manually apply it again.
     "d S" '(dired-do-symlink :wk "symlink (absolute)")
     "d /" '(dired-do-search :wk "search"))
 #+end_src
-
 *** Put directories first in sort order
 #+begin_src emacs-lisp
   (use-package dired
@@ -3553,7 +3285,6 @@ to manually apply it again.
 
     (advice-add 'dired-readin :after #'config-dired--sort-directories-first))
 #+end_src
-
 *** Rename files by editing =dired= buffer
 =wdired= is a mode that allows you to rename files and directories by editing the
 =dired= buffer itself.
@@ -3565,7 +3296,6 @@ to manually apply it again.
      :keymaps 'wdired-mode-map "^" #'evil-first-non-blank
      :keymaps 'dired-mode-map "C-c C-e" #'wdired-change-to-wdired-mode))
 #+end_src
-
 *** Toggle visibility of hidden files
 Use =dired-x= to toggle visibility of 'hidden' files (i.e. files starting with a
 dot).
@@ -3581,7 +3311,6 @@ dot).
     (dired-omit-verbose nil)
     (dired-clean-up-buffers-too t))
 #+end_src
-
 ** =projectile= - Project and repo-level commands
 =projectile= provides commands for working with projects, and a useful utility
 function to find the root directory of the project.
@@ -3621,9 +3350,7 @@ of =projectile=. Use =projectile= until the builtin functionality is more comple
        "vendor"
        "target")))
 #+end_src
-
 * Git
-
 ** =magit= - interactive commands for working with git
 #+begin_src emacs-lisp
   (use-package magit
@@ -3642,7 +3369,6 @@ of =projectile=. Use =projectile= until the builtin functionality is more comple
     (magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1)
     (magit-log-section-commit-count 0))
 #+end_src
-
 *** Reveal the entire org buffer when blaming or visiting from a diff
 #+begin_src emacs-lisp
   (use-package magit
@@ -3655,7 +3381,6 @@ of =projectile=. Use =projectile= until the builtin functionality is more comple
     (add-hook 'magit-diff-visit-file-hook 'config-git--reveal-org-buffer)
     (add-hook 'magit-blame-mode-hook #'config-git--reveal-org-buffer))
 #+end_src
-
 *** GPG verification
 Hack =magit='s commit info to show output of a GPG signature check.
 #+begin_src emacs-lisp
@@ -3672,27 +3397,23 @@ Hack =magit='s commit info to show output of a GPG signature check.
                             #'magit-insert-revision-headers
                             t))
 #+end_src
-
 *** Improve magit performance on macOS
 See: https://github.com/magit/magit/commit/26e064e1d78acb4d4d422a0a5743609612863caa
 #+begin_src emacs-lisp
   (when (equal system-type 'darwin)
     (setq magit-git-executable (expand-file-name "~/.nix-profile/bin/git")))
 #+end_src
-
 *** Compatibility with selectrum
 #+begin_src emacs-lisp
   (use-package magit
     :after (selectrum)
     (setq magit-completing-read-function #'selectrum-completing-read))
 #+end_src
-
 *** =magit-delta= -- use the =delta= program to add syntax-highlighting to hunks
 #+begin_src emacs-lisp
   (use-package magit-delta
     :hook (magit-mode . magit-delta-mode))
 #+end_src
-
 **** Conditionally disable to avoid slowdowns on large diffs
 See: [[https://github.com/dandavison/magit-delta/issues/9#issuecomment-795435781][Slowness relative to regular magit · Issue #9 · dandavison/magit-delta · GitHub]]
 
@@ -3715,7 +3436,6 @@ See: [[https://github.com/dandavison/magit-delta/issues/9#issuecomment-795435781
     (advice-add 'magit-delta-call-delta-and-convert-ansi-escape-sequences :around #'config-magit-delta-inhibit-for-large-diffs)
     (add-hook 'magit-post-refresh-hook #'config-magit-delta-maybe-reenable-for-refresh))
 #+end_src
-
 ** =forge= - teaches =magit= how to work with pull requests and issues
 :LOGBOOK:
 - Note taken on [2021-08-07 Sat 15:27] \\
@@ -3730,7 +3450,6 @@ See: [[https://github.com/dandavison/magit-delta/issues/9#issuecomment-795435781
     (add-hook 'magit-status-sections-hook 'forge-insert-requested-reviews 90)
     (add-hook 'magit-status-sections-hook 'forge-insert-assigned-issues 90))
 #+end_src
-
 ** =git-auto-commit-mode= - Commit files on save
 #+begin_src emacs-lisp
   (use-package git-auto-commit-mode
@@ -3742,7 +3461,6 @@ See: [[https://github.com/dandavison/magit-delta/issues/9#issuecomment-795435781
     (gac-automatically-push-p t)
     (gac-automatically-add-new-files-p t))
 #+end_src
-
 ** =vc-annotate= - Step through file history
 #+begin_src emacs-lisp
   (use-package vc-annotate
@@ -3759,7 +3477,6 @@ See: [[https://github.com/dandavison/magit-delta/issues/9#issuecomment-795435781
      "D" 'vc-annotate-show-changeset-diff-revision-at-line
      "." 'vc-annotate-working-revision))
 #+end_src
-
 ** =git-commit-mode= - Commit messages authoring mode
 #+begin_src emacs-lisp
   (use-package git-commit-mode
@@ -3769,14 +3486,12 @@ See: [[https://github.com/dandavison/magit-delta/issues/9#issuecomment-795435781
 
     (add-hook 'git-commit-mode-hook 'configure-git-commit-mode))
 #+end_src
-
 *** =git-commit-ticket-prefix= - Add ticket number to commit messaging
 #+begin_src emacs-lisp
   (use-package git-commit-ticket-prefix
     :general (:keymaps 'git-commit-mode-map "C-c C-a"
               'git-commit-ticket-prefix-insert-ticket-number))
 #+end_src
-
 ** =browse-at-remote= - Browse file at remote
 =browse-at-remote= provides commands for opening the current buffer in the source
 repo, or copying the remote URL to the clipboard.
@@ -3789,7 +3504,6 @@ repo, or copying the remote URL to the clipboard.
     :custom
     (browse-at-remote-add-line-number-if-no-region-selected nil))
 #+end_src
-
 *** Provide better feedback by writing to =*Messages*=
 #+begin_src emacs-lisp
   (use-package browse-at-remote
@@ -3800,7 +3514,6 @@ repo, or copying the remote URL to the clipboard.
 
     (advice-add 'browse-at-remote-kill :after 'config-browse-at-remote--message-kill))
 #+end_src
-
 *** Default to =master= if there's no push remote set
 #+begin_src emacs-lisp
   (defun config-browse-at-remote--master-as-default (fn local-branch &rest args)
@@ -3813,7 +3526,6 @@ repo, or copying the remote URL to the clipboard.
 
   (advice-add 'browse-at-remote--get-remote-branch :around #'config-browse-at-remote--master-as-default)
 #+end_src
-
 ** =git-gutter= & =git-gutter-fringe= - Show git status in fringe
 Source: [[https://ianyepan.github.io/posts/emacs-git-gutter/][Git Gutter in Emacs | Ian Y.E. Pan]]
 
@@ -3825,7 +3537,6 @@ Source: [[https://ianyepan.github.io/posts/emacs-git-gutter/][Git Gutter in Emac
     :config
     (require 'git-gutter-fringe))
 #+end_src
-
 *** Use the fringe for drawing hunk indicators
 
 #+begin_src emacs-lisp
@@ -3835,7 +3546,6 @@ Source: [[https://ianyepan.github.io/posts/emacs-git-gutter/][Git Gutter in Emac
     (define-fringe-bitmap 'git-gutter-fr:modified [224] nil nil '(center repeated))
     (define-fringe-bitmap 'git-gutter-fr:deleted [128 192 224 240] nil nil 'bottom))
 #+end_src
-
 *** Prevent git-gutter clobbering transclusion indicators in the fringe
 
 #+begin_src emacs-lisp
@@ -3878,9 +3588,7 @@ Source: [[https://ianyepan.github.io/posts/emacs-git-gutter/][Git Gutter in Emac
     :config
     (advice-add 'git-gutter-fr:view-diff-infos :override #'config-custom-git-gutter-fringe-fn))
 #+end_src
-
 * Programming languages & text-modes
-
 ** =flycheck= - Syntax Checking & Linting
 =Flycheck= integrates with external tools to show indications of errors and
 warnings in the buffer as you edit.
@@ -3916,7 +3624,6 @@ See: [[https://www.flycheck.org/en/latest/][flycheck.org]]
     (flycheck-python-pycompile-executable "python")
     (flycheck-global-modes '(not text-mode org-agenda-mode)))
 #+end_src
-
 *** =flycheck-org-lint= - Linting for org-mode buffers           :disabled:
 #+begin_src emacs-lisp
   (use-package flycheck-org-lint
@@ -3925,7 +3632,6 @@ See: [[https://www.flycheck.org/en/latest/][flycheck.org]]
     :config
     (add-to-list 'flycheck-checkers 'org-lint))
 #+end_src
-
 *** Customise the modeline indicator
 #+begin_src emacs-lisp
   (use-package flycheck
@@ -3957,7 +3663,6 @@ See: [[https://www.flycheck.org/en/latest/][flycheck.org]]
     :custom
     (flycheck-mode-line '(:eval (flycheck-custom-mode-line-status-text))))
 #+end_src
-
 *** Projectile integration                                       :disabled:
 Automatically re-check all buffers belonging to a project on save. This ensures
 diagnostics do not go stale.
@@ -3979,7 +3684,6 @@ diagnostics do not go stale.
 
     (add-hook 'after-save-hook #'config-flycheck--check-all-project-buffers))
 #+end_src
-
 *** Conditionally inhibit =Flycheck=
 Don't use =Flycheck= in certain situations, such as for files inside =node_modules=,
 during =ediff= merges, etc.
@@ -3996,13 +3700,11 @@ during =ediff= merges, etc.
 
     (advice-add 'flycheck-may-enable-mode :filter-return #'config-flycheck--maybe-inhibit))
 #+end_src
-
 ** =smartparens= - Structured expression editing
 Use =smartparens= to keep parens and braces paired and manipulate expressions in a
 structured way.
 
 See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
-
 *** Set general variables
 #+begin_src emacs-lisp
   (use-package smartparens
@@ -4033,7 +3735,6 @@ See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
     (smartparens-global-strict-mode +1)
     (show-smartparens-global-mode +1))
 #+end_src
-
 *** Load macros and functions at compile time so I can use them in this config
 #+begin_src emacs-lisp
   (cl-eval-when (compile)
@@ -4042,7 +3743,6 @@ See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
   (autoload 'sp-pair "smartparens")
   (autoload 'sp-local-pair "smartparens")
 #+end_src
-
 *** Define utility functions
 #+begin_src emacs-lisp
   (autoload 'sp-get-pair "smartparens")
@@ -4072,7 +3772,6 @@ See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
                   (looking-at (sp--get-opening-regexp)))
           (insert " ")))))
 #+end_src
-
 *** Define the pairs to use by default in all modes
 #+begin_src emacs-lisp
   (use-package smartparens
@@ -4093,7 +3792,6 @@ See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
              :bind "M-\""
              :pre-handlers '(:add (config-smartparens-add-space-before-sexp-insertion))))
 #+end_src
-
 *** Delete enclosing whitespace as necessary on backspace
 #+begin_src emacs-lisp
   (use-package smartparens
@@ -4206,7 +3904,6 @@ See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
 
     (advice-add 'sp-backward-delete-char :around #'config-smartparens-delete-horizontal-space-for-delete))
 #+end_src
-
 *** Emacs lisp
 #+begin_src emacs-lisp
   (use-package smartparens
@@ -4225,7 +3922,6 @@ See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
                      :pre-handlers '(config-smartparens-add-space-before-sexp-insertion)
                      :post-handlers '(config-smartparens-add-space-after-sexp-insertion))))
 #+end_src
-
 *** Don't pad curly-braces in markdown, org, and latex
 #+begin_src emacs-lisp
   (use-package smartparens
@@ -4233,7 +3929,6 @@ See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
     (sp-with-modes '(org-mode markdown-mode gfm-mode latex-mode)
       (sp-local-pair "{" "}" :pre-handlers nil)))
 #+end_src
-
 *** Make checkbox insertion smarter for org-mode and markdown
 #+begin_src emacs-lisp
   (use-package smartparens
@@ -4253,7 +3948,6 @@ See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
     (sp-with-modes '(org-mode markdown-mode gfm-mode)
       (sp-local-pair "[" "]" :post-handlers '(config-smartparens--format-checkitem))))
 #+end_src
-
 ** =elisp-mode= - Emacs Lisp
 #+begin_src emacs-lisp
   (use-package elisp-mode
@@ -4267,7 +3961,6 @@ See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
      :keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map)
      "C-c C-c" #'eval-region))
 #+end_src
-
 *** Set leader keys
 #+begin_src emacs-lisp
   (mode-leader-set-key :keymaps 'emacs-lisp-mode-map
@@ -4283,9 +3976,7 @@ See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
 
     "t" 'ert)
 #+end_src
-
 *** =debug= - Emacs Lisp debugger
-
 **** Set leader keys
 #+begin_src emacs-lisp
   (mode-leader-set-key :keymaps 'debugger-mode-map
@@ -4302,7 +3993,6 @@ See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
     "l" '(debugger-list-functions :wk "list functions")
     "v" '(debugger-toggle-locals :wk "toggle locals"))
 #+end_src
-
 *** =elisp-slime-nav= - Code navigation                          :disabled:
 Use =elisp-slime-nav= to go to definition in Emacs Lisp.
 #+begin_src emacs-lisp
@@ -4312,7 +4002,6 @@ Use =elisp-slime-nav= to go to definition in Emacs Lisp.
     (:keymaps 'elisp-slime-nav-mode-map :states 'normal
      "M-." #'elisp-slime-nav-find-elisp-thing-at-point))
 #+end_src
-
 *** =helpful= - Better help buffer
 #+begin_src emacs-lisp
   (use-package helpful
@@ -4322,7 +4011,6 @@ Use =elisp-slime-nav= to go to definition in Emacs Lisp.
     (:keymaps 'elisp-slime-nav-mode-map :states '(motion normal)
      "K" nil))
 #+end_src
-
 *** =ielm= - Emacs Lisp REPL
 #+begin_src emacs-lisp
   (use-package ielm
@@ -4343,7 +4031,6 @@ Use =elisp-slime-nav= to go to definition in Emacs Lisp.
 
     (add-hook 'inferior-emacs-lisp-mode-hook #'hs-minor-mode))
 #+end_src
-
 *** =pp= - S-Expression Pretty-printing
 #+begin_src emacs-lisp
   (use-package pp
@@ -4354,7 +4041,6 @@ Use =elisp-slime-nav= to go to definition in Emacs Lisp.
      "C-c <return>" 'pp-eval-last-sexp
      "C-c C-e" 'pp-macroexpand-last-sexp))
 #+end_src
-
 *** Improve indent function
 Teach the Emacs Lisp indentation function to indent plists nicely.
 #+begin_src emacs-lisp
@@ -4415,9 +4101,7 @@ Teach the Emacs Lisp indentation function to indent plists nicely.
     :custom
     (lisp-indent-function #'config-elisp--better-lisp-indent-function))
 #+end_src
-
 *** Emacs lisp syntax checking
-
 **** =checkdoc= - linting for Elisp docstrings
 #+begin_src emacs-lisp
   (use-package checkdoc
@@ -4427,7 +4111,6 @@ Teach the Emacs Lisp indentation function to indent plists nicely.
     (checkdoc-force-docstrings-flag nil)
     (checkdoc-arguments-in-order-flag nil))
 #+end_src
-
 **** =flycheck-package= - checker for =package.el= conventions
 #+begin_src emacs-lisp
   (use-package flycheck-package
@@ -4436,7 +4119,6 @@ Teach the Emacs Lisp indentation function to indent plists nicely.
     :config
     (flycheck-package-setup))
 #+end_src
-
 **** Disable these checkers in org src blocks
 #+begin_src emacs-lisp
   (defun disable-flycheck-checkers-for-org-src-block ()
@@ -4445,7 +4127,6 @@ Teach the Emacs Lisp indentation function to indent plists nicely.
 
   (add-hook 'org-src-mode-hook 'disable-flycheck-checkers-for-org-src-block)
 #+end_src
-
 ** =prettify-symbols-mode= - Pretty lambdas in Lisp modes
 #+begin_src emacs-lisp
   (use-package prettify-symbols-mode
@@ -4458,7 +4139,6 @@ Teach the Emacs Lisp indentation function to indent plists nicely.
        ((derived-mode-p 'emacs-lisp-mode 'lisp-mode 'scheme-mode)
         (setq-local prettify-symbols-alist '(("lambda" . ?λ)))))))
 #+end_src
-
 ** =typescript-mode= - TypeScript language support
 =typescript-mode= adds a major mode with syntax highlighting for TypeScript
 files.
@@ -4471,7 +4151,6 @@ files.
     :custom
     (typescript-indent-level 2))
 #+end_src
-
 ** =nix-mode= Configure support for the Nix language
 #+begin_src emacs-lisp
   (use-package nix-mode
@@ -4480,7 +4159,6 @@ files.
     :custom
     (nix-indent-function 'nix-indent-line))
 #+end_src
-
 ** =yaml-mode= - YAML editing support
 #+begin_src emacs-lisp
   (defun disable-autofill ()
@@ -4494,7 +4172,6 @@ files.
     :config
     (add-hook 'yaml-mode-hook #'disable-autofill))
 #+end_src
-
 *** =origami= - code folding
 #+begin_src emacs-lisp
   (use-package origami
@@ -4504,7 +4181,6 @@ files.
      "TAB" 'origami-recursively-toggle-node
      "S-<tab>" 'origami-toggle-all-nodes))
 #+end_src
-
 ** =json-mode= - JSON editing support
 #+begin_src emacs-lisp
   (use-package json-mode
@@ -4513,7 +4189,6 @@ files.
     :custom
     (json-reformat:indent-width 2))
 #+end_src
-
 ** =highlight-indent-guides= - show indentation level indicators
 #+begin_src emacs-lisp
   (use-package highlight-indent-guides
@@ -4521,7 +4196,6 @@ files.
     (yaml-mode . highlight-indent-guides-mode)
     (json-mode . highlight-indent-guides-mode))
 #+end_src
-
 ** =markdown-mode= - Markdown file support
 #+begin_src emacs-lisp
   (use-package markdown-mode
@@ -4578,7 +4252,6 @@ files.
     "p" '(markdown-live-preview-mode :wk "preview (live)")
     "e" '(markdown-export :wk "export"))
 #+end_src
-
 ** =ledger-mode= - Ledger accounting software interface
 #+begin_src emacs-lisp
   (use-package ledger-mode
@@ -4599,7 +4272,6 @@ files.
     (ledger-post-account-alignment-column 2)
     (ledger-fontify-xact-state-overrides nil))
 #+end_src
-
 *** Highlight negative numbers in red
 #+begin_src emacs-lisp
   (use-package ledger-mode
@@ -4617,7 +4289,6 @@ files.
 
     (add-hook 'ledger-report-mode-hook 'font-lock-fontify-buffer))
 #+end_src
-
 *** Changing transaction timestamps
 Use =C-c C-.= to change the timestamp of the transaction at point.
 #+begin_src emacs-lisp
@@ -4642,7 +4313,6 @@ Use =C-c C-.= to change the timestamp of the transaction at point.
           (let ((message-log-max))
             (message "Date changed: %s -> %s" value updated))))))
 #+end_src
-
 *** Format ledger buffer
 Define a command to format a ledger buffer.
 #+begin_src emacs-lisp
@@ -4678,14 +4348,12 @@ Define a command to format a ledger buffer.
           (ledger-format--align-price-assertion))
         (goto-char pos))))
 #+end_src
-
 *** =flycheck-ledger= - Flycheck support for ledger buffers
 #+begin_src emacs-lisp
   (use-package flycheck-ledger
     :after (:all flycheck ledger-mode)
     :demand t)
 #+end_src
-
 ** =autctex= - Tex & Latex editing
 Use =auctex= as the Tex and Latex editing mode.
 =auctex= is disgusting and clobbers the builtin Tex modes. To load it lazily,
@@ -4727,7 +4395,6 @@ intercept attempts to load Tex files and make sure =auctex= is loaded first.
     (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode)
     (add-hook 'LaTeX-mode-hook 'TeX-PDF-mode))
 #+end_src
-
 *** Smarter autofill function
 Teach the autofill function in Latex buffers not to fill in certain contexts.
 #+begin_src emacs-lisp
@@ -4757,7 +4424,6 @@ Teach the autofill function in Latex buffers not to fill in certain contexts.
 
     (add-hook 'LaTeX-mode-hook 'config-latex--configure-autofill))
 #+end_src
-
 *** Build command
 =C-c C-c= builds the current buffer with =tectonic=.
 #+begin_src emacs-lisp
@@ -4779,7 +4445,6 @@ Teach the autofill function in Latex buffers not to fill in certain contexts.
           (TeX-save-document (TeX-master-file)))
         (TeX-command (getenv "NIX_EMACS_TEX_PROGRAM") 'TeX-master-file -1))))
 #+end_src
-
 *** Environment folding
 =tex-fold= enables folding of macros and environments. It's part of =auctex=.
 #+begin_src emacs-lisp
@@ -4787,7 +4452,6 @@ Teach the autofill function in Latex buffers not to fill in certain contexts.
     :after tex
     :demand t)
 #+end_src
-
 *** Code completion
 #+begin_src emacs-lisp
   (use-package company-auctex
@@ -4795,19 +4459,16 @@ Teach the autofill function in Latex buffers not to fill in certain contexts.
     :demand t
     :config (company-auctex-init))
 #+end_src
-
 *** Show preview on save
 #+begin_src emacs-lisp
   (use-package latex-preview-pane
     :general (:keymaps 'LaTeX-mode-map "C-c p" #'latex-preview-pane))
 #+end_src
-
 ** =graphql= - GraphQL schema definition language editing support
 #+begin_src emacs-lisp
   (use-package graphql-mode
     :mode ("\\.graphql\\'" . graphql-mode))
 #+end_src
-
 *** Teach dumb-jump about GraphQL files
 #+begin_src emacs-lisp
   (use-package graphql-mode
@@ -4828,7 +4489,6 @@ Teach the autofill function in Latex buffers not to fill in certain contexts.
                    :supports ("ag" "grep" "rg") :language "graphql"
                    :regex "scalar\\s+JJJ\\b")))
 #+end_src
-
 ** =js= - Editing support for JavaScript
 #+begin_src emacs-lisp
   (use-package js
@@ -4838,7 +4498,6 @@ Teach the autofill function in Latex buffers not to fill in certain contexts.
     (js-switch-indent-offset 2)
     (js-js-tmpdir (f-join paths-cache-directory "js")))
 #+end_src
-
 ** =plantuml-mode= - Editing support for PlantUML diagrams
 #+begin_src emacs-lisp
   (use-package plantuml-mode
@@ -4858,7 +4517,6 @@ Teach the autofill function in Latex buffers not to fill in certain contexts.
     :config
     (modify-syntax-entry ?_ "w" plantuml-mode-syntax-table))
 #+end_src
-
 *** Flycheck support
 #+begin_src emacs-lisp
   (use-package flycheck-plantuml
@@ -4866,7 +4524,6 @@ Teach the autofill function in Latex buffers not to fill in certain contexts.
     :demand t
     :config (flycheck-plantuml-setup))
 #+end_src
-
 *** Highlight arrows and important keywords
 #+begin_src emacs-lisp
   (use-package plantuml-mode
@@ -5006,7 +4663,6 @@ Teach the autofill function in Latex buffers not to fill in certain contexts.
        (,(rx bol (* space) (group "*") (+ (not (any "*"))))
         (1 'org-list-dt)))))
 #+end_src
-
 ** =terraform-mode= & =hcl-mode= - Editing support for Terraform
 #+begin_src emacs-lisp
   (use-package terraform-mode
@@ -5017,7 +4673,6 @@ Teach the autofill function in Latex buffers not to fill in certain contexts.
     ("\\.hcl\\'" . hcl-mode)
     ("\\.nomad\\'" . hcl-mode))
 #+end_src
-
 *** Format HCL buffers on save
 #+begin_src emacs-lisp
   (use-package hcl-mode
@@ -5034,7 +4689,6 @@ Teach the autofill function in Latex buffers not to fill in certain contexts.
 
     (add-to-list 'format-all-default-formatters 'terragrunt-fmt))
 #+end_src
-
 ** =css-mode= - CSS editing support
 #+begin_src emacs-lisp
   (use-package css-mode
@@ -5042,7 +4696,6 @@ Teach the autofill function in Latex buffers not to fill in certain contexts.
     :custom
     (css-indent-offset 2))
 #+end_src
-
 ** =hexl-mode= - Hex editing
 =hexl= is Emacs' built-in hex editor.
 #+begin_src emacs-lisp
@@ -5059,7 +4712,6 @@ Teach the autofill function in Latex buffers not to fill in certain contexts.
      "^" #'hexl-beginning-of-line
      "0" #'hexl-beginning-of-line))
 #+end_src
-
 ** =conf-mode= - Configuration files
 Configure =conf-mode= for use with more kinds of config files.
 #+begin_src emacs-lisp
@@ -5068,15 +4720,12 @@ Configure =conf-mode= for use with more kinds of config files.
     ("\\.env" . conf-mode)
     ("\\.kll\\'" . conf-mode))
 #+end_src
-
 ** =dockerfile-mode= - editing support for Dockerfile
 #+begin_src emacs-lisp
   (use-package dockerfile-mode
     :mode ("Dockerfile\\'" . dockerfile-mode))
 #+end_src
-
 * Applications
-
 ** =pass= - Frontend to Unix ~password-store~
 #+begin_src emacs-lisp
   (use-package pass
@@ -5096,7 +4745,6 @@ Configure =conf-mode= for use with more kinds of config files.
     :custom
     (pass-username-field "email"))
 #+end_src
-
 ** =pdf-tools= - PDF reader
 #+begin_src emacs-lisp
   (use-package pdf-tools
@@ -5136,7 +4784,6 @@ Configure =conf-mode= for use with more kinds of config files.
 
     (pdf-tools-install))
 #+end_src
-
 ** =mu4e= - Mail user agent
 Use the system's =mu4e= installation for mail management. I use the
 systemd/launchd to run mbsync and indexing, so mu4e doesn't trigger fetching
@@ -5189,12 +4836,10 @@ itself.
     ;; Custom rendering of HTML messages
     (mu4e-html2text-command #'config-mail--shr-buffer))
 #+end_src
-
 *** Always use =mu4e= for mail composition
 #+begin_src emacs-lisp
   (global-set-key [remap compose-mail] #'mu4e-compose-new)
 #+end_src
-
 *** Auto-load the mu4e org link type
 #+begin_src emacs-lisp
   (with-eval-after-load 'org
@@ -5205,7 +4850,6 @@ itself.
                              :follow #'mu4e-org-open
                              :store  #'mu4e-org-store-link))
 #+end_src
-
 *** Wrap lines in an intuitive way while viewing and editing.
 #+begin_src emacs-lisp
   (use-package mu4e
@@ -5217,7 +4861,6 @@ itself.
     ;; Wrap lines when viewing.
     (add-hook 'mu4e-view-mode-hook #'visual-line-mode))
 #+end_src
-
 *** Define commands for viewing messages in a browser
 Either with =eww= or the default system browser.
 #+begin_src emacs-lisp
@@ -5226,7 +4869,6 @@ Either with =eww= or the default system browser.
     ;; View html message in eww. `av` in view to activate
     (add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t))
 #+end_src
-
 *** Define a smart refile action for ~r~
 Marks messages as 'read' and moves them into the appropriate folder.
 #+begin_src emacs-lisp
@@ -5246,7 +4888,6 @@ Marks messages as 'read' and moves them into the appropriate folder.
                       (unless (config-mail--message-from-me-p msg)
                         (mu4e~proc-move docid (mu4e~mark-check-target target) "+S-u-N"))))))
 #+end_src
-
 *** Insert signatures before quoted content, as in other mail user agents
 #+begin_src emacs-lisp
   (use-package mu4e
@@ -5284,18 +4925,15 @@ Marks messages as 'read' and moves them into the appropriate folder.
 
     (add-hook 'mu4e-compose-mode-hook #'mu4e--insert-signature-before-quoted-message))
 #+end_src
-
 *** Don't quit mu4e, just bury the buffer
 #+begin_src emacs-lisp
   (global-set-key [remap mu4e-quit] #'bury-buffer)
 #+end_src
-
 *** Teach =org-mode= how to store links to messages in =mu4e=
 #+begin_src emacs-lisp
   (use-package org-mu4e
     :after (:any org mu4e))
 #+end_src
-
 *** Display newline symbols in the buffer when a hard newline would be used
 Normally newlines are reflowed automatically.
 #+begin_src emacs-lisp
@@ -5307,9 +4945,7 @@ Normally newlines are reflowed automatically.
       (add-hook 'after-change-functions 'messages-are-flowing--mark-hard-newlines nil t))
     :hook (message-mode . setup-hard-newlines))
 #+end_src
-
 * ✍🏻 =org-mode= - Org document format & editing support
-
 ** Set general org-mode variables
 #+begin_src emacs-lisp
   (use-package org
@@ -5349,7 +4985,6 @@ Normally newlines are reflowed automatically.
      "C-c ." 'org-time-stamp
      "C-c o" 'org-table-toggle-coordinate-overlays))
 #+end_src
-
 ** TODO Get org-ellipsis working
 I want something like the following:
 #+begin_src emacs-lisp
@@ -5358,7 +4993,6 @@ I want something like the following:
 
 However, the ellipses aren't rendering with this set for some reason. :/ It's
 probably a package incompatibility.
-
 ** Set up major-mode leader keybindings
 #+begin_src emacs-lisp
   ;; https://stackoverflow.com/a/28031539
@@ -5415,7 +5049,6 @@ probably a package incompatibility.
     "e x" '(org-babel-demarcate-block :wk "split block")
     "e v" '(org-babel-mark-block :wk "mark block"))
 #+end_src
-
 ** Allow ID lookups to work in task files
 #+begin_src emacs-lisp
   (use-package org-id
@@ -5429,7 +5062,6 @@ probably a package incompatibility.
     (dolist (file (f-files org-roam-directory nil t))
       (add-to-list 'org-id-files file)))
 #+end_src
-
 ** Tweak flyspell verification function
 #+begin_src emacs-lisp
   (defun config-org-ignore-formulae (result)
@@ -5438,7 +5070,6 @@ probably a package incompatibility.
 
   (advice-add #'org-mode-flyspell-verify :filter-return #'config-org-ignore-formulae)
 #+end_src
-
 ** =org-funcs= - org functions used throughout config
 #+begin_src emacs-lisp
   (use-package org-funcs
@@ -5451,7 +5082,6 @@ probably a package incompatibility.
     (:keymaps 'org-mode-map :states '(normal insert emacs)
      "C-c l" 'org-funcs-insert-url-as-link))
 #+end_src
-
 ** =evil-org= - Improve Evil integration with org-mode
 #+begin_src emacs-lisp
   (use-package evil-org
@@ -5464,7 +5094,6 @@ probably a package incompatibility.
                           textobjects
                           todo)))
 #+end_src
-
 ** =org-capture= - Customise basic capture templates
 #+begin_src emacs-lisp
   (use-package org-capture
@@ -5477,7 +5106,6 @@ probably a package incompatibility.
                                            (function org-funcs-capture-note-to-clocked-heading)
                                            :immediate-finish t))))
 #+end_src
-
 ** Evil state improvements
 Automatically enter insert state when inserting new headings or using
 =org-capture=.
@@ -5503,7 +5131,6 @@ Automatically enter insert state when inserting new headings or using
     (advice-add 'org-insert-todo-heading-respect-content :after #'org-enter-evil-insert-state)
     (advice-add 'org-insert-todo-heading :after #'org-enter-evil-insert-state))
 #+end_src
-
 ** Visual settings
 #+begin_src emacs-lisp
   (use-package org
@@ -5516,7 +5143,6 @@ Automatically enter insert state when inserting new headings or using
     (org-startup-shrink-all-tables t)
     (org-startup-with-inline-images t))
 #+end_src
-
 *** =org-format= - Format document on save
 =org-format= provides some commands to clean up the whitespace around
 org headings.
@@ -5525,14 +5151,12 @@ org headings.
   (use-package org-format
     :hook (org-mode . org-format-on-save-mode))
 #+end_src
-
 *** Styles
 #+begin_src emacs-lisp
   (defvar config-org-style 'compact)
   (cl-assert (member config-org-style '(compact
                                         sparse)))
 #+end_src
-
 **** Style: Compact & Dense
 #+begin_src emacs-lisp
   (use-package org
@@ -5547,7 +5171,6 @@ org headings.
     :custom
     (org-format-blank-lines-before-heading 0))
 #+end_src
-
 **** Style: Sparse & Indented
 #+begin_src emacs-lisp
   (use-package org
@@ -5562,7 +5185,6 @@ org headings.
     :custom
     (org-format-blank-lines-before-heading 1))
 #+end_src
-
 ***** =org-superstar= - Improve display of headlines
 #+begin_src emacs-lisp
   (use-package org-superstar
@@ -5580,7 +5202,6 @@ org headings.
     :config
     (setf (alist-get 45 org-superstar-item-bullet-alist) ?•))
 #+end_src
-
 *** Use bullet characters for list items
 #+begin_src emacs-lisp
   (use-package org
@@ -5589,12 +5210,10 @@ org headings.
                             `((,(rx bol (* space) (group "-") (+ space))
                                (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•")))))))
 #+end_src
-
 *** Don't show secondary selection when running ~org-show-todo-tree~
 #+begin_src emacs-lisp
   (advice-add #'org-highlight-new-match :override #'ignore)
 #+end_src
-
 ** Attachments
 #+begin_src emacs-lisp
   (use-package org
@@ -5614,7 +5233,6 @@ Automatically commit attachments to git.
     ;; of `org-use-property-inheritance'.
     (org-attach-use-inheritance t))
 #+end_src
-
 ** Automatically save buffers
 Save org buffers automatically after certain operations.
 #+begin_src emacs-lisp
@@ -5626,7 +5244,6 @@ Save org buffers automatically after certain operations.
     (advice-add 'org-archive-subtree :after #'org-ad-save-buffers)
     (advice-add 'org-refile :after #'org-ad-save-buffers))
 #+end_src
-
 ** Document formatting style
 #+begin_src emacs-lisp
   (use-package org
@@ -5639,7 +5256,6 @@ Save org buffers automatically after certain operations.
     (org-insert-heading-respect-content t)
     (org-loop-over-headlines-in-active-region 'start-level))
 #+end_src
-
 *** Load =org-export= packages
 #+begin_src emacs-lisp
   (use-package ox-gfm
@@ -5651,7 +5267,6 @@ Save org buffers automatically after certain operations.
   (use-package htmlize
     :defer t)
 #+end_src
-
 ** Todos, checkboxes and statistics
 #+begin_src emacs-lisp
   (use-package org
@@ -5674,7 +5289,6 @@ Completing all child TODOs will change the parent TODO to DONE.
 
     (add-hook 'org-after-todo-statistics-hook #'org-set-done-when-all-children-completed))
 #+end_src
-
 ** Refiling
 #+begin_src emacs-lisp
   (use-package org
@@ -5702,7 +5316,6 @@ Limit refile depth and restrict to specific candidates.
     (org-refile-targets '((nil . (:maxlevel . 10)) (org-funcs-refile-candidates . (:maxlevel . 3))))
     (org-refile-target-verify-function 'org-funcs-refile-verify-function))
 #+end_src
-
 ** Automatically remove deleted files from agenda
 #+begin_src emacs-lisp
   (use-package org
@@ -5714,7 +5327,6 @@ Limit refile depth and restrict to specific candidates.
 
     (advice-add 'org-check-agenda-file :override #'config-org--always-remove-missing-agenda-files))
 #+end_src
-
 ** Logging & clocking
 #+begin_src emacs-lisp
   (use-package org
@@ -5748,7 +5360,6 @@ Exit minibuffer before adding notes.
 
     (advice-add 'org-add-log-note :before #'org-ad-exit-minibuffer))
 #+end_src
-
 ** =org-archive= - Archiving support for org-mode content
 #+begin_src emacs-lisp
   (use-package org
@@ -5756,7 +5367,6 @@ Exit minibuffer before adding notes.
     (org-archive-location (concat (f-join org-directory "archive.org") "::datetree/"))
     (org-archive-subtree-add-inherited-tags t))
 #+end_src
-
 *** Apply either an =@work= or =@personal= context when archiving    :disabled:
 #+begin_src emacs-lisp
   (use-package org
@@ -5770,7 +5380,6 @@ Exit minibuffer before adding notes.
 
     (advice-add 'org-archive-subtree :before 'org-apply-tags-before-archive))
 #+end_src
-
 ** Turn priorities into an on/off flag
 I customise priorities so that headlines are either 'prioritised' an show a
 cookie or 'cleared', which indicates no special priority.
@@ -5785,7 +5394,6 @@ cookie or 'cleared', which indicates no special priority.
 #+end_src
 
 ~C-c p~ toggles a priority cookie on the current heading.
-
 *** Toggle priority in org-mode
 #+begin_src emacs-lisp
   (use-package org
@@ -5805,7 +5413,6 @@ cookie or 'cleared', which indicates no special priority.
                  (org-priority ?A)
                  (message "Priority set")))))))
 #+end_src
-
 *** Toggle priority in org-agenda
 #+begin_src emacs-lisp
   (use-package org-agenda
@@ -5836,7 +5443,6 @@ cookie or 'cleared', which indicates no special priority.
           (org-agenda-change-all-lines updated-heading heading-marker)
           (org-move-to-column col)))))
 #+end_src
-
 ** Export
 #+begin_src emacs-lisp
   (use-package org
@@ -5848,7 +5454,6 @@ cookie or 'cleared', which indicates no special priority.
     (org-export-exclude-tags '("noexport" "ignore"))
     (org-export-coding-system 'utf-8))
 #+end_src
-
 ** =org-babel= & =org-src= - Source code support and code blocks
 #+begin_src emacs-lisp
   (use-package org
@@ -5856,7 +5461,6 @@ cookie or 'cleared', which indicates no special priority.
     (org-src-fontify-natively t)
     (org-src-window-setup 'current-window))
 #+end_src
-
 *** Defer language loading as late as possible
 #+begin_src emacs-lisp
   (use-package ob
@@ -5870,14 +5474,12 @@ cookie or 'cleared', which indicates no special priority.
                                 (shell . t)))
     (org-babel-python-command (executable-find "python3")))
 #+end_src
-
 *** Show images in outputs (useful for GNUplot, etc).
 #+begin_src emacs-lisp
   (use-package org
     :config
     (add-hook 'org-babel-after-execute-hook 'org-display-inline-images t))
 #+end_src
-
 *** Prevent trailing whitespace from being created in src blocks.
 #+begin_src emacs-lisp
   (use-package org
@@ -5891,9 +5493,7 @@ cookie or 'cleared', which indicates no special priority.
     (add-hook 'org-src-mode-hook 'org-ad-suppress-final-newline)
     (advice-add 'org-edit-src-exit :before 'org-ad-delete-trailing-space-on-src-block-exit))
 #+end_src
-
 ** Latex
-
 *** Use Tectonic as org-mode's primary LaTeX compiler
 #+begin_src emacs-lisp
   (use-package org
@@ -5902,7 +5502,6 @@ cookie or 'cleared', which indicates no special priority.
     (org-latex-compilers (list (getenv "NIX_EMACS_TEX_PROGRAM")))
     (org-latex-pdf-process (list (concat (getenv "NIX_EMACS_TEX_PROGRAM") " -Z shell-escape --outdir=%o %f"))))
 #+end_src
-
 *** Make latex previews look good on high-DPI screens
 #+begin_src emacs-lisp
   (use-package org
@@ -5911,7 +5510,6 @@ cookie or 'cleared', which indicates no special priority.
     :config
     (plist-put org-format-latex-options :scale 1.7))
 #+end_src
-
 *** Make ~C-c C-c~ toggle LaTeX fragment preview for editing
 #+begin_src emacs-lisp
   (use-package org
@@ -5932,7 +5530,6 @@ cookie or 'cleared', which indicates no special priority.
 
     (add-hook 'org-ctrl-c-ctrl-c-hook #'config-org-maybe-toggle-latex-fragment))
 #+end_src
-
 *** Set some default LaTeX packages
 #+begin_src emacs-lisp
   (use-package org
@@ -5941,7 +5538,6 @@ cookie or 'cleared', which indicates no special priority.
     :config
     (add-to-list 'org-latex-default-packages-alist '("colorlinks=true" "hyperref" nil)))
 #+end_src
-
 *** Don't apply =org-block= face to latex snippets
 #+begin_src emacs-lisp
   (use-package org-src
@@ -5950,7 +5546,6 @@ cookie or 'cleared', which indicates no special priority.
     :config
     (add-to-list 'org-src-block-faces '("latex" (:inherit default :extend t))))
 #+end_src
-
 *** Make latex fragments adapt to colour theme changes
 #+begin_src emacs-lisp
   (use-package org-latex-themed-previews
@@ -5961,13 +5556,11 @@ cookie or 'cleared', which indicates no special priority.
     :config
     (org-latex-themed-previews-mode +1))
 #+end_src
-
 *** =org-fragtog= - Automatically toggle fragment at point
 #+begin_src emacs-lisp
   (use-package org-fragtog
     :hook (org-mode . org-fragtog-mode))
 #+end_src
-
 ** =org-crypt= - Encrypted file content
 #+begin_src emacs-lisp
   (use-package org-crypt
@@ -5980,7 +5573,6 @@ cookie or 'cleared', which indicates no special priority.
       (push "crypt" org-export-exclude-tags))
     (org-crypt-use-before-save-magic))
 #+end_src
-
 ** Define context-sensitive key commands
 #+begin_src emacs-lisp
   (use-package org
@@ -5996,7 +5588,6 @@ cookie or 'cleared', which indicates no special priority.
      (general-predicate-dispatch 'org-insert-todo-heading
        (org-at-table-p) 'org-table-hline-and-move)))
 #+end_src
-
 ** Support mixed text direction in documents
 Allow each paragraph to have a different text direction. This is useful for
 mixed-direction documents which include English with Arabic, Farsi, etc.
@@ -6009,7 +5600,6 @@ mixed-direction documents which include English with Arabic, Farsi, etc.
 
     (add-hook 'org-mode-hook #'org-set-local-vars-and-hooks))
 #+end_src
-
 ** Always open directories in Emacs via dired
 Ensure we use dired rather than the Finder on macOS.
 #+begin_src emacs-lisp
@@ -6017,7 +5607,6 @@ Ensure we use dired rather than the Finder on macOS.
     :config
     (add-to-list 'org-file-apps '(directory . emacs)))
 #+end_src
-
 ** =org-agenda= - Calendaring and configurable todo lists
 #+begin_src emacs-lisp
   (use-package org-agenda
@@ -6082,7 +5671,6 @@ Ensure we use dired rather than the Finder on macOS.
     "a" '(org-agenda-archive :wk "archive")
     "r" '(org-agenda-refile :wk "refile"))
 #+end_src
-
 *** Define agenda views
 Define an agenda view that changes depending on whether I'm clocked in or not
 (by invoking =org-funcs-agenda-dwim=). The presence of a running clock means I'm
@@ -6125,7 +5713,6 @@ property to =ignore= or =scheduled=.
            (org-agenda-tag-filter-preset (list "-someday" "-ignore" (format "+%s" (timekeep-work-tag))))
            (org-agenda-archives-mode t)))))))
 #+end_src
-
 *** Reveal context around item on ~TAB~
 #+begin_src emacs-lisp
   (use-package org-agenda
@@ -6138,7 +5725,6 @@ property to =ignore= or =scheduled=.
 
     (add-hook 'org-agenda-after-show-hook #'config-org--on-show-item-from-agenda))
 #+end_src
-
 *** Integration with builtin =appt= (appointments)
 #+begin_src emacs-lisp
   (use-package org-agenda
@@ -6150,7 +5736,6 @@ property to =ignore= or =scheduled=.
     (appt-message-warning-time 60)
     (appt-display-interval 5))
 #+end_src
-
 *** Use =page-break-lines= to draw separator
 #+begin_src emacs-lisp
   (use-package org-agenda
@@ -6165,7 +5750,6 @@ property to =ignore= or =scheduled=.
     (advice-add 'org-agenda :after #'config-org--draw-separator)
     (advice-add 'org-agenda-redo :after #'config-org--draw-separator))
 #+end_src
-
 *** Make priority inherited
 #+begin_src emacs-lisp
   (defun config-org-inherited-priority (s)
@@ -6183,7 +5767,6 @@ property to =ignore= or =scheduled=.
     :custom
     (org-priority-get-priority-function #'config-org-inherited-priority))
 #+end_src
-
 *** Search for and update agenda files automatically
 Search org files in a couple of blessed locations for open TODOs using [[https://github.com/BurntSushi/ripgrep][ripgrep]].
 Populate the agenda with these files.
@@ -6202,7 +5785,6 @@ Populate the agenda with these files.
 
   (add-hook 'after-save-hook #'config-org-setup-agenda-updates)
 #+end_src
-
 ** =timekeep= - Better timekeeping handling for org-clock
 #+begin_src emacs-lisp
   (use-package timekeep
@@ -6219,21 +5801,18 @@ Populate the agenda with these files.
     (timekeep-mode +1)
     (add-hook 'timekeep-agenda-should-update-hook #'org-funcs-agenda-dwim))
 #+end_src
-
 ** =orgtbl-aggregate= - Add pivot tables to org-mode
 #+begin_src emacs-lisp
   (use-package orgtbl-aggregate
     :after (org)
     :demand t)
 #+end_src
-
 ** =ox-koma-letter= - Export backend for letters via latex
 #+begin_src emacs-lisp
   (use-package ox-koma-letter
     :demand t
     :after ox)
 #+end_src
-
 ** =org-download= - Easily attach images
 Attach images to org buffers via GUI drag-and-drop.
 #+begin_src emacs-lisp
@@ -6268,13 +5847,11 @@ Attach images to org buffers via GUI drag-and-drop.
                    (not (url-handler-file-remote-p (current-kill 0))))
           (delete-file link delete-by-moving-to-trash)))))
 #+end_src
-
 ** =org-pretty-table= - use unicode box characters for org tables
 #+begin_src emacs-lisp
   (use-package org-pretty-table
     :hook (org-mode . org-pretty-table-mode))
 #+end_src
-
 ** =org-appear= - automatically reveal hidden org elements at point
 This makes it much easier to edit text using emphasis markers correctly.
 #+begin_src emacs-lisp
@@ -6289,7 +5866,6 @@ This makes it much easier to edit text using emphasis markers correctly.
     ;; needs to be run after other hooks have acted.
     (run-at-time nil nil #'org-appear--set-elements))
 #+end_src
-
 ** Add a link type for opening macOS GUI applications
 #+begin_src emacs-lisp
   (use-package org
@@ -6319,7 +5895,6 @@ This makes it much easier to edit text using emphasis markers correctly.
                              :follow #'org-link-follow-mac-app
                              :complete #'org-link-complete-app))
 #+end_src
-
 ** Add a link type for playing audio files
 :PROPERTIES:
 :ID:       9058EF04-3653-49F7-9C93-A15D3A4C9B06
@@ -6378,12 +5953,10 @@ This makes it much easier to edit text using emphasis markers correctly.
                              :complete #'org-link-complete-audio-file
                              :follow #'org-link-follow-audio))
 #+end_src
-
 ** Keep abbrevs in =org-directory=
 #+begin_src emacs-lisp
   (setq abbrev-file-name (f-join paths-org-directory "abbrev.el"))
 #+end_src
-
 * 📓 =org-roam= - Personal wiki & research tooling
 #+begin_src emacs-lisp
   (use-package org-roam
@@ -6417,7 +5990,6 @@ This makes it much easier to edit text using emphasis markers correctly.
      "C-c TAB" (general-predicate-dispatch 'org-roam-node-insert
                  (org-at-table-p) 'org-ctrl-c-tab)))
 #+end_src
-
 ** Set leader keys
 #+begin_src emacs-lisp
   (defun display-backlinks ()
@@ -6456,7 +6028,6 @@ This makes it much easier to edit text using emphasis markers correctly.
   (mode-leader-set-key :keymaps 'org-roam-mode-map :states '(motion normal)
     "<tab>" '(quit-window :wk "hide"))
 #+end_src
-
 ** Use title for buffer notes identification
 #+begin_src emacs-lisp
   (defun config-org-roam-set-buffer-identification ()
@@ -6474,7 +6045,6 @@ This makes it much easier to edit text using emphasis markers correctly.
 
   (add-hook 'org-mode-hook #'config-org-roam-set-buffer-identification)
 #+end_src
-
 ** Open my index roam file as the initial buffer
 #+begin_src emacs-lisp
   (autoload 'org-roam-dailies-goto-today "org-roam-dailies")
@@ -6490,7 +6060,6 @@ This makes it much easier to edit text using emphasis markers correctly.
 
   (setq initial-buffer-choice #'initial-buffers)
 #+end_src
-
 ** Hack around removed cl-lib function
 #+begin_src emacs-lisp
   (use-package org-roam
@@ -6505,7 +6074,6 @@ This makes it much easier to edit text using emphasis markers correctly.
                          (point-min) (point-max))
          h1-count))))
 #+end_src
-
 ** =org-roam-gc= - Automatically clean up empty dailies
 #+begin_src emacs-lisp
   (use-package org-roam-gc
@@ -6514,7 +6082,6 @@ This makes it much easier to edit text using emphasis markers correctly.
     :config
     (run-with-idle-timer 2 nil 'org-roam-gc))
 #+end_src
-
 ** =org-roam-review= - spaced-repetition implementation for org-roam notes
 #+begin_src emacs-lisp
   (use-package org-roam-review
@@ -6542,7 +6109,6 @@ This makes it much easier to edit text using emphasis markers correctly.
      "C-c r s" '(org-roam-review-set-seedling :wk "set seedling")
      "C-c r e" '(org-roam-review-set-evergreen :wk "set evergreen")))
 #+end_src
-
 ** Allow lookups to roam nodes from non-roam org files
 #+begin_src emacs-lisp
   (use-package org-roam
@@ -6562,7 +6128,6 @@ This makes it much easier to edit text using emphasis markers correctly.
 
     (add-hook 'org-mode-hook #'config-org-roam--ensure-ids))
 #+end_src
-
 ** Apply a created date property to new nodes
 #+begin_src emacs-lisp
   (defun config-org-roam-set-created-timestamp ()
@@ -6572,7 +6137,6 @@ This makes it much easier to edit text using emphasis markers correctly.
 
   (add-hook 'org-roam-capture-new-node-hook #'config-org-roam-set-created-timestamp)
 #+end_src
-
 ** =org-roam-ui= - Web browser interface to org-roam
 #+begin_src emacs-lisp
   (use-package org-roam-ui
@@ -6583,7 +6147,6 @@ This makes it much easier to edit text using emphasis markers correctly.
     (org-roam-ui-update-on-save t)
     (org-roam-ui-open-on-start t))
 #+end_src
-
 *** Keep org-roam-ui in sync as themes change
 #+begin_src emacs-lisp
   (use-package org-roam-ui
@@ -6595,7 +6158,6 @@ This makes it much easier to edit text using emphasis markers correctly.
 
     (add-hook 'after-load-theme-functions #'config-update-org-roam-ui-theme))
 #+end_src
-
 ** =org-transclusion= - share trees across org files
 #+begin_src emacs-lisp
   (use-package org-transclusion
@@ -6615,7 +6177,6 @@ This makes it much easier to edit text using emphasis markers correctly.
     :config
     (define-fringe-bitmap 'org-transclusion-fringe-bitmap [224] nil nil '(center repeated)))
 #+end_src
-
 *** Don't transclude if org-inhibit-startup is set
 #+begin_src emacs-lisp
   (defun config-disable-transclusion-when-inhibited-startup-on (fn &rest args)
@@ -6624,7 +6185,6 @@ This makes it much easier to edit text using emphasis markers correctly.
 
   (advice-add 'org-transclusion-add :around #'config-disable-transclusion-when-inhibited-startup-on)
 #+end_src
-
 *** =evil-org= compatibility
 We want to use =org-transclusion= commands instead of the evil ones where
 appropriate. Iterate through the evil-org-mode keymap and apply advice to each
@@ -6652,7 +6212,6 @@ There's probably a saner way to do this.
         (dolist (command commands)
           (advice-add command :around #'org-transclusion-local-map-passthrough)))))
 #+end_src
-
 *** Improve transclusion handling with structural editing commands.
 When using structural editing commands, I don't want to have to think about whether a headline is a transclusion or not.
 #+begin_src emacs-lisp
@@ -6673,7 +6232,6 @@ When using structural editing commands, I don't want to have to think about whet
   (advice-add 'org-copy-subtree :after #'config-org-transclusion-restore-subtree)
   (advice-add 'org-paste-subtree :after #'config-org-transclusion-restore-subtree)
 #+end_src
-
 *** =org-indent= compatibility
 Note that the out-of-the-box implementation doesn't appear to work, so set up
 the advice manually.
@@ -6701,7 +6259,6 @@ rid of it.
 #+begin_src emacs-lisp
   (advice-add 'org-transclusion-propertize-source :around #'ignore)
 #+end_src
-
 *** Trim trailing newlines
 #+begin_src emacs-lisp
   (defun config-org-transclusion-trim (_ content &rest _)
@@ -6711,7 +6268,6 @@ rid of it.
     (add-to-list 'org-transclusion-content-format-functions
                  #'config-org-transclusion-trim))
 #+end_src
-
 *** Teach org-open-link to open transclusions
 #+begin_src emacs-lisp
   (defun config-org-transclusion-try-follow-link ()
@@ -6723,7 +6279,6 @@ rid of it.
 
   (add-hook 'org-open-at-point-functions 'config-org-transclusion-try-follow-link)
 #+end_src
-
 *** Teach M-left and M-right to promote & demote
 #+begin_src emacs-lisp
   (defun config-org-at-transclusion-keyword-p ()
@@ -6750,7 +6305,6 @@ rid of it.
   (add-hook 'org-metaleft-hook #'config-org-transclusion-promote)
   (add-hook 'org-metaright-hook #'config-org-transclusion-demote)
 #+end_src
-
 *** Teach ~C-c C-c~ to refresh
 #+begin_src emacs-lisp
   (defun config-org-transclusion-refresh-at-point ()
@@ -6761,7 +6315,6 @@ rid of it.
 
   (add-hook 'org-ctrl-c-ctrl-c-hook #'config-org-transclusion-refresh-at-point)
 #+end_src
-
 *** Fix indentation after save, refreshing and live sync
 #+begin_src emacs-lisp
   (defun config-org-transclusion-apply-indentation (&rest _)
@@ -6775,7 +6328,6 @@ rid of it.
   (advice-add 'org-transclusion-live-sync-exit :after #'config-org-transclusion-apply-indentation)
   (advice-add 'org-transclusion-add :after #'config-org-transclusion-apply-indentation)
 #+end_src
-
 ** Fix buffer promotion function
 =org-roam-promote-entire-buffer= will leave stranded content between the top-level
 property drawer and the title. Advise it to fix that.
@@ -6800,7 +6352,6 @@ property drawer and the title. Advise it to fix that.
 
   (advice-add 'org-roam-promote-entire-buffer :after 'config-org-roam-cleanup-after-promote-entire-buffer)
 #+end_src
-
 ** Fix reference to removed cl function
 #+begin_src emacs-lisp
   (defun config-org-roam--h1-count-override ()
@@ -6815,7 +6366,6 @@ property drawer and the title. Advise it to fix that.
 
   (advice-add 'org-roam--h1-count :override #'config-org-roam--h1-count-override)
 #+end_src
-
 ** =org-roam-search= - a search interface that works better with org-roam
 #+begin_src emacs-lisp
   (use-package org-roam-search
@@ -6824,13 +6374,11 @@ property drawer and the title. Advise it to fix that.
     (:keymaps 'org-roam-mode-map :states '(normal motion)
      "s" 'org-roam-search-view))
 #+end_src
-
 ** =org-roam-links= - show a graph of links for a node
 #+begin_src emacs-lisp
   (use-package org-roam-links
     :commands (org-roam-links-view org-roam-links-backlinks-view))
 #+end_src
-
 ** Customise preview function
 - Exclude transcluded headings
 - Avoid display of first subheading as preview
@@ -6858,13 +6406,11 @@ property drawer and the title. Advise it to fix that.
     :custom
     (org-roam-preview-function #'config-org-roam-preview-function))
 #+end_src
-
 ** Silence transclusion messages
 #+begin_src emacs-lisp
   (advice-add 'org-transclusion-add-all :around #'advice-inhibit-logging)
   (advice-add 'org-transclusion-add-all :after #'advice-clear-minibuffer)
 #+end_src
-
 * Load Lisp from other locations
 #+begin_src emacs-lisp
   (use-package org
@@ -6879,9 +6425,7 @@ property drawer and the title. Advise it to fix that.
     (when (file-directory-p paths-ledger-lisp-directory)
       (load (expand-file-name "init.el" paths-ledger-lisp-directory) t)))
 #+end_src
-
 * 🪟 display-buffer customisations
-
 ** Define a full-frame display-buffer action
 #+begin_src emacs-lisp
   (defun display-buffer-fullframe (buffer alist)
@@ -6892,7 +6436,6 @@ property drawer and the title. Advise it to fix that.
       (delete-other-windows window)
       window))
 #+end_src
-
 ** Prevent display-buffer from creating new frames
 #+begin_src emacs-lisp
   (defun config--display-buffer-fallback (buffer &rest _)
@@ -6910,13 +6453,11 @@ property drawer and the title. Advise it to fix that.
            display-buffer-pop-up-window
            config--display-buffer-fallback)))
 #+end_src
-
 ** Define helper to update =display-buffer-alist= entries
 #+begin_src emacs-lisp
   (defun display-buffer-set (regexp-or-predicate actions)
     (setf (alist-get regexp-or-predicate display-buffer-alist nil nil #'equal) actions))
 #+end_src
-
 ** compilation
 #+begin_src emacs-lisp
   (display-buffer-set (rx bos "*compilation*" eos)
@@ -6925,7 +6466,6 @@ property drawer and the title. Advise it to fix that.
                         (inhibit-same-window . t)
                         (window-height . 0.4)))
 #+end_src
-
 ** lisp debugger
 #+begin_src emacs-lisp
   (display-buffer-set (rx bos "*Backtrace*" eos)
@@ -6934,7 +6474,6 @@ property drawer and the title. Advise it to fix that.
                         (side . bottom)
                         (window-height . 0.4)))
 #+end_src
-
 ** =flycheck=
 #+begin_src emacs-lisp
   (display-buffer-set (rx bos "*Flycheck errors*" eos)
@@ -6943,7 +6482,6 @@ property drawer and the title. Advise it to fix that.
                         (side . bottom)
                         (window-height . 0.4)))
 #+end_src
-
 ** help
 #+begin_src emacs-lisp
   (display-buffer-set (rx bos (or (and "*Help*" eos)
@@ -6960,7 +6498,6 @@ property drawer and the title. Advise it to fix that.
                         (inhibit-same-window . t)
                         (window-height   . 0.4)))
 #+end_src
-
 ** =ielm=
 #+begin_src emacs-lisp
   (display-buffer-set (rx bos "*ielm*" eos)
@@ -6970,7 +6507,6 @@ property drawer and the title. Advise it to fix that.
                         (side . rightmost)
                         (window-width . 80)))
 #+end_src
-
 ** ledger
 #+begin_src emacs-lisp
   (display-buffer-set (rx bos "*Ledger Report*" eos)
@@ -6979,13 +6515,11 @@ property drawer and the title. Advise it to fix that.
                         (side . rightmost)
                         (window-width . fit-window-to-buffer)))
 #+end_src
-
 ** mu4e
 #+begin_src emacs-lisp
   (display-buffer-set (rx bos " *mu4e-main*" eos)
                       '((display-buffer-fullframe)))
 #+end_src
-
 ** nix-repl
 #+begin_src emacs-lisp
   (display-buffer-set (rx bos "*Nix-REPL*" eos)
@@ -6993,13 +6527,11 @@ property drawer and the title. Advise it to fix that.
                         (inhibit-same-window . t)
                         (window-height   . 0.4)))
 #+end_src
-
 ** pass
 #+begin_src emacs-lisp
   (display-buffer-set (rx bos "*Password-Store*" eos)
                       '((display-buffer-fullframe)))
 #+end_src
-
 ** org-roam
 #+begin_src emacs-lisp
   (display-buffer-set (rx bos "*org-roam*" eos)
@@ -7008,13 +6540,11 @@ property drawer and the title. Advise it to fix that.
                         (side . rightmost)
                         (window-width . fit-window-to-buffer)))
 #+end_src
-
 ** org-roam-review
 #+begin_src emacs-lisp
   (display-buffer-set (rx bos "*org-roam-review*" eos)
                       '((display-buffer-fullframe)))
 #+end_src
-
 ** org-roam-search
 #+begin_src emacs-lisp
   (display-buffer-set (rx bos "*org-roam-search*" eos)
@@ -7023,7 +6553,6 @@ property drawer and the title. Advise it to fix that.
                         (side . rightmost)
                         (window-width . fit-window-to-buffer)))
 #+end_src
-
 ** org-roam-links
 #+begin_src emacs-lisp
   (display-buffer-set (rx bos "*org-roam-links*" eos)
@@ -7032,7 +6561,6 @@ property drawer and the title. Advise it to fix that.
                         (side . rightmost)
                         (window-width . fit-window-to-buffer)))
 #+end_src
-
 ** pp
 #+begin_src emacs-lisp
   (display-buffer-set (rx bos "*Pp Eval Output*" eos)
@@ -7040,7 +6568,6 @@ property drawer and the title. Advise it to fix that.
                         (inhibit-same-window . t)
                         (window-height . 0.4)))
 #+end_src
-
 ** vlc
 #+begin_src emacs-lisp
   (display-buffer-set (rx bos "*vlc*" eos)
@@ -7057,7 +6584,6 @@ property drawer and the title. Advise it to fix that.
                         (side . rightmost)
                         (window-width . 80)))
 #+end_src
-
 * File postamble
 #+begin_src emacs-lisp
   ;; (provide 'config)
