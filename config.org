@@ -5027,6 +5027,7 @@ Normally newlines are reflowed automatically.
     "A" '(org-archive-subtree :wk "archive")
     "/" '(org-sparse-tree :wk "sparse tree...")
     "#" '(org-decrypt-entries :wk "decrypt entries")
+    "RET" '(org-indent-mode :wk "toggle indentation")
     "r" (list (general-predicate-dispatch 'org-refile
                 (bound-and-true-p org-capture-mode) 'org-capture-refile)
               :wk "refile")
