@@ -9,6 +9,7 @@ This file uses org-mode's tangle functionality to create both the
 =early-init.el= and =init.el= files used by Emacs during the startup sequence.
 
 Headings can be tagged with =:disabled:= to 'comment-out' those blocks.
+
 * Early Init
 :PROPERTIES:
 :header-args:emacs-lisp: :tangle "early-init.el" :lexical yes
@@ -5157,7 +5158,7 @@ org headings.
   (cl-assert (member config-org-style '(compact
                                         sparse)))
 #+end_src
-**** Style: Compact & Dense
+**** Style: Compact
 #+begin_src emacs-lisp
   (use-package org
     :if (equal config-org-style 'compact)
@@ -5169,7 +5170,9 @@ org headings.
   (use-package org-format
     :if (equal config-org-style 'compact)
     :custom
-    (org-format-blank-lines-before-heading 0))
+    (org-format-blank-lines-before-first-heading 1)
+    (org-format-blank-lines-before-subheadings 0)
+    (org-format-blank-lines-before-level-1-headings 0))
 #+end_src
 **** Style: Sparse & Indented
 #+begin_src emacs-lisp
@@ -5183,7 +5186,9 @@ org headings.
   (use-package org-format
     :if (equal config-org-style 'sparse)
     :custom
-    (org-format-blank-lines-before-heading 1))
+    (org-format-blank-lines-before-first-heading 1)
+    (org-format-blank-lines-before-subheadings 1)
+    (org-format-blank-lines-before-level-1-headings 1))
 #+end_src
 ***** =org-superstar= - Improve display of headlines
 #+begin_src emacs-lisp

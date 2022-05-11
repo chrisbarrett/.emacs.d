@@ -14,8 +14,26 @@
   :group 'productivity
   :prefix "org-format-")
 
-(defcustom org-format-blank-lines-before-heading 1
-  "Number of blank lines between a heading and preceding content"
+(defcustom org-format-blank-lines-before-subheadings 1
+  "Number of blank lines between a heading and preceding content.
+
+Only applies to subheadings."
+  :group 'org-format
+  :type 'integer)
+
+(defcustom org-format-blank-lines-before-first-heading 1
+  "Number of blank lines between a heading and preceding content.
+
+Only applies to first level-1 heading in the document, and
+supercedes the setting for
+`org-format-blank-lines-before-level-1-headings'."
+  :group 'org-format
+  :type 'integer)
+
+(defcustom org-format-blank-lines-before-level-1-headings 1
+  "Number of blank lines between a heading and preceding content.
+
+Only applies to level-1 headings in the document."
   :group 'org-format
   :type 'integer)
 
@@ -43,12 +61,22 @@
 (defun org-format-all-headings ()
   "Ensure that blank lines exist between headings and their contents."
   (interactive)
-  (let ((scope (if (equal (buffer-name) "archive.org") 'tree 'file)))
+  (let ((scope (if (equal (buffer-name) "archive.org") 'tree 'file))
+        (seen-first-heading-p))
     (org-map-entries (lambda ()
                        ;; Widen so we can see space preceding the current
                        ;; headline.
                        (org-with-wide-buffer
-                        (org-format--ensure-empty-lines org-format-blank-lines-before-heading))
+                        (let* ((level (car (org-heading-components)))
+                               (headline-spacing (cond
+                                                  ((and (equal 1 level) (not seen-first-heading-p))
+                                                   (setq seen-first-heading-p t)
+                                                   org-format-blank-lines-before-first-heading)
+                                                  ((equal 1 level)
+                                                   org-format-blank-lines-before-level-1-headings)
+                                                  (t
+                                                   org-format-blank-lines-before-subheadings))))
+                          (org-format--ensure-empty-lines headline-spacing)))
 
                        (unless (or (org-at-heading-p)
                                    (org-transclusion-within-transclusion-p))
@@ -66,7 +94,7 @@
        (save-excursion
          (unless (search-forward ":only-content" (line-end-position) t)
            (goto-char (line-beginning-position))
-           (org-format--ensure-empty-lines org-format-blank-lines-before-heading)))))))
+           (org-format--ensure-empty-lines org-format-blank-lines-before-subheadings)))))))
 
 ;; NB: Set this higher than the default to avoid interfering with things like
 ;; org-transclusion, etc.
