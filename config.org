@@ -4976,6 +4976,7 @@ Normally newlines are reflowed automatically.
     (org-image-actual-width nil)
     (org-return-follows-link t)
     (org-ellipsis " …")
+    (org-indent-mode-turns-on-hiding-stars t)
 
     :config
     (add-hook 'org-mode-hook #'auto-fill-mode)
@@ -5203,7 +5204,6 @@ Automatically enter insert state when inserting new headings or using
   (use-package org-superstar
     :hook (org-mode . org-superstar-mode)
     :custom
-    (org-indent-mode-turns-on-hiding-stars nil)
     (org-superstar-headline-bullets-list '(?○))
     (org-superstar-leading-bullet ?\s)
     (org-superstar-special-todo-items t)
