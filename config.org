@@ -108,6 +108,7 @@ The path to sources in the nix-store is injected via an environment variable.
 #+begin_src emacs-lisp
   (setq source-directory (expand-file-name emacs-version (getenv "NIX_EMACS_SRC_DIR")))
 #+end_src
+
 * File header
 #+begin_src emacs-lisp
   ;;; config.el -- User init file for Emacs.  -*- lexical-binding: t; buffer-read-only: t; -*-
@@ -119,6 +120,7 @@ The path to sources in the nix-store is injected via an environment variable.
 
   ;;; Code:
 #+end_src
+
 * Debugging
 Hook into the startup lifecycle to report useful debugging information. Note
 that these leverage the ~DEPTH~ argument so that subsequent functions added to
@@ -179,6 +181,7 @@ Note that tests refer to ~total-startup-duration~, so it should not be inlined.
                                           total-startup-duration)))
             97)
 #+end_src
+
 * Startup
 ** Tune garbage collection
 See: [[https://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-threshold/][Why are you changing gc-cons-threshold?]]
@@ -333,6 +336,7 @@ Load host-specific settings, which are not checked into version control.
   (when (file-exists-p user-site-file)
     (load-file-with-stats user-site-file))
 #+end_src
+
 * 🖌️ Colour theme
 ** Define a quick-and-dirty utility for smashing face specs together
 #+begin_src emacs-lisp
@@ -456,6 +460,7 @@ applications. The following functions will be invoked by those scripts over
       (disable-theme theme))
     (load-theme 'doom-one t))
 #+end_src
+
 * mode-line and header-line
 Use a header line instead of a mode line.
 
@@ -500,6 +505,7 @@ Use a header line instead of a mode line.
         (cl-nsubst 'mode-line-modes 'minions-mode-line-modes header-line-format)))
     (minions-header-line-mode +1))
 #+end_src
+
 * Common advice
 #+begin_src emacs-lisp
   (defun advice-ignore-errors (f &rest args)
@@ -520,6 +526,7 @@ Use a header line instead of a mode line.
 
   (advice-add 'load-theme :after #'config-run-after-load-theme-hook)
 #+end_src
+
 * Definitions needed for config
 ** Org-roam index
 #+begin_src emacs-lisp
@@ -550,6 +557,7 @@ Use a header line instead of a mode line.
              (line-end-position))))
       (list start end)))
 #+end_src
+
 * Customise builtin features
 ** Always use one-char =y-or-n-p=
 #+begin_src emacs-lisp
@@ -1133,6 +1141,7 @@ Configure how =ediff= should display windows when started.
 
   (setq minibuffer-default-add-function #'config--minibuffer-default-add-function)
 #+end_src
+
 * Better eval-expression
 Define an alternative version of =eval-expression= that uses =emacs-lisp-mode= to
 provide font-locking, and handles =smartparens= better.
@@ -1201,6 +1210,7 @@ See: [[https://lists.gnu.org/archive/html/help-gnu-emacs/2014-07/msg00135.html][
                   (funcall f exp))
                 '((name . use-eval-expression-interactively--read))))
 #+end_src
+
 * Improve basic editing configuration for all modes
 ** Use control key to transpose lines up and down
 #+begin_src emacs-lisp
@@ -1682,6 +1692,7 @@ See: [[https://github.com/wbolster/emacs-direnv][wbolster/emacs-direnv]]
   (use-package string-inflection
     :general ("M-s" 'string-inflection-all-cycle))
 #+end_src
+
 * =evil= - Vim-style modal editing
 =evil= provides macros that I want to use in ~:config~ blocks, so teach the
 byte-compiler about them to avoid warnings.
@@ -2022,6 +2033,7 @@ https://github.com/syl20bnr/evil-iedit-state/issues/36
 #+begin_src emacs-lisp
   (defalias 'evil-redirect-digit-argument #'ignore)
 #+end_src
+
 * =lsp-mode= - language-server support
 ** Inject language servers into exec-path on Darwin
 macOS prevents PATH being modified for graphical apps, so the wrapper set up
@@ -2101,6 +2113,7 @@ Make company completions more proactive when an lsp is active.
     (json-mode . lsp-ui-doc-mode)
     (yaml-mode . lsp-ui-doc-mode))
 #+end_src
+
 * =eshell= - built-in rudimentary shell
 #+begin_src emacs-lisp
   (use-package eshell
@@ -2156,6 +2169,7 @@ Make company completions more proactive when an lsp is active.
               (eshell/cd dir))
           (user-error "Not in a project or git repo")))))
 #+end_src
+
 * ⌨️ Set up leader keys
 Note that we ensure evil is loaded first before binding any keys below,
 otherwise =general= is pathologically slow.
@@ -2817,6 +2831,7 @@ Disabled for now since this breaks insert state in evil :/
                                  '(normal motion visual)
                                  :prefix ","))))
 #+end_src
+
 * Search & replace
 ** =deadgrep= - Ripgrep (=rg=) frontend
 #+begin_src emacs-lisp
@@ -2861,6 +2876,7 @@ Enable =wgrep=, which provides editable grep buffers.
 #+begin_src emacs-lisp
   (use-package wgrep)
 #+end_src
+
 * Prompts and UI enhancements
 ** =historian= - Persistent input history
 #+begin_src emacs-lisp
@@ -2922,6 +2938,7 @@ See: [[https://github.com/raxod502/selectrum/issues/498#issuecomment-876424791][
   (use-package marginalia
     :hook (after-init . marginalia-mode))
 #+end_src
+
 * Window management
 ** =winner= - Window state history
 =winner-mode= saves the window and buffer layout history, allowing you to cycle
@@ -2968,6 +2985,7 @@ after editing actions have changed what windows are shown.
                                     'occur-mode
                                     'compilation-mode)))
 #+end_src
+
 * Text completion engines
 ** =hippie-expand= - generic text completion
 =hippie-expand= is a generic completion engine that works in most buffers without
@@ -3044,6 +3062,7 @@ to manually apply it again.
   (use-package company-posframe
     :after company)
 #+end_src
+
 * Themeing
 ** =volatile-highlights= - Highlight pasted text
 *** Load at compile-time so macro expansions are available
@@ -3170,6 +3189,7 @@ to manually apply it again.
   (use-package fira-code-mode
     :hook (prog-mode text-mode))
 #+end_src
+
 * File & Buffer management
 ** =bufler= - Better buffer list
 #+begin_src emacs-lisp
@@ -3343,6 +3363,7 @@ of =projectile=. Use =projectile= until the builtin functionality is more comple
        "vendor"
        "target")))
 #+end_src
+
 * Git
 ** =magit= - interactive commands for working with git
 #+begin_src emacs-lisp
@@ -3581,6 +3602,7 @@ Source: [[https://ianyepan.github.io/posts/emacs-git-gutter/][Git Gutter in Emac
     :config
     (advice-add 'git-gutter-fr:view-diff-infos :override #'config-custom-git-gutter-fringe-fn))
 #+end_src
+
 * Programming languages & text-modes
 ** =flycheck= - Syntax Checking & Linting
 =Flycheck= integrates with external tools to show indications of errors and
@@ -4718,6 +4740,7 @@ Configure =conf-mode= for use with more kinds of config files.
   (use-package dockerfile-mode
     :mode ("Dockerfile\\'" . dockerfile-mode))
 #+end_src
+
 * Applications
 ** =pass= - Frontend to Unix ~password-store~
 #+begin_src emacs-lisp
@@ -4938,6 +4961,7 @@ Normally newlines are reflowed automatically.
       (add-hook 'after-change-functions 'messages-are-flowing--mark-hard-newlines nil t))
     :hook (message-mode . setup-hard-newlines))
 #+end_src
+
 * ✍🏻 =org-mode= - Org document format & editing support
 ** Set general org-mode variables
 #+begin_src emacs-lisp
@@ -5161,13 +5185,6 @@ org headings.
 #+end_src
 **** Style: Sparse & Indented
 #+begin_src emacs-lisp
-  (use-package org
-    :if (equal config-org-style 'sparse)
-    :custom
-    (org-startup-indented t))
-#+end_src
-
-#+begin_src emacs-lisp
   (use-package org-format
     :if (equal config-org-style 'sparse)
     :custom
@@ -5175,10 +5192,15 @@ org headings.
     (org-format-blank-lines-before-subheadings 1)
     (org-format-blank-lines-before-level-1-headings 1))
 #+end_src
-***** =org-superstar= - Improve display of headlines
+**** Indentation
+#+begin_src emacs-lisp
+  (use-package org
+    :custom
+    (org-startup-indented t))
+#+end_src
+**** =org-superstar= - Improve display of headlines
 #+begin_src emacs-lisp
   (use-package org-superstar
-    :if (equal config-org-style 'sparse)
     :hook (org-mode . org-superstar-mode)
     :custom
     (org-indent-mode-turns-on-hiding-stars nil)
@@ -5947,6 +5969,7 @@ This makes it much easier to edit text using emphasis markers correctly.
 #+begin_src emacs-lisp
   (setq abbrev-file-name (f-join paths-org-directory "abbrev.el"))
 #+end_src
+
 * 📓 =org-roam= - Personal wiki & research tooling
 #+begin_src emacs-lisp
   (use-package org-roam
@@ -6401,6 +6424,7 @@ property drawer and the title. Advise it to fix that.
   (advice-add 'org-transclusion-add-all :around #'advice-inhibit-logging)
   (advice-add 'org-transclusion-add-all :after #'advice-clear-minibuffer)
 #+end_src
+
 * Load Lisp from other locations
 #+begin_src emacs-lisp
   (use-package org
@@ -6415,6 +6439,7 @@ property drawer and the title. Advise it to fix that.
     (when (file-directory-p paths-ledger-lisp-directory)
       (load (expand-file-name "init.el" paths-ledger-lisp-directory) t)))
 #+end_src
+
 * 🪟 display-buffer customisations
 ** Define a full-frame display-buffer action
 #+begin_src emacs-lisp
@@ -6574,6 +6599,7 @@ property drawer and the title. Advise it to fix that.
                         (side . rightmost)
                         (window-width . 80)))
 #+end_src
+
 * File postamble
 #+begin_src emacs-lisp
   ;; (provide 'config)
