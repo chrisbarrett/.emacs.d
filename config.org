@@ -5157,7 +5157,7 @@ org headings.
     :custom
     (org-format-blank-lines-before-first-heading 1)
     (org-format-blank-lines-before-subheadings 0)
-    (org-format-blank-lines-before-level-1-headings 0))
+    (org-format-blank-lines-before-level-1-headings 1))
 #+end_src
 **** Style: Sparse & Indented
 #+begin_src emacs-lisp
