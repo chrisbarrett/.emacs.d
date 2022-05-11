@@ -624,14 +624,6 @@ I don't use sentence-based commands that often anyway.
 #+begin_src emacs-lisp
   (setq confirm-nonexistent-file-or-buffer nil)
 #+end_src
-*** Do not show =^M= chars in files containing mixed UNIX and DOS line endings
-#+begin_src emacs-lisp
-  (defun config--hide-dos-eol ()
-    (setq buffer-display-table (make-display-table))
-    (aset buffer-display-table ?\^M []))
-
-  (add-hook 'after-change-major-mode-hook #'config--hide-dos-eol)
-#+end_src
 *** Use UTF-8 everywhere by default
 Source: [[https://www.reddit.com/r/emacs/comments/siuvpu/isnt_there_a_better_way_to_set_utf8/hvbns5f/?utm_source=reddit&utm_medium=web2x&context=3][Isn't there a better way to set UTF-8 ? : emacs]]
 
@@ -4959,6 +4951,7 @@ Normally newlines are reflowed automatically.
     (org-link-elisp-confirm-function 'y-or-n-p)
     (org-image-actual-width nil)
     (org-return-follows-link t)
+    (org-ellipsis " …")
 
     :config
     (add-hook 'org-mode-hook #'auto-fill-mode)
@@ -4986,14 +4979,6 @@ Normally newlines are reflowed automatically.
      "C-c ." 'org-time-stamp
      "C-c o" 'org-table-toggle-coordinate-overlays))
 #+end_src
-** TODO Get org-ellipsis working
-I want something like the following:
-#+begin_src emacs-lisp
-  (setq org-ellipsis " ▾ ")
-#+end_src
-
-However, the ellipses aren't rendering with this set for some reason. :/ It's
-probably a package incompatibility.
 ** Set up major-mode leader keybindings
 #+begin_src emacs-lisp
   ;; https://stackoverflow.com/a/28031539
