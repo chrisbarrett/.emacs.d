@@ -5006,7 +5006,7 @@ Normally newlines are reflowed automatically.
 ** Set up major-mode leader keybindings
 #+begin_src emacs-lisp
   ;; https://stackoverflow.com/a/28031539
-  (defun org-focus-entry ()
+  (defun config-org-focus-entry ()
     "Show only the entry at point, keeping other entries closed."
     (interactive)
     (if (save-excursion (end-of-line) (outline-invisible-p))
@@ -5029,7 +5029,7 @@ Normally newlines are reflowed automatically.
     "r" (list (general-predicate-dispatch 'org-refile
                 (bound-and-true-p org-capture-mode) 'org-capture-refile)
               :wk "refile")
-    "f" '(org-focus-entry :wk "focus entry")
+    "f" '(config-org-focus-entry :wk "focus entry")
 
     "u" '(nil :wk "org-roam-ui")
     "u f" '(org-roam-ui-follow-mode :wk "toggle follow")
