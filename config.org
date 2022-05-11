@@ -5268,7 +5268,7 @@ Save org buffers automatically after certain operations.
     (org-insert-heading-respect-content t)
     (org-loop-over-headlines-in-active-region 'start-level))
 #+end_src
-*** Load =org-export= packages
+** Load =org-export= packages
 #+begin_src emacs-lisp
   (use-package ox-gfm
     :after org)
