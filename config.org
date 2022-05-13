@@ -5165,7 +5165,7 @@ Automatically enter insert state when inserting new headings or using
 #+end_src
 *** Styles
 #+begin_src emacs-lisp
-  (defvar config-org-style 'compact)
+  (defconst config-org-style 'sparse)
   (cl-assert (member config-org-style '(compact
                                         sparse)))
 #+end_src
