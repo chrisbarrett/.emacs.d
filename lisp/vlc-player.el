@@ -193,19 +193,22 @@ further control of the playback."
   (--> command-or-commands
        (if (listp (car it)) it (list it))
        (-non-nil it)
-       (seq-map (lambda (sexp)
-                  (pcase sexp
-                    (`(seek ,seconds)
-                     (format "seek %s%s" (if (cl-plusp seconds) "+" "") seconds))
-                    (`(seek-to ,seconds)
-                     (format "seek %s" seconds))
-                    (`(clear)
-                     "clear")
-                    (`(stop)
-                     "stop")
-                    (sexp
-                     (string-join (--map (format "%s" it) sexp) " "))))
-                it)))
+       (seq-mapcat (lambda (sexp)
+                     (pcase sexp
+                       (`(seek ,seconds)
+                        (list (format "seek %s%s" (if (cl-plusp seconds) "+" "") seconds)
+                              "get_time"))
+                       (`(seek-to ,seconds)
+                        (list (format "seek %s" seconds)))
+                       (`(clear)
+                        (list "clear"))
+                       (`(stop)
+                        (list "stop"))
+                       (`(pause)
+                        (list "pause" "get_time"))
+                       (sexp
+                        (list (string-join (--map (format "%s" it) sexp) " ")))))
+                   it)))
 
 (defun vlc-player--send-command-string (command-string)
   (if-let* ((buf (vlc-player-buffer))
