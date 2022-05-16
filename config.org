@@ -698,6 +698,7 @@ Source: [[https://www.reddit.com/r/emacs/comments/siuvpu/isnt_there_a_better_way
   (set-terminal-coding-system 'utf-8)
   (set-keyboard-coding-system 'utf-8)
   (set-language-environment "UTF-8")
+  (add-to-list 'file-coding-system-alist '("\\.pdf\\'" no-conversion . no-conversion))
 #+end_src
 
 ** Whitespace handling
