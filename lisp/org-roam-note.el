@@ -277,7 +277,11 @@ https://github.com/org-roam/org-roam/issues/2032"
                org-file-tags
              (org-get-tags nil local))))
 
-(defun org-roam-note--cache-roam-files ()
+;;;###autoload
+(defun org-roam-note-cache-rebuild ()
+  "Rebuild the evergreen notes cache."
+  (interactive)
+  (org-roam-note--cache-clear)
   (let* ((files
           (let* ((msg (format "Scanning files in %s ..." (abbreviate-file-name org-roam-directory)))
                  (reporter (make-progress-reporter msg)))
@@ -304,14 +308,7 @@ https://github.com/org-roam/org-roam/issues/2032"
 
       (progress-reporter-done reporter))
     ;; Write back to disk.
-    (org-roam-note--cache-mutate #'ignore)))
-
-;;;###autoload
-(defun org-roam-note-cache-rebuild ()
-  "Rebuild the evergreen notes cache."
-  (interactive)
-  (org-roam-note--cache-clear)
-  (org-roam-note--cache-roam-files)
+    (org-roam-note--cache-mutate #'ignore))
   (message "Rebuilt evergreen notes index."))
 
 ;;;###autoload
