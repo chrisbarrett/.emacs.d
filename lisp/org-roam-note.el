@@ -58,7 +58,31 @@
   :group 'org-roam-note)
 
 
-;; Core typue definition
+;; Org-mode commands for parsing and traversing the buffer require a functioning
+;; org-mode, but setting up org-mode for interactive use can be a big
+;; performance bottleneck, depending on what's in the mode hooks. Define a way
+;; to start a more minimal org-mode.
+
+(defmacro org-roam-note--with-ignored-functions (function-names &rest body)
+  (declare (indent 1))
+  `(progn
+     ,@(seq-map (lambda (it) `(advice-add #',it :override #'ignore))
+                function-names)
+     (unwind-protect
+         (progn
+           ,@body)
+       ,@(seq-map (lambda (it)
+                    `(advice-remove #',it #'ignore))
+                  function-names))))
+
+(defun org-roam-note--hacky-org-mode-enable ()
+  (org-roam-note--with-ignored-functions (run-mode-hooks
+                                          org-install-agenda-files-menu
+                                          org-latex-preview)
+    (org-mode)))
+
+
+;; Core type definition
 
 (plist-define org-roam-note-filter
   :optional (:required :forbidden))
@@ -83,8 +107,7 @@
                      (when-let* ((file (org-roam-node-file node)))
                        (with-temp-buffer
                          (insert-file-contents file)
-                         (let ((org-inhibit-startup t))
-                           (org-mode))
+                         (org-roam-note--hacky-org-mode-enable)
                          (org-roam-notes-from-buffer (current-buffer) file all)))))
        (seq-uniq)
        (seq-remove #'org-roam-note-ignored-p)))
@@ -255,19 +278,33 @@ https://github.com/org-roam/org-roam/issues/2032"
              (org-get-tags nil local))))
 
 (defun org-roam-note--cache-roam-files ()
-  (f-files org-roam-directory
-           (lambda (file)
-             (when (f-ext-p file "org")
-               (with-temp-buffer
-                 (let ((org-inhibit-startup t))
-                   (insert-file-contents file)
-                   (org-mode)
-                   (unless (org-roam-note--cache-skip-note-p file)
-                     (org-roam-note--cache-mutate (lambda (cache)
-                                                    (org-roam-note--update-by-props-in-buffer cache
-                                                                                              (current-buffer)
-                                                                                              file))))))))
-           t))
+  (let* ((files
+          (let* ((msg (format "Scanning files in %s ..." (abbreviate-file-name org-roam-directory)))
+                 (reporter (make-progress-reporter msg)))
+            (prog1 (f-files org-roam-directory
+                            (lambda (file)
+                              (when (f-ext-p file "org")
+                                (progress-reporter-update reporter)
+                                t))
+                            t)
+              (progress-reporter-done reporter)))))
+
+    (let ((reporter (make-progress-reporter "Parsing notes..." 0 (length files)))
+          (n 0))
+      (dolist (file files)
+        (cl-incf n)
+        (progress-reporter-update reporter n file)
+        (with-temp-buffer
+          (insert-file-contents-literally file)
+          (org-roam-note--hacky-org-mode-enable)
+          (unless (org-roam-note--cache-skip-note-p file)
+            (org-roam-note--update-by-props-in-buffer (org-roam-note--cache)
+                                                      (current-buffer)
+                                                      file))))
+
+      (progress-reporter-done reporter))
+    ;; Write back to disk.
+    (org-roam-note--cache-mutate #'ignore)))
 
 ;;;###autoload
 (defun org-roam-note-cache-rebuild ()
@@ -275,8 +312,6 @@ https://github.com/org-roam/org-roam/issues/2032"
   (interactive)
   (org-roam-note--cache-clear)
   (org-roam-note--cache-roam-files)
-  ;; Write back to disk.
-  (org-roam-note--cache-mutate #'ignore)
   (message "Rebuilt evergreen notes index."))
 
 ;;;###autoload
