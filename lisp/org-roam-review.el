@@ -579,8 +579,7 @@ A higher score means that the note will appear less frequently."
           (org-set-property "LAST_REVIEW" (org-format-time-string "[%Y-%m-%d %a]"))
 
           (save-buffer)
-          (message "Maturity set to '%s'. Review scheduled for %s" maturity next-review)))))
-  (org-roam-review-refresh))
+          (message "Maturity set to '%s'. Review scheduled for %s" maturity next-review))))))
 
 (defun org-roam-review--kill-buffer-for-completed-review ()
   (let ((review-buf (get-buffer "*org-roam-review*")))
@@ -622,7 +621,7 @@ A higher score means that the note will appear less frequently."
     (org-roam-review--kill-buffer-for-completed-review)
     (run-hooks 'org-roam-note-accepted-hook)
     (run-hooks 'org-roam-note-processed-hook)
-    (org-roam-review-refresh)))
+    (message "Note scheduled for future review")))
 
 ;;;###autoload
 (defun org-roam-review-bury ()
@@ -634,7 +633,7 @@ A higher score means that the note will appear less frequently."
     (org-roam-review--kill-buffer-for-completed-review)
     (run-hooks 'org-roam-note-buried-hook)
     (run-hooks 'org-roam-note-processed-hook)
-    (org-roam-review-refresh)))
+    (message "Note buried")))
 
 (defun org-roam-review--skip-note-for-maturity-assignment-p ()
   (org-with-wide-buffer
