@@ -2197,6 +2197,13 @@ staging them in magit.
       (evil-visual-restore)))
 #+end_src
 
+** Replace rectangle-mark-mode binding with insert-char
+Since I have visual state for block selection, I don't need a rectangle
+selection key. But a nice way to insert Unicode chars would be good.
+#+begin_src emacs-lisp
+  (global-set-key (kbd "C-x SPC") 'insert-char)
+#+end_src
+
 ** =evil-iedit-state= - Easy renaming of symbol at point
 =iedit= adds useful mass-renaming functionality. This package provides evil
 compatibility.
