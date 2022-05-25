@@ -6370,6 +6370,30 @@ This makes it much easier to edit text using emphasis markers correctly.
                              :follow #'org-link-follow-audio))
 #+end_src
 
+** Add a link type for stock tickers
+#+begin_src emacs-lisp
+  (use-package org
+    :config
+    (require 'ol)
+
+    (defconst org-link-stock-ticker-rx
+      (rx (? "^") (** 1 5 alpha) (? "." (** 1 2 alpha))))
+
+    (defun org-link-follow-stock-ticker (ticker &optional arg)
+      (let ((query (url-build-query-string `((t ,ticker)))))
+        (browse-url (concat "https://finviz.com/quote.ashx?" query))))
+
+    (defun org-link-complete-stock-ticker ()
+      (save-match-data
+        (if (thing-at-point-looking-at org-link-stock-ticker-rx)
+            (concat "stock:" (upcase (match-string 0)))
+          "stock:")))
+
+    (org-link-set-parameters "stock"
+                             :complete #'org-link-complete-stock-ticker
+                             :follow #'org-link-follow-stock-ticker))
+#+end_src
+
 ** Keep abbrevs in =org-directory=
 #+begin_src emacs-lisp
   (setq abbrev-file-name (f-join paths-org-directory "abbrev.el"))
