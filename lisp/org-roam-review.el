@@ -739,6 +739,22 @@ it is not a candidate for reviews."
          (org-roam-tag-add '("author"))
          (save-buffer))))))
 
+;;;###autoload
+(defun org-roam-review-go-to-latest-outline ()
+  (or
+   (when (bound-and-true-p recentf-list)
+     (-some->> recentf-list
+       (seq-find (lambda (it)
+                   (f-descendant-of-p it (f-join org-roam-directory "outlines"))))
+       find-file))
+   (-some->> (buffer-list)
+     (seq-find
+      (lambda (it)
+        (with-current-buffer it
+          (and (derived-mode-p 'org-mode)
+               (seq-contains-p org-file-tags "outline")))))
+     switch-to-buffer)))
+
 (provide 'org-roam-review)
 
 ;;; org-roam-review.el ends here
