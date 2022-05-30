@@ -472,7 +472,8 @@ needed to be included in reviews. Categorise them as appropriate."
     (lambda ()
       (org-roam-note-cache-collect
        (lambda (note)
-         (when (seq-contains-p (org-roam-note-tags note) "author")
+         (when (and (seq-contains-p (org-roam-note-tags note) "author")
+                    (not (org-roam-note-ignored-p note)))
            note)))))))
 
 (defun org-roam-review--note-todo-presence (note)
@@ -496,7 +497,8 @@ grouped by whether they require further processing."
     (lambda ()
       (org-roam-note-cache-collect
        (lambda (note)
-         (when (seq-contains-p (org-roam-note-local-tags note) "outline")
+         (when (and (seq-contains-p (org-roam-note-local-tags note) "outline")
+                    (not (org-roam-note-ignored-p note)))
            note)))))))
 
 (defun org-roam-review--note-added-group (note)
@@ -524,7 +526,7 @@ grouped by whether they require further processing."
     (lambda ()
       (org-roam-note-cache-collect
        (lambda (note)
-         (unless (seq-intersection (org-roam-note-tags note) org-roam-note-ignored-tags)
+         (unless (org-roam-note-ignored-p note)
            note)))))))
 
 
