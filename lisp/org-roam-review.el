@@ -111,7 +111,6 @@ candidate for reviews."
     (ts<= next-review (ts-now))))
 
 (defvar-local org-roam-review-buffer-refresh-command nil)
-(defvar-local org-roam-review-buffer-auto-refresh-inhibited-p nil)
 
 (defun org-roam-review-buffers ()
   (seq-filter (lambda (buf)
@@ -128,10 +127,9 @@ interactively. Extra messages will be logged."
   (interactive "P")
   (dolist (buf (org-roam-review-buffers))
     (with-current-buffer buf
-      (unless org-roam-review-buffer-auto-refresh-inhibited-p
-        (unless org-roam-review-buffer-refresh-command
-          (error "Refresh command not defined"))
-        (funcall org-roam-review-buffer-refresh-command))))
+      (unless org-roam-review-buffer-refresh-command
+        (error "Refresh command not defined"))
+      (funcall org-roam-review-buffer-refresh-command)))
   (when interactive-p
     (message "Buffer refreshed")))
 
@@ -293,7 +291,7 @@ nodes for review."
         (goto-char start-of-content)))))
 
 (cl-defun org-roam-review-create-buffer
-    (&key title instructions group-on placeholder sort notes inhibit-auto-refresh
+    (&key title instructions group-on placeholder sort notes
           (buffer-name "*org-roam-review*")
           (insert-notes-fn 'org-roam-review--insert-notes-fn-default)
           (insert-preview-fn 'org-roam-review-insert-preview))
@@ -314,10 +312,6 @@ The following keyword arguments are optional:
 
 - PLACEHOLDER is a string to be shown if there are no notes to
   display.
-
-- INHIBIT-AUTO-REFRESH will prevent the buffer from being
-  automatically refreshed as part of a mass review-buffer
-  refresh. This is useful if populating the buffer is expensive.
 
 - BUFFER-NAME is the name to use for the created buffer.
 
@@ -362,7 +356,6 @@ The following keyword arguments are optional:
                                        :sort sort
                                        :insert-notes-fn insert-notes-fn
                                        :insert-preview-fn insert-preview-fn)
-              (setq-local org-roam-review-buffer-auto-refresh-inhibited-p inhibit-auto-refresh)
               (setq-local org-roam-review-buffer-refresh-command (lambda () (funcall render (funcall notes))))
               (current-buffer))))
     (funcall render (funcall notes))))
