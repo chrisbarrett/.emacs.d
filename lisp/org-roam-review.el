@@ -67,8 +67,7 @@
     ("evergreen" . "🌲")))
 
 (defcustom org-roam-review-tags-ignored-for-review-buffer '("outline")
-  "A list of tags that define a note should not be considered a
-candidate for reviews."
+  "A list of tags that disqualify a note from review."
   :group 'org-roam-review
   :type '(list string))
 
@@ -149,7 +148,9 @@ interactively. Extra messages will be logged."
                                                     required))))
 
 (defun org-roam-review-modify-tags (tags-filter)
-  "Read a tags filter interactively.
+  "Read tags filter interactively.
+
+TAGS-FILTER is plist of type `org-roam-note-filter'.
 
 When called with a `C-u' prefix arg, clear the current filter."
   (interactive (list
@@ -175,8 +176,7 @@ When called with a `C-u' prefix arg, clear the current filter."
     (call-interactively 'org-roam-review-refresh)))
 
 (define-derived-mode org-roam-review-mode org-roam-mode "Org-roam-review"
-  "Major mode for displaying relevant information about Org-roam
-nodes for review."
+  "Major mode for displaying relevant information about Org-roam nodes for review."
   :group 'org-roam-review
   ;; HACK: avoid all calls to org-roam-buffer-review if we're in a review
   ;; buffer, since it will error.
