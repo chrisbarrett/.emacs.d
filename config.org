@@ -594,6 +594,11 @@ Use a header line instead of a mode line.
       (list start end)))
 #+end_src
 
+** Overlay management
+#+begin_src emacs-lisp
+  (autoload 'emacs-overlay-update "emacs-overlay" nil t)
+#+end_src
+
 * Customise builtin features
 
 ** Always use one-char =y-or-n-p=

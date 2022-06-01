@@ -87,6 +87,7 @@
 By default, only Lisp packages are updated. With prefix arg
 UPDATE-EMACS-P, also update the Emacs build."
   (interactive "P")
+  (message "Getting latest overlay rev...")
   (-let ((upstream-rev (emacs-overlay--remote-head-ref))
          ((current &as &plist :lisp current-rev :pkg current-pkg-rev) (emacs-overlay-info-load)))
     (cond
