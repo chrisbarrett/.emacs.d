@@ -53,6 +53,7 @@
   hl-todo
   htmlize
   ibuffer-projectile
+  iscroll
   json-mode
   latex-preview-pane
   ledger-mode

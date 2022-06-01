@@ -6410,6 +6410,18 @@ This makes it much easier to edit text using emphasis markers correctly.
   (setq abbrev-file-name (f-join paths-org-directory "abbrev.el"))
 #+end_src
 
+** =iscroll= - Scroll incrementally over images, instead of jumping
+#+begin_src emacs-lisp
+  (use-package iscroll
+    :hook
+    (org-mode . iscroll-mode)
+    (markdown-mode . iscroll-mode)
+    :general
+    (:keymaps 'iscroll-mode-map
+     [remap evil-next-line] 'iscroll-forward-line
+     [remap evil-previous-line] 'iscroll-previous-line))
+#+end_src
+
 * 📓 =org-roam= - Personal wiki & research tooling
 #+begin_src emacs-lisp
   (use-package org-roam
