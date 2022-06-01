@@ -6422,9 +6422,9 @@ This makes it much easier to edit text using emphasis markers correctly.
     (org-mode . iscroll-mode)
     (markdown-mode . iscroll-mode)
     :general
-    (:keymaps 'iscroll-mode-map
-     [remap evil-next-line] 'iscroll-forward-line
-     [remap evil-previous-line] 'iscroll-previous-line))
+    (:keymaps 'iscroll-mode-map :states 'normal
+     "j" 'iscroll-forward-line
+     "k" 'iscroll-previous-line))
 #+end_src
 
 * 📓 =org-roam= - Personal wiki & research tooling
