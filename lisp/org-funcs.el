@@ -250,10 +250,17 @@ TAGS are the tags to use when displaying the list."
       ((string-match-p (rx bol "https://" (+? any) ".slack.com/") url)
        "Slack link")))))
 
+(defun org-funcs--postprocess-retrieved-title (url title)
+  (cond
+   ((string-match-p (rx "investopedia.com") url)
+    (concat title " (Investopedia)"))
+   (t
+    title)))
+
 (defun org-funcs-guess-or-retrieve-title (url)
   (or (org-funcs-simplified-title-for-url url)
-      (org-cliplink-retrieve-title-synchronously url)))
-
+      (org-funcs--postprocess-retrieved-title url
+                                              (org-cliplink-retrieve-title-synchronously url))))
 
 (defun org-funcs-insert-url-as-link (url)
   "Insert an orgmode link at point for URL."
