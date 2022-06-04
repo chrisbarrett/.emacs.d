@@ -3312,7 +3312,9 @@ to manually apply it again.
 *** =company-posframe= - use a child frame for completions
 #+begin_src emacs-lisp
   (use-package company-posframe
-    :after company)
+    :after company
+    :config
+    (company-posframe-mode +1))
 #+end_src
 
 * Themeing
