@@ -576,18 +576,18 @@ A higher score means that the note will appear less frequently."
           (save-buffer)
           (message "Maturity set to '%s'. Review scheduled for %s" maturity next-review))))))
 
-(defun org-roam-review--kill-buffer-for-completed-review ()
-  (let ((review-buf (get-buffer "*org-roam-review*")))
-    (when (< 1 (length (window-list)))
-      (mapc (lambda (win)
-              (when (equal review-buf (window-buffer win))
-                (delete-window win)))
-            (window-list)))
+(defun org-roam-review--update-workspace-for-completed-review ()
+  (let ((buf (current-buffer))
+        (initial-window-count (length (window-list))))
     (save-buffer)
-    (kill-buffer)
-    (-some->> review-buf
-      (org-roam-review-display-buffer-and-select)
-      (select-window))))
+    (when (< 1 initial-window-count)
+      (delete-window))
+    (kill-buffer buf)
+
+    (when (= 1 initial-window-count)
+      (-some->> (get-buffer "*org-roam-review*")
+        (org-roam-review-display-buffer-and-select)
+        (select-window)))))
 
 (defmacro org-roam-review--visiting-note-at-point (&rest body)
   (declare (indent 0))
@@ -613,7 +613,7 @@ A higher score means that the note will appear less frequently."
   (org-roam-review--visiting-note-at-point
     (when-let* ((maturity (org-entry-get-with-inheritance "MATURITY")))
       (org-roam-review--update-note maturity org-roam-review--maturity-score-ok))
-    (org-roam-review--kill-buffer-for-completed-review)
+    (org-roam-review--update-workspace-for-completed-review)
     (run-hooks 'org-roam-note-accepted-hook)
     (run-hooks 'org-roam-note-processed-hook)
     (message "Note scheduled for future review")))
@@ -625,7 +625,7 @@ A higher score means that the note will appear less frequently."
   (org-roam-review--visiting-note-at-point
     (when-let* ((maturity (org-entry-get-with-inheritance "MATURITY")))
       (org-roam-review--update-note maturity org-roam-review--maturity-score-bury))
-    (org-roam-review--kill-buffer-for-completed-review)
+    (org-roam-review--update-workspace-for-completed-review)
     (run-hooks 'org-roam-note-buried-hook)
     (run-hooks 'org-roam-note-processed-hook)
     (message "Note buried")))
