@@ -2274,7 +2274,14 @@ with Nix won't work. Manually add language servers to the path here.
     (lsp-modeline-workspace-status-enable nil)
     (lsp-auto-execute-action nil)
     (lsp-enable-on-type-formatting nil)
-    (lsp-restart 'auto-restart)
+    (lsp-restart 'auto-restart))
+#+end_src
+
+** Inject LSP servers from nix build
+
+#+begin_src emacs-lisp
+  (use-package lsp-mode
+    :custom
     (lsp-clients-typescript-tls-path (getenv "NIX_EMACS_TS_LANGUAGE_SERVER"))
     (lsp-eslint-validate '("typescript" "javascript" "javascriptreact"))
     (lsp-eslint-server-command (list (getenv "NIX_EMACS_LSP_ESLINT_NODE_PATH")
@@ -2282,7 +2289,14 @@ with Nix won't work. Manually add language servers to the path here.
                                      "--stdio")))
 #+end_src
 
-Make company completions more proactive when an lsp is active.
+#+begin_src emacs-lisp
+  (use-package lsp-json
+    :config
+    (lsp-dependency 'vscode-json-languageserver
+                    `(:system ,(getenv "NIX_EMACS_JSON_LANGUAGE_SERVER"))))
+#+end_src
+
+** Make company completions more proactive when an lsp is active
 
 #+begin_src emacs-lisp
   (use-package lsp-mode

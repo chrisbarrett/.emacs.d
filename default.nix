@@ -77,6 +77,7 @@ pkgs.symlinkJoin
           --set NIX_EMACS_ESLINT_SERVER_SCRIPT "${languageServers.eslint}/lib/eslintServer.js" \
           --set NIX_EMACS_LSP_ESLINT_NODE_PATH "${pkgs.nodejs}/bin/node" \
           --set NIX_EMACS_TS_LANGUAGE_SERVER "${languageServers.typescript}/bin/typescript-language-server" \
+          --set NIX_EMACS_JSON_LANGUAGE_SERVER "${languageServers.json}/bin/vscode-json-languageserver" \
           --set NIX_EMACS_MU_BINARY "${pkgs.mu}/bin/mu" \
           --set NIX_EMACS_MU_LISP_DIR "${pkgs.mu}/share/emacs/site-lisp/mu4e" \
           --set NIX_EMACS_SRC_DIR "${emacs}/share/emacs" \
