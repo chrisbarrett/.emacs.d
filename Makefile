@@ -10,7 +10,7 @@ EMACS_RUN_OPTS = -l early-init.el -l init.el --eval "(run-hooks 'after-init-hook
 .PHONY: build
 build: $(TARGETS)
 
-$(BUILD): $(shell find . -type f -name '*.nix')
+$(BUILD): $(shell find . -type f -name '*.nix') emacs-overlay.json
 	@mkdir -p .make
 	nix-build
 	@touch $(BUILD)
