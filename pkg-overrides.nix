@@ -24,4 +24,4 @@
     rev = "4a6b93c170169594e1e8ea60cd799a1a88a969da";
     sha256 = "1xzmx7m1qbl3b1x6yq1db1a108xqaa64ljfv1hdw763zmy4kc6m0";
   };
-} // (import ./patches eself esuper)
+}
