@@ -5377,6 +5377,8 @@ Normally newlines are reflowed automatically.
      "M-p" 'org-metaup
      "RET" 'org-open-at-point)
     (:states '(normal motion insert emacs) :keymaps 'org-mode-map
+     "M-+" 'org-table-insert-column
+     "M--" 'org-table-delete-column
      "C-c C-." 'org-time-stamp-inactive
      "C-c ." 'org-time-stamp
      "C-c o" 'org-table-toggle-coordinate-overlays))
