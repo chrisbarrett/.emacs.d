@@ -6269,6 +6269,8 @@ Attach images to org buffers via GUI drag-and-drop.
     :hook (org-mode . org-download-enable)
     :custom
     (org-download-method 'attach)
+    (org-download-image-org-width 650)
+    (org-download-timestamp "")
     (org-download-annotate-function (-const ""))
     :config
     ;; HACK Redefine to fix throw in org-attach.
