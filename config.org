@@ -429,7 +429,7 @@ Load host-specific settings, which are not checked into version control.
                               `(org-roam-review-heading ,outline-heading)
                               `(org-roam-review-heading-separator ,(append-faces outline-heading `((t :bold nil))))
 
-                              `(outline-1 ,(append-faces outline-heading heading))
+                              `(outline-1 ,outline-heading)
                               `(outline-2 ,outline-heading)
                               `(outline-3 ,outline-heading)
                               `(outline-4 ,outline-heading)
