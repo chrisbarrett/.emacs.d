@@ -3327,6 +3327,7 @@ to manually apply it again.
 #+begin_src emacs-lisp
   (use-package company-posframe
     :after company
+    :demand t
     :config
     (company-posframe-mode +1))
 #+end_src
