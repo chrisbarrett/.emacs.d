@@ -2908,16 +2908,6 @@ Disabled for now since this breaks insert state in evil :/
     (interactive)
     (org-roam-node-visit (org-roam-node-from-id org-roam-index-node-id)))
 
-  (defun config-org-roam-outlines (&optional arg)
-    "Go to the most recently edited outline note.
-
-  With prefix ARG, show the list of outlines instead."
-    (interactive "P")
-    (if arg
-        (org-roam-review-list-outlines)
-      (xref-push-marker-stack)
-      (org-roam-review-go-to-latest-outline)))
-
   (leader-set-key :infix "o"
     "" '(nil :wk "org")
     "SPC" '(org-roam-dailies-capture-today :wk "capture note...")
@@ -2945,7 +2935,7 @@ Disabled for now since this breaks insert state in evil :/
     "r" '(nil :wk "review...")
     "ra" '(org-roam-review-list-authors :wk "review authors")
     "rd" '(org-roam-review-list-recently-added :wk "recently added")
-    "ro" '(config-org-roam-outlines :wk "goto latest/review outlines")
+    "ro" '(org-roam-review-visit-outline :wk "outlines...")
     "rr" '(org-roam-review :wk "review due evergreens")
     "ru" '(org-roam-review-list-uncategorised :wk "uncategorised notes")
     "rl" '(org-roam-links-view :wk "show links")

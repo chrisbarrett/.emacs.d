@@ -494,6 +494,25 @@ grouped by whether they require further processing."
                     (not (org-roam-note-ignored-p note)))
            note)))))))
 
+;;;###autoload
+(defun org-roam-review-visit-outline (&optional arg)
+  "Choose an ouline note to open.
+
+With a single prefix ARG, show in other another window.
+
+With two prefix args, show the list of outlines instead."
+  (interactive "p")
+  (if (equal 16 arg)
+      (org-roam-review-list-outlines)
+    (let* ((notes
+            (ht-from-alist
+             (org-roam-note-cache-collect
+              (lambda (note)
+                (when (seq-contains-p (org-roam-note-local-tags note) "outline")
+                  (cons (string-remove-prefix "Outline - " (org-roam-note-title note)) note))))))
+           (choice (completing-read "Outline: " (ht-keys notes) nil t)))
+      (org-roam-node-visit (org-roam-note-to-node (gethash choice notes)) (equal arg 4)))))
+
 (defun org-roam-review--note-added-group (note)
   (when-let* ((created (org-roam-note-created note))
               (recently (ts-adjust 'hour -24 (ts-now))))
@@ -733,22 +752,6 @@ it is not a candidate for reviews."
          (org-roam-review-remove-managed-properties-in-node id)
          (org-roam-tag-add '("author"))
          (save-buffer))))))
-
-;;;###autoload
-(defun org-roam-review-go-to-latest-outline ()
-  (or
-   (-some->> (buffer-list)
-     (seq-find
-      (lambda (it)
-        (with-current-buffer it
-          (and (derived-mode-p 'org-mode)
-               (seq-contains-p org-file-tags "outline")))))
-     switch-to-buffer)
-   (when (bound-and-true-p recentf-list)
-     (-some->> recentf-list
-       (seq-find (lambda (it)
-                   (f-descendant-of-p it (f-join org-roam-directory "outlines"))))
-       find-file))))
 
 (provide 'org-roam-review)
 
