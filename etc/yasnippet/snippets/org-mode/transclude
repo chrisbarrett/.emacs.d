@@ -2,5 +2,10 @@
 # name: transclude (incl heading)
 # key: tt
 # condition: (yas-funcs-bolp)
+# type: command
 # --
-#+transclude: `(org-funcs-read-roam-node-link)` :level 1
+(let ((link (org-funcs-read-roam-node-link)))
+  (org-insert-heading)
+  (insert (concat link "\n" "#+transclude: " link " :only-contents"))
+  (org-transclusion-add)
+  (newline))
