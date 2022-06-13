@@ -1,6 +1,7 @@
 EMACS = $(PWD)/result/bin/emacs
 BUILD = .make/build
 TARGET_EL = config-autoloads.el config.el
+NIX = /run/current-system/sw/bin/nix
 
 TARGETS = $(BUILD) $(TARGET_EL)
 SRCS = config.org
@@ -10,9 +11,9 @@ EMACS_RUN_OPTS = -l early-init.el -l init.el --eval "(run-hooks 'after-init-hook
 .PHONY: build
 build: $(TARGETS)
 
-$(BUILD): $(shell find . -type f -name '*.nix') emacs-overlay.json
+$(BUILD): $(shell find . -type f -name '*.nix')
 	@mkdir -p .make
-	nix-build
+	$(NIX) build
 	@touch $(BUILD)
 
 $(TARGET_EL) : $(BUILD) $(SRCS)

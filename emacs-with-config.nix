@@ -1,27 +1,4 @@
-let
-  nixpkgsWithOverlays = { emacsOverlayRev }:
-    import <nixpkgs> {
-      overlays = [
-        (import (builtins.fetchTarball {
-          url =
-            "https://github.com/nix-community/emacs-overlay/archive/${emacsOverlayRev}.tar.gz";
-        }))
-      ];
-    };
-  revs = builtins.fromJSON (builtins.readFile ./emacs-overlay.json);
-in
-{
-  # Version of nixpkgs used for building binaries and Emacs itself.
-  pkgs ? nixpkgsWithOverlays {
-    emacsOverlayRev = revs.pkgs;
-  }
-  # Version of nixpkgs that determines 3rd-party Lisp package versions.
-, lispPkgs ? nixpkgsWithOverlays {
-    emacsOverlayRev = revs.lisp;
-  }
-, emacs ? pkgs.emacsNativeComp
-}:
-
+{ pkgs, emacs, ... }:
 let
   inherit (pkgs.lib) strings attrsets;
 
@@ -53,7 +30,7 @@ let
   };
 
   builders = pkgs.callPackage ./builders { };
-  emacsEnv = (lispPkgs.emacsPackagesFor emacs).overrideScope' (import ./pkg-overrides.nix builders);
+  emacsEnv = (pkgs.emacsPackagesFor emacs).overrideScope' (import ./pkg-overrides.nix builders);
   packages = import ./packages.nix;
 
   customPathEntries =
