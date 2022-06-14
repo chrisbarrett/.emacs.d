@@ -2,42 +2,72 @@
 
 My personal Emacs configuration. It's a chonker.
 
-I don't recommend anyone else actually uses this as-is since it's a personal setup that I change regularly. But the overall structure works well, and I've had a few coworkers fork and riff on this--it's less magic than some of the popular community Emacs setups.
+I don't recommend anyone else actually uses this as-is since it's a personal
+setup that I change regularly.
 
-It demonstrates how to:
-
-- dynamically load config files from a directory using just use-package
-- split your configuration up, to keep config separate from vendored code
-- use Nix to build a self-contained Emacs with the 3rd party packages and utilities it needs
-
-* Installation
-Nix is used to build an Emacs along with 3rd-party Lisp packages and required programs.
+* Setup
+[[https://nixos.org/][Nix]] is used to build an Emacs along with 3rd-party Lisp packages and required
+programs on its path. It should be sufficient to install a recent Nix that has
+Flake support to get this running.
 
 #+begin_src sh
-  nix-build
-  ./result/bin/emacs
+  nix run
 #+end_src
 
-The derivation can be imported into a NixOS or home-manager configuration using
-the usual mechanisms. Doing this would allow you to add this Emacs to your Nix
-profile for normal use.
+* Nix Flake Usage
+To integrate this with your system configuration, pull in the Flake and consume
+the appropriate output package for your system.
+
+The example below is for nix-darwin; a NixOS configuration would look very
+similar.
 
 #+begin_src nix
-  { pkgs, ... }:
   {
-    nixpkgs.overlays = [
-      (self: super:
-      {
-        emacsCustom = builtins.fetchTarball rec {
-          rev = "master";
-          url = "https://github.com/chrisbarrett/.emacs.d/archive/${rev}.tar.gz";
-        };
-      })
-    ];
+    description = "Example flake using custom Emacs build";
 
-    home.packages = [
-      # Installs to ~/.nix-profile/bin/{emacs,emacsclient}
-      pkgs.emacsCustom
-    ];
+    inputs = {
+      nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-22.05-darwin";
+      darwin = {
+        url = "github:lnl7/nix-darwin/master";
+        inputs.nixpkgs.follows = "nixpkgs";
+      };
+      emacs = {
+        # NB. You could use a local checkout instead: "dir:/path/to/checkout"
+        url = "github:chrisbarrett/.emacs.d";
+        inputs.nixpkgs.follows = "nixpkgs";
+      };
+      home-manager = {
+        url = "github:nix-community/home-manager";
+        inputs.nixpkgs.follows = "nixpkgs";
+      };
+
+    };
+    outputs = { self, emacs, home-manager, darwin }: {
+      # e.g. ...
+      darwinConfiguration.testMachine =
+        let system = "aarch64-darwin";
+        in
+        darwin.lib.darwinSystem {
+          inherit system;
+
+          modules = [
+            home-manager.darwinModules.home-manager
+          ];
+
+          nixpkgs.overlays = [
+            (self: super: {
+              emacsCustom = emacs.packages.${system}.default;
+            })
+          ];
+
+          home-manager = {
+            users.hello = { pkgs, ... }: {
+              home.packages = [
+                pkgs.emacsCustom
+              ];
+            };
+          };
+        };
+    };
   }
 #+end_src
