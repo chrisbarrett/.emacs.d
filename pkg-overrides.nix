@@ -1,10 +1,10 @@
 { emacsmirror, github, ... }: eself: esuper: {
-  org-transclusion = (github {
+  org-transclusion = github {
     name = "org-transclusion";
     owner = "nobiot";
     rev = "ccc0aaa72732ea633bf52bcc8a0345cd3ac178fd";
     sha256 = "0sqs5gi58ngrjqpx35ff4q6lhgz32bcsxb9jkamw0rn18qp92w3p";
-  });
+  };
 
   org-pretty-table = github {
     name = "org-pretty-table";
