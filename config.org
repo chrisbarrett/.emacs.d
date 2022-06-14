@@ -5629,9 +5629,7 @@ Automatically commit attachments to git.
     :after org
     :config (require 'org-attach-git)
     :custom
-    ;; This needs to be set for attach commands to work as expected, independently
-    ;; of `org-use-property-inheritance'.
-    (org-attach-use-inheritance t))
+    (org-attach-auto-tag nil))
 #+end_src
 
 ** Automatically save buffers
