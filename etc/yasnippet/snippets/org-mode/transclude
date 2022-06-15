@@ -7,5 +7,4 @@
 (let ((link (org-funcs-read-roam-node-link)))
   (org-insert-heading)
   (insert (concat link "\n" "#+transclude: " link " :only-contents"))
-  (org-transclusion-add)
-  (newline))
+  (org-transclusion-add))
