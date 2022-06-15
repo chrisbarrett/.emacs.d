@@ -6259,7 +6259,6 @@ Attach images to org buffers via GUI drag-and-drop.
     :custom
     (org-download-method 'attach)
     (org-download-image-org-width 650)
-    (org-download-timestamp "")
     (org-download-annotate-function (-const ""))
     :config
     ;; HACK Redefine to fix throw in org-attach.
@@ -6286,6 +6285,17 @@ Attach images to org buffers via GUI drag-and-drop.
         (when (and (eq org-download-delete-image-after-download t)
                    (not (url-handler-file-remote-p (current-kill 0))))
           (delete-file link delete-by-moving-to-trash)))))
+#+end_src
+
+Use =pngpaste= (installed via Homebrew) for inserting screenshots on macOS.
+
+#+begin_src emacs-lisp
+  (use-package org-download
+    :if (equal system-type 'darwin)
+    :custom
+    (org-download-screenshot-method "/opt/homebrew/bin/pngpaste %s")
+    :general
+    (:keymaps 'org-mode-map "s-V" 'org-download-screenshot))
 #+end_src
 
 ** =org-pretty-table= - use unicode box characters for org tables
