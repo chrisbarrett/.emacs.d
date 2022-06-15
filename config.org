@@ -6259,8 +6259,9 @@ Attach images to org buffers via GUI drag-and-drop.
     :custom
     (org-download-method 'attach)
     (org-download-image-org-width 650)
-    (org-download-annotate-function (-const ""))
     :config
+    ;; Prevent insertion of download timestamp into buffer.
+    (setq org-download-annotate-function (-const ""))
     ;; HACK Redefine to fix throw in org-attach.
     (defun org-download-image (link)
       "Save image at address LINK to `org-download--dir'."
