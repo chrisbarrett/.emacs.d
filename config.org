@@ -3831,10 +3831,11 @@ Source: [[https://ianyepan.github.io/posts/emacs-git-gutter/][Git Gutter in Emac
 
 #+begin_src emacs-lisp
   (use-package git-gutter
-    :hook (after-init . global-git-gutter-mode)
+    :hook
+    (text-mode . git-gutter-mode)
+    (prog-mode . git-gutter-mode)
     :custom
     (git-gutter:update-interval 0.02)
-    (git-gutter:disabled-modes '(pdf-view-mode tar-mode archive-mode))
     :config
     (require 'git-gutter-fringe))
 #+end_src
