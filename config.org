@@ -5622,7 +5622,7 @@ Automatically commit attachments to git.
     :after org
     :config (require 'org-attach-git)
     :custom
-    (org-attach-auto-tag nil))
+    (org-attach-use-inheritance t))
 #+end_src
 
 ** Automatically save buffers
