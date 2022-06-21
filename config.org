@@ -5336,6 +5336,7 @@ Normally newlines are reflowed automatically.
     (org-link-elisp-confirm-function 'y-or-n-p)
     (org-image-actual-width nil)
     (org-return-follows-link t)
+    (org-use-property-inheritance t)
     (org-ellipsis " …")
     (org-indent-mode-turns-on-hiding-stars t)
 
