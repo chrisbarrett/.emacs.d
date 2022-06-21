@@ -287,8 +287,8 @@ BUILDER is the command argument builder."
                     (org-roam-review-insert-preview top-node)))
 
                 (dolist (note group)
-                  (let* ((note-id (org-roam-note-id note))
-                         (node (org-roam-node-from-id note-id)))
+                  (when-let* ((note-id (org-roam-note-id note))
+                              (node (org-roam-node-from-id note-id)))
                     (unless (equal note-id file-id)
                       (atomic-change-group
                         (magit-insert-section section (org-roam-node-section nil t)
