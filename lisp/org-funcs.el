@@ -321,6 +321,8 @@ handles file titles, IDs and tags better."
       (when (file-exists-p dest-file)
         (user-error "%s exists. Aborting" dest-file))
 
+      (f-touch dest-file)
+
       (let ((title (org-get-heading))
             (tags (org-get-tags))
             (id (org-id-get-create)))
