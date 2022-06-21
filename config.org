@@ -3116,6 +3116,17 @@ Enable =wgrep=, which provides editable grep buffers.
     :hook (after-init . historian-mode))
 #+end_src
 
+*** Fix text encoding issues
+#+begin_src emacs-lisp
+  (use-package historian
+    :init
+    (defun config-historian-force-text-encoding (f &rest args)
+      (let ((coding-system-for-write 'binary))
+        (apply f args)))
+    :config
+    (advice-add 'historian-save :around #'config-historian-force-text-encoding))
+#+end_src
+
 ** =orderless= - order-insensitive matching algorithm
 https://github.com/oantolin/orderless
 #+begin_src emacs-lisp
