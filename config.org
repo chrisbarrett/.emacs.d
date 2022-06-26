@@ -6452,6 +6452,20 @@ This makes it much easier to edit text using emphasis markers correctly.
      "k" 'iscroll-previous-line))
 #+end_src
 
+** Prevent org-mode from following links in insert state
+#+begin_src emacs-lisp
+  (use-package org
+    :init
+    (autoload 'evil-insert-state-p "evil-states")
+    (defun config-org-inhibit-org-return-follows-link-for-insert-state (fn &rest args)
+      (let ((org-return-follows-link (if (evil-insert-state-p)
+                                         nil
+                                       org-return-follows-link)))
+        (apply fn args)))
+    :config
+    (advice-add 'org-return :around #'config-org-inhibit-org-return-follows-link-for-insert-state))
+#+end_src
+
 * 📓 =org-roam= - Personal wiki & research tooling
 #+begin_src emacs-lisp
   (use-package org-roam
