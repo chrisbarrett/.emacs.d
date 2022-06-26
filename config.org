@@ -6962,6 +6962,13 @@ property drawer and the title. Advise it to fix that.
   (advice-add 'org-transclusion-add-all :after #'advice-clear-minibuffer)
 #+end_src
 
+** Open links in the current window
+#+begin_src emacs-lisp
+  (use-package ol
+    :config
+    (setf (alist-get 'file org-link-frame-setup) 'find-file))
+#+end_src
+
 * Load Lisp from other locations
 #+begin_src emacs-lisp
   (use-package org
