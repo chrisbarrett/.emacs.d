@@ -6833,6 +6833,21 @@ rid of it.
   (add-hook 'org-metaright-hook #'config-org-transclusion-demote)
 #+end_src
 
+*** Teach headline reordering and insertion not to error when transclusions are in subtree
+#+begin_src emacs-lisp
+  (use-package org-transclusion
+    :init
+    (defun config-org-transclusion-ad-with-transclusions-off (fn &rest args)
+      (org-transclusion-remove-all)
+      (prog1 (apply fn args)
+        (org-transclusion-add-all)))
+
+    :config
+    (advice-add #'org-insert-heading :around #'config-org-transclusion-ad-with-transclusions-off)
+    (advice-add #'org-metaup :around #'config-org-transclusion-ad-with-transclusions-off)
+    (advice-add #'org-metadown :around #'config-org-transclusion-ad-with-transclusions-off))
+#+end_src
+
 *** Teach ~C-c C-c~ to refresh
 #+begin_src emacs-lisp
   (defun config-org-transclusion-refresh-at-point ()
