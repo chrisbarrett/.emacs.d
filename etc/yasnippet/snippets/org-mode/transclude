@@ -4,7 +4,9 @@
 # condition: (yas-funcs-bolp)
 # type: command
 # --
-(let ((link (org-funcs-read-roam-node-link)))
-  (org-insert-heading)
-  (insert (concat link "\n" "#+transclude: " link " :only-contents"))
-  (org-transclusion-add))
+(let ((link (org-funcs-read-roam-node-link))
+      ;; NB construct stars in headline manually so transclusions work
+      (stars (make-string (or (org-current-level) 1) ?*)))
+  (delete-horizontal-space)
+  (insert (concat stars  " " link "\n" "#+transclude: " link " :only-contents"))
+  (org-transclusion-add)))
