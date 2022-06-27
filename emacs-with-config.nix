@@ -48,7 +48,7 @@ pkgs.symlinkJoin
       if [ -f "$program" ]; then
         wrapProgram "$program" \
           --prefix PATH ":" "${customPathEntries}" \
-          --set NIX_EMACS_DARWIN_PATH_EXTRAS "${customPathEntries}" \
+          --set NIX_EMACS_DARWIN_PATH_EXTRAS "${customPathEntries}:/opt/homebrew/bin" \
           --set NIX_EMACS_ESLINT_SERVER_SCRIPT "${languageServers.eslint}/lib/eslintServer.js" \
           --set NIX_EMACS_LSP_ESLINT_NODE_PATH "${pkgs.nodejs}/bin/node" \
           --set NIX_EMACS_TS_LANGUAGE_SERVER "${languageServers.typescript}/bin/typescript-language-server" \
