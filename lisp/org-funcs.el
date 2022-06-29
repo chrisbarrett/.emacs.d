@@ -229,6 +229,9 @@ TAGS are the tags to use when displaying the list."
   (--first (s-matches? (rx bos (or "http" "https" "www")) it)
            (cons (current-kill 0 t) kill-ring)))
 
+(defun org-funcs--strip-google-highlight-query-param (url)
+  (car (split-string url (rx (? "#") ":~:"))))
+
 (defun org-funcs-read-url (&optional prompt default)
   (let* ((default (-some->> (or default (thing-at-point-url-at-point) (org-funcs--last-url-kill))
                     (string-trim)))
@@ -237,7 +240,7 @@ TAGS are the tags to use when displaying the list."
                              nil nil default)))
     (substring-no-properties
      (if (string-match-p (rx "http" (? "s") "://") input)
-         input
+         (org-funcs--strip-google-highlight-query-param input)
        (org-funcs-read-url prompt default)))))
 
 (defun org-funcs-simplified-title-for-url (url)
