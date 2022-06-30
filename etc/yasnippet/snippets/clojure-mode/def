@@ -1,5 +1,0 @@
-# key: de
-# name: def
-# condition: (yas-funcs-bolp)
-# --
-(def $0)
