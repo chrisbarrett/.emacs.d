@@ -5069,6 +5069,16 @@ Configure =conf-mode= for use with more kinds of config files.
     ("\\.kll\\'" . conf-mode))
 #+end_src
 
+** =clojure-mode=
+
+*** Fix mysteriously shadowed binding
+#+begin_src emacs-lisp
+  (use-package smartparens
+    :general
+    (:keymaps '(clojure-mode-map cider-repl-mode-map) :states 'insert
+     "DEL" 'sp-backward-delete-char))
+#+end_src
+
 * Applications
 
 ** =pass= - Frontend to Unix ~password-store~
