@@ -4500,8 +4500,6 @@ files.
 ** =nix-mode= Configure support for the Nix language
 #+begin_src emacs-lisp
   (use-package nix-mode
-    :mode (("\\.nix\\'" . nix-mode)
-           ("\\.nix.in\\'" . nix-mode))
     :custom
     (nix-indent-function 'nix-indent-line))
 #+end_src
@@ -4512,7 +4510,6 @@ files.
     (auto-fill-mode -1))
 
   (use-package yaml-mode
-    :mode ("\\.\\(e?ya?\\|ra\\)ml\\'" . yaml-mode)
     :general
     (:states '(normal insert) :keymaps 'yaml-mode-map
      [backtab] 'yaml-indent-line)
@@ -4550,9 +4547,6 @@ files.
 ** =markdown-mode= - Markdown file support
 #+begin_src emacs-lisp
   (use-package markdown-mode
-    :mode
-    ("\\.md\\'" . gfm-mode)
-    ("\\.markdown\\'" . markdown-mode)
     :hook
     (markdown-mode . visual-line-mode)
 
@@ -4607,8 +4601,6 @@ files.
 ** =ledger-mode= - Ledger accounting software interface
 #+begin_src emacs-lisp
   (use-package ledger-mode
-    :mode ("\\.ledger$" . ledger-mode)
-
     :general
 
     (:keymaps 'ledger-report-mode-map
@@ -4828,10 +4820,6 @@ Teach the autofill function in Latex buffers not to fill in certain contexts.
 #+end_src
 
 ** =graphql= - GraphQL schema definition language editing support
-#+begin_src emacs-lisp
-  (use-package graphql-mode
-    :mode ("\\.graphql\\'" . graphql-mode))
-#+end_src
 
 *** Teach dumb-jump about GraphQL files
 #+begin_src emacs-lisp
@@ -4867,10 +4855,6 @@ Teach the autofill function in Latex buffers not to fill in certain contexts.
 ** =plantuml-mode= - Editing support for PlantUML diagrams
 #+begin_src emacs-lisp
   (use-package plantuml-mode
-    :mode
-    ("\\.plantuml\\'" . plantuml-mode)
-    ("\\.puml\\'" . plantuml-mode)
-
     :general
     (:keymaps 'plantuml-mode-map
      "C-c C-b" 'recompile)
@@ -5033,15 +5017,6 @@ Teach the autofill function in Latex buffers not to fill in certain contexts.
 #+end_src
 
 ** =terraform-mode= & =hcl-mode= - Editing support for Terraform
-#+begin_src emacs-lisp
-  (use-package terraform-mode
-    :mode ("\\.tf\\(vars\\)?\\'" . terraform-mode))
-
-  (use-package hcl-mode
-    :mode
-    ("\\.hcl\\'" . hcl-mode)
-    ("\\.nomad\\'" . hcl-mode))
-#+end_src
 
 *** Format HCL buffers on save
 #+begin_src emacs-lisp
@@ -5092,12 +5067,6 @@ Configure =conf-mode= for use with more kinds of config files.
     :mode
     ("\\.env" . conf-mode)
     ("\\.kll\\'" . conf-mode))
-#+end_src
-
-** =dockerfile-mode= - editing support for Dockerfile
-#+begin_src emacs-lisp
-  (use-package dockerfile-mode
-    :mode ("Dockerfile\\'" . dockerfile-mode))
 #+end_src
 
 * Applications
