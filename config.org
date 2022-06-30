@@ -7041,6 +7041,8 @@ property drawer and the title. Advise it to fix that.
                         (inhibit-same-window . t)
                         (slot . 1)
                         (side . rightmost)
+                        (window-height . 0.4)
+                        (window-width . 80)))
                         (window-width . 80)))
 #+end_src
 
