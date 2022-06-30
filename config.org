@@ -3939,7 +3939,7 @@ See: [[https://www.flycheck.org/en/latest/][flycheck.org]]
     (flycheck-display-errors-delay 0.1)
     (flycheck-emacs-lisp-load-path 'inherit)
     (flycheck-python-pycompile-executable "python")
-    (flycheck-global-modes '(not org-mode text-mode org-agenda-mode)))
+    (flycheck-global-modes '(not org-mode text-mode org-agenda-mode cider-repl-mode)))
 #+end_src
 
 *** =flycheck-org-lint= - Linting for org-mode buffers           :disabled:
