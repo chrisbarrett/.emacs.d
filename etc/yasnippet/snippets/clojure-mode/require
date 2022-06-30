@@ -1,0 +1,5 @@
+# key: r
+# name: require
+# condition: (yas-funcs-bolp)
+# --
+(require '$0)
