@@ -5079,6 +5079,14 @@ Configure =conf-mode= for use with more kinds of config files.
      "DEL" 'sp-backward-delete-char))
 #+end_src
 
+*** =cider= - interactive programming environment for Clojure
+#+begin_src emacs-lisp
+  (use-package cider
+    :custom
+    (cider-repl-display-help-banner nil)
+    (cider-allow-jack-in-without-project t))
+#+end_src
+
 * Applications
 
 ** =pass= - Frontend to Unix ~password-store~
