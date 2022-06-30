@@ -3,6 +3,8 @@ epkgs: with epkgs; [
   auctex
   browse-at-remote
   bufler
+  cider
+  clojure-mode
   company
   company-auctex
   company-emoji
