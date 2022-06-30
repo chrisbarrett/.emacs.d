@@ -5864,11 +5864,13 @@ cookie or 'cleared', which indicates no special priority.
     :custom
     (org-confirm-babel-evaluate nil)
     (org-babel-load-languages '((emacs-lisp . t)
+                                (clojure . t)
                                 (sql . t)
                                 (python . t)
                                 (http . t)
                                 (calc . t)
                                 (shell . t)))
+    (org-babel-clojure-backend 'cider)
     (org-babel-python-command (executable-find "python3")))
 #+end_src
 
