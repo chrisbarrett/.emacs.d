@@ -7043,6 +7043,16 @@ property drawer and the title. Advise it to fix that.
                         (side . rightmost)
                         (window-height . 0.4)
                         (window-width . 80)))
+#+end_src
+
+** =cider=
+#+begin_src emacs-lisp
+  (display-buffer-set (rx bos "*cider-repl ")
+                      '((display-buffer-in-direction)
+                        (inhibit-same-window . t)
+                        (slot . 1)
+                        (side . rightmost)
+                        (window-height . 0.4)
                         (window-width . 80)))
 #+end_src
 
