@@ -4232,7 +4232,7 @@ See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
     (advice-add 'sp-backward-delete-char :around #'config-smartparens-delete-horizontal-space-for-delete))
 #+end_src
 
-*** Emacs lisp
+*** Lisps
 #+begin_src emacs-lisp
   (use-package smartparens
     :config
