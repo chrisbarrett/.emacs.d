@@ -6717,11 +6717,25 @@ This makes it much easier to edit text using emphasis markers correctly.
 
 ** =org-transclusion= - share trees across org files
 #+begin_src emacs-lisp
+  (defun org-transclusion-open-same-window ()
+    "Open the transclusion at point"
+    (interactive)
+    (cond
+     ((not (bound-and-true-p org-transclusion-mode))
+      (user-error "org-transclusion-mode not active"))
+     ((org-transclusion-within-transclusion-p)
+      (xref-push-marker-stack)
+      (org-transclusion-open-source t))
+     (t
+      (user-error "Not at a transclusion"))))
+
   (use-package org-transclusion
     :hook (org-mode . org-transclusion-mode)
     :custom
     (org-transclusion-exclude-elements '(property-drawer keyword))
     :general
+    (:keymaps 'org-mode-map :states '(normal)
+     "M-." 'org-transclusion-open-same-window)
     (:keymaps 'org-transclusion-map
      "C-c C-e" 'org-transclusion-live-sync-start)
     (:keymaps 'org-transclusion-live-sync-map
@@ -6829,18 +6843,6 @@ rid of it.
   (with-eval-after-load 'org-transclusion
     (add-to-list 'org-transclusion-content-format-functions
                  #'config-org-transclusion-trim))
-#+end_src
-
-*** Teach org-open-link to open transclusions
-#+begin_src emacs-lisp
-  (defun config-org-transclusion-try-follow-link ()
-    (when (and (require 'org-transclusion nil t)
-               (org-transclusion-within-transclusion-p))
-      (xref-push-marker-stack)
-      (org-transclusion-open-source t)
-      t))
-
-  (add-hook 'org-open-at-point-functions 'config-org-transclusion-try-follow-link)
 #+end_src
 
 *** Teach M-left and M-right to promote & demote
