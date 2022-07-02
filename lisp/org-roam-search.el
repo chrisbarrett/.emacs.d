@@ -37,7 +37,7 @@
 (require 'pcre2el)
 
 (defgroup org-roam-search nil
-  "Notes search interface for org-roam"
+  "Notes search interface for org-roam."
   :group 'productivity
   :prefix "org-roam-search-")
 
