@@ -1480,9 +1480,10 @@ of an LSP or semantic analysis.
 
 #+begin_src emacs-lisp
   (use-package dumb-jump
-    :general (:states 'normal :keymaps 'prog-mode-map "M-." #'jump-to-definition)
     :custom
-    (dumb-jump-selector 'completing-read))
+    (dumb-jump-selector 'completing-read)
+    :config
+    (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
 #+end_src
 
 ** =auto-insert= - File templates
@@ -3906,6 +3907,14 @@ Source: [[https://ianyepan.github.io/posts/emacs-git-gutter/][Git Gutter in Emac
 
 * Programming languages & text-modes
 
+** =xref= - Finding to definitions and references
+#+begin_src emacs-lisp
+  (use-package xref
+    :general
+    (:keymaps 'prog-mode-map :states '(normal visual insert)
+     "M-." 'xref-find-definitions))
+#+end_src
+
 ** =flycheck= - Syntax Checking & Linting
 =Flycheck= integrates with external tools to show indications of errors and
 warnings in the buffer as you edit.
@@ -4286,8 +4295,6 @@ See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
     (:keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map)
      "C-c C-c" #'eval-defun
      "C-c C-b" #'eval-buffer)
-    (:keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map) :states '(normal visual insert)
-     "M-." 'xref-find-definitions)
     (:states 'visual
      :keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map)
      "C-c C-c" #'eval-region))
