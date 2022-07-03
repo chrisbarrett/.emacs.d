@@ -324,13 +324,11 @@ handles file titles, IDs and tags better."
       (when (file-exists-p dest-file)
         (user-error "%s exists. Aborting" dest-file))
 
-      (f-touch dest-file)
+      (atomic-change-group
+        (let ((title (org-get-heading))
+              (tags (org-get-tags))
+              (id (org-id-get-create)))
 
-      (let ((title (org-get-heading))
-            (tags (org-get-tags))
-            (id (org-id-get-create)))
-
-        (atomic-change-group
           (save-restriction
             (org-narrow-to-subtree)
             (when (bound-and-true-p org-transclusion-mode)
@@ -340,18 +338,24 @@ handles file titles, IDs and tags better."
           (insert (org-link-make-string (format "id:%s" id) (org-link-display-format title)))
           (newline)
           (save-buffer)
+          (f-touch dest-file)
           (with-current-buffer (find-file-noselect dest-file)
-            (org-paste-subtree nil nil nil t)
-            (org-roam-promote-entire-buffer)
-            (org-funcs-set-title title)
-            (require 'org-roam-review)
-            (when-let* ((tags (-difference (-union (org-funcs--file-tags) tags)
-                                           (-union org-roam-note-ignored-tags
-                                                   org-roam-review-maturity-values))))
-              (org-funcs--set-file-tags tags)
-              (when (bound-and-true-p org-transclusion-mode)
-                (org-transclusion-add-all)))
-            (save-buffer)
+            (condition-case _
+                (progn
+                  (org-paste-subtree nil nil nil t)
+                  (org-roam-promote-entire-buffer)
+                  (org-funcs-set-title title)
+                  (require 'org-roam-review)
+                  (when-let* ((tags (-difference (-union (org-funcs--file-tags) tags)
+                                                 (-union org-roam-note-ignored-tags
+                                                         org-roam-review-maturity-values))))
+                    (org-funcs--set-file-tags tags)
+                    (when (bound-and-true-p org-transclusion-mode)
+                      (org-transclusion-add-all)))
+                  (save-buffer))
+              (error
+               (f-delete dest-file)))
+
             (run-hook-with-args 'org-roam-capture-new-node-hook)))))))
 
 (defun org-funcs-read-tags-filter (&optional default)
