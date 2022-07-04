@@ -3422,6 +3422,15 @@ to manually apply it again.
      (font-lock-add-keywords 'typescript-mode `((,(rx (any ":")) 0 'parenthesis))))
  #+end_src
 
+*** Use a specific subset of parens in Clojure
+#+begin_src emacs-lisp
+  (defun config-set-clojure-paren-face ()
+    (setq-local paren-face-regexp (rx (any "(),"))))
+
+  (add-hook 'clojure-mode-hook #'config-set-clojure-paren-face)
+  (font-lock-add-keywords 'clojure-mode `((,(rx (group "#") (or "{" "(")) 1 'font-lock-variable-name-face)))
+#+end_src
+
 ** =hl-todo= - Highlight TODOs in comments
 #+begin_src emacs-lisp
   (use-package hl-todo
