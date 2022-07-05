@@ -45,6 +45,7 @@ epkgs: with epkgs; [
   git-auto-commit-mode
   git-gutter
   git-gutter-fringe
+  gnuplot
   graphql-mode
   hcl-mode
   helpful

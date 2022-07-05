@@ -5932,6 +5932,7 @@ cookie or 'cleared', which indicates no special priority.
     (org-confirm-babel-evaluate nil)
     (org-babel-load-languages '((emacs-lisp . t)
                                 (clojure . t)
+                                (gnuplot . t)
                                 (sql . t)
                                 (python . t)
                                 (http . t)
