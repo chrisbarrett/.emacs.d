@@ -5096,6 +5096,8 @@ Configure =conf-mode= for use with more kinds of config files.
     ":" '(cider-read-and-eval :wk "eval")
 
     "e" '(nil :wk "eval...")
+    "es" '(cider-eval-sexp-at-point :wk "eval sexp at pt")
+    "eS" '(cider-eval-sexp-at-point-in-context :wk "eval sexp at pt (bindings)")
     "eb" '(cider-eval-buffer :wk "eval buffer")
     "ed" '(cider-eval-defun-at-point :wk "eval defun")
     "en" '(cider-eval-ns-form :wk "eval ns form")
