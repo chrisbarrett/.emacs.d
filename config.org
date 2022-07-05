@@ -3611,6 +3611,7 @@ dot).
     :general
     (:states 'normal :keymaps 'dired-mode-map "h" #'dired-omit-mode)
     :custom
+    (dired-omit-files (rx bol (or "." "__pycache__")))
     (dired-omit-verbose nil)
     (dired-clean-up-buffers-too t))
 #+end_src
