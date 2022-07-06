@@ -5939,6 +5939,7 @@ cookie or 'cleared', which indicates no special priority.
                                 (http . t)
                                 (calc . t)
                                 (shell . t)))
+    (org-babel-default-header-args:emacs-lisp '((:lexical . "yes")))
     (org-babel-clojure-backend 'cider)
     (org-babel-python-command (executable-find "python3")))
 #+end_src
