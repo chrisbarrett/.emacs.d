@@ -1,7 +1,0 @@
-# key: rtr
-# name: runtype record decl
-# condition: (yas-funcs-bolp)
-# --
-export const ${1:Name} = rt.Record({ $0 });
-
-export type $1 = rt.Static<typeof $1>;

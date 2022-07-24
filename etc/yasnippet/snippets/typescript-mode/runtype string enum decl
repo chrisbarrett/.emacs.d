@@ -1,8 +1,0 @@
-# key: rte
-# name: runtype string enum decl
-# --
-export const ${1:Name} = rt.Union(
-  rt.Literal('$0'),
-);
-
-export type $1 = rt.Static<typeof $1>;
