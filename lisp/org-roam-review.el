@@ -138,8 +138,10 @@ interactively. Extra messages will be logged."
                          (seq-map (lambda (it) (concat "-" it)) (org-roam-note-filter-forbidden org-roam-note-last-filter))
                          (org-roam-note-filter-required org-roam-note-last-filter))
                         " "))
-          (input (read-string "Tags filter (+/-): " (unless  (string-blank-p current-filter)
-                                                      (concat current-filter " "))))
+          (input (read-string "Tags filter (+/-): "
+                              (unless  (string-blank-p current-filter)
+                                (concat current-filter " "))
+                              'org-roam-review-tags))
           ((forbidden required) (-separate (lambda (it) (string-prefix-p "-" it))
                                            (split-string input " " t))))
     (org-roam-note-filter-create :forbidden (seq-map (lambda (it) (string-remove-prefix "-" it))
