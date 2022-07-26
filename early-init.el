@@ -50,3 +50,11 @@
 
 
 (setq source-directory (expand-file-name emacs-version (getenv "NIX_EMACS_SRC_DIR")))
+
+
+(when (equal system-type 'darwin)
+  (dolist (dir (split-string (getenv "NIX_EMACS_DARWIN_PATH_EXTRAS") ":"))
+    (push dir exec-path))
+  (setq exec-path (seq-uniq exec-path))
+
+  (setenv "PATH" (string-join exec-path ":")))

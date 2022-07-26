@@ -121,6 +121,20 @@ The path to sources in the nix-store is injected via an environment variable.
   (setq source-directory (expand-file-name emacs-version (getenv "NIX_EMACS_SRC_DIR")))
 #+end_src
 
+** Set PATH correctly on Darwin
+macOS prevents PATH being modified for graphical apps, so the wrapper set up
+with Nix won't work. Use another environment variable to pass through the
+desired value.
+
+#+begin_src emacs-lisp
+  (when (equal system-type 'darwin)
+    (dolist (dir (split-string (getenv "NIX_EMACS_DARWIN_PATH_EXTRAS") ":"))
+      (push dir exec-path))
+    (setq exec-path (seq-uniq exec-path))
+
+    (setenv "PATH" (string-join exec-path ":")))
+#+end_src
+
 * File header
 #+begin_src emacs-lisp
   ;;; config.el -- User init file for Emacs.  -*- lexical-binding: t; buffer-read-only: t; -*-
@@ -2219,19 +2233,6 @@ https://github.com/syl20bnr/evil-iedit-state/issues/36
 #+end_src
 
 * =lsp-mode= - language-server support
-
-** Inject language servers into exec-path on Darwin
-macOS prevents PATH being modified for graphical apps, so the wrapper set up
-with Nix won't work. Manually add language servers to the path here.
-
-#+begin_src emacs-lisp
-  (when (equal system-type 'darwin)
-    (dolist (dir (split-string (getenv "NIX_EMACS_DARWIN_PATH_EXTRAS") ":"))
-      (push dir exec-path))
-    (setq exec-path (seq-uniq exec-path))
-
-    (setenv "PATH" (string-join exec-path ":")))
-#+end_src
 
 ** Set which modes use LSP
 #+begin_src emacs-lisp
