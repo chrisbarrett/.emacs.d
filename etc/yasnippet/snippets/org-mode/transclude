@@ -8,5 +8,6 @@
       ;; NB construct stars in headline manually so transclusions work
       (stars (make-string (or (org-current-level) 1) ?*)))
   (delete-horizontal-space)
-  (insert (concat stars  " " link "\n" "#+transclude: " link " :only-contents"))
+  (insert (concat stars  " " link "\n"
+                  "#+transclude: " link " :only-contents :exclude-elements \"section\""))
   (org-transclusion-add)))
