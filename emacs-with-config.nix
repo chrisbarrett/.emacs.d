@@ -24,7 +24,7 @@ let
     html = nodePackages.vscode-html-languageserver-bin;
     json = nodePackages.vscode-json-languageserver;
     nix = rnix-lsp;
-    terraform = terraform-lsp;
+    # terraform = terraform-lsp;
     typescript = nodePackages.typescript-language-server;
     yaml = nodePackages.yaml-language-server;
   };
