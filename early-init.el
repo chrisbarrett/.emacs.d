@@ -52,6 +52,8 @@
 (setq source-directory (expand-file-name emacs-version (getenv "NIX_EMACS_SRC_DIR")))
 
 
+(autoload 'string-join "subr-x")
+
 (when (equal system-type 'darwin)
   (dolist (dir (split-string (getenv "NIX_EMACS_DARWIN_PATH_EXTRAS") ":"))
     (push dir exec-path))

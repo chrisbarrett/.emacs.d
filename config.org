@@ -127,6 +127,8 @@ with Nix won't work. Use another environment variable to pass through the
 desired value.
 
 #+begin_src emacs-lisp
+  (autoload 'string-join "subr-x")
+
   (when (equal system-type 'darwin)
     (dolist (dir (split-string (getenv "NIX_EMACS_DARWIN_PATH_EXTRAS") ":"))
       (push dir exec-path))
