@@ -4430,7 +4430,9 @@ Use =elisp-slime-nav= to go to definition in Emacs Lisp.
 *** =ielm= - Emacs Lisp REPL
 #+begin_src emacs-lisp
   (use-package ielm
-    :hook (inferior-emacs-lisp-mode . hs-minor-mode))
+    :hook (inferior-emacs-lisp-mode . hs-minor-mode)
+    :general
+    ("C-c C-k" :keymaps 'inferior-emacs-lisp-mode-map 'quit-window))
 #+end_src
 
 **** Pop back and forth between IELM and Elisp buffers with ~C-c C-z~
