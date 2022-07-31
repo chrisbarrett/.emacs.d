@@ -177,21 +177,25 @@
 
 (defun org-roam-note-at-point (&optional file)
   (when-let* ((id (org-entry-get-with-inheritance "ID")))
-    (org-roam-note-create
-     :id id
-     :file (or file (buffer-file-name))
-     :file-id (org-entry-get (point-min) "ID")
-     :level (if (org-before-first-heading-p)
-                0
-              (car (org-heading-components)))
-     :todo-keywords (org-roam-note--todo-keywords-in-buffer)
-     :next-review (-some->> (org-entry-get-with-inheritance "NEXT_REVIEW") (ts-parse-org))
-     :last-review (-some->> (org-entry-get-with-inheritance "LAST_REVIEW") (ts-parse-org))
-     :created (-some->> (org-entry-get-with-inheritance "CREATED") (ts-parse-org))
-     :maturity (org-entry-get-with-inheritance "MATURITY")
-     :title (substring-no-properties (or (org-get-heading t t t) (org-roam-note--buffer-title)))
-     :local-tags (org-roam-note-file-or-headline-tags 'local)
-     :tags (org-roam-note-file-or-headline-tags))))
+    (org-with-wide-buffer
+     ;; Make sure we're sitting on the declaration of the note.
+     (goto-char (org-find-property "ID" id))
+
+     (org-roam-note-create
+      :id id
+      :file (or file (buffer-file-name))
+      :file-id (org-entry-get (point-min) "ID")
+      :level (if (org-before-first-heading-p)
+                 0
+               (car (org-heading-components)))
+      :todo-keywords (org-roam-note--todo-keywords-in-buffer)
+      :next-review (-some->> (org-entry-get-with-inheritance "NEXT_REVIEW") (ts-parse-org))
+      :last-review (-some->> (org-entry-get-with-inheritance "LAST_REVIEW") (ts-parse-org))
+      :created (-some->> (org-entry-get-with-inheritance "CREATED") (ts-parse-org))
+      :maturity (org-entry-get-with-inheritance "MATURITY")
+      :title (substring-no-properties (or (org-get-heading t t t) (org-roam-note--buffer-title)))
+      :local-tags (org-roam-note-file-or-headline-tags 'local)
+      :tags (org-roam-note-file-or-headline-tags)))))
 
 (defun org-roam-note-from-node (node)
   (let* ((org-inhibit-startup t)
