@@ -1,4 +1,4 @@
-# -*- eval: (add-hook 'after-save-hook #'tangle-init-files nil t); -*-
+# -*- eval: (add-hook 'after-save-hook #'tangle-init-files nil t); evil-lookup-func: helpful-at-point; -*-
 #+title: Emacs Configuration
 #+author: Chris Barrett
 #+property: header-args :results silent
