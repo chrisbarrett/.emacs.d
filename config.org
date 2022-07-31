@@ -2495,6 +2495,7 @@ See:
                 'org-roam-search)
               :wk "search...")
     ":" '(eval-expression-interactively :wk "eval")
+    ";" '(ielm :wk "Lisp REPL")
     "<tab>" (list (general-predicate-dispatch 'alternate-buffer
                     (and (bound-and-true-p popper-popup-status) (memq popper-popup-status '(popup user-popup))) 'popper-cycle)
                   :wk "other buf")
