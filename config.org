@@ -4417,14 +4417,15 @@ Use =elisp-slime-nav= to go to definition in Emacs Lisp.
      "M-." #'elisp-slime-nav-find-elisp-thing-at-point))
 #+end_src
 
-*** =helpful= - Better help buffer
+*** =helpful= - Better help buffer for Elisp
 #+begin_src emacs-lisp
   (use-package helpful
-    :general
-    (:keymaps '(emacs-lisp-mode-map helpful-mode-map ielm-map) :states '(motion normal)
-     "K" 'helpful-at-point)
-    (:keymaps 'elisp-slime-nav-mode-map :states '(motion normal)
-     "K" nil))
+    :hook ((emacs-lisp-mode . config--use-helpful-for-evil-lookup)
+           (helpful-mode . config--use-helpful-for-evil-lookup)
+           (ielm-mode . config--use-helpful-for-evil-lookup))
+    :preface
+    (defun config--use-helpful-for-evil-lookup ()
+      (setq-local evil-lookup-func 'helpful-at-point)))
 #+end_src
 
 *** =ielm= - Emacs Lisp REPL
