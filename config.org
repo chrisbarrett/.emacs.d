@@ -3982,7 +3982,7 @@ Source: [[https://ianyepan.github.io/posts/emacs-git-gutter/][Git Gutter in Emac
 #+begin_src emacs-lisp
   (use-package xref
     :general
-    (:keymaps 'prog-mode-map :states '(normal visual insert)
+    (:keymaps '(prog-mode-map ielm-map) :states '(normal visual insert)
      "M-." 'xref-find-definitions))
 #+end_src
 
@@ -4420,7 +4420,7 @@ Use =elisp-slime-nav= to go to definition in Emacs Lisp.
 #+begin_src emacs-lisp
   (use-package helpful
     :general
-    (:keymaps '(emacs-lisp-mode-map helpful-mode-map) :states '(motion normal)
+    (:keymaps '(emacs-lisp-mode-map helpful-mode-map ielm-map) :states '(motion normal)
      "K" 'helpful-at-point)
     (:keymaps 'elisp-slime-nav-mode-map :states '(motion normal)
      "K" nil))
@@ -4429,12 +4429,17 @@ Use =elisp-slime-nav= to go to definition in Emacs Lisp.
 *** =ielm= - Emacs Lisp REPL
 #+begin_src emacs-lisp
   (use-package ielm
+    :hook (inferior-emacs-lisp-mode . hs-minor-mode))
+#+end_src
+
+**** Pop back and forth between IELM and Elisp buffers with ~C-c C-z~
+#+begin_src emacs-lisp
+  (use-package ielm
     :general
     (:keymaps 'emacs-lisp-mode-map "C-c C-z" #'ielm)
     (:keymaps 'inferior-emacs-lisp-mode-map
      "C-c C-z" #'config-elisp-pop-to-elisp-buffer)
-
-    :config
+    :preface
     (defun config-elisp-pop-to-elisp-buffer ()
       (interactive)
       (if-let* ((buf (seq-find (lambda (buf)
@@ -4442,9 +4447,16 @@ Use =elisp-slime-nav= to go to definition in Emacs Lisp.
                                    (derived-mode-p 'emacs-lisp-mode)))
                                (buffer-list))))
           (pop-to-buffer buf)
-        (user-error "No Emacs Lisp buffers")))
+        (user-error "No Emacs Lisp buffers"))))
+#+end_src
 
-    (add-hook 'inferior-emacs-lisp-mode-hook #'hs-minor-mode))
+**** Teach xref to work correctly in IELM buffers
+#+begin_src emacs-lisp
+  (use-package ielm
+    :hook (inferior-emacs-lisp-mode . config-ielm-xref-setup)
+    :preface
+    (defun config-ielm-xref-setup ()
+      (setq-local xref-backend-functions '(elisp--xref-backend t))))
 #+end_src
 
 *** =pp= - S-Expression Pretty-printing
