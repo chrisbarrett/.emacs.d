@@ -4431,9 +4431,10 @@ Use =elisp-slime-nav= to go to definition in Emacs Lisp.
 *** =ielm= - Emacs Lisp REPL
 #+begin_src emacs-lisp
   (use-package ielm
-    :hook (inferior-emacs-lisp-mode . hs-minor-mode)
+    :hook (ielm-mode . hs-minor-mode)
     :general
-    ("C-c C-k" :keymaps 'inferior-emacs-lisp-mode-map 'quit-window))
+    (:keymaps 'ielm-map
+     "C-c C-k" 'quit-window))
 #+end_src
 
 **** Pop back and forth between IELM and Elisp buffers with ~C-c C-z~
@@ -4441,7 +4442,7 @@ Use =elisp-slime-nav= to go to definition in Emacs Lisp.
   (use-package ielm
     :general
     (:keymaps 'emacs-lisp-mode-map "C-c C-z" #'ielm)
-    (:keymaps 'inferior-emacs-lisp-mode-map
+    (:keymaps 'ielm-map
      "C-c C-z" #'config-elisp-pop-to-elisp-buffer)
     :preface
     (defun config-elisp-pop-to-elisp-buffer ()
@@ -4457,7 +4458,7 @@ Use =elisp-slime-nav= to go to definition in Emacs Lisp.
 **** Teach xref to work correctly in IELM buffers
 #+begin_src emacs-lisp
   (use-package ielm
-    :hook (inferior-emacs-lisp-mode . config-ielm-xref-setup)
+    :hook (ielm-mode . config-ielm-xref-setup)
     :preface
     (defun config-ielm-xref-setup ()
       (setq-local xref-backend-functions '(elisp--xref-backend t))))
@@ -4467,7 +4468,7 @@ Use =elisp-slime-nav= to go to definition in Emacs Lisp.
 #+begin_src emacs-lisp
   (use-package pp
     :general
-    (:keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map inferior-emacs-lisp-mode-map)
+    (:keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map ielm-mode-map)
      :states '(motion normal insert)
      "C-c C-<return>" 'pp-eval-last-sexp
      "C-c <return>" 'pp-eval-last-sexp
