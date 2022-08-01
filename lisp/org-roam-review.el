@@ -150,17 +150,20 @@ interactively. Extra messages will be logged."
                                  :required (seq-map (lambda (it) (string-remove-prefix "+" it))
                                                     required))))
 
-(defun org-roam-review-modify-tags (tags-filter)
+(defun org-roam-review-modify-tags (tags-filter &optional no-refresh)
   "Read tags filter interactively.
 
 TAGS-FILTER is plist of type `org-roam-note-filter'.
+
+NO-REFRESH means don't update open org-roam-review buffers.
 
 When called with a `C-u' prefix arg, clear the current filter."
   (interactive (list
                 (unless current-prefix-arg
                   (org-roam-review--read-tags-filter))))
   (setq org-roam-note-last-filter tags-filter)
-  (org-roam-review-refresh t))
+  (unless no-refresh
+    (org-roam-review-refresh t)))
 
 (defvar org-roam-review-mode-map
   (let ((keymap (make-sparse-keymap)))
