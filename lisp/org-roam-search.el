@@ -330,7 +330,7 @@ QUERY is a PRCE regexp string that will be passed to ripgrep."
   "Search `org-roam-directory' for notes matching a tags query.
 
 QUERY is an `org-roam-note-filter'."
-  (interactive (list (org-roam-review--read-tags-filter)))
+  (interactive (list (org-roam-review--read-tags-filter "Search by tags filter (+/-): ")))
   (org-roam-review-modify-tags query t)
   (org-roam-review-display-buffer-and-select
    (org-roam-review-create-buffer

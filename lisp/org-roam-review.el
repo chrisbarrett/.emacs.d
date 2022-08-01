@@ -137,9 +137,9 @@ interactively. Extra messages will be logged."
                 (seq-map (lambda (it) (concat "-" it)) (org-roam-note-filter-forbidden tags-filter))
                 (org-roam-note-filter-required tags-filter)) " "))
 
-(defun org-roam-review--read-tags-filter ()
+(defun org-roam-review--read-tags-filter (&optional prompt)
   (-let* ((current-filter (org-roam-review--pp-tags-filter org-roam-note-last-filter))
-          (input (read-string "Tags filter (+/-): "
+          (input (read-string (or prompt "Tags filter (+/-): ")
                               (unless  (string-blank-p current-filter)
                                 (concat current-filter " "))
                               'org-roam-review-tags))
