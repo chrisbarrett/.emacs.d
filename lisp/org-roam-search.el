@@ -154,6 +154,7 @@ BUILDER is the command argument builder."
      :sort nil)))
 
 (defvar org-roam-search-buffer-name "*org-roam-search*")
+(defvar org-roam-search-tags-buffer-name "*org-roam-search-tags*")
 
 
 
@@ -321,6 +322,29 @@ QUERY is a PRCE regexp string that will be passed to ripgrep."
     :notes
     (lambda ()
       (org-roam-search--ripgrep-for-notes query)))))
+
+(defvar org-roam-search-view-tags-query-history nil)
+
+;;;###autoload
+(defun org-roam-search-tags (query)
+  "Search `org-roam-directory' for notes matching a tags query.
+
+QUERY is an `org-roam-note-filter'."
+  (interactive (list (org-roam-review--read-tags-filter)))
+  (org-roam-review-modify-tags query t)
+  (org-roam-review-display-buffer-and-select
+   (org-roam-review-create-buffer
+    :title "Tag Search Results"
+    :instructions "The list below contains notes matching the given tags."
+    :placeholder "No search results"
+    :buffer-name org-roam-search-tags-buffer-name
+    :sort (-on #'string-lessp #'org-roam-note-title)
+    :notes
+    (lambda ()
+      (org-roam-note-cache-collect
+       (lambda (note)
+         (unless (org-roam-note-ignored-p note)
+           note)))))))
 
 (defun org-roam-search--kill-buffer ()
   (when-let* ((buf (get-buffer org-roam-search-buffer-name)))
