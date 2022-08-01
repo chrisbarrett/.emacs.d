@@ -132,12 +132,13 @@ interactively. Extra messages will be logged."
   (when interactive-p
     (message "Buffer refreshed")))
 
+(defun org-roam-review--pp-tags-filter (tags-filter)
+  (string-join (append
+                (seq-map (lambda (it) (concat "-" it)) (org-roam-note-filter-forbidden tags-filter))
+                (org-roam-note-filter-required tags-filter)) " "))
+
 (defun org-roam-review--read-tags-filter ()
-  (-let* ((current-filter
-           (string-join (append
-                         (seq-map (lambda (it) (concat "-" it)) (org-roam-note-filter-forbidden org-roam-note-last-filter))
-                         (org-roam-note-filter-required org-roam-note-last-filter))
-                        " "))
+  (-let* ((current-filter (org-roam-review--pp-tags-filter org-roam-note-last-filter))
           (input (read-string "Tags filter (+/-): "
                               (unless  (string-blank-p current-filter)
                                 (concat current-filter " "))
