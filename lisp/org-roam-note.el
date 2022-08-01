@@ -94,10 +94,11 @@
 
 (defvar org-roam-note-last-filter nil)
 
-(defun org-roam-note-ignored-p (note)
-  (let* ((tags (org-roam-note-tags note))
-         (forbidden-tags (org-roam-note-filter-forbidden org-roam-note-last-filter))
-         (required-tags (org-roam-note-filter-required org-roam-note-last-filter)))
+(defun org-roam-note-ignored-p (note &optional filter-plist)
+  (let* ((filter-plist (or filter-plist org-roam-note-last-filter))
+         (tags (org-roam-note-tags note))
+         (forbidden-tags (org-roam-note-filter-forbidden filter-plist))
+         (required-tags (org-roam-note-filter-required filter-plist)))
     (or (seq-intersection tags forbidden-tags)
         (seq-difference required-tags tags))))
 
