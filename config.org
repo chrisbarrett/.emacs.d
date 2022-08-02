@@ -4347,11 +4347,19 @@ See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
 #+begin_src emacs-lisp
   (use-package smartparens
     :config
-    (autoload 'org-at-item-p "org-list")
+    (autoload 'org-in-block-p "org")
 
-    (defun config-smartparens--format-checkitem (_id action _context)
-      (when (and (equal action 'insert)
-                 (org-at-item-p))
+    (defun config-smartparens--format-checkitem (_id action context)
+      (when (and (eq action 'insert)
+                 (if (derived-mode-p 'org-mode)
+                     (not (org-in-block-p org-list-forbidden-blocks))
+                   t)
+                 (string-match-p (rx bos (* space) "-" (* space)
+                                     (? "[" (* space) (? "]" (* space)))
+                                     (* space)
+                                     eos)
+                                 (buffer-substring (line-beginning-position)
+                                                   (point))))
         (atomic-change-group
           (just-one-space)
           (search-backward "[" (line-beginning-position))
