@@ -308,6 +308,8 @@ TAGS are the tags to use when displaying the list."
                                   (lambda ()
                                     (concat " " formatted))))))))
 
+(defvar org-funcs-extra-tags-excluded-for-extraction '("moc"))
+
 (defun org-funcs-roam-extract-subtree ()
   "Convert current subtree at point to a node, and extract it into a new file.
 
@@ -346,12 +348,14 @@ handles file titles, IDs and tags better."
                   (org-roam-promote-entire-buffer)
                   (org-funcs-set-title title)
                   (require 'org-roam-review)
-                  (when-let* ((tags (-difference (-union (org-funcs--file-tags) tags)
-                                                 (-union org-roam-note-ignored-tags
-                                                         org-roam-review-maturity-values))))
-                    (org-funcs--set-file-tags tags)
-                    (when (bound-and-true-p org-transclusion-mode)
-                      (org-transclusion-add-all)))
+                  (let ((tags-to-remove (append org-roam-note-ignored-tags
+                                                org-roam-review-maturity-values
+                                                org-funcs-extra-tags-excluded-for-extraction)))
+                    (when-let* ((tags (-difference (-union (org-funcs--file-tags) tags)
+                                                   tags-to-remove)))
+                      (org-funcs--set-file-tags tags)
+                      (when (bound-and-true-p org-transclusion-mode)
+                        (org-transclusion-add-all))))
                   (save-buffer))
               (error
                (f-delete dest-file)))
