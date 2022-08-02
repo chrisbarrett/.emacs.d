@@ -571,6 +571,8 @@ Use a header line instead of a mode line.
 
 ** Run a hook when the theme changes
 #+begin_src emacs-lisp
+  (defvar after-load-theme-functions nil)
+
   (defun config-run-after-load-theme-hook (theme &rest _)
     (run-hook-with-args 'after-load-theme-functions theme))
 
