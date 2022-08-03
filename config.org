@@ -6467,6 +6467,13 @@ This makes it much easier to edit text using emphasis markers correctly.
     (run-at-time nil nil #'org-appear--set-elements))
 #+end_src
 
+** Add a link type for opening manpages
+#+begin_src emacs-lisp
+  (use-package ol-man
+    :after org
+    :demand t)
+#+end_src
+
 ** Add a link type for opening macOS GUI applications
 #+begin_src emacs-lisp
   (use-package org
