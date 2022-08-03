@@ -297,7 +297,7 @@ When called with a `C-u' prefix arg, clear the current filter."
         (goto-char start-of-content)))))
 
 (cl-defun org-roam-review-create-buffer
-    (&key title instructions group-on placeholder sort notes
+    (&key title instructions group-on placeholder sort notes enable-previews
           (buffer-name "*org-roam-review*")
           (insert-notes-fn 'org-roam-review--insert-notes-fn-default)
           (insert-preview-fn 'org-roam-review-insert-preview))
@@ -329,7 +329,11 @@ The following keyword arguments are optional:
 - INSERT-PREVIEW-FN is a function that takes a node and is
   expected to insert a preview using the magit-section API. As a
   special case, throwing an error with a `skip' tag will cause
-  insertion of this entry to be skipped.
+  insertion of this entry to be skipped. The default
+  implementation will show the content before the first heading.
+
+  Note that previews will never be shown unless ENABLE-PREVIEWS is
+  set.
 
 - GROUP-ON is a projection function that is passed a note and
   should return one of:
@@ -361,7 +365,7 @@ The following keyword arguments are optional:
                                        :placeholder placeholder
                                        :sort sort
                                        :insert-notes-fn insert-notes-fn
-                                       :insert-preview-fn insert-preview-fn)
+                                       :insert-preview-fn (if enable-previews insert-preview-fn #'ignore))
               (setq-local org-roam-review-buffer-refresh-command (lambda () (funcall render (funcall notes))))
               (current-buffer))))
     (funcall render (funcall notes))))
