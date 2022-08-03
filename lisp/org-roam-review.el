@@ -415,6 +415,9 @@ them as reviewed with `org-roam-review-accept',
                     (org-roam-note-due-p note))
            note)))))))
 
+(defalias 'org-roam-review-sort-by-title-case-insensitive
+  (-on #'string-lessp (-compose  #'downcase #'org-roam-note-title)))
+
 ;;;###autoload
 (defun org-roam-review-list-categorised ()
   "List all evergreen notes categorised by maturity."
@@ -424,7 +427,7 @@ them as reviewed with `org-roam-review-accept',
     :title "Evergreen Notes"
     :instructions "The notes below are categorised by maturity."
     :group-on #'org-roam-review--maturity-header-for-note
-    :sort (-on #'string-lessp #'org-roam-note-title)
+    :sort #'org-roam-review-sort-by-title-case-insensitive
     :notes
     (lambda ()
       (org-roam-note-cache-collect
@@ -445,7 +448,7 @@ system."
     :title "Uncategorised Notes"
     :instructions "The notes below are missing the properties
 needed to be included in reviews. Categorise them as appropriate."
-    :sort (-on #'string-lessp #'org-roam-note-title)
+    :sort #'org-roam-review-sort-by-title-case-insensitive
     :notes
     (lambda ()
       (org-roam-note-cache-collect
@@ -466,7 +469,7 @@ needed to be included in reviews. Categorise them as appropriate."
    (org-roam-review-create-buffer
     :title "Author Notes"
     :instructions "The list below contains notes tagged as authors."
-    :sort (-on #'string-lessp #'org-roam-note-title)
+    :sort #'org-roam-review-sort-by-title-case-insensitive
     :notes
     (lambda ()
       (org-roam-note-cache-collect
@@ -491,7 +494,7 @@ needed to be included in reviews. Categorise them as appropriate."
     :instructions "The notes below are outlines of sources,
 grouped by whether they require further processing."
     :group-on #'org-roam-review--note-todo-presence
-    :sort (-on #'string-lessp #'org-roam-note-title)
+    :sort #'org-roam-review-sort-by-title-case-insensitive
     :notes
     (lambda ()
       (org-roam-note-cache-collect
@@ -539,7 +542,7 @@ With two prefix args, show the list of outlines instead."
     :title "Recently Created Notes"
     :instructions "The notes below are sorted by when they were created."
     :group-on #'org-roam-review--note-added-group
-    :sort (-on #'string-lessp #'org-roam-note-title)
+    :sort #'org-roam-review-sort-by-title-case-insensitive
     :notes
     (lambda ()
       (org-roam-note-cache-collect
