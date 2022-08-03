@@ -194,6 +194,7 @@ When called with a `C-u' prefix arg, clear the current filter."
   (replace-regexp-in-string (rx bol) (make-string (* depth org-roam-review-indent-width) 32)
                             str))
 
+;; FIXME: expansion breaks visiting node from the heading above.
 (defun org-roam-review-insert-preview (node &optional hidden-p depth)
   (when node
     (let* ((depth (or depth 0))
