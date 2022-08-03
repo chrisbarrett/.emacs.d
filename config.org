@@ -3721,6 +3721,16 @@ of =projectile=. Use =projectile= until the builtin functionality is more comple
        "target")))
 #+end_src
 
+*** Exclude Nix store from known projects
+#+begin_src emacs-lisp
+  (use-package projectile
+    :preface
+    (defun config-projectile-ignored-project-function (path)
+      (string-prefix-p "/nix/store/" path))
+    :custom
+    (projectile-ignored-project-function #'config-projectile-ignored-project-function))
+#+end_src
+
 * Git
 
 ** =magit= - interactive commands for working with git
