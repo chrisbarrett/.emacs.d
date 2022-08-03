@@ -208,14 +208,14 @@ When called with a `C-u' prefix arg, clear the current filter."
         (oset section point start)
         (insert "\n\n")))))
 
-(defun org-roam-review--insert-node (node skip-preview-p insert-preview-fn)
+(defun org-roam-review--insert-node (node insert-preview-fn)
   (catch 'skip
     (atomic-change-group
       (magit-insert-section section (org-roam-node-section nil t)
         (magit-insert-heading (propertize (org-roam-node-title node)
                                           'font-lock-face 'magit-section-secondary-heading))
         (oset section node node)
-        (unless skip-preview-p
+        (magit-insert-section-body
           (funcall insert-preview-fn node))))))
 
 (defvar org-roam-review-default-placeholder
@@ -232,9 +232,8 @@ When called with a `C-u' prefix arg, clear the current filter."
                                                (cons node acc)
                                              acc))
                                          notes nil))))
-      (--each-indexed nodes
-        (let ((skip-preview-p (> (1+ it-index) org-roam-review-max-previews-per-group)))
-          (org-roam-review--insert-node it skip-preview-p insert-preview-fn)))
+      (--each nodes
+        (org-roam-review--insert-node it insert-preview-fn))
     (insert (or placeholder org-roam-review-default-placeholder))
     (newline)))
 
@@ -297,7 +296,7 @@ When called with a `C-u' prefix arg, clear the current filter."
         (goto-char start-of-content)))))
 
 (cl-defun org-roam-review-create-buffer
-    (&key title instructions group-on placeholder sort notes enable-previews
+    (&key title instructions group-on placeholder sort notes
           (buffer-name "*org-roam-review*")
           (insert-notes-fn 'org-roam-review--insert-notes-fn-default)
           (insert-preview-fn 'org-roam-review-insert-preview))
@@ -332,9 +331,6 @@ The following keyword arguments are optional:
   insertion of this entry to be skipped. The default
   implementation will show the content before the first heading.
 
-  Note that previews will never be shown unless ENABLE-PREVIEWS is
-  set.
-
 - GROUP-ON is a projection function that is passed a note and
   should return one of:
 
@@ -365,7 +361,7 @@ The following keyword arguments are optional:
                                        :placeholder placeholder
                                        :sort sort
                                        :insert-notes-fn insert-notes-fn
-                                       :insert-preview-fn (if enable-previews insert-preview-fn #'ignore))
+                                       :insert-preview-fn insert-preview-fn)
               (setq-local org-roam-review-buffer-refresh-command (lambda () (funcall render (funcall notes))))
               (current-buffer))))
     (funcall render (funcall notes))))
