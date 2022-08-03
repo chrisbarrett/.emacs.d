@@ -47,6 +47,7 @@ epkgs: with epkgs; [
   git-gutter-fringe
   gnuplot
   graphql-mode
+  groovy-mode
   hcl-mode
   helpful
   hide-comnt
