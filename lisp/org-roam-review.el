@@ -194,20 +194,17 @@ When called with a `C-u' prefix arg, clear the current filter."
   (replace-regexp-in-string (rx bol) (make-string (* depth org-roam-review-indent-width) 32)
                             str))
 
-;; FIXME: expansion breaks visiting node from the heading above.
-(defun org-roam-review-insert-preview (node &optional hidden-p depth)
-  (when node
-    (let* ((depth (or depth 0))
-           (start (org-roam-node-point node))
-           (content (org-roam-fontify-like-in-org-mode (org-roam-preview-get-contents (org-roam-node-file node) start))))
-      (magit-insert-section section (org-roam-preview-section nil hidden-p)
-        (insert (org-roam-review-indent-string (if (string-blank-p (string-trim-left content))
-                                                   (propertize "(Empty)" 'font-lock-face 'font-lock-comment-face)
-                                                 content)
-                                               depth))
-        (oset section file (org-roam-node-file node))
-        (oset section point start)
-        (insert "\n\n")))))
+(cl-defun org-roam-review-insert-preview (node &optional hidden-p (depth 0))
+  (let* ((start (org-roam-node-point node))
+         (content (org-roam-fontify-like-in-org-mode (org-roam-preview-get-contents (org-roam-node-file node) start))))
+    (magit-insert-section section (org-roam-preview-section nil hidden-p)
+      (insert (org-roam-review-indent-string (if (string-blank-p (string-trim-left content))
+                                                 (propertize "(Empty)" 'font-lock-face 'font-lock-comment-face)
+                                               content)
+                                             depth))
+      (oset section file (org-roam-node-file node))
+      (oset section point start)
+      (insert "\n\n"))))
 
 (defun org-roam-review--insert-node (node insert-preview-fn)
   (catch 'skip
@@ -216,6 +213,7 @@ When called with a `C-u' prefix arg, clear the current filter."
         (magit-insert-heading (propertize (org-roam-node-title node)
                                           'font-lock-face 'magit-section-secondary-heading))
         (oset section node node)
+        ;; FIXME: expansion breaks visiting node from the heading above.
         (magit-insert-section-body
           (funcall insert-preview-fn node))))))
 
