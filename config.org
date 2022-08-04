@@ -2971,6 +2971,7 @@ Disabled for now since this breaks insert state in evil :/
     "i" '(jump-to-index-file :wk "index file")
 
     "k" '(org-capture :wk "capture...")
+    "K" '(org-roam-capture :wk "capture... (roam)")
     "l" '(org-store-link :wk "store link")
     "s" '(org-roam-search-view :wk "search...")
     "f" '(org-funcs-roam-node-find :wk "roam file...")
