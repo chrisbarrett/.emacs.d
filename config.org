@@ -6640,23 +6640,14 @@ This makes it much easier to edit text using emphasis markers correctly.
     (org-roam-v2-ack t)
     (org-roam-verbose nil)
     (org-roam-extract-new-file-path "%<%Y-%m-%d--%H-%M-%S>.org")
-    (org-roam-capture-templates
-     '(("d" "default" plain "%?" :if-new
-        (file+head "%<%Y-%m-%d--%H-%M-%S>.org" "#+title: ${title}\n")
-        :immediate-finish t
-        :unnarrowed t)))
-    (org-roam-dailies-capture-templates
-     '(("d" "default" entry "* %?" :target
-        (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d %A>\n#+filetags: :dailies:\n"))))
-
-    :config
-    (org-roam-setup)
-
+    (org-roam-capture-templates (list (config-org-roam-template "default" "d")))
     :general
     (:states '(insert normal) :keymap 'org-mode-map
      "C-c i" '(org-roam-node-insert :wk "insert org-roam link")
      "C-c TAB" (general-predicate-dispatch 'org-roam-node-insert
-                 (org-at-table-p) 'org-ctrl-c-tab)))
+                 (org-at-table-p) 'org-ctrl-c-tab))
+    :config
+    (org-roam-setup))
 #+end_src
 
 ** Set leader keys
