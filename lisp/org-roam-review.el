@@ -138,17 +138,12 @@ interactively. Extra messages will be logged."
                 (org-roam-note-filter-required tags-filter)) " "))
 
 (defun org-roam-review--read-tags-filter (&optional prompt)
-  (-let* ((current-filter (org-roam-review--pp-tags-filter org-roam-note-last-filter))
-          (input (read-string (or prompt "Tags filter (+/-): ")
-                              (unless  (string-blank-p current-filter)
-                                (concat current-filter " "))
-                              'org-roam-review-tags))
-          ((forbidden required) (-separate (lambda (it) (string-prefix-p "-" it))
-                                           (split-string input " " t))))
-    (org-roam-note-filter-create :forbidden (seq-map (lambda (it) (string-remove-prefix "-" it))
-                                                     forbidden)
-                                 :required (seq-map (lambda (it) (string-remove-prefix "+" it))
-                                                    required))))
+  (let* ((current-filter (org-roam-review--pp-tags-filter org-roam-note-last-filter))
+         (input (read-string (or prompt "Tags filter (+/-): ")
+                             (unless  (string-blank-p current-filter)
+                               (concat current-filter " "))
+                             'org-roam-review-tags)))
+    (org-roam-note-filter-parse input)))
 
 (defun org-roam-review-modify-tags (tags-filter &optional no-refresh)
   "Read tags filter interactively.

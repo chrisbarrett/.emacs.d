@@ -87,6 +87,29 @@
 (plist-define org-roam-note-filter
   :optional (:required :forbidden))
 
+(defun org-roam-note-filter-parse (input)
+  ;; (org-roam-note-filter-parse nil)
+  ;; (org-roam-note-filter-parse "")
+  ;; (org-roam-note-filter-parse "hello there")
+  ;; (org-roam-note-filter-parse "-hello there +obi +wan")
+  ;; (org-roam-note-filter-parse '(-hello there "+obi" "+wan"))
+  (-let* ((tokens
+           (cond
+            ((null input) nil)
+            ((stringp input)
+             (split-string input " " t))
+            ((symbolp input)
+             (list (symbol-name input)))
+            ((listp input)
+             (seq-map (lambda (it) (format "%s" it)) input))
+            (t
+             (error "Cannot parse as note filter: %s" input))))
+          ((forbidden required) (-separate (lambda (it) (string-prefix-p "-" it)) tokens)))
+    (org-roam-note-filter-create :forbidden (seq-map (lambda (it) (string-remove-prefix "-" it))
+                                                     forbidden)
+                                 :required (seq-map (lambda (it) (string-remove-prefix "+" it))
+                                                    required))))
+
 (plist-define org-roam-note
   :required (:id :title :file)
   :optional (:tags :local-tags :next-review :last-review :maturity
