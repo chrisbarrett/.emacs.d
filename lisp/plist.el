@@ -81,29 +81,36 @@ which are compared using `plist-equal' recursively."
 (defun plist--pred-name-for-type (type)
   (intern (format "%s-p" type)))
 
-(defmacro plist-define-predicate (type required-keys)
+(defmacro plist-define-predicate (type required-keys all-keys)
   (cl-assert (symbolp type))
   (cl-assert (listp required-keys))
   (cl-assert (seq-every-p #'keywordp required-keys))
-  `(defun ,(plist--pred-name-for-type type) (value)
+  (cl-assert (seq-every-p #'keywordp all-keys))
+  `(defun ,(plist--pred-name-for-type type) (value &optional strict)
      (when (listp value)
-       (let ((required-keys ',required-keys))
+       (let ((required-keys ',required-keys)
+             (all-keys ',all-keys))
          (let ((keys (plist-keys value)))
            (and (null (seq-difference required-keys keys))
                 (seq-every-p (lambda (key)
                                (plist-get value key))
-                             required-keys)))))))
+                             required-keys)
+                (if strict
+                    (null (seq-difference keys all-keys))
+                  t)))))))
 
 (defun plist--validator-for-type (type)
   (intern (format "%s-assert" type)))
 
-(defmacro plist-define-validator (type required-keys)
+(defmacro plist-define-validator (type required-keys all-keys)
   (cl-assert (symbolp type))
   (cl-assert (listp required-keys))
   (cl-assert (seq-every-p #'keywordp required-keys))
-  `(defsubst ,(plist--validator-for-type type) (value)
+  (cl-assert (seq-every-p #'keywordp all-keys))
+  `(defsubst ,(plist--validator-for-type type) (value &optional strict)
      (cl-assert (listp value) t "Expected a plist" )
      (let ((required-keys ',required-keys)
+           (all-keys ',all-keys)
            (keys (plist-keys value)))
        (cl-assert (null (seq-difference required-keys keys)) t "Missing required keys: %s" (seq-difference required-keys keys))
        (cl-assert (seq-every-p (lambda (key)
@@ -111,7 +118,12 @@ which are compared using `plist-equal' recursively."
                                required-keys) t
                                "Illegal values for required keys: %s" (seq-filter (lambda (key)
                                                                                     (null (plist-get value key)))
-                                                                                  required-keys)))))
+                                                                                  required-keys))
+       (when strict
+         (cl-assert (null (seq-difference keys all-keys))
+                    t
+                    "Unexpected additional keys: %s"
+                    (seq-difference keys all-keys))))))
 
 (defun plist--pred-accessor-name (type keyword)
   (intern (format "%s-%s" type (string-remove-prefix ":" (symbol-name keyword)))))
@@ -153,8 +165,8 @@ which are compared using `plist-equal' recursively."
   (cl-assert (null (seq-intersection required optional)))
   (let ((keys (seq-union required optional)))
     `(progn
-       (plist-define-predicate ,type ,required)
-       (plist-define-validator ,type ,required)
+       (plist-define-predicate ,type ,required ,keys)
+       (plist-define-validator ,type ,required ,keys)
        (plist-define-create ,type ,required ,optional)
        ,@(seq-map (lambda (it) `(plist-define-getter ,type ,it))
                   keys))))
