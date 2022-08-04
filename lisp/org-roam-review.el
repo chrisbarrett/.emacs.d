@@ -132,19 +132,6 @@ interactively. Extra messages will be logged."
   (when interactive-p
     (message "Buffer refreshed")))
 
-(defun org-roam-review--pp-tags-filter (tags-filter)
-  (string-join (append
-                (seq-map (lambda (it) (concat "-" it)) (org-roam-note-filter-forbidden tags-filter))
-                (org-roam-note-filter-required tags-filter)) " "))
-
-(defun org-roam-review--read-tags-filter (&optional prompt)
-  (let* ((current-filter (org-roam-review--pp-tags-filter org-roam-note-last-filter))
-         (input (read-string (or prompt "Tags filter (+/-): ")
-                             (unless  (string-blank-p current-filter)
-                               (concat current-filter " "))
-                             'org-roam-review-tags)))
-    (org-roam-note-filter-parse input)))
-
 (defun org-roam-review-modify-tags (tags-filter &optional no-refresh)
   "Read tags filter interactively.
 
@@ -155,7 +142,7 @@ NO-REFRESH means don't update open org-roam-review buffers.
 When called with a `C-u' prefix arg, clear the current filter."
   (interactive (list
                 (unless current-prefix-arg
-                  (org-roam-review--read-tags-filter))))
+                  (org-roam-note-filter-read))))
   (setq org-roam-note-last-filter tags-filter)
   (unless no-refresh
     (org-roam-review-refresh t)))

@@ -110,12 +110,25 @@
                                  :required (seq-map (lambda (it) (string-remove-prefix "+" it))
                                                     required))))
 
+(defun org-roam-note-filter-pp (tags-filter)
+  (string-join (append
+                (seq-map (lambda (it) (concat "-" it)) (org-roam-note-filter-forbidden tags-filter))
+                (org-roam-note-filter-required tags-filter)) " "))
+
+(defvar org-roam-note-last-filter nil)
+
+(defun org-roam-note-filter-read (&optional prompt)
+  (let* ((current-filter (org-roam-note-filter-pp org-roam-note-last-filter))
+         (input (read-string (or prompt "Tags filter (+/-): ")
+                             (unless  (string-blank-p current-filter)
+                               (concat current-filter " "))
+                             'org-roam-review-tags)))
+    (org-roam-note-filter-parse input)))
+
 (plist-define org-roam-note
   :required (:id :title :file)
   :optional (:tags :local-tags :next-review :last-review :maturity
              :todo-keywords :created :level :file-id))
-
-(defvar org-roam-note-last-filter nil)
 
 (defun org-roam-note-ignored-p (note &optional filter-plist)
   (let* ((filter-plist (or filter-plist org-roam-note-last-filter))
