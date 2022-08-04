@@ -7274,6 +7274,8 @@ property drawer and the title. Advise it to fix that.
   (display-buffer-set (rx bos "*org-roam*" eos)
                       '((display-buffer-in-direction)
                         (inhibit-same-window . t)
+                        (window-height . 0.5)
+                        (window-width . 0.5)
                         (side . rightmost)
                         (window-width . fit-window-to-buffer)))
 #+end_src
