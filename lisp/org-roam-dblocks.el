@@ -39,6 +39,7 @@
 
 (cl-eval-when (compile)
   (require 'org)
+  (require 'org-roam-note)
   (require 'org-roam))
 
 (require 'plist)
@@ -60,19 +61,23 @@ their blocks are updated automatically."
 
 
 (plist-define org-roam-dblocks-args
-  :optional (:id :match))
+  :optional (:id :match :tags))
 
 (defun org-roam-dblocks--node-to-link (node)
   (let ((link (concat "id:" (org-roam-node-id node)))
         (desc (org-roam-node-title node)))
     (concat "- " (org-link-make-string link desc))))
 
-(defun org-roam-dblocks--eval-regexp (form)
+(defun org-roam-dblocks--parse-regexp-form (form)
+  ;;; Quick tests:
+  ;; (org-roam-dblocks--parse-regexp-form nil)
+  ;; (org-roam-dblocks--parse-regexp-form 'hi)
+  ;; (org-roam-dblocks--parse-regexp-form "hi")
+  ;; (org-roam-dblocks--parse-regexp-form '(rx bol "hi" eol))
   (cond
-   ((zerop (length form))
-    nil)
    ((stringp form)
-    form)
+    (unless (zerop (length form))
+      form))
    ((symbolp form)
     (symbol-name form))
    (t
@@ -81,18 +86,29 @@ their blocks are updated automatically."
        (rx-to-string (cons 'and args)
                      t))))))
 
-;;; Quick tests:
-;; (org-roam-dblocks--eval-regexp nil)
-;; (org-roam-dblocks--eval-regexp 'hi)
-;; (org-roam-dblocks--eval-regexp "hi")
-;; (org-roam-dblocks--eval-regexp '(rx bol "hi" eol))
+(defun org-roam-dblocks--eval-regexp-predicate (node match)
+  (cond
+   ((null match)
+    node)
+   ((string-match-p match (org-roam-node-title node))
+    node)))
+
+(defun org-roam-dblocks--eval-tags-predicate (node tags-filter)
+  (let* ((tags (org-roam-node-tags node))
+         (forbidden-tags (org-roam-note-filter-forbidden tags-filter))
+         (required-tags (org-roam-note-filter-required tags-filter)))
+    (unless (or (seq-intersection tags forbidden-tags)
+                (seq-difference required-tags tags))
+      node)))
+
+(defalias 'org-roam-dblocks--node-sorting
+  (-on #'string-lessp (-compose #'downcase #'org-roam-node-title)))
 
 ;;;###autoload
 (defun org-dblock-write:backlinks (params)
   (-let* ((id (org-roam-dblocks-args-id params))
-          (match
-           (org-roam-dblocks--eval-regexp
-            (org-roam-dblocks-args-match params)))
+          (tags (org-roam-note-filter-parse (org-roam-dblocks-args-tags params)))
+          (match (org-roam-dblocks--parse-regexp-form (org-roam-dblocks-args-match params)))
 
           (node (if id
                     (org-roam-node-from-id id)
@@ -101,12 +117,9 @@ their blocks are updated automatically."
                       (org-roam-backlinks-get node :unique t)
                       (-keep (lambda (bl)
                                (let ((node (org-roam-backlink-source-node bl)))
-                                 (cond
-                                  ((null match)
-                                   node)
-                                  ((string-match-p match (org-roam-node-title node))
-                                   node)))))
-                      (seq-sort (-on #'string-lessp (-compose #'downcase #'org-roam-node-title)))))
+                                 (and (org-roam-dblocks--eval-regexp-predicate node match)
+                                      (org-roam-dblocks--eval-tags-predicate node tags)))))
+                      (seq-sort 'org-roam-dblocks--node-sorting)))
           (lines (seq-map 'org-roam-dblocks--node-to-link backlinks)))
     (insert (string-join lines  "\n"))))
 
