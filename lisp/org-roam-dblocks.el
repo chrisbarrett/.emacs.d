@@ -27,8 +27,10 @@
 ;;      (org-roam-dblocks-auto-refresh-tags '("moc")))
 ;;
 ;;
-;; The "backlinks" block type writes a list of backlinks directly into the
-;; buffer.
+;; The "backlinks" block type writes a list of backlinks into the block body.
+;;
+;; The "notes" block type searches for notes based on the header criteria and
+;; inserts links into the block body.
 ;;
 ;; These dynamic blocks can optionally be updated when opening and saving
 ;; buffers.
@@ -76,6 +78,7 @@ their blocks are updated automatically."
   ;; (org-roam-dblocks--parse-regexp-form "hi")
   ;; (org-roam-dblocks--parse-regexp-form '(rx bol "hi" eol))
   (cond
+   ((null form) nil)
    ((stringp form)
     (unless (zerop (length form))
       form))
@@ -135,6 +138,39 @@ their blocks are updated automatically."
     (org-create-dblock (list :name "backlinks")))
   (org-update-dblock))
 
+
+;;; Roam notes search dblock type
+
+;;;###autoload
+(defun org-dblock-write:notes (params)
+  (condition-case err
+      (progn
+        (org-roam-dblocks-args-assert params t)
+        (cl-assert (or (org-roam-dblocks-args-match params) (org-roam-dblocks-args-tags params)) t "Must provide at least one of :tags or :match")
+        (-let* ((backlinks (->> (org-roam-node-list)
+                                (-keep (org-roam-dblocks--compiled-predicates params))
+                                (seq-sort 'org-roam-dblocks--node-sorting)))
+                (lines (seq-map 'org-roam-dblocks--node-to-link backlinks)))
+          (insert (string-join lines  "\n"))))
+    (error (insert (error-message-string err)))))
+
+;;;###autoload
+(defun org-insert-dblock:notes ()
+  "Insert a backlinks dynamic block at point."
+  (interactive)
+  (let ((args (pcase-exhaustive (read-char-choice "Query type:  [t] title match (regexp)\n             [k] tags" '(?t ?k))
+                (?t
+                 (list :match (read-string "Match title (regexp): ")))
+                (?k
+                 (list :tags (org-roam-note-filter-read))))))
+    (atomic-change-group
+      (org-create-dblock (append '(:name "notes") args))))
+  (org-update-dblock))
+
+
+
+(defconst org-roam-dblocks-names '("notes" "backlinks"))
+
 (defun org-roam-dblocks--update-block-at-point-p ()
   (or (null org-roam-dblocks-auto-refresh-tags)
       (seq-intersection org-roam-dblocks-auto-refresh-tags
@@ -146,7 +182,7 @@ their blocks are updated automatically."
      (when (org-roam-dblocks--update-block-at-point-p)
        (pcase (org-element-at-point)
          (`(dynamic-block ,plist)
-          (when (equal "backlinks" (plist-get plist :block-name))
+          (when (member (plist-get plist :block-name) org-roam-dblocks-names)
             (org-update-dblock))))))))
 
 
@@ -163,6 +199,7 @@ their blocks are updated automatically."
     (remove-hook 'before-save-hook #'org-roam-dblocks--update-blocks))))
 
 (with-eval-after-load 'org
+  (org-dynamic-block-define "notes" #'org-insert-dblock:notes)
   (org-dynamic-block-define "backlinks" #'org-insert-dblock:backlinks))
 
 (provide 'org-roam-dblocks)
