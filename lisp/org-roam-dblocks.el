@@ -88,22 +88,29 @@ their blocks are updated automatically."
                      t))))))
 
 (defun org-roam-dblocks--eval-regexp-predicate (node match)
-  (cond
-   ((null match)
-    node)
-   ((string-match-p match (org-roam-node-title node))
-    node)))
+  (or (null match)
+      (string-match-p match (org-roam-node-title node))))
 
 (defun org-roam-dblocks--eval-tags-predicate (node tags-filter)
   (let* ((tags (org-roam-node-tags node))
          (forbidden-tags (org-roam-note-filter-forbidden tags-filter))
          (required-tags (org-roam-note-filter-required tags-filter)))
-    (unless (or (seq-intersection tags forbidden-tags)
-                (seq-difference required-tags tags))
-      node)))
+    (not (or (seq-intersection tags forbidden-tags)
+             (seq-difference required-tags tags)))))
 
 (defalias 'org-roam-dblocks--node-sorting
   (-on #'string-lessp (-compose #'downcase #'org-roam-node-title)))
+
+(defun org-roam-dblocks--compiled-predicates (params)
+  (-let ((tags (org-roam-note-filter-parse (org-roam-dblocks-args-tags params)))
+         (match (org-roam-dblocks--parse-regexp-form (org-roam-dblocks-args-match params))))
+    (lambda (node)
+      (when (and (org-roam-dblocks--eval-regexp-predicate node match)
+                 (org-roam-dblocks--eval-tags-predicate node tags))
+        node))))
+
+
+;;; Backlinks dblock type
 
 ;;;###autoload
 (defun org-dblock-write:backlinks (params)
@@ -111,18 +118,10 @@ their blocks are updated automatically."
       (progn
         (org-roam-dblocks-args-assert params t)
         (-let* ((id (org-roam-dblocks-args-id params))
-                (tags (org-roam-note-filter-parse (org-roam-dblocks-args-tags params)))
-                (match (org-roam-dblocks--parse-regexp-form (org-roam-dblocks-args-match params)))
-
-                (node (if id
-                          (org-roam-node-from-id id)
-                        (org-roam-node-at-point)))
+                (node (if id (org-roam-node-from-id id) (org-roam-node-at-point t)))
                 (backlinks (->>
                             (org-roam-backlinks-get node :unique t)
-                            (-keep (lambda (bl)
-                                     (let ((node (org-roam-backlink-source-node bl)))
-                                       (and (org-roam-dblocks--eval-regexp-predicate node match)
-                                            (org-roam-dblocks--eval-tags-predicate node tags)))))
+                            (-keep (-compose (org-roam-dblocks--compiled-predicates params) #'org-roam-backlink-source-node))
                             (seq-sort 'org-roam-dblocks--node-sorting)))
                 (lines (seq-map 'org-roam-dblocks--node-to-link backlinks)))
           (insert (string-join lines  "\n"))))
