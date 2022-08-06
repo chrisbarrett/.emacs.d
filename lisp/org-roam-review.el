@@ -185,6 +185,7 @@ When called with a `C-u' prefix arg, clear the current filter."
                                                  (propertize "(Empty)" 'font-lock-face 'font-lock-comment-face)
                                                content)
                                              depth))
+      (oset section value (concat "preview:" (org-roam-node-id node)))
       (oset section file (org-roam-node-file node))
       (oset section point start)
       (insert "\n\n"))))
@@ -195,6 +196,7 @@ When called with a `C-u' prefix arg, clear the current filter."
       (magit-insert-section section (org-roam-node-section nil t)
         (magit-insert-heading (propertize (org-roam-node-title node)
                                           'font-lock-face 'magit-section-secondary-heading))
+        (oset section value (org-roam-node-id node))
         (oset section node node)
         ;; FIXME: expansion breaks visiting node from the heading above.
         (magit-insert-section-body
@@ -241,7 +243,8 @@ When called with a `C-u' prefix arg, clear the current filter."
               (let ((header (format "%s (%s)"
                                     (if (stringp key) key (car key))
                                     (length group))))
-                (magit-insert-heading (propertize header 'font-lock-face 'magit-section-heading)))
+                (magit-insert-heading (propertize header 'font-lock-face 'magit-section-heading))
+                (oset section value header))
               (org-roam-review--insert-notes (-sort sort group) placeholder insert-preview-fn)
               (insert "\n"))))))
      (t
