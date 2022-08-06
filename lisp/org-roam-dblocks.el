@@ -1,4 +1,4 @@
-;;; org-roam-dblocks.el --- Defines a dynamic block type in org-mode for backlinks.  -*- lexical-binding: t; -*-
+;;; org-roam-dblocks.el --- Defines dynamic block types for org-roam.  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2022  Chris Barrett
 
@@ -25,15 +25,71 @@
 ;;      :hook (org-mode . org-roam-dblocks-autoupdate-mode)
 ;;      :custom
 ;;      (org-roam-dblocks-auto-refresh-tags '("moc")))
+
+;; The dblock types defined are:
 ;;
+;; - "backlinks": lists the backlinks for this node, with optional filter
+;;   criteria.
 ;;
-;; The "backlinks" block type writes a list of backlinks into the block body.
+;;     E.g., in my TV Tropes note I have:
 ;;
-;; The "notes" block type searches for notes based on the header criteria and
-;; inserts links into the block body.
+;;     #+BEGIN: backlinks :match trope$
+;;     - [[id:...][Advanced Ancient Humans Trope]]
+;;     - [[id:...][Bizarre Alien Biology Trope]]
+;;     - [[id:...][Evil Brit Trope]]
+;;     - [[id:...][Humans Are Bastards Trope]]
+;;     - [[id:...][Lost Superweapon Trope]]
+;;     - [[id:...][Mega-Corporations Trope]]
+;;     - [[id:...][One-Man-Army Trope]]
+;;     - [[id:...][Precursor Alien Civilisation Trope]]
+;;     - [[id:...][Scary Dogmatic Aliens Trope]]
+;;     - [[id:...][Sealed Evil in a Can Trope]]
+;;     #+END:
+;;
+;; - "notes": lists org-roam notes based on filter criteria.
+;;
+;;     E.g. A block that collects open questions in my Zettelkasten:
+;;
+;;     #+BEGIN: notes :match (rx "?" eos) :tags (-answered -snooze -outline)
+;;     - [[id:...][Are Alien and Blade Runner in the same universe?]]
+;;     - [[id:...][Can attention span be increased through training?]]
+;;     - [[id:...][Is there research supporting the claimed benefits of the Pomodoro Technique?]]
+;;     #+END:
+
+;; Implemented filters:
+;;
+;; - :match, which matches note titles (case-insensitively).
+
+;;     A match filter must be an `rx' form or regexp string. String
+;;     double-quotes may be safely omitted for regexps that are just a single
+;;     alphanumeric word.
+;;
+;;     Examples:
+;;     - foo, "foo", (rx "foo")
+;;     - "foo bar", (rx "foo bar")
+;;     - "[?]$", (rx "?" eol)
+;;
+;; - :tags, which matches note headline and file tags.
+;;
+;;     A tags filter must be a single tag (double-quotes optional) or a list of
+;;     tags. Each tag may be preceded by a minus sign to indicate a forbidden tag,
+;;     or a plus symbol to indicate a required tag. Tags are interpreted to be
+;;     required if neither +/- is specified.
+;;
+;;     Examples of tags matches:
+;;     - required: foo, "foo", +foo, "+foo"
+;;     - forbidden: -foo, "-foo"
+;;     - multiple tags (and-ed together): (foo "+bar" -baz)
+
+;; Keeping blocks up-to-date:
 ;;
 ;; These dynamic blocks can optionally be updated when opening and saving
-;; buffers.
+;; buffers. To do this, enable `org-roam-dblocks-autoupdate-mode'.
+;;
+;; The autoupdate can be customised so that it only runs in files/headings with
+;; specific tags. This is useful if you want to have both index-style cards and
+;; stable canned searches.
+;;
 
 ;;; Code:
 
@@ -43,7 +99,6 @@
 
 (cl-eval-when (compile)
   (require 'org)
-  (require 'org-roam-note)
   (require 'org-roam))
 
 (defgroup org-roam-dblocks nil
@@ -117,7 +172,8 @@ their blocks updated automatically."
 
 ;; HACK: To avoid dirtying the buffer when blocks haven't changed, we actually
 ;; compute the data to insert earlier, at the phase where org would normally
-;; blindly clear out the block's content. We don't clear the content
+;; blindly clear out the block's content. We then check whether the block
+;; content needs to be updated.
 
 (defun org-roam-dblocks--prepare-dblock (fn &rest args)
   "Advice to hack org's dblock update flow for the dblock types we define.
