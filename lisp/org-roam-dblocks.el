@@ -270,7 +270,7 @@ and old content."
                 ("Title Regexp Match"
                  (list :match (read-string "Match title (regexp): ")))
                 ("Tags Filter"
-                 (list :tags (org-tags-filter-read))))))
+                 (list :tags (format "(%s)" (org-tags-filter-pp  (org-tags-filter-read))))))))
     (atomic-change-group
       (org-create-dblock (append '(:name "notes") args))))
   (org-update-dblock))
