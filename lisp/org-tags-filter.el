@@ -45,9 +45,9 @@
              (error "Cannot parse as note filter: %s" input))))
           ((forbidden required) (-separate (lambda (it) (string-prefix-p "-" it)) tokens)))
     (org-tags-filter-create :forbidden (seq-map (lambda (it) (string-remove-prefix "-" it))
-                                                     forbidden)
-                                 :required (seq-map (lambda (it) (string-remove-prefix "+" it))
-                                                    required))))
+                                                forbidden)
+                            :required (seq-map (lambda (it) (string-remove-prefix "+" it))
+                                               required))))
 
 (defun org-tags-filter-pp (tags-filter)
   (string-join (append
