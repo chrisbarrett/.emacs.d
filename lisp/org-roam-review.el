@@ -205,9 +205,6 @@ When called with a `C-u' prefix arg, clear the current filter."
 (defvar org-roam-review-default-placeholder
   (propertize "(None)" 'face 'font-lock-comment-face))
 
-(defconst org-roam-review-max-previews-per-group
-  50)
-
 (defun org-roam-review--insert-notes (notes placeholder insert-preview-fn)
   (if-let* ((nodes (nreverse (seq-reduce (lambda (acc note)
                                            (if-let* ((node (-some->> note
