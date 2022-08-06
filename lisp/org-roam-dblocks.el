@@ -163,9 +163,11 @@ their blocks updated automatically."
 
 (defun org-roam-dblocks--compiled-predicates (params)
   (-let ((tags (org-tags-filter-parse (org-roam-dblocks-args-tags params)))
-         (match (org-roam-dblocks--parse-regexp-form (org-roam-dblocks-args-match params))))
+         (match (org-roam-dblocks--parse-regexp-form (org-roam-dblocks-args-match params)))
+         (block-id (org-roam-dblocks-args-id params)))
     (lambda (node)
-      (when (and (org-roam-dblocks--eval-regexp-predicate node match)
+      (when (and (not (equal block-id (org-roam-node-id node)))
+                 (org-roam-dblocks--eval-regexp-predicate node match)
                  (org-roam-dblocks--eval-tags-predicate node tags))
         node))))
 
@@ -190,7 +192,12 @@ and old content."
         ;; Defer to default implementation for any dblocks we don't define in
         ;; this file..
         (apply fn args)
-      (let* ((params (append (list :name name) (read (concat "(" (match-string 3) ")"))))
+      (let* ((node-id (ignore-errors
+                        (save-match-data
+                          (org-roam-node-id (org-roam-node-at-point)))))
+             (params (append (list :name name)
+                             (read (concat "(" (match-string 3) ")"))
+                             (list :id node-id)))
              (content-start (1+ (match-end 0)))
              (content-end (if (re-search-forward org-dblock-end-re nil t)
                               (1- (match-beginning 0))
