@@ -185,35 +185,31 @@ stays unchanged if there's no difference between the new content
 and old content."
   (unless (looking-at org-dblock-start-re)
     (user-error "Not at a dynamic block"))
-  (let ((name (org-no-properties (match-string 1))))
+  (let ((name (match-string-no-properties 1)))
     (if (not (member name org-roam-dblocks-names))
         ;; Defer to default implementation for any dblocks we don't define in
         ;; this file..
         (apply fn args)
-      (let* ((content-start (1+ (match-end 0)))
-             (content-end)
-             (params (append (list :name name) (read (concat "(" (match-string 3) ")")))))
-        (if (re-search-forward org-dblock-end-re nil t)
-            (setq content-end (match-beginning 0))
-          (error "Dynamic block not terminated"))
+      (let* ((params (append (list :name name) (read (concat "(" (match-string 3) ")"))))
+             (content-start (1+ (match-end 0)))
+             (content-end (if (re-search-forward org-dblock-end-re nil t)
+                              (1- (match-beginning 0))
+                            (error "Dynamic block not terminated")))
+             (current-content (buffer-substring-no-properties content-start content-end))
+             (updated-content
+              (pcase-exhaustive name
+                ("notes" (org-roam-dblocks-format-notes params))
+                ("backlinks" (org-roam-dblocks-format-backlinks params))))
 
-        (let* ((current-content (buffer-substring-no-properties content-start content-end))
-               (updated-content
-                (pcase-exhaustive name
-                  ("notes" (org-roam-dblocks-format-notes params))
-                  ("backlinks" (org-roam-dblocks-format-backlinks params))))
+             (content-changed-p (not (equal current-content updated-content)))
+             (params (append params (list :new-content (and content-changed-p updated-content)))))
 
-               (content-changed-p (not (equal (string-trim-right current-content "\n") updated-content)))
-               (params (append params (list :content current-content
-                                            :new-content (and content-changed-p updated-content)))))
+        ;; Only clear the block if the content should change.
+        (when content-changed-p
+          (delete-region content-start content-end)
+          (goto-char content-start))
 
-          ;; Only clear the block if the content should change.
-          (when content-changed-p
-            (delete-region content-start content-end)
-            (goto-char content-start)
-            (open-line 1))
-
-          params)))))
+        params))))
 
 (with-eval-after-load 'org
   (advice-add 'org-prepare-dblock :around #'org-roam-dblocks--prepare-dblock))
