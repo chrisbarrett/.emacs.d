@@ -595,7 +595,7 @@ A higher score means that the note will appear less frequently."
         (org-roam-review-display-buffer-and-select)
         (select-window)))))
 
-(defmacro org-roam-review--visiting-note-at-point (&rest body)
+(defmacro org-roam-review--visiting-node-at-point (&rest body)
   (declare (indent 0))
   `(let* ((node (org-roam-node-at-point t))
           (file (org-roam-node-file node)))
@@ -610,31 +610,61 @@ A higher score means that the note will appear less frequently."
         (point-min)
         ,@body))
       (t
-       (error "Invalid context for visiting node")))))
+       (error "Invalid context for visiting node")))
+     node))
+
+(defun org-roam-review--update-review-buffer-entry (node)
+  (when-let* ((buf (get-buffer "*org-roam-review*")))
+
+    (with-current-buffer buf
+      (let ((continue t)
+            (found-pos nil)
+            (id (org-roam-node-id node)))
+        (save-excursion
+          (goto-char (point-min))
+          (while (and (not found-pos) continue)
+            (if (equal id (ignore-errors (org-roam-node-id (org-roam-node-at-point))))
+                (setq continue nil
+                      found-pos (point))
+              (or (ignore-errors (magit-section-forward) t)
+                  (setq continue nil)))))
+
+        (when found-pos
+          (goto-char found-pos)
+          (when-let* ((section (magit-current-section)))
+            (when (oref section node)
+              (let ((inhibit-read-only t))
+                (put-text-property (line-beginning-position) (line-end-position) 'face 'font-lock-comment-face))
+              (magit-section-hide section))
+            (ignore-errors
+              (magit-section-forward-sibling)
+              (magit-section-show (magit-current-section)))))))))
 
 ;;;###autoload
 (defun org-roam-review-accept ()
   "Confirm review of the current note."
   (interactive)
-  (org-roam-review--visiting-note-at-point
-    (when-let* ((maturity (org-entry-get-with-inheritance "MATURITY")))
-      (org-roam-review--update-note maturity org-roam-review--maturity-score-ok))
-    (org-roam-review--update-workspace-for-completed-review)
-    (run-hooks 'org-roam-note-accepted-hook)
-    (run-hooks 'org-roam-note-processed-hook)
-    (message "Note scheduled for future review")))
+  (org-roam-review--update-review-buffer-entry
+   (org-roam-review--visiting-node-at-point
+     (when-let* ((maturity (org-entry-get-with-inheritance "MATURITY")))
+       (org-roam-review--update-note maturity org-roam-review--maturity-score-ok))
+     (org-roam-review--update-workspace-for-completed-review)
+     (run-hooks 'org-roam-note-accepted-hook)
+     (run-hooks 'org-roam-note-processed-hook)
+     (message "Note scheduled for future review"))))
 
 ;;;###autoload
 (defun org-roam-review-bury ()
   "Confirm review of the current note and bury it."
   (interactive)
-  (org-roam-review--visiting-note-at-point
-    (when-let* ((maturity (org-entry-get-with-inheritance "MATURITY")))
-      (org-roam-review--update-note maturity org-roam-review--maturity-score-bury))
-    (org-roam-review--update-workspace-for-completed-review)
-    (run-hooks 'org-roam-note-buried-hook)
-    (run-hooks 'org-roam-note-processed-hook)
-    (message "Note buried")))
+  (org-roam-review--update-review-buffer-entry
+   (org-roam-review--visiting-node-at-point
+     (when-let* ((maturity (org-entry-get-with-inheritance "MATURITY")))
+       (org-roam-review--update-note maturity org-roam-review--maturity-score-bury))
+     (org-roam-review--update-workspace-for-completed-review)
+     (run-hooks 'org-roam-note-buried-hook)
+     (run-hooks 'org-roam-note-processed-hook)
+     (message "Note buried"))))
 
 (defun org-roam-review--skip-note-for-maturity-assignment-p ()
   (org-with-wide-buffer
@@ -651,9 +681,10 @@ the future."
   (let ((score (if bury
                    org-roam-review--maturity-score-bury
                  org-roam-review--maturity-score-ok)))
-    (org-roam-review--visiting-note-at-point
-      (unless (org-roam-review--skip-note-for-maturity-assignment-p)
-        (org-roam-review--update-note "budding" score)))))
+    (org-roam-review--update-review-buffer-entry
+     (org-roam-review--visiting-node-at-point
+       (unless (org-roam-review--skip-note-for-maturity-assignment-p)
+         (org-roam-review--update-note "budding" score))))))
 
 ;;;###autoload
 (defun org-roam-review-set-seedling (&optional bury)
@@ -665,9 +696,10 @@ the future."
   (let ((score (if bury
                    org-roam-review--maturity-score-bury
                  org-roam-review--maturity-score-revisit)))
-    (org-roam-review--visiting-note-at-point
-      (unless (org-roam-review--skip-note-for-maturity-assignment-p)
-        (org-roam-review--update-note "seedling" score)))))
+    (org-roam-review--update-review-buffer-entry
+     (org-roam-review--visiting-node-at-point
+       (unless (org-roam-review--skip-note-for-maturity-assignment-p)
+         (org-roam-review--update-note "seedling" score))))))
 
 ;;;###autoload
 (defun org-roam-review-set-evergreen (&optional bury)
@@ -679,9 +711,10 @@ the future."
   (let ((score (if bury
                    org-roam-review--maturity-score-bury
                  org-roam-review--maturity-score-ok)))
-    (org-roam-review--visiting-note-at-point
-      (unless (org-roam-review--skip-note-for-maturity-assignment-p)
-        (org-roam-review--update-note "evergreen" score)))))
+    (org-roam-review--update-review-buffer-entry
+     (org-roam-review--visiting-node-at-point
+       (unless (org-roam-review--skip-note-for-maturity-assignment-p)
+         (org-roam-review--update-note "evergreen" score))))))
 
 (defconst org-roam-review--properties
   '("LAST_REVIEW"
@@ -713,7 +746,7 @@ notes that aren't expected to be refined over time.
 This sets a special property, REVIEW_EXCLUDED, to indicate that
 it is not a candidate for reviews."
   (interactive)
-  (org-roam-review--visiting-note-at-point
+  (org-roam-review--visiting-node-at-point
     (let ((id (org-entry-get (point-min) "ID")))
       (unless id
         (error "No ID in buffer"))
@@ -730,7 +763,7 @@ it is not a candidate for reviews."
 (defun org-roam-review-set-author ()
   "Mark this note as an author note."
   (interactive)
-  (org-roam-review--visiting-note-at-point
+  (org-roam-review--visiting-node-at-point
     (atomic-change-group
       (org-with-wide-buffer
        (let ((id (org-entry-get (point-min) "ID")))
