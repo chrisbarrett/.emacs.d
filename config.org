@@ -1046,16 +1046,19 @@ Set up LaTeX-style input method and add extra MULE rules for common chars.
     (defun config-mule--set-tex-method-vars ()
       (when-let* ((quail-current-package (assoc "TeX" quail-package-alist)))
         (quail-defrule ";" (quail-lookup-key "\\"))
+        ;; NOTE: Use hex literals instead of unicode chars so Nix doesn't choke
+        ;; parsing this form.
         (quail-define-rules ((append . t))
-                            ("\\ou" ?ů)
-                            ("\\null" ?∅)
-                            ("\\rarr" ?→)
-                            ("\\larr" ?←)
-                            ("\\lr" ?↔)
-                            ("\\lam" ?λ)
-                            ("\\Lam" ?Λ)
-                            ("\\all" ?∀)
-                            ("\\rtack" ?⊢))))
+                            ("\\ou" #x16f) ; ů
+                            ("\\null" #x2205) ; ∅
+                            ("\\rarr" #x2192) ; →
+                            ("\\larr" #x2190) ; ←
+                            ("\\lr" #x2194) ; ↔
+                            ("\\lam" #x3bb) ; λ
+                            ("\\Lam" #x39b) ; Λ
+                            ("\\all" #x2200) ; ∀
+                            ("\\rtack" #x22a2) ; ⊢
+                            )))
     (add-hook 'input-method-activate-hook #'config-mule--set-tex-method-vars))
 #+end_src
 
@@ -4598,7 +4601,7 @@ Teach the Emacs Lisp indentation function to indent plists nicely.
     (defun prettify-symbols-setup ()
       (cond
        ((derived-mode-p 'emacs-lisp-mode 'lisp-mode 'scheme-mode)
-        (setq-local prettify-symbols-alist '(("lambda" . ?λ)))))))
+        (setq-local prettify-symbols-alist '(("lambda" . #x3bb)))))))
 #+end_src
 
 ** =typescript-mode= - TypeScript language support
@@ -5744,12 +5747,12 @@ Automatically enter insert state when inserting new headings or using
     (org-superstar-headline-bullets-list '(?*))
     (org-superstar-leading-bullet ?\s)
     (org-superstar-special-todo-items t)
-    (org-superstar-todo-bullet-alist '(("TODO" . ?○)
-                                       ("WAIT" . ?○)
-                                       ("CANCELLED" . ?●)
-                                       ("DONE" . ?●)))
+    (org-superstar-todo-bullet-alist '(("TODO" . #x25cb) ; ○
+                                       ("WAIT" . #x25cb) ; ○
+                                       ("CANCELLED" . #x25cf) ; ●
+                                       ("DONE" . #x25cf))) ; ●
     :config
-    (setf (alist-get 45 org-superstar-item-bullet-alist) ?•))
+    (setf (alist-get 45 org-superstar-item-bullet-alist) #x2022)) ; •
 #+end_src
 
 *** Use bullet characters for list items
