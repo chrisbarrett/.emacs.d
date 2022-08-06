@@ -192,13 +192,7 @@ and old content."
         (apply fn args)
       (let* ((content-start (1+ (match-end 0)))
              (content-end)
-             (params (append (list :name name)
-                             (read (concat "(" (match-string 3) ")")))))
-        (save-excursion
-          (beginning-of-line 1)
-          (skip-chars-forward " \t")
-          (setq params (plist-put params :indentation-column (current-column))))
-
+             (params (append (list :name name) (read (concat "(" (match-string 3) ")")))))
         (if (re-search-forward org-dblock-end-re nil t)
             (setq content-end (match-beginning 0))
           (error "Dynamic block not terminated"))
