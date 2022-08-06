@@ -203,7 +203,7 @@ and old content."
                   ("notes" (org-roam-dblocks-format-notes params))
                   ("backlinks" (org-roam-dblocks-format-backlinks params))))
 
-               (content-changed-p (not (equal (string-trim current-content) updated-content)))
+               (content-changed-p (not (equal (string-trim-right current-content "\n") updated-content)))
                (params (append params (list :content current-content
                                             :new-content (and content-changed-p updated-content)))))
 
