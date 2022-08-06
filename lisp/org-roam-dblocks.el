@@ -38,13 +38,13 @@
 ;;; Code:
 
 (require 'dash)
+(require 'org-tags-filter)
+(require 'plist)
 
 (cl-eval-when (compile)
   (require 'org)
   (require 'org-roam-note)
   (require 'org-roam))
-
-(require 'plist)
 
 (defgroup org-roam-dblocks nil
   "Adds support for a dynamic block of org-roam backlinks to `org-mode'."
@@ -55,7 +55,7 @@
   "A list of tags (as strings) or nil.
 
 If non-nil, only org-roam nodes with the specified tags have
-their blocks are updated automatically."
+their blocks updated automatically."
   :group 'org-roam-dblocks
   :type '(choice (const nil)
                  (repeat :tag "Tag" (string))))
@@ -98,8 +98,8 @@ their blocks are updated automatically."
 
 (defun org-roam-dblocks--eval-tags-predicate (node tags-filter)
   (let* ((tags (org-roam-node-tags node))
-         (forbidden-tags (org-roam-note-filter-forbidden tags-filter))
-         (required-tags (org-roam-note-filter-required tags-filter)))
+         (forbidden-tags (org-tags-filter-forbidden tags-filter))
+         (required-tags (org-tags-filter-required tags-filter)))
     (not (or (seq-intersection tags forbidden-tags)
              (seq-difference required-tags tags)))))
 
@@ -107,7 +107,7 @@ their blocks are updated automatically."
   (-on #'string-lessp (-compose #'downcase #'org-roam-node-title)))
 
 (defun org-roam-dblocks--compiled-predicates (params)
-  (-let ((tags (org-roam-note-filter-parse (org-roam-dblocks-args-tags params)))
+  (-let ((tags (org-tags-filter-parse (org-roam-dblocks-args-tags params)))
          (match (org-roam-dblocks--parse-regexp-form (org-roam-dblocks-args-match params))))
     (lambda (node)
       (when (and (org-roam-dblocks--eval-regexp-predicate node match)
@@ -121,6 +121,8 @@ their blocks are updated automatically."
 
 (defun org-roam-dblocks--prepare-dblock (fn &rest args)
   "Advice to hack org's dblock update flow for the dblock types we define.
+
+FN is the advised function, and ARGS are its arguments.
 
 Populates `org-roam-dblocks--content' and ensures the buffer
 stays unchanged if there's no difference between the new content
@@ -163,11 +165,11 @@ and old content."
 
           params)))))
 
-(advice-add 'org-prepare-dblock :around #'org-roam-dblocks--prepare-dblock)
+(with-eval-after-load 'org
+  (advice-add 'org-prepare-dblock :around #'org-roam-dblocks--prepare-dblock))
 
 ;;;###autoload
 (defun org-roam-dblocks--write-content (params)
-  "Inserts updated dblock content prepared by `org-roam-dblocks--prepare-dblock'."
   (when-let* ((new-content (plist-get params :new-content)))
     (insert new-content)))
 
@@ -222,7 +224,7 @@ and old content."
                 ("Title Regexp Match"
                  (list :match (read-string "Match title (regexp): ")))
                 ("Tags Filter"
-                 (list :tags (org-roam-note-filter-read))))))
+                 (list :tags (org-tags-filter-read))))))
     (atomic-change-group
       (org-create-dblock (append '(:name "notes") args))))
   (org-update-dblock))

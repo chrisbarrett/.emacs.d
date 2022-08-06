@@ -84,47 +84,6 @@
 
 ;; Core type definition
 
-(plist-define org-roam-note-filter
-  :optional (:required :forbidden))
-
-(defun org-roam-note-filter-parse (input)
-  ;; (org-roam-note-filter-parse nil)
-  ;; (org-roam-note-filter-parse "")
-  ;; (org-roam-note-filter-parse "hello there")
-  ;; (org-roam-note-filter-parse "-hello there +obi +wan")
-  ;; (org-roam-note-filter-parse '(-hello there "+obi" "+wan"))
-  (-let* ((tokens
-           (cond
-            ((null input) nil)
-            ((stringp input)
-             (split-string input " " t))
-            ((symbolp input)
-             (list (symbol-name input)))
-            ((listp input)
-             (seq-map (lambda (it) (format "%s" it)) input))
-            (t
-             (error "Cannot parse as note filter: %s" input))))
-          ((forbidden required) (-separate (lambda (it) (string-prefix-p "-" it)) tokens)))
-    (org-roam-note-filter-create :forbidden (seq-map (lambda (it) (string-remove-prefix "-" it))
-                                                     forbidden)
-                                 :required (seq-map (lambda (it) (string-remove-prefix "+" it))
-                                                    required))))
-
-(defun org-roam-note-filter-pp (tags-filter)
-  (string-join (append
-                (seq-map (lambda (it) (concat "-" it)) (org-roam-note-filter-forbidden tags-filter))
-                (org-roam-note-filter-required tags-filter)) " "))
-
-(defvar org-roam-note-last-filter nil)
-
-(defun org-roam-note-filter-read (&optional prompt)
-  (let* ((current-filter (org-roam-note-filter-pp org-roam-note-last-filter))
-         (input (read-string (or prompt "Tags filter (+/-): ")
-                             (unless  (string-blank-p current-filter)
-                               (concat current-filter " "))
-                             'org-roam-review-tags)))
-    (org-roam-note-filter-parse input)))
-
 (plist-define org-roam-note
   :required (:id :title :file)
   :optional (:tags :local-tags :next-review :last-review :maturity
@@ -133,8 +92,8 @@
 (defun org-roam-note-ignored-p (note &optional filter-plist)
   (let* ((filter-plist (or filter-plist org-roam-note-last-filter))
          (tags (org-roam-note-tags note))
-         (forbidden-tags (org-roam-note-filter-forbidden filter-plist))
-         (required-tags (org-roam-note-filter-required filter-plist)))
+         (forbidden-tags (org-tags-filter-forbidden filter-plist))
+         (required-tags (org-tags-filter-required filter-plist)))
     (or (seq-intersection tags forbidden-tags)
         (seq-difference required-tags tags))))
 

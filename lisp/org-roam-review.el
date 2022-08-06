@@ -52,6 +52,7 @@
 ;;; Code:
 
 (require 'org-roam-note)
+(require 'org-tags-filter)
 (require 'org-drill)
 
 (defgroup org-roam-review nil
@@ -135,14 +136,14 @@ interactively. Extra messages will be logged."
 (defun org-roam-review-modify-tags (tags-filter &optional no-refresh)
   "Read tags filter interactively.
 
-TAGS-FILTER is plist of type `org-roam-note-filter'.
+TAGS-FILTER is plist of type `org-tags-filter'.
 
 NO-REFRESH means don't update open org-roam-review buffers.
 
 When called with a `C-u' prefix arg, clear the current filter."
   (interactive (list
                 (unless current-prefix-arg
-                  (org-roam-note-filter-read))))
+                  (org-tags-filter-read))))
   (setq org-roam-note-last-filter tags-filter)
   (unless no-refresh
     (org-roam-review-refresh t)))
@@ -258,12 +259,12 @@ When called with a `C-u' prefix arg, clear the current filter."
           (fill-region start (point)))
         (newline 2))
 
-      (let ((forbidden-tags (seq-map (lambda (it) (format "-%s" it)) (org-roam-note-filter-forbidden org-roam-note-last-filter)))
-            (required-tags (seq-map (lambda (it) (format "+%s" it)) (org-roam-note-filter-required org-roam-note-last-filter))))
+      (let ((forbidden-tags (seq-map (lambda (it) (format "-%s" it)) (org-tags-filter-forbidden org-roam-note-last-filter)))
+            (required-tags (seq-map (lambda (it) (format "+%s" it)) (org-tags-filter-required org-roam-note-last-filter))))
         (when (or forbidden-tags required-tags)
-          (insert (concat (propertize "Filters:" 'face 'org-roam-note-filter-keyword)
+          (insert (concat (propertize "Filters:" 'face 'org-tags-filter-keyword)
                           " "
-                          (propertize (string-join (append forbidden-tags required-tags) " ") 'face 'org-roam-note-filter)))
+                          (propertize (string-join (append forbidden-tags required-tags) " ") 'face 'org-tags-filter)))
           (newline 2)))
 
       (let ((start-of-content (point)))
