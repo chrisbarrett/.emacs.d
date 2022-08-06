@@ -263,42 +263,43 @@ BUILDER is the command argument builder."
     (ht-values notes)))
 
 (defun org-roam-search--make-insert-notes-fn (query)
-  (-lambda ((&plist :notes :placeholder :root :insert-preview-fn))
-    (let ((notes (seq-remove #'org-roam-note-ignored-p notes)))
-      (cond
-       ((null notes)
-        (insert placeholder)
-        (newline))
-       (t
-        (let ((search-hits (seq-map #'org-roam-note-id notes)))
-          (pcase-dolist (`(,file-id . ,group) (seq-group-by #'org-roam-note-file-id notes))
-            (when-let* ((top-note (-some->> file-id (org-roam-note-from-id)))
-                        (heading (org-link-display-format (org-roam-note-title top-note))))
-              (magit-insert-section section (org-roam-node-section)
-                (magit-insert-heading
-                  (concat (propertize heading 'font-lock-face 'magit-section-heading)
-                          " "
-                          (when-let* ((mat (org-roam-note-maturity top-note)))
-                            (alist-get mat org-roam-review-maturity-emoji-alist nil nil #'equal))))
-                (oset section parent root)
+  (let ((insert-preview (org-roam-search-make-insert-preview-fn query)))
+    (-lambda ((&plist :notes :placeholder :root))
+      (let ((notes (seq-remove #'org-roam-note-ignored-p notes)))
+        (cond
+         ((null notes)
+          (insert placeholder)
+          (newline))
+         (t
+          (let ((search-hits (seq-map #'org-roam-note-id notes)))
+            (pcase-dolist (`(,file-id . ,group) (seq-group-by #'org-roam-note-file-id notes))
+              (when-let* ((top-note (-some->> file-id (org-roam-note-from-id)))
+                          (heading (org-link-display-format (org-roam-note-title top-note))))
+                (magit-insert-section section (org-roam-node-section)
+                  (magit-insert-heading
+                    (concat (propertize heading 'font-lock-face 'magit-section-heading)
+                            " "
+                            (when-let* ((mat (org-roam-note-maturity top-note)))
+                              (alist-get mat org-roam-review-maturity-emoji-alist nil nil #'equal))))
+                  (oset section parent root)
 
-                (let ((top-node (org-roam-node-from-id file-id)))
-                  (oset section node top-node)
-                  (when (seq-contains-p search-hits file-id)
-                    (org-roam-review-insert-preview top-node)))
+                  (let ((top-node (org-roam-node-from-id file-id)))
+                    (oset section node top-node)
+                    (when (seq-contains-p search-hits file-id)
+                      (org-roam-review-insert-preview top-node)))
 
-                (dolist (note group)
-                  (when-let* ((note-id (org-roam-note-id note))
-                              (node (org-roam-node-from-id note-id)))
-                    (unless (equal note-id file-id)
-                      (atomic-change-group
-                        (magit-insert-section section (org-roam-node-section nil t)
-                          (magit-insert-heading (concat "  " (propertize (org-link-display-format (org-roam-note-title note))
-                                                                         'font-lock-face
-                                                                         'magit-section-secondary-heading)))
-                          (oset section node node)
-                          (funcall insert-preview-fn node nil 1))))))))))
-        (org-roam-search--highlight-matches query))))))
+                  (dolist (note group)
+                    (when-let* ((note-id (org-roam-note-id note))
+                                (node (org-roam-node-from-id note-id)))
+                      (unless (equal note-id file-id)
+                        (atomic-change-group
+                          (magit-insert-section section (org-roam-node-section nil t)
+                            (magit-insert-heading (concat "  " (propertize (org-link-display-format (org-roam-note-title note))
+                                                                           'font-lock-face
+                                                                           'magit-section-secondary-heading)))
+                            (oset section node node)
+                            (funcall insert-preview node))))))))))
+          (org-roam-search--highlight-matches query)))))))
 
 ;;;###autoload
 (defun org-roam-search-view (query)

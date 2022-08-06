@@ -177,35 +177,37 @@ When called with a `C-u' prefix arg, clear the current filter."
   (replace-regexp-in-string (rx bol) (make-string (* depth org-roam-review-indent-width) 32)
                             str))
 
-(cl-defun org-roam-review-insert-preview (node &optional hidden-p (depth 0))
-  (let* ((start (org-roam-node-point node))
-         (content (org-roam-fontify-like-in-org-mode (org-roam-preview-get-contents (org-roam-node-file node) start))))
-    (magit-insert-section section (org-roam-preview-section nil hidden-p)
+(cl-defun org-roam-review-insert-preview (node &optional (depth 0))
+  (magit-insert-section preview (org-roam-preview-section)
+    (let* ((start (org-roam-node-point node))
+           (file (org-roam-node-file node))
+           (content (org-roam-fontify-like-in-org-mode (org-roam-preview-get-contents file start))))
+      (oset preview file file)
+      (oset preview point start)
       (insert (org-roam-review-indent-string (if (string-blank-p (string-trim-left content))
                                                  (propertize "(Empty)" 'font-lock-face 'font-lock-comment-face)
                                                content)
                                              depth))
-      (oset section value (concat "preview:" (org-roam-node-id node)))
-      (oset section file (org-roam-node-file node))
-      (oset section point start)
       (insert "\n\n"))))
 
-(defun org-roam-review--insert-node (node insert-preview-fn)
+(defun org-roam-review--insert-node (node)
   (catch 'skip
     (atomic-change-group
-      (magit-insert-section section (org-roam-node-section nil t)
+      (magit-insert-section section (org-roam-node-section (org-roam-node-id node) t)
         (magit-insert-heading (propertize (org-roam-node-title node)
                                           'font-lock-face 'magit-section-secondary-heading))
-        (oset section value (org-roam-node-id node))
         (oset section node node)
-        ;; FIXME: expansion breaks visiting node from the heading above.
-        (magit-insert-section-body
-          (funcall insert-preview-fn node))))))
+        ;; KLUDGE: Mofified macro-expansion of `magit-insert-section-body' that
+        ;; avoids unsetting the parent section's keymap.
+        (oset section washer
+              (lambda ()
+                (org-roam-review-insert-preview node)
+                (magit-section-maybe-remove-visibility-indicator section)))))))
 
 (defvar org-roam-review-default-placeholder
   (propertize "(None)" 'face 'font-lock-comment-face))
 
-(defun org-roam-review--insert-notes (notes placeholder insert-preview-fn)
+(defun org-roam-review--insert-notes (notes placeholder)
   (if-let* ((nodes (nreverse (seq-reduce (lambda (acc note)
                                            (if-let* ((node (-some->> note
                                                              (org-roam-note-id)
@@ -214,16 +216,18 @@ When called with a `C-u' prefix arg, clear the current filter."
                                              acc))
                                          notes nil))))
       (--each nodes
-        (org-roam-review--insert-node it insert-preview-fn))
+        (org-roam-review--insert-node it))
     (insert (or placeholder org-roam-review-default-placeholder))
     (newline)))
 
 (plist-define org-roam-review-render-args
   :optional (:group-on :notes :placeholder :sort)
-  :required (:insert-preview-fn :root))
+  :required (:root))
+
+(defclass org-roam-review-grouping-section (magit-section) ())
 
 (cl-defun org-roam-review--insert-notes-fn-default (args)
-  (-let* (((&plist :group-on :notes :placeholder :sort :insert-preview-fn :root) args)
+  (-let* (((&plist :group-on :notes :placeholder :sort :root) args)
           (sort (or sort (-const t))))
     (cond
      ((null notes)
@@ -235,19 +239,18 @@ When called with a `C-u' prefix arg, clear the current filter."
                                              (if (stringp key) key (or (cdr key) 0))))))))
         (pcase-dolist (`(,key . ,group) grouped)
           (when (and key group)
-            (magit-insert-section section (org-roam-note-group)
-              (oset section parent root)
-              (let ((header (format "%s (%s)"
-                                    (if (stringp key) key (car key))
-                                    (length group))))
+            (let ((header (format "%s (%s)"
+                                  (if (stringp key) key (car key))
+                                  (length group))))
+              (magit-insert-section section (org-roam-review-grouping-section header)
+                (oset section parent root)
                 (magit-insert-heading (propertize header 'font-lock-face 'magit-section-heading))
-                (oset section value header))
-              (org-roam-review--insert-notes (-sort sort group) placeholder insert-preview-fn)
-              (insert "\n"))))))
+                (org-roam-review--insert-notes (-sort sort group) placeholder)
+                (insert "\n")))))))
      (t
-      (org-roam-review--insert-notes (-sort sort notes) placeholder insert-preview-fn)))))
+      (org-roam-review--insert-notes (-sort sort notes) placeholder)))))
 
-(cl-defun org-roam-review--render (&key insert-notes-fn title instructions group-on placeholder sort insert-preview-fn notes)
+(cl-defun org-roam-review--render (&key insert-notes-fn title instructions group-on placeholder sort notes)
   (let ((inhibit-read-only t))
     (erase-buffer)
     (org-roam-review-mode)
@@ -273,15 +276,13 @@ When called with a `C-u' prefix arg, clear the current filter."
                                                      :group-on group-on
                                                      :sort sort
                                                      :root root
-                                                     :placeholder placeholder
-                                                     :insert-preview-fn insert-preview-fn))
+                                                     :placeholder placeholder))
         (goto-char start-of-content)))))
 
 (cl-defun org-roam-review-create-buffer
     (&key title instructions group-on placeholder sort notes
           (buffer-name "*org-roam-review*")
-          (insert-notes-fn 'org-roam-review--insert-notes-fn-default)
-          (insert-preview-fn 'org-roam-review-insert-preview))
+          (insert-notes-fn 'org-roam-review--insert-notes-fn-default))
   "Create a note review buffer for the notes currently in the cache.
 
 
@@ -306,12 +307,6 @@ The following keyword arguments are optional:
   `org-roam-review-render-args' to override the default render
   behaviour for notes. It is expected to insert a rendered
   representation of notes using the magit-section API.
-
-- INSERT-PREVIEW-FN is a function that takes a node and is
-  expected to insert a preview using the magit-section API. As a
-  special case, throwing an error with a `skip' tag will cause
-  insertion of this entry to be skipped. The default
-  implementation will show the content before the first heading.
 
 - GROUP-ON is a projection function that is passed a note and
   should return one of:
@@ -342,8 +337,7 @@ The following keyword arguments are optional:
                                        :group-on group-on
                                        :placeholder placeholder
                                        :sort sort
-                                       :insert-notes-fn insert-notes-fn
-                                       :insert-preview-fn insert-preview-fn)
+                                       :insert-notes-fn insert-notes-fn)
               (setq-local org-roam-review-buffer-refresh-command (lambda () (funcall render (funcall notes))))
               (current-buffer))))
     (funcall render (funcall notes))))
@@ -540,6 +534,8 @@ With two prefix args, show the list of outlines instead."
 
 (defun org-roam-review--update-next-review (quality)
   "Adapted from org-drill.
+
+QUALITY is a number 0-5 inclusive.
 
 - only use sm5 algorithm for simplicity
 - use properties instead of SCHEDULED.
