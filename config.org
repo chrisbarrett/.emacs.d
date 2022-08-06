@@ -6595,6 +6595,20 @@ This makes it much easier to edit text using emphasis markers correctly.
                              :follow #'org-link-follow-stock-ticker))
 #+end_src
 
+** Add a link type to Elisp libraries
+#+begin_src emacs-lisp
+  (use-package org
+    :config
+    (require 'ol)
+
+    (defun org-link-complete-library (&optional arg)
+      (concat "library:" (file-name-base (read-library-name))))
+
+    (org-link-set-parameters "library"
+                             :follow #'find-library
+                             :complete #'org-link-complete-library))
+#+end_src
+
 ** Keep abbrevs in =org-directory=
 #+begin_src emacs-lisp
   (setq abbrev-file-name (f-join paths-org-directory "abbrev.el"))
