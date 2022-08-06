@@ -7141,9 +7141,7 @@ property drawer and the title. Advise it to fix that.
 ** Define dynamic block types to extend org-roam
 #+begin_src emacs-lisp
   (use-package org-roam-dblocks
-    :hook (org-mode . org-roam-dblocks-autoupdate-mode)
-    :custom
-    (org-roam-dblocks-auto-refresh-tags '("moc")))
+    :hook (org-mode . org-roam-dblocks-autoupdate-mode))
 #+end_src
 
 * Load Lisp from other locations
