@@ -307,10 +307,10 @@ and old content."
   :init-value nil
   (cond
    (org-roam-dblocks-autoupdate-mode
-    (add-hook 'before-save-hook #'org-roam-dblocks--update-blocks nil t)
     (org-roam-dblocks--update-blocks)
     (when (and (buffer-file-name) (buffer-modified-p))
-      (save-buffer)))
+      (save-buffer))
+    (add-hook 'before-save-hook #'org-roam-dblocks--update-blocks nil t))
    (t
     (remove-hook 'before-save-hook #'org-roam-dblocks--update-blocks))))
 
