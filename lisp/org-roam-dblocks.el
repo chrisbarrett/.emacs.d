@@ -310,7 +310,9 @@ and old content."
   (cond
    (org-roam-dblocks-autoupdate-mode
     (add-hook 'before-save-hook #'org-roam-dblocks--update-blocks nil t)
-    (org-roam-dblocks--update-blocks))
+    (org-roam-dblocks--update-blocks)
+    (when (and (buffer-file-name) (buffer-modified-p))
+      (save-buffer)))
    (t
     (remove-hook 'before-save-hook #'org-roam-dblocks--update-blocks))))
 
