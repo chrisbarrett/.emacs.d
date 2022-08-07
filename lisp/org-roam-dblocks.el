@@ -305,7 +305,7 @@ and old content."
 
 ;;;###autoload
 (define-minor-mode org-roam-dblocks-autoupdate-mode
-  "Automatically update backlinks blocks on visit and save."
+  "Automatically update org-roam-dblocks blocks on open and save."
   :init-value nil
   (cond
    (org-roam-dblocks-autoupdate-mode
