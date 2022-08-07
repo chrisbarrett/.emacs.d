@@ -22,9 +22,7 @@
 ;; Defines dynamic block types for use with org-roam. Example configuration:
 ;;
 ;;    (use-package org-roam-dblocks
-;;      :hook (org-mode . org-roam-dblocks-autoupdate-mode)
-;;      :custom
-;;      (org-roam-dblocks-auto-refresh-tags '("moc")))
+;;      :hook (org-mode . org-roam-dblocks-autoupdate-mode))
 
 ;; The dblock types defined are:
 ;;
@@ -69,7 +67,7 @@
 ;;     - "foo bar", (rx "foo bar")
 ;;     - "[?]$", (rx "?" eol)
 ;;
-;; - :tags, which matches note headline and file tags.
+;; - :tags, which matches the note's headline and file tags.
 ;;
 ;;     A tags filter must be a single tag (double-quotes optional) or a list of
 ;;     tags. Each tag may be preceded by a minus sign to indicate a forbidden tag,
@@ -86,9 +84,9 @@
 ;; These dynamic blocks can optionally be updated when opening and saving
 ;; buffers. To do this, enable `org-roam-dblocks-autoupdate-mode'.
 ;;
-;; The autoupdate can be customised so that it only runs in files/headings with
-;; specific tags. This is useful if you want to have both index-style cards and
-;; stable canned searches.
+;; The autoupdate can be customised using `org-roam-dblocks-auto-refresh-tags'
+;; so that it only runs in files/headings with specific tags. This is useful if
+;; you want to have both index-style cards and stable canned searches.
 ;;
 
 ;;; Code:
