@@ -21,6 +21,7 @@
 (cl-eval-when (compile)
   (require 'org)
   (require 'org-roam)
+  (require 'org-transclusion)
   (require 'org-agenda)
   (require 'org-clock)
   (require 'org-capture))
@@ -199,6 +200,50 @@ TAGS are the tags to use when displaying the list."
   (org-roam-node-visit dest-node)
   (message "Inlined note successfully"))
 
+(defun org-funcs--rewrite-backlinks (backlinks new-id new-title)
+  (let ((replacement (org-link-make-string (concat "id:" new-id) new-title))
+        (backlinks-by-file
+         (seq-group-by (-compose #'org-roam-node-file #'org-roam-backlink-source-node)
+                       backlinks)))
+    (pcase-dolist (`(,file . ,backlinks) backlinks-by-file)
+      (with-temp-buffer
+        (insert-file-contents file)
+        (dolist (backlink (seq-sort-by #'org-roam-backlink-point #'> backlinks))
+          (goto-char (org-roam-backlink-point backlink))
+          (save-match-data
+            (looking-at org-link-any-re)
+            (replace-match replacement t t)))
+        (write-file file)))))
+
+(defun org-funcs-rename-note (node new-title)
+  "Change the title of a note and update links to match.
+
+NODE is the node to update.
+
+NEW-TITLE is the new title to use. All backlinks will have their
+descriptions updated to this value."
+  (interactive (let* ((node (org-roam-node-read nil nil nil t "Rename: ")))
+                 (list node (read-string "New title: " (org-roam-node-title node)))))
+  (org-roam-node-visit node)
+  (org-save-all-org-buffers)
+  (let ((backlinks (org-roam-backlinks-get node)))
+    (cond
+     ((null backlinks)
+      (message "No backlinks found."))
+     ((y-or-n-p (format "Rewriting %s link(s) from \"%s\" -> \"%s\". Continue? "
+                        (length backlinks) (org-roam-node-title node) new-title))
+      (org-funcs-set-title new-title)
+      (org-funcs--rewrite-backlinks backlinks (org-roam-node-id node) new-title)
+      (org-save-all-org-buffers)
+      (message "Rewrote %s links to note." (length backlinks)))
+     (t
+      (user-error "Rewrite aborted")))))
+
+(defun org-funcs--delete-org-roam-node (node)
+  (when-let* ((buf (find-buffer-visiting (org-roam-node-file node))))
+    (kill-buffer buf))
+  (delete-file (org-roam-node-file node)))
+
 (defun org-funcs-rewrite-note-links (from to link-desc)
   "Redirect links from one node to a replacement node.
 
@@ -210,33 +255,23 @@ LINK-DESC is the description to use for the updated links."
   (interactive (let* ((from (org-roam-node-read nil nil nil t "Remove: "))
                       (to (org-roam-node-read nil (lambda (it) (not (equal from it))) nil t "Rewrite to: ")))
                  (list from to (read-string "Link description: " (org-roam-node-title to)))))
-
-  (unless (y-or-n-p (format "Rewriting links \"%s\" -> \"%s\". Continue? "
-                            (org-roam-node-title from) link-desc))
-    (user-error "Rewrite aborted"))
-
   (org-save-all-org-buffers)
-  (let* ((replacement-link (org-link-make-string (concat "id:" (org-roam-node-id to)) link-desc))
-         (backlinks (org-roam-backlinks-get from))
-         (backlinks-by-file
-          (seq-group-by (-compose #'org-roam-node-file #'org-roam-backlink-source-node)
-                        backlinks)))
-    (pcase-dolist (`(,file . ,backlinks) backlinks-by-file)
-      (with-temp-buffer
-        (insert-file-contents file)
-        (dolist (backlink (seq-sort-by #'org-roam-backlink-point #'> backlinks))
-          (goto-char (org-roam-backlink-point backlink))
-          (save-match-data
-            (looking-at org-link-any-re)
-            (replace-match replacement-link t t)))
-        (write-file file)))
-
-    (when (y-or-n-p (format "Rewrote %s links to note. Delete note? " (length backlinks)))
-      (when-let* ((buf (find-buffer-visiting (org-roam-node-file from))))
-        (kill-buffer buf))
-      (delete-file (org-roam-node-file from)))))
+  (let ((backlinks (org-roam-backlinks-get from)))
+    (cond
+     ((null backlinks)
+      (when (y-or-n-p "No links found. Delete note? ")
+        (org-funcs--delete-org-roam-node from)))
+     ((y-or-n-p (format "Rewriting %s link(s) from \"%s\" -> \"%s\". Continue? "
+                        (length backlinks) (org-roam-node-title from) link-desc))
+      (org-funcs--rewrite-backlinks backlinks (org-roam-node-id to) link-desc)
+      (org-save-all-org-buffers)
+      (when (y-or-n-p "Rewrite completed. Delete note? ")
+        (org-funcs--delete-org-roam-node from)))
+     (t
+      (user-error "Rewrite aborted")))))
 
 
+
 (defun org-funcs-set-title (text)
   (org-with-wide-buffer
    (goto-char (point-min))
