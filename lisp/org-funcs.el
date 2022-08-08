@@ -234,7 +234,6 @@ descriptions updated to this value."
                         (length backlinks) (org-roam-node-title node) new-title))
       (org-funcs-set-title new-title)
       (org-funcs--rewrite-backlinks backlinks (org-roam-node-id node) new-title)
-      (org-save-all-org-buffers)
       (message "Rewrote %s links to note." (length backlinks)))
      (t
       (user-error "Rewrite aborted")))))
@@ -264,7 +263,6 @@ LINK-DESC is the description to use for the updated links."
      ((y-or-n-p (format "Rewriting %s link(s) from \"%s\" -> \"%s\". Continue? "
                         (length backlinks) (org-roam-node-title from) link-desc))
       (org-funcs--rewrite-backlinks backlinks (org-roam-node-id to) link-desc)
-      (org-save-all-org-buffers)
       (when (y-or-n-p "Rewrite completed. Delete note? ")
         (org-funcs--delete-org-roam-node from)))
      (t
