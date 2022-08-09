@@ -30,35 +30,24 @@
 (require 'org-roam-note)
 (require 'org-roam-review)
 
-(defcustom org-roam-links-ignored-ids nil
-  "List of IDs that are 'boring' and should always be ignored."
-  :group 'org-roam-links
-  :type '(repeat string))
-
-(defun org-roam-links-get (node)
-  (org-with-point-at (org-id-find (org-roam-node-id node) 'marker)
-    (when (org-at-heading-p) (org-narrow-to-subtree))
-    (let (ids)
-      (save-match-data
-        (while (search-forward-regexp (rx "[[id:" (group (+? nonl)) "]") nil t)
-          (push (match-string-no-properties 1) ids)))
-
-      (seq-mapcat (lambda (it) (ignore-errors
-                            (when-let* ((node (org-roam-node-from-id it)))
-                              (list node))))
-                  (nreverse ids)))))
-
 (plist-define org-roam-links-graph
   :required (:nodes :tree))
+
+(defun org-roam-links--forward-links (node)
+  (let ((elements (with-temp-buffer
+                    (insert-file-contents (org-roam-node-file node))
+                    (org-element-parse-buffer))))
+    (org-element-map elements 'link
+      (lambda (link)
+        (when (string= (org-element-property :type link) "id")
+          (org-roam-node-from-id (org-element-property :path link)))))))
 
 (defun org-roam-links-graph (node depth)
   "Return the linked nodes, and their links, up to DEPTH."
   (when (cl-plusp depth)
-    (let ((linked-nodes (seq-remove (lambda (it) (seq-contains-p org-roam-links-ignored-ids (org-roam-node-id it)))
-                         (append
-                          (seq-map #'org-roam-backlink-source-node (org-roam-backlinks-get node))
-                          (org-roam-links-get node))))
-
+    (let ((linked-nodes (append
+                         (org-roam-links--forward-links node)
+                         (seq-map #'org-roam-backlink-source-node (org-roam-backlinks-get node))))
           (nodes (ht-create))
           (tree (ht-create)))
       (dolist (node linked-nodes)
@@ -155,7 +144,7 @@ When called interactively, prompt the user for DEPTH."
         (seq-filter (lambda (note)
                       (not (org-roam-note-ignored-p note)))
                     (org-roam-notes-from-backlinks (org-roam-backlinks-get start-node)
-                                                          'all)))))))
+                                                   'all)))))))
 
 (provide 'org-roam-links)
 
