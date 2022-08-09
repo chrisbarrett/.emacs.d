@@ -96,30 +96,32 @@ When called interactively, prompt the user for DEPTH."
           (puthash (org-roam-node-id start-node) t seen-ids)
           (cl-labels ((render-at-depth
                        (tree depth)
-                       (maphash (lambda (id children)
-                                  (when-let* ((node (ht-get nodes id))
-                                              (note-exists-p (seq-find (lambda (it) (equal id (org-roam-note-id it))) notes)))
-                                    (let ((self-reference-p (equal (org-roam-node-id node)
-                                                                   (org-roam-node-id start-node))))
-                                      (unless (and (zerop depth) self-reference-p)
-                                        (magit-insert-section section (org-roam-preview-section)
-                                          (oset section parent root)
-                                          (oset section point (org-roam-node-point node))
-                                          (oset section file (org-roam-node-file node))
-                                          (let* ((seen-p (gethash id seen-ids))
-                                                 (face
-                                                  (cond
-                                                   ((zerop depth) 'magit-section-heading)
-                                                   (seen-p 'font-lock-comment-face)
-                                                   (t 'magit-section-secondary-heading)))
-                                                 (heading (propertize (org-roam-node-title node) 'font-lock-face face)))
+                       (let ((values
+                              (seq-sort-by (-compose 'downcase #'org-roam-node-title #'org-roam-node-from-id #'car) #'string<
+                                           (ht-to-alist tree))))
+                         (pcase-dolist (`(,id . ,children) values)
+                           (when-let* ((node (ht-get nodes id))
+                                       (note-exists-p (seq-find (lambda (it) (equal id (org-roam-note-id it))) notes)))
+                             (let ((self-reference-p (equal (org-roam-node-id node)
+                                                            (org-roam-node-id start-node))))
+                               (unless (and (zerop depth) self-reference-p)
+                                 (magit-insert-section section (org-roam-preview-section)
+                                   (oset section parent root)
+                                   (oset section point (org-roam-node-point node))
+                                   (oset section file (org-roam-node-file node))
+                                   (let* ((seen-p (gethash id seen-ids))
+                                          (face
+                                           (cond
+                                            ((zerop depth) 'magit-section-heading)
+                                            (seen-p 'font-lock-comment-face)
+                                            (t 'magit-section-secondary-heading)))
+                                          (heading (propertize (org-roam-node-title node) 'font-lock-face face)))
 
-                                            (magit-insert-heading (org-roam-review-indent-string heading depth))
-                                            (unless seen-p
-                                              (puthash id t seen-ids)
-                                              (when children
-                                                (render-at-depth children (1+ depth))))))))))
-                                tree)))
+                                     (magit-insert-heading (org-roam-review-indent-string heading depth))
+                                     (unless seen-p
+                                       (puthash id t seen-ids)
+                                       (when children
+                                         (render-at-depth children (1+ depth)))))))))))))
             (render-at-depth tree 0))))))))
 
 ;;;###autoload
