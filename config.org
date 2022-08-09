@@ -5692,7 +5692,7 @@ Automatically enter insert state when inserting new headings or using
     (org-hidden-keywords '(title author))
     (org-cycle-separator-lines 0)
     (org-hide-emphasis-markers t)
-    (org-startup-with-latex-preview nil)
+    (org-startup-with-latex-preview t)
     (org-startup-folded 'showall)
     (org-startup-shrink-all-tables t)
     (org-startup-with-inline-images t))
