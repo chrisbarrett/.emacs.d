@@ -24,6 +24,7 @@
 (require 'org)
 (require 'org-roam)
 (require 'org-roam-dailies)
+(require 'org-tags-filter)
 (require 'f)
 (require 'ht)
 (require 'ts)
