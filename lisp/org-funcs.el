@@ -213,7 +213,7 @@ TAGS are the tags to use when displaying the list."
           (save-match-data
             (looking-at org-link-any-re)
             (replace-match replacement t t)))
-        (write-file file)))))
+        (write-region (point-min) (point-max) file)))))
 
 (defun org-funcs--update-node-title (node new-title)
   (org-id-goto (org-roam-node-id node))
