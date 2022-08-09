@@ -238,6 +238,7 @@ descriptions updated to this value."
   (let ((backlinks (org-roam-backlinks-get node)))
     (cond
      ((null backlinks)
+      (org-funcs--update-node-title node new-title)
       (message "No backlinks found."))
      ((y-or-n-p (format "Rewriting %s link(s) from \"%s\" -> \"%s\". Continue? "
                         (length backlinks) (org-roam-node-title node) new-title))
