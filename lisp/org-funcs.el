@@ -215,6 +215,14 @@ TAGS are the tags to use when displaying the list."
             (replace-match replacement t t)))
         (write-file file)))))
 
+(defun org-funcs--update-node-title (node new-title)
+  (org-id-goto (org-roam-node-id node))
+  (cond ((equal 0 (org-roam-node-level node))
+         (org-funcs-set-title new-title))
+        ((looking-at org-complex-heading-regexp)
+         (replace-match new-title t t nil 4)))
+  (save-buffer))
+
 (defun org-funcs-rename-note (node new-title)
   "Change the title of a note and update links to match.
 
@@ -222,7 +230,8 @@ NODE is the node to update.
 
 NEW-TITLE is the new title to use. All backlinks will have their
 descriptions updated to this value."
-  (interactive (let* ((node (org-roam-node-read nil nil nil t "Rename: ")))
+  (interactive (let* ((node (org-roam-node-read (-some->> (org-roam-node-at-point) (org-roam-node-title))
+                                                nil nil t "Rename: ")))
                  (list node (read-string "New title: " (org-roam-node-title node)))))
   (org-roam-node-visit node)
   (org-save-all-org-buffers)
@@ -232,7 +241,7 @@ descriptions updated to this value."
       (message "No backlinks found."))
      ((y-or-n-p (format "Rewriting %s link(s) from \"%s\" -> \"%s\". Continue? "
                         (length backlinks) (org-roam-node-title node) new-title))
-      (org-funcs-set-title new-title)
+      (org-funcs--update-node-title node new-title)
       (org-funcs--rewrite-backlinks backlinks (org-roam-node-id node) new-title)
       (message "Rewrote %s links to note." (length backlinks)))
      (t
