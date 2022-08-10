@@ -226,7 +226,7 @@ BUILDER is the command argument builder."
         (insert (propertize "(Matched title)" 'font-lock-face 'font-lock-comment-face))
         (insert "\n\n"))
        (t
-        (throw 'skip nil))))))
+        (magit-cancel-section))))))
 
 (defvar org-roam-search-view-query-history nil)
 

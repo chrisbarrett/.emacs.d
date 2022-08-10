@@ -191,18 +191,17 @@ When called with a `C-u' prefix arg, clear the current filter."
       (insert "\n\n"))))
 
 (defun org-roam-review--insert-node (node)
-  (catch 'skip
-    (atomic-change-group
-      (magit-insert-section section (org-roam-node-section (org-roam-node-id node) t)
-        (magit-insert-heading (propertize (org-roam-node-title node)
-                                          'font-lock-face 'magit-section-secondary-heading))
-        (oset section node node)
-        ;; KLUDGE: Mofified macro-expansion of `magit-insert-section-body' that
-        ;; avoids unsetting the parent section's keymap.
-        (oset section washer
-              (lambda ()
-                (org-roam-review-insert-preview node)
-                (magit-section-maybe-remove-visibility-indicator section)))))))
+  (atomic-change-group
+    (magit-insert-section section (org-roam-node-section (org-roam-node-id node) t)
+      (magit-insert-heading (propertize (org-roam-node-title node)
+                                        'font-lock-face 'magit-section-secondary-heading))
+      (oset section node node)
+      ;; KLUDGE: Mofified macro-expansion of `magit-insert-section-body' that
+      ;; avoids unsetting the parent section's keymap.
+      (oset section washer
+            (lambda ()
+              (org-roam-review-insert-preview node)
+              (magit-section-maybe-remove-visibility-indicator section))))))
 
 (defvar org-roam-review-default-placeholder
   (propertize "(None)" 'face 'font-lock-comment-face))
