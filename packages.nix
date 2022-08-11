@@ -105,6 +105,7 @@ epkgs: with epkgs; [
   poporg
   popper
   projectile
+  proof-general
   rainbow-mode
   request
   rotate

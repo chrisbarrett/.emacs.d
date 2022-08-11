@@ -6045,6 +6045,7 @@ cookie or 'cleared', which indicates no special priority.
                                 (python . t)
                                 (http . t)
                                 (calc . t)
+                                (coq . t)
                                 (shell . t)))
     (org-babel-default-header-args:emacs-lisp '((:lexical . "yes")))
     (org-babel-clojure-backend 'cider)

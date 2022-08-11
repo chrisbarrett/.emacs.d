@@ -42,7 +42,12 @@
         (let ((form (read (thing-at-point 'sexp))))
           (when (equal form init--spurious-autoload-form)
             (delete-region (point) (end-of-thing 'sexp))))
-        (goto-char (line-end-position))))))
+        (goto-char (line-end-position)))
+
+      ;; Fix weird issue loading proof-general due to how it tries to compute its root dir.
+      (goto-char (point-min))
+      (when (search-forward "(expand-file-name \"generic/proof-site\" pg-init--pg-root)" nil t)
+        (delete-region (match-beginning 0) (match-end 0))))))
 
 (defun generate-package-autoloads ()
   "Generate a consolidated autoloads file of all installed packages."
@@ -95,10 +100,10 @@
                          (message "Init files: Adding:\n%s" body)))))))))
       (let ((lines-by-file
              (thread-last file-to-block-list
-               (seq-group-by #'car)
-               (seq-map (lambda (pair)
-                          (let ((lines (seq-reverse (seq-map #'cdr (cdr pair)))))
-                            (cons (car pair) (string-join lines "\n\n"))))))))
+                          (seq-group-by #'car)
+                          (seq-map (lambda (pair)
+                                     (let ((lines (seq-reverse (seq-map #'cdr (cdr pair)))))
+                                       (cons (car pair) (string-join lines "\n\n"))))))))
         (dolist (pair lines-by-file)
           (let ((file (car pair))
                 (lines (cdr pair)))
