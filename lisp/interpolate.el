@@ -33,7 +33,7 @@ Values not bound in the environment can be provided with BINDINGS-ALIST."
                (value (interpolate--lookup values var bindings-alist)))
           (goto-char (1+ beg))
           (delete-region (1+ beg) (1+ end))
-          (insert (format "%s" value))))
+          (insert (format "%s" (or value "")))))
       (buffer-string))))
 
 (defun interpolate--keyword-args-to-alist (kws-plist)
@@ -48,8 +48,17 @@ Values not bound in the environment can be provided with BINDINGS-ALIST."
 
 Values not bound in the global environment can be provided with KEYS, e.g.
 
-  (interpolate \"foo %%bar\" :bar \"baz\")
-  => \"foo baz\""
+  (interpolate \"%%x\" :x \"hello\")
+  => \"hello\"
+
+  (interpolate \"%%x\" :x nil)
+  => \"\"
+
+  (interpolate \"%%x\" :x '(a b c))
+  => \"(a b c)\"
+
+  (interpolate \"hellow %%x\" :x \"world\")
+  => \"hello, world\""
   (interpolate-string string (interpolate--keyword-args-to-alist keys)))
 
 (provide 'interpolate)
