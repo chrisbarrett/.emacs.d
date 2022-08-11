@@ -5727,16 +5727,10 @@ Automatically enter insert state when inserting new headings or using
   (use-package org-format
     :if (equal config-org-style 'sparse)
     :custom
+    (org-startup-indented t)
     (org-format-blank-lines-before-first-heading 1)
     (org-format-blank-lines-before-subheadings 1)
     (org-format-blank-lines-before-level-1-headings 1))
-#+end_src
-
-**** Indentation
-#+begin_src emacs-lisp
-  (use-package org
-    :custom
-    (org-startup-indented t))
 #+end_src
 
 **** =org-superstar= - Improve display of headlines
