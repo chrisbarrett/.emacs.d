@@ -1145,6 +1145,7 @@ system below.
   (use-package info
     :general
     (:states 'normal :keymaps 'Info-mode-map
+     "^" 'Info-up
      "C-n" 'Info-forward-node
      "C-p" 'Info-backward-node))
 #+end_src
