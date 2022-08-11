@@ -4385,6 +4385,14 @@ See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
       (sp-local-pair "[" "]" :post-handlers '(config-smartparens--format-checkitem))))
 #+end_src
 
+*** Remove broken python indentation hack
+#+begin_src emacs-lisp
+  (use-package smartparens-python
+    :config
+    (advice-remove 'python-indent-dedent-line-backspace
+                   'ad-Advice-python-indent-dedent-line-backspace))
+#+end_src
+
 ** =elisp-mode= - Emacs Lisp
 #+begin_src emacs-lisp
   (use-package elisp-mode
