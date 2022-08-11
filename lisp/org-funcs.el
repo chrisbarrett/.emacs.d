@@ -481,6 +481,10 @@ handles file titles, IDs and tags better."
             (org-roam-node-id node)
             (org-roam-node-formatted node))))
 
+(defun org-funcs-roam-node-to-link-string (node)
+  (org-link-make-string (concat "id:" (org-roam-node-id node))
+                        (org-roam-node-title node)))
+
 (provide 'org-funcs)
 
 ;;; org-funcs.el ends here
