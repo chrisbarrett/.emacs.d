@@ -6685,6 +6685,7 @@ This makes it much easier to edit text using emphasis markers correctly.
 
   (mode-leader-set-key :keymaps 'org-mode-map
     "<tab>" '(display-backlinks :wk "backlinks")
+    "<backtab>" '(org-roam-buffer-display-dedicated :wk "backlinks (dedicated)")
     "<" '(org-roam-dailies-find-previous-note :wk "prev daily")
     ">" '(org-roam-dailies-find-next-note :wk "next daily")
     "J" '(org-roam-dailies-goto-date :wk "goto daily...")
