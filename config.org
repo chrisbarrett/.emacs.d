@@ -6661,6 +6661,8 @@ This makes it much easier to edit text using emphasis markers correctly.
     (org-roam-v2-ack t)
     (org-roam-verbose nil)
     (org-roam-extract-new-file-path "%<%Y-%m-%d--%H-%M-%S>.org")
+    (org-roam-mode-sections '((org-roam-backlinks-section :unique t)
+                              (org-roam-reflinks-section)))
     (org-roam-dailies-capture-templates
      '(("d" "default" entry "* %?" :target
         (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d %A>\n#+filetags: :dailies:\n"))))
