@@ -6672,7 +6672,7 @@ This makes it much easier to edit text using emphasis markers correctly.
      "C-c TAB" (general-predicate-dispatch 'org-roam-node-insert
                  (org-at-table-p) 'org-ctrl-c-tab))
     :config
-    (org-roam-setup))
+    (org-roam-db-autosync-enable))
 #+end_src
 
 ** Set leader keys
