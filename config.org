@@ -6761,10 +6761,14 @@ This makes it much easier to edit text using emphasis markers correctly.
 
 ** =org-roam-review= - spaced-repetition implementation for org-roam notes
 #+begin_src emacs-lisp
+  (defun config-org-roam-maybe-set-seedling ()
+    (when (string-match-p "/notes/" (buffer-file-name))
+      (org-roam-review-set-seedling)))
+
   (use-package org-roam-review
     :hook
     (org-mode . org-roam-note-cache-mode)
-    (org-roam-capture-new-node . org-roam-review-set-seedling)
+    (org-roam-capture-new-node . config-org-roam-maybe-set-seedling)
     :custom
     (org-roam-note-cache-file (f-join paths-cache-directory "org-roam-review"))
     (org-roam-note-ignored-tags '("project" "client"))
