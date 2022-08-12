@@ -488,14 +488,14 @@ With two prefix args, show the list of outlines instead."
   (interactive "p")
   (if (equal 16 arg)
       (org-roam-review-list-outlines)
-    (let* ((notes
-            (ht-from-alist
-             (org-roam-note-cache-collect
-              (lambda (note)
-                (when (seq-contains-p (org-roam-note-local-tags note) "outline")
-                  (cons (string-remove-prefix "Outline - " (org-roam-note-title note)) note))))))
-           (choice (completing-read "Outline: " (ht-keys notes) nil t)))
-      (org-roam-node-visit (org-roam-note-to-node (gethash choice notes)) (equal arg 4)))))
+    (org-roam-node-visit
+     (org-roam-node-read nil
+                         (lambda (it)
+                           (and (equal (org-roam-node-level it) 0)
+                                (seq-contains-p (org-roam-node-tags it) "outline")))
+                         nil
+                         t
+                         "Outline: "))))
 
 (defun org-roam-review--note-added-group (note)
   (when-let* ((created (org-roam-note-created note))
