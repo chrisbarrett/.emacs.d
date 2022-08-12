@@ -5528,6 +5528,8 @@ Normally newlines are reflowed automatically.
      "<backtab>" 'org-global-cycle
      "<tab>" 'org-cycle
      "C-c c" 'org-columns
+     "C-c d" 'org-dynamic-block-insert-dblock
+     "C-c @" 'org-cite-insert
      "M-n" 'org-metadown
      "M-p" 'org-metaup
      "RET" 'org-open-at-point)
