@@ -6651,6 +6651,8 @@ This makes it much easier to edit text using emphasis markers correctly.
 * 📓 =org-roam= - Personal wiki & research tooling
 #+begin_src emacs-lisp
   (use-package org-roam
+    :after org
+    :demand t
     :commands
     org-roam-node-find
     org-roam-dailies-goto-today
