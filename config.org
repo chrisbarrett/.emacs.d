@@ -7124,6 +7124,31 @@ property drawer and the title. Advise it to fix that.
     :hook (org-mode . org-roam-dblocks-autoupdate-mode))
 #+end_src
 
+** Customise the way nodes are displayed when completing
+#+begin_src emacs-lisp
+  (use-package org-roam
+    :custom
+    (org-roam-node-display-template
+     (concat "${icon:3} " "${title:*}" (propertize "${slipbox:9}" 'face 'org-tag)))
+    :config
+    (cl-defmethod org-roam-node-slipbox ((node org-roam-node))
+      "Return the TYPE of NODE."
+      (condition-case nil
+          (let ((slipbox (cadr (reverse (f-split (org-roam-node-file node))))))
+            (if (or (equal slipbox "roam")
+                    (equal slipbox "notes"))
+                ""
+              slipbox))
+        (error "")))
+
+    (cl-defmethod org-roam-node-icon ((node org-roam-node))
+      "Return the TYPE of NODE."
+      (condition-case nil
+          (when-let* ((maturity (car (seq-intersection org-roam-review-maturity-values (org-roam-node-tags node)))))
+            (alist-get maturity org-roam-review-maturity-emoji-alist nil nil #'string=))
+        (error ""))))
+#+end_src
+
 * Load Lisp from other locations
 #+begin_src emacs-lisp
   (use-package org
