@@ -465,16 +465,6 @@ handles file titles, IDs and tags better."
                           (= 0 (org-roam-node-level node))))))))
     (org-roam-node-find other-window nil filter)))
 
-(defun org-funcs-new-note ()
-  (let ((require-final-newline nil))
-    (find-file (expand-file-name (format-time-string "%Y-%m-%d--%H-%M-%S.org")
-                                 org-roam-directory))))
-
-(defun org-funcs-new-outline-note ()
-  (let ((require-final-newline nil))
-    (find-file (expand-file-name (format-time-string "outlines/%Y-%m-%d--%H-%M-%S.org")
-                                 org-roam-directory))))
-
 (defun org-funcs-read-roam-node-link ()
   (let ((node (org-roam-node-read)))
     (format "[[id:%s][%s]]"
