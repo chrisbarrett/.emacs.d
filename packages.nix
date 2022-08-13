@@ -23,6 +23,7 @@ epkgs: with epkgs; [
   edit-indirect
   editorconfig
   elisp-slime-nav
+  embark
   emojify
   evil
   evil-args
