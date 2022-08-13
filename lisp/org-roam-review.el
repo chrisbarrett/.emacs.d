@@ -582,17 +582,10 @@ A higher score means that the note will appear less frequently."
           (message "Maturity set to '%s'. Review scheduled for %s" maturity next-review))))))
 
 (defun org-roam-review--update-workspace-for-completed-review ()
-  (let ((buf (current-buffer))
-        (initial-window-count (length (window-list))))
-    (save-buffer)
-    (when (< 1 initial-window-count)
-      (delete-window))
-    (kill-buffer buf)
-
-    (when (= 1 initial-window-count)
-      (-some->> (get-buffer "*org-roam-review*")
-        (org-roam-review-display-buffer-and-select)
-        (select-window)))))
+  (save-buffer)
+  (kill-buffer)
+  (when-let* ((buf (get-buffer "*org-roam-review*")))
+    (org-roam-review-display-buffer-and-select buf)))
 
 (defmacro org-roam-review--visiting-node-at-point (&rest body)
   (declare (indent 0))
@@ -611,6 +604,19 @@ A higher score means that the note will appear less frequently."
       (t
        (error "Invalid context for visiting node")))
      node))
+
+(defun org-roam-review--forward-to-uncommented-sibling ()
+  (ignore-errors
+    (let ((section (magit-current-section))
+          (stop)
+          (found))
+      (while (not stop)
+        (magit-section-forward-sibling)
+        (setq found (not (equal 'font-lock-comment-face (get-text-property (point) 'face))))
+        (let ((unchanged (equal (magit-current-section) section)))
+          (setq stop (or found unchanged))))
+      (when found
+        (magit-section-show (magit-current-section))))))
 
 (defun org-roam-review--update-review-buffer-entry (node)
   (when-let* ((buf (get-buffer "*org-roam-review*")))
@@ -635,9 +641,7 @@ A higher score means that the note will appear less frequently."
               (let ((inhibit-read-only t))
                 (put-text-property (line-beginning-position) (line-end-position) 'face 'font-lock-comment-face))
               (magit-section-hide section))
-            (ignore-errors
-              (magit-section-forward-sibling)
-              (magit-section-show (magit-current-section)))))))))
+            (org-roam-review--forward-to-uncommented-sibling)))))))
 
 ;;;###autoload
 (defun org-roam-review-accept ()
