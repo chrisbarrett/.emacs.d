@@ -605,6 +605,18 @@ A higher score means that the note will appear less frequently."
        (error "Invalid context for visiting node")))
      node))
 
+(defun org-roam-review--in-review-session-p ()
+  (and (< 1 (length (window-list)))
+       (seq-find (lambda (it) (equal (get-buffer "*org-roam-review*") (window-buffer it)))
+                 (window-list))))
+
+(defun org-roam-review-open-node-if-in-review-session ()
+  (if (org-roam-review--in-review-session-p)
+      (org-roam-node-visit (org-roam-node-at-point))
+    (magit-section-show (magit-current-section))))
+
+(defvar org-roam-review-next-node-selected-hook '(org-roam-review-open-node-if-in-review-session))
+
 (defun org-roam-review--forward-to-uncommented-sibling ()
   (ignore-errors
     (let ((section (magit-current-section))
@@ -616,7 +628,7 @@ A higher score means that the note will appear less frequently."
         (let ((unchanged (equal (magit-current-section) section)))
           (setq stop (or found unchanged))))
       (when found
-        (magit-section-show (magit-current-section))))))
+        (run-hooks 'org-roam-review-next-node-selected-hook)))))
 
 (defun org-roam-review--update-review-buffer-entry (node)
   (when-let* ((buf (get-buffer "*org-roam-review*")))
