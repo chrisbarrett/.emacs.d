@@ -5529,7 +5529,6 @@ Normally newlines are reflowed automatically.
      "<tab>" 'org-cycle
      "C-c c" 'org-columns
      "C-c d" 'org-dynamic-block-insert-dblock
-     "C-c @" 'org-cite-insert
      "M-n" 'org-metadown
      "M-p" 'org-metaup
      "RET" 'org-open-at-point)
@@ -7156,6 +7155,37 @@ property drawer and the title. Advise it to fix that.
             (alist-get maturity org-roam-review-maturity-emoji-alist nil nil #'string=))
         (error ""))))
 #+end_src
+
+** =org-cite= - Citations support in org-mode
+I use Zotero for capturing to my bibliography file, so Emacs is mostly a
+consumer of it.
+
+#+begin_src emacs-lisp
+  (use-package org
+    :general
+    (:keymaps 'org-mode-map "C-c b" 'org-cite-insert)
+    :custom
+    (org-cite-global-bibliography (list (f-join org-directory "org-roam.bib"))))
+#+end_src
+
+*** =citar= - Citations management UI
+#+begin_src emacs-lisp
+  (use-package citar
+    :custom
+    (org-cite-insert-processor 'citar)
+    (org-cite-follow-processor 'citar)
+    (org-cite-activate-processor 'citar)
+    (citar-bibliography org-cite-global-bibliography)
+    (citar-symbol-separator "  ")
+    :config
+    (require 'all-the-icons)
+    (setq citar-symbols
+          `((file ,(all-the-icons-faicon "file-o" :face 'all-the-icons-green :v-adjust -0.1) . " ")
+            (note ,(all-the-icons-material "speaker_notes" :face 'all-the-icons-blue :v-adjust -0.3) . " ")
+            (link ,(all-the-icons-octicon "link" :face 'all-the-icons-orange :v-adjust 0.01) . " "))))
+#+end_src
+
+*** TODO Evaluate =embark= & =citar-embark=
 
 * Load Lisp from other locations
 #+begin_src emacs-lisp
