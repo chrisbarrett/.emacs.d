@@ -7354,7 +7354,10 @@ consumer of it.
 ** org-roam-review
 #+begin_src emacs-lisp
   (display-buffer-set (rx bos "*org-roam-review*" eos)
-                      '((display-buffer-fullframe)))
+                      '((display-buffer-in-side-window)
+                        (inhibit-same-window . t)
+                        (side . left)
+                        (window-width . 50)))
 #+end_src
 
 ** org-roam-search
