@@ -4,6 +4,7 @@ epkgs: with epkgs; [
   browse-at-remote
   bufler
   cider
+  citar
   clojure-mode
   company
   company-auctex
