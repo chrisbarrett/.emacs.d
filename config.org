@@ -7321,10 +7321,7 @@ consumer of it.
 #+begin_src emacs-lisp
   (use-package citar
     :general
-    (:keymaps 'org-mode-map :prefix "C-c b"
-     "b" '(citar-insert-citation :wk "Insert citation")
-     "r" '(citar-insert-reference :wk "Insert reference")
-     "o" '(citar-open-notes :wk "Open note"))
+    (:keymaps 'org-mode-map "C-c b" '(citar-insert-citation :wk "Insert citation"))
     :preface
     :custom
     (org-cite-insert-processor 'citar)
