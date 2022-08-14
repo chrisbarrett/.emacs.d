@@ -3277,6 +3277,7 @@ Disabled for now since this breaks insert state in evil :/
 #+begin_src emacs-lisp
   (leader-set-key :infix "w"
     "" '(nil :wk "window")
+    "SPC" '(window-toggle-side-windows :wk "toggle side windows")
     "w" '(evil-window-next :wk "next")
     "r" '(evil-window-rotate-downwards :wk "rotate")
     "/" '(split-window-horizontally-dwim :wk "split (horizontal)")
