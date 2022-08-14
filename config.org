@@ -6938,18 +6938,20 @@ This makes it much easier to edit text using emphasis markers correctly.
   (add-hook 'org-mode-hook #'config-org-roam-set-buffer-identification)
 #+end_src
 
-** Open my index roam file as the initial buffer
+** Open my index file and notes review buffer
 #+begin_src emacs-lisp
-  (autoload 'org-roam-dailies-goto-today "org-roam-dailies")
-
   (defun initial-buffers ()
     (interactive)
-    (let ((inhibit-redisplay t))
+    (let ((inhibit-redisplay t)
+          (buf))
       (org-roam-node-visit (org-roam-node-from-id org-roam-index-node-id))
-      (delete-other-windows)
+      (setq buf (current-buffer))
       (goto-char (point-min))
+      (delete-other-windows)
       (org-roam-review)
-      (current-buffer)))
+      (set-window-dedicated-p (selected-window) t)
+      (display-buffer buf)
+      buf))
 
   (setq initial-buffer-choice #'initial-buffers)
 #+end_src
