@@ -5731,6 +5731,8 @@ Normally newlines are reflowed automatically.
      "<tab>" 'org-cycle
      "C-c c" 'org-columns
      "C-c d" 'org-dynamic-block-insert-dblock
+     "C-c n" 'org-next-link
+     "C-c p" 'org-previous-link
      "M-n" 'org-metadown
      "M-p" 'org-metaup
      "RET" 'org-open-at-point)
