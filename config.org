@@ -7365,8 +7365,8 @@ consumer of it.
   (use-package org
     :general
     (:keymaps 'org-mode-map "C-c b" 'org-cite-insert)
-    :custom
-    (org-cite-global-bibliography (list (f-join org-directory "org-roam.bib"))))
+    :config
+    (setq org-cite-global-bibliography (list "~/org/org-roam.bib")))
 #+end_src
 
 *** =citar= - Citations management UI
