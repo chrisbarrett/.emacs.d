@@ -5,6 +5,7 @@ epkgs: with epkgs; [
   bufler
   cider
   citar
+  citar-org-roam
   clojure-mode
   company
   company-auctex

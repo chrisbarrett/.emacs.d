@@ -24,4 +24,12 @@
     rev = "4a6b93c170169594e1e8ea60cd799a1a88a969da";
     sha256 = "1xzmx7m1qbl3b1x6yq1db1a108xqaa64ljfv1hdw763zmy4kc6m0";
   };
+
+  citar-org-roam = github {
+    name = "citar-org-roam";
+    owner = "emacs-citar";
+    rev = "2774e20bcfcd88d3173d4d08380885f1b5c05187";
+    sha256 = "sha256-DohzykbsE4ZD2foAiAI4MhFIuACi2NWOJbdMmA9Hgeo=";
+    buildInputs = [ esuper.citar esuper.org-roam ];
+  };
 }
