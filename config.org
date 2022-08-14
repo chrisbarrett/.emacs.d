@@ -641,54 +641,37 @@ applications. The following functions will be invoked by those scripts over
                       '((display-buffer-fullframe)))
 #+end_src
 
-** org-roam
+** org-roam & friends
 #+begin_src emacs-lisp
-  (display-buffer-set (rx bos "*org-roam: " (+ nonl))
-                      '((display-buffer-in-side-window)
-                        (inhibit-same-window . t)
-                        (slot . 1)
-                        (side . left)
-                        (window-width . 50)))
+  (cl-labels ((make-actions (&key (body-function
+                                   (lambda (win)
+                                     (set-window-dedicated-p win t)))
+                                  (slot 1)
+                                  window-height)
+                            `((display-buffer-in-side-window)
+                              (body-function . ,body-function)
+                              (slot . ,slot)
+                              (side . left)
+                              (window-height . ,window-height)
+                              (window-width . 50)))
 
-  (display-buffer-set (rx bos "*org-roam*" eos)
-                      '((display-buffer-in-side-window)
-                        (inhibit-same-window . t)
-                        (slot . 1)
-                        (side . left)
-                        (window-height . 20)
-                        (window-width . 50)
-                        (body-function . (lambda (win)
-                                           (save-window-excursion
-                                             (select-window win)
-                                             (goto-char (point-min))
-                                             (magit-section-hide-children (magit-current-section)))))))
-#+end_src
+              (hide-section-children (win)
+                                     (set-window-dedicated-p win t)
+                                     (save-window-excursion
+                                       (select-window win)
+                                       (goto-char (point-min))
+                                       (magit-section-hide-children (magit-current-section)))))
 
-** org-roam-review
-#+begin_src emacs-lisp
-  (display-buffer-set (rx bos "*org-roam-review*" eos)
-                      '((display-buffer-in-side-window)
-                        (inhibit-same-window . t)
-                        (side . left)
-                        (window-width . 50)))
-#+end_src
-
-** org-roam-search
-#+begin_src emacs-lisp
-  (display-buffer-set (rx bos "*org-roam-search*" eos)
-                      '((display-buffer-in-direction)
-                        (inhibit-same-window . t)
-                        (side . rightmost)
-                        (window-width . fit-window-to-buffer)))
-#+end_src
-
-** org-roam-links
-#+begin_src emacs-lisp
-  (display-buffer-set (rx bos "*org-roam-links*" eos)
-                      '((display-buffer-in-direction)
-                        (inhibit-same-window . t)
-                        (side . rightmost)
-                        (window-width . fit-window-to-buffer)))
+    (display-buffer-set (rx bos "*org-roam: " (+ nonl))
+                        (make-actions :body-function 'hide-section-children))
+    (display-buffer-set (rx bos "*org-roam*" eos)
+                        (make-actions :body-function 'hide-section-children))
+    (display-buffer-set (rx bos "*org-roam-review*" eos)
+                        (make-actions :slot 2 :window-height 0.3))
+    (display-buffer-set (rx bos "*org-roam-search*" eos)
+                        (make-actions))
+    (display-buffer-set (rx bos "*org-roam-links*" eos)
+                        (make-actions)))
 #+end_src
 
 ** pp
