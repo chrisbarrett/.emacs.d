@@ -509,6 +509,207 @@ applications. The following functions will be invoked by those scripts over
     (load-theme 'doom-one t))
 #+end_src
 
+* 🪟 display-buffer customisations
+
+** Define a full-frame display-buffer action
+#+begin_src emacs-lisp
+  (defun display-buffer-fullframe (buffer alist)
+    (when-let* ((window (or (display-buffer-reuse-window buffer alist)
+                            (display-buffer-same-window buffer alist)
+                            (display-buffer-pop-up-window buffer alist)
+                            (display-buffer-use-some-window buffer alist))))
+      (delete-other-windows window)
+      window))
+#+end_src
+
+** Prevent display-buffer from creating new frames
+#+begin_src emacs-lisp
+  (defun config--display-buffer-fallback (buffer &rest _)
+    (when-let* ((win (split-window-sensibly)))
+      (with-selected-window win
+        (switch-to-buffer buffer)
+        (help-window-setup (selected-window))))
+    t)
+
+  (setq display-buffer-fallback-action
+        '((display-buffer--maybe-same-window
+           display-buffer-reuse-window
+           display-buffer-in-previous-window
+           display-buffer-use-some-window
+           display-buffer-pop-up-window
+           config--display-buffer-fallback)))
+#+end_src
+
+** Define helper to update =display-buffer-alist= entries
+#+begin_src emacs-lisp
+  (defun display-buffer-set (regexp-or-predicate actions)
+    (setf (alist-get regexp-or-predicate display-buffer-alist nil nil #'equal) actions))
+#+end_src
+
+** compilation
+#+begin_src emacs-lisp
+  (display-buffer-set (rx bos "*compilation*" eos)
+                      '((display-buffer-in-direction)
+                        (side . bottom)
+                        (inhibit-same-window . t)
+                        (window-height . 0.4)))
+#+end_src
+
+** lisp debugger
+#+begin_src emacs-lisp
+  (display-buffer-set (rx bos "*Backtrace*" eos)
+                      '((display-buffer-in-direction)
+                        (inhibit-same-window . t)
+                        (side . bottom)
+                        (window-height . 0.4)))
+#+end_src
+
+** =flycheck=
+#+begin_src emacs-lisp
+  (display-buffer-set (rx bos "*Flycheck errors*" eos)
+                      '((display-buffer-in-side-window)
+                        (inhibit-same-window . t)
+                        (side . bottom)
+                        (window-height . 0.4)))
+#+end_src
+
+** help
+#+begin_src emacs-lisp
+  (display-buffer-set (rx bos (or (and "*Help*" eos)
+                                  "*helpful "))
+                      '((display-buffer-reuse-mode-window
+                         display-buffer-pop-up-window)
+                        (dedicated . t)
+                        (modes . (helpful-mode help-mode Info-mode))
+                        (side . rightmost)
+                        (window-width . 80)))
+
+  (display-buffer-set (rx bos "*lsp-help*" eos)
+                      '((display-buffer-at-bottom)
+                        (inhibit-same-window . t)
+                        (window-height   . 0.4)))
+#+end_src
+
+** =ielm=
+#+begin_src emacs-lisp
+  (display-buffer-set (rx bos "*ielm*" eos)
+                      '((display-buffer-in-direction)
+                        (inhibit-same-window . t)
+                        (slot . 1)
+                        (side . rightmost)
+                        (window-height . 0.4)
+                        (window-width . 80)))
+#+end_src
+
+** =cider=
+#+begin_src emacs-lisp
+  (display-buffer-set (rx bos "*cider-repl ")
+                      '((display-buffer-in-direction)
+                        (inhibit-same-window . t)
+                        (slot . 1)
+                        (side . rightmost)
+                        (window-height . 0.4)
+                        (window-width . 80)))
+#+end_src
+
+** ledger
+#+begin_src emacs-lisp
+  (display-buffer-set (rx bos "*Ledger Report*" eos)
+                      '((display-buffer-in-direction)
+                        (inhibit-same-window . t)
+                        (side . rightmost)
+                        (window-width . fit-window-to-buffer)))
+#+end_src
+
+** mu4e
+#+begin_src emacs-lisp
+  (display-buffer-set (rx bos " *mu4e-main*" eos)
+                      '((display-buffer-fullframe)))
+#+end_src
+
+** nix-repl
+#+begin_src emacs-lisp
+  (display-buffer-set (rx bos "*Nix-REPL*" eos)
+                      '((display-buffer-at-bottom)
+                        (inhibit-same-window . t)
+                        (window-height   . 0.4)))
+#+end_src
+
+** pass
+#+begin_src emacs-lisp
+  (display-buffer-set (rx bos "*Password-Store*" eos)
+                      '((display-buffer-fullframe)))
+#+end_src
+
+** org-roam
+#+begin_src emacs-lisp
+  (display-buffer-set (rx bos "*org-roam*" eos)
+                      '((display-buffer-in-direction)
+                        (inhibit-same-window . t)
+                        (window-width . fit-window-to-buffer)
+                        (window-height . 0.5)
+                        (side . right)))
+
+  (display-buffer-set (rx bos "*org-roam: " (+ nonl))
+                      '((display-buffer-in-side-window)
+                          (inhibit-same-window . t)
+                          (window-height . 0.5)
+                          (window-width . 0.3)
+                          (side . left)))
+#+end_src
+
+** org-roam-review
+#+begin_src emacs-lisp
+  (display-buffer-set (rx bos "*org-roam-review*" eos)
+                      '((display-buffer-in-side-window)
+                        (inhibit-same-window . t)
+                        (side . left)
+                        (window-width . 50)))
+#+end_src
+
+** org-roam-search
+#+begin_src emacs-lisp
+  (display-buffer-set (rx bos "*org-roam-search*" eos)
+                      '((display-buffer-in-direction)
+                        (inhibit-same-window . t)
+                        (side . rightmost)
+                        (window-width . fit-window-to-buffer)))
+#+end_src
+
+** org-roam-links
+#+begin_src emacs-lisp
+  (display-buffer-set (rx bos "*org-roam-links*" eos)
+                      '((display-buffer-in-direction)
+                        (inhibit-same-window . t)
+                        (side . rightmost)
+                        (window-width . fit-window-to-buffer)))
+#+end_src
+
+** pp
+#+begin_src emacs-lisp
+  (display-buffer-set (rx bos "*Pp Eval Output*" eos)
+                      '((display-buffer-at-bottom)
+                        (inhibit-same-window . t)
+                        (window-height . 0.4)))
+#+end_src
+
+** vlc
+#+begin_src emacs-lisp
+  (display-buffer-set (rx bos "*vlc*" eos)
+                      '((display-buffer-in-side-window)
+                        (inhibit-same-window . t)
+                        (side . bottom)
+                        (window-height . 0.1)))
+
+  (display-buffer-set (rx bos "*vlc-debug*" eos)
+                      '((display-buffer-reuse-mode-window
+                         display-buffer-pop-up-window)
+                        (dedicated . t)
+                        (modes . (helpful-mode help-mode Info-mode))
+                        (side . rightmost)
+                        (window-width . 80)))
+#+end_src
+
 * mode-line and header-line
 Use a header line instead of a mode line.
 
@@ -7200,207 +7401,6 @@ consumer of it.
     :config
     (when (file-directory-p paths-ledger-lisp-directory)
       (load (expand-file-name "init.el" paths-ledger-lisp-directory) t)))
-#+end_src
-
-* 🪟 display-buffer customisations
-
-** Define a full-frame display-buffer action
-#+begin_src emacs-lisp
-  (defun display-buffer-fullframe (buffer alist)
-    (when-let* ((window (or (display-buffer-reuse-window buffer alist)
-                            (display-buffer-same-window buffer alist)
-                            (display-buffer-pop-up-window buffer alist)
-                            (display-buffer-use-some-window buffer alist))))
-      (delete-other-windows window)
-      window))
-#+end_src
-
-** Prevent display-buffer from creating new frames
-#+begin_src emacs-lisp
-  (defun config--display-buffer-fallback (buffer &rest _)
-    (when-let* ((win (split-window-sensibly)))
-      (with-selected-window win
-        (switch-to-buffer buffer)
-        (help-window-setup (selected-window))))
-    t)
-
-  (setq display-buffer-fallback-action
-        '((display-buffer--maybe-same-window
-           display-buffer-reuse-window
-           display-buffer-in-previous-window
-           display-buffer-use-some-window
-           display-buffer-pop-up-window
-           config--display-buffer-fallback)))
-#+end_src
-
-** Define helper to update =display-buffer-alist= entries
-#+begin_src emacs-lisp
-  (defun display-buffer-set (regexp-or-predicate actions)
-    (setf (alist-get regexp-or-predicate display-buffer-alist nil nil #'equal) actions))
-#+end_src
-
-** compilation
-#+begin_src emacs-lisp
-  (display-buffer-set (rx bos "*compilation*" eos)
-                      '((display-buffer-in-direction)
-                        (side . bottom)
-                        (inhibit-same-window . t)
-                        (window-height . 0.4)))
-#+end_src
-
-** lisp debugger
-#+begin_src emacs-lisp
-  (display-buffer-set (rx bos "*Backtrace*" eos)
-                      '((display-buffer-in-direction)
-                        (inhibit-same-window . t)
-                        (side . bottom)
-                        (window-height . 0.4)))
-#+end_src
-
-** =flycheck=
-#+begin_src emacs-lisp
-  (display-buffer-set (rx bos "*Flycheck errors*" eos)
-                      '((display-buffer-in-side-window)
-                        (inhibit-same-window . t)
-                        (side . bottom)
-                        (window-height . 0.4)))
-#+end_src
-
-** help
-#+begin_src emacs-lisp
-  (display-buffer-set (rx bos (or (and "*Help*" eos)
-                                  "*helpful "))
-                      '((display-buffer-reuse-mode-window
-                         display-buffer-pop-up-window)
-                        (dedicated . t)
-                        (modes . (helpful-mode help-mode Info-mode))
-                        (side . rightmost)
-                        (window-width . 80)))
-
-  (display-buffer-set (rx bos "*lsp-help*" eos)
-                      '((display-buffer-at-bottom)
-                        (inhibit-same-window . t)
-                        (window-height   . 0.4)))
-#+end_src
-
-** =ielm=
-#+begin_src emacs-lisp
-  (display-buffer-set (rx bos "*ielm*" eos)
-                      '((display-buffer-in-direction)
-                        (inhibit-same-window . t)
-                        (slot . 1)
-                        (side . rightmost)
-                        (window-height . 0.4)
-                        (window-width . 80)))
-#+end_src
-
-** =cider=
-#+begin_src emacs-lisp
-  (display-buffer-set (rx bos "*cider-repl ")
-                      '((display-buffer-in-direction)
-                        (inhibit-same-window . t)
-                        (slot . 1)
-                        (side . rightmost)
-                        (window-height . 0.4)
-                        (window-width . 80)))
-#+end_src
-
-** ledger
-#+begin_src emacs-lisp
-  (display-buffer-set (rx bos "*Ledger Report*" eos)
-                      '((display-buffer-in-direction)
-                        (inhibit-same-window . t)
-                        (side . rightmost)
-                        (window-width . fit-window-to-buffer)))
-#+end_src
-
-** mu4e
-#+begin_src emacs-lisp
-  (display-buffer-set (rx bos " *mu4e-main*" eos)
-                      '((display-buffer-fullframe)))
-#+end_src
-
-** nix-repl
-#+begin_src emacs-lisp
-  (display-buffer-set (rx bos "*Nix-REPL*" eos)
-                      '((display-buffer-at-bottom)
-                        (inhibit-same-window . t)
-                        (window-height   . 0.4)))
-#+end_src
-
-** pass
-#+begin_src emacs-lisp
-  (display-buffer-set (rx bos "*Password-Store*" eos)
-                      '((display-buffer-fullframe)))
-#+end_src
-
-** org-roam
-#+begin_src emacs-lisp
-  (display-buffer-set (rx bos "*org-roam*" eos)
-                      '((display-buffer-in-direction)
-                        (inhibit-same-window . t)
-                        (window-width . fit-window-to-buffer)
-                        (window-height . 0.5)
-                        (side . right)))
-
-  (display-buffer-set (rx bos "*org-roam: " (+ nonl))
-                      '((display-buffer-in-side-window)
-                          (inhibit-same-window . t)
-                          (window-height . 0.5)
-                          (window-width . 0.3)
-                          (side . left)))
-#+end_src
-
-** org-roam-review
-#+begin_src emacs-lisp
-  (display-buffer-set (rx bos "*org-roam-review*" eos)
-                      '((display-buffer-in-side-window)
-                        (inhibit-same-window . t)
-                        (side . left)
-                        (window-width . 50)))
-#+end_src
-
-** org-roam-search
-#+begin_src emacs-lisp
-  (display-buffer-set (rx bos "*org-roam-search*" eos)
-                      '((display-buffer-in-direction)
-                        (inhibit-same-window . t)
-                        (side . rightmost)
-                        (window-width . fit-window-to-buffer)))
-#+end_src
-
-** org-roam-links
-#+begin_src emacs-lisp
-  (display-buffer-set (rx bos "*org-roam-links*" eos)
-                      '((display-buffer-in-direction)
-                        (inhibit-same-window . t)
-                        (side . rightmost)
-                        (window-width . fit-window-to-buffer)))
-#+end_src
-
-** pp
-#+begin_src emacs-lisp
-  (display-buffer-set (rx bos "*Pp Eval Output*" eos)
-                      '((display-buffer-at-bottom)
-                        (inhibit-same-window . t)
-                        (window-height . 0.4)))
-#+end_src
-
-** vlc
-#+begin_src emacs-lisp
-  (display-buffer-set (rx bos "*vlc*" eos)
-                      '((display-buffer-in-side-window)
-                        (inhibit-same-window . t)
-                        (side . bottom)
-                        (window-height . 0.1)))
-
-  (display-buffer-set (rx bos "*vlc-debug*" eos)
-                      '((display-buffer-reuse-mode-window
-                         display-buffer-pop-up-window)
-                        (dedicated . t)
-                        (modes . (helpful-mode help-mode Info-mode))
-                        (side . rightmost)
-                        (window-width . 80)))
 #+end_src
 
 * File postamble
