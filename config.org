@@ -7306,13 +7306,17 @@ I use Zotero for capturing to my bibliography file, so Emacs is mostly a
 consumer of it.
 
 #+begin_src emacs-lisp
+  (defconst config-bibfiles (list "~/org/org-roam.bib"))
+#+end_src
+
+
+#+begin_src emacs-lisp
   (use-package org
     :general
     (:keymaps 'org-mode-map "C-c @" 'org-cite-insert)
     :custom
     (org-cite-csl-styles-dir (expand-file-name "~/Documents/Zotero/styles/"))
-    :config
-    (setq org-cite-global-bibliography (list "~/org/org-roam.bib")))
+    (org-cite-global-bibliography config-bibfiles))
 #+end_src
 
 *** =citar= - Citations management UI
@@ -7330,7 +7334,7 @@ consumer of it.
     (org-cite-activate-processor 'citar)
     (citar-notes-paths '("~/org/roam/outlines"))
     (citar-open-note-function 'org-funcs-go-to-outline-for-key)
-    (citar-bibliography org-cite-global-bibliography)
+    (citar-bibliography config-bibfiles)
     (citar-symbol-separator "  ")
     :config
     (require 'all-the-icons)
