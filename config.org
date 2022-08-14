@@ -643,19 +643,25 @@ applications. The following functions will be invoked by those scripts over
 
 ** org-roam
 #+begin_src emacs-lisp
-  (display-buffer-set (rx bos "*org-roam*" eos)
-                      '((display-buffer-in-direction)
-                        (inhibit-same-window . t)
-                        (window-width . fit-window-to-buffer)
-                        (window-height . 0.5)
-                        (side . right)))
-
   (display-buffer-set (rx bos "*org-roam: " (+ nonl))
                       '((display-buffer-in-side-window)
-                          (inhibit-same-window . t)
-                          (window-height . 0.5)
-                          (window-width . 0.3)
-                          (side . left)))
+                        (inhibit-same-window . t)
+                        (slot . 1)
+                        (side . left)
+                        (window-width . 50)))
+
+  (display-buffer-set (rx bos "*org-roam*" eos)
+                      '((display-buffer-in-side-window)
+                        (inhibit-same-window . t)
+                        (slot . 1)
+                        (side . left)
+                        (window-height . 20)
+                        (window-width . 50)
+                        (body-function . (lambda (win)
+                                           (save-window-excursion
+                                             (select-window win)
+                                             (goto-char (point-min))
+                                             (magit-section-hide-children (magit-current-section)))))))
 #+end_src
 
 ** org-roam-review
