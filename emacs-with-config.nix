@@ -30,7 +30,7 @@ let
   };
 
   builders = pkgs.callPackage ./builders { };
-  emacsEnv = (pkgs.emacsPackagesFor emacs).overrideScope' (import ./pkg-overrides.nix builders);
+  emacsEnv = (pkgs.emacsPackagesFor emacs).overrideScope' (pkgs.callPackage ./pkg-overrides.nix builders);
   packages = import ./packages.nix;
 
   customPathEntries =
