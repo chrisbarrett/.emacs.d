@@ -2673,9 +2673,7 @@ See:
   (autoload 'selectrum-repeat "selectrum")
 
   (leader-set-key
-    "$" '(popper-toggle-latest :wk "toggle popups")
-    "+" '(popper-toggle-type :wk "toggle popup or normal")
-    "-" '(popper-kill-latest-popup :wk "kill latest popup")
+    "-" '(window-toggle-side-windows :wk "toggle side windows")
     "!" '(async-shell-command :wk "shell cmd (async)")
     "'" (general-predicate-dispatch 'poporg-dwim
           (bound-and-true-p poporg-mode) 'poporg-edit-exit
@@ -2692,9 +2690,7 @@ See:
               :wk "search...")
     ":" '(eval-expression-interactively :wk "eval")
     ";" '(ielm :wk "Lisp REPL")
-    "<tab>" (list (general-predicate-dispatch 'alternate-buffer
-                    (and (bound-and-true-p popper-popup-status) (memq popper-popup-status '(popup user-popup))) 'popper-cycle)
-                  :wk "other buf")
+    "<tab>" '(alternate-buffer :wk "other buf")
     "?" '(general-describe-keybindings :wk "show bindings")
     "@" '(consult-bookmark :wk "bookmark")
     "|" '(rotate-layout :wk "rotate window layout")
@@ -3483,24 +3479,6 @@ after editing actions have changed what windows are shown.
 #+begin_src emacs-lisp
   (use-package rotate
     :commands (rotate-layout))
-#+end_src
-
-** =popper= - Categorise buffers for window assignments
-#+begin_src emacs-lisp
-  (use-package popper
-    :hook (after-init . popper-mode)
-    :custom
-    (popper-mode-line nil)
-    (popper-group-function 'popper-group-by-projectile)
-    (popper-display-control nil)
-    (popper-reference-buffers (list (rx bol "*Messages*" eol)
-                                    (rx bol "*ielm*" eol)
-                                    (rx bol "*" (? "Async ") "Shell Command")
-                                    'org-roam-mode
-                                    'org-roam-review-mode
-                                    'help-mode
-                                    'occur-mode
-                                    'compilation-mode)))
 #+end_src
 
 * Text completion engines

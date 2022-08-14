@@ -106,7 +106,6 @@ epkgs: with epkgs; [
   pdf-tools
   plantuml-mode
   poporg
-  popper
   projectile
   proof-general
   rainbow-mode
