@@ -7321,6 +7321,8 @@ consumer of it.
 
 *** =citar= - Citations management UI
 #+begin_src emacs-lisp
+  (autoload 'citar-org-roam-mode "citar-org-roam")
+
   (use-package citar
     :general
     (:keymaps 'org-mode-map :prefix "C-c b"
@@ -7337,14 +7339,13 @@ consumer of it.
     (citar-bibliography config-bibfiles)
     (citar-symbol-separator "  ")
     :config
+    (citar-org-roam-mode)
     (require 'all-the-icons)
     (setq citar-symbols
           `((file ,(all-the-icons-faicon "file-o" :face 'all-the-icons-green :v-adjust -0.1) . " ")
             (note ,(all-the-icons-material "speaker_notes" :face 'all-the-icons-blue :v-adjust -0.3) . " ")
             (link ,(all-the-icons-octicon "link" :face 'all-the-icons-orange :v-adjust 0.01) . " "))))
 #+end_src
-
-*** TODO Evaluate =embark= & =citar-embark=
 
 * Load Lisp from other locations
 #+begin_src emacs-lisp
