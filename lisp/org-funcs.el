@@ -101,6 +101,43 @@
 (defun org-funcs-high-priority-p ()
   (equal ?A (nth 3 (org-heading-components))))
 
+(defun org-funcs-toggle-priority ()
+  "Toggle the priority cookie on the current line."
+  (interactive)
+  (save-excursion
+    (org-back-to-heading t)
+    (-let [(_ _ _ priority) (org-heading-components)]
+      (cond (priority
+             (org-priority ?\s)
+             (message "Priority cleared"))
+            (t
+             (org-priority ?A)
+             (message "Priority set"))))))
+
+(defun org-funcs-agenda-toggle-priority ()
+  "Toggle the priority cookie on the current line."
+  (interactive)
+
+  (org-agenda-check-no-diary)
+  (unless (org-get-at-bol 'org-marker)
+    (org-agenda-error))
+
+  (let* ((col (current-column))
+         (heading-marker (org-get-at-bol 'org-hd-marker))
+         (buffer (marker-buffer heading-marker))
+         (pos (marker-position heading-marker))
+         (inhibit-read-only t)
+         updated-heading)
+    (org-with-remote-undo buffer
+      (with-current-buffer buffer
+        (widen)
+        (goto-char pos)
+        (org-show-context 'agenda)
+        (org-funcs-toggle-priority)
+        (setq updated-heading (org-get-heading)))
+      (org-agenda-change-all-lines updated-heading heading-marker)
+      (org-move-to-column col))))
+
 (defun org-funcs--parent-scheduled-in-future-p ()
   (save-restriction
     (widen)

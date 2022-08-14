@@ -5814,6 +5814,19 @@ Normally newlines are reflowed automatically.
       (add-to-list 'org-id-files file)))
 #+end_src
 
+** Turn priorities into an on/off flag
+I customise priorities so that headlines are either 'prioritised' an show a
+cookie or 'cleared', which indicates no special priority.
+
+#+begin_src emacs-lisp
+  (use-package org
+    :custom
+    (org-priority-start-cycle-with-default t)
+    (org-highest-priority ?A)
+    (org-lowest-priority ?B)
+    (org-default-priority ?B))
+#+end_src
+
 ** Tweak flyspell verification function
 #+begin_src emacs-lisp
   (defun config-org-ignore-formulae (result)
@@ -5830,10 +5843,12 @@ Normally newlines are reflowed automatically.
     org-funcs-agenda-dwim
     org-funcs-todo-list
     org-funcs-read-url
-    org-funcs-toggle-priority
     :general
     (:keymaps 'org-mode-map :states '(normal insert emacs)
-     "C-c l" 'org-funcs-insert-url-as-link))
+     "C-c !" 'org-funcs-toggle-priority
+     "C-c l" 'org-funcs-insert-url-as-link)
+    (:keymaps 'org-agenda-mode-map :states 'motion
+     "C-c !" 'org-funcs-agenda-toggle-priority))
 #+end_src
 
 ** =evil-org= - Improve Evil integration with org-mode
@@ -6148,72 +6163,6 @@ Exit minibuffer before adding notes.
           (?p nil))))
 
     (advice-add 'org-archive-subtree :before 'org-apply-tags-before-archive))
-#+end_src
-
-** Turn priorities into an on/off flag
-I customise priorities so that headlines are either 'prioritised' an show a
-cookie or 'cleared', which indicates no special priority.
-
-#+begin_src emacs-lisp
-  (use-package org
-    :custom
-    (org-priority-start-cycle-with-default t)
-    (org-highest-priority ?A)
-    (org-lowest-priority ?B)
-    (org-default-priority ?B))
-#+end_src
-
-~C-c p~ toggles a priority cookie on the current heading.
-
-*** Toggle priority in org-mode
-#+begin_src emacs-lisp
-  (use-package org
-    :general
-    (:states 'normal :keymaps 'org-mode-map "C-c p" 'org-funcs-toggle-priority)
-    :config
-    (defun org-funcs-toggle-priority ()
-      "Toggle the priority cookie on the current line."
-      (interactive)
-      (save-excursion
-        (org-back-to-heading t)
-        (-let [(_ _ _ priority) (org-heading-components)]
-          (cond (priority
-                 (org-priority ?\s)
-                 (message "Priority cleared"))
-                (t
-                 (org-priority ?A)
-                 (message "Priority set")))))))
-#+end_src
-
-*** Toggle priority in org-agenda
-#+begin_src emacs-lisp
-  (use-package org-agenda
-    :general
-    (:states 'motion :keymaps 'org-agenda-mode-map "C-c p" 'org-funcs-agenda-toggle-priority)
-    :config
-    (defun org-funcs-agenda-toggle-priority ()
-      "Toggle the priority cookie on the current line."
-      (interactive)
-
-      (org-agenda-check-no-diary)
-      (unless (org-get-at-bol 'org-marker)
-        (org-agenda-error))
-
-      (let* ((col (current-column))
-             (heading-marker (org-get-at-bol 'org-hd-marker))
-             (buffer (marker-buffer heading-marker))
-             (pos (marker-position heading-marker))
-             (inhibit-read-only t)
-             updated-heading)
-        (org-with-remote-undo buffer
-          (with-current-buffer buffer
-            (widen)
-            (goto-char pos)
-            (org-show-context 'agenda)
-            (org-funcs-toggle-priority)
-            (setq updated-heading (org-get-heading)))
-          (org-agenda-change-all-lines updated-heading heading-marker)
-          (org-move-to-column col)))))
 #+end_src
 
 ** Export
