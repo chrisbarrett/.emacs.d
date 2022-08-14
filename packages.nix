@@ -25,6 +25,7 @@ epkgs: with epkgs; [
   editorconfig
   elisp-slime-nav
   embark
+  embark-consult
   emojify
   evil
   evil-args
