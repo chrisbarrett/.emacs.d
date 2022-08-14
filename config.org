@@ -3449,6 +3449,19 @@ See: [[https://github.com/raxod502/selectrum/issues/498#issuecomment-876424791][
     :hook (after-init . marginalia-mode))
 #+end_src
 
+** =embark= - adds a general contextual menu
+#+begin_src emacs-lisp
+  (use-package embark
+    :demand t
+    :general ("C-@" 'embark-act))
+
+  (use-package embark-consult
+    :after (:all embark consult)
+    :demand t
+    :hook
+    (embark-collect-mode . consult-preview-at-point-mode))
+#+end_src
+
 * Window management
 
 ** =winner= - Window state history
