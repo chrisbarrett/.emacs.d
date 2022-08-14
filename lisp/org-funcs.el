@@ -512,6 +512,36 @@ handles file titles, IDs and tags better."
   (org-link-make-string (concat "id:" (org-roam-node-id node))
                         (org-roam-node-title node)))
 
+
+
+(defconst org-funcs-key-sequence-for-outline-capture-template "ro"
+  "The key sequence for the outline note capture template.")
+
+(defvar org-funcs--cite-key-for-capture nil
+  "Side-channel variable used to inject citation read from prompt.
+
+It should only ever be dynamically bound.")
+
+(autoload 'citar-select-ref "citar")
+
+(defun org-funcs-citation-from-capture-or-read ()
+  "Get a citar reference for use in an org capture template.
+
+If capture was triggered by trying to navigate to non-existent a
+notes file, return the reference that was originally selected by
+the user.
+
+Otherwise, prompt the user for a reference."
+  (or org-funcs--cite-key-for-capture
+      (citar-select-ref)))
+
+(defun org-funcs-go-to-outline-for-key (key &optional attrs)
+  "See `citar-open-note-function'."
+  (if-let* ((node (org-roam-node-from-ref (concat "@" key))))
+      (org-roam-node-visit node)
+    (let ((org-funcs--cite-key-for-capture (cons key attrs)))
+      (org-capture nil org-funcs-key-sequence-for-outline-capture-template))))
+
 (provide 'org-funcs)
 
 ;;; org-funcs.el ends here

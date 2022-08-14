@@ -3178,6 +3178,7 @@ Disabled for now since this breaks insert state in evil :/
     "ra" '(org-roam-review-list-authors :wk "review authors")
     "rd" '(org-roam-review-list-recently-added :wk "recently added")
     "ro" '(org-roam-review-visit-outline :wk "outlines...")
+    "rb" '(citar-open-notes :wk "outlines (from bib)...")
     "rr" '(org-roam-review :wk "review due evergreens")
     "rt" '(org-roam-search-tags :wk "search (tags)...")
     "ru" '(org-roam-review-list-uncategorised :wk "uncategorised notes")
@@ -7307,7 +7308,7 @@ consumer of it.
 #+begin_src emacs-lisp
   (use-package org
     :general
-    (:keymaps 'org-mode-map "C-c b" 'org-cite-insert)
+    (:keymaps 'org-mode-map "C-c @" 'org-cite-insert)
     :custom
     (org-cite-csl-styles-dir (expand-file-name "~/Documents/Zotero/styles/"))
     :config
@@ -7317,10 +7318,18 @@ consumer of it.
 *** =citar= - Citations management UI
 #+begin_src emacs-lisp
   (use-package citar
+    :general
+    (:keymaps 'org-mode-map :prefix "C-c b"
+     "b" '(citar-insert-citation :wk "Insert citation")
+     "r" '(citar-insert-reference :wk "Insert reference")
+     "o" '(citar-open-notes :wk "Open note"))
+    :preface
     :custom
     (org-cite-insert-processor 'citar)
     (org-cite-follow-processor 'citar)
     (org-cite-activate-processor 'citar)
+    (citar-notes-paths '("~/org/roam/outlines"))
+    (citar-open-note-function 'org-funcs-go-to-outline-for-key)
     (citar-bibliography org-cite-global-bibliography)
     (citar-symbol-separator "  ")
     :config
