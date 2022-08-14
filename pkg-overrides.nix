@@ -1,4 +1,4 @@
-{ emacsmirror, github, ... }: eself: esuper: {
+{ emacsmirror, github, fetchzip, ... }: eself: esuper: {
   org-transclusion = github {
     name = "org-transclusion";
     owner = "nobiot";
@@ -32,4 +32,11 @@
     sha256 = "sha256-DohzykbsE4ZD2foAiAI4MhFIuACi2NWOJbdMmA9Hgeo=";
     buildInputs = [ esuper.citar esuper.org-roam ];
   };
+
+  citar = esuper.citar.overrideAttrs (it: {
+    src = fetchzip {
+      url = "https://github.com/emacs-citar/citar/archive/beb9ce96a083d5cbd3bd5ccdce4cd199424def1f.tar.gz";
+      sha256 = "sha256-mVfKNf01wsnwrsDavNhrC8w205L2U8ZZKgRdzYPhays=";
+    };
+  });
 }
