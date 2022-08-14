@@ -7308,6 +7308,8 @@ consumer of it.
   (use-package org
     :general
     (:keymaps 'org-mode-map "C-c b" 'org-cite-insert)
+    :custom
+    (org-cite-csl-styles-dir (expand-file-name "~/Documents/Zotero/styles/"))
     :config
     (setq org-cite-global-bibliography (list "~/org/org-roam.bib")))
 #+end_src
