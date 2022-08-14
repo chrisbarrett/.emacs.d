@@ -6822,9 +6822,16 @@ This makes it much easier to edit text using emphasis markers correctly.
         (org-roam-buffer-refresh)))
     (org-roam-buffer-toggle))
 
+  (defun display-backlinks-dedicated (node)
+    "Display a dedicated backlinks buffer for NODE."
+    (interactive (list (if current-prefix-arg
+                           (org-roam-node-read nil nil nil 'require-match)
+                         (org-roam-node-at-point 'assert))))
+    (org-roam-buffer-display-dedicated node))
+
   (mode-leader-set-key :keymaps 'org-mode-map
     "<tab>" '(display-backlinks :wk "backlinks")
-    "<backtab>" '(org-roam-buffer-display-dedicated :wk "backlinks (dedicated)")
+    "<backtab>" '(display-backlinks-dedicated :wk "backlinks (dedicated)")
     "<" '(org-roam-dailies-find-previous-note :wk "prev daily")
     ">" '(org-roam-dailies-find-next-note :wk "next daily")
     "J" '(org-roam-dailies-goto-date :wk "goto daily...")
