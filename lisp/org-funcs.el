@@ -542,6 +542,14 @@ Otherwise, prompt the user for a reference."
     (let ((org-funcs--cite-key-for-capture (cons key attrs)))
       (org-capture nil org-funcs-key-sequence-for-outline-capture-template))))
 
+
+
+(defun org-funcs-clean-bibtex-string (s)
+  "Remove quoting brackets and superfluous whitespace from string S."
+  (string-replace "\\&" "&"
+   (replace-regexp-in-string "[\n\t ]+" " "
+                             (replace-regexp-in-string "[\"{}]+" "" s))))
+
 (provide 'org-funcs)
 
 ;;; org-funcs.el ends here

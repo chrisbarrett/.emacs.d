@@ -7327,6 +7327,8 @@ consumer of it.
     (org-cite-insert-processor 'citar)
     (org-cite-follow-processor 'citar)
     (org-cite-activate-processor 'citar)
+    (citar-display-transform-functions `((("author" "editor") . ,(-compose 'citar--shorten-names 'org-funcs-clean-bibtex-string))
+                                         (("title") . org-funcs-clean-bibtex-string)))
     (citar-notes-paths '("~/org/roam/outlines"))
     (citar-open-note-function 'org-funcs-go-to-outline-for-key)
     (citar-bibliography config-bibfiles)
