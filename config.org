@@ -434,6 +434,7 @@ Load host-specific settings, which are not checked into version control.
                               '(org-document-info-keyword ((t :italic nil)) t)
                               '(org-meta-line ((t :italic nil)) t)
                               '(org-link ((t :weight unspecified :underline nil)) t)
+                              '(org-footnote ((t :foreground nil :slant italic :inherit font-lock-comment-face)))
                               '(compilation-warning ((t :italic nil)))
                               '(magit-header-line ((t :background nil :box nil)))
                               `(org-document-title ,title)
@@ -5702,6 +5703,7 @@ Normally newlines are reflowed automatically.
     :general
     ("C-c a" 'org-agenda
      "C-c s" 'org-search-view
+     "C-c f" 'org-footnote-new
      "C-c t" 'org-todo-list
      "C-c /" 'org-tags-view)
     (:states '(insert) :keymaps 'org-mode-map
