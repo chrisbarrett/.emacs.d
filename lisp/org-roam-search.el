@@ -19,12 +19,12 @@
 
 ;;; Commentary:
 
-;; Org-roam works best when your notes are divided into many files, but this
+;; Org-roam works best when your nodes are divided into many files, but this
 ;; makes the org-search functionality unsuitable. ripgrep does a better job, but
-;; has the problem that it shows the raw filenames instead of the note title.
+;; has the problem that it shows the raw filenames instead of the node title.
 
 ;; This implementation of search aims to surface matched text along with the
-;; title of the relevant note, when available.
+;; title of the relevant node, when available.
 
 ;;; Code:
 
@@ -37,7 +37,7 @@
 (require 'pcre2el)
 
 (defgroup org-roam-search nil
-  "Notes search interface for org-roam."
+  "Node search interface for org-roam."
   :group 'productivity
   :prefix "org-roam-search-")
 
@@ -164,10 +164,7 @@ BUILDER is the command argument builder."
     (save-match-data
       (let ((transpiled-regexp (pcre-to-elisp regexp)))
         (while (search-forward-regexp transpiled-regexp nil t)
-          (unless (seq-intersection (face-at-point nil t) '(magit-section-heading
-                                                            org-roam-review-instructions
-                                                            org-roam-note-filter
-                                                            org-roam-note-filter-keyword))
+          (unless (seq-intersection (face-at-point nil t) '(magit-section-heading org-roam-review-instructions))
             (let ((overlay (make-overlay (let ((pt (match-beginning 0)))
                                            (goto-char pt)
                                            (min pt (or (car (save-match-data (bounds-of-thing-at-point 'word)))
@@ -230,9 +227,9 @@ BUILDER is the command argument builder."
 
 (defvar org-roam-search-view-query-history nil)
 
-(defun org-roam-search--ripgrep-for-notes (query)
-  (let ((reporter (make-progress-reporter "Searching notes"))
-        (notes (ht-create)))
+(defun org-roam-search--ripgrep-for-nodes (query)
+  (let ((reporter (make-progress-reporter "Searching nodes"))
+        (files (ht-create)))
     (async-wait
      (async-start-process "ripgrep" "rg"
 
@@ -248,62 +245,50 @@ BUILDER is the command argument builder."
                                            ((&plist :data (&plist :path (&plist :text file) :absolute_offset pos))
                                             (when (equal "match" type)
                                               parsed))
-
-                                           (note (with-current-buffer (find-file-noselect (expand-file-name file org-roam-directory))
-                                                   (goto-char pos)
-                                                   (org-roam-note-at-point))))
-
-                                (puthash (org-roam-note-id note) note notes))
+                                           (file (expand-file-name file org-roam-directory)))
+                                (puthash file file files))
                               (forward-line)))
 
                           "--smart-case"
                           "--json"
                           query org-roam-directory))
     (progress-reporter-done reporter)
-    (ht-values notes)))
+    (seq-filter (lambda (node)
+                  (and (ht-get files (org-roam-node-file node))
+                       (not (org-roam-review-node-ignored-p node))))
+                (org-roam-node-list))))
 
-(defun org-roam-search--make-insert-notes-fn (query)
-  (let ((insert-preview (org-roam-search-make-insert-preview-fn query)))
-    (-lambda ((&plist :notes :placeholder :root))
-      (let ((notes (seq-remove #'org-roam-note-ignored-p notes)))
-        (cond
-         ((null notes)
-          (insert placeholder)
-          (newline))
-         (t
-          (let ((search-hits (seq-map #'org-roam-note-id notes)))
-            (pcase-dolist (`(,file-id . ,group) (seq-group-by #'org-roam-note-file-id notes))
-              (when-let* ((top-note (-some->> file-id (org-roam-note-from-id)))
-                          (heading (org-link-display-format (org-roam-note-title top-note))))
-                (magit-insert-section section (org-roam-node-section)
-                  (magit-insert-heading
-                    (concat (propertize heading 'font-lock-face 'magit-section-heading)
-                            " "
-                            (when-let* ((mat (org-roam-note-maturity top-note)))
-                              (alist-get mat org-roam-review-maturity-emoji-alist nil nil #'equal))))
-                  (oset section parent root)
-
-                  (let ((top-node (org-roam-node-from-id file-id)))
-                    (oset section node top-node)
-                    (when (seq-contains-p search-hits file-id)
-                      (org-roam-review-insert-preview top-node)))
-
-                  (dolist (note group)
-                    (when-let* ((note-id (org-roam-note-id note))
-                                (node (org-roam-node-from-id note-id)))
-                      (unless (equal note-id file-id)
-                        (atomic-change-group
-                          (magit-insert-section section (org-roam-node-section nil t)
-                            (magit-insert-heading (concat "  " (propertize (org-link-display-format (org-roam-note-title note))
-                                                                           'font-lock-face
-                                                                           'magit-section-secondary-heading)))
-                            (oset section node node)
-                            (funcall insert-preview node))))))))))
-          (org-roam-search--highlight-matches query)))))))
+(defun org-roam-search--make-insert-nodes-fn (query)
+  (-lambda ((&plist :nodes :placeholder :root))
+    (let ((nodes (seq-remove #'org-roam-review-node-ignored-p nodes)))
+      (cond
+       ((null nodes)
+        (insert placeholder)
+        (newline))
+       (t
+        (pcase-dolist (`(,_file . ,group) (seq-group-by #'org-roam-node-file nodes))
+          (when-let* ((top-node (-max-by (-on #'< #'org-roam-node-level)
+                                         group) )
+                      (node-id (org-roam-node-id top-node))
+                      (heading (org-link-display-format (org-roam-node-title top-node))))
+            (magit-insert-section section (org-roam-node-section node-id t)
+              (magit-insert-heading
+                (concat (propertize heading 'font-lock-face 'magit-section-heading)
+                        " "
+                        (when-let* ((mat (org-roam-review-node-maturity top-node)))
+                          (alist-get mat org-roam-review-maturity-emoji-alist nil nil #'equal))))
+              (oset section parent root)
+              (oset section node top-node)
+              (oset section washer
+                    (lambda ()
+                      (org-roam-review-insert-preview top-node)
+                      (org-roam-search--highlight-matches query)
+                      (magit-section-maybe-remove-visibility-indicator section))))))
+        (org-roam-search--highlight-matches query))))))
 
 ;;;###autoload
 (defun org-roam-search-view (query)
-  "Search `org-roam-directory' for notes matching a query.
+  "Search `org-roam-directory' for nodes matching a query.
 
 QUERY is a PRCE regexp string that will be passed to ripgrep."
   (interactive (list
@@ -319,16 +304,16 @@ QUERY is a PRCE regexp string that will be passed to ripgrep."
     :title (format "Search Results: %s" query)
     :placeholder "No search results"
     :buffer-name org-roam-search-buffer-name
-    :insert-notes-fn (org-roam-search--make-insert-notes-fn query)
-    :notes
+    :insert-nodes-fn (org-roam-search--make-insert-nodes-fn query)
+    :nodes
     (lambda ()
-      (org-roam-search--ripgrep-for-notes query)))))
+      (org-roam-search--ripgrep-for-nodes query)))))
 
 (defvar org-roam-search-view-tags-query-history nil)
 
 ;;;###autoload
 (defun org-roam-search-tags (query)
-  "Search `org-roam-directory' for notes matching a tags query.
+  "Search `org-roam-directory' for nodes matching a tags query.
 
 QUERY is an `org-tags-filter'."
   (interactive (list (org-tags-filter-read "Search by tags filter (+/-): ")))
@@ -336,22 +321,19 @@ QUERY is an `org-tags-filter'."
   (org-roam-review-display-buffer-and-select
    (org-roam-review-create-buffer
     :title "Tag Search Results"
-    :instructions "The list below contains notes matching the given tags."
+    :instructions "The list below contains nodes matching the given tags."
     :placeholder "No search results"
     :buffer-name org-roam-search-tags-buffer-name
-    :sort (-on #'string-lessp #'org-roam-note-title)
-    :notes
+    :sort (-on #'string-lessp #'org-roam-node-title)
+    :nodes
     (lambda ()
-      (org-roam-note-cache-collect
-       (lambda (note)
-         (unless (org-roam-note-ignored-p note)
-           note)))))))
+      (seq-remove #'org-roam-review-node-ignored-p (org-roam-node-list))))))
 
 (defun org-roam-search--kill-buffer ()
   (when-let* ((buf (get-buffer org-roam-search-buffer-name)))
     (kill-buffer buf)))
 
-(add-hook 'org-roam-note-processed-hook #'org-roam-search--kill-buffer)
+(add-hook 'org-roam-node-processed-hook #'org-roam-search--kill-buffer)
 
 (provide 'org-roam-search)
 
