@@ -213,7 +213,7 @@ See:
 https://github.com/org-roam/org-roam/issues/2032"
   (cl-assert (or file (buffer-file-name)))
   (let ((org-roam-directory (string-remove-suffix org-roam-dailies-directory org-roam-directory)))
-    (org-roam-dailies--daily-node-p file)))
+    (org-roam-dailies--daily-note-p file)))
 
 (defun org-roam-review--tags-at-pt (&optional local)
   (seq-map #'substring-no-properties
