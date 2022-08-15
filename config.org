@@ -7374,17 +7374,15 @@ consumer of it.
                                               'font-lock-face 'org-roam-title)
                                   (when outline
                                     (format " > %s" (propertize outline 'font-lock-face 'org-roam-olp))))))
-        (magit-insert-section section (org-roam-node-section)
+        (magit-insert-section section (org-roam-node-section (org-roam-node-id source-node) t)
           (magit-insert-heading heading-str)
           (oset section node source-node)
-          (magit-insert-section-body
-            (magit-insert-section section (org-roam-preview-section)
-              (insert (org-roam-fontify-like-in-org-mode
-                       (org-roam-preview-get-contents (org-roam-node-file source-node) point))
-                      "\n")
-              (oset section file (org-roam-node-file source-node))
-              (oset section point point)
-              (insert ?\n))))))
+          ;; KLUDGE: Mofified macro-expansion of `magit-insert-section-body' that
+          ;; avoids unsetting the parent section's keymap.
+          (oset section washer
+                (lambda ()
+                  (org-roam-review-insert-preview source-node)
+                  (magit-section-maybe-remove-visibility-indicator section))))))
     :config
     (advice-add 'org-roam-node-insert-section :override #'config-org-roam-node-insert-section))
 #+end_src
