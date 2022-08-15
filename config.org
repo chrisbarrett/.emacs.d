@@ -7347,15 +7347,7 @@ consumer of it.
     :after (:all org-roam citar)
     :demand t
     :config
-    (autoload 'org-funcs-go-to-outline-for-key "org-funcs")
-    (setq citar-org-roam-notes-config
-          (list :name "Org-Roam Notes"
-                :category 'org-roam-node
-                :items #'citar-org-roam--get-candidates
-                :hasitems #'citar-org-roam-has-notes
-                :open #'citar-org-roam-open-note
-                :create #'org-funcs-go-to-outline-for-key
-                :annotate #'citar-org-roam--annotate))
+    (setf (plist-get citar-org-roam-notes-config :create) #'org-funcs-go-to-outline-for-key)
     (citar-org-roam-mode))
 #+end_src
 
