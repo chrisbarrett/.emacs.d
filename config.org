@@ -3172,13 +3172,11 @@ Disabled for now since this breaks insert state in evil :/
     "d" '(org-roam-dailies-goto-date :wk "dailies: date...")
 
     "r" '(nil :wk "review...")
-    "ra" '(org-roam-review-list-authors :wk "review authors")
     "rd" '(org-roam-review-list-recently-added :wk "recently added")
     "ro" '(org-roam-review-visit-outline :wk "outlines...")
     "rb" '(citar-open-notes :wk "outlines (from bib)...")
     "rr" '(org-roam-review :wk "review due evergreens")
     "rt" '(org-roam-search-tags :wk "search (tags)...")
-    "ru" '(org-roam-review-list-uncategorised :wk "uncategorised notes")
     "rl" '(org-roam-links-view :wk "show links")
 
     "p" '(org-funcs-goto-todos :wk "todos")
