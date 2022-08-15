@@ -19,6 +19,7 @@ epkgs: with epkgs; [
   delight
   direnv
   dockerfile-mode
+  dogears
   doom-themes
   dumb-jump
   edit-indirect

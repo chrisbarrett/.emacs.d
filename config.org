@@ -3207,10 +3207,13 @@ Disabled for now since this breaks insert state in evil :/
     "r" '(projectile-replace :wk "replace"))
 #+end_src
 
-*** ~r~ - registers
+*** ~r~ - registers/dogears
 #+begin_src emacs-lisp
   (leader-set-key :infix "j"
     "" '(nil :wk "registers")
+    "g" '(dogears-go :wk "go (dogears)")
+    "l" '(dogears-list :wk "list (dogears)")
+
     "j" '(config-consult-register-no-strings :wk "select")
     "x" '(config-delete-register :wk "delete")
     "w" '(window-configuration-to-register :wk "store... (windows)")
@@ -3461,6 +3464,12 @@ See: [[https://github.com/raxod502/selectrum/issues/498#issuecomment-876424791][
     :demand t
     :hook
     (embark-collect-mode . consult-preview-at-point-mode))
+#+end_src
+
+** =dogears= - remember where you've been
+#+begin_src emacs-lisp
+  (use-package dogears
+    :hook (after-init . dogears-mode))
 #+end_src
 
 * Window management
