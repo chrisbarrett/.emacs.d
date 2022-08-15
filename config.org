@@ -7233,7 +7233,7 @@ property drawer and the title. Advise it to fix that.
 ** =org-roam-links= - show a graph of links for a node
 #+begin_src emacs-lisp
   (use-package org-roam-links
-    :commands (org-roam-links-view org-roam-links-backlinks-view))
+    :commands (org-roam-links-view))
 #+end_src
 
 ** Customise preview function
