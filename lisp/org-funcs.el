@@ -550,6 +550,11 @@ Otherwise, prompt the user for a reference."
    (replace-regexp-in-string "[\n\t ]+" " "
                              (replace-regexp-in-string "[\"{}]+" "" s))))
 
+(defun org-funcs-add-roam-cite-ref (key)
+  "Add KEY as a ROAM_REFS cite entry for the current node."
+  (interactive (list (citar-select-ref)))
+  (org-roam-ref-add (format "[cite:@%s]" key)))
+
 (provide 'org-funcs)
 
 ;;; org-funcs.el ends here
