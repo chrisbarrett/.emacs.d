@@ -18,6 +18,10 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
+
+;; Defines a data structure to represent a filter against an org-roam-node's
+;; tags, and provides functions to read and evaluate these filters.
+
 ;;; Code:
 
 (require 'dash)
