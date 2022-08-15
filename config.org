@@ -7353,6 +7353,16 @@ consumer of it.
     (citar-org-roam-mode))
 #+end_src
 
+*** =org-collapse-citations= - Collapse citations for viewing
+#+begin_src emacs-lisp
+  (use-package org-collapse-citations
+    :hook (org-mode . cursor-sensor-mode)
+    :after (:all org citar-org)
+    :demand t
+    :config
+    (add-to-list 'citar-org-activation-functions #'org-collapse-citations-activation-function t))
+#+end_src
+
 * Load Lisp from other locations
 #+begin_src emacs-lisp
   (use-package org
