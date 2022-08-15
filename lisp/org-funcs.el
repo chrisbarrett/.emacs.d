@@ -547,8 +547,8 @@ Otherwise, prompt the user for a reference."
 (defun org-funcs-clean-bibtex-string (s)
   "Remove quoting brackets and superfluous whitespace from string S."
   (string-replace "\\&" "&"
-   (replace-regexp-in-string "[\n\t ]+" " "
-                             (replace-regexp-in-string "[\"{}]+" "" s))))
+                  (replace-regexp-in-string "[\n\t ]+" " "
+                                            (replace-regexp-in-string "[\"{}]+" "" s))))
 
 (defun org-funcs-add-roam-cite-ref (key)
   "Add KEY as a ROAM_REFS cite entry for the current node."
