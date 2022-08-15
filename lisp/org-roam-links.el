@@ -1,4 +1,4 @@
-;;; org-roam-links.el --- Buffer showing links in an org-roam note -*- lexical-binding: t; -*-
+;;; org-roam-links.el --- Buffer showing links in an org-roam node -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2022  Chris Barrett
 
@@ -21,36 +21,33 @@
 
 ;; org-roam comes with a backlanks buffer that shows previous of other locations
 ;; in the Zettlekasten linking here. This is useful for most cases, but it would
-;; be useful to see another level of links deep to find unexpected note
+;; be useful to see another level of links deep to find unexpected node
 ;; connections.
 
 ;;; Code:
 
 (require 'dash)
-(require 'org-roam-note)
 (require 'org-roam-review)
 
 (plist-define org-roam-links-graph
   :required (:nodes :tree))
 
 (defun org-roam-links--forward-links (node)
-  (let ((elements (with-temp-buffer
-                    (insert-file-contents (org-roam-node-file node))
-                    (org-element-parse-buffer))))
-    (org-element-map elements 'link
-      (lambda (link)
-        (when (string= (org-element-property :type link) "id")
-          (org-roam-node-from-id (org-element-property :path link)))))))
+  (-keep (-compose #'org-roam-node-from-id #'car)
+         (org-roam-db-query [:select :distinct [dest] :from links :where (= source $s1)]
+                            (org-roam-node-id node))))
 
 (defun org-roam-links-graph (node depth)
-  "Return the linked nodes, and their links, up to DEPTH."
+  "Return the linked nodes for NODE, and their links, up to DEPTH."
   (when (cl-plusp depth)
-    (let ((linked-nodes (append
-                         (org-roam-links--forward-links node)
-                         (seq-map #'org-roam-backlink-source-node (org-roam-backlinks-get node))))
+    (let ((links
+           (->>  (append (org-roam-links--forward-links node)
+                         (seq-map #'org-roam-backlink-source-node (org-roam-backlinks-get node)))
+                 (seq-remove #'org-roam-review-node-ignored-p)
+                 (-uniq)))
           (nodes (ht-create))
           (tree (ht-create)))
-      (dolist (node linked-nodes)
+      (dolist (node links)
         (let ((id (org-roam-node-id node))
               (children (org-roam-links-graph node (1- depth))))
           (puthash id node nodes)
@@ -80,28 +77,27 @@ When called interactively, prompt the user for DEPTH."
      (org-roam-review-create-buffer
       :title (format "Links for “%s\”" short-title)
       :instructions "Below is the graph of links to and from the current node."
-      :placeholder "No linked notes"
+      :placeholder "No linked nodes"
       :buffer-name "*org-roam-links*"
-      :notes
+      :nodes
       (lambda ()
         (setq graph (org-roam-links-graph start-node depth))
-        (seq-filter (lambda (note)
-                      (not (org-roam-note-ignored-p note)))
-                    (org-roam-notes-from-nodes (ht-values (org-roam-links-graph-nodes graph)))))
-      :insert-notes-fn
-      (-lambda ((&plist :root :notes))
+        (seq-remove #'org-roam-review-node-ignored-p
+                    (ht-values (org-roam-links-graph-nodes graph))))
+      :insert-nodes-fn
+      (-lambda ((&plist :root))
         (let ((seen-ids (ht-create))
               (nodes (org-roam-links-graph-nodes graph))
               (tree (org-roam-links-graph-tree graph)))
           (puthash (org-roam-node-id start-node) t seen-ids)
+
           (cl-labels ((render-at-depth
                        (tree depth)
                        (let ((values
                               (seq-sort-by (-compose 'downcase #'org-roam-node-title #'org-roam-node-from-id #'car) #'string<
                                            (ht-to-alist tree))))
                          (pcase-dolist (`(,id . ,children) values)
-                           (when-let* ((node (ht-get nodes id))
-                                       (note-exists-p (seq-find (lambda (it) (equal id (org-roam-note-id it))) notes)))
+                           (when-let* ((node (ht-get nodes id)))
                              (let ((self-reference-p (equal (org-roam-node-id node)
                                                             (org-roam-node-id start-node))))
                                (unless (and (zerop depth) self-reference-p)
@@ -116,37 +112,13 @@ When called interactively, prompt the user for DEPTH."
                                             (seen-p 'font-lock-comment-face)
                                             (t 'magit-section-secondary-heading)))
                                           (heading (propertize (org-roam-node-title node) 'font-lock-face face)))
-
                                      (magit-insert-heading (org-roam-review-indent-string heading depth))
                                      (unless seen-p
                                        (puthash id t seen-ids)
                                        (when children
                                          (render-at-depth children (1+ depth)))))))))))))
-            (render-at-depth tree 0))))))))
 
-;;;###autoload
-(defun org-roam-links-backlinks-view ()
-  "Show backlinks for an org-roam buffer."
-  (interactive)
-  (-let* ((start-node (or (org-roam-node-at-point)
-                          (let ((node (org-roam-node-read)))
-                            (org-roam-node-visit node)
-                            node)))
-          (title (org-roam-node-title start-node))
-          (short-title (substring title 0 (min (length title) org-roam-links-max-title-length)))
-          (short-title (if (equal title short-title) title (concat short-title "…"))))
-    (org-roam-review-display-buffer-and-select
-     (org-roam-review-create-buffer
-      :title (format "Backlinks for “%s\”" short-title)
-      :instructions "Below are the backlinks for the current node."
-      :placeholder "No backlinked notes"
-      :buffer-name "*org-roam-links*"
-      :notes
-      (lambda ()
-        (seq-filter (lambda (note)
-                      (not (org-roam-note-ignored-p note)))
-                    (org-roam-notes-from-backlinks (org-roam-backlinks-get start-node)
-                                                   'all)))))))
+            (render-at-depth tree 0))))))))
 
 (provide 'org-roam-links)
 
