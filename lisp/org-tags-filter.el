@@ -54,10 +54,10 @@
                 (seq-map (lambda (it) (concat "-" it)) (org-tags-filter-forbidden tags-filter))
                 (org-tags-filter-required tags-filter)) " "))
 
-(defvar org-roam-note-last-filter nil)
+(defvar org-tags-filter-last-value nil)
 
 (defun org-tags-filter-read (&optional prompt)
-  (let* ((current-filter (org-tags-filter-pp org-roam-note-last-filter))
+  (let* ((current-filter (org-tags-filter-pp org-tags-filter-last-value))
          (input (read-string (or prompt "Tags filter (+/-): ")
                              (unless  (string-blank-p current-filter)
                                (concat current-filter " "))

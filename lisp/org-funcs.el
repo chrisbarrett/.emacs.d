@@ -26,7 +26,6 @@
   (require 'org-clock)
   (require 'org-capture))
 
-(autoload 'org-roam-review-remove-managed-properties-in-node "org-roam-review")
 (autoload 'timekeep-work-tag "timekeep")
 (autoload 'org-cliplink-retrieve-title-synchronously "org-cliplink")
 (autoload 'org-project-p "org-project")
@@ -465,7 +464,7 @@ handles file titles, IDs and tags better."
                   (org-roam-promote-entire-buffer)
                   (org-funcs-set-title title)
                   (require 'org-roam-review)
-                  (let ((tags-to-remove (append org-roam-note-ignored-tags
+                  (let ((tags-to-remove (append org-roam-review-ignored-tags
                                                 org-roam-review-maturity-values
                                                 org-funcs-extra-tags-excluded-for-extraction)))
                     (when-let* ((tags (-difference (-union (org-funcs--file-tags) tags)

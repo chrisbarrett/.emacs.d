@@ -442,7 +442,7 @@ Load host-specific settings, which are not checked into version control.
                               `(selectrum-group-title ((t :inherit magit-section-heading)))
                               `(consult-line-number ((t :inherit font-lock-comment-face)))
                               `(shortdoc-section ((t :inherit fixed-pitch)))
-                              `(org-roam-note-filter ((t :inherit magit-section-heading :bold nil)))
+                              `(org-roam-review-tags-filter ((t :inherit magit-section-heading :bold nil)))
                               `(org-roam-review-heading ,outline-heading)
                               `(org-roam-review-heading-separator ,(append-faces outline-heading `((t :bold nil))))
 
@@ -6924,11 +6924,9 @@ This makes it much easier to edit text using emphasis markers correctly.
 
   (use-package org-roam-review
     :hook
-    (org-mode . org-roam-note-cache-mode)
     (org-roam-capture-new-node . config-org-roam-maybe-set-seedling)
     :custom
-    (org-roam-note-cache-file (f-join paths-cache-directory "org-roam-review"))
-    (org-roam-note-ignored-tags '("project" "client"))
+    (org-roam-review-ignored-tags '("project" "client"))
     (org-roam-review-show-instructions-p nil)
     (org-roam-review-tags-ignored-for-review-buffer '("dailies" "outline" "author" "accounts" "flat"))
     :general
