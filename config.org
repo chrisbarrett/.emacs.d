@@ -643,35 +643,20 @@ applications. The following functions will be invoked by those scripts over
 
 ** org-roam & friends
 #+begin_src emacs-lisp
-  (cl-labels ((make-actions (&key (body-function
-                                   (lambda (win)
-                                     (set-window-dedicated-p win t)))
-                                  (slot 1)
-                                  window-height)
+  (cl-labels ((make-actions (&key window-height (slot 1))
                             `((display-buffer-in-side-window)
-                              (body-function . ,body-function)
+                              (body-function . (lambda (win)
+                                                 (set-window-dedicated-p win t)))
                               (slot . ,slot)
                               (side . left)
                               (window-height . ,window-height)
-                              (window-width . 50)))
+                              (window-width . 50))))
 
-              (hide-section-children (win)
-                                     (set-window-dedicated-p win t)
-                                     (save-window-excursion
-                                       (select-window win)
-                                       (goto-char (point-min))
-                                       (magit-section-hide-children (magit-current-section)))))
-
-    (display-buffer-set (rx bos "*org-roam: " (+ nonl))
-                        (make-actions :body-function 'hide-section-children))
-    (display-buffer-set (rx bos "*org-roam*" eos)
-                        (make-actions :body-function 'hide-section-children))
-    (display-buffer-set (rx bos "*org-roam-review*" eos)
-                        (make-actions :slot 2 :window-height 0.3))
-    (display-buffer-set (rx bos "*org-roam-search*" eos)
-                        (make-actions))
-    (display-buffer-set (rx bos "*org-roam-links*" eos)
-                        (make-actions)))
+    (display-buffer-set (rx bos "*org-roam: " (+ nonl)) (make-actions))
+    (display-buffer-set (rx bos "*org-roam*" eos) (make-actions))
+    (display-buffer-set (rx bos "*org-roam-review*" eos) (make-actions :slot 2 :window-height 0.3))
+    (display-buffer-set (rx bos "*org-roam-search*" eos) (make-actions))
+    (display-buffer-set (rx bos "*org-roam-links*" eos) (make-actions)))
 #+end_src
 
 ** pp
