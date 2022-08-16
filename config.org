@@ -6845,7 +6845,10 @@ This makes it much easier to edit text using emphasis markers correctly.
     ">" '(org-roam-dailies-find-next-note :wk "next daily")
     "J" '(org-roam-dailies-goto-date :wk "goto daily...")
 
-    "E" '(org-funcs-roam-extract-subtree :wk "extract subtree to roam file...")
+    "E" '(org-roam-rewrite-extract :wk "extract subtree to roam file...")
+    "R" '(org-roam-rewrite-rename :wk "rename node...")
+    "I" '(org-roam-rewrite-inline :wk "inline node...")
+    "D" '(org-roam-rewrite-remove :wk "delete node & redirect links...")
 
     "i" '(nil :wk "transclusion")
     "i a" '(org-transclusion-add :wk "add")
@@ -6912,6 +6915,17 @@ This makes it much easier to edit text using emphasis markers correctly.
     :demand t
     :config
     (run-with-idle-timer 2 nil 'org-roam-gc))
+#+end_src
+
+** =org-roam-rewrite= - Extra utilities for refactoring notes
+#+begin_src emacs-lisp
+  (use-package org-roam-rewrite
+    :after (org-roam-review)
+    :demand t
+    :config
+    (setq org-roam-rewrite-extract-excluded-tags
+          (append '("moc" "project" "client")
+                  org-roam-review-maturity-values)))
 #+end_src
 
 ** =org-roam-review= - spaced-repetition implementation for org-roam notes

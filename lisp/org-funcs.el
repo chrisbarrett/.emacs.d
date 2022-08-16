@@ -14,42 +14,17 @@
 (require 'dash)
 (require 'f)
 (require 'ht)
-(require 'org-roam-review)
 (require 'seq)
 (require 'thingatpt)
 
 (cl-eval-when (compile)
-  (require 'org)
   (require 'org-roam)
-  (require 'org-transclusion)
-  (require 'org-agenda)
-  (require 'org-clock)
-  (require 'org-capture))
+  (require 'org-agenda))
 
-(autoload 'timekeep-work-tag "timekeep")
+(autoload 'org-clocking-p "org-clock")
 (autoload 'org-cliplink-retrieve-title-synchronously "org-cliplink")
 (autoload 'org-project-p "org-project")
 (autoload 'org-project-skip-stuck-projects "org-project")
-(autoload 'org-transclusion-remove-all "org-transclusion")
-
-
-;; Capture template helpers
-
-(defun org-funcs-update-capture-templates (templates)
-  "Merge TEMPLATES with existing values in `org-capture-templates'."
-  (with-eval-after-load 'org-capture
-    (let ((ht (ht-merge (ht-from-alist org-capture-templates) (ht-from-alist templates))))
-      (setq org-capture-templates (-sort (-on 'string-lessp 'car) (ht->alist ht))))))
-
-(defun org-funcs-capture-template-apply-defaults (template)
-  (-let ((defaults '(:clock-keep t :prepend t :immediate-finish nil :jump-to-captured nil :empty-lines 1))
-         ((positional-args keywords) (-split-with (-not #'keywordp) template)))
-    (append positional-args (ht->plist (ht-merge
-                                        (ht-from-plist defaults)
-                                        (ht-from-plist keywords))))))
-
-(cl-defun org-funcs-capture-template (key label form template &rest keywords)
-  (org-funcs-capture-template-apply-defaults (append (list key label 'entry form template) keywords)))
 
 
 ;; Agenda utils
@@ -190,148 +165,27 @@ TAGS are the tags to use when displaying the list."
   (interactive)
   (org-roam-node-visit (org-roam-node-from-title-or-alias "Accounts")))
 
-(defun org-funcs-inline-note (src-node dest-node)
-  "Inline the contents of one org-roam note into another, removing the original."
-  (interactive
-   (let* ((src (org-roam-node-read (-some->> (org-roam-node-at-point) (org-roam-node-title)) nil nil t "Source: "))
-          (dest (org-roam-node-read nil (lambda (node)
-                                          (and
-                                           (not (equal (org-roam-node-id node) (org-roam-node-id src)))
-                                           (zerop (org-roam-node-level node))
-                                           (not (seq-contains-p (org-roam-node-tags node) "dailies"))))
-                                    nil t "Destination: ")))
-     (list src dest)))
+
+;; Capture template definition
 
-  (let* ((org-inhibit-startup t)
-         (src-buffer (find-file-noselect (org-roam-node-file src-node)))
-         (content
-          (with-current-buffer src-buffer
-            (org-with-wide-buffer
-             (org-transclusion-remove-all)
-             (goto-char (point-min))
-             (org-roam-end-of-meta-data t)
-             (buffer-substring (point) (point-max))))))
-    (find-file (org-roam-node-file dest-node))
-    (org-with-wide-buffer
-     (org-transclusion-remove-all)
-     (goto-char (point-max))
-     (delete-blank-lines)
-     (insert "\n\n")
-     (insert (format "* %s\n" (org-roam-node-title src-node)))
-     (org-set-property "ID" (org-roam-node-id src-node))
-     (save-restriction
-       (narrow-to-region (point) (point-max))
-       (insert content)
-       (org-map-entries 'org-do-demote)
-       (goto-char (point-min))
-       (while (search-forward-regexp (rx bol "#+transclude:") nil t)
-         (org-transclusion-add)
-         (org-transclusion-promote-subtree))))
-    (delete-file (org-roam-node-file src-node))
-    (save-buffer)
-    (org-transclusion-add-all)
-    (when (buffer-live-p src-buffer)
-      (kill-buffer src-buffer)))
+(defun org-funcs-update-capture-templates (templates)
+  "Merge TEMPLATES with existing values in `org-capture-templates'."
+  (with-eval-after-load 'org-capture
+    (let ((ht (ht-merge (ht-from-alist org-capture-templates) (ht-from-alist templates))))
+      (setq org-capture-templates (-sort (-on 'string-lessp 'car) (ht->alist ht))))))
 
-  (org-roam-node-visit dest-node)
-  (message "Inlined note successfully"))
+(defun org-funcs-capture-template-apply-defaults (template)
+  (-let ((defaults '(:clock-keep t :prepend t :immediate-finish nil :jump-to-captured nil :empty-lines 1))
+         ((positional-args keywords) (-split-with (-not #'keywordp) template)))
+    (append positional-args (ht->plist (ht-merge
+                                        (ht-from-plist defaults)
+                                        (ht-from-plist keywords))))))
 
-(defun org-funcs--rewrite-backlinks (backlinks new-id new-title)
-  (let ((replacement (org-link-make-string (concat "id:" new-id) new-title))
-        (backlinks-by-file
-         (seq-group-by (-compose #'org-roam-node-file #'org-roam-backlink-source-node)
-                       backlinks)))
-    (pcase-dolist (`(,file . ,backlinks) backlinks-by-file)
-      (with-temp-buffer
-        (insert-file-contents file)
-        (dolist (backlink (seq-sort-by #'org-roam-backlink-point #'> backlinks))
-          (goto-char (org-roam-backlink-point backlink))
-          (save-match-data
-            (looking-at org-link-any-re)
-            (replace-match replacement t t)))
-        (write-region (point-min) (point-max) file)))))
-
-(defun org-funcs--update-node-title (node new-title)
-  (org-id-goto (org-roam-node-id node))
-  (cond ((equal 0 (org-roam-node-level node))
-         (org-funcs-set-title new-title))
-        ((looking-at org-complex-heading-regexp)
-         (replace-match new-title t t nil 4)))
-  (save-buffer))
-
-(defun org-funcs-rename-note (node new-title)
-  "Change the title of a note and update links to match.
-
-NODE is the node to update.
-
-NEW-TITLE is the new title to use. All backlinks will have their
-descriptions updated to this value."
-  (interactive (let* ((node (org-roam-node-read (-some->> (org-roam-node-at-point) (org-roam-node-title))
-                                                nil nil t "Rename: ")))
-                 (list node (read-string "New title: " (org-roam-node-title node)))))
-  (org-roam-node-visit node)
-  (org-save-all-org-buffers)
-  (let ((backlinks (org-roam-backlinks-get node)))
-    (cond
-     ((null backlinks)
-      (org-funcs--update-node-title node new-title)
-      (message "No backlinks found."))
-     ((y-or-n-p (format "Rewriting %s link(s) from \"%s\" -> \"%s\". Continue? "
-                        (length backlinks) (org-roam-node-title node) new-title))
-      (org-funcs--update-node-title node new-title)
-      (org-funcs--rewrite-backlinks backlinks (org-roam-node-id node) new-title)
-      (message "Rewrote %s links to note." (length backlinks)))
-     (t
-      (user-error "Rewrite aborted")))))
-
-(defun org-funcs--delete-org-roam-node (node)
-  (when-let* ((buf (find-buffer-visiting (org-roam-node-file node))))
-    (kill-buffer buf))
-  (delete-file (org-roam-node-file node)))
-
-(defun org-funcs-rewrite-note-links (from to link-desc)
-  "Redirect links from one node to a replacement node.
-
-FROM is the node which will be unlinked.
-
-TO is the node to change those references to point to.
-
-LINK-DESC is the description to use for the updated links."
-  (interactive (let* ((from (org-roam-node-read nil nil nil t "Remove: "))
-                      (to (org-roam-node-read nil (lambda (it) (not (equal from it))) nil t "Rewrite to: ")))
-                 (list from to (read-string "Link description: " (org-roam-node-title to)))))
-  (org-save-all-org-buffers)
-  (let ((backlinks (org-roam-backlinks-get from)))
-    (cond
-     ((null backlinks)
-      (when (y-or-n-p "No links found. Delete note? ")
-        (org-funcs--delete-org-roam-node from)))
-     ((y-or-n-p (format "Rewriting %s link(s) from \"%s\" -> \"%s\". Continue? "
-                        (length backlinks) (org-roam-node-title from) link-desc))
-      (org-funcs--rewrite-backlinks backlinks (org-roam-node-id to) link-desc)
-      (when (y-or-n-p "Rewrite completed. Delete note? ")
-        (org-funcs--delete-org-roam-node from)))
-     (t
-      (user-error "Rewrite aborted")))))
+(cl-defun org-funcs-capture-template (key label form template &rest keywords)
+  (org-funcs-capture-template-apply-defaults (append (list key label 'entry form template) keywords)))
 
 
-
-(defun org-funcs-set-title (text)
-  (org-with-wide-buffer
-   (goto-char (point-min))
-   (save-match-data
-     (search-forward-regexp (rx bol "#+title:" (* space) (group (+ any)) eol))
-     (replace-match text t nil nil 1))))
-
-(defun org-funcs-title ()
-  (org-with-wide-buffer
-   (goto-char (point-min))
-   (save-match-data
-     (search-forward-regexp (rx bol "#+title:" (* space) (group (+ any)) eol))
-     (match-string 1 ))))
-
-
-;; Capture utils
+;;; Commands used in capture templates
 
 (defun org-funcs-capture-note-to-clocked-heading ()
   (unless (org-clocking-p)
@@ -395,89 +249,6 @@ LINK-DESC is the description to use for the updated links."
       (insert (format "[[%s][%s]]" url escaped-title))
       (just-one-space))))
 
-(defun org-funcs--file-tags ()
-  (save-match-data
-    (org-with-wide-buffer
-     (goto-char (point-min))
-     (when (search-forward-regexp (rx bol "#+filetags:" (group (+ nonl)))
-                                  nil
-                                  t)
-       (split-string (string-trim (substring-no-properties (match-string 1))) ":" t)))))
-
-(defun org-funcs--set-file-tags (tags)
-  (org-with-wide-buffer
-   (goto-char (point-min))
-   (unless (search-forward-regexp (rx bol "#+filetags:" (group (* nonl))) nil t)
-     (cond ((search-forward-regexp (rx bol "#+title:"))
-            (goto-char (line-end-position))
-            (insert "\n#+filetags:"))
-           (t
-            (insert "#+filetags:\n"))))
-
-   (let ((formatted (if tags
-                        (format ":%s:" (string-join tags ":"))
-                      "")))
-     (save-match-data
-       (goto-char (point-min))
-       (when (search-forward-regexp (rx bol "#+filetags:" (group (* nonl))))
-         (replace-region-contents (match-beginning 1) (match-end 1)
-                                  (lambda ()
-                                    (concat " " formatted))))))))
-
-(defvar org-funcs-extra-tags-excluded-for-extraction '("moc"))
-
-(defun org-funcs-roam-extract-subtree ()
-  "Convert current subtree at point to a node, and extract it into a new file.
-
-It's a re-implementation of `org-roam-extract-subtree', but
-handles file titles, IDs and tags better."
-  (interactive)
-  (let ((dest-file (f-join org-roam-directory "notes" (format-time-string "%Y-%m-%d--%H-%M-%S.org"))))
-    (save-excursion
-      (when (org-before-first-heading-p)
-        (user-error "Already a top-level node"))
-
-      (save-buffer)
-      (org-roam-db-update-file)
-      (when (file-exists-p dest-file)
-        (user-error "%s exists. Aborting" dest-file))
-
-      (atomic-change-group
-        (let ((title (org-get-heading))
-              (tags (org-get-tags))
-              (id (org-id-get-create)))
-
-          (save-restriction
-            (org-narrow-to-subtree)
-            (when (bound-and-true-p org-transclusion-mode)
-              (org-transclusion-remove-all t)))
-
-          (org-cut-subtree)
-          (insert (org-link-make-string (format "id:%s" id) (org-link-display-format title)))
-          (newline)
-          (save-buffer)
-          (f-touch dest-file)
-          (with-current-buffer (find-file-noselect dest-file)
-            (condition-case _
-                (progn
-                  (org-paste-subtree nil nil nil t)
-                  (org-roam-promote-entire-buffer)
-                  (org-funcs-set-title title)
-                  (require 'org-roam-review)
-                  (let ((tags-to-remove (append org-roam-review-ignored-tags
-                                                org-roam-review-maturity-values
-                                                org-funcs-extra-tags-excluded-for-extraction)))
-                    (when-let* ((tags (-difference (-union (org-funcs--file-tags) tags)
-                                                   tags-to-remove)))
-                      (org-funcs--set-file-tags tags)
-                      (when (bound-and-true-p org-transclusion-mode)
-                        (org-transclusion-add-all))))
-                  (save-buffer))
-              (error
-               (f-delete dest-file)))
-
-            (run-hook-with-args 'org-roam-capture-new-node-hook)))))))
-
 (defun org-funcs-roam-node-find (&optional other-window)
   "Find an org-roam node. See `org-roam-node-find'."
   (interactive "P")
@@ -496,11 +267,8 @@ handles file titles, IDs and tags better."
              (org-roam-node-id node))
      (org-roam-node-formatted node))))
 
-(defun org-funcs-roam-node-to-link-string (node)
-  (org-link-make-string (concat "id:" (org-roam-node-id node))
-                        (org-roam-node-title node)))
-
 
+;; BibTeX management with Citar
 
 (defconst org-funcs-key-sequence-for-outline-capture-template "ro"
   "The key sequence for the outline note capture template.")
@@ -529,8 +297,6 @@ Otherwise, prompt the user for a reference."
       (org-roam-node-visit node)
     (let ((org-funcs--cite-key-for-capture (cons key attrs)))
       (org-capture nil org-funcs-key-sequence-for-outline-capture-template))))
-
-
 
 (defun org-funcs-clean-bibtex-string (s)
   "Remove quoting brackets and superfluous whitespace from string S."
