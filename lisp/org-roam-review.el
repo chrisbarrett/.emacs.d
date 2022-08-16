@@ -61,13 +61,6 @@
   :group 'productivity
   :prefix "org-roam-review-")
 
-(defconst org-roam-review-maturity-values '("seedling" "evergreen" "budding"))
-
-(defconst org-roam-review-maturity-emoji-alist
-  '(("seedling" . "🌱")
-    ("budding" . "🪴")
-    ("evergreen" . "🌲")))
-
 (defcustom org-roam-review-tags-ignored-for-review-buffer '("dailies")
   "A list of tags that disqualify a node from review."
   :group 'org-roam-review
@@ -103,6 +96,13 @@
   '((t (:italic t)))
   "Face for tag filter text in review buffers."
   :group 'org-roam-review)
+
+(defconst org-roam-review-maturity-values '("seedling" "evergreen" "budding"))
+
+(defconst org-roam-review-maturity-emoji-alist
+  '(("seedling" . "🌱")
+    ("budding" . "🪴")
+    ("evergreen" . "🌲")))
 
 (defconst org-roam-review-properties
   '("LAST_REVIEW"
