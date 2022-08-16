@@ -6924,8 +6924,10 @@ This makes it much easier to edit text using emphasis markers correctly.
     :demand t
     :config
     (setq org-roam-rewrite-extract-excluded-tags
-          (append '("moc" "project" "client")
-                  org-roam-review-maturity-values)))
+          (seq-uniq (append
+                     org-roam-rewrite-extract-excluded-tags
+                     org-roam-review-maturity-values
+                     '("moc" "project" "client")))))
 #+end_src
 
 ** =org-roam-review= - spaced-repetition implementation for org-roam notes
