@@ -58,6 +58,9 @@
 
 (defconst org-roam-links-max-title-length 50)
 
+(defalias 'org-roam-links--graph-sorting
+  (-compose 'downcase #'org-roam-node-title #'org-roam-node-from-id #'car))
+
 ;;;###autoload
 (defun org-roam-links-view (&optional depth)
   "Show Evergreen Note links for the current buffer.
@@ -88,37 +91,32 @@ When called interactively, prompt the user for DEPTH."
       (-lambda ((&plist :root))
         (let ((seen-ids (ht-create))
               (nodes (org-roam-links-graph-nodes graph))
-              (tree (org-roam-links-graph-tree graph)))
-          (puthash (org-roam-node-id start-node) t seen-ids)
-
+              (start-node-id (org-roam-node-id start-node)))
           (cl-labels ((render-at-depth
                        (tree depth)
-                       (let ((values
-                              (seq-sort-by (-compose 'downcase #'org-roam-node-title #'org-roam-node-from-id #'car) #'string<
-                                           (ht-to-alist tree))))
-                         (pcase-dolist (`(,id . ,children) values)
+                       (let ((sorted-nodes (seq-sort-by 'org-roam-links--graph-sorting #'string< (ht-to-alist tree))))
+                         (pcase-dolist (`(,id . ,children) sorted-nodes)
                            (when-let* ((node (ht-get nodes id)))
-                             (let ((self-reference-p (equal (org-roam-node-id node)
-                                                            (org-roam-node-id start-node))))
-                               (unless (and (zerop depth) self-reference-p)
-                                 (magit-insert-section section (org-roam-preview-section)
-                                   (oset section parent root)
-                                   (oset section point (org-roam-node-point node))
-                                   (oset section file (org-roam-node-file node))
-                                   (let* ((seen-p (gethash id seen-ids))
-                                          (face
-                                           (cond
-                                            ((zerop depth) 'magit-section-heading)
-                                            (seen-p 'font-lock-comment-face)
-                                            (t 'magit-section-secondary-heading)))
-                                          (heading (propertize (org-roam-node-title node) 'font-lock-face face)))
-                                     (magit-insert-heading (org-roam-review-indent-string heading depth))
-                                     (unless seen-p
-                                       (puthash id t seen-ids)
-                                       (when children
-                                         (render-at-depth children (1+ depth)))))))))))))
+                             (magit-insert-section section (org-roam-preview-section)
+                               (oset section parent root)
+                               (oset section point (org-roam-node-point node))
+                               (oset section file (org-roam-node-file node))
+                               (if (equal id start-node-id)
+                                   (magit-cancel-section)
+                                 (let* ((seen-p (gethash id seen-ids))
+                                        (face
+                                         (cond
+                                          ((zerop depth) 'magit-section-heading)
+                                          (seen-p 'font-lock-comment-face)
+                                          (t 'org-roam-title)))
+                                        (heading (propertize (org-roam-node-title node) 'font-lock-face face)))
+                                   (magit-insert-heading (org-roam-review-indent-string heading depth))
+                                   (unless seen-p
+                                     (puthash id t seen-ids)
+                                     (when children
+                                       (render-at-depth children (1+ depth))))))))))))
 
-            (render-at-depth tree 0))))))))
+            (render-at-depth (org-roam-links-graph-tree graph) 0))))))))
 
 (provide 'org-roam-links)
 
