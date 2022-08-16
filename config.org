@@ -2671,7 +2671,7 @@ See:
                 (and (bound-and-true-p org-roam-directory)
                      (or (f-same-p default-directory org-roam-directory)
                          (f-child-of-p default-directory org-roam-directory)))
-                'org-roam-search)
+                'org-roam-consult)
               :wk "search...")
     ":" '(eval-expression-interactively :wk "eval")
     ";" '(ielm :wk "Lisp REPL")
@@ -3148,7 +3148,7 @@ Disabled for now since this breaks insert state in evil :/
     "k" '(org-capture :wk "capture...")
     "K" '(org-roam-capture :wk "capture... (roam)")
     "l" '(org-store-link :wk "store link")
-    "s" '(org-roam-search-view :wk "search...")
+    "s" '(org-roam-search :wk "search...")
     "f" '(org-funcs-roam-node-find :wk "roam file...")
     "n" '(org-roam-dailies-goto-today :wk "dailies: today")
     "T" '(org-roam-dailies-goto-tomorrow :wk "dailies: tomorrow")
@@ -7219,13 +7219,19 @@ property drawer and the title. Advise it to fix that.
   (advice-add 'org-roam-promote-entire-buffer :after 'config-org-roam-cleanup-after-promote-entire-buffer)
 #+end_src
 
-** =org-roam-search= - a search interface that works better with org-roam
+** =org-roam-search= - a search interface for org-roam
 #+begin_src emacs-lisp
   (use-package org-roam-search
-    :commands (org-roam-search org-roam-search-view)
+    :commands (org-roam-search)
     :general
     (:keymaps 'org-roam-mode-map :states '(normal motion)
-     "s" 'org-roam-search-view))
+     "s" 'org-roam-search))
+#+end_src
+
+** =org-roam-consult= - a version of consult-ripgrep that works better with org-roam
+#+begin_src emacs-lisp
+  (use-package org-roam-consult
+    :commands (org-roam-consult))
 #+end_src
 
 ** =org-roam-links= - show a graph of links for a node
