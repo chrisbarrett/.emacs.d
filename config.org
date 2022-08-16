@@ -6939,6 +6939,7 @@ This makes it much easier to edit text using emphasis markers correctly.
   (use-package org-roam-review
     :hook
     (org-roam-capture-new-node . config-org-roam-maybe-set-seedling)
+    :commands (org-roam-review)
     :custom
     (org-roam-review-ignored-tags '("project" "client"))
     (org-roam-review-show-instructions-p nil)
