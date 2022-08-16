@@ -62,10 +62,10 @@
   (-compose 'downcase #'org-roam-node-title #'org-roam-node-from-id #'car))
 
 ;;;###autoload
-(defun org-roam-links-view (&optional depth)
+(cl-defun org-roam-links-view (&optional (max-depth 2))
   "Show Evergreen Note links for the current buffer.
 
-When called interactively, prompt the user for DEPTH."
+When called interactively, prompt the user for MAX-DEPTH."
   (interactive (when current-prefix-arg (list (read-number "Depth: " 2))))
   (-let* ((start-node (or (org-roam-node-at-point)
                           (let ((node (org-roam-node-read)))
@@ -74,7 +74,6 @@ When called interactively, prompt the user for DEPTH."
           (title (org-roam-node-title start-node))
           (short-title (substring title 0 (min (length title) org-roam-links-max-title-length)))
           (short-title (if (equal title short-title) title (concat short-title "…")))
-          (depth (or depth 2))
           graph)
     (org-roam-review-display-buffer-and-select
      (org-roam-review-create-buffer
@@ -84,7 +83,7 @@ When called interactively, prompt the user for DEPTH."
       :buffer-name "*org-roam-links*"
       :nodes
       (lambda ()
-        (setq graph (org-roam-links-graph start-node depth))
+        (setq graph (org-roam-links-graph start-node max-depth))
         (seq-remove #'org-roam-review-node-ignored-p
                     (ht-values (org-roam-links-graph-nodes graph))))
       :insert-nodes-fn
