@@ -338,7 +338,7 @@ When called with a `C-u' prefix arg, clear the current filter."
 
 (defclass org-roam-review-grouping-section (magit-section) ())
 
-(cl-defun org-roam-review--insert-nodes-fn-default (args)
+(cl-defun org-roam-review--render (args)
   (-let* (((&plist :group-on :nodes :placeholder :sort :root-section) args)
           (sort (or sort (-const t))))
     (cond
@@ -362,7 +362,7 @@ When called with a `C-u' prefix arg, clear the current filter."
      (t
       (org-roam-review--insert-nodes (-sort sort nodes) placeholder)))))
 
-(cl-defun org-roam-review--render (&key insert-nodes-fn title instructions group-on placeholder sort nodes)
+(cl-defun org-roam-review--re-render (&key render title instructions group-on placeholder sort nodes)
   (let ((inhibit-read-only t))
     (erase-buffer)
     (org-roam-review-mode)
@@ -383,7 +383,7 @@ When called with a `C-u' prefix arg, clear the current filter."
           (newline 2)))
 
       (let ((start-of-content (point)))
-        (funcall insert-nodes-fn
+        (funcall render
                  (org-roam-review-render-args-create :nodes nodes
                                                      :group-on group-on
                                                      :sort sort
@@ -395,7 +395,7 @@ When called with a `C-u' prefix arg, clear the current filter."
     (&key title instructions group-on placeholder sort
           (nodes #'org-roam-review-node-list)
           (buffer-name "*org-roam-review*")
-          (insert-nodes-fn 'org-roam-review--insert-nodes-fn-default))
+          (render 'org-roam-review--render))
   "Create a node review buffer for nodesusing Evergreen SRS.
 
 The following keyword arguments are required:
@@ -415,10 +415,10 @@ The following keyword arguments are optional:
 
 - BUFFER-NAME is the name to use for the created buffer.
 
-- INSERT-NODES-FN is a function taking a plist of type
-  `org-roam-review-render-args' to override the default render
-  behaviour for nodes. It is expected to insert a rendered
-  representation of nodes using the magit-section API.
+- RENDER is a function taking a single argument, a plist of type
+  `org-roam-review-render-args', that populates the buffer using
+  the magit-section API. It can be used to override the default
+  rendering behaviour.
 
 - GROUP-ON is a projection function that is passed a node and
   should return one of:
@@ -439,20 +439,20 @@ The following keyword arguments are optional:
   before the second."
   (cl-assert title)
   (cl-assert (functionp nodes))
-  (let (render)
-    (setq render
+  (let (re-render)
+    (setq re-render
           (lambda (updated-nodes)
             (with-current-buffer (get-buffer-create buffer-name)
-              (org-roam-review--render :title title
-                                       :instructions instructions
-                                       :nodes updated-nodes
-                                       :group-on group-on
-                                       :placeholder placeholder
-                                       :sort sort
-                                       :insert-nodes-fn insert-nodes-fn)
-              (setq-local org-roam-review-buffer-refresh-command (lambda () (funcall render (funcall nodes))))
+              (org-roam-review--re-render :title title
+                                          :instructions instructions
+                                          :nodes updated-nodes
+                                          :group-on group-on
+                                          :placeholder placeholder
+                                          :sort sort
+                                          :render render)
+              (setq-local org-roam-review-buffer-refresh-command (lambda () (funcall re-render (funcall nodes))))
               (current-buffer))))
-    (funcall render (funcall nodes))))
+    (funcall re-render (funcall nodes))))
 
 ;;;###autoload
 (defun org-roam-review (&optional all)

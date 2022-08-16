@@ -257,9 +257,29 @@ BUILDER is the command argument builder."
                   (ht-get files (org-roam-node-file node)))
                 (org-roam-review-node-list))))
 
-(defun org-roam-search--make-insert-nodes-fn (query)
-  (-lambda ((&plist :nodes :placeholder :root-section))
-    (let ((nodes (seq-remove #'org-roam-review-node-ignored-p nodes)))
+;;;###autoload
+(defun org-roam-search-view (query)
+  "Search `org-roam-directory' for nodes matching a query.
+
+QUERY is a PRCE regexp string that will be passed to ripgrep."
+  (interactive (list
+                (let* ((default (car org-roam-search-view-query-history))
+                       (prompt (format "Search Roam%s: " (if default (format " (default \"%s\")" default) "")))
+                       (input (string-trim (read-string prompt nil 'org-roam-search-view-query-history org-roam-search-view-query-history))))
+                  (if (and (string-match-p (rx "|") input)
+                           (not (string-prefix-p "(" input)))
+                      (format "(%s)" input)
+                    input))))
+  (org-roam-review-display-buffer-and-select
+   (org-roam-review-create-buffer
+    :title (format "Search Results: %s" query)
+    :placeholder "No search results"
+    :buffer-name org-roam-search-buffer-name
+    :nodes
+    (lambda ()
+      (org-roam-search--ripgrep-for-nodes query))
+    :render
+    (-lambda ((&plist :nodes :placeholder :root-section))
       (cond
        ((null nodes)
         (insert placeholder)
@@ -283,30 +303,7 @@ BUILDER is the command argument builder."
                       (org-roam-review-insert-preview top-node)
                       (org-roam-search--highlight-matches query)
                       (magit-section-maybe-remove-visibility-indicator section))))))
-        (org-roam-search--highlight-matches query))))))
-
-;;;###autoload
-(defun org-roam-search-view (query)
-  "Search `org-roam-directory' for nodes matching a query.
-
-QUERY is a PRCE regexp string that will be passed to ripgrep."
-  (interactive (list
-                (let* ((default (car org-roam-search-view-query-history))
-                       (prompt (format "Search Roam%s: " (if default (format " (default \"%s\")" default) "")))
-                       (input (string-trim (read-string prompt nil 'org-roam-search-view-query-history org-roam-search-view-query-history))))
-                  (if (and (string-match-p (rx "|") input)
-                           (not (string-prefix-p "(" input)))
-                      (format "(%s)" input)
-                    input))))
-  (org-roam-review-display-buffer-and-select
-   (org-roam-review-create-buffer
-    :title (format "Search Results: %s" query)
-    :placeholder "No search results"
-    :buffer-name org-roam-search-buffer-name
-    :insert-nodes-fn (org-roam-search--make-insert-nodes-fn query)
-    :nodes
-    (lambda ()
-      (org-roam-search--ripgrep-for-nodes query)))))
+        (org-roam-search--highlight-matches query)))))))
 
 (defvar org-roam-search-view-tags-query-history nil)
 

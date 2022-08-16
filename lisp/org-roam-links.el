@@ -86,7 +86,7 @@ When called interactively, prompt the user for MAX-DEPTH."
         (setq graph (org-roam-links-graph start-node max-depth))
         (seq-remove #'org-roam-review-node-ignored-p
                     (ht-values (org-roam-links-graph-nodes graph))))
-      :insert-nodes-fn
+      :render
       (-lambda ((&plist :root-section))
         (let ((seen-ids (ht-create))
               (nodes (org-roam-links-graph-nodes graph))
