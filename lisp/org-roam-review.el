@@ -173,7 +173,6 @@ A higher score means that the node will appear less frequently."
             (org-roam-tag-remove org-roam-review-maturity-values))
           (org-roam-tag-add (list maturity))
 
-          (org-delete-property "REVIEW_EXCLUDED")
           (org-set-property "MATURITY" maturity)
           (org-set-property "LAST_REVIEW" (org-format-time-string "[%Y-%m-%d %a]"))
 
@@ -737,32 +736,28 @@ the future."
        (unless (org-roam-review--skip-node-for-maturity-assignment-p)
          (org-roam-review--update-node-srs-properties "evergreen" score))))))
 
-(defun org-roam-review--remove-managed-properties (node-id)
+(defun org-roam-review--delete-tags-and-properties (node-id)
   (let ((message-log-max))
     (org-with-point-at (org-find-property "ID" node-id)
-      (ignore-errors
-        (org-roam-tag-remove org-roam-review-maturity-values))
-      (dolist (name org-roam-review-properties)
-        (org-delete-property name)))))
+      (atomic-change-group
+        (ignore-errors
+          (org-roam-tag-remove org-roam-review-maturity-values))
+        (dolist (name org-roam-review-properties)
+          (org-delete-property name))))))
 
 ;;;###autoload
 (defun org-roam-review-set-excluded ()
   "Exclude this node from reviews.
 
-This is useful for nodes that are not Evergreens, e.g. wiki-style
-nodes that aren't expected to be refined over time.
-
-This sets a special property, REVIEW_EXCLUDED, to indicate that
-it is not a candidate for reviews."
+This deletes all the properties and tags managed by this
+package."
   (interactive)
   (org-roam-review--visiting-node-at-point
     (let ((id (org-entry-get (point-min) "ID")))
       (unless id
         (error "No ID in buffer"))
       (org-with-point-at (org-find-property "ID" id)
-        (atomic-change-group
-          (org-roam-review--remove-managed-properties id)
-          (org-set-property "REVIEW_EXCLUDED" "t"))
+        (org-roam-review--delete-tags-and-properties id)
         (save-buffer))
 
       (let ((title (org-roam-node-title (org-roam-node-from-id id))))
