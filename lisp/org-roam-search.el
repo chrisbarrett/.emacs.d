@@ -254,9 +254,8 @@ BUILDER is the command argument builder."
                           query org-roam-directory))
     (progress-reporter-done reporter)
     (seq-filter (lambda (node)
-                  (and (ht-get files (org-roam-node-file node))
-                       (not (org-roam-review-node-ignored-p node))))
-                (org-roam-node-list))))
+                  (ht-get files (org-roam-node-file node)))
+                (org-roam-review-node-list))))
 
 (defun org-roam-search--make-insert-nodes-fn (query)
   (-lambda ((&plist :nodes :placeholder :root))
@@ -324,10 +323,7 @@ QUERY is an `org-tags-filter'."
     :instructions "The list below contains nodes matching the given tags."
     :placeholder "No search results"
     :buffer-name org-roam-search-tags-buffer-name
-    :sort (-on #'string-lessp #'org-roam-node-title)
-    :nodes
-    (lambda ()
-      (seq-remove #'org-roam-review-node-ignored-p (org-roam-node-list))))))
+    :sort (-on #'string-lessp #'org-roam-node-title))))
 
 (defun org-roam-search--kill-buffer ()
   (when-let* ((buf (get-buffer org-roam-search-buffer-name)))

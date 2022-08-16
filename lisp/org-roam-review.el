@@ -199,6 +199,14 @@ A higher score means that the node will appear less frequently."
   (-when-let* (((&alist "MATURITY" maturity) (org-roam-node-properties node)))
     (intern maturity)))
 
+(defun org-roam-review-node-list ()
+  "Return all org-roam-nodes that are not explicitly ignored from reviews."
+  (let ((table (ht-create)))
+    (dolist (node (org-roam-node-list))
+      (unless (org-roam-review-node-ignored-p node)
+        (ht-set table (org-roam-node-id node) node)))
+    (ht-values table)))
+
 
 ;;; Review buffers
 
@@ -384,7 +392,8 @@ When called with a `C-u' prefix arg, clear the current filter."
         (goto-char start-of-content)))))
 
 (cl-defun org-roam-review-create-buffer
-    (&key title instructions group-on placeholder sort nodes
+    (&key title instructions group-on placeholder sort
+          (nodes #'org-roam-review-node-list)
           (buffer-name "*org-roam-review*")
           (insert-nodes-fn 'org-roam-review--insert-nodes-fn-default))
   "Create a node review buffer for nodesusing Evergreen SRS.
@@ -396,10 +405,10 @@ The following keyword arguments are required:
 - INSTRUCTIONS is a paragraph inserted below the title. It is
   automatically paragraph-filled.
 
-- NODES is a function returning a list of nodes to display (which
-  is possibly empty).
-
 The following keyword arguments are optional:
+
+- NODES is a function returning a list of nodes to display (which
+  is possibly empty). It defaults to all non-ignored nodes.
 
 - PLACEHOLDER is a string to be shown if there are no nodes to
   display.
@@ -445,13 +454,6 @@ The following keyword arguments are optional:
               (current-buffer))))
     (funcall render (funcall nodes))))
 
-(defun org-roam-review-node-list ()
-  (let ((table (ht-create)))
-    (dolist (node (org-roam-node-list))
-      (unless (org-roam-review-node-ignored-p node)
-        (ht-set table (org-roam-node-id node) node)))
-    (ht-values table)))
-
 ;;;###autoload
 (defun org-roam-review (&optional all)
   "List nodes that are due for review.
@@ -460,7 +462,7 @@ With optional prefix arg ALL, list all evergreen nodes
 categorised by their maturity."
   (interactive "P")
   (if all
-      (org-roam-review-list-categorised)
+      (org-roam-review-list-by-maturity)
     (org-roam-review-list-due)))
 
 (defun org-roam-review--maturity-header (node)
@@ -507,7 +509,7 @@ them as reviewed with `org-roam-review-accept',
   (-on #'string-lessp (-compose  #'downcase #'org-roam-node-title)))
 
 ;;;###autoload
-(defun org-roam-review-list-categorised ()
+(defun org-roam-review-list-by-maturity ()
   "List all evergreen nodes categorised by maturity."
   (interactive)
   (org-roam-review-display-buffer-and-select
@@ -581,10 +583,10 @@ With two prefix args, show the list of outlines instead."
     :title "Recently Created Notes"
     :instructions "The nodes below are sorted by when they were created."
     :group-on #'org-roam-review--node-added-group
-    :sort #'org-roam-review-sort-by-title-case-insensitive
-    :nodes
-    (lambda ()
-      (org-roam-review-node-list)))))
+    :sort #'org-roam-review-sort-by-title-case-insensitive)))
+
+
+;;; Commands for manipulating node review state.
 
 (defun org-roam-review--update-workspace-for-completed-review ()
   (save-buffer)
