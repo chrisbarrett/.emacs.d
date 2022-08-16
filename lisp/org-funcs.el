@@ -491,9 +491,10 @@ handles file titles, IDs and tags better."
 
 (defun org-funcs-read-roam-node-link ()
   (let ((node (org-roam-node-read)))
-    (format "[[id:%s][%s]]"
-            (org-roam-node-id node)
-            (org-roam-node-formatted node))))
+    (org-link-make-string
+     (concat "id:"
+             (org-roam-node-id node))
+     (org-roam-node-formatted node))))
 
 (defun org-funcs-roam-node-to-link-string (node)
   (org-link-make-string (concat "id:" (org-roam-node-id node))
