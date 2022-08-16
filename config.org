@@ -3161,7 +3161,7 @@ Disabled for now since this breaks insert state in evil :/
     "rb" '(citar-open-notes :wk "outlines (from bib)...")
     "rr" '(org-roam-review :wk "review due evergreens")
     "rt" '(org-roam-search-tags :wk "search (tags)...")
-    "rl" '(org-roam-links-view :wk "show links")
+    "rl" '(org-roam-links :wk "show links")
 
     "p" '(org-funcs-goto-todos :wk "todos")
     "g" '(org-capture-goto-last-stored :wk "last captured")
@@ -7231,7 +7231,7 @@ property drawer and the title. Advise it to fix that.
 ** =org-roam-links= - show a graph of links for a node
 #+begin_src emacs-lisp
   (use-package org-roam-links
-    :commands (org-roam-links-view))
+    :commands (org-roam-links))
 #+end_src
 
 ** Customise preview function
