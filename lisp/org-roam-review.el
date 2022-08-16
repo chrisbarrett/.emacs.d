@@ -119,6 +119,7 @@
 (defvar org-roam-review-node-accepted-hook nil)
 (defvar org-roam-review-node-buried-hook nil)
 (defvar org-roam-review-node-processed-hook nil)
+(defvar org-roam-review-next-node-selected-hook '(org-roam-review-open-node-if-in-review-session))
 
 
 ;;; SRS property management & parsing
@@ -621,8 +622,6 @@ With two prefix args, show the list of outlines instead."
   (if (org-roam-review--in-review-session-p)
       (org-roam-node-visit (org-roam-node-at-point))
     (magit-section-show (magit-current-section))))
-
-(defvar org-roam-review-next-node-selected-hook '(org-roam-review-open-node-if-in-review-session))
 
 (defun org-roam-review--forward-to-uncommented-sibling ()
   (ignore-errors
