@@ -14,9 +14,9 @@
 (require 'dash)
 (require 'f)
 (require 'ht)
+(require 'org-roam-review)
 (require 'seq)
 (require 'thingatpt)
-(require 'org-roam-review)
 
 (cl-eval-when (compile)
   (require 'org)
