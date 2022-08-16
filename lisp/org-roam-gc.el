@@ -5,6 +5,10 @@
 (require 'f)
 (require 'org-element)
 
+(cl-eval-when (compile)
+  (require 'org-roam)
+  (require 'org-roam-dailies))
+
 (defconst org-roam-gc-prompt-before-deleting-p nil
   "Whether to prompt before removing files when run interactively.")
 
