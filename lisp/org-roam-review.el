@@ -338,29 +338,29 @@ When called with a `C-u' prefix arg, clear the current filter."
 
 (defclass org-roam-review-grouping-section (magit-section) ())
 
-(cl-defun org-roam-review--render (args)
-  (-let* (((&plist :group-on :nodes :placeholder :sort :root-section) args)
-          (sort (or sort (-const t))))
-    (cond
-     ((null nodes)
-      (insert (or placeholder org-roam-review-default-placeholder))
-      (newline))
-     (group-on
-      (let ((grouped (->> (seq-group-by group-on nodes)
-                          (-sort (-on #'<= (-lambda ((key . _))
-                                             (if (stringp key) key (or (cdr key) 0))))))))
-        (pcase-dolist (`(,key . ,group) grouped)
-          (when (and key group)
-            (let ((header (format "%s (%s)"
-                                  (if (stringp key) key (car key))
-                                  (length group))))
-              (magit-insert-section section (org-roam-review-grouping-section header)
-                (oset section parent root-section)
-                (magit-insert-heading (propertize header 'font-lock-face 'magit-section-heading))
-                (org-roam-review--insert-nodes (-sort sort group) placeholder)
-                (insert "\n")))))))
-     (t
-      (org-roam-review--insert-nodes (-sort sort nodes) placeholder)))))
+(defalias 'org-roam-review--render
+  (-lambda ((&plist :group-on :nodes :placeholder :sort :root-section))
+    (let ((sort (or sort (-const t))))
+      (cond
+       ((null nodes)
+        (insert (or placeholder org-roam-review-default-placeholder))
+        (newline))
+       (group-on
+        (let ((grouped (->> (seq-group-by group-on nodes)
+                            (-sort (-on #'<= (-lambda ((key . _))
+                                               (if (stringp key) key (or (cdr key) 0))))))))
+          (pcase-dolist (`(,key . ,group) grouped)
+            (when (and key group)
+              (let ((header (format "%s (%s)"
+                                    (if (stringp key) key (car key))
+                                    (length group))))
+                (magit-insert-section section (org-roam-review-grouping-section header)
+                  (oset section parent root-section)
+                  (magit-insert-heading (propertize header 'font-lock-face 'magit-section-heading))
+                  (org-roam-review--insert-nodes (-sort sort group) placeholder)
+                  (insert "\n")))))))
+       (t
+        (org-roam-review--insert-nodes (-sort sort nodes) placeholder))))))
 
 (cl-defun org-roam-review--re-render (&key render title instructions group-on placeholder sort nodes)
   (let ((inhibit-read-only t))
