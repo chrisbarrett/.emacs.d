@@ -445,6 +445,13 @@ The following keyword arguments are optional:
               (current-buffer))))
     (funcall render (funcall nodes))))
 
+(defun org-roam-review-node-list ()
+  (let ((table (ht-create)))
+    (dolist (node (org-roam-node-list))
+      (unless (org-roam-review-node-ignored-p node)
+        (ht-set table (org-roam-node-id node) node)))
+    (ht-values table)))
+
 ;;;###autoload
 (defun org-roam-review (&optional all)
   "List nodes that are due for review.
@@ -489,14 +496,12 @@ them as reviewed with `org-roam-review-accept',
     :sort (-on #'ts< #'org-roam-review-node-next-review)
     :nodes
     (lambda ()
-      (seq-filter
-       (lambda (node)
-         (and (not (org-roam-review-node-ignored-p node))
-              (zerop (org-roam-node-level node))
-              (null (seq-intersection (org-roam-node-tags node)
-                                      org-roam-review-tags-ignored-for-review-buffer))
-              (org-roam-review-node-due-p node)))
-       (org-roam-node-list))))))
+      (seq-filter (lambda (node)
+                    (and (zerop (org-roam-node-level node))
+                         (null (seq-intersection (org-roam-node-tags node)
+                                                 org-roam-review-tags-ignored-for-review-buffer))
+                         (org-roam-review-node-due-p node)))
+                  (org-roam-review-node-list))))))
 
 (defalias 'org-roam-review-sort-by-title-case-insensitive
   (-on #'string-lessp (-compose  #'downcase #'org-roam-node-title)))
@@ -513,11 +518,7 @@ them as reviewed with `org-roam-review-accept',
     :sort #'org-roam-review-sort-by-title-case-insensitive
     :nodes
     (lambda ()
-      (seq-filter
-       (lambda (node)
-         (and (not (org-roam-review-node-ignored-p node))
-              (org-roam-review-node-maturity node)))
-       (org-roam-node-list))))))
+      (seq-filter #'org-roam-review-node-maturity (org-roam-review-node-list))))))
 
 
 ;; Outline management stuff.
@@ -536,7 +537,10 @@ grouped by whether they require further processing."
     :sort #'org-roam-review-sort-by-title-case-insensitive
     :nodes
     (lambda ()
-      (seq-remove #'org-roam-review-node-ignored-p (org-roam-node-list))))))
+      (seq-filter (lambda (node)
+                    (seq-contains-p (org-roam-node-tags node)
+                                    "outline"))
+                  (org-roam-review-node-list))))))
 
 ;;;###autoload
 (defun org-roam-review-visit-outline (&optional arg)
@@ -580,7 +584,7 @@ With two prefix args, show the list of outlines instead."
     :sort #'org-roam-review-sort-by-title-case-insensitive
     :nodes
     (lambda ()
-      (seq-remove #'org-roam-review-node-ignored-p (org-roam-node-list))))))
+      (org-roam-review-node-list)))))
 
 (defun org-roam-review--update-workspace-for-completed-review ()
   (save-buffer)
