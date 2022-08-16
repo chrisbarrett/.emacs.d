@@ -104,6 +104,18 @@
   "Face for headings in review buffers."
   :group 'org-roam-review)
 
+(defconst org-roam-review-properties
+  '("LAST_REVIEW"
+    "NEXT_REVIEW"
+    "MATURITY"
+    "DRILL_LAST_INTERVAL"
+    "DRILL_REPEATS_SINCE_FAIL"
+    "DRILL_TOTAL_REPEATS"
+    "DRILL_FAILURE_COUNT"
+    "DRILL_AVERAGE_QUALITY"
+    "DRILL_EASE")
+  "List of properties managed by `org-roam-review'.")
+
 (defvar org-roam-review-node-accepted-hook nil)
 (defvar org-roam-review-node-buried-hook nil)
 (defvar org-roam-review-node-processed-hook nil)
@@ -726,24 +738,13 @@ the future."
        (unless (org-roam-review--skip-node-for-maturity-assignment-p)
          (org-roam-review--update-node-srs-properties "evergreen" score))))))
 
-(defconst org-roam-review--properties
-  '("LAST_REVIEW"
-    "NEXT_REVIEW"
-    "MATURITY"
-    "DRILL_LAST_INTERVAL"
-    "DRILL_REPEATS_SINCE_FAIL"
-    "DRILL_TOTAL_REPEATS"
-    "DRILL_FAILURE_COUNT"
-    "DRILL_AVERAGE_QUALITY"
-    "DRILL_EASE")
-  "List of properties managed by `org-roam-review'.")
 
 (defun org-roam-review-remove-managed-properties-in-node (node-id)
   (let ((message-log-max))
     (org-with-point-at (org-find-property "ID" node-id)
       (ignore-errors
         (org-roam-tag-remove org-roam-review-maturity-values))
-      (dolist (name org-roam-review--properties)
+      (dolist (name org-roam-review-properties)
         (org-delete-property name)))))
 
 ;;;###autoload
