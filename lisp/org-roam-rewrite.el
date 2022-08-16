@@ -18,6 +18,10 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
+
+;; Provides commands for rewriting links and removing nodes in a structured way,
+;; to reduce the likelihood of leaving broken links in your org-roam files.
+
 ;;; Code:
 
 (require 'f)
