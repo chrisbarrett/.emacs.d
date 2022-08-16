@@ -20,21 +20,20 @@
 ;;; Commentary:
 ;;; Code:
 
-(require 'dash)
 (require 'ht)
 
 (defun plist-keys (plist)
-  (seq-map #'car (-partition-all 2 plist)))
+  (seq-map #'car (seq-partition plist 2)))
 
 (defun plist-pick (key-or-keys plist)
-  (let ((keys (-list key-or-keys))
+  (let ((keys (flatten-list (list key-or-keys)))
         (ht (ht-from-plist plist)))
     (ht-reject! (lambda (key _v) (not (seq-contains-p keys key)))
                 ht)
     (ht-to-plist ht)))
 
 (defun plist-omit (key-or-keys plist)
-  (let ((keys (-list key-or-keys))
+  (let ((keys (flatten-list (list key-or-keys)))
         (ht (ht-from-plist plist)))
     (ht-reject! (lambda (key _v) (seq-contains-p keys key))
                 ht)
@@ -47,7 +46,7 @@
     (apply 'append pairs)))
 
 (defun plist-merge (p1 p2)
-  "Merge two plists, such that keys in `p2' override duplicates in `p1'."
+  "Merge two plists, such that keys in P2 override duplicates in P1."
   (let* ((h1 (ht-from-plist p1))
          (h2 (ht-from-plist p2))
          (merged (ht-merge h1 h2)))
@@ -60,7 +59,7 @@
        (seq-every-p #'keywordp (plist-keys obj))))
 
 (defun plist-equal (p1 p2)
-  "Test whether two plists are structurally equal.
+  "Test whether two plists P1 & P2 are structurally equal.
 
 Values are compared using `equal', except directly nested plists,
 which are compared using `plist-equal' recursively."
@@ -145,7 +144,6 @@ which are compared using `plist-equal' recursively."
                                    (seq-map (lambda (it) (format "[%s]" (upcase (string-remove-prefix ":" (symbol-name it))))) optional))
                            " "))
     ""))
-
 
 (defmacro plist-define-create (type required optional)
   (cl-assert (symbolp type))
