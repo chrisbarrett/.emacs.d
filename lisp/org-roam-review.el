@@ -74,11 +74,6 @@
   :group 'org-roam-review
   :type '(list string))
 
-(defcustom org-roam-review-pending-todo-keywords '("WAIT" "TODO")
-  "Org TODO keywords representing pending todos in outline files."
-  :group 'org-roam-review
-  :type '(repeat string))
-
 (defcustom org-roam-review-show-instructions-p t
   "Whether to show instructions in review buffers."
   :group 'org-roam-review
@@ -98,12 +93,6 @@
 (defface org-roam-review-heading
   '((t (:inherit org-level-2 :bold t)))
   "Face for headings in review buffers."
-  :group 'org-roam-review)
-
-(defface org-roam-review-heading-separator
-  '((t
-     (:inherit org-level-2)))
-  "Face for heading separators in review buffers."
   :group 'org-roam-review)
 
 (defface org-roam-review-tags-filter-keyword

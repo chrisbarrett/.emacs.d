@@ -444,7 +444,6 @@ Load host-specific settings, which are not checked into version control.
                               `(shortdoc-section ((t :inherit fixed-pitch)))
                               `(org-roam-review-tags-filter ((t :inherit magit-section-heading :bold nil)))
                               `(org-roam-review-heading ,outline-heading)
-                              `(org-roam-review-heading-separator ,(append-faces outline-heading `((t :bold nil))))
 
                               `(outline-1 ,outline-heading)
                               `(outline-2 ,outline-heading)
