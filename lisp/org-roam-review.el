@@ -738,8 +738,7 @@ the future."
        (unless (org-roam-review--skip-node-for-maturity-assignment-p)
          (org-roam-review--update-node-srs-properties "evergreen" score))))))
 
-
-(defun org-roam-review-remove-managed-properties-in-node (node-id)
+(defun org-roam-review--remove-managed-properties (node-id)
   (let ((message-log-max))
     (org-with-point-at (org-find-property "ID" node-id)
       (ignore-errors
@@ -763,7 +762,7 @@ it is not a candidate for reviews."
         (error "No ID in buffer"))
       (org-with-point-at (org-find-property "ID" id)
         (atomic-change-group
-          (org-roam-review-remove-managed-properties-in-node id)
+          (org-roam-review--remove-managed-properties id)
           (org-set-property "REVIEW_EXCLUDED" "t"))
         (save-buffer))
 
