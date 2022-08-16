@@ -6897,8 +6897,7 @@ This makes it much easier to edit text using emphasis markers correctly.
   (use-package org-roam-gc
     :after org-roam
     :demand t
-    :config
-    (run-with-idle-timer 5 nil 'org-roam-gc))
+    :hook (org-mode . org-roam-gc-automatically))
 #+end_src
 
 ** =org-roam-rewrite= - Extra utilities for refactoring notes
