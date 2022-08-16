@@ -96,12 +96,12 @@
 
 (defface org-roam-review-tags-filter-keyword
   '((t (:bold t)))
-  "Face for headings in review buffers."
+  "Face for the tags heading in review buffers."
   :group 'org-roam-review)
 
 (defface org-roam-review-tags-filter
   '((t (:italic t)))
-  "Face for headings in review buffers."
+  "Face for tag filter text in review buffers."
   :group 'org-roam-review)
 
 (defconst org-roam-review-properties
@@ -116,10 +116,34 @@
     "DRILL_EASE")
   "List of properties managed by `org-roam-review'.")
 
-(defvar org-roam-review-node-accepted-hook nil)
-(defvar org-roam-review-node-buried-hook nil)
-(defvar org-roam-review-node-processed-hook nil)
-(defvar org-roam-review-next-node-selected-hook '(org-roam-review-open-node-if-in-review-session))
+(defvar org-roam-review-node-accepted-hook nil
+  "Hook run after marking a node as successfully reviewed.
+
+The hook is run within `org-roam-review-accept', with that node
+as the current buffer.")
+
+(defvar org-roam-review-node-buried-hook nil
+  "Hook run after marking a node as successfully reviewed.
+
+The hook is run within `org-roam-review-bury', with that node as
+the current buffer.")
+
+(defvar org-roam-review-node-processed-hook nil
+  "Hook run whenever a node is buried or accepted in a review.
+
+The hook is run with the node as the current buffer.")
+
+(defvar org-roam-review-next-node-selected-hook '(org-roam-review-open-node-if-in-review-session)
+  "A hook executed when point advances to the next node for review.
+
+Running `org-roam-review-accept' or `org-roam-review-bury' causes
+point to advance to the next section in the review buffer, when
+open. The hook is runs with the review buffer as the current
+buffer, and with point at the section corresponding to the next
+node for review.
+
+The default value for this hook means the next node for
+review is automatically opened, where available.")
 
 
 ;;; SRS property management & parsing
