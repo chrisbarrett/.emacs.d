@@ -258,7 +258,7 @@ BUILDER is the command argument builder."
                 (org-roam-review-node-list))))
 
 (defun org-roam-search--make-insert-nodes-fn (query)
-  (-lambda ((&plist :nodes :placeholder :root))
+  (-lambda ((&plist :nodes :placeholder :root-section))
     (let ((nodes (seq-remove #'org-roam-review-node-ignored-p nodes)))
       (cond
        ((null nodes)
@@ -276,7 +276,7 @@ BUILDER is the command argument builder."
                         " "
                         (when-let* ((mat (org-roam-review-node-maturity top-node)))
                           (alist-get mat org-roam-review-maturity-emoji-alist nil nil #'equal))))
-              (oset section parent root)
+              (oset section parent root-section)
               (oset section node top-node)
               (oset section washer
                     (lambda ()

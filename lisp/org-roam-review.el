@@ -334,12 +334,12 @@ When called with a `C-u' prefix arg, clear the current filter."
 
 (plist-define org-roam-review-render-args
   :optional (:group-on :nodes :placeholder :sort)
-  :required (:root))
+  :required (:root-section))
 
 (defclass org-roam-review-grouping-section (magit-section) ())
 
 (cl-defun org-roam-review--insert-nodes-fn-default (args)
-  (-let* (((&plist :group-on :nodes :placeholder :sort :root) args)
+  (-let* (((&plist :group-on :nodes :placeholder :sort :root-section) args)
           (sort (or sort (-const t))))
     (cond
      ((null nodes)
@@ -355,7 +355,7 @@ When called with a `C-u' prefix arg, clear the current filter."
                                   (if (stringp key) key (car key))
                                   (length group))))
               (magit-insert-section section (org-roam-review-grouping-section header)
-                (oset section parent root)
+                (oset section parent root-section)
                 (magit-insert-heading (propertize header 'font-lock-face 'magit-section-heading))
                 (org-roam-review--insert-nodes (-sort sort group) placeholder)
                 (insert "\n")))))))
@@ -367,7 +367,7 @@ When called with a `C-u' prefix arg, clear the current filter."
     (erase-buffer)
     (org-roam-review-mode)
     (org-roam-buffer-set-header-line-format title)
-    (magit-insert-section root (root)
+    (magit-insert-section root-section (root)
       (when (and org-roam-review-show-instructions-p instructions nodes)
         (let ((start (point)))
           (insert (propertize instructions 'font-lock-face 'org-roam-review-instructions))
@@ -387,7 +387,7 @@ When called with a `C-u' prefix arg, clear the current filter."
                  (org-roam-review-render-args-create :nodes nodes
                                                      :group-on group-on
                                                      :sort sort
-                                                     :root root
+                                                     :root-section root-section
                                                      :placeholder placeholder))
         (goto-char start-of-content)))))
 

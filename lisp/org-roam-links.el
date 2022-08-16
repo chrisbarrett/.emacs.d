@@ -88,7 +88,7 @@ When called interactively, prompt the user for DEPTH."
         (seq-remove #'org-roam-review-node-ignored-p
                     (ht-values (org-roam-links-graph-nodes graph))))
       :insert-nodes-fn
-      (-lambda ((&plist :root))
+      (-lambda ((&plist :root-section))
         (let ((seen-ids (ht-create))
               (nodes (org-roam-links-graph-nodes graph))
               (start-node-id (org-roam-node-id start-node)))
@@ -98,7 +98,7 @@ When called interactively, prompt the user for DEPTH."
                          (pcase-dolist (`(,id . ,children) sorted-nodes)
                            (when-let* ((node (ht-get nodes id)))
                              (magit-insert-section section (org-roam-preview-section)
-                               (oset section parent root)
+                               (oset section parent root-section)
                                (oset section point (org-roam-node-point node))
                                (oset section file (org-roam-node-file node))
                                (if (equal id start-node-id)
