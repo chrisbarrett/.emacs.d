@@ -161,6 +161,10 @@ LINK-DESC is the description to use for the updated links."
      (t
       (user-error "Rewrite aborted")))))
 
+(defun org-roam-rewrite--apply-when-transclusions-enabled (fname &rest args)
+  (when (bound-and-true-p org-transclusion-mode)
+    (apply fname args)))
+
 ;;;###autoload
 (defun org-roam-rewrite-inline (src-node dest-node)
   "Inline the contents of one org-roam note into another, removing the original.
@@ -183,13 +187,13 @@ DEST-NODE is the node that will be added to."
          (content
           (with-current-buffer src-buffer
             (org-with-wide-buffer
-             (org-transclusion-remove-all)
+             (org-roam-rewrite--apply-when-transclusions-enabled 'org-transclusion-remove-all)
              (goto-char (point-min))
              (org-roam-end-of-meta-data t)
              (buffer-substring (point) (point-max))))))
     (find-file (org-roam-node-file dest-node))
     (org-with-wide-buffer
-     (org-transclusion-remove-all)
+     (org-roam-rewrite--apply-when-transclusions-enabled 'org-transclusion-remove-all)
      (goto-char (point-max))
      (delete-blank-lines)
      (insert "\n\n")
@@ -201,11 +205,11 @@ DEST-NODE is the node that will be added to."
        (org-map-entries 'org-do-demote)
        (goto-char (point-min))
        (while (search-forward-regexp (rx bol "#+transclude:") nil t)
-         (org-transclusion-add)
-         (org-transclusion-promote-subtree))))
+         (org-roam-rewrite--apply-when-transclusions-enabled 'org-transclusion-add)
+         (org-roam-rewrite--apply-when-transclusions-enabled 'org-transclusion-promote-subtree))))
     (delete-file (org-roam-node-file src-node))
     (save-buffer)
-    (org-transclusion-add-all)
+    (org-roam-rewrite--apply-when-transclusions-enabled 'org-transclusion-add-all)
     (when (buffer-live-p src-buffer)
       (kill-buffer src-buffer)))
 
@@ -236,8 +240,7 @@ handles file titles, IDs and tags better."
 
           (save-restriction
             (org-narrow-to-subtree)
-            (when (bound-and-true-p org-transclusion-mode)
-              (org-transclusion-remove-all t)))
+            (org-roam-rewrite--apply-when-transclusions-enabled 'org-transclusion-remove-all t))
 
           (org-cut-subtree)
           (insert (org-link-make-string (format "id:%s" id) (org-link-display-format title)))
@@ -254,8 +257,7 @@ handles file titles, IDs and tags better."
                   (when-let* ((tags (-difference (-union (org-roam-rewrite--file-tags) tags)
                                                  org-roam-rewrite-extract-excluded-tags)))
                     (org-roam-rewrite--set-file-tags tags)
-                    (when (bound-and-true-p org-transclusion-mode)
-                      (org-transclusion-add-all)))
+                    (org-roam-rewrite--apply-when-transclusions-enabled 'org-transclusion-add-all))
                   (save-buffer))
               (error
                (f-delete dest-file)))
