@@ -33,9 +33,8 @@
 ;;     (use-package org-roam-review
 ;;       :hook
 ;;       (org-mode . org-roam-note-cache-mode)
+;;       ;; Optional - tag all newly-created notes as seedlings
 ;;       (org-roam-capture-new-node . org-roam-review-set-seedling)
-;;       :custom
-;;       (org-roam-note-ignored-tags '("person" "client" "project" "lit_notes"))
 ;;       :general
 ;;       ;; optional bindings for evil-mode compatability.
 ;;       (:states '(normal) :keymaps 'org-roam-review-mode-map
@@ -69,7 +68,7 @@
     ("budding" . "🪴")
     ("evergreen" . "🌲")))
 
-(defcustom org-roam-review-tags-ignored-for-review-buffer '("outline")
+(defcustom org-roam-review-tags-ignored-for-review-buffer '("dailies")
   "A list of tags that disqualify a node from review."
   :group 'org-roam-review
   :type '(list string))
@@ -79,7 +78,7 @@
   :group 'org-roam-review
   :type 'boolean)
 
-(defcustom org-roam-review-ignored-tags '()
+(defcustom org-roam-review-ignored-tags '("dailies")
   "A list of tags for nodes that should never be reviewable."
   :group 'org-roam-review
   :type '(list string))

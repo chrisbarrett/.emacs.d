@@ -6940,9 +6940,9 @@ This makes it much easier to edit text using emphasis markers correctly.
     (org-roam-capture-new-node . config-org-roam-maybe-set-seedling)
     :commands (org-roam-review)
     :custom
-    (org-roam-review-ignored-tags '("project" "client"))
+    (org-roam-review-ignored-tags '("dailies" "outline"))
+    (org-roam-review-tags-ignored-for-review-buffer '("dailies" "outline"))
     (org-roam-review-show-instructions-p nil)
-    (org-roam-review-tags-ignored-for-review-buffer '("dailies" "outline" "author" "accounts" "flat"))
     :general
     (:states '(normal) :keymaps 'org-roam-review-mode-map
      "/" 'org-roam-review-modify-tags
