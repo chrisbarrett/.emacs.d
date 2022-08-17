@@ -6945,7 +6945,9 @@ This makes it much easier to edit text using emphasis markers correctly.
      "C-c r x" '(org-roam-review-set-excluded :wk "set excluded")
      "C-c r b" '(org-roam-review-set-budding :wk "set budding")
      "C-c r s" '(org-roam-review-set-seedling :wk "set seedling")
-     "C-c r e" '(org-roam-review-set-evergreen :wk "set evergreen")))
+     "C-c r e" '(org-roam-review-set-evergreen :wk "set evergreen"))
+    :config
+    (add-hook 'org-roam-review-next-node-selected-hook 'org-roam-buffer--redisplay-h 91))
 #+end_src
 
 ** Allow lookups to roam nodes from non-roam org files
