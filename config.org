@@ -3157,8 +3157,7 @@ Disabled for now since this breaks insert state in evil :/
 
     "r" '(nil :wk "review...")
     "rd" '(org-roam-review-list-recently-added :wk "recently added")
-    "ro" '(org-roam-review-visit-outline :wk "outlines...")
-    "rb" '(citar-open-notes :wk "outlines (from bib)...")
+    "ro" '(citar-open-notes :wk "outlines...")
     "rr" '(org-roam-review :wk "review due evergreens")
     "rt" '(org-roam-search-tags :wk "search (tags)...")
     "rl" '(org-roam-links :wk "show links")
