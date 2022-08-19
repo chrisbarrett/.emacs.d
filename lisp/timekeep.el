@@ -25,8 +25,6 @@
 (require 'org-capture)
 (require 'org-clock)
 (require 'persist)
-(require 'ht)
-(require 's)
 
 (defgroup timekeep nil
   "Functions for managing client timekeeping with org-clock."
@@ -143,10 +141,10 @@ property is not set, it is computed using
   (org-roam-node-from-id timekeep--latest-target-id))
 
 (defun timekeep-read-target ()
-  (let ((table (ht-from-alist (seq-map (lambda (it) (cons (timekeep-node-name it) it))
-                                       (timekeep-nodes)))))
-    (gethash (completing-read "Target: " table nil t)
-             table)))
+  (let* ((alist (seq-map (lambda (it) (cons (timekeep-node-name it) it))
+                         (timekeep-nodes)))
+         (choice (completing-read "Target: " alist nil t)))
+    (alist-get choice alist nil nil #'equal)))
 
 (defun timekeep-choose-target (&optional interactive-p)
   "Choose a target node for clocking with timekeep.
@@ -154,14 +152,14 @@ property is not set, it is computed using
 With optional argument INTERACTIVE-P, log additional messages as
 feedback."
   (interactive (list t))
-  (let ((choice (timekeep-read-target)))
-    (setq timekeep--latest-target-id (org-roam-node-id choice))
+  (let ((node (timekeep-read-target)))
+    (setq timekeep--latest-target-id (org-roam-node-id node))
     (persist-save 'timekeep--latest-target-id)
     (when interactive-p
-      (message (concat "Timekeep traget set to " (propertize (timekeep-node-name choice)
+      (message (concat "Timekeep traget set to " (propertize (timekeep-node-name node)
                                                              'face
                                                              'font-lock-string-face))))
-    choice))
+    node))
 
 
 ;;; Clocktree management & clocking integration
