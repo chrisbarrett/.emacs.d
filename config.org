@@ -7218,6 +7218,8 @@ property drawer and the title. Advise it to fix that.
 #+begin_src emacs-lisp
   (use-package org-roam-search
     :commands (org-roam-search)
+    :custom
+    (org-roam-search-ignored-tags '("dailies"))
     :general
     (:keymaps 'org-roam-mode-map :states '(normal motion)
      "s" 'org-roam-search))
