@@ -186,12 +186,10 @@ feedback."
 (defun timekeep--on-clock-in ()
   (let* ((node (org-roam-node-at-point))
          (node-id (org-roam-node-id node)))
-    (cond ((seq-contains-p (seq-map #'org-roam-node-id (timekeep-nodes)) node-id)
-           (setq timekeep--latest-target-id node-id)
-           (persist-save 'timekeep--latest-target-id)
-           (setq timekeep--session-active-p t))
-          (t
-           (user-error "Not in a valid timekeep target node")))))
+    (when (seq-contains-p (seq-map #'org-roam-node-id (timekeep-nodes)) node-id)
+      (setq timekeep--latest-target-id node-id)
+      (persist-save 'timekeep--latest-target-id)
+      (setq timekeep--session-active-p t))))
 
 (defun timekeep--on-clock-out ()
   (when (and timekeep--session-active-p
