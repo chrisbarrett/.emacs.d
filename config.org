@@ -6127,20 +6127,6 @@ Exit minibuffer before adding notes.
     (org-archive-subtree-add-inherited-tags t))
 #+end_src
 
-*** Apply either an =@work= or =@personal= context when archiving    :disabled:
-#+begin_src emacs-lisp
-  (use-package org
-    :config
-    (defun org-apply-tags-before-archive (&rest _)
-      ;; Ensure we have a context before archiving.
-      (when (seq-empty-p (org-get-tags))
-        (pcase-exhaustive (read-char-choice "Set context: [w]ork  [p]ersonal" '(?w ?p))
-          (?w (org-toggle-tag (timekeep-work-tag) 'on))
-          (?p nil))))
-
-    (advice-add 'org-archive-subtree :before 'org-apply-tags-before-archive))
-#+end_src
-
 ** Export
 #+begin_src emacs-lisp
   (use-package org
