@@ -7397,7 +7397,6 @@ consumer of it.
         (or name title)))
     :custom
     (timekeep-node-to-name-function #'config-timekeep-strip-prefix-from-title)
-    (timekeep-default-vat-rate 0.15)
     :general ("<f12>" (general-predicate-dispatch 'timekeep-start
                         (and (fboundp 'org-clocking-p) (org-clocking-p)) 'timekeep-stop))
     :config

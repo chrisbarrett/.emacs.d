@@ -50,14 +50,6 @@ Will be used if:
   :group 'timekeep
   :type 'string)
 
-(defcustom timekeep-default-vat-rate nil
-  "The rate of VAT/GST charged on invoices to a client.
-
-Should be a floating point number between 0-1, or nil."
-  :group 'timekeep
-  :type '(choice float
-                 (const :tag "None" nil)))
-
 (defcustom timekeep-agenda-should-update-hook nil
   "Hook run when a clocking change should update the agenda."
   :group 'timekeep
@@ -121,15 +113,6 @@ property is not set, it is computed using
   (cl-assert node)
   (or (timekeep--node-property "TIMEKEEP_NAME" node)
       (funcall timekeep-node-to-name-function node)))
-
-(defun timekeep-node-vat-rate (node)
-  "The VAT/GST rate associated with NODE."
-  (cl-assert node)
-  (let ((result
-         (or (timekeep--node-property "TIMEKEEP_VAT" node)
-             timekeep-default-vat-rate)))
-    (cl-assert result)
-    result))
 
 
 ;;; UI prompts
