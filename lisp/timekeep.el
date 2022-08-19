@@ -82,7 +82,6 @@ Will be used if:
 
 The value is taken from the TIMEKEEP_CODE property.
 
-
 If ASSERT is non-nil, throw an error on a nil result."
   (cl-assert node)
   (let ((result (timekeep--node-property "TIMEKEEP_CODE" node)))
