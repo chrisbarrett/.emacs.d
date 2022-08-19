@@ -142,28 +142,34 @@ property is not set, it is computed using
 (defun timekeep-current-target ()
   (org-roam-node-from-id timekeep--latest-target-id))
 
-(defun timekeep-read-target (&optional prompt)
+(defun timekeep-read-target ()
   (let ((table (ht-from-alist (seq-map (lambda (it) (cons (timekeep-node-name it) it))
                                        (timekeep-nodes)))))
-    (gethash (completing-read (or prompt "Target: ") table nil t)
+    (gethash (completing-read "Target: " table nil t)
              table)))
 
-(defun timekeep-choose-target (&optional prompt)
-  (let ((choice (timekeep-read-target prompt)))
+(defun timekeep-choose-target (&optional interactive-p)
+  "Choose a target node for clocking with timekeep.
+
+With optional argument INTERACTIVE-P, log additional messages as
+feedback."
+  (interactive (list t))
+  (let ((choice (timekeep-read-target)))
     (setq timekeep--latest-target-id (org-roam-node-id choice))
+    (persist-save 'timekeep--latest-target-id)
+    (when interactive-p
+      (message (concat "Timekeep traget set to " (propertize (timekeep-node-name choice)
+                                                             'face
+                                                             'font-lock-string-face))))
     choice))
 
 
 ;;; Clocktree management & clocking integration
 
-(defun timekeep--clocktree-headline (buffer)
-  (cl-assert (buffer-live-p buffer))
-  (let ((heading (list timekeep-default-headline-name
-                       (format-time-string "%Y %W"))))
-    (with-current-buffer buffer
-      (org-with-wide-buffer
-       (goto-char (point-min))
-       (org-roam-capture-find-or-create-olp heading)))))
+(defun timekeep--clocktree-headline-find-or-create ()
+  (let ((heading (list timekeep-default-headline-name (format-time-string "%Y %W"))))
+    (widen)
+    (goto-char (marker-position (org-roam-capture-find-or-create-olp heading)))))
 
 (defun timekeep--punch-in-for-node (node)
   (cl-assert node)
@@ -171,8 +177,8 @@ property is not set, it is computed using
     (save-excursion
       (org-roam-node-visit node)
       (org-with-wide-buffer
-       (org-with-point-at (timekeep--clocktree-headline (current-buffer))
-         (org-clock-in '(16)))))))
+       (timekeep--clocktree-headline-find-or-create)
+       (org-clock-in '(16))))))
 
 (defvar timekeep--session-active-p nil)
 
@@ -202,6 +208,7 @@ property is not set, it is computed using
          (node-id (org-roam-node-id node)))
     (cond ((seq-contains-p (seq-map #'org-roam-node-id (timekeep-nodes)) node-id)
            (setq timekeep--latest-target-id node-id)
+           (persist-save 'timekeep--latest-target-id)
            (setq timekeep--session-active-p t))
           (t
            (user-error "Not in a valid timekeep target node")))))
@@ -307,7 +314,7 @@ or if no current target is set, prompt for the node to visit."
   (interactive "P")
   (org-roam-node-visit
    (if (or ask (null timekeep--latest-target-id))
-       (timekeep-read-target)
+       (timekeep-choose-target t)
      (org-roam-node-from-id timekeep--latest-target-id))))
 
 ;;;###autoload
@@ -315,7 +322,7 @@ or if no current target is set, prompt for the node to visit."
   "Target-location function for use in capture templates."
   (timekeep-visit-node)
   (widen)
-  (goto-char (timekeep--clocktree-headline (current-buffer))))
+  (timekeep--clocktree-headline-find-or-create))
 
 ;;;###autoload
 (defun timekeep-capture-to-toplevel ()
