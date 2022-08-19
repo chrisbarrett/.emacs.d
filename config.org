@@ -7382,10 +7382,10 @@ consumer of it.
 
 #+begin_src emacs-lisp
   (use-package timekeep
-    :commands
-    timekeep-start
-    timekeep-stop
-    timekeep-visit-node
+    :commands (timekeep-start
+               timekeep-stop
+               timekeep-mode
+               timekeep-visit-node)
     :after org
     :demand t
     :preface
