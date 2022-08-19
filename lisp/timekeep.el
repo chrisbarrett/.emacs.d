@@ -21,9 +21,9 @@
 ;;; Code:
 
 (require 'org-agenda)
-(require 'org-roam-node)
 (require 'org-capture)
 (require 'org-clock)
+(require 'org-roam-node)
 (require 'persist)
 
 (defgroup timekeep nil
