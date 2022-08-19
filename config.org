@@ -6500,23 +6500,6 @@ Populate the agenda with these files.
   (add-hook 'after-save-hook #'config-org-setup-agenda-updates)
 #+end_src
 
-** =timekeep= - Better timekeeping handling for org-clock
-#+begin_src emacs-lisp
-  (use-package timekeep
-    :commands
-    timekeep-start
-    timekeep-stop
-    timekeep-find-client-buffer
-    timekeep-read-client-name
-    :general ("<f12>" (general-predicate-dispatch 'timekeep-start
-                        (and (fboundp 'org-clocking-p) (org-clocking-p)) 'timekeep-stop))
-    :custom
-    (timekeep-cache-file (expand-file-name "timekeep" paths-cache-directory))
-    :config
-    (timekeep-mode +1)
-    (add-hook 'timekeep-agenda-should-update-hook #'org-funcs-agenda-dwim))
-#+end_src
-
 ** =orgtbl-aggregate= - Add pivot tables to org-mode
 #+begin_src emacs-lisp
   (use-package orgtbl-aggregate
