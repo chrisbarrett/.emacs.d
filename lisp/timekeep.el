@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2022  Chris Barrett
 
-;; Author: Chris Barrett <chris@walrus.cool>
+;; Author: Chris Barrett <chris+emacs@walrus.cool>
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -18,6 +18,66 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
+
+;; This package provides a way of using org-roam nodes to represent clients or
+;; employers. I developed it because I wanted a good way to capture time spent
+;; on tasks for contract work across multiple clients. I also wanted capture
+;; templates for filinginto a clocktree for each client, to make reviews easy.
+
+;; The big idea is to use an org-roam node for each client, and decorate it with
+;; properties to indicate it denotes a client or employer. Then, integrate
+;; org-clock and org-capture with this view of the world by:
+;;
+;; 1. providing a smooth clocking interface modelled around punching
+;;    in/out.[fn:1]
+;;
+;; 2. exposing capture template target locator functions, allowing capture
+;;    templates to file into clocktrees, or into the most recent client's file.
+
+;; Any roam node with a property whose name starts with "TIMEKEEP" will be
+;; considered a timekeep "target". Once you have a few nodes defined as targets,
+;; you can switch between them with `C-u timekeep-visit-node'. Without the
+;; prefix argument this command just jumps to the node selected most recently
+;; from that list.
+
+;; Aside from visiting your target buffers, the main commands you'd use are
+;; `timekeep-start' and `timekeep-stop', which provide a simple punch-in/out
+;; interface for a managing a working session. Punching in will create a
+;; clocktree in the target roam node, and by default will clock in there.
+
+;; While a timekeep clocking session is active, clocking commands will behave
+;; differently; clocking out will search upward for an unfinished parent task to
+;; clock into. If this search fails, the clocktree is clocked into as a
+;; fallback. This allows you to account for time where you're not doing
+;; organisational work, answering Slack & emails, etc, rather than working on
+;; specific tasks.
+
+;; If you want to take a break you run `timekeep-stop' to punch out and suspend
+;; the current clock. When you get back, `timekeep-start' will resume where you
+;; left off.
+
+;; I like to bind both start & stop to <f12>. General.el has a neat feature
+;; called "predicate-dispatch" that makes this easy.
+
+;; Example configuration:
+;;
+;;     (use-package timekeep
+;;       :commands (timekeep-start
+;;                  timekeep-stop
+;;                  timekeep-mode
+;;                  timekeep-visit-node)
+;;       :after org
+;;       :demand t
+;;       :general ("<f12>" (general-predicate-dispatch 'timekeep-start
+;;                           (and (fboundp 'org-clocking-p) (org-clocking-p)) 'timekeep-stop))
+;;       :config
+;;       (timekeep-mode +1))
+
+;;
+;; [fn:1] The approach here takes inspiration from the punch-in/punch-out
+;;   workflow outlined by Bernt Hansen. See:
+;;   http://doc.norang.ca/org-mode.html#Clocking
+
 ;;; Code:
 
 (require 'org-agenda)
