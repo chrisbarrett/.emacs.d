@@ -87,21 +87,32 @@ Should be a floating point number between 0-1, or nil."
   (cl-assert node)
   (alist-get key (org-roam-node-properties node) nil nil #'equal))
 
-(defun timekeep-node-code (node)
+(defun timekeep-node-code (node &optional assert)
   "The code associated with NODE, e.g. for use with invoices.
 
-The value is taken from the TIMEKEEP_CODE property."
-  (cl-assert node)
-  (timekeep--node-property "TIMEKEEP_CODE" node))
+The value is taken from the TIMEKEEP_CODE property.
 
-(defun timekeep-node-tag (node)
+
+If ASSERT is non-nil, throw an error on a nil result."
+  (cl-assert node)
+  (let ((result (timekeep--node-property "TIMEKEEP_CODE" node)))
+    (when assert
+      (cl-assert result))
+    result))
+
+(defun timekeep-node-tag (node &optional assert)
   "A tag associated with NODE.
 
 The value is taken from the TIMEKEEP_TAG property, or the
-CATEGORY as a fallback."
+CATEGORY as a fallback.
+
+If ASSERT is non-nil, throw an error on a nil result."
   (cl-assert node)
-  (or (timekeep--node-property "TIMEKEEP_TAG" node)
-      (-some->> (timekeep--node-property "CATEGORY" node) (downcase))))
+  (let ((result (or (timekeep--node-property "TIMEKEEP_TAG" node)
+                    (-some->> (timekeep--node-property "CATEGORY" node) (downcase)))))
+    (when assert
+      (cl-assert result))
+    result))
 
 (defun timekeep-node-name (node)
   "The human-readable name of NODE, e.g. a company or client name.
@@ -116,8 +127,11 @@ property is not set, it is computed using
 (defun timekeep-node-vat-rate (node)
   "The VAT/GST rate associated with NODE."
   (cl-assert node)
-  (or (timekeep--node-property "TIMEKEEP_VAT" node)
-      timekeep-default-vat-rate))
+  (let ((result
+         (or (timekeep--node-property "TIMEKEEP_VAT" node)
+             timekeep-default-vat-rate)))
+    (cl-assert result)
+    result))
 
 
 ;;; UI prompts
