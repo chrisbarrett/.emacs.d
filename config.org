@@ -3138,8 +3138,8 @@ Disabled for now since this breaks insert state in evil :/
     "a" '(org-funcs-agenda-dwim :wk "agenda")
 
     "c" '(nil :wk "clock")
-    "c i" '(timekeep2-start :wk "punch in")
-    "c o" '(timekeep2-stop :wk "punch out")
+    "c i" '(timekeep-start :wk "punch in")
+    "c o" '(timekeep-stop :wk "punch out")
     "c r" '(org-resolve-clocks :wk "resolve clocks")
     "c g" '(org-clock-goto :wk "goto last clock")
 
@@ -3167,7 +3167,7 @@ Disabled for now since this breaks insert state in evil :/
     "g" '(org-capture-goto-last-stored :wk "last captured")
     "t" '(org-funcs-todo-list :wk "todo list")
     "v" '(org-tags-view :wk "tags")
-    "w" '(timekeep2-visit-node :wk "work"))
+    "w" '(timekeep-visit-node :wk "work"))
 #+end_src
 
 *** ~p~ - Projects
@@ -7378,31 +7378,31 @@ consumer of it.
     (advice-add 'org-roam-node-insert-section :override #'config-org-roam-node-insert-section))
 #+end_src
 
-** =timekeep2= - Client clocking & billing built on org-roam
+** =timekeep= - Client clocking & billing built on org-roam
 
 #+begin_src emacs-lisp
-  (use-package timekeep2
+  (use-package timekeep
     :commands
-    timekeep2-start
-    timekeep2-stop
-    timekeep2-visit-node
+    timekeep-start
+    timekeep-stop
+    timekeep-visit-node
     :after org
     :demand t
     :preface
-    (defun config-timekeep2-strip-prefix-from-title (node)
+    (defun config-timekeep-strip-prefix-from-title (node)
       (pcase-let* ((title (org-roam-node-title node))
                    (`(_ ,name) (s-match (rx bos (? "Client" (* space) "-" (* space))
                                             (group (+ nonl)))
                                         title)))
         (or name title)))
     :custom
-    (timekeep2-node-to-name-function #'config-timekeep2-strip-prefix-from-title)
-    (timekeep2-default-vat-rate 0.15)
-    :general ("<f12>" (general-predicate-dispatch 'timekeep2-start
-                        (and (fboundp 'org-clocking-p) (org-clocking-p)) 'timekeep2-stop))
+    (timekeep-node-to-name-function #'config-timekeep-strip-prefix-from-title)
+    (timekeep-default-vat-rate 0.15)
+    :general ("<f12>" (general-predicate-dispatch 'timekeep-start
+                        (and (fboundp 'org-clocking-p) (org-clocking-p)) 'timekeep-stop))
     :config
-    (timekeep2-mode +1)
-    (add-hook 'timekeep2-agenda-should-update-hook #'org-funcs-agenda-dwim))
+    (timekeep-mode +1)
+    (add-hook 'timekeep-agenda-should-update-hook #'org-funcs-agenda-dwim))
 #+end_src
 
 * Load Lisp from other locations
