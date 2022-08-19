@@ -233,6 +233,10 @@ When this mode is active, clocking out behaves differently:
 
 ;;;###autoload
 (defun timekeep-work-tag ()
+  "Return the org tag associated with the current timekeep target.
+
+If the target does not have one the value of
+`timekeep-fallback-work-tag' is used."
   (or (-some->> (timekeep-current-target) (timekeep-node-tag))
       timekeep-fallback-work-tag))
 
