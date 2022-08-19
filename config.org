@@ -7388,15 +7388,6 @@ consumer of it.
                timekeep-visit-node)
     :after org
     :demand t
-    :preface
-    (defun config-timekeep-strip-prefix-from-title (node)
-      (pcase-let* ((title (org-roam-node-title node))
-                   (`(_ ,name) (s-match (rx bos (? "Client" (* space) "-" (* space))
-                                            (group (+ nonl)))
-                                        title)))
-        (or name title)))
-    :custom
-    (timekeep-node-to-name-function #'config-timekeep-strip-prefix-from-title)
     :general ("<f12>" (general-predicate-dispatch 'timekeep-start
                         (and (fboundp 'org-clocking-p) (org-clocking-p)) 'timekeep-stop))
     :config
