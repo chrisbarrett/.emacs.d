@@ -4026,7 +4026,9 @@ See: [[https://github.com/dandavison/magit-delta/issues/9#issuecomment-795435781
 #+begin_src emacs-lisp
   (use-package git-auto-commit-mode
     :delight " auto-commit"
-    :hook (pass-mode . git-auto-commit-mode)
+    :hook
+    (pass-mode . git-auto-commit-mode)
+    (pass-view-mode . git-auto-commit-mode)
     :custom
     (gac-debounce-interval 10)
     (gac-silent-message-p t)
