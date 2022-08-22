@@ -1503,6 +1503,11 @@ Configure how =ediff= should display windows when started.
     (consult-register-load (config-read-register) arg))
 #+end_src
 
+** Hide commands irrelevant to current mode from M-x
+#+begin_src emacs-lisp
+  (setq read-extended-command-predicate #'command-completion-default-include-p)
+#+end_src
+
 * Better eval-expression
 Define an alternative version of =eval-expression= that uses =emacs-lisp-mode= to
 provide font-locking, and handles =smartparens= better.
@@ -3484,8 +3489,6 @@ after editing actions have changed what windows are shown.
   (use-package emacs
     :init
     (setq completion-cycle-threshold 3)
-    ;; Hide commands not relevant to current major mode.
-    (setq read-extended-command-predicate #'command-completion-default-include-p)
     ;; Perform both indentation & text completion with TAB.
     (setq tab-always-indent 'complete))
 #+end_src
