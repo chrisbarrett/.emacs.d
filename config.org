@@ -439,7 +439,7 @@ Load host-specific settings, which are not checked into version control.
                               '(magit-header-line ((t :background nil :box nil)))
                               `(org-document-title ,title)
                               `(org-roam-header-line ((t :inherit org-document-title)))
-                              `(selectrum-group-title ((t :inherit magit-section-heading)))
+                              `(vertico-group-title ((t :inherit magit-section-heading)))
                               `(consult-line-number ((t :inherit font-lock-comment-face)))
                               `(shortdoc-section ((t :inherit fixed-pitch)))
                               `(org-roam-review-tags-filter ((t :inherit magit-section-heading :bold nil)))
@@ -2663,8 +2663,6 @@ See:
 #+end_src
 
 #+begin_src emacs-lisp
-  (autoload 'selectrum-repeat "selectrum")
-
   (leader-set-key
     "-" '(window-toggle-side-windows :wk "toggle side windows")
     "!" '(async-shell-command :wk "shell cmd (async)")
@@ -2697,7 +2695,6 @@ See:
                 (derived-mode-p 'lsp-ui-imenu-mode) 'lsp-ui-imenu--kill)
               :wk "imenu")
     "q" '(delete-window :wk "delete window")
-    "r" 'selectrum-repeat
     "s" '(evil-iedit-state/iedit-mode :wk "iedit")
     "u" '(universal-argument :wk "prefix arg")
     "x" '(execute-extended-command :wk "M-x"))
@@ -3388,7 +3385,7 @@ https://github.com/oantolin/orderless
     (completion-styles '(orderless)))
 #+end_src
 
-** =selectrum= - Incremental search and narrowing
+** =selectrum= - Incremental search and narrowing                   :disabled:
 #+begin_src emacs-lisp
   (use-package selectrum
     :hook (after-init . selectrum-mode)
@@ -3435,6 +3432,14 @@ See: [[https://github.com/raxod502/selectrum/issues/498#issuecomment-876424791][
     (xref-show-xrefs-function #'consult-xref)
     (xref-show-definitions-function #'consult-xref)
     :general (:states 'normal "/" 'consult-line))
+#+end_src
+
+** =vertico= - Completion & narrowing for minibuffer prompts
+#+begin_src emacs-lisp
+  (use-package vertico
+    :hook (after-init . vertico-mode)
+    :custom
+    (vertico-cycle t))
 #+end_src
 
 ** =marginalia= - adds helpful annotations to completion prompts
@@ -4009,7 +4014,7 @@ See: https://github.com/magit/magit/commit/26e064e1d78acb4d4d422a0a5743609612863
     (setq magit-git-executable (expand-file-name "~/.nix-profile/bin/git")))
 #+end_src
 
-*** Compatibility with selectrum
+*** Compatibility with selectrum                                 :disabled:
 #+begin_src emacs-lisp
   (use-package magit
     :after (selectrum)

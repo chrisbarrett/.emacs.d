@@ -114,7 +114,6 @@ epkgs: with epkgs; [
   rainbow-mode
   request
   rotate
-  selectrum
   shut-up
   simple-httpd
   smartparens
