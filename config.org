@@ -5380,7 +5380,7 @@ Configure =conf-mode= for use with more kinds of config files.
     ("\\.kll\\'" . conf-mode))
 #+end_src
 
-** =clojure-mode=
+** =clojure-mode= - Major mode for interacting with Clojure & Leiningen
 
 *** Set up major-mode leader keybindings
 #+begin_src emacs-lisp
