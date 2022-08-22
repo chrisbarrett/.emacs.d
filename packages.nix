@@ -92,7 +92,6 @@ epkgs: with epkgs; [
   org-drill
   org-fragtog
   org-ml
-  org-noter
   org-pretty-table
   org-ql
   org-roam
