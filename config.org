@@ -5441,6 +5441,13 @@ Configure =conf-mode= for use with more kinds of config files.
     (cider-allow-jack-in-without-project t))
 #+end_src
 
+** =proof-general= - Major-mode for theorem proving with Coq
+#+begin_src emacs-lisp
+  (use-package proof-site
+    :custom
+    (proof-splash-enable nil))
+#+end_src
+
 * Applications
 
 ** =pass= - Frontend to Unix ~password-store~
