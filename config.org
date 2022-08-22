@@ -5,8 +5,8 @@
 #+property: header-args:emacs-lisp :tangle "config.el" :lexical yes
 #+startup: fold
 
-This file uses org-mode's tangle functionality to create both the
-=early-init.el= and =init.el= files used by Emacs during the startup sequence.
+This file uses org-mode's tangle functionality to create both the =early-init.el=
+and =init.el= files used by Emacs during the startup sequence.
 
 Headings can be tagged with =:disabled:= to 'comment-out' those blocks.
 
