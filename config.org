@@ -3502,6 +3502,20 @@ after editing actions have changed what windows are shown.
     :hook (minibuffer-setup . corfu-enable-in-minibuffer))
 #+end_src
 
+*** Exiting =corfu= also returns to evil normal state
+#+begin_src emacs-lisp
+  (use-package corfu
+    :init
+    (defun config-corfu-quit-and-enter-normal-state ()
+      (interactive)
+      (corfu-quit)
+      (when (evil-insert-state-p)
+        (evil-normal-state)))
+    :general
+    (:keymaps 'corfu-map
+     [remap corfu-quit] 'config-corfu-quit-and-enter-normal-state))
+#+end_src
+
 *** Use a less aggressive completion configuration in =eshell=
 #+begin_src emacs-lisp
   (use-package eshell
