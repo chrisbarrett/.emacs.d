@@ -3382,7 +3382,9 @@ https://github.com/oantolin/orderless
 #+begin_src emacs-lisp
   (use-package orderless
     :custom
-    (completion-styles '(orderless)))
+    (completion-styles '(orderless basic))
+    (completion-category-defaults nil)
+    (completion-category-overrides '((file (styles partial-completion)))))
 #+end_src
 
 ** =selectrum= - Incremental search and narrowing                   :disabled:
