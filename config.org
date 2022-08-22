@@ -3440,8 +3440,25 @@ See: [[https://github.com/raxod502/selectrum/issues/498#issuecomment-876424791][
 #+begin_src emacs-lisp
   (use-package vertico
     :hook (after-init . vertico-mode)
+    :general (:keymaps 'vertico-map
+              "?" 'minibuffer-completion-help
+              "C-<return>" 'exit-minibuffer
+              "M-<return>" 'minibuffer-force-complete-and-exit)
     :custom
     (vertico-cycle t))
+#+end_src
+
+*** Improve completion UX for files & directories
+#+begin_src emacs-lisp
+  (use-package vertico-directory
+    :after vertico
+    :demand t
+    :general (:keymaps 'vertico-map
+              "RET" 'vertico-directory-enter
+              "DEL" 'vertico-directory-delete-char
+              "C-h" 'vertico-directory-delete-word)
+    :config
+    (add-hook 'rfn-eshadow-update-overlay-hook 'vertico-directory-tidy))
 #+end_src
 
 ** =marginalia= - adds helpful annotations to completion prompts
