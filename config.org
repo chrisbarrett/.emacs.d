@@ -1516,6 +1516,19 @@ Configure how =ediff= should display windows when started.
   (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
 #+end_src
 
+** Show additional information in prompt if completing-read-multiple is used
+#+begin_src emacs-lisp
+  (use-package crm
+    :config
+    (define-advice completing-read-multiple (:filter-args (args) show-indicator)
+      (cons (format "[CRM%s] %s"
+                    (replace-regexp-in-string
+                     "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+                     crm-separator)
+                    (car args))
+            (cdr args))))
+#+end_src
+
 * Better eval-expression
 Define an alternative version of =eval-expression= that uses =emacs-lisp-mode= to
 provide font-locking, and handles =smartparens= better.
