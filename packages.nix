@@ -7,10 +7,6 @@ epkgs: with epkgs; [
   citar
   citar-org-roam
   clojure-mode
-  company
-  company-auctex
-  company-emoji
-  company-posframe
   consult
   csv-mode
   dash

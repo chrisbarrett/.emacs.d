@@ -1850,7 +1850,7 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
   (add-hook 'emojify-mode-hook #'config-emojify-modify-emojis)
 #+end_src
 
-** =company-emoji= - Provide a nice interface for inserting emoji
+** =company-emoji= - Provide a nice interface for inserting emoji   :disabled:
 #+begin_src emacs-lisp
   (use-package company-emoji
     :after company
@@ -2519,7 +2519,7 @@ https://github.com/syl20bnr/evil-iedit-state/issues/36
                     `(:system ,(getenv "NIX_EMACS_JSON_LANGUAGE_SERVER"))))
 #+end_src
 
-** Make company completions more proactive when an lsp is active
+** Make company completions more proactive when an lsp is active  :disabled:
 
 #+begin_src emacs-lisp
   (use-package lsp-mode
@@ -3519,7 +3519,7 @@ any special language-level support.
        try-complete-lisp-symbol)))
 #+end_src
 
-** =company= - UI for selecting completions
+** =company= - UI for selecting completions                         :disabled:
 =company= is a general-purpose completion frontend, showing a popup of completion
 options.
 
@@ -5113,7 +5113,7 @@ Teach the autofill function in Latex buffers not to fill in certain contexts.
     :demand t)
 #+end_src
 
-*** Code completion
+*** Code completion                                              :disabled:
 #+begin_src emacs-lisp
   (use-package company-auctex
     :after (:all tex company)
