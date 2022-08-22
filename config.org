@@ -3387,55 +3387,6 @@ https://github.com/oantolin/orderless
     (completion-category-overrides '((file (styles partial-completion)))))
 #+end_src
 
-** =selectrum= - Incremental search and narrowing                   :disabled:
-#+begin_src emacs-lisp
-  (use-package selectrum
-    :hook (after-init . selectrum-mode)
-    :general (:keymaps 'selectrum-minibuffer-map "C-<return>" 'selectrum-submit-exact-input))
-#+end_src
-
-*** Integrate =selectrum= with =orderless=
-#+begin_src emacs-lisp
-  (use-package orderless
-    :custom
-    (orderless-skip-highlighting (lambda () (bound-and-true-p selectrum-is-active)))
-    (selectrum-highlight-candidates-function #'orderless-highlight-matches))
-#+end_src
-
-*** KLUDGE: Use C-h in find-file to traverse up a dir
-It would be nice if this was an out-of-the-box thing.
-See: [[https://github.com/raxod502/selectrum/issues/498#issuecomment-876424791][Add dedicated command to move up a directory in find-file · Issue #498 · raxo...]]
-
-#+begin_src emacs-lisp
-  (defun selectrum-up (&optional arg)
-    (interactive "p")
-    (save-restriction
-      (narrow-to-region (minibuffer-prompt-end) (point-max))
-      (let ((start (point)))
-        (forward-sexp (- (or arg 1)))
-        (delete-region start (point)))))
-#+end_src
-
-#+begin_src emacs-lisp
-  (use-package selectrum
-    :general
-    (:keymaps 'selectrum-minibuffer-map "C-h" 'selectrum-up))
-#+end_src
-
-**** TODO Teach find-file to understand =~= and =//=
-
-**** TODO Teach find-file how to navigate up past the home dir
-
-*** =consult= - Commands built on top of selectrum
-#+begin_src emacs-lisp
-  (use-package consult
-    :custom
-    (consult-project-function 'projectile-project-root)
-    (xref-show-xrefs-function #'consult-xref)
-    (xref-show-definitions-function #'consult-xref)
-    :general (:states 'normal "/" 'consult-line))
-#+end_src
-
 ** =vertico= - Completion & narrowing for minibuffer prompts
 #+begin_src emacs-lisp
   (use-package vertico
@@ -4036,13 +3987,6 @@ See: https://github.com/magit/magit/commit/26e064e1d78acb4d4d422a0a5743609612863
 #+begin_src emacs-lisp
   (when (equal system-type 'darwin)
     (setq magit-git-executable (expand-file-name "~/.nix-profile/bin/git")))
-#+end_src
-
-*** Compatibility with selectrum                                 :disabled:
-#+begin_src emacs-lisp
-  (use-package magit
-    :after (selectrum)
-    (setq magit-completing-read-function #'selectrum-completing-read))
 #+end_src
 
 *** =magit-delta= -- use the =delta= program to add syntax-highlighting to hunks
