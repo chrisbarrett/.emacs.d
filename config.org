@@ -1850,14 +1850,6 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
   (add-hook 'emojify-mode-hook #'config-emojify-modify-emojis)
 #+end_src
 
-** =company-emoji= - Provide a nice interface for inserting emoji   :disabled:
-#+begin_src emacs-lisp
-  (use-package company-emoji
-    :after company
-    :config
-    (add-to-list 'company-backends 'company-emoji))
-#+end_src
-
 ** =yasnippet= - Text snippets
 =yasnippet= provides expandable text snippets. I use them extensively to cut
 down on typing.
@@ -2517,16 +2509,6 @@ https://github.com/syl20bnr/evil-iedit-state/issues/36
     :config
     (lsp-dependency 'vscode-json-languageserver
                     `(:system ,(getenv "NIX_EMACS_JSON_LANGUAGE_SERVER"))))
-#+end_src
-
-** Make company completions more proactive when an lsp is active  :disabled:
-
-#+begin_src emacs-lisp
-  (use-package lsp-mode
-    :init
-    (defun config-lsp-set-vars ()
-      (setq-local company-minimum-prefix-length 0))
-    :hook (lsp-mode . config-lsp-set-vars))
 #+end_src
 
 ** =lsp-ui= - Additional package providing richer UI elements for lsp-mode
@@ -3489,89 +3471,6 @@ after editing actions have changed what windows are shown.
 #+end_src
 
 * Text completion engines
-
-** =hippie-expand= - generic text completion                        :disabled:
-=hippie-expand= is a generic completion engine that works in most buffers without
-any special language-level support.
-
-*** Use =hippie-expand= as the default completion command for evil
-#+begin_src emacs-lisp
-  (use-package hippie-exp
-    :general ("M-/" 'hippie-expand
-              :states 'insert
-              [remap evil-complete-previous] 'hippie-expand))
-#+end_src
-
-*** Set the default heuristic for completing symbols
-#+begin_src emacs-lisp
-  (use-package hippie-exp
-    :custom
-    (hippie-expand-try-functions-list
-     '(try-expand-dabbrev
-       try-expand-dabbrev-all-buffers
-       try-expand-dabbrev-from-kill
-       try-complete-file-name-partially
-       try-complete-file-name
-       try-expand-all-abbrevs
-       try-expand-list
-       try-expand-line
-       try-complete-lisp-symbol-partially
-       try-complete-lisp-symbol)))
-#+end_src
-
-** =company= - UI for selecting completions                         :disabled:
-=company= is a general-purpose completion frontend, showing a popup of completion
-options.
-
-#+begin_src emacs-lisp
-  (use-package company
-    :hook (after-init . global-company-mode)
-
-    :general
-    (:keymaps '(prog-mode-map text-mode-map)
-     [remap completion-at-point] #'company-manual-begin
-     [remap complete-symbol] #'company-manual-begin)
-    (:states '(insert normal emacs) :keymaps 'company-active-map
-     "S-<return>" #'company-complete
-     "<return>" #'company-complete-selection)
-    (:keymaps 'comint-mode-map [remap indent-for-tab-command] #'company-manual-begin)
-
-    :preface
-    (general-unbind :keymaps 'company-active-map "C-w" "C-h")
-
-    :custom
-    (company-idle-delay 0.3)
-    (company-minimum-prefix-length 3)
-    (company-tooltip-align-annotations t)
-    (company-require-match nil)
-
-    :config
-    (require 'company-tng))
-#+end_src
-
-=evil-collection-company= seems to be messing with the =<return>= binding, so I need
-to manually apply it again.
-
-#+begin_src emacs-lisp
-  (use-package company
-    :after evil-collection
-    :custom
-    (company-tooltip-minimum-width 40)
-    :config
-    (defun config-company--set-company-vars ()
-      (define-key company-active-map (kbd "RET") #'company-complete-selection))
-
-    (add-hook 'company-mode-hook #'config-company--set-company-vars))
-#+end_src
-
-*** =company-posframe= - use a child frame for completions
-#+begin_src emacs-lisp
-  (use-package company-posframe
-    :after company
-    :demand t
-    :config
-    (company-posframe-mode +1))
-#+end_src
 
 ** =corfu= - completion UI
 #+begin_src emacs-lisp
@@ -5212,14 +5111,6 @@ Teach the autofill function in Latex buffers not to fill in certain contexts.
   (use-package tex-fold
     :after tex
     :demand t)
-#+end_src
-
-*** Code completion                                              :disabled:
-#+begin_src emacs-lisp
-  (use-package company-auctex
-    :after (:all tex company)
-    :demand t
-    :config (company-auctex-init))
 #+end_src
 
 *** Show preview on save
