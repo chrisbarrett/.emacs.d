@@ -3,11 +3,14 @@ epkgs: with epkgs; [
   auctex
   browse-at-remote
   bufler
+  cape
   cider
   citar
   citar-org-roam
   clojure-mode
   consult
+  corfu
+  corfu-doc
   csv-mode
   dash
   deadgrep
@@ -62,6 +65,7 @@ epkgs: with epkgs; [
   info-plus
   iscroll
   json-mode
+  kind-icon
   latex-preview-pane
   ledger-mode
   link-hint
@@ -78,8 +82,8 @@ epkgs: with epkgs; [
   minions
   nix-mode
   no-littering
-  orderless
   ob-http
+  orderless
   org
   org-appear
   org-cliplink
@@ -100,6 +104,7 @@ epkgs: with epkgs; [
   page-break-lines
   paren-face
   pass
+  pcmpl-args
   pcre2el
   pdf-tools
   plantuml-mode
@@ -121,6 +126,7 @@ epkgs: with epkgs; [
   undo-tree
   unfill
   use-package
+  vertico
   volatile-highlights
   websocket
   wgrep
