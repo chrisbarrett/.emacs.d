@@ -3490,7 +3490,7 @@ after editing actions have changed what windows are shown.
 
 * Text completion engines
 
-** =hippie-expand= - generic text completion
+** =hippie-expand= - generic text completion                        :disabled:
 =hippie-expand= is a generic completion engine that works in most buffers without
 any special language-level support.
 
@@ -3571,6 +3571,107 @@ to manually apply it again.
     :demand t
     :config
     (company-posframe-mode +1))
+#+end_src
+
+** =corfu= - completion UI
+#+begin_src emacs-lisp
+  (use-package corfu
+    :hook (after-init . global-corfu-mode)
+    :custom
+    (corfu-auto t)
+    (corfu-auto-delay 0.3)
+    (corfu-auto-prefix 3))
+
+  (use-package emacs
+    :init
+    (setq completion-cycle-threshold 3)
+    ;; Hide commands not relevant to current major mode.
+    (setq read-extended-command-predicate #'command-completion-default-include-p)
+    ;; Perform both indentation & text completion with TAB.
+    (setq tab-always-indent 'complete))
+#+end_src
+
+*** Enable =corfu= for eval-expression, etc
+#+begin_src emacs-lisp
+  (use-package corfu
+    :init
+    (defun corfu-enable-in-minibuffer ()
+      "Enable Corfu in the minibuffer if `completion-at-point' is bound."
+      (when (where-is-internal #'completion-at-point (list (current-local-map)))
+        ;; (setq-local corfu-auto nil) Enable/disable auto completion
+        (corfu-mode 1)))
+    :hook (minibuffer-setup . corfu-enable-in-minibuffer))
+#+end_src
+
+*** Use a less aggressive completion configuration in =eshell=
+#+begin_src emacs-lisp
+  (use-package eshell
+    :after corfu
+    :demand t
+    :init
+    (defun config-corfu-eshell-setup ()
+      (setq-local corfu-auto nil)
+      (corfu-mode +1))
+    :hook (eshell-mode . config-corfu-eshell-setup))
+#+end_src
+
+*** =dabbrev= - configure integration with =corfu=
+#+begin_src emacs-lisp
+  (use-package dabbrev
+    :custom
+    (dabbrev-ignored-buffer-regexps '("\\.\\(?:pdf\\|jpe?g\\|png\\)\\'")))
+#+end_src
+
+*** =orderless= - completion style
+#+begin_src emacs-lisp
+  (use-package orderless
+    :init
+    (setq completion-styles '(orderless basic)
+          completion-category-defaults nil
+          completion-category-overrides '((file (styles . (partial-completion))))))
+#+end_src
+
+*** =corfu-doc= - show quick-help & documentation in =corfu=
+#+begin_src emacs-lisp
+  (use-package corfu-doc
+    :hook (corfu-mode . corfu-doc-mode)
+    :general (:keymaps 'corfu-map
+              "M-n" 'corfu-doc-scroll-up
+              "M-p" 'corfu-doc-scroll-down
+              "<f1>" 'corfu-doc-toggle))
+#+end_src
+
+*** =kind-icon= - Show icons in =corfu= completion popups
+#+begin_src emacs-lisp
+  (use-package kind-icon
+    :after corfu
+    :demand t
+    :custom
+    (kind-icon-use-icons nil)
+    (kind-icon-default-face 'corfu-default)
+    :config
+    (add-to-list 'corfu-margin-formatters 'kind-icon-margin-formatter))
+#+end_src
+
+** =cape= - extensions to built-in completion mechanisms
+#+begin_src emacs-lisp
+  (use-package cape
+    :general ("M-/" 'completion-at-point)
+    :demand t
+    :init
+    (add-to-list 'completion-at-point-functions 'cape-dabbrev)
+    (add-to-list 'completion-at-point-functions 'cape-file)
+    (add-to-list 'completion-at-point-functions 'cape-ispell)
+    (add-to-list 'completion-at-point-functions 'cape-symbol)
+
+    ;; Unicode characters by TeX name
+    (add-to-list 'completion-at-point-functions 'cape-symbol)
+
+    ;; Unicode characters by name
+    (add-to-list 'completion-at-point-functions 'cape-rfc1345)
+
+    ;; Programming language keywords
+    (add-to-list 'completion-at-point-functions 'cape-keyword))
 #+end_src
 
 * Themeing
