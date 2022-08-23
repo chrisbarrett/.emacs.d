@@ -3133,6 +3133,12 @@ Disabled for now since this breaks insert state in evil :/
     (interactive)
     (org-roam-node-visit (org-roam-node-from-id org-roam-index-node-id)))
 
+  (defun config-org-roam-review-toggle ()
+    (interactive)
+    (if-let* ((win (get-buffer-window "*org-roam-review*")))
+        (delete-window win)
+      (org-roam-review)))
+
   (leader-set-key :infix "o"
     "" '(nil :wk "org")
     "SPC" '(org-roam-dailies-capture-today :wk "capture note...")
@@ -3162,7 +3168,7 @@ Disabled for now since this breaks insert state in evil :/
     "rd" '(org-roam-review-list-recently-added :wk "recently added")
     "ro" '(citar-open-notes :wk "outlines...")
     "rb" '(citar-open :wk "open reference...")
-    "rr" '(org-roam-review :wk "review due evergreens")
+    "rr" '(config-org-roam-review-toggle :wk "review due evergreens")
     "rt" '(org-roam-search-tags :wk "search (tags)...")
     "rl" '(org-roam-links :wk "show links")
 
