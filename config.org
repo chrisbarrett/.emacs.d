@@ -643,17 +643,15 @@ applications. The following functions will be invoked by those scripts over
 
 ** org-roam & friends
 #+begin_src emacs-lisp
-  (cl-labels ((make-actions (&key window-height (slot 1))
+  (cl-labels ((make-actions (&key window-height (slot 1) (side 'left))
                             `((display-buffer-in-side-window)
                               (body-function . (lambda (win)
                                                  (set-window-dedicated-p win t)))
                               (slot . ,slot)
-                              (side . left)
+                              (side . ,side)
                               (window-height . ,window-height)
                               (window-width . 50))))
-
-    (display-buffer-set (rx bos "*org-roam: " (+ nonl)) (make-actions))
-    (display-buffer-set (rx bos "*org-roam*" eos) (make-actions))
+    (display-buffer-set (rx bos "*org-roam" (or (and "*" eos) (and ":" (+ nonl)))) (make-actions :side 'bottom))
     (display-buffer-set (rx bos "*org-roam-review*" eos) (make-actions :slot 2 :window-height 0.3))
     (display-buffer-set (rx bos "*org-roam-search*" eos) (make-actions))
     (display-buffer-set (rx bos "*org-roam-links*" eos) (make-actions)))
