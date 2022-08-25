@@ -3396,7 +3396,6 @@ https://github.com/oantolin/orderless
   (use-package vertico
     :hook (after-init . vertico-mode)
     :general (:keymaps 'vertico-map
-              "?" 'minibuffer-completion-help
               "C-<return>" 'vertico-exit-input
               "M-<return>" 'minibuffer-force-complete-and-exit)
     :custom
