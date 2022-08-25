@@ -5762,7 +5762,7 @@ Normally newlines are reflowed automatically.
     "/" '(org-sparse-tree :wk "sparse tree...")
     "#" '(org-decrypt-entries :wk "decrypt entries")
     "RET" '(org-indent-mode :wk "toggle indentation")
-    "r" (list (general-predicate-dispatch 'org-refile
+    "R" (list (general-predicate-dispatch 'org-refile
                 (bound-and-true-p org-capture-mode) 'org-capture-refile)
               :wk "refile")
     "f" '(config-org-focus-entry :wk "focus entry")
@@ -6820,7 +6820,7 @@ This makes it much easier to edit text using emphasis markers correctly.
     "J" '(org-roam-dailies-goto-date :wk "goto daily...")
 
     "E" '(org-roam-rewrite-extract :wk "extract subtree to roam file...")
-    "R" '(org-roam-rewrite-rename :wk "rename node...")
+    "r" '(org-roam-rewrite-rename :wk "rename node...")
     "I" '(org-roam-rewrite-inline :wk "inline node...")
     "D" '(org-roam-rewrite-remove :wk "delete node & redirect links...")
 
