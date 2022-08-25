@@ -270,8 +270,8 @@ TAGS are the tags to use when displaying the list."
 
 ;; BibTeX management with Citar
 
-(defconst org-funcs-key-sequence-for-outline-capture-template "ro"
-  "The key sequence for the outline note capture template.")
+(defconst org-funcs-key-sequence-for-lit-note-capture-template "rn"
+  "The key sequence for the literature note capture template.")
 
 (defvar org-funcs--cite-key-for-capture nil
   "Side-channel variable used to inject citation read from prompt.
@@ -292,11 +292,16 @@ Otherwise, prompt the user for a reference."
       (citar-select-ref)))
 
 (defun org-funcs-go-to-outline-for-key (key &optional attrs)
-  "See `citar-open-note-function'."
+  "Function for use as `citar-open-note-function', which see.
+
+KEY is a cite key.
+
+ATTRS are additional attributes for the citation passed by
+citar."
   (if-let* ((node (org-roam-node-from-ref (concat "@" key))))
       (org-roam-node-visit node)
     (let ((org-funcs--cite-key-for-capture (cons key attrs)))
-      (org-capture nil org-funcs-key-sequence-for-outline-capture-template))))
+      (org-capture nil org-funcs-key-sequence-for-lit-note-capture-template))))
 
 (defun org-funcs-clean-bibtex-string (s)
   "Remove quoting brackets and superfluous whitespace from string S."
