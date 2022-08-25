@@ -3571,7 +3571,9 @@ after editing actions have changed what windows are shown.
     (kind-icon-use-icons nil)
     (kind-icon-default-face 'corfu-default)
     :config
-    (add-to-list 'corfu-margin-formatters 'kind-icon-margin-formatter))
+    (add-to-list 'corfu-margin-formatters 'kind-icon-margin-formatter)
+    (add-hook 'after-load-theme-functions (lambda (_)
+                                            (kind-icon-reset-cache))))
 #+end_src
 
 ** =cape= - extensions to built-in completion mechanisms
