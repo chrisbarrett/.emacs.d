@@ -6775,6 +6775,7 @@ This makes it much easier to edit text using emphasis markers correctly.
     org-roam-node-create
     :custom
     (org-roam-directory (f-join paths-org-directory "roam/"))
+    (org-roam-dailies-directory "dailies/")
     (org-roam-v2-ack t)
     (org-roam-verbose nil)
     (org-roam-extract-new-file-path "notes/%<%Y-%m-%d--%H-%M-%S>.org")
