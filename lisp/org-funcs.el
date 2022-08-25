@@ -254,10 +254,11 @@ TAGS are the tags to use when displaying the list."
   (interactive "P")
   (let ((filter (lambda (node)
                   (let ((tags (org-roam-node-tags node)))
-                    (or (null (seq-intersection tags '("outline" "dailies")))
-                        ;; Exclude subnotes in outlines
-                        (when (seq-contains-p tags "outline")
-                          (= 0 (org-roam-node-level node))))))))
+                    (cond
+                     ((seq-contains-p tags "litnote")
+                      (= 0 (org-roam-node-level node)))
+                     (t
+                      (null (seq-intersection tags '("dailies")))))))))
     (org-roam-node-find other-window nil filter)))
 
 (defun org-funcs-read-roam-node-link ()
@@ -291,7 +292,7 @@ Otherwise, prompt the user for a reference."
   (or org-funcs--cite-key-for-capture
       (citar-select-ref)))
 
-(defun org-funcs-go-to-outline-for-key (key &optional attrs)
+(defun org-funcs-go-to-litnote-for-key (key &optional attrs)
   "Function for use as `citar-open-note-function', which see.
 
 KEY is a cite key.

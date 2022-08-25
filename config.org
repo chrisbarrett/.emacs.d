@@ -3166,7 +3166,7 @@ Disabled for now since this breaks insert state in evil :/
 
     "r" '(nil :wk "review...")
     "rd" '(org-roam-review-list-recently-added :wk "recently added")
-    "ro" '(citar-open-notes :wk "outlines...")
+    "rn" '(citar-open-notes :wk "lit notes...")
     "rb" '(citar-open :wk "open reference...")
     "rr" '(config-org-roam-review-toggle :wk "review due evergreens")
     "rt" '(org-roam-search-tags :wk "search (tags)...")
@@ -6911,8 +6911,8 @@ This makes it much easier to edit text using emphasis markers correctly.
     (org-roam-capture-new-node . config-org-roam-maybe-set-seedling)
     :commands (org-roam-review)
     :custom
-    (org-roam-review-ignored-tags '("dailies" "outline"))
-    (org-roam-review-tags-ignored-for-review-buffer '("dailies" "outline"))
+    (org-roam-review-ignored-tags '("dailies" "litnote"))
+    (org-roam-review-tags-ignored-for-review-buffer '("dailies" "litnote"))
     (org-roam-review-show-instructions-p nil)
     :general
     (:states '(normal) :keymaps 'org-roam-review-mode-map
@@ -7338,8 +7338,8 @@ consumer of it.
     (org-cite-activate-processor 'citar)
     (citar-display-transform-functions `((("author" "editor") . ,(-compose 'citar--shorten-names 'org-funcs-clean-bibtex-string))
                                          (("title") . org-funcs-clean-bibtex-string)))
-    (citar-notes-paths '("~/org/roam/outlines"))
-    (citar-open-note-function 'org-funcs-go-to-outline-for-key)
+    (citar-notes-paths '("~/org/roam/litnotes"))
+    (citar-open-note-function 'org-funcs-go-to-litnote-for-key)
     (citar-bibliography config-bibfiles)
     (citar-symbol-separator "  ")
     :config
@@ -7356,7 +7356,7 @@ consumer of it.
     :after (:all org-roam citar)
     :demand t
     :config
-    (setf (plist-get citar-org-roam-notes-config :create) #'org-funcs-go-to-outline-for-key)
+    (setf (plist-get citar-org-roam-notes-config :create) #'org-funcs-go-to-litnote-for-key)
     (citar-org-roam-mode))
 #+end_src
 
