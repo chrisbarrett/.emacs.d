@@ -3581,20 +3581,29 @@ after editing actions have changed what windows are shown.
   (use-package cape
     :general ("M-/" 'completion-at-point)
     :demand t
+    :preface
+    (defun config-cape-default-setup ()
+      (add-to-list 'completion-at-point-functions 'cape-file)
+      (add-to-list 'completion-at-point-functions 'cape-dabbrev)
+      (add-to-list 'completion-at-point-functions 'cape-tex)
+      (add-to-list 'completion-at-point-functions 'cape-rfc1345)
+      (add-to-list 'completion-at-point-functions 'cape-keyword))
+
+    (defun config-cape-lisp-setup ()
+      (make-local-variable 'completion-at-point-functions)
+      (config-cape-default-setup)
+      (add-to-list 'completion-at-point-functions 'cape-symbol))
+    (defun config-cape-text-mode-setup ()
+      (make-local-variable 'completion-at-point-functions)
+      (config-cape-default-setup)
+      (add-to-list 'completion-at-point-functions 'cape-ispell))
+    :hook
+    (emacs-lisp-mode . config-cape-lisp-setup)
+    (lisp-data-mode . config-cape-lisp-setup)
+    (ielm-mode . config-cape-lisp-setup)
+    (text-mode .  config-cape-text-mode-setup)
     :init
-    (add-to-list 'completion-at-point-functions 'cape-dabbrev)
-    (add-to-list 'completion-at-point-functions 'cape-file)
-    (add-to-list 'completion-at-point-functions 'cape-ispell)
-    (add-to-list 'completion-at-point-functions 'cape-symbol)
-
-    ;; Unicode characters by TeX name
-    (add-to-list 'completion-at-point-functions 'cape-symbol)
-
-    ;; Unicode characters by name
-    (add-to-list 'completion-at-point-functions 'cape-rfc1345)
-
-    ;; Programming language keywords
-    (add-to-list 'completion-at-point-functions 'cape-keyword))
+    (config-cape-default-setup))
 #+end_src
 
 * Themeing
