@@ -11,6 +11,7 @@ epkgs: with epkgs; [
   consult
   corfu
   corfu-doc
+  csharp-mode
   csv-mode
   dash
   deadgrep
@@ -83,6 +84,7 @@ epkgs: with epkgs; [
   nix-mode
   no-littering
   ob-http
+  omnisharp
   orderless
   org
   org-appear
