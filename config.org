@@ -5462,6 +5462,13 @@ Configure =conf-mode= for use with more kinds of config files.
     (proof-splash-enable nil))
 #+end_src
 
+** =csharp-mode= - Major-mode for C#
+#+begin_src emacs-lisp
+  (use-package csharp-mode
+    :mode
+    ("\\.cs\\'" . csharp-mode))
+#+end_src
+
 * Applications
 
 ** =pass= - Frontend to Unix ~password-store~
