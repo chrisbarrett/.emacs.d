@@ -94,7 +94,6 @@ epkgs: with epkgs; [
   org-drill
   org-fragtog
   org-ml
-  org-pretty-table
   org-ql
   org-roam
   org-roam-ui

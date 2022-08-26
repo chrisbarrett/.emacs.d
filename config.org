@@ -6588,12 +6588,6 @@ Use =pngpaste= (installed via Homebrew) for inserting screenshots on macOS.
     (:keymaps 'org-mode-map "s-V" 'org-download-screenshot))
 #+end_src
 
-** =org-pretty-table= - use unicode box characters for org tables
-#+begin_src emacs-lisp
-  (use-package org-pretty-table
-    :hook (org-mode . org-pretty-table-mode))
-#+end_src
-
 ** =org-appear= - automatically reveal hidden org elements at point
 This makes it much easier to edit text using emphasis markers correctly.
 #+begin_src emacs-lisp
