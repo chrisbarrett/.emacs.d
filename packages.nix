@@ -84,7 +84,6 @@ epkgs: with epkgs; [
   nix-mode
   no-littering
   ob-http
-  omnisharp
   orderless
   org
   org-appear
