@@ -3809,6 +3809,7 @@ after editing actions have changed what windows are shown.
     :hook (dired-mode . dired-hide-details-mode)
     :general
     (:states 'normal :keymaps 'dired-mode-map
+     "M-w" #'dired-copy-filename-as-kill
      "$" #'end-of-line
      "i" nil
      "i i" 'dired-insert-subdir
