@@ -7317,7 +7317,7 @@ property drawer and the title. Advise it to fix that.
   (use-package org-roam
     :custom
     (org-roam-node-display-template
-     (concat "${icon:3} " "${title:*}" (propertize "${slipbox:9}" 'face 'org-tag)))
+     (concat (propertize "${slipbox:9}" 'face 'org-tag) " ${icon:3} " "${title:*}" ))
     :config
     (cl-defmethod org-roam-node-slipbox ((node org-roam-node))
       "Return the TYPE of NODE."
@@ -7325,7 +7325,7 @@ property drawer and the title. Advise it to fix that.
           (let ((slipbox (cadr (reverse (f-split (org-roam-node-file node))))))
             (if (or (equal slipbox "roam")
                     (equal slipbox "notes"))
-                ""
+                "notes"
               slipbox))
         (error "")))
 
