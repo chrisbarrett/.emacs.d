@@ -2533,6 +2533,7 @@ https://github.com/syl20bnr/evil-iedit-state/issues/36
     :custom
     (lsp-clients-typescript-tls-path (getenv "NIX_EMACS_TS_LANGUAGE_SERVER"))
     (lsp-eslint-validate '("typescript" "javascript" "javascriptreact"))
+    (lsp-csharp-server-path (getenv "NIX_EMACS_OMNISHARP_ROSLYN_PATH"))
     (lsp-eslint-server-command (list (getenv "NIX_EMACS_LSP_ESLINT_NODE_PATH")
                                      (getenv "NIX_EMACS_ESLINT_SERVER_SCRIPT")
                                      "--stdio")))
