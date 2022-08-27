@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: global using
+# key: gu
+# condition: (yas-funcs-bolp)
+# --
+global using $0;

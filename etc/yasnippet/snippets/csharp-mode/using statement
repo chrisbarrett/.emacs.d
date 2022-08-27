@@ -1,0 +1,8 @@
+# key: u
+# name: using statement
+# condition: (and (yas-funcs-bolp) (not (zerop (syntax-ppss-depth (syntax-ppss)))))
+# --
+using ($1)
+{
+  $0
+}

@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: namespace
+# key: ns
+# condition: (yas-funcs-bolp)
+# --
+namespace $0;
