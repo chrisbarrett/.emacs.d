@@ -2526,6 +2526,13 @@ https://github.com/syl20bnr/evil-iedit-state/issues/36
     (lsp-restart 'auto-restart))
 #+end_src
 
+Disable completion backend integration, since we're not using =company=.
+#+begin_src emacs-lisp
+  (use-package lsp-mode
+    :custom
+    (lsp-completion-provider nil))
+#+end_src
+
 ** Inject LSP servers from nix build
 
 #+begin_src emacs-lisp
