@@ -39,7 +39,16 @@
       sha256 = "sha256-mVfKNf01wsnwrsDavNhrC8w205L2U8ZZKgRdzYPhays=";
     };
   });
+
   csharp-mode = esuper.csharp-mode.overrideAttrs (it: {
     patches = [ ./patches/csharp-mode-keywords.patch ];
+  });
+
+  lsp-mode = esuper.lsp-mode.overrideAttrs (it: {
+    LSP_USE_PLISTS = true;
+  });
+
+  lsp-ui = esuper.lsp-ui.overrideAttrs (it: {
+    LSP_USE_PLISTS = true;
   });
 }
