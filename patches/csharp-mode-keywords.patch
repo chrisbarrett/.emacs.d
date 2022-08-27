@@ -1,5 +1,5 @@
 diff --git a/csharp-mode.el b/csharp-mode.el
-index b6abe94..8136d28 100644
+index b6abe94..a7f4982 100644
 --- a/csharp-mode.el
 +++ b/csharp-mode.el
 @@ -204,15 +204,15 @@
@@ -13,7 +13,7 @@ index b6abe94..8136d28 100644
    csharp '("select" "from" "where" "join" "in" "on" "equals" "into"
             "orderby" "ascending" "descending" "group" "when"
 -           "let" "by" "namespace"))
-+           "let" "by" "namespace" "with"))
++           "let" "by" "namespace" "with" "or" "and" "not"))
  
  (c-lang-defconst c-colon-type-list-kwds
 -  csharp '("class" "struct" "interface"))
