@@ -18,6 +18,7 @@ let
 
   languageServers = with pkgs; {
     bash = nodePackages.bash-language-server;
+    csharp = pkgs.omnisharp-roslyn;
     css = nodePackages.vscode-css-languageserver-bin;
     eslint = vscode-extensions.dbaeumer.vscode-eslint;
     graphql = vscode-extensions.graphql.vscode-graphql;
@@ -53,6 +54,7 @@ pkgs.symlinkJoin
           --set NIX_EMACS_LSP_ESLINT_NODE_PATH "${pkgs.nodejs}/bin/node" \
           --set NIX_EMACS_TS_LANGUAGE_SERVER "${languageServers.typescript}/bin/typescript-language-server" \
           --set NIX_EMACS_JSON_LANGUAGE_SERVER "${languageServers.json}/bin/vscode-json-languageserver" \
+          --set NIX_EMACS_OMNISHARP_ROSLYN_PATH "${languageServers.csharp}/bin/Omnisharp" \
           --set NIX_EMACS_MU_BINARY "${pkgs.mu}/bin/mu" \
           --set NIX_EMACS_MU_LISP_DIR "${pkgs.mu}/share/emacs/site-lisp/mu4e" \
           --set NIX_EMACS_SRC_DIR "${emacs}/share/emacs" \
