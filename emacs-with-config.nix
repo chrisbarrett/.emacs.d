@@ -56,7 +56,8 @@ pkgs.symlinkJoin
           --set NIX_EMACS_MU_BINARY "${pkgs.mu}/bin/mu" \
           --set NIX_EMACS_MU_LISP_DIR "${pkgs.mu}/share/emacs/site-lisp/mu4e" \
           --set NIX_EMACS_SRC_DIR "${emacs}/share/emacs" \
-          --set NIX_EMACS_TEX_PROGRAM "${pkgs.tectonic}/bin/tectonic"
+          --set NIX_EMACS_TEX_PROGRAM "${pkgs.tectonic}/bin/tectonic" \
+          --set LSP_USE_PLISTS true
       fi
     done
   '';
