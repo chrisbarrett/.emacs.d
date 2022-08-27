@@ -218,7 +218,7 @@ Note that tests refer to ~total-startup-duration~, so it should not be inlined.
 ** Tune garbage collection
 See: [[https://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-threshold/][Why are you changing gc-cons-threshold?]]
 #+begin_src emacs-lisp
-  (defvar config-default-gc-threshold 800000)
+  (defvar config-default-gc-threshold 100000000)
 
   (defun config--inhibit-gc ()
     (setq gc-cons-threshold most-positive-fixnum))
