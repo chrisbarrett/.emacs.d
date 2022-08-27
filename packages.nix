@@ -121,6 +121,7 @@ epkgs: with epkgs; [
   string-inflection
   terraform-mode
   tree-sitter
+  tree-sitter-indent
   tree-sitter-langs
   ts
   typescript-mode

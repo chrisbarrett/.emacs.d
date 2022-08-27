@@ -1715,8 +1715,11 @@ This should really be a thing out-of-the-box.
 
 ** =tree-sitter= - Tree-sitter parser support
 #+begin_src emacs-lisp
-  (use-package tree-sitter :demand t)
-  (use-package tree-sitter-langs :demand t)
+  (use-package tree-sitter
+    :demand t
+    :config
+    (use-package tree-sitter-indent :demand t)
+    (use-package tree-sitter-langs :demand t))
 #+end_src
 
 ** =ws-butler= - Automatic whitespace cleanup while editing
