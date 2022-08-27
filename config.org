@@ -3406,6 +3406,11 @@ https://github.com/oantolin/orderless
   (setq completion-ignore-case t)
 #+end_src
 
+*** Fix errors raised in =vertico--exhibit=
+#+begin_src emacs-lisp
+  (advice-add 'vertico--exhibit :around #'advice-ignore-errors)
+#+end_src
+
 *** Improve completion UX for files & directories
 #+begin_src emacs-lisp
   (use-package vertico-directory
