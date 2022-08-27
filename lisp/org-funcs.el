@@ -197,7 +197,8 @@ TAGS are the tags to use when displaying the list."
 (defun org-funcs--last-url-kill ()
   "Return the most recent URL in the kill ring or X pasteboard."
   (--first (s-matches? (rx bos (or "http" "https" "www")) it)
-           (cons (current-kill 0 t) kill-ring)))
+           (ignore-errors
+             (cons (current-kill 0 t) kill-ring))))
 
 (defun org-funcs--strip-google-highlight-query-param (url)
   (car (split-string url (rx (? "#") ":~:"))))
