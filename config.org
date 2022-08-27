@@ -7288,7 +7288,7 @@ property drawer and the title. Advise it to fix that.
     (setf (alist-get 'file org-link-frame-setup) 'find-file))
 #+end_src
 
-** Define dynamic block types to extend org-roam
+** =org-roam-dblocks= - Define dynamic block types to extend org-roam
 #+begin_src emacs-lisp
   (use-package org-roam-dblocks
     :hook (org-mode . org-roam-dblocks-autoupdate-mode))
