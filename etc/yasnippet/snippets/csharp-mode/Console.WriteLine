@@ -1,0 +1,5 @@
+# key: cw
+# name: Console.WriteLine
+# condition: (yas-funcs-bolp)
+# --
+Console.WriteLine($0);

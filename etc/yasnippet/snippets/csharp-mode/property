@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: property
+# key: pp
+# --
+public ${1:Type} ${2:Name} { get; init; }
