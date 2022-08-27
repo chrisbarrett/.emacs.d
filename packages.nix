@@ -120,6 +120,8 @@ epkgs: with epkgs; [
   smex
   string-inflection
   terraform-mode
+  tree-sitter
+  tree-sitter-langs
   ts
   typescript-mode
   undo-tree

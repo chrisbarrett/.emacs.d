@@ -1713,6 +1713,12 @@ This should really be a thing out-of-the-box.
   (define-key prog-mode-map (kbd "M-q") #'config-indent-dwim)
 #+end_src
 
+** =tree-sitter= - Tree-sitter parser support
+#+begin_src emacs-lisp
+  (use-package tree-sitter :demand t)
+  (use-package tree-sitter-langs :demand t)
+#+end_src
+
 ** =ws-butler= - Automatic whitespace cleanup while editing
 #+begin_src emacs-lisp
   (use-package ws-butler
@@ -5471,7 +5477,7 @@ Configure =conf-mode= for use with more kinds of config files.
 #+begin_src emacs-lisp
   (use-package csharp-mode
     :mode
-    ("\\.cs\\'" . csharp-mode))
+    ("\\.cs\\'" . csharp-tree-sitter-mode))
 #+end_src
 
 * Applications
