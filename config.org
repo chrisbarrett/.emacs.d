@@ -2491,7 +2491,8 @@ https://github.com/syl20bnr/evil-iedit-state/issues/36
 ** Set which modes use LSP
 #+begin_src emacs-lisp
   (defconst lsp-enabled-modes
-    '(graphql-mode
+    '(csharp-mode
+      graphql-mode
       js-mode
       json-mode
       nix-mode
