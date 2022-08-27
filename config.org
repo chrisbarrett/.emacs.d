@@ -5482,8 +5482,9 @@ Configure =conf-mode= for use with more kinds of config files.
 ** =csharp-mode= - Major-mode for C#
 #+begin_src emacs-lisp
   (use-package csharp-mode
+    :preface (defvar csharp-mode-map (make-sparse-keymap))
     :mode
-    ("\\.cs\\'" . csharp-tree-sitter-mode))
+    ("\\.cs\\'" . csharp-mode))
 #+end_src
 
 * Applications
