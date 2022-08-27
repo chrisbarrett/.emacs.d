@@ -1719,7 +1719,8 @@ This should really be a thing out-of-the-box.
     :demand t
     :config
     (use-package tree-sitter-indent :demand t)
-    (use-package tree-sitter-langs :demand t))
+    (use-package tree-sitter-langs :demand t)
+    (global-tree-sitter-mode +1))
 #+end_src
 
 ** =ws-butler= - Automatic whitespace cleanup while editing
