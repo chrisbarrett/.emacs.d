@@ -1,0 +1,5 @@
+# key: t
+# name: type
+# condition: (yas-funcs-bolp)
+# --
+# type: command
