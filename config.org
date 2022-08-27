@@ -5500,6 +5500,14 @@ Configure =conf-mode= for use with more kinds of config files.
     ("\\.cs\\'" . csharp-mode))
 #+end_src
 
+*** Snippet supporting functions
+#+begin_src emacs-lisp
+  (defun config-csharp-expression-context-p (template)
+    (thing-at-point-looking-at (rx-to-string `(and (or "=>"
+                                                       (any ",;()=:"))
+                                                   (* space) ,template (* space)))))
+#+end_src
+
 * Applications
 
 ** =pass= - Frontend to Unix ~password-store~

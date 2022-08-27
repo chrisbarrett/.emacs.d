@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: function
+# key: f
+# --
+${1:TReturn} ${2:Name} (${3:args...}) => $0;
