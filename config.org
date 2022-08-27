@@ -6188,6 +6188,7 @@ Exit minibuffer before adding notes.
     (org-confirm-babel-evaluate nil)
     (org-babel-load-languages '((emacs-lisp . t)
                                 (clojure . t)
+                                (csharp . t)
                                 (dot . t)
                                 (gnuplot . t)
                                 (sql . t)
