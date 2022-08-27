@@ -1,0 +1,22 @@
+diff --git a/csharp-mode.el b/csharp-mode.el
+index b6abe94..e4bfa6d 100644
+--- a/csharp-mode.el
++++ b/csharp-mode.el
+@@ -204,7 +204,7 @@
+            "public" "partial" "internal" "readonly" "static" "event" "transient"
+            "volatile" "sealed" "ref" "out" "virtual" "implicit" "explicit"
+            "fixed" "override" "params" "async" "await" "extern" "unsafe"
+-           "get" "set" "this" "const" "delegate"))
++           "init" "get" "set" "this" "const" "delegate"))
+ 
+ (c-lang-defconst c-other-kwds
+   csharp '("select" "from" "where" "join" "in" "on" "equals" "into"
+@@ -212,7 +212,7 @@
+            "let" "by" "namespace"))
+ 
+ (c-lang-defconst c-colon-type-list-kwds
+-  csharp '("class" "struct" "interface"))
++  csharp '("class" "struct" "interface" "record"))
+ 
+ (c-lang-defconst c-block-stmt-1-kwds
+   csharp '("do" "else" "finally" "try"))
