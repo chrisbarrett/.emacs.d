@@ -7294,10 +7294,11 @@ property drawer and the title. Advise it to fix that.
     (cl-destructuring-bind (&key source-node point properties) args
       (let* ((outline (when-let* ((outline (plist-get properties :outline)))
                         (mapconcat #'org-link-display-format outline " > ")))
-             (heading-str (concat (propertize (org-roam-node-title source-node)
-                                              'font-lock-face 'org-roam-title)
-                                  (when outline
-                                    (format " > %s" (propertize outline 'font-lock-face 'org-roam-olp))))))
+             (title (org-roam-node-title source-node))
+             (heading-str
+              (concat (propertize title 'font-lock-face 'org-roam-title)
+                      (when (and outline (not (equal title outline)))
+                        (format " > %s" (propertize outline 'font-lock-face 'org-roam-olp))))))
         (magit-insert-section section (org-roam-node-section (org-roam-node-id source-node) t)
           (magit-insert-heading heading-str)
           (oset section node source-node)
