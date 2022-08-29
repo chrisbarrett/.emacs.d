@@ -7309,34 +7309,6 @@ property drawer and the title. Advise it to fix that.
                   (magit-section-maybe-remove-visibility-indicator section)))))))
 #+end_src
 
-** Customise preview function
-- Exclude transcluded headings
-- Avoid display of first subheading as preview
-#+begin_src emacs-lisp
-  (use-package org-roam
-    :init
-    (defun config-org-roam-preview-function ()
-      (let* ((beg-at-heading-p)
-             (beg (progn (org-roam-end-of-meta-data t)
-                         (when (org-at-heading-p)
-                           (setq beg-at-heading-p t))
-                         (point)))
-             (end (progn (org-next-visible-heading 1)
-                         (point))))
-        (if beg-at-heading-p
-            ""
-          (->> (buffer-substring-no-properties beg end)
-               (s-lines)
-               (seq-filter (lambda (it)
-                             (if (string-match-p (rx bol (* space) "#+transclude:") it)
-                                 (string-match-p ":only-contents" it)
-                               t)))
-               (s-join "\n")
-               (string-trim)))))
-    :custom
-    (org-roam-preview-function #'config-org-roam-preview-function))
-#+end_src
-
 ** Silence transclusion messages
 #+begin_src emacs-lisp
   (advice-add 'org-transclusion-add-all :around #'advice-inhibit-logging)
