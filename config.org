@@ -7304,28 +7304,6 @@ property drawer and the title. Advise it to fix that.
     :commands (org-roam-links))
 #+end_src
 
-** Compute backlink previews lazily for better performance
-#+begin_src emacs-lisp
-  (define-advice org-roam-node-insert-section (:override (&rest args) lazy-bodies)
-    (cl-destructuring-bind (&key source-node point properties) args
-      (let* ((outline (when-let* ((outline (plist-get properties :outline)))
-                        (mapconcat #'org-link-display-format outline " > ")))
-             (title (org-roam-node-title source-node))
-             (heading-str
-              (concat (propertize title 'font-lock-face 'org-roam-title)
-                      (when (and outline (not (equal title outline)))
-                        (format " > %s" (propertize outline 'font-lock-face 'org-roam-olp))))))
-        (magit-insert-section section (org-roam-node-section (org-roam-node-id source-node) t)
-          (magit-insert-heading heading-str)
-          (oset section node source-node)
-          ;; KLUDGE: Mofified macro-expansion of `magit-insert-section-body' that
-          ;; avoids unsetting the parent section's keymap.
-          (oset section washer
-                (lambda ()
-                  (org-roam-review-insert-preview source-node)
-                  (magit-section-maybe-remove-visibility-indicator section)))))))
-#+end_src
-
 ** =org-roam-refill-previews= - Refill previews to fit backlinks window
 #+begin_src emacs-lisp
   (use-package org-roam-refill-previews
