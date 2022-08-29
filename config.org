@@ -661,8 +661,8 @@ applications. The following functions will be invoked by those scripts over
                               (side . ,side)
                               (window-height . ,window-height)
                               (window-width . 50))))
-    (display-buffer-set (rx bos "*org-roam" (any "*:")) (make-actions :side 'bottom))
-    (display-buffer-set (rx bos "*org-roam-review*" eos) (make-actions :window-height 0.3))
+    (display-buffer-set (rx bos "*org-roam" (any "*:")) (make-actions))
+    (display-buffer-set (rx bos "*org-roam-review*" eos) (make-actions :slot 2))
     (display-buffer-set (rx bos "*org-roam-search*" eos) (make-actions))
     (display-buffer-set (rx bos "*org-roam-links*" eos) (make-actions)))
 #+end_src
