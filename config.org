@@ -7290,9 +7290,8 @@ property drawer and the title. Advise it to fix that.
 
 ** Compute backlink previews lazily for better performance
 #+begin_src emacs-lisp
-  (use-package org-roam
-    :init
-    (cl-defun config-org-roam-node-insert-section (&key source-node point properties)
+  (define-advice org-roam-node-insert-section (:override (&rest args) lazy-bodies)
+    (cl-destructuring-bind (&key source-node point properties) args
       (let* ((outline (when-let* ((outline (plist-get properties :outline)))
                         (mapconcat #'org-link-display-format outline " > ")))
              (heading-str (concat (propertize (org-roam-node-title source-node)
@@ -7307,9 +7306,7 @@ property drawer and the title. Advise it to fix that.
           (oset section washer
                 (lambda ()
                   (org-roam-review-insert-preview source-node)
-                  (magit-section-maybe-remove-visibility-indicator section))))))
-    :config
-    (advice-add 'org-roam-node-insert-section :override #'config-org-roam-node-insert-section))
+                  (magit-section-maybe-remove-visibility-indicator section)))))))
 #+end_src
 
 ** Customise preview function
