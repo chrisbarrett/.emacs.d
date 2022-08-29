@@ -401,10 +401,10 @@ Load host-specific settings, which are not checked into version control.
   (defun config-theme-apply-settings ()
     (let* ((dark-fg "#bbc2cf")
            (light-fg "#556b72")
-           (title `((t :height 1.5)))
+           (title `((t :height 1.5 :weight semibold)))
            (heading `((t :height 1.2)))
            (block-markup `((t :inherit font-lock-comment-face :background nil :italic nil :weight light :bold nil)))
-           (outline-heading `((t :weight bold :foreground nil))))
+           (outline-heading `((t :weight semibold :foreground nil))))
       (custom-theme-set-faces 'user
                               `(font-lock-comment-face
                                 ((((background dark))
@@ -442,6 +442,11 @@ Load host-specific settings, which are not checked into version control.
                                   (:foreground ,dark-fg :extend t))
                                  (((background light))
                                   (:foreground ,light-fg :extend t))))
+                              `(magit-section-secondary-heading
+                                ((((background dark))
+                                  (:foreground "#a9a1e1" :weight semibold :extend t))
+                                 (((background light))
+                                  (:foreground "#6c71c4" :weight semibold :extend t))))
                               '(org-document-info-keyword ((t :italic nil)) t)
                               '(org-meta-line ((t :italic nil)) t)
                               '(org-link ((t :weight unspecified :underline nil)) t)
@@ -464,7 +469,7 @@ Load host-specific settings, which are not checked into version control.
                               `(outline-6 ,outline-heading)
                               `(outline-7 ,outline-heading)
                               `(outline-8 ,outline-heading)
-                              `(org-roam-title ((t :inherit magit-section-secondary-heading :weight semibold)))
+                              `(org-roam-title ((t :inherit magit-section-secondary-heading)))
                               `(org-roam-olp ((t :inherit magit-section-secondary-heading :italic t :bold nil)))
                               `(org-agenda-structure ,(append-faces outline-heading heading))
                               '(link ((t :weight unspecified)) t)
