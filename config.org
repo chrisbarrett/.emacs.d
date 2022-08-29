@@ -7288,6 +7288,30 @@ property drawer and the title. Advise it to fix that.
     :commands (org-roam-links))
 #+end_src
 
+** Compute backlink previews lazily for better performance
+#+begin_src emacs-lisp
+  (use-package org-roam
+    :init
+    (cl-defun config-org-roam-node-insert-section (&key source-node point properties)
+      (let* ((outline (when-let* ((outline (plist-get properties :outline)))
+                        (mapconcat #'org-link-display-format outline " > ")))
+             (heading-str (concat (propertize (org-roam-node-title source-node)
+                                              'font-lock-face 'org-roam-title)
+                                  (when outline
+                                    (format " > %s" (propertize outline 'font-lock-face 'org-roam-olp))))))
+        (magit-insert-section section (org-roam-node-section (org-roam-node-id source-node) t)
+          (magit-insert-heading heading-str)
+          (oset section node source-node)
+          ;; KLUDGE: Mofified macro-expansion of `magit-insert-section-body' that
+          ;; avoids unsetting the parent section's keymap.
+          (oset section washer
+                (lambda ()
+                  (org-roam-review-insert-preview source-node)
+                  (magit-section-maybe-remove-visibility-indicator section))))))
+    :config
+    (advice-add 'org-roam-node-insert-section :override #'config-org-roam-node-insert-section))
+#+end_src
+
 ** Customise preview function
 - Exclude transcluded headings
 - Avoid display of first subheading as preview
@@ -7420,30 +7444,6 @@ consumer of it.
     :demand t
     :config
     (add-to-list 'citar-org-activation-functions #'org-collapse-citations-activation-function t))
-#+end_src
-
-** Compute backlink previews lazily for better performance
-#+begin_src emacs-lisp
-  (use-package org-roam
-    :init
-    (cl-defun config-org-roam-node-insert-section (&key source-node point properties)
-      (let* ((outline (when-let* ((outline (plist-get properties :outline)))
-                        (mapconcat #'org-link-display-format outline " > ")))
-             (heading-str (concat (propertize (org-roam-node-title source-node)
-                                              'font-lock-face 'org-roam-title)
-                                  (when outline
-                                    (format " > %s" (propertize outline 'font-lock-face 'org-roam-olp))))))
-        (magit-insert-section section (org-roam-node-section (org-roam-node-id source-node) t)
-          (magit-insert-heading heading-str)
-          (oset section node source-node)
-          ;; KLUDGE: Mofified macro-expansion of `magit-insert-section-body' that
-          ;; avoids unsetting the parent section's keymap.
-          (oset section washer
-                (lambda ()
-                  (org-roam-review-insert-preview source-node)
-                  (magit-section-maybe-remove-visibility-indicator section))))))
-    :config
-    (advice-add 'org-roam-node-insert-section :override #'config-org-roam-node-insert-section))
 #+end_src
 
 ** =timekeep= - Client clocking & billing built on org-roam
