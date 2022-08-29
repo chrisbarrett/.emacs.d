@@ -7311,6 +7311,15 @@ property drawer and the title. Advise it to fix that.
                   (magit-section-maybe-remove-visibility-indicator section)))))))
 #+end_src
 
+** =org-roam-refill-previews= - Refill previews to fit backlinks window
+#+begin_src emacs-lisp
+  (use-package org-roam-refill-previews
+    :after org-roam
+    :demand t
+    :config
+    (add-hook 'org-roam-preview-postprocess-functions #'org-roam-refill-previews))
+#+end_src
+
 ** Silence transclusion messages
 #+begin_src emacs-lisp
   (advice-add 'org-transclusion-add-all :around #'advice-inhibit-logging)
