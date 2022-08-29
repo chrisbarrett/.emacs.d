@@ -7297,6 +7297,13 @@ property drawer and the title. Advise it to fix that.
      "s" 'org-roam-search))
 #+end_src
 
+** =org-roam-lazy-previews= - Make previews lazy
+#+begin_src emacs-lisp
+  (use-package org-roam-lazy-previews
+    :after org-roam
+    :demand t)
+#+end_src
+
 ** =org-roam-consult= - a version of consult-ripgrep that works better with org-roam
 #+begin_src emacs-lisp
   (use-package org-roam-consult
