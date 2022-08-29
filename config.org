@@ -7241,6 +7241,21 @@ rid of it.
   (advice-add 'org-transclusion-add :after #'config-org-transclusion-apply-indentation)
 #+end_src
 
+*** Exclude transclusions from previews
+#+begin_src emacs-lisp
+  (defun org-roam-strip-transclusions (s)
+    (with-temp-buffer
+      (insert s)
+      (goto-char (point-min))
+      (while (not (eobp))
+        (if (thing-at-point-looking-at (rx bol (* space) "#+transclusion:"))
+            (delete-region (point-at-bol) (progn (forward-line) (point)))
+          (forward-line)))
+      (buffer-string)))
+
+  (add-hook 'org-roam-preview-postprocess-functions #'org-roam-strip-transclusions)
+#+end_src
+
 ** Fix buffer promotion function
 =org-roam-promote-entire-buffer= will leave stranded content between the top-level
 property drawer and the title. Advise it to fix that.
