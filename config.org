@@ -464,7 +464,7 @@ Load host-specific settings, which are not checked into version control.
                               `(outline-6 ,outline-heading)
                               `(outline-7 ,outline-heading)
                               `(outline-8 ,outline-heading)
-                              `(org-roam-title ((t :inherit magit-section-secondary-heading :bold nil)))
+                              `(org-roam-title ((t :inherit magit-section-secondary-heading :weight semibold)))
                               `(org-roam-olp ((t :inherit magit-section-secondary-heading :italic t :bold nil)))
                               `(org-agenda-structure ,(append-faces outline-heading heading))
                               '(link ((t :weight unspecified)) t)
