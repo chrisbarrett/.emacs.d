@@ -4235,7 +4235,7 @@ Source: [[https://ianyepan.github.io/posts/emacs-git-gutter/][Git Gutter in Emac
     (advice-add 'git-gutter-fr:view-diff-infos :override #'config-custom-git-gutter-fringe-fn))
 #+end_src
 
-* Programming languages & text-modes
+* 🤖 Programming languages & text-modes
 
 ** =xref= - Finding to definitions and references
 #+begin_src emacs-lisp
