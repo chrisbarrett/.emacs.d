@@ -2552,7 +2552,7 @@ Disable completion backend integration, since we're not using =company=.
 #+begin_src emacs-lisp
   (use-package lsp-mode
     :custom
-    (lsp-completion-provider nil))
+    (lsp-completion-provider :none))
 #+end_src
 
 ** Inject LSP servers from nix build
