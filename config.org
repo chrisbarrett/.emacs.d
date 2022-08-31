@@ -2575,6 +2575,20 @@ Disable completion backend integration, since we're not using =company=.
                     `(:system ,(getenv "NIX_EMACS_JSON_LANGUAGE_SERVER"))))
 #+end_src
 
+** Automatically format on save
+#+begin_src emacs-lisp
+  (use-package lsp-mode
+    :init
+    (defun config-lsp--format-before-save ()
+      (add-hook 'before-save-hook
+                (lambda ()
+                  (when lsp-mode
+                    (lsp-format-buffer)))
+                nil t))
+    :config
+    (add-hook 'lsp-mode-hook #'config-lsp--format-before-save))
+#+end_src
+
 ** =lsp-ui= - Additional package providing richer UI elements for lsp-mode
 #+begin_src emacs-lisp
   (use-package lsp-ui
