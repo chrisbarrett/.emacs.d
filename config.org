@@ -5519,6 +5519,11 @@ Configure =conf-mode= for use with more kinds of config files.
                                                    (* space) ,template (* space)))))
 #+end_src
 
+*** Use =nxml-mode= for ~csproj~ files
+#+begin_src emacs-lisp
+  (add-to-list 'auto-mode-alist '("\\.csproj$" . nxml-mode))
+#+end_src
+
 * Applications
 
 ** =pass= - Frontend to Unix ~password-store~
