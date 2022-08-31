@@ -412,6 +412,11 @@ Load host-specific settings, which are not checked into version control.
                               `(font-lock-doc-face
                                 ((((background dark))
                                   (:foreground "#869799" :italic t))))
+                              `(font-lock-constant-face
+                                ((((background dark))
+                                  (:foreground "#a9a1e1" :weight semibold))
+                                 (((background light))
+                                  (:foreground "#6c71c4" :weight semibold))))
                               `(parenthesis
                                 ((((background dark))
                                   (:foreground "#869799" :italic nil :weight light :inherit nil))
