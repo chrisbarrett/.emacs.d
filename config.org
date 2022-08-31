@@ -2534,6 +2534,8 @@ https://github.com/syl20bnr/evil-iedit-state/issues/36
     :commands (lsp lsp-deferred)
     :general
     (:keymaps 'lsp-mode-map
+     "M-n" 'next-error
+     "M-p" 'previous-error
      "C-c C-c" 'lsp-execute-code-action
      "C-c r" 'lsp-rename
      [remap evil-lookup] 'lsp-describe-thing-at-point
