@@ -5783,6 +5783,7 @@ Normally newlines are reflowed automatically.
     (org-default-notes-file (f-join paths-org-directory "notes.org"))
     (org-bookmark-names-plist nil)
     (org-imenu-depth 4)
+    (org-archive-tag "archived")
     (org-indirect-buffer-display 'current-window)
     (org-link-elisp-confirm-function 'y-or-n-p)
     (org-image-actual-width nil)
