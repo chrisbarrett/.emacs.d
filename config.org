@@ -453,7 +453,7 @@ Load host-specific settings, which are not checked into version control.
                                  (((background light))
                                   (:foreground "#6c71c4" :weight semibold :extend t))))
                               '(org-document-info-keyword ((t :italic nil)) t)
-                              '(org-meta-line ((t :italic nil)) t)
+                              '(org-meta-line ((t :inherit font-lock-comment-face :italic nil :foreground nil)) t)
                               '(org-link ((t :weight unspecified :underline nil)) t)
                               '(org-footnote ((t :foreground nil :slant italic :inherit font-lock-comment-face)))
                               '(compilation-warning ((t :italic nil)))
