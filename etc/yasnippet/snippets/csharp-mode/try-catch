@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: try-catch
+# key: try
+# condition: (yas-funcs-bolp)
+# --
+try
+{
+    $0
+}
+catch(Exception ex)
+{
+}

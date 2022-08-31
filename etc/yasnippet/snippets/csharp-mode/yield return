@@ -1,0 +1,5 @@
+# key: yr
+# name: yield return
+# condition: (or (yas-funcs-bolp) (config-csharp-expression-context-p yr))
+# --
+yield return $0;

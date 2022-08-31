@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: foreach
+# key: fe
+# condition: (yas-funcs-bolp)
+# --
+foreach (var ${1:value} in ${2:coll})
+{
+    $0
+}

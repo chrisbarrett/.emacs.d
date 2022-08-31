@@ -1,0 +1,5 @@
+# key: r
+# name: return
+# condition: (or (yas-funcs-bolp) (config-csharp-expression-context-p r))
+# --
+return $0;

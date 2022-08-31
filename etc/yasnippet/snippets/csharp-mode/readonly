@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: readonly
+# key: ro
+# type: command
+# --
+(when (thing-at-point-looking-at (rx bol (* space) (+ nonl) "ro"))
+  (just-one-space))
+(insert "readonly")
+(just-one-space)
