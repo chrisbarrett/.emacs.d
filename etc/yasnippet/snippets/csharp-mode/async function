@@ -2,7 +2,7 @@
 # name: async function
 # condition: (yas-funcs-bolp)
 # --
-async ${1:TReturn} ${2:Name} (${3:args...})
+async ${1:TReturn} ${2:Name}(${3:args...})
 {
   $0
 }

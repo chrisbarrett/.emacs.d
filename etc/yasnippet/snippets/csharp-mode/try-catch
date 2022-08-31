@@ -7,6 +7,6 @@ try
 {
     $0
 }
-catch(Exception ex)
+catch (Exception ex)
 {
 }
