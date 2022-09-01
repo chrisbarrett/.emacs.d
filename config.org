@@ -2558,7 +2558,6 @@ Disable completion backend integration, since we're not using =company=.
 #+end_src
 
 ** Inject LSP servers from nix build
-
 #+begin_src emacs-lisp
   (use-package lsp-mode
     :custom
@@ -4204,7 +4203,6 @@ Source: [[https://ianyepan.github.io/posts/emacs-git-gutter/][Git Gutter in Emac
 #+end_src
 
 *** Use the fringe for drawing hunk indicators
-
 #+begin_src emacs-lisp
   (use-package git-gutter-fringe
     :config
@@ -4214,7 +4212,6 @@ Source: [[https://ianyepan.github.io/posts/emacs-git-gutter/][Git Gutter in Emac
 #+end_src
 
 *** Prevent git-gutter clobbering transclusion indicators in the fringe
-
 #+begin_src emacs-lisp
   (use-package git-gutter-fringe
     :preface
@@ -5537,10 +5534,10 @@ Configure =conf-mode= for use with more kinds of config files.
 
 *** Snippet supporting functions
 #+begin_src emacs-lisp
-  (defun config-csharp-expression-context-p (template)
+  (defun config-csharp-expression-context-p (regexp)
     (thing-at-point-looking-at (rx-to-string `(and (or "=>"
                                                        (any ",;()=:"))
-                                                   (* space) ,template (* space)))))
+                                                   (* space) (regexp ,regexp) (* space)))))
 #+end_src
 
 *** Use =nxml-mode= for ~csproj~ files
@@ -6090,7 +6087,6 @@ Automatically enter insert state when inserting new headings or using
 #+end_src
 
 *** Automatically commit attachments to git
-
 #+begin_src emacs-lisp
   (use-package org-attach
     :demand t
@@ -6822,6 +6818,15 @@ This makes it much easier to edit text using emphasis markers correctly.
                              :complete #'org-link-complete-library))
 #+end_src
 
+** Add a link type to dotnet source code
+#+begin_src emacs-lisp
+  (use-package ol-dotnet-src
+    :after org
+    :demand t
+    :custom
+    (ol-dotnet-src-runtime-location "~/src/dotnet/runtime"))
+#+end_src
+
 ** Keep abbrevs in =org-directory=
 #+begin_src emacs-lisp
   (setq abbrev-file-name (f-join paths-org-directory "abbrev.el"))
@@ -7467,7 +7472,6 @@ consumer of it.
 #+end_src
 
 ** =timekeep= - Client clocking & billing built on org-roam
-
 #+begin_src emacs-lisp
   (use-package timekeep
     :commands (timekeep-start
