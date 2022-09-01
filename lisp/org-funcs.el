@@ -13,6 +13,7 @@
 (require 'async)
 (require 'dash)
 (require 'f)
+(require 'org-cliplink)
 (require 'ht)
 (require 'seq)
 (require 'thingatpt)
@@ -22,7 +23,6 @@
   (require 'org-agenda))
 
 (autoload 'org-clocking-p "org-clock")
-(autoload 'org-cliplink-retrieve-title-synchronously "org-cliplink")
 (autoload 'org-project-p "org-project")
 (autoload 'org-project-skip-stuck-projects "org-project")
 
@@ -225,18 +225,21 @@ TAGS are the tags to use when displaying the list."
        "Slack link")))))
 
 (defun org-funcs--postprocess-retrieved-title (url title)
-  (cond
-   ((string-match-p (rx "investopedia.com") url)
-    (concat title " (Investopedia)"))
-   ((string-suffix-p "| Microsoft Docs" title)
-    (string-remove-suffix "| Microsoft Docs" title))
-   (t
-    title)))
+  (string-trim (cond
+                ((string-match-p (rx "investopedia.com") url)
+                 (concat title " (Investopedia)"))
+                ((string-suffix-p "| Microsoft Docs" title)
+                 (string-remove-suffix "| Microsoft Docs" title))
+                (t
+                 title))))
 
 (defun org-funcs-guess-or-retrieve-title (url)
-  (or (org-funcs-simplified-title-for-url url)
-      (org-funcs--postprocess-retrieved-title url
-                                              (org-cliplink-retrieve-title-synchronously url))))
+  (let ((title
+         (or (org-funcs-simplified-title-for-url url)
+             (org-funcs--postprocess-retrieved-title url
+                                                     (let ((org-cliplink-max-length 1024))
+                                                       (org-cliplink-retrieve-title-synchronously url))))))
+    (org-cliplink-elide-string title org-cliplink-max-length)))
 
 (defun org-funcs-insert-url-as-link (url)
   "Insert an orgmode link at point for URL."
