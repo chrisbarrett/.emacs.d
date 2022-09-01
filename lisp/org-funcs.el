@@ -256,7 +256,10 @@ TAGS are the tags to use when displaying the list."
       (just-one-space))))
 
 (defun org-funcs-roam-node-find (&optional other-window)
-  "Find an org-roam node. See `org-roam-node-find'."
+  "Find an org-roam node. See `org-roam-node-find'.
+
+With optional prefix arg OTHER-WINDOW, visit the node in another
+window."
   (interactive "P")
   (let ((filter (lambda (node)
                   (let ((tags (org-roam-node-tags node)))
