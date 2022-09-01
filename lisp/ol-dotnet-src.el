@@ -30,6 +30,7 @@
 (require 'dash)
 (require 'ol)
 (require 's)
+(require 'xref)
 
 (defgroup ol-dotnet-src nil
   "Org link type for looking up dotnet source files.
@@ -72,6 +73,7 @@ If nil, always look up online."
                                         ol-dotnet-src-runtime-location))))
               (filepath (expand-file-name file dir)))
     (when (file-exists-p filepath)
+      (xref-push-marker-stack)
       (find-file filepath)
       (let ((line (and (stringp ref)
                        (string-to-number ref))))
