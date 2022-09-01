@@ -28,6 +28,7 @@
 ;;; Code:
 
 (require 'dash)
+(require 'f)
 (require 'ol)
 (require 's)
 (require 'xref)
@@ -53,6 +54,20 @@ If nil, always look up online."
   :group 'ol-dotnet-src
   :type 'string)
 
+(defcustom ol-dotnet-readonly-p t
+  "Whether visited files should be read-only."
+  :group 'ol-dotnet-src
+  :type 'boolean)
+
+(defcustom ol-dotnet-library-search-paths (list "src/coreclr"
+                                                "src/libraries")
+  "Paths to search for libraries inside.
+
+Expanded relative to `ol-dotnet-src-runtime-location'."
+
+  :group 'ol-dotnet-src
+  :type '(repeat string))
+
 
 
 (defun ol-dotnet-lookup-online (lib file ref)
@@ -66,27 +81,34 @@ If nil, always look up online."
                          (concat "," ref))
                         (_ "")))))
 
+(defun ol-dotnet-src-locate-library-file (lib file)
+  (->> ol-dotnet-library-search-paths
+       (seq-map (lambda (base)
+                  (f-join ol-dotnet-src-runtime-location
+                          base
+                          lib
+                          "src"
+                          file)))
+       (seq-find #'file-exists-p)))
+
 (defun ol-dotnet-lookup-locally (lib file &optional ref)
-  (when-let* ((dir (pcase lib
-                     ("System.Private.CoreLib"
-                      (expand-file-name "src/coreclr/System.Private.CoreLib/src/"
-                                        ol-dotnet-src-runtime-location))))
-              (filepath (expand-file-name file dir)))
-    (when (file-exists-p filepath)
-      (xref-push-marker-stack)
-      (find-file filepath)
-      (let ((line (and (stringp ref)
-                       (string-to-number ref))))
-        (cond
-         ((and line (cl-plusp line))
-          (goto-char (point-min))
-          (forward-line (1- line))
-          (back-to-indentation))
-         ((stringp ref)
-          (goto-char (point-min))
-          (search-forward ref)
-          (back-to-indentation))))
-      t)))
+  (when-let* ((filepath (ol-dotnet-src-locate-library-file lib file)))
+    (xref-push-marker-stack)
+    (find-file filepath)
+    (when ol-dotnet-readonly-p
+      (read-only-mode +1))
+    (let ((line (and (stringp ref)
+                     (string-to-number ref))))
+      (cond
+       ((and line (cl-plusp line))
+        (goto-char (point-min))
+        (forward-line (1- line))
+        (back-to-indentation))
+       ((stringp ref)
+        (goto-char (point-min))
+        (search-forward ref)
+        (back-to-indentation))))
+    t))
 
 (defun ol-dotnet-follow-dotnet-source (str &optional _arg)
   (-let* ((parts (split-string str "#"))
@@ -95,7 +117,8 @@ If nil, always look up online."
                  ol-dotnet-default-lib))
           ((file ref) (-some->> (-last-item parts)
                         (s-split "::"))))
-    (or (ol-dotnet-lookup-locally lib file ref)
+    (or (and ol-dotnet-src-runtime-location
+             (ol-dotnet-lookup-locally lib file ref))
         (ol-dotnet-lookup-online lib file ref))))
 
 (org-link-set-parameters "dotnet-src" :follow #'ol-dotnet-follow-dotnet-source)
