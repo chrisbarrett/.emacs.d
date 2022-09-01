@@ -228,6 +228,8 @@ TAGS are the tags to use when displaying the list."
   (cond
    ((string-match-p (rx "investopedia.com") url)
     (concat title " (Investopedia)"))
+   ((string-suffix-p "| Microsoft Docs" title)
+    (string-remove-suffix "| Microsoft Docs" title))
    (t
     title)))
 
