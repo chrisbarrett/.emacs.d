@@ -6882,7 +6882,7 @@ This makes it much easier to edit text using emphasis markers correctly.
      '(("d" "default" entry "* %?" :target
         (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d %A>\n#+filetags: :dailies:\n"))))
     :general
-    (:states '(insert normal) :keymap 'org-mode-map
+    (:states '(insert normal) :keymaps 'org-mode-map
      "C-c i" '(org-roam-node-insert :wk "insert org-roam link")
      "C-c TAB" (general-predicate-dispatch 'org-roam-node-insert
                  (org-at-table-p) 'org-ctrl-c-tab))
