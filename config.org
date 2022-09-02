@@ -6979,6 +6979,30 @@ This makes it much easier to edit text using emphasis markers correctly.
   (setq initial-buffer-choice #'initial-buffers)
 #+end_src
 
+** Make C-c TAB toggle between window sizes in backlinks buffer (spike)
+#+begin_src emacs-lisp
+  (use-package org-roam
+    :general
+    (:keymaps 'org-roam-mode-map "C-c TAB" #'config-org-roam-toggle-window-width)
+    :preface
+    (defconst config-org-roam-side-window-step-width 85)
+
+    (defun config-org-roam-toggle-window-width ()
+      "Toggle between large or normal side window size."
+      (interactive)
+      (if-let* ((win (seq-find
+                      (lambda (it) (with-current-buffer (window-buffer it)
+                                (derived-mode-p 'org-roam-mode)))
+                      (window-list))))
+          (window-resize win
+                         (- (if (<= (window-width win) config-org-roam-side-window-default-width)
+                                config-org-roam-side-window-step-width
+                              config-org-roam-side-window-default-width)
+                            (window-width win))
+                         t)
+        (user-error "No org-roam windows"))))
+#+end_src
+
 ** =org-roam-gc= - Automatically clean up empty dailies
 #+begin_src emacs-lisp
   (use-package org-roam-gc
