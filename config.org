@@ -664,13 +664,15 @@ applications. The following functions will be invoked by those scripts over
 
 ** org-roam & friends
 #+begin_src emacs-lisp
+  (defconst config-org-roam-side-window-default-width 50)
+
   (cl-labels ((make-actions (&key window-height (slot 1) (side 'left))
                             `((display-buffer-in-side-window)
                               (dedicated . t)
                               (slot . ,slot)
                               (side . ,side)
                               (window-height . ,window-height)
-                              (window-width . 50))))
+                              (window-width . ,config-org-roam-side-window-default-width))))
     (display-buffer-set (rx bos "*org-roam" (any "*:")) (make-actions))
     (display-buffer-set (rx bos "*org-roam-links*" eos) (make-actions))
     (display-buffer-set (rx bos "*org-roam-review*" eos) (make-actions :slot 2 :window-height 0.4))
