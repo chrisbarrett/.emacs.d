@@ -3157,7 +3157,7 @@ See:
 *** ~l~ - LSP
 #+begin_src emacs-lisp
   (leader-set-key :infix "l"
-    "" '(:keymap lsp-command-map :package lsp-mode :wk "lsp"))
+    "" '(:keymaps lsp-command-map :package lsp-mode :wk "lsp"))
 #+end_src
 
 **** Use which-key replacements                                 :disabled:
