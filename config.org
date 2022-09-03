@@ -6979,11 +6979,13 @@ This makes it much easier to edit text using emphasis markers correctly.
   (setq initial-buffer-choice #'initial-buffers)
 #+end_src
 
-** Make C-c TAB toggle between window sizes in backlinks buffer (spike)
+** Define a command to switch between a few window sizes in the backlinks buffer (spike)
 #+begin_src emacs-lisp
   (use-package org-roam
     :general
-    (:keymaps 'org-roam-mode-map "C-c TAB" #'config-org-roam-toggle-window-width)
+    (:keymaps 'org-roam-mode-map
+     "C-c TAB" #'config-org-roam-toggle-window-width
+     "t" #'config-org-roam-toggle-window-width)
     :preface
     (defconst config-org-roam-side-window-step-width 85)
 
