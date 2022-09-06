@@ -1356,6 +1356,16 @@ Temporarily disabled because it throws an error on load.
     (Info-fontify-angle-bracketed-flag nil))
 #+end_src
 
+*** =info-path-from-nix= - Add info manuals for Lisp packages installed via Nix
+#+begin_src emacs-lisp
+  (use-package info-path-from-nix
+    :after info
+    :demand t
+    :config
+    (setq Info-directory-list (append Info-default-directory-list
+                                      (info-path-from-nix))))
+#+end_src
+
 ** Image viewing
 #+begin_src emacs-lisp
   (use-package image
