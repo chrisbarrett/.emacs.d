@@ -7426,7 +7426,7 @@ property drawer and the title. Advise it to fix that.
   (use-package org-roam
     :custom
     (org-roam-node-display-template
-     (concat (propertize "${slipbox:9}" 'face 'org-tag) " ${icon:3} " "${title:*}" ))
+     (concat (propertize "${slipbox:9}" 'face 'org-tag) " ${icon:3} " "${title:*} " "${tags:*}"))
     :config
     (cl-defmethod org-roam-node-slipbox ((node org-roam-node))
       "Return the TYPE of NODE."
