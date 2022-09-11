@@ -3326,7 +3326,9 @@ Disabled for now since this breaks insert state in evil :/
   (leader-set-key :infix "w"
     "" '(nil :wk "window")
     "SPC" '(window-toggle-side-windows :wk "toggle side windows")
+    "p" '(evil-window-prev :wk "prev")
     "w" '(evil-window-next :wk "next")
+    "n" '(evil-window-next :wk "next")
     "r" '(evil-window-rotate-downwards :wk "rotate")
     "/" '(split-window-horizontally-dwim :wk "split (horizontal)")
     "-" '(split-window-vertically-dwim :wk "split (vertical)")
