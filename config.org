@@ -664,7 +664,7 @@ applications. The following functions will be invoked by those scripts over
 
 ** org-roam & friends
 #+begin_src emacs-lisp
-  (defconst config-org-roam-side-window-default-width 50)
+  (defconst config-org-roam-side-window-default-width 55)
 
   (cl-labels ((make-actions (&key window-height (slot 1) (side 'left))
                             `((display-buffer-in-side-window)
