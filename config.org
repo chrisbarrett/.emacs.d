@@ -3320,6 +3320,15 @@ Disabled for now since this breaks insert state in evil :/
       (message "Window %sdedicated to %s"
                (if was-dedicated "no longer " "")
                (buffer-name))))
+
+  (defun config-delete-other-windows-except-dedicated ()
+    (interactive)
+    (let ((windows (window-list))
+          (selected (selected-window)))
+      (dolist (win windows)
+        (unless (or (equal win selected)
+                    (window-dedicated-p win))
+          (delete-window win)))))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -3334,7 +3343,8 @@ Disabled for now since this breaks insert state in evil :/
     "-" '(split-window-vertically-dwim :wk "split (vertical)")
     "=" '(balance-windows :wk "balance")
     "d" '(delete-window :wk "delete")
-    "o" '(delete-other-windows :wk "delete others")
+    "o" '(config-delete-other-windows-except-dedicated :wk "delete non-dedicated")
+    "O" '(delete-other-windows :wk "delete others")
     "t" '(toggle-window-dedication :wk "toggle dedication"))
 #+end_src
 
