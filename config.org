@@ -668,7 +668,6 @@ applications. The following functions will be invoked by those scripts over
 
   (cl-labels ((make-actions (&key window-height (slot 1) (side 'left))
                             `((display-buffer-in-side-window)
-                              (dedicated . t)
                               (slot . ,slot)
                               (side . ,side)
                               (window-height . ,window-height)
