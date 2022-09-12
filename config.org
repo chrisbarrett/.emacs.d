@@ -1370,7 +1370,9 @@ Temporarily disabled because it throws an error on load.
   (use-package image
     :general (:keymaps 'image-mode-map :states '(normal motion)
               "-" #'image-decrease-size
-              "+" #'image-increase-size))
+              "+" #'image-increase-size)
+    :custom
+    (image-use-external-converter t))
 #+end_src
 
 ** =compile= - Mode for compilation buffers
