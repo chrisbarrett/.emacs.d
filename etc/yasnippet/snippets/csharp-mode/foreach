@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: foreach
 # key: fe
-# condition: (yas-funcs-bolp)
+# condition: (and (yas-funcs-bolp) (cl-plusp (syntax-ppss-depth (syntax-ppss))))
 # --
 foreach (var ${1:value} in ${2:coll})
 {

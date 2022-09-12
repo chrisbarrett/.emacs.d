@@ -1,5 +1,5 @@
 # key: y
 # name: yield
-# condition: (or (yas-funcs-bolp) (config-csharp-expression-context-p "y"))
+# condition: (and (yas-funcs-bolp) (cl-plusp (syntax-ppss-depth (syntax-ppss))))
 # --
 yield $0;

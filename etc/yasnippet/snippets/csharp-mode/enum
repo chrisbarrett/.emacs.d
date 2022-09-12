@@ -1,6 +1,9 @@
 # -*- mode: snippet -*-
-# name: record
-# key: r
+# name: enum
+# key: e
 # condition: (and (yas-funcs-bolp) (zerop (syntax-ppss-depth (syntax-ppss))))
 # --
-record ${1:Name}($0);
+public enum ${1:Name}
+{
+  $0
+}

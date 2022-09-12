@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: namespace
 # key: ns
-# condition: (yas-funcs-bolp)
+# condition: (and (yas-funcs-bolp) (zerop (syntax-ppss-depth (syntax-ppss))))
 # --
 namespace $0;

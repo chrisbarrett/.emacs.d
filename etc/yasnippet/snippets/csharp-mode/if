@@ -1,6 +1,6 @@
 # key: i
 # name: if
-# condition: (yas-funcs-bolp)
+# condition: (and (yas-funcs-bolp) (cl-plusp (syntax-ppss-depth (syntax-ppss))))
 # --
 if ($1)
 {

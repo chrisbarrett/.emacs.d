@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: record class
 # key: rc
-# condition: (yas-funcs-bolp)
+# condition: (and (yas-funcs-bolp) (zerop (syntax-ppss-depth (syntax-ppss))))
 # --
 record ${1:Name}
 {
