@@ -3,7 +3,7 @@
 # key: e
 # condition: (and (yas-funcs-bolp) (zerop (syntax-ppss-depth (syntax-ppss))))
 # --
-public enum ${1:Name}
+enum ${1:Name}
 {
   $0
 }
