@@ -5880,7 +5880,7 @@ Normally newlines are reflowed automatically.
     "/" '(org-sparse-tree :wk "sparse tree...")
     "#" '(org-decrypt-entries :wk "decrypt entries")
     "RET" '(org-indent-mode :wk "toggle indentation")
-    "R" (list (general-predicate-dispatch 'org-refile
+    "R" (list (general-predicate-dispatch 'org-funcs-refile-dwim
                 (bound-and-true-p org-capture-mode) 'org-capture-refile)
               :wk "refile")
     "f" '(config-org-focus-entry :wk "focus entry")
