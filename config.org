@@ -4892,7 +4892,9 @@ Teach the Emacs Lisp indentation function to indent plists nicely.
     (defun prettify-symbols-setup ()
       (cond
        ((derived-mode-p 'emacs-lisp-mode 'lisp-mode 'scheme-mode)
-        (setq-local prettify-symbols-alist '(("lambda" . #x3bb)))))))
+        (setq-local prettify-symbols-alist '(("lambda" . #x3bb))))))
+    :config
+    (advice-add 'prettify-symbols--post-command-hook :around 'advice-ignore-errors))
 #+end_src
 
 ** =typescript-mode= - TypeScript language support
