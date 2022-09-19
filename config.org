@@ -4886,7 +4886,7 @@ Teach the Emacs Lisp indentation function to indent plists nicely.
 
 ** =prettify-symbols-mode= - Pretty lambdas in Lisp modes
 #+begin_src emacs-lisp
-  (use-package prettify-symbols-mode
+  (use-package prog-mode
     :hook
     (emacs-lisp-mode . prettify-symbols-mode)
     (prettify-symbols-mode . prettify-symbols-setup)
