@@ -5822,6 +5822,7 @@ Normally newlines are reflowed automatically.
     (org-image-actual-width nil)
     (org-return-follows-link t)
     (org-use-property-inheritance t)
+    (org-startup-align-all-tables t)
     (org-ellipsis " …")
     (org-indent-mode-turns-on-hiding-stars t)
 
