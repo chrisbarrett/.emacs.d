@@ -6976,14 +6976,14 @@ This makes it much easier to edit text using emphasis markers correctly.
     (unless org-inhibit-startup
       (when (and (buffer-file-name) (f-descendant-of-p (buffer-file-name)
                                                        org-roam-directory))
-        (when-let* ((title
-                     (ignore-errors
-                       (save-excursion
-                         (goto-char (point-min))
-                         (org-roam-node-title (org-roam-node-at-point))))))
+        (when-let* ((node
+                     (ignore-errors (save-excursion
+                                      (goto-char (point-min))
+                                      (org-roam-node-at-point)))))
           (setq-local mode-line-buffer-identification
-                      (propertize title 'face 'mode-line-highlight
-                                  'help-echo (buffer-file-name)))))))
+                      (concat
+                       (propertize title 'face 'mode-line-highlight
+                                   'help-echo (buffer-file-name))))))))
 
   (add-hook 'org-mode-hook #'config-org-roam-set-buffer-identification)
 #+end_src
