@@ -6970,20 +6970,34 @@ This makes it much easier to edit text using emphasis markers correctly.
     "<backtab>" '(org-roam-buffer-display-dedicated :wk "backlinks (dedicated)"))
 #+end_src
 
+** Add a =slipbox= property to org-roam nodes
+#+begin_src emacs-lisp
+  (use-package org-roam
+    :config
+    (cl-defmethod org-roam-node-slipbox ((node org-roam-node))
+      "Return the TYPE of NODE."
+      (condition-case nil
+          (let ((slipbox (cadr (reverse (f-split (org-roam-node-file node))))))
+            (if (equal slipbox "roam")
+                "notes"
+              slipbox))
+        (error ""))))
+#+end_src
+
 ** Use title for buffer notes identification
 #+begin_src emacs-lisp
   (defun config-org-roam-set-buffer-identification ()
     (unless org-inhibit-startup
-      (when (and (buffer-file-name) (f-descendant-of-p (buffer-file-name)
-                                                       org-roam-directory))
-        (when-let* ((node
-                     (ignore-errors (save-excursion
-                                      (goto-char (point-min))
-                                      (org-roam-node-at-point)))))
-          (setq-local mode-line-buffer-identification
-                      (concat
-                       (propertize title 'face 'mode-line-highlight
-                                   'help-echo (buffer-file-name))))))))
+      (when-let* ((node
+                   (ignore-errors (save-excursion
+                                    (goto-char (point-min))
+                                    (org-roam-node-at-point)))))
+        (setq-local mode-line-buffer-identification
+                    (concat
+                     (propertize (org-roam-node-slipbox node) 'face 'org-tag)
+                     " > "
+                     (propertize (org-roam-node-title node) 'face 'mode-line-highlight
+                                 'help-echo (buffer-file-name)))))))
 
   (add-hook 'org-mode-hook #'config-org-roam-set-buffer-identification)
 #+end_src
@@ -7446,16 +7460,6 @@ property drawer and the title. Advise it to fix that.
     (org-roam-node-display-template
      (concat (propertize "${slipbox:9}" 'face 'org-tag) " ${icon:3} " "${title:*} " "${tags:*}"))
     :config
-    (cl-defmethod org-roam-node-slipbox ((node org-roam-node))
-      "Return the TYPE of NODE."
-      (condition-case nil
-          (let ((slipbox (cadr (reverse (f-split (org-roam-node-file node))))))
-            (if (or (equal slipbox "roam")
-                    (equal slipbox "notes"))
-                "notes"
-              slipbox))
-        (error "")))
-
     (cl-defmethod org-roam-node-icon ((node org-roam-node))
       "Return the TYPE of NODE."
       (condition-case nil
