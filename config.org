@@ -2636,6 +2636,8 @@ Disable completion backend integration, since we're not using =company=.
 #+begin_src emacs-lisp
   (use-package eshell
     :custom
+    (eshell-prefer-lisp-functions t)
+    (eshell-prefer-lisp-variables t)
     (eshell-prompt-function 'config-eshell-prompt)
     (eshell-skip-prompt-function 'config-eshell-skip-prompt)
     (eshell-prompt-regexp (rx bol (* (not (any "#$\n"))) space (any "#$λ") space))
