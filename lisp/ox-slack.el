@@ -81,23 +81,23 @@ channel."
   (org-timestamp-translate timestamp))
 
 (org-export-define-derived-backend 'slack 'gfm
-                                   :translate-alist '((bold . ox-slack--bold)
-                                                      (example-block . ox-slack--fixed-width-block)
-                                                      (fixed-width . ox-slack--fixed-width-block)
-                                                      (headline . ox-slack--markup-headline)
-                                                      (italic . ox-slack--italic)
-                                                      (item . ox-slack--item)
-                                                      (link . ox-slack--link)
-                                                      (src-block . ox-slack--fixed-width-block)
-                                                      (strike-through . ox-slack--strike-through)
-                                                      (timestamp . ox-slack--timestamp)
-                                                      (subscript . ox-slack--passthrough)
-                                                      (superscript . ox-slack--passthrough)
-                                                      (underline . ox-slack--italic))
-                                   :menu-entry
-                                   '(?s "Export to Slack Markup"
-                                        ((?c "To clipboard" ox-slack-export-to-clipboard)
-                                         (?s "To temporary buffer" ox-slack-export-to-buffer))))
+  :translate-alist '((bold . ox-slack--bold)
+                     (example-block . ox-slack--fixed-width-block)
+                     (fixed-width . ox-slack--fixed-width-block)
+                     (headline . ox-slack--markup-headline)
+                     (italic . ox-slack--italic)
+                     (item . ox-slack--item)
+                     (link . ox-slack--link)
+                     (src-block . ox-slack--fixed-width-block)
+                     (strike-through . ox-slack--strike-through)
+                     (timestamp . ox-slack--timestamp)
+                     (subscript . ox-slack--passthrough)
+                     (superscript . ox-slack--passthrough)
+                     (underline . ox-slack--italic))
+  :menu-entry
+  '(?s "Export to Slack Markup"
+       ((?c "To clipboard" ox-slack-export-to-clipboard)
+        (?s "To temporary buffer" ox-slack-export-to-buffer))))
 
 (defmacro ox-slack--with-default-export-options (&rest body)
   (declare (indent 0))
@@ -111,25 +111,25 @@ channel."
 (defun ox-slack-export-to-buffer (&optional async subtreep visible-only body-only ext-plist)
   (interactive)
   (ox-slack--with-default-export-options
-   (org-export-to-buffer 'slack "*Org Slack Export*"
-     async subtreep visible-only body-only ext-plist
-     (lambda ()
-       (let ((str (funcall ox-slack-postprocess-function (buffer-string))))
-         (erase-buffer)
-         (insert str)
-         (gfm-mode))))))
+    (org-export-to-buffer 'slack "*Org Slack Export*"
+      async subtreep visible-only body-only ext-plist
+      (lambda ()
+        (let ((str (funcall ox-slack-postprocess-function (buffer-string))))
+          (erase-buffer)
+          (insert str)
+          (gfm-mode))))))
 
 (defun ox-slack-export-to-clipboard (&optional async subtreep visible-only body-only ext-plist formatter)
   (interactive)
   (let ((org-export-show-temporary-export-buffer nil))
     (ox-slack--with-default-export-options
-     (org-export-to-buffer 'slack "*Org Slack Export*"
-       async subtreep visible-only body-only ext-plist
-       (lambda ()
-         (let* ((str (funcall ox-slack-postprocess-function (string-trim (buffer-string))))
-                (postprocessed (funcall (or formatter #'identity) str)))
-           (kill-new postprocessed))
-         (message "Buffer contents copied to clipboard"))))))
+      (org-export-to-buffer 'slack "*Org Slack Export*"
+        async subtreep visible-only body-only ext-plist
+        (lambda ()
+          (let* ((str (funcall ox-slack-postprocess-function (string-trim (buffer-string))))
+                 (postprocessed (funcall (or formatter #'identity) str)))
+            (kill-new postprocessed))
+          (message "Buffer contents copied to clipboard"))))))
 
 (provide 'ox-slack)
 
