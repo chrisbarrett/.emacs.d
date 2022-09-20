@@ -48,9 +48,8 @@
   (f-join user-emacs-directory "host.el"))
 
 (defconst paths-project-directories
-  (->> (list "~/.config" "~/src")
-       (seq-filter #'file-directory-p)
-       (seq-map (lambda (it) (cons it 1)))))
+  (seq-filter (-compose #'file-directory-p #'car)
+              '(("~/.config" . 1) ("~/src" . 2))))
 
 
 
