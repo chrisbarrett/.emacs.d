@@ -65,6 +65,10 @@ Useful for replacing references to people with username, etc."
             (and contents
                  (org-trim (replace-regexp-in-string "^" "    " contents))))))
 
+(defun ox-slack--link (link desc info)
+  )
+
+
 (defun ox-slack--fixed-width-block (example-block _contents info)
   "Transcode EXAMPLE-BLOCK element into Markdown format.
 CONTENTS is nil.  INFO is a plist used as a communication
@@ -83,6 +87,7 @@ channel."
                                                       (headline . ox-slack--markup-headline)
                                                       (italic . ox-slack--italic)
                                                       (item . ox-slack--item)
+                                                      (link . ox-slack--link)
                                                       (src-block . ox-slack--fixed-width-block)
                                                       (strike-through . ox-slack--strike-through)
                                                       (timestamp . ox-slack--timestamp)
