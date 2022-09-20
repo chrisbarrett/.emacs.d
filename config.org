@@ -4884,6 +4884,13 @@ Teach the Emacs Lisp indentation function to indent plists nicely.
   (add-hook 'org-src-mode-hook 'disable-flycheck-checkers-for-org-src-block)
 #+end_src
 
+*** Disable package-lint installability check
+This always fails since I don't use =package.el=.
+
+#+begin_src emacs-lisp
+  (advice-add #'package-lint--check-packages-installable :override #'ignore)
+#+end_src
+
 ** =prettify-symbols-mode= - Pretty lambdas in Lisp modes
 #+begin_src emacs-lisp
   (use-package prog-mode
