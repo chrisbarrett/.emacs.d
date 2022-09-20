@@ -216,6 +216,9 @@ TAGS are the tags to use when displaying the list."
          (org-funcs--strip-google-highlight-query-param input)
        (org-funcs-read-url prompt default)))))
 
+(defconst org-funcs--match-confluence-title
+  (rx ".atlassian.net/wiki/spaces/" (+? nonl) "/pages/" (+? nonl) "/" (group (+ nonl))))
+
 (defun org-funcs-simplified-title-for-url (url)
   (let ((query-params '(? "?" (* nonl))))
     (or
@@ -224,7 +227,13 @@ TAGS are the tags to use when displaying the list."
           (s-match (rx-to-string `(and "atlassian.net/browse/" (group (+? nonl)) ,query-params eol)) url)))
      (cond
       ((string-match-p (rx bol "https://" (+? any) ".slack.com/") url)
-       "Slack link")))))
+       "Slack link")
+      ((string-match-p org-funcs--match-confluence-title url)
+       (when-let* ((embedded-title
+                    (-some->> (s-match org-funcs--match-confluence-title url)
+                      (cadr)
+                      (s-replace "+" " "))))
+         (concat embedded-title " (Confluence)")))))))
 
 (defun org-funcs--postprocess-retrieved-title (url title)
   (string-trim (cond
