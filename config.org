@@ -4055,7 +4055,7 @@ of =projectile=. Use =projectile= until the builtin functionality is more comple
      [remap evil-next-visual-line] 'next-line
      [remap evil-previous-visual-line] 'previous-line)
     :custom
-    (magit-repository-directories (--map (cons it 1) paths-project-directories))
+    (magit-repository-directories paths-project-directories)
     (magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1)
     (magit-log-section-commit-count 0))
 #+end_src
