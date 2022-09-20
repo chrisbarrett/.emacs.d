@@ -4037,6 +4037,8 @@ of =projectile=. Use =projectile= until the builtin functionality is more comple
     (projectile-ignored-project-function #'config-projectile-ignored-project-function))
 #+end_src
 
+*** Cache some common directories
+
 * Git
 
 ** =magit= - interactive commands for working with git
