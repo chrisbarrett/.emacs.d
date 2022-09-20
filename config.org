@@ -1560,6 +1560,14 @@ Configure how =ediff= should display windows when started.
             (cdr args))))
 #+end_src
 
+** Cache passwords
+#+begin_src emacs-lisp
+  (use-package password-cache
+    :custom
+    (password-cache t)
+    (password-cache-expiry 3600))
+#+end_src
+
 * Better eval-expression
 Define an alternative version of =eval-expression= that uses =emacs-lisp-mode= to
 provide font-locking, and handles =smartparens= better.
