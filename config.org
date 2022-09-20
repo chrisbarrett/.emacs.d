@@ -6986,20 +6986,24 @@ This makes it much easier to edit text using emphasis markers correctly.
 
 ** Use title for buffer notes identification
 #+begin_src emacs-lisp
-  (defun config-org-roam-set-buffer-identification ()
-    (unless org-inhibit-startup
-      (when-let* ((node
-                   (ignore-errors (save-excursion
-                                    (goto-char (point-min))
-                                    (org-roam-node-at-point)))))
-        (setq-local mode-line-buffer-identification
-                    (concat
-                     (propertize (org-roam-node-slipbox node) 'face 'org-tag)
-                     " > "
-                     (propertize (org-roam-node-title node) 'face 'mode-line-highlight
-                                 'help-echo (buffer-file-name)))))))
+  (defun config-org-roam--set-buffer-identification ()
+    (when-let* ((node
+                 (ignore-errors (save-excursion
+                                  (goto-char (point-min))
+                                  (org-roam-node-at-point)))))
+      (setq-local mode-line-buffer-identification
+                  (concat
+                   (propertize (org-roam-node-slipbox node) 'face 'org-tag)
+                   " > "
+                   (propertize (org-roam-node-title node) 'face 'mode-line-highlight
+                               'help-echo (buffer-file-name))))))
 
-  (add-hook 'org-mode-hook #'config-org-roam-set-buffer-identification)
+  (defun config-org-roam-configure-buffer-identification-hooks ()
+    (unless org-inhibit-startup
+      (config-org-roam--set-buffer-identification)
+      (add-hook 'after-save-hook #'config-org-roam--set-buffer-identification nil t)))
+
+  (add-hook 'org-mode-hook #'config-org-roam-configure-buffer-identification-hooks)
 #+end_src
 
 ** Open my index file and notes review buffer
