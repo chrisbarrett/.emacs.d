@@ -65,9 +65,12 @@ Useful for replacing references to people with username, etc."
             (and contents
                  (org-trim (replace-regexp-in-string "^" "    " contents))))))
 
-(defun ox-slack--link (link desc info)
-  )
-
+(defun ox-slack--link (&rest args)
+  (pcase-let ((`(,link ,_ ,_) args))
+    (apply (if (string-match-p (rx bol "id:") link)
+               #'ox-slack--passthrough
+             #'org-md-link)
+           args)))
 
 (defun ox-slack--fixed-width-block (example-block _contents info)
   "Transcode EXAMPLE-BLOCK element into Markdown format.
