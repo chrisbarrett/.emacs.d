@@ -219,6 +219,15 @@ TAGS are the tags to use when displaying the list."
 (defconst org-funcs--match-confluence-title
   (rx ".atlassian.net/wiki/spaces/" (+? nonl) "/pages/" (+? nonl) "/" (group (+ nonl))))
 
+(defconst org-funcs--match-github-repo
+  (rx "github.com/" (group (+ nonl))))
+
+(cl-defun org-funcs--regexp-extract-append-host (regexp host &optional (group 1))
+  (when-let* ((extracted (-some->> (s-match regexp url)
+                           (nth group) ;; 0 is the whole string
+                           (s-replace "+" " "))))
+    (format "%s (%s)" extracted host)))
+
 (defun org-funcs-simplified-title-for-url (url)
   (let ((query-params '(? "?" (* nonl))))
     (or
