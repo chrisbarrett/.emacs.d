@@ -372,7 +372,8 @@ In an org-roam node, move or extract to a different slipbox.
 Otherwise, run `org-refile'."
   (interactive)
   (call-interactively
-   (if (f-child-of-p default-directory org-roam-directory)
+   (if (or (equal default-directory org-roam-directory)
+           (f-child-of-p default-directory org-roam-directory))
        #'org-funcs-refile-to-slipbox
      #'org-refile)))
 
