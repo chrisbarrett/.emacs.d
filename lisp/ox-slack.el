@@ -66,8 +66,10 @@ Useful for replacing references to people with username, etc."
                  (org-trim (replace-regexp-in-string "^" "    " contents))))))
 
 (defun ox-slack--link (&rest args)
-  (pcase-let ((`(,link ,_ ,_) args))
-    (apply (if (string-match-p (rx bol "id:") link)
+  (pcase-let* ((`((link ,link-attrs) ,_ ,_) args)
+               (link-type (plist-get link-attrs :type)))
+    (debug link-type link-attrs)
+    (apply (if (equal "id" link-type)
                #'ox-slack--passthrough
              #'org-md-link)
            args)))
