@@ -216,33 +216,24 @@ TAGS are the tags to use when displaying the list."
          (org-funcs--strip-google-highlight-query-param input)
        (org-funcs-read-url prompt default)))))
 
-(defconst org-funcs--match-confluence-title
-  (rx ".atlassian.net/wiki/spaces/" (+? nonl) "/pages/" (+? nonl) "/" (group (+ nonl))))
-
-(defconst org-funcs--match-github-repo
-  (rx "github.com/" (group (+ nonl))))
-
-(cl-defun org-funcs--regexp-extract-append-host (regexp host &optional (group 1))
-  (when-let* ((extracted (-some->> (s-match regexp url)
-                           (nth group) ;; 0 is the whole string
-                           (s-replace "+" " "))))
-    (format "%s (%s)" extracted host)))
-
 (defun org-funcs-simplified-title-for-url (url)
-  (let ((query-params '(? "?" (* nonl))))
-    (or
-     (cadr
-      (or (s-match (rx-to-string `(and "github.com/" (group (+? nonl) (or "/issues/" "/pull/") (+ digit)) ,query-params eol)) url)
-          (s-match (rx-to-string `(and "atlassian.net/browse/" (group (+? nonl)) ,query-params eol)) url)))
-     (cond
-      ((string-match-p (rx bol "https://" (+? any) ".slack.com/") url)
-       "Slack link")
-      ((string-match-p org-funcs--match-confluence-title url)
-       (when-let* ((embedded-title
-                    (-some->> (s-match org-funcs--match-confluence-title url)
-                      (cadr)
-                      (s-replace "+" " "))))
-         (concat embedded-title " (Confluence)")))))))
+  (cl-labels ((regexp-extract (host regexp &optional (group 1))
+                              (when-let* ((extracted (-some->> (s-match regexp url)
+                                                       (nth group) ;; 0 is the whole string
+                                                       (s-replace "+" " "))))
+                                (format "%s (%s)" extracted host))))
+
+    (let ((query-params '(? "?" (* nonl))))
+      (or
+       (cadr
+        (or (s-match (rx-to-string `(and "github.com/" (group (+? nonl) (or "/issues/" "/pull/") (+ digit)) ,query-params eol)) url)
+            (s-match (rx-to-string `(and "atlassian.net/browse/" (group (+? nonl)) ,query-params eol)) url)))
+       (when (string-match-p (rx bol "https://" (+? any) ".slack.com/") url)
+         "Slack link")
+       (regexp-extract "Confluence"
+                       (rx ".atlassian.net/wiki/spaces/" (+? nonl) "/pages/" (+? nonl) "/" (group (+ nonl))))
+       (regexp-extract "GitHub"
+                       (rx "github.com/" (group (+ nonl))))))))
 
 (defun org-funcs--postprocess-retrieved-title (url title)
   (string-trim (cond
