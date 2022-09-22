@@ -4126,6 +4126,13 @@ See: [[https://github.com/dandavison/magit-delta/issues/9#issuecomment-795435781
     (add-hook 'magit-post-refresh-hook #'config-magit-delta-maybe-reenable-for-refresh))
 #+end_src
 
+** =vc= - Emacs' built-in version control functionality
+#+begin_src emacs-lisp
+  (use-package vc-git
+    :custom
+    (vc-git-program (expand-file-name "~/.nix-profile/bin/git")))
+#+end_src
+
 ** =forge= - teaches =magit= how to work with pull requests and issues
 :LOGBOOK:
 - Note taken on [2021-08-07 Sat 15:27] \\
