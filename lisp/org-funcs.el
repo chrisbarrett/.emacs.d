@@ -403,6 +403,11 @@ Otherwise, run `org-refile'."
        #'org-funcs-refile-to-slipbox
      #'org-refile)))
 
+(defun org-funcs-handle-deleted-node (args)
+  (-let* (((&plist :file :level) args)
+          (default-directory (f-dirname file)))
+    (when (zerop level)
+      (call-process vc-git-program nil nil nil "rm" file))))
 
 (provide 'org-funcs)
 
