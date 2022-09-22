@@ -358,6 +358,7 @@ citar."
       (let ((file (org-roam-node-file node)))
         (setq dest (f-join org-roam-directory slipbox (f-filename file)))
         (call-process vc-git-program nil nil nil "add" file)
+        (vc-update)
         (vc-rename-file file dest)
         (org-roam-db-sync)))
      (t
