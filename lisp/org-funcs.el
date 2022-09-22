@@ -220,7 +220,7 @@ TAGS are the tags to use when displaying the list."
 (defun org-funcs-simplified-title-for-url (url)
   (cl-labels ((regexp-extract (host regexp)
                               (when-let* ((extracted (-some->> (s-match regexp url)
-                                                       'cdr ;; 0 is the whole string
+                                                       (cdr) ;; 0 is the whole string
                                                        (seq-map (lambda (it) (s-replace "+" " " it)))
                                                        (s-join "/…/"))))
                                 (format "%s (%s)" extracted host))))
