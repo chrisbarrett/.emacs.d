@@ -354,7 +354,7 @@ citar."
      ((zerop (org-roam-node-level node))
       (let ((file (org-roam-node-file node)))
         (setq dest (f-join org-roam-directory slipbox (f-filename file)))
-        (dired-rename-file file dest nil)))
+        (vc-rename-file file dest)))
      (t
       (let ((new-file (f-filename (org-roam-rewrite--new-filename-from-capture-template node))))
         (setq dest (f-join org-roam-directory slipbox new-file))
