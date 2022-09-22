@@ -337,6 +337,8 @@ citar."
 
 
 
+(defvar org-funcs-node-refiled-hook nil)
+
 (defun org-funcs-node-slipbox (node)
   (f-filename (f-dirname (org-roam-node-file node))))
 
@@ -354,11 +356,13 @@ citar."
      ((zerop (org-roam-node-level node))
       (let ((file (org-roam-node-file node)))
         (setq dest (f-join org-roam-directory slipbox (f-filename file)))
-        (vc-rename-file file dest)))
+        (vc-rename-file file dest)
+        (org-roam-db-sync)))
      (t
       (let ((new-file (f-filename (org-roam-rewrite--new-filename-from-capture-template node))))
         (setq dest (f-join org-roam-directory slipbox new-file))
         (org-roam-rewrite-extract node dest))))
+    (run-hooks 'org-funcs-node-refiled-hook)
     (message (concat "Refiled from "
                      (propertize current-slipbox 'face 'font-lock-constant-face)
                      " to "

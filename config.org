@@ -7024,6 +7024,7 @@ This makes it much easier to edit text using emphasis markers correctly.
 
   (add-hook 'org-mode-hook #'config-org-roam-configure-buffer-identification-hooks)
   (add-hook 'org-roam-rewrite-node-renamed-hook #'config-org-roam--set-buffer-identification)
+  (add-hook 'org-funcs-node-refiled-hook #'config-org-roam--set-buffer-identification)
 #+end_src
 
 ** Open my index file and notes review buffer
