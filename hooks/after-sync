@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+set -e -x -o pipefail
+
+# shellcheck disable=SC2039
+cd "$( dirname "${BASH_SOURCE[0]}" )" 
+GIT_ROOT=$(git rev-parse --show-toplevel)
+
+CONFIG_EL="${GIT_ROOT}/config.el"
+~/.nix-profile/bin/emacsclient -a true -e "
+  (let ((noninteractive t))
+    (ignore-errors
+      (tangle-init-files)
+      (load \"$CONFIG_EL\")))
+"
