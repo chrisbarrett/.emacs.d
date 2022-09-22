@@ -185,7 +185,8 @@ that these leverage the ~DEPTH~ argument so that subsequent functions added to
 
 ** Enable debugging for duration of startup sequence
 #+begin_src emacs-lisp
-  (setq debug-on-error t)
+  (unless noninteractive
+    (setq debug-on-error t))
 
   (add-hook 'after-init-hook
             (lambda ()
