@@ -217,29 +217,43 @@ TAGS are the tags to use when displaying the list."
          (org-funcs--strip-google-highlight-query-param input)
        (org-funcs-read-url prompt default)))))
 
-(defun org-funcs-simplified-title-for-url (url)
-  (cl-labels ((regexp-extract (host regexp)
-                              (when-let* ((extracted (-some->> (s-match regexp url)
-                                                       (cdr) ;; 0 is the whole string
-                                                       (seq-map (lambda (it) (s-replace "+" " " it)))
-                                                       (s-join "/…/"))))
-                                (format "%s (%s)" extracted host))))
+(defun org-funcs--simplify-url (regexp url)
+  (-some->> (s-match regexp url)
+    (cdr) ;; 0 is the whole string
+    (seq-map (lambda (it) (s-replace "+" " " it)))
+    (s-join "/…/")))
 
-    (let ((query-params '(? "?" (* nonl))))
+
+(defun org-funcs-simplified-title-for-url (url)
+
+  (cl-labels ((extract (host regexp)
+                       (when-let* ((simplified (org-funcs--simplify-url regexp url)))
+                         (format "%s (%s)" simplified host))))
+    (let ((query '(? "?" (* nonl))))
       (or
-       (cadr
-        (or (s-match (rx-to-string `(and "github.com/" (group (+? nonl) (or "/issues/" "/pull/") (+ digit)) ,query-params eol)) url)
-            (s-match (rx-to-string `(and "atlassian.net/browse/" (group (+? nonl)) ,query-params eol)) url)))
+       (extract "Confluence"
+                (rx ".atlassian.net/wiki/spaces/" (+? nonl) "/pages/" (+? nonl) "/" (group (+ nonl))))
+       (extract "Jira"
+                (rx-to-string `(and ".atlassian.net/browse/" (group (+? nonl)) ,query eol)))
+
+       (extract "GitHub"
+                (rx-to-string `(and bol "https://github.com/"
+                                    (group (+? nonl) (or "/issues/" "/pull/") (+ digit))
+                                    ,query eol)))
+
+       ;; (org-funcs-simplified-title-for-url "https://github.com/org/repo/blob/master/path/file.md")
+       (extract "GitHub"
+                (rx bol "https://github.com/"
+                    (group (+? nonl) "/" (+ nonl))
+                    "/blob/" (+? nonl) "/"
+                    (group (+ nonl))))
+
+
+       ;; (org-funcs-simplified-title-for-url "https://github.com/org/repo")
+       (extract "GitHub" (rx bol "https://github.com/" (group (+ nonl))))
+
        (when (string-match-p (rx bol "https://" (+? any) ".slack.com/") url)
-         "Slack link")
-       (regexp-extract "Confluence"
-                       (rx ".atlassian.net/wiki/spaces/" (+? nonl) "/pages/" (+? nonl) "/" (group (+ nonl))))
-       (regexp-extract "GitHub"
-                       (rx "github.com/" (group (+? nonl))
-                           "/blob/" (+? nonl) "/" (group (+ nonl))))
-       (regexp-extract "GitHub"
-                       (rx "github.com/"
-                           (group (+? nonl) "/" (+? nonl))))))))
+         "Slack link")))))
 
 (defun org-funcs--postprocess-retrieved-title (url title)
   (string-trim (cond
