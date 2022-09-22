@@ -7019,7 +7019,7 @@ This makes it much easier to edit text using emphasis markers correctly.
                                   (org-roam-node-at-point)))))
       (setq-local mode-line-buffer-identification
                   (concat
-                   (propertize (org-roam-node-slipbox node) 'face 'org-tag)
+                   (propertize (org-roam-node-slipbox node) 'face 'font-lock-string-face)
                    " > "
                    (propertize (org-roam-node-title node) 'face 'mode-line-highlight
                                'help-echo (buffer-file-name))))))
