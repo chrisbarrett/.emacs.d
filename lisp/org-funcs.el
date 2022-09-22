@@ -218,10 +218,11 @@ TAGS are the tags to use when displaying the list."
        (org-funcs-read-url prompt default)))))
 
 (defun org-funcs-simplified-title-for-url (url)
-  (cl-labels ((regexp-extract (host regexp &optional (group 1))
+  (cl-labels ((regexp-extract (host regexp)
                               (when-let* ((extracted (-some->> (s-match regexp url)
-                                                       (nth group) ;; 0 is the whole string
-                                                       (s-replace "+" " "))))
+                                                       'cdr ;; 0 is the whole string
+                                                       (seq-map (lambda (it) (s-replace "+" " " it)))
+                                                       (s-join "/…/"))))
                                 (format "%s (%s)" extracted host))))
 
     (let ((query-params '(? "?" (* nonl))))
@@ -234,7 +235,11 @@ TAGS are the tags to use when displaying the list."
        (regexp-extract "Confluence"
                        (rx ".atlassian.net/wiki/spaces/" (+? nonl) "/pages/" (+? nonl) "/" (group (+ nonl))))
        (regexp-extract "GitHub"
-                       (rx "github.com/" (group (+ nonl))))))))
+                       (rx "github.com/" (group (+? nonl))
+                           "/blob/" (+? nonl) "/" (group (+ nonl))))
+       (regexp-extract "GitHub"
+                       (rx "github.com/"
+                           (group (+? nonl) "/" (+? nonl))))))))
 
 (defun org-funcs--postprocess-retrieved-title (url title)
   (string-trim (cond
