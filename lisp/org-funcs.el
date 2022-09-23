@@ -23,6 +23,7 @@
 
 (cl-eval-when (compile)
   (require 'org-roam)
+  (require 'org-roam-dailies)
   (require 'org-agenda))
 
 (autoload 'org-clocking-p "org-clock")
@@ -126,6 +127,16 @@
             (when (time-less-p now scheduled)
               (setq found t))))
         found))))
+
+(defun org-funcs-goto-capture-buffer-or-daily ()
+  "Switch to the current capture buffer.
+
+If there is no capture buffer, go to today's daily file."
+  (interactive)
+  (if-let* ((buf (seq-find (lambda (it) (string-match-p (rx bol "CAPTURE-") (buffer-name it)))
+                           (buffer-list))))
+      (display-buffer buf)
+    (call-interactively #'org-roam-dailies-goto-today)))
 
 (defun org-funcs-skip-items-already-in-agenda ()
   (cond

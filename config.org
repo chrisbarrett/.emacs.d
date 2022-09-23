@@ -3238,7 +3238,7 @@ Disabled for now since this breaks insert state in evil :/
     "l" '(org-store-link :wk "store link")
     "s" '(org-roam-search :wk "search...")
     "f" '(org-funcs-roam-node-find :wk "roam file...")
-    "n" '(org-roam-dailies-goto-today :wk "dailies: today")
+    "n" '(org-funcs-goto-capture-buffer-or-daily :wk "capture buffer/today's daily")
     "T" '(org-roam-dailies-goto-tomorrow :wk "dailies: tomorrow")
     "y" '(org-roam-dailies-goto-yesterday :wk "dailies: yesterday")
     "d" '(org-roam-dailies-goto-date :wk "dailies: date...")
