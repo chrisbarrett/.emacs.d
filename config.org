@@ -7028,12 +7028,18 @@ This makes it much easier to edit text using emphasis markers correctly.
   (use-package org-roam-rewrite
     :after (org-roam-review)
     :demand t
+    :preface
+    (defun config-org-roam--handle-deleted-node (args)
+      (-let* (((&plist :file :level) args)
+              (default-directory (f-dirname file)))
+        (when (zerop level)
+          (magit-call-git "rm" (magit-convert-filename-for-git file)))))
     :config
     (setq org-roam-rewrite-extract-excluded-tags
           (seq-uniq (append
                      org-roam-rewrite-extract-excluded-tags
                      org-roam-review-maturity-values
-                     '("moc" "project"))))
+                     '("moc" "outline" "litnotes"))))
     (add-hook 'org-roam-rewrite-node-removed-functions #'org-funcs-handle-deleted-node))
 #+end_src
 
