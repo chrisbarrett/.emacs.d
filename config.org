@@ -6429,7 +6429,6 @@ Ensure we use dired rather than the Finder on macOS.
     (org-agenda-files (f-join org-directory "org-agenda-files"))
     (org-stuck-projects '("" nil nil ""))
     (org-agenda-todo-ignore-scheduled t)
-    (org-agenda-hide-tags-regexp (rx (or "noexport" "someday")))
     (org-agenda-include-diary nil)
     (org-agenda-insert-diary-extract-time t)
     (org-agenda-search-view-always-boolean t)
