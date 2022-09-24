@@ -7493,30 +7493,8 @@ consumer of it.
     :after org-roam
     :demand t
     :config
-    (org-roam-slipbox-tag-mode +1))
-#+end_src
-
-** Use slipbox & title for buffer notes identification
-#+begin_src emacs-lisp
-  (defun config-org-roam--set-buffer-identification ()
-    (when-let* ((node
-                 (ignore-errors (save-excursion
-                                  (goto-char (point-min))
-                                  (org-roam-node-at-point)))))
-      (setq-local mode-line-buffer-identification
-                  (concat
-                   (propertize (org-roam-node-slipbox node) 'face 'org-roam-slipbox-name)
-                   " > "
-                   (propertize (org-roam-node-title node) 'face 'mode-line-highlight 'help-echo (buffer-file-name))))))
-
-  (defun config-org-roam-configure-buffer-identification-hooks ()
-    (unless org-inhibit-startup
-      (config-org-roam--set-buffer-identification)
-      (add-hook 'after-save-hook #'config-org-roam--set-buffer-identification nil t)))
-
-  (add-hook 'org-mode-hook #'config-org-roam-configure-buffer-identification-hooks)
-  (add-hook 'org-roam-rewrite-node-renamed-hook #'config-org-roam--set-buffer-identification)
-  (add-hook 'org-roam-slipbox-after-refile-hook #'config-org-roam--set-buffer-identification)
+    (org-roam-slipbox-tag-mode +1)
+    (org-roam-slipbox-buffer-identification-mode +1))
 #+end_src
 
 * Load Lisp from other locations
