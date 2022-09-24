@@ -2948,70 +2948,6 @@ See:
                          (t (concat "/sudo:root@localhost:" fname)))))
       (find-file target)))
 
-  (defun assert-file-exists-for-buffer (&optional buf)
-    (let ((cur (buffer-file-name buf)))
-      (if (not (and cur (file-exists-p cur)))
-          (error "Buffer is not visiting a file!")
-        cur)))
-
-  (defun rename-file-and-buffer--vc-rename (src dest)
-    (condition-case err
-        (when (vc-backend src)
-          (vc-rename-file src dest)
-          t)
-      (error
-       (let ((msg (error-message-string err)))
-         (cond
-          ((string-match-p "New file already exists" msg) nil)
-          ((string-match-p "Please update files" msg)
-           (unless (y-or-n-p "VC cannot track this change automatically.  Continue? ")
-             (error msg)))
-          (t
-           (error msg)))))))
-
-  (autoload 'recentf-cleanup "recentf")
-  (require 'subr-x)
-
-  (defun rename-file-and-buffer--try (src dest)
-    (when (and (file-exists-p dest) (not (y-or-n-p "File exists.  Overwrite? ")))
-      (user-error "Aborted"))
-    (rename-file src dest t)
-    (when-let* ((buf (get-file-buffer src)))
-      (with-current-buffer buf
-        (rename-buffer dest)
-        (set-visited-file-name dest)
-        (set-buffer-modified-p nil))
-
-      (recentf-cleanup)
-      (when (projectile-project-p)
-        (projectile-invalidate-cache nil))))
-
-  (autoload 'f-join "f")
-
-  ;;;###autoload
-  (defun rename-file-and-buffer (buffer dest-dir dest-filename)
-    "Rename the current buffer and file it is visiting.
-  Performs basic VC cleanup.
-
-  BUFFER is the buffer to rename.
-
-  DEST-DIR is the directory to move the underlying file to.
-
-  DEST-FILENAME is the new filename for the underlying file."
-    (interactive (let ((cur (assert-file-exists-for-buffer)))
-                   (list (current-buffer)
-                         (read-directory-name "Move to directory: " (file-name-directory cur))
-                         (read-string "New name: " (file-name-nondirectory cur)))))
-    (let ((src (assert-file-exists-for-buffer buffer))
-          (dest-path (f-join dest-dir dest-filename)))
-      (or (rename-file-and-buffer--vc-rename src dest-path)
-          (rename-file-and-buffer--try src dest-path))
-      (when (and (fboundp 'projectile-project-p) (projectile-project-p))
-        (call-interactively #'projectile-invalidate-cache))
-      (message "File '%s' moved to '%s'"
-               (abbreviate-file-name (file-name-nondirectory src))
-               (abbreviate-file-name dest-path))))
-
   (defun reload-file ()
     "Revisit the current file."
     (interactive)
@@ -3060,7 +2996,7 @@ See:
     "w" '(write-file :wk "write copy...")
     "v" '(reload-file :wk "reload from disk")
     "r" '(consult-recent-file :wk "recent files...")
-    "R" '(rename-file-and-buffer :wk "rename..."))
+    "R" '(magit-file-rename :wk "rename..."))
 #+end_src
 
 *** ~g~ - Git & Goto
