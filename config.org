@@ -3186,6 +3186,7 @@ Disabled for now since this breaks insert state in evil :/
     "rr" '(config-org-roam-review-toggle :wk "review due evergreens")
     "rt" '(org-roam-search-tags :wk "search (tags)...")
     "rl" '(org-roam-links :wk "show links")
+    "rs" '(org-roam-slipbox-list-notes :wk "list (slipbox)...")
 
     "p" '(org-funcs-goto-todos :wk "todos")
     "g" '(org-capture-goto-last-stored :wk "last captured")
