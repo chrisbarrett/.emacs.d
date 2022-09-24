@@ -5846,8 +5846,11 @@ Normally newlines are reflowed automatically.
     "/" '(org-sparse-tree :wk "sparse tree...")
     "#" '(org-decrypt-entries :wk "decrypt entries")
     "RET" '(org-indent-mode :wk "toggle indentation")
-    "R" (list (general-predicate-dispatch 'org-funcs-refile-dwim
-                (bound-and-true-p org-capture-mode) 'org-capture-refile)
+    "R" (list (general-predicate-dispatch 'org-refile
+                (bound-and-true-p org-capture-mode) 'org-capture-refile
+                (or (equal default-directory org-roam-directory)
+                    (f-child-of-p default-directory org-roam-directory))
+                'org-roam-slipbox-refile)
               :wk "refile")
     "f" '(config-org-focus-entry :wk "focus entry")
 
@@ -6933,44 +6936,6 @@ This makes it much easier to edit text using emphasis markers correctly.
     "<backtab>" '(org-roam-buffer-display-dedicated :wk "backlinks (dedicated)"))
 #+end_src
 
-** Add a =slipbox= property to org-roam nodes
-#+begin_src emacs-lisp
-  (use-package org-roam
-    :config
-    (cl-defmethod org-roam-node-slipbox ((node org-roam-node))
-      "Return the TYPE of NODE."
-      (condition-case nil
-          (let ((slipbox (cadr (reverse (f-split (org-roam-node-file node))))))
-            (if (equal slipbox "roam")
-                "notes"
-              slipbox))
-        (error ""))))
-#+end_src
-
-** Use title for buffer notes identification
-#+begin_src emacs-lisp
-  (defun config-org-roam--set-buffer-identification ()
-    (when-let* ((node
-                 (ignore-errors (save-excursion
-                                  (goto-char (point-min))
-                                  (org-roam-node-at-point)))))
-      (setq-local mode-line-buffer-identification
-                  (concat
-                   (propertize (org-roam-node-slipbox node) 'face 'font-lock-string-face)
-                   " > "
-                   (propertize (org-roam-node-title node) 'face 'mode-line-highlight
-                               'help-echo (buffer-file-name))))))
-
-  (defun config-org-roam-configure-buffer-identification-hooks ()
-    (unless org-inhibit-startup
-      (config-org-roam--set-buffer-identification)
-      (add-hook 'after-save-hook #'config-org-roam--set-buffer-identification nil t)))
-
-  (add-hook 'org-mode-hook #'config-org-roam-configure-buffer-identification-hooks)
-  (add-hook 'org-roam-rewrite-node-renamed-hook #'config-org-roam--set-buffer-identification)
-  (add-hook 'org-funcs-node-refiled-hook #'config-org-roam--set-buffer-identification)
-#+end_src
-
 ** Open my index file and notes review buffer
 #+begin_src emacs-lisp
   (defun initial-buffers ()
@@ -7520,6 +7485,38 @@ consumer of it.
     :config
     (timekeep-mode +1)
     (add-hook 'timekeep-agenda-should-update-hook #'org-funcs-agenda-dwim))
+#+end_src
+
+** =org-roam-slipbox= - Teach org-roam to tag slipboxes
+#+begin_src emacs-lisp
+  (use-package org-roam-slipbox
+    :after org-roam
+    :demand t
+    :config
+    (org-roam-slipbox-tag-mode +1))
+#+end_src
+
+** Use slipbox & title for buffer notes identification
+#+begin_src emacs-lisp
+  (defun config-org-roam--set-buffer-identification ()
+    (when-let* ((node
+                 (ignore-errors (save-excursion
+                                  (goto-char (point-min))
+                                  (org-roam-node-at-point)))))
+      (setq-local mode-line-buffer-identification
+                  (concat
+                   (propertize (org-roam-node-slipbox node) 'face 'org-roam-slipbox-name)
+                   " > "
+                   (propertize (org-roam-node-title node) 'face 'mode-line-highlight 'help-echo (buffer-file-name))))))
+
+  (defun config-org-roam-configure-buffer-identification-hooks ()
+    (unless org-inhibit-startup
+      (config-org-roam--set-buffer-identification)
+      (add-hook 'after-save-hook #'config-org-roam--set-buffer-identification nil t)))
+
+  (add-hook 'org-mode-hook #'config-org-roam-configure-buffer-identification-hooks)
+  (add-hook 'org-roam-rewrite-node-renamed-hook #'config-org-roam--set-buffer-identification)
+  (add-hook 'org-roam-slipbox-after-refile-hook #'config-org-roam--set-buffer-identification)
 #+end_src
 
 * Load Lisp from other locations

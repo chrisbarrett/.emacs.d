@@ -14,6 +14,7 @@
 (require 'dash)
 (require 'f)
 (require 'org-cliplink)
+(require 'org-roam-slipbox)
 (require 'ht)
 (require 'seq)
 (require 'thingatpt)
@@ -365,54 +366,6 @@ citar."
   "Add KEY as a ROAM_REFS cite entry for the current node."
   (interactive (list (citar-select-ref)))
   (org-roam-ref-add (format "[cite:@%s]" key)))
-
-
-
-(defvar org-funcs-node-refiled-hook nil)
-
-(defun org-funcs-node-slipbox (node)
-  (f-filename (f-dirname (org-roam-node-file node))))
-
-(defun org-funcs-refile-to-slipbox (node slipbox)
-  "Move NODE into SLIPBOX."
-  (interactive (let* ((node (org-roam-node-at-point t))
-                      (current-slipbox (org-funcs-node-slipbox node))
-                      (slipboxes (seq-difference (seq-map #'f-base (f-directories org-roam-directory))
-                                                 (list current-slipbox))))
-                 (list node
-                       (completing-read "Slipbox: " slipboxes nil t))))
-  (let ((current-slipbox (org-funcs-node-slipbox node))
-        dest)
-    (cond
-     ((zerop (org-roam-node-level node))
-      (let ((file (org-roam-node-file node)))
-        (setq dest (f-join org-roam-directory slipbox (f-filename file)))
-        (call-process vc-git-program nil nil nil "add" file)
-        (vc-refresh-state)
-        (vc-rename-file file dest)
-        (org-roam-db-sync)))
-     (t
-      (let ((new-file (f-filename (org-roam-rewrite--new-filename-from-capture-template node))))
-        (setq dest (f-join org-roam-directory slipbox new-file))
-        (org-roam-rewrite-extract node dest))))
-    (run-hooks 'org-funcs-node-refiled-hook)
-    (message (concat "Refiled from "
-                     (propertize current-slipbox 'face 'font-lock-constant-face)
-                     " to "
-                     (propertize slipbox 'face 'font-lock-constant-face)))))
-
-(defun org-funcs-refile-dwim ()
-  "Perform a context-sensitive refiling action.
-
-In an org-roam node, move or extract to a different slipbox.
-
-Otherwise, run `org-refile'."
-  (interactive)
-  (call-interactively
-   (if (or (equal default-directory org-roam-directory)
-           (f-child-of-p default-directory org-roam-directory))
-       #'org-funcs-refile-to-slipbox
-     #'org-refile)))
 
 (provide 'org-funcs)
 
