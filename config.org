@@ -5875,8 +5875,8 @@ Normally newlines are reflowed automatically.
     "e c" '(org-babel-tangle-clean :wk "clean")
 
     "e e" (list (general-predicate-dispatch 'org-babel-execute-subtree
-             (org-in-src-block-p) 'org-babel-execute-src-block)
-           :wk "execute")
+                  (org-in-src-block-p) 'org-babel-execute-src-block)
+                :wk "execute")
     "e i" '(org-babel-view-src-block-info :wk "src info")
 
     "e x" '(org-babel-demarcate-block :wk "split block")
