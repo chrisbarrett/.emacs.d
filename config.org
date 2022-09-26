@@ -7005,7 +7005,7 @@ This makes it much easier to edit text using emphasis markers correctly.
                      org-roam-rewrite-extract-excluded-tags
                      org-roam-review-maturity-values
                      '("moc" "outline" "litnotes"))))
-    (add-hook 'org-roam-rewrite-node-removed-functions #'org-funcs-handle-deleted-node))
+    (add-hook 'org-roam-rewrite-node-removed-functions #'config-org-roam--handle-deleted-node))
 #+end_src
 
 ** =org-roam-review= - spaced-repetition implementation for org-roam notes
