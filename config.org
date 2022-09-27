@@ -573,7 +573,7 @@ applications. The following functions will be invoked by those scripts over
   (display-buffer-set (rx bos "*compilation*" eos)
                       '((display-buffer-in-direction)
                         (side . bottom)
-                        (inhibit-same-window . t)
+                        (dedicated . t)
                         (window-height . 0.4)))
 #+end_src
 
