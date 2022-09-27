@@ -4080,6 +4080,8 @@ See: [[https://github.com/dandavison/magit-delta/issues/9#issuecomment-795435781
   (use-package forge
     :after magit
     :demand t
+    :custom
+    (forge-add-default-bindings nil)
     :config
     (remove-hook 'magit-status-sections-hook 'forge-insert-issues)
     (add-hook 'magit-status-sections-hook 'forge-insert-requested-reviews 90)
