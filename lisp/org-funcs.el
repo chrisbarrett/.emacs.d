@@ -254,10 +254,10 @@ TAGS are the tags to use when displaying the list."
                                     ,query eol)))
 
        ;; (org-funcs-simplified-title-for-url "https://trello.com/c/00000000/1000-the-quick-brown-fox")
-       (s-replace "-" " "
-                  (extract "Trello"
-                                   (rx-to-string `(and bol "https://trello.com/c/"
-                                                       (+ alnum) "/" (+ digit) "-" (group (+? nonl)) ,query eol))))
+       (-some->> (extract "Trello"
+                          (rx-to-string `(and bol "https://trello.com/c/"
+                                              (+ alnum) "/" (+ digit) "-" (group (+? nonl)) ,query eol)))
+         (s-replace "-" " "))
 
        ;; (org-funcs-simplified-title-for-url "https://github.com/org/repo/blob/master/path/file.md")
        (extract "GitHub"
