@@ -6233,7 +6233,7 @@ Exit minibuffer before adding notes.
   (use-package org
     :custom
     (org-archive-location (concat (f-join org-directory "archive.org") "::datetree/"))
-    (org-archive-subtree-add-inherited-tags t))
+    (org-archive-subtree-add-inherited-tags nil))
 #+end_src
 
 ** Export
