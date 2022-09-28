@@ -1324,6 +1324,15 @@ Set up LaTeX-style input method and add extra MULE rules for common chars.
               "M-p" #'Man-previous-section))
 #+end_src
 
+**** =man-completing= - Improve completion when =man= is called interactively
+#+begin_src emacs-lisp
+  (use-package man-completing
+    :after 'man
+    :demand t
+    :config
+    (man-completing-mode +1))
+#+end_src
+
 *** =woman= - system manual page reader
 #+begin_src emacs-lisp
   (use-package woman
@@ -2166,12 +2175,10 @@ byte-compiler about them to avoid warnings.
 
 ** Customise global vars and keybindings
 #+begin_src emacs-lisp
-  (autoload 'man-completing "man-completing")
-
   (use-package evil
     :hook (after-init . evil-mode)
     :custom
-    (evil-lookup-func #'man-completing)
+    (evil-lookup-func #'man)
     (evil-mode-line-format nil)
     (evil-shift-width 2)
     (evil-undo-system 'undo-redo)

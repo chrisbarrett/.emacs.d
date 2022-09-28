@@ -25,6 +25,12 @@
 (require 'ht)
 (require 'memoize)
 (require 'interpolate)
+(require 'man)
+
+(defgroup man-completing nil
+  "Use manpath for manpage completion."
+  :group 'productivity
+  :prefix "man-completing-")
 
 (defun man-completing--list-manpages ()
   (let ((paths (split-string (string-trim (shell-command-to-string "manpath -q")) ":" t)))
@@ -39,7 +45,7 @@
 (ignore-errors
   (memoize 'man-completing--list-manpages))
 
-(defun man-completing ()
+(defun man-completing--read ()
   "Run `man' with completion.
 
 Uses `completing-read' to prompt for a manpage if the symbol at
@@ -56,8 +62,21 @@ point is ambiguous."
                 (let ((choices (sort (or matching-keys (hash-table-keys pages)) #'string<)))
                   (completing-read "Manual entry: " choices nil t sym 'Man-topic-history)))))
     (if-let* ((hit (gethash key pages)))
-        (man (apply #'interpolate "%%section %%name" hit))
-      (man-completing))))
+        (apply #'interpolate "%%section %%name" hit)
+      (man-completing--read))))
+
+(defun man-completing (man-args)
+  "Replace `man' with a version that does completion."
+  (interactive (list (man-completing--read)))
+  (Man-getpage-in-background (Man-translate-references man-args)))
+
+(define-minor-mode man-completing-mode
+  "Use manpath for manpage completion."
+  :global t
+  :group 'man-completing
+  (if man-completing-mode
+      (advice-add 'man :override #'man-completing)
+    (advice-remove 'man #'man-completing)))
 
 (provide 'man-completing)
 
