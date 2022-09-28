@@ -96,6 +96,7 @@ epkgs: with epkgs; [
   org-ql
   org-roam
   org-roam-ui
+  org-super-agenda
   org-superstar
   org-transclusion
   orgtbl-aggregate
