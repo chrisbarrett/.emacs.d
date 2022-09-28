@@ -6554,7 +6554,7 @@ property to =ignore= or =scheduled=.
 #+begin_src emacs-lisp
   (use-package org-agenda
     :config
-    (add-hook 'org-finalize-agenda-hook 'org-agenda-to-appt))
+    (add-hook 'org-agenda-finalize-hook 'org-agenda-to-appt))
 
   (use-package appt
     :custom
