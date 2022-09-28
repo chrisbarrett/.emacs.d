@@ -571,7 +571,7 @@ applications. The following functions will be invoked by those scripts over
 ** compilation
 #+begin_src emacs-lisp
   (display-buffer-set (rx bos "*compilation*" eos)
-                      '((display-buffer-in-direction)
+                      '((display-buffer-in-side-window)
                         (side . bottom)
                         (dedicated . t)
                         (window-height . 0.4)))
