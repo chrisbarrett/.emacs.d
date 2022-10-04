@@ -5533,6 +5533,18 @@ Configure =conf-mode= for use with more kinds of config files.
   (add-to-list 'auto-mode-alist '("\\.csproj$" . nxml-mode))
 #+end_src
 
+*** =lsp-csharp= - Configure Omnisharp
+#+begin_src emacs-lisp
+  (use-package lsp-csharp
+    :if (and (equal system-type 'darwin)
+             (equal "arm" (string-trim (shell-command-to-string "uname -p"))))
+    :custom
+    (lsp-csharp-omnisharp-roslyn-download-url
+     "https://github.com/omnisharp/omnisharp-roslyn/releases/latest/download/omnisharp-osx-arm64-net6.0.zip")
+    :config
+    (setq lsp-csharp-server-path (f-join lsp-csharp-omnisharp-roslyn-server-dir "OmniSharp.exe")))
+#+end_src
+
 * Applications
 
 ** =pass= - Frontend to Unix ~password-store~
