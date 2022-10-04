@@ -5541,8 +5541,7 @@ Configure =conf-mode= for use with more kinds of config files.
     :custom
     (lsp-csharp-omnisharp-roslyn-download-url
      "https://github.com/omnisharp/omnisharp-roslyn/releases/latest/download/omnisharp-osx-arm64-net6.0.zip")
-    :config
-    (setq lsp-csharp-server-path (f-join lsp-csharp-omnisharp-roslyn-server-dir "OmniSharp.exe")))
+    (lsp-csharp-server-path (f-join paths-cache-directory "lsp/server/omnisharp-roslyn/latest/omnisharp-roslyn/OmniSharp")))
 #+end_src
 
 * Applications
