@@ -5,7 +5,7 @@
     nixpkgs.url = "github:nixos/nixpkgs";
 
     emacs-overlay = {
-      url = "github:nix-community/emacs-overlay";
+      url = "github:nix-community/emacs-overlay/be61e5636";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
