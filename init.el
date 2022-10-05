@@ -130,10 +130,16 @@
                                 (shell-command-to-string)
                                 (string-trim))))
       (let ((hash-before (fast-hash))
-            (noninteractive t))
+            (noninteractive t)
+            (ad-const-t (lambda (prompt)
+                          (message "ad-const-t: %s (y or n) -> t" prompt)
+                          t)))
         (tangle-init-files)
         (unless (equal hash-before (fast-hash))
-          (load config-el)
+          (advice-add 'y-or-n-p :override ad-const-t)
+          (unwind-protect
+              (load config-el)
+            (advice-remove 'y-or-n-p ad-const-t))
           (message "Reloaded config.el"))))))
 
 (let ((default-directory user-emacs-directory))
