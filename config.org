@@ -5534,6 +5534,9 @@ Configure =conf-mode= for use with more kinds of config files.
 #+end_src
 
 *** =lsp-csharp= - Configure Omnisharp
+Do the lord's work and hack the snot out of this thing to use the .NET 6
+version.
+
 #+begin_src emacs-lisp
   (use-package lsp-csharp
     :if (and (equal system-type 'darwin)
@@ -5541,7 +5544,29 @@ Configure =conf-mode= for use with more kinds of config files.
     :custom
     (lsp-csharp-omnisharp-roslyn-download-url
      "https://github.com/omnisharp/omnisharp-roslyn/releases/latest/download/omnisharp-osx-arm64-net6.0.zip")
-    (lsp-csharp-server-path (f-join paths-cache-directory "lsp/server/omnisharp-roslyn/latest/omnisharp-roslyn/OmniSharp")))
+    (lsp-csharp-server-path (f-join paths-cache-directory "lsp/server/omnisharp-roslyn/latest/omnisharp-roslyn/OmniSharp"))
+    :config
+    (setenv "DOTNET_ROOT" (file-name-directory (file-truename "~/.nix-profile/bin/dotnet")))
+    (defun config-lsp--ensure-csharp-runner ()
+      (let* ((default-directory lsp-csharp-omnisharp-roslyn-server-dir)
+             (run-script "run"))
+        (unless (f-exists-p run-script)
+          (with-temp-file run-script
+            (insert "#!/bin/bash\n")
+            (insert "DIR=$(dirname \"$0\")\n")
+            (insert "dotnet \"$DIR/OmniSharp.dll\"\n")))
+        (set-file-modes run-script #o755)))
+
+    (define-advice lsp-csharp--download-server (:override (_client callback error-callback _update?) dotnet-6)
+      "Download zip package for omnisharp-roslyn and install it.
+  Will invoke CALLBACK on success, ERROR-CALLBACK on error."
+      (lsp-package-ensure
+       'omnisharp-roslyn
+       (lambda ()
+         (lsp-unzip lsp-csharp-omnisharp-roslyn-store-path lsp-csharp-omnisharp-roslyn-server-dir)
+         (config-lsp--ensure-csharp-runner)
+         (funcall callback))
+       error-callback)))
 #+end_src
 
 * Applications
