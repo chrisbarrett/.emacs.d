@@ -4065,7 +4065,7 @@ See: [[https://github.com/dandavison/magit-delta/issues/9#issuecomment-795435781
     (vc-git-program (expand-file-name "~/.nix-profile/bin/git")))
 #+end_src
 
-** =forge= - teaches =magit= how to work with pull requests and issues
+** =forge= - teaches =magit= how to work with pull requests and issues :disabled:
 :LOGBOOK:
 - Note taken on [2021-08-07 Sat 15:27] \\
   Temporarily disabled while yaml dependency has build issues on macOS
