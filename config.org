@@ -2745,9 +2745,8 @@ See:
           (and (derived-mode-p 'markdown-mode) (markdown-code-block-at-point-p)) 'markdown-edit-code-block
           (bound-and-true-p org-src-mode) 'org-edit-src-exit)
     "/" (list (general-predicate-dispatch 'consult-ripgrep
-                (and (bound-and-true-p org-roam-directory)
-                     (or (f-same-p default-directory org-roam-directory)
-                         (f-child-of-p default-directory org-roam-directory)))
+                (or (f-descendant-of-p default-directory org-directory)
+                    (f-same-p default-directory org-directory))
                 'org-roam-consult)
               :wk "search...")
     ":" '(eval-expression-interactively :wk "eval")
