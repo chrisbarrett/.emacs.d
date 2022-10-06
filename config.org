@@ -6595,7 +6595,7 @@ Populate the agenda with these files.
       (unless (and process (process-live-p process))
         (let ((default-directory org-directory))
           (setq process
-                (start-process-shell-command "update-org-agenda-files" nil "rg --follow --files-with-matches '^[*]+ +(TODO|WAIT)' roam -g '!roam/dailies' > org-agenda-files"))))))
+                (start-process-shell-command "update-org-agenda-files" nil "rg --follow --files-with-matches '^[*]+ +(TODO|WAIT)' roam -g '!attach' -g '!dailies' > org-agenda-files"))))))
 
   (defun config-org-setup-agenda-updates ()
     (when (derived-mode-p 'org-mode)
