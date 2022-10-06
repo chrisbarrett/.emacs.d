@@ -5879,11 +5879,8 @@ Normally newlines are reflowed automatically.
     "/" '(org-sparse-tree :wk "sparse tree...")
     "#" '(org-decrypt-entries :wk "decrypt entries")
     "RET" '(org-indent-mode :wk "toggle indentation")
-    "R" (list (general-predicate-dispatch 'org-refile
-                (bound-and-true-p org-capture-mode) 'org-capture-refile
-                (or (equal default-directory org-roam-directory)
-                    (f-child-of-p default-directory org-roam-directory))
-                'org-roam-slipbox-refile)
+    "R" (list (general-predicate-dispatch 'org-roam-slipbox-refile
+                (bound-and-true-p org-capture-mode) 'org-capture-refile)
               :wk "refile")
     "f" '(config-org-focus-entry :wk "focus entry")
 
@@ -6133,8 +6130,7 @@ Save org buffers automatically after certain operations.
     (defun org-ad-save-buffers (&rest _)
       (org-save-all-org-buffers))
 
-    (advice-add 'org-archive-subtree :after #'org-ad-save-buffers)
-    (advice-add 'org-refile :after #'org-ad-save-buffers))
+    (advice-add 'org-archive-subtree :after #'org-ad-save-buffers))
 #+end_src
 
 ** Document formatting style
@@ -6183,34 +6179,6 @@ Completing all child TODOs will change the parent TODO to DONE.
         (org-todo (if (zerop n-todo) "DONE" "TODO"))))
 
     (add-hook 'org-after-todo-statistics-hook #'org-set-done-when-all-children-completed))
-#+end_src
-
-** Refiling
-#+begin_src emacs-lisp
-  (use-package org
-    :custom
-    (org-outline-path-complete-in-steps nil)
-    (org-refile-allow-creating-parent-nodes 'confirm)
-    (org-refile-use-outline-path 'file))
-#+end_src
-
-Limit refile depth and restrict to specific candidates.
-
-#+begin_src emacs-lisp
-  (use-package org
-    :config
-    (defun org-funcs-refile-candidates ()
-      (f-files (f-join org-directory "tasks")
-               (lambda (it)
-                 (f-ext-p it "org"))))
-
-    (defun org-funcs-refile-verify-function ()
-      (let ((keyword (nth 2 (org-heading-components))))
-        (not (member keyword org-done-keywords))))
-
-    :custom
-    (org-refile-targets '((nil . (:maxlevel . 10)) (org-funcs-refile-candidates . (:maxlevel . 3))))
-    (org-refile-target-verify-function 'org-funcs-refile-verify-function))
 #+end_src
 
 ** Automatically remove deleted files from agenda
@@ -6514,8 +6482,7 @@ Ensure we use dired rather than the Finder on macOS.
 
 #+begin_src emacs-lisp
   (mode-leader-set-key :keymaps 'org-agenda-mode-map
-    "a" '(org-agenda-archive :wk "archive")
-    "r" '(org-agenda-refile :wk "refile"))
+    "a" '(org-agenda-archive :wk "archive"))
 #+end_src
 
 *** Define agenda views
