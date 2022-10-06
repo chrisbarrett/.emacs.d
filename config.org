@@ -5912,20 +5912,6 @@ Normally newlines are reflowed automatically.
     "e v" '(org-babel-mark-block :wk "mark block"))
 #+end_src
 
-** Allow ID lookups to work in task files
-#+begin_src emacs-lisp
-  (use-package org-id
-    :config
-    (dolist (file (f-files (f-join paths-org-directory "tasks")))
-      (add-to-list 'org-id-files file)))
-
-  (use-package org-id
-    :after org-roam
-    :config
-    (dolist (file (f-files org-roam-directory nil t))
-      (add-to-list 'org-id-files file)))
-#+end_src
-
 ** Turn priorities into an on/off flag
 I customise priorities so that headlines are either 'prioritised' an show a
 cookie or 'cleared', which indicates no special priority.
