@@ -12,7 +12,9 @@ let
       multimarkdown
       nixpkgs-fmt
       ripgrep
+      rnix-lsp
       sqlite
+      terraform-lsp
     ];
   };
 
