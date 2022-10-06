@@ -5809,7 +5809,6 @@ Normally newlines are reflowed automatically.
   (use-package org
     :custom
     (org-directory paths-org-directory)
-    (org-default-notes-file (f-join paths-org-directory "notes.org"))
     (org-bookmark-names-plist nil)
     (org-imenu-depth 4)
     (org-archive-tag "archived")
