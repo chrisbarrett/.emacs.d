@@ -6111,7 +6111,8 @@ Automatically enter insert state when inserting new headings or using
   (use-package org
     :custom
     (org-attach-auto-tag nil)
-    (org-attach-id-dir (f-join paths-org-directory "data")))
+    (org-attach-id-dir "attach/")
+    (org-attach-id-to-path-function-list '(identity)))
 #+end_src
 
 *** Automatically commit attachments to git
