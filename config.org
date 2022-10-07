@@ -6995,8 +6995,11 @@ This makes it much easier to edit text using emphasis markers correctly.
 
 ** =org-roam-review= - spaced-repetition implementation for org-roam notes
 #+begin_src emacs-lisp
+  (defvar config-org-roam-review-excluded-slipboxes '("dailies" "litnotes"))
+
   (defun config-org-roam-maybe-set-seedling ()
-    (when (string-match-p "/notes/" default-directory)
+    (unless (member (org-roam-node-slipbox (org-roam-node-at-point t))
+                    config-org-roam-review-excluded-slipboxes)
       (org-roam-review-set-seedling)))
 
   (use-package org-roam-review
