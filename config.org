@@ -2588,7 +2588,7 @@ Disable completion backend integration, since we're not using =company=.
 #+begin_src emacs-lisp
   (use-package lsp-mode
     :custom
-    (lsp-clients-typescript-tls-path (getenv "NIX_EMACS_TS_LANGUAGE_SERVER"))
+    ;; (lsp-clients-typescript-tls-path (getenv "NIX_EMACS_TS_LANGUAGE_SERVER"))
     (lsp-eslint-validate '("typescript" "javascript" "javascriptreact"))
     (lsp-csharp-server-path (getenv "NIX_EMACS_OMNISHARP_ROSLYN_PATH"))
     (lsp-eslint-server-command (list (getenv "NIX_EMACS_LSP_ESLINT_NODE_PATH")

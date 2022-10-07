@@ -19,7 +19,7 @@ let
   # NB. $out/bin for node packages is a symlink. Therefore it cannot be
   # symlinkJoined with other derivations. To work around this, just dereference
   # the symlinks directly for building PATH.
-  languageServers = with pkgs; with nodePackages_latest; {
+  languageServers = with pkgs; with nodePackages; {
     bash = bash-language-server;
     css = vscode-css-languageserver-bin;
     eslint = vscode-extensions.dbaeumer.vscode-eslint;
@@ -27,7 +27,6 @@ let
     html = vscode-html-languageserver-bin;
     json = vscode-json-languageserver;
     nix = rnix-lsp;
-    typescript = typescript-language-server;
     yaml = yaml-language-server;
   };
 
@@ -53,7 +52,6 @@ pkgs.symlinkJoin
           --set NIX_EMACS_DARWIN_PATH_EXTRAS "${customPathEntries}:/opt/homebrew/bin" \
           --set NIX_EMACS_ESLINT_SERVER_SCRIPT "${languageServers.eslint}/lib/eslintServer.js" \
           --set NIX_EMACS_LSP_ESLINT_NODE_PATH "${pkgs.nodejs}/bin/node" \
-          --set NIX_EMACS_TS_LANGUAGE_SERVER "${languageServers.typescript}/bin/typescript-language-server" \
           --set NIX_EMACS_JSON_LANGUAGE_SERVER "${languageServers.json}/bin/vscode-json-languageserver" \
           --set NIX_EMACS_MU_BINARY "${pkgs.mu}/bin/mu" \
           --set NIX_EMACS_MU_LISP_DIR "${pkgs.mu}/share/emacs/site-lisp/mu4e" \
