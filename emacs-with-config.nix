@@ -10,6 +10,7 @@ let
       (aspellWithDicts (ps: [ ps.en ]))
       delta
       multimarkdown
+      nodePackages.bash-language-server
       nixpkgs-fmt
       ripgrep
       rnix-lsp
