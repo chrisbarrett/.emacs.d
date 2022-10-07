@@ -10,24 +10,25 @@ let
       (aspellWithDicts (ps: [ ps.en ]))
       delta
       multimarkdown
-      nodePackages.bash-language-server
       nixpkgs-fmt
       ripgrep
-      rnix-lsp
       sqlite
-      terraform-lsp
     ];
   };
 
-  languageServers = with pkgs; {
-    bash = nodePackages.bash-language-server;
-    css = nodePackages.vscode-css-languageserver-bin;
+  # NB. $out/bin for node packages is a symlink. Therefore it cannot be
+  # symlinkJoined with other derivations. To work around this, just dereference
+  # the symlinks directly for building PATH.
+  languageServers = with pkgs; with nodePackages_latest; {
+    bash = bash-language-server;
+    css = vscode-css-languageserver-bin;
     eslint = vscode-extensions.dbaeumer.vscode-eslint;
     graphql = vscode-extensions.graphql.vscode-graphql;
-    html = nodePackages.vscode-html-languageserver-bin;
-    json = nodePackages.vscode-json-languageserver;
-    typescript = nodePackages.typescript-language-server;
-    yaml = nodePackages.yaml-language-server;
+    html = vscode-html-languageserver-bin;
+    json = vscode-json-languageserver;
+    nix = rnix-lsp;
+    typescript = typescript-language-server;
+    yaml = yaml-language-server;
   };
 
   builders = pkgs.callPackage ./builders { };
