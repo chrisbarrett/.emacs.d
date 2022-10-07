@@ -7007,8 +7007,8 @@ This makes it much easier to edit text using emphasis markers correctly.
     (org-roam-capture-new-node . config-org-roam-maybe-set-seedling)
     :commands (org-roam-review)
     :custom
-    (org-roam-review-ignored-tags '("dailies" "litnote"))
-    (org-roam-review-tags-ignored-for-review-buffer '("dailies" "litnote"))
+    (org-roam-review-ignored-tags '("dailies" "litnotes"))
+    (org-roam-review-tags-ignored-for-review-buffer '("dailies" "litnotes"))
     (org-roam-review-show-instructions-p nil)
     :general
     (:states '(normal) :keymaps 'org-roam-review-mode-map
