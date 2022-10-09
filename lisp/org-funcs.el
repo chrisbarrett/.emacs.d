@@ -259,6 +259,12 @@ TAGS are the tags to use when displaying the list."
                                               (+ alnum) "/" (+ digit) "-" (group (+? nonl)) ,query eol)))
          (s-replace "-" " "))
 
+       ;; (org-funcs-simplified-title-for-url "https://app.shortcut.com/companydomain/story/10000/the-quick-brown-fox")
+       (-some->> (extract "Shortcut"
+                          (rx-to-string `(and bol "https://app.shortcut.com/"
+                                              (+? any) "/" (+? any) "/" (+ digit) "/" (group (+? nonl)) ,query eol)))
+         (s-replace "-" " "))
+
        ;; (org-funcs-simplified-title-for-url "https://github.com/org/repo/blob/master/path/file.md")
        (extract "GitHub"
                 (rx bol "https://github.com/"
