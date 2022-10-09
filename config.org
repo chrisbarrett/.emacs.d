@@ -1641,11 +1641,15 @@ See: [[https://lists.gnu.org/archive/html/help-gnu-emacs/2014-07/msg00135.html][
 #+begin_src emacs-lisp
   (use-package debug
     :config
+    (defun config-debug--ad-eval-expr-in-frame (f exp)
+      (interactive (list (read (eval-expression-interactively--read "Eval (in frame): "))))
+      (funcall f exp))
+
+    (advice-add 'debugger-eval-expression
+                :around #'config-debug--ad-eval-expr-in-frame
+                '((name . use-eval-expression-interactively--read)))
     (advice-add 'debugger-record-expression
-                :around
-                (lambda (f exp)
-                  (interactive (list (read (eval-expression-interactively--read "Eval: "))))
-                  (funcall f exp))
+                :around #'config-debug--ad-eval-expr-in-frame
                 '((name . use-eval-expression-interactively--read))))
 #+end_src
 
