@@ -4244,6 +4244,15 @@ Source: [[https://ianyepan.github.io/posts/emacs-git-gutter/][Git Gutter in Emac
     (advice-add 'git-gutter-fr:view-diff-infos :override #'config-custom-git-gutter-fringe-fn))
 #+end_src
 
+** Git filetypes
+#+begin_src emacs-lisp
+  (define-derived-mode gitignore-mode conf-unix-mode "Gitignore")
+  (add-to-list 'auto-mode-alist '("/\\.gitignore\\'" . gitignore-mode))
+
+  (define-derived-mode gitmodules-mode conf-unix-mode "Gitmodules")
+  (add-to-list 'auto-mode-alist '("/\\.gitmodules\\'" . gitignore-mode))
+#+end_src
+
 * 🤖 Programming languages & text-modes
 
 ** =xref= - Finding to definitions and references
