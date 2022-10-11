@@ -2148,7 +2148,7 @@ solution other is to add an inline lisp call inline to =just-one-space=.
 
 ** =envrc= - Support direnv files
 #+begin_src emacs-lisp
-  (use-package envrc-mode
+  (use-package envrc
     :hook (after-init . envrc-global-mode))
 #+end_src
 
