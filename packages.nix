@@ -17,7 +17,6 @@ epkgs: with epkgs; [
   deadgrep
   default-text-scale
   delight
-  direnv
   dockerfile-mode
   dogears
   doom-themes
@@ -28,6 +27,7 @@ epkgs: with epkgs; [
   embark
   embark-consult
   emojify
+  envrc
   evil
   evil-args
   evil-collection

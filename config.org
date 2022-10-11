@@ -2140,15 +2140,10 @@ solution other is to add an inline lisp call inline to =just-one-space=.
     :hook (after-init . editorconfig-mode))
 #+end_src
 
-** =direnv= - Support direnv files
-Teach Emacs how to load environment variables from [[https://direnv.net/][direnv]].
-See: [[https://github.com/wbolster/emacs-direnv][wbolster/emacs-direnv]]
-
+** =envrc= - Support direnv files
 #+begin_src emacs-lisp
-  (use-package direnv
-    :hook (after-init . direnv-mode)
-    :custom
-    (direnv-always-show-summary nil))
+  (use-package envrc-mode
+    :hook (after-init . envrc-global-mode))
 #+end_src
 
 ** =rainbow-mode= - Apply colours to hex strings in buffers
