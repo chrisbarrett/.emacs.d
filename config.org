@@ -531,6 +531,12 @@ applications. The following functions will be invoked by those scripts over
     (load-theme 'doom-one t))
 #+end_src
 
+** Enable line highlight
+#+begin_src emacs-lisp
+  (use-package hl-line
+    :hook (after-init . global-hl-line-mode))
+#+end_src
+
 * 🪟 display-buffer customisations
 
 ** Define a full-frame display-buffer action
