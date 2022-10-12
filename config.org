@@ -4110,7 +4110,9 @@ See: [[https://github.com/dandavison/magit-delta/issues/9#issuecomment-795435781
     (gac-debounce-interval 10)
     (gac-silent-message-p t)
     (gac-automatically-push-p t)
-    (gac-automatically-add-new-files-p t))
+    (gac-automatically-add-new-files-p t)
+    :config
+    (put 'gac-automatically-push-p 'safe-local-variable 'booleanp))
 #+end_src
 
 ** =vc-annotate= - Step through file history
