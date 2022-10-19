@@ -6285,7 +6285,7 @@ Exit minibuffer before adding notes.
                                 (shell . t)))
     (org-babel-default-header-args:emacs-lisp '((:lexical . "yes")))
     (org-babel-clojure-backend 'cider)
-    (org-babel-python-command (executable-find "python3")))
+    (org-babel-python-command "python3"))
 #+end_src
 
 *** Show images in outputs (useful for GNUplot, etc).
