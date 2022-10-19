@@ -7091,6 +7091,7 @@ This makes it much easier to edit text using emphasis markers correctly.
        (org-set-property "CREATED" (format-time-string (org-time-stamp-format t t))))))
 
   (add-hook 'org-roam-capture-new-node-hook #'config-org-roam-set-created-timestamp)
+  (add-hook 'org-roam-rewrite-node-extracted-hook #'config-org-roam-set-created-timestamp)
 #+end_src
 
 ** =org-roam-ui= - Web browser interface to org-roam
