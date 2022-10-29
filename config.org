@@ -663,12 +663,6 @@ applications. The following functions will be invoked by those scripts over
                         (window-height   . 0.4)))
 #+end_src
 
-** pass
-#+begin_src emacs-lisp
-  (display-buffer-set (rx bos "*Password-Store*" eos)
-                      '((display-buffer-fullframe)))
-#+end_src
-
 ** org-roam & friends
 #+begin_src emacs-lisp
   (defconst config-org-roam-side-window-default-width 55)
@@ -2845,7 +2839,6 @@ See:
     "C" #'full-calc
     "e" #'eshell
     "m" #'mu4e
-    "p" #'pass
     "r" (general-predicate-dispatch 'profiler-start
           (and (featurep 'profiler) (profiler-running-p)) 'profiler-stop-and-report)
     "w" #'world-time-list)
@@ -4103,9 +4096,6 @@ See: [[https://github.com/dandavison/magit-delta/issues/9#issuecomment-795435781
 #+begin_src emacs-lisp
   (use-package git-auto-commit-mode
     :delight " auto-commit"
-    :hook
-    (pass-mode . git-auto-commit-mode)
-    (pass-view-mode . git-auto-commit-mode)
     :custom
     (gac-debounce-interval 10)
     (gac-silent-message-p t)
@@ -5598,26 +5588,6 @@ version.
 #+end_src
 
 * Applications
-
-** =pass= - Frontend to Unix ~password-store~
-#+begin_src emacs-lisp
-  (use-package pass
-    :commands (pass)
-    :after (password-store)
-
-    :general
-    (:states '(normal) :keymaps 'pass-view-mode-map "q" #'kill-this-buffer)
-    (:states '(normal) :keymaps 'pass-mode-map
-     "u" #'pass-copy-username
-     "U" #'pass-copy-url
-     "J" #'pass-goto-entry
-     "y" #'pass-copy-password
-     "f" #'pass-copy-field
-     "q" #'kill-this-buffer)
-
-    :custom
-    (pass-username-field "email"))
-#+end_src
 
 ** =pdf-tools= - PDF reader
 #+begin_src emacs-lisp
