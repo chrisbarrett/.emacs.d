@@ -104,7 +104,6 @@ epkgs: with epkgs; [
   ox-gfm
   page-break-lines
   paren-face
-  pass
   pcmpl-args
   pcre2el
   pdf-tools
