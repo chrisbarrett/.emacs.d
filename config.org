@@ -6490,8 +6490,11 @@ property to =ignore= or =scheduled=.
                                            :min-duration 0
                                            :max-gap 0))
     (org-agenda-custom-commands
-     (let ((views '((tags-todo "-outline+TODO=\"TODO\"|-outline+PRIORITY=\"A\""
+     (let ((views '((tags-todo "-bills-outline+TODO=\"TODO\""
                                ((org-agenda-overriding-header "Next Actions")
+                                (org-agenda-skip-function #'org-funcs-skip-items-already-in-agenda)))
+                    (tags-todo "+TODO=\"TODO\"+bills"
+                               ((org-agenda-overriding-header "Bills")
                                 (org-agenda-skip-function #'org-funcs-skip-items-already-in-agenda)))
                     (todo "WAIT"
                           ((org-agenda-overriding-header "Delegated")
@@ -6499,7 +6502,7 @@ property to =ignore= or =scheduled=.
                     (agenda ""
                             ((org-agenda-overriding-header "Today")
                              (org-agenda-use-time-grid t)))
-                    (tags-todo "TODO=\"TODO\"+outline"
+                    (tags-todo "-bills+outline+TODO=\"TODO\""
                                ((org-agenda-overriding-header "Unprocessed Notes")
                                 (org-agenda-skip-function #'org-funcs-skip-items-already-in-agenda))))))
        `(("p" "personal agenda" ,views
