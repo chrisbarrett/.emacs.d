@@ -119,6 +119,7 @@ epkgs: with epkgs; [
   smartparens
   smex
   string-inflection
+  swift-mode
   terraform-mode
   tree-sitter
   tree-sitter-indent
