@@ -51,14 +51,4 @@
   lsp-ui = esuper.lsp-ui.overrideAttrs (it: {
     LSP_USE_PLISTS = true;
   });
-
-  mu4e = github {
-    name = "mu";
-    owner = "djcb";
-    rev = "cb4e893f3abf668c44c8a1049e799c0df5474f2f";
-    sha256 = "sha256-EH/q0LWRCEYQ/Eb9qkTgKB3k5NvhHWHZ97a3W3zHH8k=";
-    preBuild = ''
-      cd mu4e
-    '';
-  };
 }

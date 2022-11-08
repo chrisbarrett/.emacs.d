@@ -5636,12 +5636,9 @@ systemd/launchd to run mbsync and indexing, so mu4e doesn't trigger fetching
 itself.
 
 #+begin_src emacs-lisp
-  (add-to-list 'load-path (getenv "NIX_EMACS_MU_LISP_DIR"))
-
   (use-package mu4e
     :commands (mu4e mu4e-compose-new)
     :custom
-    (mu4e-mu-binary (getenv "NIX_EMACS_MU_BINARY"))
     (mu4e-attachment-dir (f-expand "~/Downloads"))
     (mu4e-headers-fields '((:human-date . 10)
                            (:flags . 6)
