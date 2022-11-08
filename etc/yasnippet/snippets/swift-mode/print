@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: print
+# key: p
+# condition: (yas-funcs-bolp)
+# --
+print($0)
