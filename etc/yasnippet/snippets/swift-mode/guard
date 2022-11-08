@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: guard
+# key: g
+# condition: (yas-funcs-bolp)
+# --
+guard ${1:expr} else {
+    $0
+}
