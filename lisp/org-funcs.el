@@ -285,6 +285,8 @@ TAGS are the tags to use when displaying the list."
                  (concat title " (Investopedia)"))
                 ((string-suffix-p "| Microsoft Docs" title)
                  (string-remove-suffix "| Microsoft Docs" title))
+                ((string-prefix-p "https://developer.apple.com/library/archive/documentation/" url)
+                 (concat title " (Apple Developer Archive)"))
                 (t
                  title))))
 
