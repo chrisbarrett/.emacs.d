@@ -79,6 +79,7 @@ epkgs: with epkgs; [
   markdown-mode
   memoize
   messages-are-flowing
+  mu4e
   mini-frame
   minions
   nix-mode
