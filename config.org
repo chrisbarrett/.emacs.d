@@ -4,6 +4,7 @@
 #+property: header-args :results silent
 #+property: header-args:emacs-lisp :tangle "config.el" :lexical yes
 #+startup: fold
+#+TODO: TODO(t) HACK(h) | DONE CANCELED
 
 This file uses org-mode's tangle functionality to create both the =early-init.el=
 and =init.el= files used by Emacs during the startup sequence.
@@ -2528,7 +2529,7 @@ compatibility.
     :commands (evil-iedit-state/iedit-mode))
 #+end_src
 
-*** HACK: work around missing function
+*** HACK work around missing function
 https://github.com/syl20bnr/evil-iedit-state/issues/36
 #+begin_src emacs-lisp
   (defalias 'evil-redirect-digit-argument #'ignore)
