@@ -5674,10 +5674,7 @@ itself.
 
     ;; Send email with long lines and format=flowed.
     (mu4e-compose-format-flowed t)
-    (fill-flowed-encode-column 998)
-
-    ;; Custom rendering of HTML messages
-    (mu4e-html2text-command #'config-mail--shr-buffer))
+    (fill-flowed-encode-column 998))
 #+end_src
 
 *** Always use =mu4e= for mail composition
