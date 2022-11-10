@@ -3588,7 +3588,7 @@ after editing actions have changed what windows are shown.
           completion-category-overrides '((file (styles . (partial-completion))))))
 #+end_src
 
-*** =corfu-doc= - show quick-help & documentation in =corfu=
+*** =corfu-doc= - show quick-help & documentation in =corfu=         :disabled:
 #+begin_src emacs-lisp
   (use-package corfu-doc
     :hook (corfu-mode . corfu-doc-mode)
