@@ -7446,6 +7446,20 @@ consumer of it.
             (link ,(all-the-icons-octicon "link" :face 'all-the-icons-orange :v-adjust 0.01) . " "))))
 #+end_src
 
+**** HACK Work around missing method implementation
+=map-merge= in library:map seems to be lacking method implementations for when the
+input is already a map. :/ Hack around this by using help:ht-merge instead.
+
+#+begin_src emacs-lisp
+  (define-advice citar-cache--entries (:override (bibs) fix-missing-method)
+    (apply #'ht-merge (nreverse (mapcar #'citar-cache--bibliography-entries bibs))))
+
+  (define-advice citar-cache--preformatted (:override (bibs) fix-missing-method)
+    "Return hash table containing pre-formatted strings from BIBS."
+    (apply #'ht-merge
+           (nreverse (mapcar #'citar-cache--bibliography-preformatted bibs))))
+#+end_src
+
 *** =citar-org-roam= - Integrate org-roam's notes and references with citar
 #+begin_src emacs-lisp
   (use-package citar-org-roam
