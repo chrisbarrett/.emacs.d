@@ -1,0 +1,6 @@
+# key: f
+# name: for...in
+# condition: (yas-funcs-bolp)
+# --
+for ${1:name} in ${2:coll}:
+    $0

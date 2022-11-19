@@ -1,0 +1,7 @@
+# key: ie
+# name: if...else
+# condition: (yas-funcs-bolp)
+# --
+if ${1:expr}:
+    $0
+else:
