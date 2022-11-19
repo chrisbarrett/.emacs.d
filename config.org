@@ -7051,6 +7051,22 @@ This makes it much easier to edit text using emphasis markers correctly.
     (add-hook 'org-mode-hook #'config-org-roam--ensure-ids))
 #+end_src
 
+** Prevent C-c C-TAB from toggling table column on roam link insertion
+Emacs thinks ~C-c C-TAB~ and ~C-c C-i~ are the same key code. In org tables, this
+means the keybinding will collapse the current column instead of inserting a
+link.
+
+Change this behaviour so that a roam link is inserted if a region is active
+while in a table.
+
+#+begin_src emacs-lisp
+  (use-package org-roam
+    :general
+    (:keymaps 'org-mode-map :states 'visual
+     "C-c C-I" (general-predicate-dispatch 'org-roam-node-insert
+                 (and (org-at-table-p) (not (region-active-p))) 'org-ctrl-c-tab)))
+#+end_src
+
 ** Apply a created date property to new nodes
 #+begin_src emacs-lisp
   (defun config-org-roam-set-created-timestamp ()
