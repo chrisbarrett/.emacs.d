@@ -4942,6 +4942,7 @@ files.
 #+begin_src emacs-lisp
   (use-package highlight-indent-guides
     :hook
+    (python-mode . highlight-indent-guides-mode)
     (yaml-mode . highlight-indent-guides-mode)
     (json-mode . highlight-indent-guides-mode))
 #+end_src
