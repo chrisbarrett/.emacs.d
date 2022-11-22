@@ -650,12 +650,6 @@ applications. The following functions will be invoked by those scripts over
                         (window-width . fit-window-to-buffer)))
 #+end_src
 
-** mu4e
-#+begin_src emacs-lisp
-  (display-buffer-set (rx bos " *mu4e-main*" eos)
-                      '((display-buffer-fullframe)))
-#+end_src
-
 ** nix-repl
 #+begin_src emacs-lisp
   (display-buffer-set (rx bos "*Nix-REPL*" eos)
@@ -5631,171 +5625,6 @@ version.
     (pdf-tools-install))
 #+end_src
 
-** =mu4e= - Mail user agent
-Use the system's =mu4e= installation for mail management. I use the
-systemd/launchd to run mbsync and indexing, so mu4e doesn't trigger fetching
-itself.
-
-#+begin_src emacs-lisp
-  (use-package mu4e
-    :commands (mu4e mu4e-compose-new)
-    :custom
-    (mu4e-attachment-dir (f-expand "~/Downloads"))
-    (mu4e-headers-fields '((:human-date . 10)
-                           (:flags . 6)
-                           (:from . 22)
-                           (:subject)))
-    (mu4e-context-policy 'pick-first)
-    (mu4e-compose-context-policy 'ask-if-none)
-    (message-kill-buffer-on-exit t)
-    (mu4e-view-use-gnus t)
-    (mu4e-use-fancy-chars t)
-    (mu4e-headers-include-related nil)
-    (mu4e-headers-attach-mark '("a" . "📎"))
-    (mu4e-headers-unread-mark '("u" . "●"))
-    (mu4e-headers-seen-mark '(" " . " "))
-    (mu4e-hide-index-messages t)
-    (mu4e-headers-skip-duplicates t)
-    (mu4e-index-lazy-check t)
-    (mu4e-confirm-quit t)
-    (mu4e-view-prefer-html t)
-    (mu4e-view-show-images t)
-    (mu4e-view-show-addresses t)
-    (mu4e-headers-date-format "%Y-%m-%d %k:%M")
-    (mu4e-completing-read-function #'completing-read)
-    (sendmail-program "msmtp")
-    (message-send-mail-function #'message-send-mail-with-sendmail)
-    (mu4e-change-filenames-when-moving t)
-
-    ;; Update every 30 seconds.
-    (mu4e-update-interval 30)
-
-    ;; Ensure I'm never prompted for the buffer coding system when sending mail.
-    (sendmail-coding-system 'utf-8)
-
-    ;; Send email with long lines and format=flowed.
-    (mu4e-compose-format-flowed t)
-    (fill-flowed-encode-column 998))
-#+end_src
-
-*** Always use =mu4e= for mail composition
-#+begin_src emacs-lisp
-  (global-set-key [remap compose-mail] #'mu4e-compose-new)
-#+end_src
-
-*** Auto-load the mu4e org link type
-#+begin_src emacs-lisp
-  (with-eval-after-load 'org
-    (autoload 'mu4e-org-open "mu4e-org")
-    (autoload 'mu4e-org-store-link "mu4e-org")
-
-    (org-link-set-parameters "mu4e"
-                             :follow #'mu4e-org-open
-                             :store  #'mu4e-org-store-link))
-#+end_src
-
-*** Wrap lines in an intuitive way while viewing and editing.
-#+begin_src emacs-lisp
-  (use-package mu4e
-    :config
-    ;; Use word wrap instead of auto-fill.
-    (add-hook 'mu4e-compose-mode-hook #'turn-off-auto-fill)
-    (add-hook 'mu4e-compose-mode-hook (lambda () (setq word-wrap t)))
-
-    ;; Wrap lines when viewing.
-    (add-hook 'mu4e-view-mode-hook #'visual-line-mode))
-#+end_src
-
-*** Define commands for viewing messages in a browser
-Either with =eww= or the default system browser.
-#+begin_src emacs-lisp
-  (use-package mu4e
-    :config
-    ;; View html message in eww. `av` in view to activate
-    (add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t))
-#+end_src
-
-*** Define a smart refile action for ~r~
-Marks messages as 'read' and moves them into the appropriate folder.
-#+begin_src emacs-lisp
-  (use-package mu4e
-    :config
-    (defun config-mail--message-from-me-p (msg)
-      (equal (mu4e-get-sent-folder msg) (mu4e-message-field msg :maildir)))
-
-    (setf (alist-get 'refile mu4e-marks)
-          '(:char ("r" . "▶")
-            :prompt "refile"
-            :dyn-target (lambda (target msg)
-                          (if (config-mail--message-from-me-p msg)
-                              (mu4e-get-sent-folder msg)
-                            (mu4e-get-refile-folder msg)))
-            :action (lambda (docid msg target)
-                      (unless (config-mail--message-from-me-p msg)
-                        (mu4e~proc-move docid (mu4e~mark-check-target target) "+S-u-N"))))))
-#+end_src
-
-*** Insert signatures before quoted content, as in other mail user agents
-#+begin_src emacs-lisp
-  (use-package mu4e
-    :custom
-    (message-forward-before-signature nil)
-    (message-citation-line-function #'message-insert-formatted-citation-line)
-    (message-citation-line-format "On %a, %b %d %Y, %f wrote:\n")
-
-    :config
-    (defun mu4e--insert-signature-before-quoted-message ()
-      (unless (member mu4e-compose-type '(edit resend))
-        (save-excursion
-          (save-restriction
-            (widen)
-            (cond
-             ((eq mu4e-compose-type 'new)
-              (message-goto-body)
-              (kill-region (point) (point-max)))
-             ((message-goto-signature)
-              (forward-line -2)
-              (delete-region (point) (point-max))))
-
-            (message-goto-body)
-            (insert "\n")
-            (narrow-to-region (point-min) (point))
-
-            (let ((message-signature t)
-                  (mu4e-compose-signature t)
-                  (mu4e-compose-signature-auto-include t))
-              (message-insert-signature))
-
-            (when (member mu4e-compose-type '(forward reply))
-              (goto-char (point-max))
-              (insert "\n"))))))
-
-    (add-hook 'mu4e-compose-mode-hook #'mu4e--insert-signature-before-quoted-message))
-#+end_src
-
-*** Don't quit mu4e, just bury the buffer
-#+begin_src emacs-lisp
-  (global-set-key [remap mu4e-quit] #'bury-buffer)
-#+end_src
-
-*** Teach =org-mode= how to store links to messages in =mu4e=
-#+begin_src emacs-lisp
-  (use-package org-mu4e
-    :after (:any org mu4e))
-#+end_src
-
-*** Display newline symbols in the buffer when a hard newline would be used
-Normally newlines are reflowed automatically.
-#+begin_src emacs-lisp
-  (use-package messages-are-flowing
-    :commands (messages-are-flowing--mark-hard-newlines)
-    :init
-    (defun setup-hard-newlines ()
-      (use-hard-newlines nil 'always)
-      (add-hook 'after-change-functions 'messages-are-flowing--mark-hard-newlines nil t))
-    :hook (message-mode . setup-hard-newlines))
-#+end_src
-
 * ✍🏻 =org-mode= - Org document format & editing support
 
 ** Set general org-mode variables
@@ -5811,6 +5640,7 @@ Normally newlines are reflowed automatically.
     (org-image-actual-width nil)
     (org-return-follows-link t)
     (org-use-property-inheritance t)
+    (org-pretty-entities t)
     (org-startup-align-all-tables t)
     (org-ellipsis " …")
     (org-indent-mode-turns-on-hiding-stars t)
@@ -6292,7 +6122,7 @@ Exit minibuffer before adding notes.
     :custom
     (org-latex-create-formula-image-program 'dvisvgm)
     :config
-    (plist-put org-format-latex-options :scale 1.7))
+    (plist-put org-format-latex-options :scale 1.6))
 #+end_src
 
 *** Make ~C-c C-c~ toggle LaTeX fragment preview for editing
