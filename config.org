@@ -439,11 +439,6 @@ Load host-specific settings, which are not checked into version control.
                                   (:foreground "#96A7A9"))
                                  (((background dark))
                                   (:foreground "#5B6268"))))
-                              `(mu4e-highlight-face
-                                ((((background light))
-                                  (:foreground "#268bd2"))
-                                 (((background dark))
-                                  (:foreground "#51afef"))))
                               `(org-agenda-clocking
                                 ((((background dark))
                                   (:foreground ,dark-fg :extend t))
@@ -2447,11 +2442,6 @@ staging them in magit.
     (evil-collection-init))
 #+end_src
 
-*** Add alias for renamed function
-#+begin_src emacs-lisp
-  (defalias 'mu4e--main-action-str 'mu4e~main-action-str)
-#+end_src
-
 ** =evil-args= - Text motions for function parameter lists
 #+begin_src emacs-lisp
   (use-package evil-args
@@ -2833,7 +2823,6 @@ See:
     "c" #'quick-calc
     "C" #'full-calc
     "e" #'eshell
-    "m" #'mu4e
     "r" (general-predicate-dispatch 'profiler-start
           (and (featurep 'profiler) (profiler-running-p)) 'profiler-stop-and-report)
     "w" #'world-time-list)
@@ -3473,9 +3462,7 @@ https://github.com/oantolin/orderless
 ** =dogears= - remember where you've been
 #+begin_src emacs-lisp
   (use-package dogears
-    :hook (after-init . dogears-mode)
-    :config
-    (add-to-list 'dogears-ignore-modes 'mu4e-view-mode))
+    :hook (after-init . dogears-mode))
 #+end_src
 
 * Window management
