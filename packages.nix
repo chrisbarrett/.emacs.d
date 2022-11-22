@@ -42,7 +42,6 @@ epkgs: with epkgs; [
   fira-code-mode
   flx
   flycheck
-  flycheck-ledger
   flycheck-package
   flycheck-plantuml
   forge
@@ -69,7 +68,6 @@ epkgs: with epkgs; [
   json-mode
   kind-icon
   latex-preview-pane
-  ledger-mode
   link-hint
   lsp-mode
   lsp-ui

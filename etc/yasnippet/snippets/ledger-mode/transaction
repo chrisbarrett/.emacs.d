@@ -1,7 +1,0 @@
-# key: x
-# name: transaction
-# condition: (yas-funcs-bolp)
-# --
-`(s-replace "-" "/" (org-read-date))` * ${1:Payee}
-  ${To}            \$ ${Value}
-  ${From}

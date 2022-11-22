@@ -9,9 +9,6 @@
 (require 'subr-x)
 (require 'seq)
 
-(defconst paths-ledger-directory "~/Documents/ledger")
-(defconst paths-ledger-lisp-directory "~/Documents/ledger/lisp")
-
 (defvar paths-org-directory "~/org")
 
 (defconst paths-nix-directory "~/.config/nixpkgs")

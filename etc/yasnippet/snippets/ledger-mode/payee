@@ -1,7 +1,0 @@
-# key: p
-# name: payee
-# condition: (yas-funcs-bolp)
-# expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 't))
-# --
-payee ${1:Name}
-  alias ^$0

@@ -636,15 +636,6 @@ applications. The following functions will be invoked by those scripts over
                         (window-width . 80)))
 #+end_src
 
-** ledger
-#+begin_src emacs-lisp
-  (display-buffer-set (rx bos "*Ledger Report*" eos)
-                      '((display-buffer-in-direction)
-                        (inhibit-same-window . t)
-                        (side . rightmost)
-                        (window-width . fit-window-to-buffer)))
-#+end_src
-
 ** nix-repl
 #+begin_src emacs-lisp
   (display-buffer-set (rx bos "*Nix-REPL*" eos)
@@ -4982,111 +4973,6 @@ files.
     "e" '(markdown-export :wk "export"))
 #+end_src
 
-** =ledger-mode= - Ledger accounting software interface
-#+begin_src emacs-lisp
-  (use-package ledger-mode
-    :general
-
-    (:keymaps 'ledger-report-mode-map
-     "C-c C-c" #'ledger-report
-     "q" #'kill-buffer-and-window)
-
-    (:keymaps 'ledger-mode-map
-     "C-c C-c" #'ledger-report
-     "M-RET" #'ledger-toggle-current-transaction)
-
-    :custom
-    (ledger-report-use-header-line nil)
-    (ledger-post-account-alignment-column 2)
-    (ledger-fontify-xact-state-overrides nil))
-#+end_src
-
-*** Highlight negative numbers in red
-#+begin_src emacs-lisp
-  (use-package ledger-mode
-    :preface
-    (defface ledger-report-negative-amount
-      `((t (:foreground "red")))
-      "Face for negative amounts in ledger reports."
-      :group 'ledger-faces)
-
-    :config
-    (font-lock-add-keywords
-     'ledger-report-mode
-     `((,(rx "$" (* space) "-" (+ digit) (* (any digit ",")) (? "." (+ digit))) . 'ledger-report-negative-amount)
-       (,(rx (+ digit) "-" (= 3 alpha) "-" (+ digit)) . 'ledger-font-posting-date-face)))
-
-    (add-hook 'ledger-report-mode-hook 'font-lock-fontify-buffer))
-#+end_src
-
-*** Changing transaction timestamps
-Use =C-c C-.= to change the timestamp of the transaction at point.
-#+begin_src emacs-lisp
-  (use-package ledger-mode
-    :general
-    (:keymaps 'ledger-mode-map
-     "C-c C-." #'config-ledger-set-xact-timestamp)
-    :preface
-    (defun config-ledger-set-xact-timestamp ()
-      (interactive)
-      (when-let* ((ctx (ledger-xact-context))
-                  (value (ledger-context-field-value ctx 'date))
-                  (start (ledger-context-field-position ctx 'date))
-                  (end (ledger-context-field-end-position ctx 'date))
-                  (updated (ledger-read-date "Transaction date: ")))
-        (if (string= value updated)
-            (user-error "Date unchanged")
-          (save-excursion
-            (goto-char start)
-            (delete-region start end)
-            (insert updated))
-          (let ((message-log-max))
-            (message "Date changed: %s -> %s" value updated))))))
-#+end_src
-
-*** Format ledger buffer
-Define a command to format a ledger buffer.
-#+begin_src emacs-lisp
-  (use-package ledger-mode
-    :general (:keymaps 'ledger-mode-map "M-q" #'ledger-format-buffer)
-
-    :functions (ledger-mode-clean-buffer)
-    :preface
-    (defvar ledger-post-amount-alignment-column 52)
-
-    (defun ledger-format--align-price-assertion ()
-      (when (string-match-p (rx (+ space) "=" (* space) (not (any digit)))
-                            (buffer-substring (line-beginning-position)
-                                              (line-end-position)))
-        (unwind-protect
-            (progn
-              (goto-char (line-beginning-position))
-              (search-forward "=")
-              (goto-char (match-beginning 0))
-              (indent-to (1+ ledger-post-amount-alignment-column))
-              (skip-chars-forward " =")
-              (just-one-space))
-          (goto-char (line-end-position)))))
-
-    (defun ledger-format-buffer ()
-      "Reformat the buffer."
-      (interactive "*")
-      (let ((pos (point)))
-        (ignore-errors
-          (ledger-mode-clean-buffer))
-        (goto-char (point-min))
-        (while (search-forward-regexp (rx (>= 2 space) "=") nil t)
-          (ledger-format--align-price-assertion))
-        (goto-char pos))))
-#+end_src
-
-*** =flycheck-ledger= - Flycheck support for ledger buffers
-#+begin_src emacs-lisp
-  (use-package flycheck-ledger
-    :after (:all flycheck ledger-mode)
-    :demand t)
-#+end_src
-
 ** =autctex= - Tex & Latex editing
 Use =auctex= as the Tex and Latex editing mode.
 =auctex= is disgusting and clobbers the builtin Tex modes. To load it lazily,
@@ -7351,12 +7237,6 @@ input is already a map. :/ Hack around this by using help:ht-merge instead.
     :config
     (when (file-directory-p paths-org-lisp-directory)
       (load (expand-file-name "init.el" paths-org-lisp-directory) t)))
-
-  (use-package ledger-mode
-    :unless noninteractive
-    :config
-    (when (file-directory-p paths-ledger-lisp-directory)
-      (load (expand-file-name "init.el" paths-ledger-lisp-directory) t)))
 #+end_src
 
 * File postamble

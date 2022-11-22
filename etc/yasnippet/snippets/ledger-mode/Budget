@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: Budget
-# key: b
-# condition: (yas-funcs-bolp)
-# expand-env: ((yas-indent-line 'nothing) (yas-wrap-around-region 't))
-# --
-`(yas-funcs-ledger-format-budget-posting-from-latest)`
