@@ -7118,8 +7118,26 @@ property drawer and the title. Advise it to fix that.
   (use-package org-roam
     :custom
     (org-roam-node-display-template
-     (concat (propertize "${slipbox:9}" 'face 'org-tag) " ${icon:3} " "${title:*} " "${tags:*}"))
+     (concat (propertize "${slipbox:9}" 'face 'org-tag)
+             " ${icon:3} "
+             " ${formatted-title:*} "
+             "${tags:*}"))
     :config
+    (defun config-org-roam-parse-node-title (node)
+      (pcase-let* ((original (org-roam-node-title node))
+                   (`(,_ ,subject ,title)
+                    (s-match (rx (* space) (group (+? nonl)) (* space) ":" (+ space) (group (+ nonl)))
+                             original)))
+        (if subject
+            (list :subject subject :title title)
+          (list :title original))))
+
+    (cl-defmethod org-roam-node-formatted-title ((node org-roam-node))
+      (-let [(result &as &plist :title :subject) (config-org-roam-parse-node-title node)]
+        (if subject
+            (concat (propertize (concat "[" subject "]") 'face 'org-property-value) " " title)
+          title)))
+
     (cl-defmethod org-roam-node-icon ((node org-roam-node))
       "Return the TYPE of NODE."
       (condition-case nil
