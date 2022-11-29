@@ -7113,6 +7113,31 @@ property drawer and the title. Advise it to fix that.
     :hook (org-mode . org-roam-dblocks-autoupdate-mode))
 #+end_src
 
+** Define a parser for my title conventions
+I sometimes like to scope notes to a particular topic, using a ~TOPIC: NAME~
+convention. This is different from having separate slipboxes, since I use
+slipboxes as /types/ (evergreens, stubs & nouns vs lit notes).
+
+#+begin_src emacs-lisp
+  (defun config-org-roam-parse-node-title (node)
+    (pcase-let* ((original (org-roam-node-title node))
+                 (`(,_ ,subject ,title)
+                  (s-match (rx (* space) (group (+? nonl)) (* space) ":" (+ space) (group (+ nonl)))
+                           original)))
+      (if subject
+          (list :subject subject :title title)
+        (list :title original))))
+#+end_src
+
+** Insert nodes without the topic prefix if present
+#+begin_src emacs-lisp
+  (use-package org-roam
+    :preface
+    (defun config-org-roam-node-formatter (node)
+      (plist-get (config-org-roam-parse-node-title node) :title))
+    :custom (org-roam-node-formatter #'config-org-roam-node-formatter))
+#+end_src
+
 ** Customise the way nodes are displayed when completing
 #+begin_src emacs-lisp
   (use-package org-roam
@@ -7123,15 +7148,6 @@ property drawer and the title. Advise it to fix that.
              " ${formatted-title:*} "
              "${tags:*}"))
     :config
-    (defun config-org-roam-parse-node-title (node)
-      (pcase-let* ((original (org-roam-node-title node))
-                   (`(,_ ,subject ,title)
-                    (s-match (rx (* space) (group (+? nonl)) (* space) ":" (+ space) (group (+ nonl)))
-                             original)))
-        (if subject
-            (list :subject subject :title title)
-          (list :title original))))
-
     (cl-defmethod org-roam-node-formatted-title ((node org-roam-node))
       (-let [(result &as &plist :title :subject) (config-org-roam-parse-node-title node)]
         (if subject
