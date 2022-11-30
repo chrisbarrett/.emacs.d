@@ -1636,6 +1636,11 @@ See: [[https://lists.gnu.org/archive/html/help-gnu-emacs/2014-07/msg00135.html][
 
 * Improve basic editing configuration for all modes
 
+** Use M-t for transpose-words
+#+begin_src emacs-lisp
+  (global-set-key (kbd "M-t") #'transpose-words)
+#+end_src
+
 ** Use control key to transpose lines up and down
 #+begin_src emacs-lisp
   (autoload 'org-move-item-down "org-list")
