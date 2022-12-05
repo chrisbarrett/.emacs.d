@@ -24,6 +24,7 @@ epkgs: with epkgs; [
   dumb-jump
   edit-indirect
   editorconfig
+  eglot
   elisp-slime-nav
   embark
   embark-consult
