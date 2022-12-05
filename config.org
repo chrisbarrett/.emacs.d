@@ -600,15 +600,9 @@ applications. The following functions will be invoked by those scripts over
 ** help
 #+begin_src emacs-lisp
   (display-buffer-set (rx bos (or (and "*Help*" eos)
-                                  "*helpful "))
-                      '((display-buffer-reuse-mode-window
-                         display-buffer-pop-up-window)
-                        (dedicated . t)
-                        (modes . (helpful-mode help-mode Info-mode))
-                        (side . rightmost)
-                        (window-width . 80)))
-
-  (display-buffer-set (rx bos "*eldoc*" eos)
+                                  "*helpful "
+                                  "*eldoc*"
+                                  "*xref*"))
                       '((display-buffer-reuse-mode-window
                          display-buffer-pop-up-window)
                         (dedicated . t)
