@@ -608,6 +608,14 @@ applications. The following functions will be invoked by those scripts over
                         (side . rightmost)
                         (window-width . 80)))
 
+  (display-buffer-set (rx bos "*eldoc*" eos)
+                      '((display-buffer-reuse-mode-window
+                         display-buffer-pop-up-window)
+                        (dedicated . t)
+                        (modes . (helpful-mode help-mode Info-mode))
+                        (side . rightmost)
+                        (window-width . 80)))
+
   (display-buffer-set (rx bos "*lsp-help*" eos)
                       '((display-buffer-at-bottom)
                         (inhibit-same-window . t)
@@ -2614,6 +2622,17 @@ Disable completion backend integration, since we're not using =company=.
     :hook
     (json-mode . lsp-ui-doc-mode)
     (yaml-mode . lsp-ui-doc-mode))
+#+end_src
+
+* =eglot-mode= - language-server support
+#+begin_src emacs-lisp
+  (use-package eglot
+    :hook
+    (sh-mode . eglot-ensure)
+    :custom
+    (eglot-extend-to-xref t)
+    :general
+    (:keymaps 'eglot-mode-map "C-c r" 'eglot-rename))
 #+end_src
 
 * =eshell= - built-in rudimentary shell
