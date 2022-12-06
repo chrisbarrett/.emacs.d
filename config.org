@@ -621,6 +621,8 @@ applications. The following functions will be invoked by those scripts over
                         (side . rightmost)
                         (window-width . 80)))
 
+*** DEPRECATED =lsp-mode=                                          :disabled:
+#+begin_src emacs-lisp
   (display-buffer-set (rx bos "*lsp-help*" eos)
                       '((display-buffer-at-bottom)
                         (inhibit-same-window . t)
@@ -1465,17 +1467,6 @@ Configure how =ediff= should display windows when started.
     :config
     (add-hook 'world-time-table-mode-hook 'hl-line-mode))
 #+end_src
-
-** =eldoc= - Show documentation in the minibuffer
-#+begin_src emacs-lisp
-  (use-package eldoc
-    :hook (emacs-lisp-mode . eldoc-mode)
-    :custom
-    (eldoc-idle-delay 0.2))
-#+end_src
-
-*** TODO Suppress eldoc when point is at a flycheck error
-On the other hand, might not be needed for flymake.
 
 ** =M-n= to end in =completing-read= will use the thing at point
 #+begin_src emacs-lisp
@@ -2635,20 +2626,40 @@ Disable completion backend integration, since we're not using =company=.
 ** =eglot-mode= - language-server support
 #+begin_src emacs-lisp
   (use-package eglot
-    :hook
-    (sh-mode . eglot-ensure)
     :custom
     (eglot-extend-to-xref t)
     :general
-    (:keymaps 'eglot-mode-map "C-c r" 'eglot-rename))
+    (:keymaps 'eglot-mode-map "C-c r" 'eglot-rename
+     :states '(motion normal)
+     "K" 'eldoc-print-current-symbol-info))
+#+end_src
+
+*** Set which modes have eglot enabled automatically
+#+begin_src emacs-lisp
+  (use-package eglot
+    :preface
+    (defun config-eglot-enable-if-lsp-exists-p ()
+      (require 'eglot)
+      (when (alist-get major-mode (bound-and-true-p eglot-server-programs))
+        (call-interactively 'eglot)))
+    :hook
+    (prog-mode . config-eglot-enable-if-lsp-exists-p)
+    (text-mode . config-eglot-enable-if-lsp-exists-p))
+#+end_src
+
+** =eldoc= - Show documentation in the minibuffer
+#+begin_src emacs-lisp
+  (use-package eldoc
+    :hook (emacs-lisp-mode . eldoc-mode)
+    :custom
+    (eldoc-idle-delay 0.2))
 #+end_src
 
 ** =flymake= - in-buffer syntax checking
 #+begin_src emacs-lisp
   (use-package flymake
     :hook
-    (prog-mode . flymake-mode)
-    (text-mode . flymake-mode)
+    (eglot-mode . flymake-mode)
     :general
     (:keymaps 'flymake-mode-map
      "M-p" 'flymake-goto-prev-error
