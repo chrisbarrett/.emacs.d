@@ -1565,6 +1565,11 @@ Configure how =ediff= should display windows when started.
     (password-cache-expiry 3600))
 #+end_src
 
+** Limit the max height of the minibuffer
+#+begin_src emacs-lisp
+  (setq max-mini-window-height 0.1)
+#+end_src
+
 * Better eval-expression
 Define an alternative version of =eval-expression= that uses =emacs-lisp-mode= to
 provide font-locking, and handles =smartparens= better.
