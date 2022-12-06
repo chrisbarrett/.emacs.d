@@ -610,7 +610,7 @@ applications. The following functions will be invoked by those scripts over
 
 ** help
 #+begin_src emacs-lisp
-  (display-buffer-set (rx bos (or (and "*Help*" eos)
+  (display-buffer-set (rx bos (or "*Help*"
                                   "*helpful "
                                   "*eldoc*"
                                   "*xref*"))
