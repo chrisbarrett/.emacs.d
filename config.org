@@ -2657,7 +2657,10 @@ Disable completion backend integration, since we're not using =company=.
   (use-package eldoc
     :hook (emacs-lisp-mode . eldoc-mode)
     :custom
-    (eldoc-idle-delay 0.2))
+    (eldoc-idle-delay 0.2)
+    :config
+    (define-advice eldoc-doc-buffer (:after (&rest args) select-window)
+      (select-window (get-buffer-window eldoc--doc-buffer))))
 #+end_src
 
 ** =flymake= - in-buffer syntax checking
