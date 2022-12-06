@@ -732,7 +732,7 @@ Use a header line instead of a mode line.
     :demand t
     :custom
     (minions-mode-line-lighter "...")
-    (minions-direct '(auto-revert-mode git-auto-commit-mode flycheck-mode))
+    (minions-direct '(auto-revert-mode git-auto-commit-mode flymake-mode))
     :config
     (define-minor-mode minions-header-line-mode
       "Change the display of minor modes in the header line."
