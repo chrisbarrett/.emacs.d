@@ -2937,11 +2937,13 @@ See:
 
 #+begin_src emacs-lisp
   (leader-set-key :infix "e"
-    "" '(nil :wk "errors")
+    "" '(nil :wk "LSP & errors")
     "n" '(flymake-goto-next-error :wk "next")
     "p" '(flymake-goto-prev-error :wk "prev")
     "l" '(config-flymake-toggle-buffer-error-list :wk "list (buffer)")
     "L" '(flymake-show-project-diagnostics :wk "list (project)")
+    "r" '(eglot-rename :wk "rename...")
+    "f" '(eglot-format :wk "format")
 
     "b" '(nil :wk "backends...")
     "br" '(flymake-reporting-backends :wk "reporting")
