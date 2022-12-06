@@ -2636,7 +2636,7 @@ Disable completion backend integration, since we're not using =company=.
     :general
     (:keymaps 'eglot-mode-map "C-c r" 'eglot-rename
      :states '(motion normal)
-     "K" 'eldoc-print-current-symbol-info))
+     "K" 'eldoc))
 #+end_src
 
 *** Set which modes have eglot enabled automatically
