@@ -588,7 +588,18 @@ applications. The following functions will be invoked by those scripts over
                         (window-height . 0.4)))
 #+end_src
 
-** =flycheck=
+** syntax checking
+
+*** =flymake=
+#+begin_src emacs-lisp
+  (display-buffer-set (rx bos "*Flymake diagnostics ")
+                      '((display-buffer-in-side-window)
+                        (inhibit-same-window . t)
+                        (side . bottom)
+                        (window-height . 0.4)))
+#+end_src
+
+*** DEPRECATED =flycheck=
 #+begin_src emacs-lisp
   (display-buffer-set (rx bos "*Flycheck errors*" eos)
                       '((display-buffer-in-side-window)
@@ -2632,6 +2643,18 @@ Disable completion backend integration, since we're not using =company=.
     (:keymaps 'eglot-mode-map "C-c r" 'eglot-rename))
 #+end_src
 
+** =flymake= - in-buffer syntax checking
+#+begin_src emacs-lisp
+  (use-package flymake
+    :hook
+    (prog-mode . flymake-mode)
+    (text-mode . flymake-mode)
+    :general
+    (:keymaps 'flymake-mode-map
+     "M-p" 'flymake-goto-prev-error
+     "M-n" 'flymake-goto-next-error))
+#+end_src
+
 * =eshell= - built-in rudimentary shell
 #+begin_src emacs-lisp
   (use-package eshell
@@ -2873,7 +2896,49 @@ See:
     "s" '(comment-sexp :wk "sexp"))
 #+end_src
 
-*** ~e~ - Errors and Flycheck
+*** ~e~ - Errors and syntax checks
+
+**** =flymake=
+#+begin_src emacs-lisp
+  (autoload 'flymake-show-buffer-diagnostics "flymake")
+  (autoload 'flymake-show-project-diagnostics "flymake")
+
+  (defun config-flymake-toggle-buffer-error-list ()
+    "Show or hide the error list."
+    (interactive)
+    (if-let* ((window (seq-find (lambda (it)
+                                  (equal (flymake--diagnostics-buffer-name)
+                                         (buffer-name (window-buffer it))))
+                                (window-list))))
+        (delete-window window)
+      (flymake-show-buffer-diagnostics)))
+
+  (defun config-flymake-toggle-project-error-list ()
+    "Show or hide the error list."
+    (interactive)
+    (if-let* ((window (seq-find (lambda (it)
+                                  (equal (format "*Flymake diagnostics for `%s'*" (project-root (project-current)))
+                                         (buffer-name (window-buffer it))))
+                                (window-list))))
+        (delete-window window)
+      (flymake-show-project-diagnostics)))
+#+end_src
+
+#+begin_src emacs-lisp
+  (leader-set-key :infix "e"
+    "" '(nil :wk "errors")
+    "n" '(flymake-goto-next-error :wk "next")
+    "p" '(flymake-goto-prev-error :wk "prev")
+    "l" '(config-flymake-toggle-buffer-error-list :wk "list (buffer)")
+    "L" '(flymake-show-project-diagnostics :wk "list (project)")
+
+    "b" '(nil :wk "backends...")
+    "br" '(flymake-reporting-backends :wk "reporting")
+    "bb" '(flymake-running-backends :wk "running")
+    "bd" '(flymake-disabled-backends :wk "disabled"))
+#+end_src
+
+**** DEPRECATED =flycheck=                                        :disabled:
 #+begin_src emacs-lisp
   (autoload 'flycheck-list-errors "flycheck")
 
@@ -4254,7 +4319,7 @@ Source: [[https://ianyepan.github.io/posts/emacs-git-gutter/][Git Gutter in Emac
      "M-." 'xref-find-definitions))
 #+end_src
 
-** =flycheck= - Syntax Checking & Linting
+** DEPRECATED =flycheck= - Syntax Checking & Linting                :disabled:
 =Flycheck= integrates with external tools to show indications of errors and
 warnings in the buffer as you edit.
 
@@ -4369,8 +4434,6 @@ during =ediff= merges, etc.
 
     (advice-add 'flycheck-may-enable-mode :filter-return #'config-flycheck--maybe-inhibit))
 #+end_src
-
-*** TODO Eval replacing Flycheck with Flymake
 
 ** =smartparens= - Structured expression editing
 Use =smartparens= to keep parens and braces paired and manipulate expressions in a
@@ -4833,7 +4896,9 @@ Teach the Emacs Lisp indentation function to indent plists nicely.
     (checkdoc-arguments-in-order-flag nil))
 #+end_src
 
-**** =flycheck-package= - checker for =package.el= conventions
+**** DEPRECATED =flycheck=                                        :disabled:
+
+***** =flycheck-package= - checker for =package.el= conventions
 #+begin_src emacs-lisp
   (use-package flycheck-package
     :after (:all flycheck elisp-mode)
@@ -4842,7 +4907,7 @@ Teach the Emacs Lisp indentation function to indent plists nicely.
     (flycheck-package-setup))
 #+end_src
 
-**** Disable these checkers in org src blocks
+***** Disable these checkers in org src blocks
 #+begin_src emacs-lisp
   (defun disable-flycheck-checkers-for-org-src-block ()
     (push 'emacs-lisp-package flycheck-disabled-checkers)
