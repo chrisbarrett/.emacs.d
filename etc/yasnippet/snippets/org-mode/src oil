@@ -1,0 +1,8 @@
+# key: oil
+# name: src oil
+# condition: (yas-funcs-bolp)
+# expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 't))
+# --
+#+begin_src oil
+  $0
+#+end_src
