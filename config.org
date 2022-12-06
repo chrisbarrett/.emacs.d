@@ -4622,13 +4622,9 @@ Teach the Emacs Lisp indentation function to indent plists nicely.
     (lisp-indent-function #'config-elisp--better-lisp-indent-function))
 #+end_src
 
-*** Emacs lisp syntax checking
-
-**** =checkdoc= - linting for Elisp docstrings
+*** =checkdoc= - linting for Elisp docstrings
 #+begin_src emacs-lisp
   (use-package checkdoc
-    :after (:all flycheck elisp-mode)
-    :demand t
     :custom
     (checkdoc-force-docstrings-flag nil)
     (checkdoc-arguments-in-order-flag nil))
