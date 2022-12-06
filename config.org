@@ -599,15 +599,6 @@ applications. The following functions will be invoked by those scripts over
                         (window-height . 0.4)))
 #+end_src
 
-*** DEPRECATED =flycheck=
-#+begin_src emacs-lisp
-  (display-buffer-set (rx bos "*Flycheck errors*" eos)
-                      '((display-buffer-in-side-window)
-                        (inhibit-same-window . t)
-                        (side . bottom)
-                        (window-height . 0.4)))
-#+end_src
-
 ** help
 #+begin_src emacs-lisp
   (display-buffer-set (rx bos (or "*Help*"
@@ -620,14 +611,6 @@ applications. The following functions will be invoked by those scripts over
                         (modes . (Man-mode helpful-mode help-mode Info-mode))
                         (side . rightmost)
                         (window-width . 80)))
-#+end_src
-
-*** DEPRECATED =lsp-mode=                                          :disabled:
-#+begin_src emacs-lisp
-  (display-buffer-set (rx bos "*lsp-help*" eos)
-                      '((display-buffer-at-bottom)
-                        (inhibit-same-window . t)
-                        (window-height   . 0.4)))
 #+end_src
 
 ** =ielm=
@@ -1725,8 +1708,9 @@ This should really be a thing out-of-the-box.
 
 *** Define a command to perform indentation in a context-sensitive way
 #+begin_src emacs-lisp
-  (autoload 'lsp-format-region "lsp-mode")
-  (autoload 'lsp-format-buffer "lsp-mode")
+  (autoload 'eglot-format "eglot")
+  (autoload 'eglot-managed-p "eglot")
+  (autoload 'format-all-buffer "format-all")
 
   (defun config-indent-dwim (&optional justify)
     "Indent the thing at point.
@@ -1748,8 +1732,8 @@ This should really be a thing out-of-the-box.
 
        ((region-active-p)
         (cond
-         ((bound-and-true-p lsp-mode)
-          (lsp-format-region (region-beginning) (region-end)))
+         ((eglot-managed-p)
+          (eglot-format (region-beginning) (region-end)))
          (t
           (indent-region (region-beginning) (region-end)))))
        (t
@@ -1757,8 +1741,8 @@ This should really be a thing out-of-the-box.
           (cond
            ((bound-and-true-p format-all-mode)
             (format-all-buffer))
-           ((bound-and-true-p lsp-mode)
-            (lsp-format-buffer))
+           ((eglot-managed-p)
+            (eglot-format))
            (t
             (indent-buffer)))
           (progress-reporter-done progress))))))
@@ -2527,107 +2511,6 @@ https://github.com/syl20bnr/evil-iedit-state/issues/36
 
 * 💡 Language Server Protocol (LSP)
 
-** DEPRECATED =lsp-mode= - language-server support                  :disabled:
-
-*** Set which modes use LSP
-#+begin_src emacs-lisp
-  (defconst lsp-enabled-modes
-    '(csharp-mode
-      graphql-mode
-      js-mode
-      json-mode
-      nix-mode
-      sh-mode
-      terraform-mode
-      typescript-mode
-      yaml-mode))
-
-  (dolist (mode lsp-enabled-modes)
-    (add-hook (intern (format "%s-hook" mode))
-              'lsp-deferred))
-#+end_src
-
-*** Configure lsp-mode variables
-#+begin_src emacs-lisp
-  (use-package lsp-mode
-    :commands (lsp lsp-deferred)
-    :general
-    (:keymaps 'lsp-mode-map
-     "M-n" 'next-error
-     "M-p" 'previous-error
-     "C-c C-c" 'lsp-execute-code-action
-     "C-c r" 'lsp-rename
-     [remap evil-lookup] 'lsp-describe-thing-at-point
-     [remap jump-to-definition] 'lsp-find-definition)
-    :custom
-    (lsp-headerline-breadcrumb-enable nil)
-    (lsp-modeline-code-actions-enable nil)
-    (lsp-modeline-diagnostics-enable nil)
-    (lsp-modeline-workspace-status-enable nil)
-    (lsp-auto-execute-action nil)
-    (lsp-enable-on-type-formatting nil)
-    (lsp-restart 'auto-restart))
-#+end_src
-
-Disable completion backend integration, since we're not using =company=.
-#+begin_src emacs-lisp
-  (use-package lsp-mode
-    :custom
-    (lsp-completion-provider :none))
-#+end_src
-
-*** Inject LSP servers from nix build
-#+begin_src emacs-lisp
-  (use-package lsp-mode
-    :custom
-    ;; (lsp-clients-typescript-tls-path (getenv "NIX_EMACS_TS_LANGUAGE_SERVER"))
-    (lsp-eslint-validate '("typescript" "javascript" "javascriptreact"))
-    (lsp-csharp-server-path (getenv "NIX_EMACS_OMNISHARP_ROSLYN_PATH"))
-    (lsp-eslint-server-command (list (getenv "NIX_EMACS_LSP_ESLINT_NODE_PATH")
-                                     (getenv "NIX_EMACS_ESLINT_SERVER_SCRIPT")
-                                     "--stdio")))
-#+end_src
-
-#+begin_src emacs-lisp
-  (use-package lsp-json
-    :config
-    (lsp-dependency 'vscode-json-languageserver
-                    `(:system ,(getenv "NIX_EMACS_JSON_LANGUAGE_SERVER"))))
-#+end_src
-
-*** Automatically format on save
-#+begin_src emacs-lisp
-  (defvar lsp-format-on-save t)
-
-  (defun config-lsp--run-format-buffer ()
-    (when (and lsp-mode lsp-format-on-save)
-      (lsp-format-buffer)))
-
-  (use-package lsp-mode
-    :init
-    (defun config-lsp--format-before-save ()
-      (add-hook 'before-save-hook #'config-lsp--run-format-buffer nil t))
-    :config
-    (add-hook 'lsp-mode-hook #'config-lsp--format-before-save))
-#+end_src
-
-*** =lsp-ui= - Additional package providing richer UI elements for lsp-mode
-#+begin_src emacs-lisp
-  (use-package lsp-ui
-    :after lsp-mode
-    :general
-    (:keymaps 'lsp-ui-mode-map
-     [remap lsp-describe-thing-at-point] 'lsp-ui-show
-     [remap imenu] 'lsp-ui-imenu
-     [remap consult-imenu] 'lsp-ui-imenu)
-    :custom
-    (lsp-ui-imenu-auto-refresh 'after-save)
-    (lsp-ui-doc-enable nil)
-    :hook
-    (json-mode . lsp-ui-doc-mode)
-    (yaml-mode . lsp-ui-doc-mode))
-#+end_src
-
 ** =eglot-mode= - language-server support
 #+begin_src emacs-lisp
   (use-package eglot
@@ -2969,35 +2852,6 @@ See:
     "bd" '(flymake-disabled-backends :wk "disabled"))
 #+end_src
 
-**** DEPRECATED =flycheck=                                        :disabled:
-#+begin_src emacs-lisp
-  (autoload 'flycheck-list-errors "flycheck")
-
-  (defun flycheck-toggle-error-list ()
-    "Show or hide the error list."
-    (interactive)
-    (if-let* ((window (seq-find (lambda (it)
-                                  (equal flycheck-error-list-buffer
-                                         (buffer-name (window-buffer it))))
-                                (window-list))))
-        (delete-window window)
-      (flycheck-list-errors)))
-#+end_src
-
-#+begin_src emacs-lisp
-  (leader-set-key :infix "e"
-    "" '(nil :wk "errors")
-    "n" '(flycheck-next-error :wk "next")
-    "p" '(flycheck-previous-error :wk "prev")
-    "l" '(flycheck-toggle-error-list :wk "list")
-    "r" '(flycheck-buffer :wk "run checks")
-    "c" '(flycheck-clear :wk "clear")
-    "e" '(flycheck-explain-error-at-point :wk "explain at pt")
-    "h" '(flycheck-describe-checker :wk "describe checker")
-    "s" '(flycheck-select-checker :wk "select checker")
-    "v" '(flycheck-verify-setup :wk "verify setup"))
-#+end_src
-
 *** ~f~ - Files
 #+begin_src emacs-lisp
   (autoload 'projectile-project-p "projectile")
@@ -3208,22 +3062,6 @@ See:
     "b" 'kill-this-buffer
     "w" 'delete-window
     "r" 'consult-yank-pop)
-#+end_src
-
-*** ~l~ - LSP
-#+begin_src emacs-lisp
-  (leader-set-key :infix "l"
-    "" '(:keymaps lsp-command-map :package lsp-mode :wk "lsp"))
-#+end_src
-
-**** Use which-key replacements                                 :disabled:
-Disabled for now since this breaks insert state in evil :/
-#+begin_src emacs-lisp
-  (use-package lsp-mode
-    :custom
-    (lsp-keymap-prefix "SPC l")
-    :hook
-    (lsp-mode . lsp-enable-which-key-integration))
 #+end_src
 
 *** ~n~ - Narrowing
@@ -4342,122 +4180,6 @@ Source: [[https://ianyepan.github.io/posts/emacs-git-gutter/][Git Gutter in Emac
 
 * 🤖 Programming languages & text-modes
 
-** DEPRECATED =flycheck= - Syntax Checking & Linting                :disabled:
-=Flycheck= integrates with external tools to show indications of errors and
-warnings in the buffer as you edit.
-
-See: [[https://www.flycheck.org/en/latest/][flycheck.org]]
-
-#+begin_src emacs-lisp
-  (use-package flycheck
-    :hook
-    (after-init . global-flycheck-mode)
-    (prog-mode . flycheck-mode-on-safe)
-
-    :general
-    (:keymaps
-     'flycheck-mode-map
-     "M-n" #'flycheck-next-error
-     "M-p" #'flycheck-previous-error
-     "M-j" #'flycheck-next-error
-     "M-k" #'flycheck-previous-error)
-
-    (:states 'motion
-     :keymaps 'flycheck-error-list-mode-map
-     "j" #'flycheck-error-list-next-error
-     "k" #'flycheck-error-list-previous-error
-     "RET" #'flycheck-error-list-goto-error
-     "n" #'flycheck-error-list-next-error
-     "p" #'flycheck-error-list-previous-error
-     "q" #'quit-window)
-
-    :custom
-    (flycheck-display-errors-delay 0.1)
-    (flycheck-emacs-lisp-load-path 'inherit)
-    (flycheck-python-pycompile-executable "python")
-    (flycheck-global-modes '(not org-mode text-mode org-agenda-mode cider-repl-mode)))
-#+end_src
-
-*** =flycheck-org-lint= - Linting for org-mode buffers           :disabled:
-#+begin_src emacs-lisp
-  (use-package flycheck-org-lint
-    :after flycheck
-    :demand t
-    :config
-    (add-to-list 'flycheck-checkers 'org-lint))
-#+end_src
-
-*** Customise the modeline indicator
-#+begin_src emacs-lisp
-  (use-package flycheck
-    :config
-    (defun flycheck-custom-mode-line-status-text (&optional status)
-      (pcase (or status flycheck-last-status-change)
-        (`no-checker " Checks[-]")
-        (`errored " Checks[ERROR]")
-        (`finished
-         (let-alist (flycheck-count-errors flycheck-current-errors)
-           (cond
-            ((and .error .warning)
-             (format " ✖ (%s error%s, %s warn%s)"
-                     .error
-                     (if (equal .error 1) "" "s")
-                     .warning
-                     (if (equal .warning 1) "" "s")))
-            (.error
-             (format " ✖ (%s error%s)" .error (if (equal .error 1) "" "s")))
-
-            (.warning
-             (format " ! (%s warning%s)" .warning (if (equal .warning 1) "" "s")))
-            (t
-             " ✔"))))
-        (`interrupted " ? (interrupted)")
-        (`suspicious " ? (suspicious)")
-        (_
-         "")))
-    :custom
-    (flycheck-mode-line '(:eval (flycheck-custom-mode-line-status-text))))
-#+end_src
-
-*** Projectile integration                                       :disabled:
-Automatically re-check all buffers belonging to a project on save. This ensures
-diagnostics do not go stale.
-
-#+begin_src emacs-lisp
-  (use-package flycheck
-    :after (projectile)
-    :config
-    (defun config-flycheck--check-all-project-buffers ()
-      (when (and (bound-and-true-p projectile-mode) (projectile-project-p))
-        (projectile-process-current-project-buffers
-         (lambda (buf)
-           (with-current-buffer buf
-             (when (bound-and-true-p flycheck-mode)
-               ;; HACK: Inhibit checks for elisp, otherwise flycheck will
-               ;; spawn a bunch of thrashing Emacs processes.
-               (unless (derived-mode-p 'emacs-lisp-mode)
-                 (flycheck-buffer))))))))
-
-    (add-hook 'after-save-hook #'config-flycheck--check-all-project-buffers))
-#+end_src
-
-*** Conditionally inhibit =Flycheck=
-Don't use =Flycheck= in certain situations, such as for files inside =node_modules=,
-during =ediff= merges, etc.
-
-#+begin_src emacs-lisp
-  (use-package flycheck
-    :config
-    (defun config-flycheck--maybe-inhibit (result)
-      (unless (or (equal (buffer-name) "*ediff-merge*")
-                  (string-suffix-p ".dir-locals.el" (buffer-file-name))
-                  (string-match-p (rx bol "*Pp ") (buffer-name))
-                  (string-match-p (rx "/node_modules/") default-directory))
-        result))
-
-    (advice-add 'flycheck-may-enable-mode :filter-return #'config-flycheck--maybe-inhibit))
-#+end_src
-
 ** =smartparens= - Structured expression editing
 Use =smartparens= to keep parens and braces paired and manipulate expressions in a
 structured way.
@@ -4917,26 +4639,6 @@ Teach the Emacs Lisp indentation function to indent plists nicely.
     :custom
     (checkdoc-force-docstrings-flag nil)
     (checkdoc-arguments-in-order-flag nil))
-#+end_src
-
-**** DEPRECATED =flycheck=                                        :disabled:
-
-***** =flycheck-package= - checker for =package.el= conventions
-#+begin_src emacs-lisp
-  (use-package flycheck-package
-    :after (:all flycheck elisp-mode)
-    :demand t
-    :config
-    (flycheck-package-setup))
-#+end_src
-
-***** Disable these checkers in org src blocks
-#+begin_src emacs-lisp
-  (defun disable-flycheck-checkers-for-org-src-block ()
-    (push 'emacs-lisp-package flycheck-disabled-checkers)
-    (push 'emacs-lisp-checkdoc flycheck-disabled-checkers))
-
-  (add-hook 'org-src-mode-hook 'disable-flycheck-checkers-for-org-src-block)
 #+end_src
 
 *** Disable package-lint installability check
@@ -5529,42 +5231,6 @@ Configure =conf-mode= for use with more kinds of config files.
 *** Use =nxml-mode= for ~csproj~ files
 #+begin_src emacs-lisp
   (add-to-list 'auto-mode-alist '("\\.csproj$" . nxml-mode))
-#+end_src
-
-*** =lsp-csharp= - Configure Omnisharp
-Do the lord's work and hack the snot out of this thing to use the .NET 6
-version.
-
-#+begin_src emacs-lisp
-  (use-package lsp-csharp
-    :if (and (equal system-type 'darwin)
-             (equal "arm" (string-trim (shell-command-to-string "uname -p"))))
-    :custom
-    (lsp-csharp-omnisharp-roslyn-download-url
-     "https://github.com/omnisharp/omnisharp-roslyn/releases/latest/download/omnisharp-osx-arm64-net6.0.zip")
-    (lsp-csharp-server-path (f-join paths-cache-directory "lsp/server/omnisharp-roslyn/latest/omnisharp-roslyn/OmniSharp"))
-    :config
-    (setenv "DOTNET_ROOT" (file-name-directory (file-truename "~/.nix-profile/bin/dotnet")))
-    (defun config-lsp--ensure-csharp-runner ()
-      (let* ((default-directory lsp-csharp-omnisharp-roslyn-server-dir)
-             (run-script "run"))
-        (unless (f-exists-p run-script)
-          (with-temp-file run-script
-            (insert "#!/bin/bash\n")
-            (insert "DIR=$(dirname \"$0\")\n")
-            (insert "dotnet \"$DIR/OmniSharp.dll\"\n")))
-        (set-file-modes run-script #o755)))
-
-    (define-advice lsp-csharp--download-server (:override (_client callback error-callback _update?) dotnet-6)
-      "Download zip package for omnisharp-roslyn and install it.
-  Will invoke CALLBACK on success, ERROR-CALLBACK on error."
-      (lsp-package-ensure
-       'omnisharp-roslyn
-       (lambda ()
-         (lsp-unzip lsp-csharp-omnisharp-roslyn-store-path lsp-csharp-omnisharp-roslyn-server-dir)
-         (config-lsp--ensure-csharp-runner)
-         (funcall callback))
-       error-callback)))
 #+end_src
 
 * Applications
@@ -7373,6 +7039,341 @@ input is already a map. :/ Hack around this by using help:ht-merge instead.
     :config
     (org-roam-slipbox-tag-mode +1)
     (org-roam-slipbox-buffer-identification-mode +1))
+#+end_src
+
+* DEPRECATED =lsp-mode= - language-server support                    :disabled:
+
+** Set which modes use LSP
+#+begin_src emacs-lisp
+  (defconst lsp-enabled-modes
+    '(csharp-mode
+      graphql-mode
+      js-mode
+      json-mode
+      nix-mode
+      sh-mode
+      terraform-mode
+      typescript-mode
+      yaml-mode))
+
+  (dolist (mode lsp-enabled-modes)
+    (add-hook (intern (format "%s-hook" mode))
+              'lsp-deferred))
+#+end_src
+
+** Configure lsp-mode variables
+#+begin_src emacs-lisp
+  (use-package lsp-mode
+    :commands (lsp lsp-deferred)
+    :general
+    (:keymaps 'lsp-mode-map
+     "M-n" 'next-error
+     "M-p" 'previous-error
+     "C-c C-c" 'lsp-execute-code-action
+     "C-c r" 'lsp-rename
+     [remap evil-lookup] 'lsp-describe-thing-at-point
+     [remap jump-to-definition] 'lsp-find-definition)
+    :custom
+    (lsp-headerline-breadcrumb-enable nil)
+    (lsp-modeline-code-actions-enable nil)
+    (lsp-modeline-diagnostics-enable nil)
+    (lsp-modeline-workspace-status-enable nil)
+    (lsp-auto-execute-action nil)
+    (lsp-enable-on-type-formatting nil)
+    (lsp-restart 'auto-restart))
+#+end_src
+
+Disable completion backend integration, since we're not using =company=.
+#+begin_src emacs-lisp
+  (use-package lsp-mode
+    :custom
+    (lsp-completion-provider :none))
+#+end_src
+
+** Inject LSP servers from nix build
+#+begin_src emacs-lisp
+  (use-package lsp-mode
+    :custom
+    ;; (lsp-clients-typescript-tls-path (getenv "NIX_EMACS_TS_LANGUAGE_SERVER"))
+    (lsp-eslint-validate '("typescript" "javascript" "javascriptreact"))
+    (lsp-csharp-server-path (getenv "NIX_EMACS_OMNISHARP_ROSLYN_PATH"))
+    (lsp-eslint-server-command (list (getenv "NIX_EMACS_LSP_ESLINT_NODE_PATH")
+                                     (getenv "NIX_EMACS_ESLINT_SERVER_SCRIPT")
+                                     "--stdio")))
+#+end_src
+
+#+begin_src emacs-lisp
+  (use-package lsp-json
+    :config
+    (lsp-dependency 'vscode-json-languageserver
+                    `(:system ,(getenv "NIX_EMACS_JSON_LANGUAGE_SERVER"))))
+#+end_src
+
+** Automatically format on save
+#+begin_src emacs-lisp
+  (defvar lsp-format-on-save t)
+
+  (defun config-lsp--run-format-buffer ()
+    (when (and lsp-mode lsp-format-on-save)
+      (lsp-format-buffer)))
+
+  (use-package lsp-mode
+    :init
+    (defun config-lsp--format-before-save ()
+      (add-hook 'before-save-hook #'config-lsp--run-format-buffer nil t))
+    :config
+    (add-hook 'lsp-mode-hook #'config-lsp--format-before-save))
+#+end_src
+
+** Global keybindings
+#+begin_src emacs-lisp
+  (leader-set-key :infix "l"
+    "" '(:keymaps lsp-command-map :package lsp-mode :wk "lsp"))
+#+end_src
+
+*** Use which-key replacements                                   :disabled:
+Disabled for now since this breaks insert state in evil :/
+#+begin_src emacs-lisp
+  (use-package lsp-mode
+    :custom
+    (lsp-keymap-prefix "SPC l")
+    :hook
+    (lsp-mode . lsp-enable-which-key-integration))
+#+end_src
+
+** Display-buffer
+#+begin_src emacs-lisp
+  (display-buffer-set (rx bos "*lsp-help*" eos)
+                      '((display-buffer-at-bottom)
+                        (inhibit-same-window . t)
+                        (window-height   . 0.4)))
+#+end_src
+
+** =lsp-ui= - Additional package providing richer UI elements for lsp-mode
+#+begin_src emacs-lisp
+  (use-package lsp-ui
+    :after lsp-mode
+    :general
+    (:keymaps 'lsp-ui-mode-map
+     [remap lsp-describe-thing-at-point] 'lsp-ui-show
+     [remap imenu] 'lsp-ui-imenu
+     [remap consult-imenu] 'lsp-ui-imenu)
+    :custom
+    (lsp-ui-imenu-auto-refresh 'after-save)
+    (lsp-ui-doc-enable nil)
+    :hook
+    (json-mode . lsp-ui-doc-mode)
+    (yaml-mode . lsp-ui-doc-mode))
+#+end_src
+
+** =lsp-csharp= - Configure Omnisharp
+Do the lord's work and hack the snot out of this thing to use the .NET 6
+version.
+
+#+begin_src emacs-lisp
+  (use-package lsp-csharp
+    :if (and (equal system-type 'darwin)
+             (equal "arm" (string-trim (shell-command-to-string "uname -p"))))
+    :custom
+    (lsp-csharp-omnisharp-roslyn-download-url
+     "https://github.com/omnisharp/omnisharp-roslyn/releases/latest/download/omnisharp-osx-arm64-net6.0.zip")
+    (lsp-csharp-server-path (f-join paths-cache-directory "lsp/server/omnisharp-roslyn/latest/omnisharp-roslyn/OmniSharp"))
+    :config
+    (setenv "DOTNET_ROOT" (file-name-directory (file-truename "~/.nix-profile/bin/dotnet")))
+    (defun config-lsp--ensure-csharp-runner ()
+      (let* ((default-directory lsp-csharp-omnisharp-roslyn-server-dir)
+             (run-script "run"))
+        (unless (f-exists-p run-script)
+          (with-temp-file run-script
+            (insert "#!/bin/bash\n")
+            (insert "DIR=$(dirname \"$0\")\n")
+            (insert "dotnet \"$DIR/OmniSharp.dll\"\n")))
+        (set-file-modes run-script #o755)))
+
+    (define-advice lsp-csharp--download-server (:override (_client callback error-callback _update?) dotnet-6)
+      "Download zip package for omnisharp-roslyn and install it.
+  Will invoke CALLBACK on success, ERROR-CALLBACK on error."
+      (lsp-package-ensure
+       'omnisharp-roslyn
+       (lambda ()
+         (lsp-unzip lsp-csharp-omnisharp-roslyn-store-path lsp-csharp-omnisharp-roslyn-server-dir)
+         (config-lsp--ensure-csharp-runner)
+         (funcall callback))
+       error-callback)))
+#+end_src
+
+* DEPRECATED =flycheck=                                              :disabled:
+=Flycheck= integrates with external tools to show indications of errors and
+warnings in the buffer as you edit.
+
+See: [[https://www.flycheck.org/en/latest/][flycheck.org]]
+
+#+begin_src emacs-lisp
+  (use-package flycheck
+    :hook
+    (after-init . global-flycheck-mode)
+    (prog-mode . flycheck-mode-on-safe)
+
+    :general
+    (:keymaps
+     'flycheck-mode-map
+     "M-n" #'flycheck-next-error
+     "M-p" #'flycheck-previous-error
+     "M-j" #'flycheck-next-error
+     "M-k" #'flycheck-previous-error)
+
+    (:states 'motion
+     :keymaps 'flycheck-error-list-mode-map
+     "j" #'flycheck-error-list-next-error
+     "k" #'flycheck-error-list-previous-error
+     "RET" #'flycheck-error-list-goto-error
+     "n" #'flycheck-error-list-next-error
+     "p" #'flycheck-error-list-previous-error
+     "q" #'quit-window)
+
+    :custom
+    (flycheck-display-errors-delay 0.1)
+    (flycheck-emacs-lisp-load-path 'inherit)
+    (flycheck-python-pycompile-executable "python")
+    (flycheck-global-modes '(not org-mode text-mode org-agenda-mode cider-repl-mode)))
+#+end_src
+
+** =flycheck-org-lint= - Linting for org-mode buffers               :disabled:
+#+begin_src emacs-lisp
+  (use-package flycheck-org-lint
+    :after flycheck
+    :demand t
+    :config
+    (add-to-list 'flycheck-checkers 'org-lint))
+#+end_src
+
+** Customise the modeline indicator
+#+begin_src emacs-lisp
+  (use-package flycheck
+    :config
+    (defun flycheck-custom-mode-line-status-text (&optional status)
+      (pcase (or status flycheck-last-status-change)
+        (`no-checker " Checks[-]")
+        (`errored " Checks[ERROR]")
+        (`finished
+         (let-alist (flycheck-count-errors flycheck-current-errors)
+           (cond
+            ((and .error .warning)
+             (format " ✖ (%s error%s, %s warn%s)"
+                     .error
+                     (if (equal .error 1) "" "s")
+                     .warning
+                     (if (equal .warning 1) "" "s")))
+            (.error
+             (format " ✖ (%s error%s)" .error (if (equal .error 1) "" "s")))
+
+            (.warning
+             (format " ! (%s warning%s)" .warning (if (equal .warning 1) "" "s")))
+            (t
+             " ✔"))))
+        (`interrupted " ? (interrupted)")
+        (`suspicious " ? (suspicious)")
+        (_
+         "")))
+    :custom
+    (flycheck-mode-line '(:eval (flycheck-custom-mode-line-status-text))))
+#+end_src
+
+** Projectile integration
+Automatically re-check all buffers belonging to a project on save. This ensures
+diagnostics do not go stale.
+
+#+begin_src emacs-lisp
+  (use-package flycheck
+    :after (projectile)
+    :config
+    (defun config-flycheck--check-all-project-buffers ()
+      (when (and (bound-and-true-p projectile-mode) (projectile-project-p))
+        (projectile-process-current-project-buffers
+         (lambda (buf)
+           (with-current-buffer buf
+             (when (bound-and-true-p flycheck-mode)
+               ;; HACK: Inhibit checks for elisp, otherwise flycheck will
+               ;; spawn a bunch of thrashing Emacs processes.
+               (unless (derived-mode-p 'emacs-lisp-mode)
+                 (flycheck-buffer))))))))
+
+    (add-hook 'after-save-hook #'config-flycheck--check-all-project-buffers))
+#+end_src
+
+** Conditionally inhibit =Flycheck=
+Don't use =Flycheck= in certain situations, such as for files inside =node_modules=,
+during =ediff= merges, etc.
+
+#+begin_src emacs-lisp
+  (use-package flycheck
+    :config
+    (defun config-flycheck--maybe-inhibit (result)
+      (unless (or (equal (buffer-name) "*ediff-merge*")
+                  (string-suffix-p ".dir-locals.el" (buffer-file-name))
+                  (string-match-p (rx bol "*Pp ") (buffer-name))
+                  (string-match-p (rx "/node_modules/") default-directory))
+        result))
+
+    (advice-add 'flycheck-may-enable-mode :filter-return #'config-flycheck--maybe-inhibit))
+#+end_src
+
+** Display-buffer
+#+begin_src emacs-lisp
+  (display-buffer-set (rx bos "*Flycheck errors*" eos)
+                      '((display-buffer-in-side-window)
+                        (inhibit-same-window . t)
+                        (side . bottom)
+                        (window-height . 0.4)))
+#+end_src
+
+** Leader keys
+#+begin_src emacs-lisp
+  (autoload 'flycheck-list-errors "flycheck")
+
+  (defun flycheck-toggle-error-list ()
+    "Show or hide the error list."
+    (interactive)
+    (if-let* ((window (seq-find (lambda (it)
+                                  (equal flycheck-error-list-buffer
+                                         (buffer-name (window-buffer it))))
+                                (window-list))))
+        (delete-window window)
+      (flycheck-list-errors)))
+#+end_src
+
+#+begin_src emacs-lisp
+  (leader-set-key :infix "e"
+    "" '(nil :wk "errors")
+    "n" '(flycheck-next-error :wk "next")
+    "p" '(flycheck-previous-error :wk "prev")
+    "l" '(flycheck-toggle-error-list :wk "list")
+    "r" '(flycheck-buffer :wk "run checks")
+    "c" '(flycheck-clear :wk "clear")
+    "e" '(flycheck-explain-error-at-point :wk "explain at pt")
+    "h" '(flycheck-describe-checker :wk "describe checker")
+    "s" '(flycheck-select-checker :wk "select checker")
+    "v" '(flycheck-verify-setup :wk "verify setup"))
+#+end_src
+
+** Emacs Lisp
+
+*** =flycheck-package= - checker for =package.el= conventions
+#+begin_src emacs-lisp
+  (use-package flycheck-package
+    :after (:all flycheck elisp-mode)
+    :demand t
+    :config
+    (flycheck-package-setup))
+#+end_src
+
+*** Disable these checkers in org src blocks
+#+begin_src emacs-lisp
+  (defun disable-flycheck-checkers-for-org-src-block ()
+    (push 'emacs-lisp-package flycheck-disabled-checkers)
+    (push 'emacs-lisp-checkdoc flycheck-disabled-checkers))
+
+  (add-hook 'org-src-mode-hook 'disable-flycheck-checkers-for-org-src-block)
 #+end_src
 
 * Load Lisp from other locations
