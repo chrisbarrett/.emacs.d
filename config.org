@@ -620,6 +620,7 @@ applications. The following functions will be invoked by those scripts over
                         (modes . (helpful-mode help-mode Info-mode))
                         (side . rightmost)
                         (window-width . 80)))
+#+end_src
 
 *** DEPRECATED =lsp-mode=                                          :disabled:
 #+begin_src emacs-lisp
@@ -2665,6 +2666,14 @@ Disable completion backend integration, since we're not using =company=.
      "M-n" 'flymake-goto-next-error))
 #+end_src
 
+** =xref= - Finding to definitions and references
+#+begin_src emacs-lisp
+  (use-package xref
+    :general
+    (:keymaps '(prog-mode-map ielm-map) :states '(normal visual insert)
+     "M-." 'xref-find-definitions))
+#+end_src
+
 * =eshell= - built-in rudimentary shell
 #+begin_src emacs-lisp
   (use-package eshell
@@ -4322,14 +4331,6 @@ Source: [[https://ianyepan.github.io/posts/emacs-git-gutter/][Git Gutter in Emac
 #+end_src
 
 * 🤖 Programming languages & text-modes
-
-** =xref= - Finding to definitions and references
-#+begin_src emacs-lisp
-  (use-package xref
-    :general
-    (:keymaps '(prog-mode-map ielm-map) :states '(normal visual insert)
-     "M-." 'xref-find-definitions))
-#+end_src
 
 ** DEPRECATED =flycheck= - Syntax Checking & Linting                :disabled:
 =Flycheck= integrates with external tools to show indications of errors and
