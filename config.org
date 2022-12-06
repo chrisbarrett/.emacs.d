@@ -2166,7 +2166,6 @@ byte-compiler about them to avoid warnings.
   (use-package evil
     :hook (after-init . evil-mode)
     :custom
-    (evil-lookup-func #'man)
     (evil-mode-line-format nil)
     (evil-shift-width 2)
     (evil-undo-system 'undo-redo)
