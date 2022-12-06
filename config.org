@@ -2668,7 +2668,8 @@ Disable completion backend integration, since we're not using =company=.
 #+begin_src emacs-lisp
   (use-package flymake
     :hook
-    (eglot-mode . flymake-mode)
+    (prog-mode . flymake-mode)
+    (text-mode . flymake-mode)
     :general
     (:keymaps 'flymake-mode-map
      "M-p" 'flymake-goto-prev-error
