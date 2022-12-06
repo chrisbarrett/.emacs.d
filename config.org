@@ -4,7 +4,7 @@
 #+property: header-args :results silent
 #+property: header-args:emacs-lisp :tangle "config.el" :lexical yes
 #+startup: fold
-#+TODO: TODO(t) HACK(h) | DONE CANCELED
+#+TODO: TODO(t) HACK(h) DEPRECATED(r) | DONE CANCELED
 
 This file uses org-mode's tangle functionality to create both the =early-init.el=
 and =init.el= files used by Emacs during the startup sequence.
