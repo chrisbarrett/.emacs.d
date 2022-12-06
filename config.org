@@ -2525,7 +2525,7 @@ https://github.com/syl20bnr/evil-iedit-state/issues/36
   (defalias 'evil-redirect-digit-argument #'ignore)
 #+end_src
 
-* Language Server Protocol (LSP)
+* 💡 Language Server Protocol (LSP)
 
 ** DEPRECATED =lsp-mode= - language-server support                  :disabled:
 
