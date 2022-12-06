@@ -2646,7 +2646,7 @@ Disable completion backend integration, since we're not using =company=.
     (defun config-eglot-enable-if-lsp-exists-p ()
       (require 'eglot)
       (when (alist-get major-mode (bound-and-true-p eglot-server-programs))
-        (call-interactively 'eglot)))
+        (eglot-ensure)))
     :hook
     (prog-mode . config-eglot-enable-if-lsp-exists-p)
     (text-mode . config-eglot-enable-if-lsp-exists-p))
