@@ -2704,10 +2704,7 @@ See:
     "D" '(dired-other-window :wk "dired (other)")
     "S" '(deadgrep :wk "rg (deadgrep)")
     "d" #'dired
-    "i" (list (general-predicate-dispatch 'consult-imenu
-                (bound-and-true-p lsp-ui-mode) 'lsp-ui-imenu
-                (derived-mode-p 'lsp-ui-imenu-mode) 'lsp-ui-imenu--kill)
-              :wk "imenu")
+    "i" '(consult-imenu :wk "imenu")
     "q" '(delete-window :wk "delete window")
     "s" '(evil-iedit-state/iedit-mode :wk "iedit")
     "u" '(universal-argument :wk "prefix arg")
