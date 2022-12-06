@@ -3618,19 +3618,15 @@ after editing actions have changed what windows are shown.
 #+begin_src emacs-lisp
   (use-package highlight-thing
     :config
-    (defun config-highlight-thing--should-highlight-p (res)
-      (unless (bound-and-true-p lsp-ui-mode)
-        (when res
-          (let ((excluded-faces '(font-lock-string-face
-                                  font-lock-keyword-face
-                                  font-lock-comment-face
-                                  font-lock-preprocessor-face
-                                  font-lock-builtin-face))
-                (faces (seq-mapcat #'face-ancestors (face-at-point nil t))))
-            (null (seq-intersection faces excluded-faces))))))
-
-    (advice-add 'highlight-thing-should-highlight-p :filter-return
-                #'config-highlight-thing--should-highlight-p))
+    (define-advice highlight-thing-should-highlight-p (:filter-return (res) highlight-only-some)
+      (when res
+        (let ((excluded-faces '(font-lock-string-face
+                                font-lock-keyword-face
+                                font-lock-comment-face
+                                font-lock-preprocessor-face
+                                font-lock-builtin-face))
+              (faces (seq-mapcat #'face-ancestors (face-at-point nil t))))
+          (null (seq-intersection faces excluded-faces))))))
 #+end_src
 
 ** =page-break-lines= - Show page breaks characters as a horizontal rule
