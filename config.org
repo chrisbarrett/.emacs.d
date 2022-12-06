@@ -617,7 +617,7 @@ applications. The following functions will be invoked by those scripts over
                       '((display-buffer-reuse-mode-window
                          display-buffer-pop-up-window)
                         (dedicated . t)
-                        (modes . (helpful-mode help-mode Info-mode))
+                        (modes . (Man-mode helpful-mode help-mode Info-mode))
                         (side . rightmost)
                         (window-width . 80)))
 #+end_src
