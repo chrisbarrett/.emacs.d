@@ -5226,6 +5226,12 @@ Configure =conf-mode= for use with more kinds of config files.
   (add-to-list 'auto-mode-alist '("\\.csproj$" . nxml-mode))
 #+end_src
 
+** =oil= - Hacked-together support for the oil scripting language
+#+begin_src emacs-lisp
+  (use-package oil
+    :mode ("\\.oil\\'" . oil-mode))
+#+end_src
+
 * Applications
 
 ** =pdf-tools= - PDF reader
@@ -5750,6 +5756,16 @@ Exit minibuffer before adding notes.
 
     (add-hook 'org-src-mode-hook 'org-ad-suppress-final-newline)
     (advice-add 'org-edit-src-exit :before 'org-ad-delete-trailing-space-on-src-block-exit))
+#+end_src
+
+*** Teach org-babel about =oil=
+#+begin_src emacs-lisp
+  (use-package ob-shell
+    :after (ob)
+    :demand t
+    :config
+    (add-to-list 'org-babel-shell-names "oil")
+    (org-babel-shell-initialize))
 #+end_src
 
 ** Latex
