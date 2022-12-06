@@ -2658,6 +2658,7 @@ Disable completion backend integration, since we're not using =company=.
     :hook (emacs-lisp-mode . eldoc-mode)
     :custom
     (eldoc-idle-delay 0.2)
+    (eldoc-echo-area-display-truncation-message nil)
     :config
     (define-advice eldoc-doc-buffer (:after (&rest args) select-window)
       (select-window (get-buffer-window eldoc--doc-buffer))))
