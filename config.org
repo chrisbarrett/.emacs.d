@@ -1464,6 +1464,7 @@ Configure how =ediff= should display windows when started.
 #+end_src
 
 *** TODO Suppress eldoc when point is at a flycheck error
+On the other hand, might not be needed for flymake.
 
 ** =M-n= to end in =completing-read= will use the thing at point
 #+begin_src emacs-lisp
@@ -2517,9 +2518,11 @@ https://github.com/syl20bnr/evil-iedit-state/issues/36
   (defalias 'evil-redirect-digit-argument #'ignore)
 #+end_src
 
-* =lsp-mode= - language-server support                               :disabled:
+* Language Server Protocol (LSP)
 
-** Set which modes use LSP
+** DEPRECATED =lsp-mode= - language-server support                  :disabled:
+
+*** Set which modes use LSP
 #+begin_src emacs-lisp
   (defconst lsp-enabled-modes
     '(csharp-mode
@@ -2537,7 +2540,7 @@ https://github.com/syl20bnr/evil-iedit-state/issues/36
               'lsp-deferred))
 #+end_src
 
-** Configure lsp-mode variables
+*** Configure lsp-mode variables
 #+begin_src emacs-lisp
   (use-package lsp-mode
     :commands (lsp lsp-deferred)
@@ -2566,7 +2569,7 @@ Disable completion backend integration, since we're not using =company=.
     (lsp-completion-provider :none))
 #+end_src
 
-** Inject LSP servers from nix build
+*** Inject LSP servers from nix build
 #+begin_src emacs-lisp
   (use-package lsp-mode
     :custom
@@ -2585,7 +2588,7 @@ Disable completion backend integration, since we're not using =company=.
                     `(:system ,(getenv "NIX_EMACS_JSON_LANGUAGE_SERVER"))))
 #+end_src
 
-** Automatically format on save
+*** Automatically format on save
 #+begin_src emacs-lisp
   (defvar lsp-format-on-save t)
 
@@ -2601,7 +2604,7 @@ Disable completion backend integration, since we're not using =company=.
     (add-hook 'lsp-mode-hook #'config-lsp--format-before-save))
 #+end_src
 
-** =lsp-ui= - Additional package providing richer UI elements for lsp-mode
+*** =lsp-ui= - Additional package providing richer UI elements for lsp-mode
 #+begin_src emacs-lisp
   (use-package lsp-ui
     :after lsp-mode
@@ -2618,7 +2621,7 @@ Disable completion backend integration, since we're not using =company=.
     (yaml-mode . lsp-ui-doc-mode))
 #+end_src
 
-* =eglot-mode= - language-server support
+** =eglot-mode= - language-server support
 #+begin_src emacs-lisp
   (use-package eglot
     :hook
@@ -4366,6 +4369,8 @@ during =ediff= merges, etc.
 
     (advice-add 'flycheck-may-enable-mode :filter-return #'config-flycheck--maybe-inhibit))
 #+end_src
+
+*** TODO Eval replacing Flycheck with Flymake
 
 ** =smartparens= - Structured expression editing
 Use =smartparens= to keep parens and braces paired and manipulate expressions in a
