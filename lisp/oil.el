@@ -93,8 +93,6 @@ not present in sh."
                              1 font-lock-builtin-face)))
 
   (setq-local syntax-propertize-function #'sh-syntax-propertize-function)
-  (setq-local defun-prompt-regexp
-              (rx bol "proc" (+ space) (+ (any alnum "_")) (* space) "(" (*? any) ")"))
   (setq-local add-log-current-defun-function #'sh-current-defun-name)
   (setq-local outline-regexp "###"))
 
