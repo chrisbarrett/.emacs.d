@@ -67,8 +67,6 @@ epkgs: with epkgs; [
   kind-icon
   latex-preview-pane
   link-hint
-  lsp-mode
-  lsp-ui
   magit
   magit-delta
   magit-popup
