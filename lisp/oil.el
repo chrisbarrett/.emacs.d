@@ -97,6 +97,10 @@ not present in sh."
   (setq-local local-abbrev-table sh-mode-abbrev-table)
   (setq-local comint-dynamic-complete-functions sh-dynamic-complete-functions)
 
+  (setq-local sh-indent-after-if 0)
+  (setq-local sh-indent-after-else 0)
+  (setq-local sh-indent-after-loop-construct 0)
+
   ;; we can't look if previous line ended with `\'
   (setq-local comint-prompt-regexp (rx bol (* space)))
   (setq-local imenu-case-fold-search nil)
