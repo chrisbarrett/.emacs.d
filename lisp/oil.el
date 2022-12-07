@@ -110,7 +110,7 @@ not present in sh."
   (setq-local outline-regexp "###"))
 
 ;;;###autoload
-(define-derived-mode oil-mode prog-mode
+(define-derived-mode oil-mode prog-mode "Shell-script"
   "Major-mode for oil shell scripts."
   (oil-vars-setup)
   (sh-set-shell "oil")
