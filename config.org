@@ -4402,6 +4402,16 @@ See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
                      :post-handlers '(config-smartparens-add-space-after-sexp-insertion))))
 #+end_src
 
+*** Oil
+#+begin_src emacs-lisp
+  (use-package smartparens
+    :config
+    (sp-with-modes '(oil-mode)
+        (sp-local-pair "'''" "'''")
+        (sp-local-pair "$'''" "'''")
+        (sp-local-pair "\"\"\"" "\"\"\"")))
+#+end_src
+
 *** Don't pad curly-braces in markdown, org, and latex
 #+begin_src emacs-lisp
   (use-package smartparens
