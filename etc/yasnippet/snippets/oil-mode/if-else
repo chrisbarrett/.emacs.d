@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: if-else
+# key: ie
+# condition: (yas-funcs-bolp)
+# --
+if ${1:pred} {
+  $0
+} else {
+
+}

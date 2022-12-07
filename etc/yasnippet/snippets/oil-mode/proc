@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: proc
+# key: p
+# condition: (yas-funcs-bolp)
+# --
+proc ${1:name} (${2:args...}) {
+  ### Doc
+  $0
+}
