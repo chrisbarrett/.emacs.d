@@ -42,9 +42,6 @@ epkgs: with epkgs; [
   f
   fira-code-mode
   flx
-  flycheck
-  flycheck-package
-  flycheck-plantuml
   forge
   format-all
   general
