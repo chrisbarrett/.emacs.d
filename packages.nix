@@ -60,7 +60,6 @@ epkgs: with epkgs; [
   historian
   hl-todo
   htmlize
-  ibuffer-projectile
   info-plus
   iscroll
   json-mode
@@ -104,7 +103,6 @@ epkgs: with epkgs; [
   pdf-tools
   plantuml-mode
   poporg
-  projectile
   proof-general
   rainbow-mode
   request

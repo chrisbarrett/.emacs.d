@@ -2625,7 +2625,7 @@ compatibility.
           (progn
             (message "Moving to git repository root")
             (eshell/cd dir))
-        (if-let* ((dir (projectile-project-root)))
+        (if-let* ((dir (project-root)))
             (progn
               (message "Moving to project root")
               (eshell/cd dir))
@@ -2854,9 +2854,6 @@ See:
 
 *** ~f~ - Files
 #+begin_src emacs-lisp
-  (autoload 'projectile-project-p "projectile")
-  (autoload 'projectile-invalidate-cache "projectile")
-
   (defun delete-current-buffer-and-file ()
     "Remove the file associated with the current buffer, then kill it."
     (interactive)
@@ -2869,10 +2866,6 @@ See:
        ((yes-or-no-p "Delete this file? ")
         (delete-file file t)
         (kill-buffer)
-
-        (when (projectile-project-p)
-          (call-interactively #'projectile-invalidate-cache))
-
         (message "File deleted: %s" file)))))
 
   (defun sudo-edit (&optional arg)
@@ -2953,7 +2946,7 @@ See:
 #+begin_src emacs-lisp
   (require 's)
   (require 'xref)
-  (autoload 'projectile-find-file "projectile")
+  (autoload 'project-find-file "project")
   (autoload 'xref-push-marker-stack "xref")
 
   (defun jump-to-file (file &optional pos)
@@ -2987,7 +2980,7 @@ See:
     "Open a nix config file."
     (interactive)
     (let ((default-directory paths-nix-directory))
-      (projectile-find-file)))
+      (project-find-file)))
 
   (defun hostname ()
     (cadr (s-match (rx (group (+? nonl)) (? "-" (+ digit)) (? ".local") eos)
@@ -3133,19 +3126,15 @@ See:
 #+begin_src emacs-lisp
   (leader-set-key :infix "p"
     "" '(nil :wk "projects")
-    "<tab>" '(projectile-toggle-between-implementation-and-test :wk "toggle impl/test")
-    "<backtab>" '(projectile-find-implementation-or-test-other-window :wk "find impl/test")
-    "!" '(projectile-run-async-shell-command-in-root :wk "shell command...")
-    "c" '(projectile-compile-project :wk "compile...")
-    "u" '(projectile-run-project :wk "run...")
-    "t" '(projectile-test-project :wk "test...")
-    "p" '(projectile-switch-project :wk "switch...")
-    "f" '(projectile-find-file :wk "find file...")
-    "d" '(projectile-find-dir :wk "find dir...")
-    "b" '(projectile-switch-to-buffer :wk "switch buffer...")
-    "D" '(projectile-dired :wk "dired")
+    "!" '(project-async-shell-command :wk "shell command...")
+    "c" '(project-compile :wk "compile...")
+    "p" '(project-switch-project :wk "switch...")
+    "f" '(project-find-file :wk "find file...")
+    "d" '(project-find-dir :wk "find dir...")
+    "b" '(project-switch-to-buffer :wk "switch buffer...")
+    "D" '(project-dired :wk "dired")
     "/" '(consult-ripgrep :wk "search (rg)")
-    "r" '(projectile-replace :wk "replace"))
+    "r" '(project-query-replace-regexp :wk "replace"))
 #+end_src
 
 *** ~r~ - registers/dogears
@@ -3851,6 +3840,19 @@ dot).
     (dired-omit-files (rx bol (or "." "__pycache__")))
     (dired-omit-verbose nil)
     (dired-clean-up-buffers-too t))
+#+end_src
+
+** =project= - Project and repo detection
+#+begin_src emacs-lisp
+  (use-package project
+    :custom
+    (project-vc-ignores '("*.elc"
+                          "*.eln"
+                          "*.gz"
+                          "*.meta"
+                          "*.tar"
+                          "*.tgz"
+                          "*.zip")))
 #+end_src
 
 * Git
@@ -7168,7 +7170,7 @@ version.
        error-callback)))
 #+end_src
 
-* DEPRECATED =projectile= - Project and repo-level commands
+* DEPRECATED =projectile= - Project and repo-level commands          :disabled:
 =projectile= provides commands for working with projects, and a useful utility
 function to find the root directory of the project.
 
