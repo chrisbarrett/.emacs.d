@@ -58,7 +58,7 @@ not present in sh."
 (setf (alist-get 'oil sh-assignment-regexp)
       (rx bol
           (or "var" "const") (+ space)
-          (group (+ (any alnum "_")))
+          (group (+ (any alnum "_" "-")))
           (* space)
           "="))
 
@@ -87,8 +87,9 @@ not present in sh."
           ((?/ . "w") (?~ . "w") (?. . "w") (?- . "w") (?_ . "w")) nil
           (font-lock-syntactic-face-function
            . ,#'sh-font-lock-syntactic-face-function)))
+
   (font-lock-add-keywords 'oil-mode
-                          `((,(rx-to-string `(and (not (any alnum "_")) (group (or ,@oil-sigils)) (+ (any alnum "_"))))
+                          `((,(rx-to-string `(and (not (any alnum "_" "-")) (group (or ,@oil-sigils)) (+ (any alnum "_"))))
                              1 font-lock-builtin-face)))
 
   (setq-local syntax-propertize-function #'sh-syntax-propertize-function)
