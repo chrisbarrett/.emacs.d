@@ -48,7 +48,7 @@ not present in sh."
 (defconst oil-font-lock-extra-keywords
   `((,(rx-to-string `(and (not (any alnum "_" "-")) (group (or ,@oil-sigils)) (+ (any alnum "_"))))
      1 font-lock-builtin-face)
-    (,(rx bol (* space) "proc" (+ space) (group (+ (any alnum "-" "_"))))
+    (,(rx bol (* space) "proc" (+ space) (group (? ".") (+ (any alnum "-" "_"))))
      1 font-lock-function-name-face)
     (,(rx bol (+ space) (group "###" (* nonl)))
      1 font-lock-doc-face)))
