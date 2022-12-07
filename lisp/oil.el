@@ -40,7 +40,7 @@ not present in sh."
   :group 'oil-mode
   :type '(repeat string))
 
-(defcustom oil-sigils '("$" "@" ":" "%")
+(defcustom oil-sigils '("$" "@" ":" "%" "^")
   "Sigils used before identifiers in the oil shell language."
   :group 'oil-mode
   :type '(repeat string))
