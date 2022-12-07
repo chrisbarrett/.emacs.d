@@ -32,7 +32,7 @@
   :group 'oil-mode
   :type '(repeat string))
 
-(defcustom oil-keywords '("var" "const" "setvar" "proc")
+(defcustom oil-keywords '("var" "const" "setvar" "proc" "use" "module")
   "Keywords used in the oil shell language.
 
 Specifically, those keywords in the oil shell language that are
@@ -50,6 +50,8 @@ not present in sh."
      1 font-lock-builtin-face)
     (,(rx bol (* space) "proc" (+ space) (group (? ".") (+ (any alnum "-" "_"))))
      1 font-lock-function-name-face)
+    (,(rx bol (* space) "module" (+ space) (group (+ (any alnum "-" "_"))))
+     1 font-lock-type-face)
     (,(rx bol (+ space) (group "###" (* nonl)))
      1 font-lock-doc-face)))
 
