@@ -27,7 +27,7 @@
   :group 'languages
   :prefix "oil-")
 
-(defcustom oil-builtins '("json")
+(defcustom oil-builtins '("json" "source")
   "Builtin functions for the oil shell language."
   :group 'oil-mode
   :type '(repeat string))
@@ -45,15 +45,33 @@ not present in sh."
   :group 'oil-mode
   :type '(repeat string))
 
+(defconst oil-font-lock-extra-keywords
+  `((,(rx-to-string `(and (not (any alnum "_" "-")) (group (or ,@oil-sigils)) (+ (any alnum "_"))))
+     1 font-lock-builtin-face)
+    (,(rx bol (* space) "proc" (+ space) (group (+ (any alnum "-" "_"))))
+     1 font-lock-function-name-face)
+    (,(rx bol (+ space) (group "###" (* nonl)))
+     1 font-lock-doc-face)))
+
 
 
 (setf (alist-get 'oil sh-ancestor-alist) 'jsh)
+
+(setf (alist-get 'oil sh-mode-syntax-table-input)
+      `(,sh-mode-syntax-table
+        ?$ "'"
+        ?: "'"
+        ?% "'"))
 
 (setf (alist-get 'oil sh-shell-arg) nil)
 
 (setf (alist-get 'oil sh-builtins) oil-builtins)
 
 (setf (alist-get 'oil sh-test) (cons "()" 1))
+
+(setf (alist-get 'oil sh-font-lock-keywords-var)
+      (append `(sh-append sh)
+              oil-font-lock-extra-keywords))
 
 (setf (alist-get 'oil sh-assignment-regexp)
       (rx bol
@@ -82,16 +100,11 @@ not present in sh."
   (setq-local imenu-case-fold-search nil)
   (setq font-lock-defaults
         `((sh-font-lock-keywords
-           sh-font-lock-keywords-1 sh-font-lock-keywords-2)
+           sh-font-lock-keywords-1
+           sh-font-lock-keywords-2)
           nil nil
           ((?/ . "w") (?~ . "w") (?. . "w") (?- . "w") (?_ . "w")) nil
-          (font-lock-syntactic-face-function
-           . ,#'sh-font-lock-syntactic-face-function)))
-
-  (font-lock-add-keywords 'oil-mode
-                          `((,(rx-to-string `(and (not (any alnum "_" "-")) (group (or ,@oil-sigils)) (+ (any alnum "_"))))
-                             1 font-lock-builtin-face)))
-
+          (font-lock-syntactic-face-function . ,#'sh-font-lock-syntactic-face-function)))
   (setq-local syntax-propertize-function #'sh-syntax-propertize-function)
   (setq-local add-log-current-defun-function #'sh-current-defun-name)
   (setq-local outline-regexp "###"))
