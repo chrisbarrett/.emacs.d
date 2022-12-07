@@ -27,12 +27,12 @@
   :group 'languages
   :prefix "oil-")
 
-(defcustom oil-builtins nil
+(defcustom oil-builtins '("json")
   "Builtin functions for the oil shell language."
   :group 'oil-mode
   :type '(repeat string))
 
-(defcustom oil-keywords '("var" "const")
+(defcustom oil-keywords '("var" "const" "setvar")
   "Keywords used in the oil shell language.
 
 Specifically, those keywords in the oil shell language that are
@@ -50,6 +50,8 @@ not present in sh."
 (setf (alist-get 'oil sh-ancestor-alist) 'jsh)
 
 (setf (alist-get 'oil sh-shell-arg) nil)
+
+(setf (alist-get 'oil sh-builtins) oil-builtins)
 
 (setf (alist-get 'oil sh-test) (cons "()" 1))
 
@@ -73,8 +75,7 @@ not present in sh."
   (setq-local comment-start "# ")
   (setq-local comment-start-skip (rx (+ "#") (* space)))
   (setq-local local-abbrev-table sh-mode-abbrev-table)
-  (setq-local comint-dynamic-complete-functions
-              sh-dynamic-complete-functions)
+  (setq-local comint-dynamic-complete-functions sh-dynamic-complete-functions)
 
   ;; we can't look if previous line ended with `\'
   (setq-local comint-prompt-regexp (rx bol (* space)))
