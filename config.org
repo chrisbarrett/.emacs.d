@@ -3853,58 +3853,6 @@ dot).
     (dired-clean-up-buffers-too t))
 #+end_src
 
-** =projectile= - Project and repo-level commands
-=projectile= provides commands for working with projects, and a useful utility
-function to find the root directory of the project.
-
-Emacs now comes with =project.el=, but it provides a subset of the functionality
-of =projectile=. Use =projectile= until the builtin functionality is more complete.
-
-#+begin_src emacs-lisp
-  (use-package projectile
-    :hook (after-init . projectile-mode)
-    :custom
-    (projectile-project-search-path paths-project-directories)
-    (projectile-switch-project-action (lambda () (dired default-directory)))
-    (projectile-enable-caching t)
-    (projectile-create-missing-test-files t)
-    (projectile-globally-ignored-files '("TAGS" ".DS_Store"))
-    (projectile-globally-ignored-file-suffixes
-     '("meta"
-       "gz"
-       "zip"
-       "tar"
-       "tgz"
-       "elc"
-       "eln"))
-    (projectile-globally-ignored-directories
-     '("coverage"
-       ".bzr"
-       ".eunit"
-       ".fslckout"
-       ".g8"
-       ".git"
-       ".hg"
-       ".svn"
-       "dist"
-       "jars"
-       "node_modules"
-       "vendor"
-       "target")))
-#+end_src
-
-*** Exclude Nix store from known projects
-#+begin_src emacs-lisp
-  (use-package projectile
-    :preface
-    (defun config-projectile-ignored-project-function (path)
-      (string-prefix-p "/nix/store/" path))
-    :custom
-    (projectile-ignored-project-function #'config-projectile-ignored-project-function))
-#+end_src
-
-*** Cache some common directories
-
 * Git
 
 ** =magit= - interactive commands for working with git
@@ -7219,6 +7167,58 @@ version.
          (funcall callback))
        error-callback)))
 #+end_src
+
+* DEPRECATED =projectile= - Project and repo-level commands
+=projectile= provides commands for working with projects, and a useful utility
+function to find the root directory of the project.
+
+Emacs now comes with =project.el=, but it provides a subset of the functionality
+of =projectile=. Use =projectile= until the builtin functionality is more complete.
+
+#+begin_src emacs-lisp
+  (use-package projectile
+    :hook (after-init . projectile-mode)
+    :custom
+    (projectile-project-search-path paths-project-directories)
+    (projectile-switch-project-action (lambda () (dired default-directory)))
+    (projectile-enable-caching t)
+    (projectile-create-missing-test-files t)
+    (projectile-globally-ignored-files '("TAGS" ".DS_Store"))
+    (projectile-globally-ignored-file-suffixes
+     '("meta"
+       "gz"
+       "zip"
+       "tar"
+       "tgz"
+       "elc"
+       "eln"))
+    (projectile-globally-ignored-directories
+     '("coverage"
+       ".bzr"
+       ".eunit"
+       ".fslckout"
+       ".g8"
+       ".git"
+       ".hg"
+       ".svn"
+       "dist"
+       "jars"
+       "node_modules"
+       "vendor"
+       "target")))
+#+end_src
+
+** Exclude Nix store from known projects
+#+begin_src emacs-lisp
+  (use-package projectile
+    :preface
+    (defun config-projectile-ignored-project-function (path)
+      (string-prefix-p "/nix/store/" path))
+    :custom
+    (projectile-ignored-project-function #'config-projectile-ignored-project-function))
+#+end_src
+
+** Cache some common directories
 
 * DEPRECATED =flycheck=                                              :disabled:
 =Flycheck= integrates with external tools to show indications of errors and
