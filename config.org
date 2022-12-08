@@ -6855,7 +6855,12 @@ property drawer and the title. Advise it to fix that.
 ** =org-roam-dblocks= - Define dynamic block types to extend org-roam
 #+begin_src emacs-lisp
   (use-package org-roam-dblocks
-    :hook (org-mode . org-roam-dblocks-autoupdate-mode))
+    :commands (org-roam-dblocks-autoupdate-mode)
+    :preface
+    (defun config-org-roam-dblocks-maybe-enable-autoupdate-mode ()
+      (unless (string-match-p (rx ".template.org" eos) (buffer-name))
+        (org-roam-dblocks-autoupdate-mode +1)))
+    :hook (org-mode . config-org-roam-dblocks-maybe-enable-autoupdate-mode))
 #+end_src
 
 ** Define a parser for my title conventions
