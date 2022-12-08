@@ -302,14 +302,11 @@ TAGS are the tags to use when displaying the list."
   "Insert an orgmode link at point for URL."
   (interactive (list (org-funcs-read-url)))
   (save-match-data
-    (let* ((title (or (org-funcs-guess-or-retrieve-title url)
-                      (read-string "Title: ")))
-           (escaped-title (s-replace-all '(("[" . "(")
-                                           ("]" . ")"))
-                                         title)))
+    (let ((title (or (org-funcs-guess-or-retrieve-title url)
+                     (read-string "Title: "))))
       (unless (thing-at-point-looking-at (rx bol (* space)))
         (just-one-space))
-      (insert (format "[[%s][%s]]" url escaped-title))
+      (insert (org-link-make-string url title))
       (just-one-space))))
 
 (defun org-funcs-roam-node-find (&optional other-window)

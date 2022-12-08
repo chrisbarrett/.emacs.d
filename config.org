@@ -6858,7 +6858,8 @@ property drawer and the title. Advise it to fix that.
     :commands (org-roam-dblocks-autoupdate-mode)
     :preface
     (defun config-org-roam-dblocks-maybe-enable-autoupdate-mode ()
-      (unless (string-match-p (rx ".template.org" eos) (buffer-name))
+      (unless (or (string-match-p (rx ".template.org" eos) (buffer-name))
+                  (derived-mode-p 'snippet-mode))
         (org-roam-dblocks-autoupdate-mode +1)))
     :hook (org-mode . config-org-roam-dblocks-maybe-enable-autoupdate-mode))
 #+end_src
