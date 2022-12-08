@@ -14,12 +14,15 @@
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
+
+
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
 ;;; Code:
 
+(require 'flymake)
 (require 'sh-script)
 
 (defgroup oil-mode nil
@@ -39,6 +42,11 @@ Specifically, those keywords in the oil shell language that are
 not present in sh."
   :group 'oil-mode
   :type '(repeat string))
+
+(defcustom oil-program "oil"
+  "The path to the oil binary."
+  :group 'oil-mode
+  :type 'string)
 
 (defcustom oil-sigils '("$" "@" ":" "%" "^" "&")
   "Sigils used before identifiers in the oil shell language."
@@ -115,11 +123,56 @@ not present in sh."
   (setq-local add-log-current-defun-function #'sh-current-defun-name)
   (setq-local outline-regexp "###"))
 
+(defconst oil--error-line-regexp
+  (rx bol "'" (group (+? nonl)) "'"
+      ":" (group (+ digit))
+      ":" (+ space) (group (+ nonl))))
+
+(defun oil--flymake-validate-parse-buffer ()
+  (save-match-data
+    (goto-char (point-min))
+    (let ((diagnostics))
+
+      (while (search-forward-regexp oil--error-line-regexp nil t)
+        (let* ((file (match-string 1))
+               (line (string-to-number (match-string 2)))
+               (text (match-string 3))
+               (col
+                ;; Backtrack to recover the column from the error's ^~~~~
+                ;; indicator.
+                (save-excursion
+                  (forward-line -1)
+                  (goto-char (line-beginning-position))
+                  (when (looking-at (rx bol (>= 2 space) (group "^" (* "~")) (* space) eol))
+                    (goto-char (match-beginning 1))
+                    (1- (current-column)))))
+               (diagnostic (flymake-make-diagnostic file (cons line col) nil :error text)))
+          (push diagnostic diagnostics)))
+
+      (nreverse diagnostics))))
+
+(cl-defun oil-flymake-validate (report-fn &rest _)
+  (let ((file (buffer-file-name)))
+    (when (file-exists-p file)
+      (let* ((buffer (generate-new-buffer " *flymake-oil*" t))
+             (proc (start-process "flymake-oil" buffer oil-program "-n" file)))
+        (set-process-sentinel proc (lambda (proc _)
+                                     (unwind-protect
+                                         (funcall report-fn
+                                                  (pcase (process-status proc)
+                                                    ((or 1 126 127)
+                                                     :panic)
+                                                    (_
+                                                     (with-current-buffer buffer
+                                                       (oil--flymake-validate-parse-buffer)))))
+                                       (kill-buffer buffer))))))))
+
 ;;;###autoload
 (define-derived-mode oil-mode prog-mode "Shell-script"
   "Major-mode for oil shell scripts."
   (oil-vars-setup)
   (sh-set-shell "oil")
+  (add-hook 'flymake-diagnostic-functions #'oil-flymake-validate nil t)
   (add-hook 'completion-at-point-functions #'sh-completion-at-point-function nil t)
   (add-hook 'syntax-propertize-extend-region-functions #'syntax-propertize-multiline 'append 'local)
   (add-hook 'completion-at-point-functions #'comint-completion-at-point nil t)
