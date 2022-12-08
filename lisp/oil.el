@@ -35,7 +35,7 @@
   :group 'oil-mode
   :type '(repeat string))
 
-(defcustom oil-keywords '("var" "const" "setvar" "proc" "use" "module")
+(defcustom oil-keywords '("var" "const" "setvar" "proc" "use" "module" "try")
   "Keywords used in the oil shell language.
 
 Specifically, those keywords in the oil shell language that are
