@@ -178,6 +178,46 @@ not present in sh."
   (add-hook 'completion-at-point-functions #'comint-completion-at-point nil t)
   (add-hook 'hack-local-variables-hook #'sh-after-hack-local-variables nil t))
 
+
+;; org-babel support
+
+(require 'ob-shell)
+
+(defun oil--org-babel-format-assignments (params)
+  (let ((sep (cdr (assq :separator params)))
+        (hline (when (string= "yes" (cdr (assq :hlines params)))
+                 (or (cdr (assq :hline-string params))
+                     "hline"))))
+    (mapcar
+     (pcase-lambda (`(,varname . ,values))
+       (pcase values
+         (`((,_ ,_ . ,_) . ,_)               ;two-dimensional array
+          (format "const %s = {\n%s\n}"
+                  varname
+                  (mapconcat
+                   (lambda (items)
+                     (format "%s: %s,"
+                             (org-babel-sh-var-to-sh (car items) sep hline)
+                             (org-babel-sh-var-to-sh (cdr items) sep hline)))
+                   values
+                   "\n")))
+         (`(,_ . ,_)                         ;simple list
+          (format "const %s = [ %s ]"
+                  varname
+                  (mapconcat
+                   (lambda (value) (org-babel-sh-var-to-sh value sep hline))
+                   values
+                   " ")))
+         (_                                  ;scalar value
+          (format "const %s = %s" varname (org-babel-sh-var-to-sh values sep hline)))))
+     (org-babel--get-vars params))))
+
+(define-advice org-babel-variable-assignments:shell (:around (fn params) oil-variable-syntax)
+  (funcall (if (string-suffix-p "oil" shell-file-name)
+               #'oil--org-babel-format-assignments
+             fn)
+           params))
+
 (provide 'oil)
 
 ;;; oil.el ends here
