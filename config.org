@@ -6539,14 +6539,15 @@ while in a table.
     "Populate the current roam node with headings."
     (interactive)
     (org-with-wide-buffer
-     (goto-char (point-max))
-     (dolist (heading '("Notes" "Topics" "Related"))
-       (goto-char (marker-position (org-roam-capture-find-or-create-olp (list heading)))))
+     (unless (org-roam-dailies--daily-note-p)
+       (goto-char (point-max))
+       (dolist (heading '("Notes" "Topics" "Related"))
+         (goto-char (marker-position (org-roam-capture-find-or-create-olp (list heading)))))
 
-     (org-with-point-at (org-roam-capture-find-or-create-olp '("References"))
-       (let ((has-content-p (org-element-property :contents-begin (org-element-at-point))))
-         (unless has-content-p
-           (org-create-dblock '(:name "backlinks" :tags litnotes :only-missing t)))))))
+       (org-with-point-at (org-roam-capture-find-or-create-olp '("References"))
+         (let ((has-content-p (org-element-property :contents-begin (org-element-at-point))))
+           (unless has-content-p
+             (org-create-dblock '(:name "backlinks" :tags litnotes :only-missing t))))))))
 
   (add-hook 'org-roam-capture-new-node-hook #'config-org-roam-populate-node-headings)
 #+end_src
