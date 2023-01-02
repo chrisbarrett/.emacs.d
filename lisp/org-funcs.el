@@ -315,14 +315,11 @@ TAGS are the tags to use when displaying the list."
 With optional prefix arg OTHER-WINDOW, visit the node in another
 window."
   (interactive "P")
-  (let ((filter (lambda (node)
-                  (let ((tags (org-roam-node-tags node)))
-                    (cond
-                     ((seq-contains-p tags "litnote")
-                      (= 0 (org-roam-node-level node)))
-                     (t
-                      (null (seq-intersection tags '("dailies")))))))))
-    (org-roam-node-find other-window nil filter)))
+  (org-roam-node-find other-window
+                      nil
+                      (lambda (node)
+                        (let ((tags (org-roam-node-tags node)))
+                          (null (seq-intersection tags '("dailies" "litnotes")))))))
 
 (defun org-funcs-read-roam-node-link ()
   (let ((node (org-roam-node-read)))
