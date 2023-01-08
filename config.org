@@ -6436,6 +6436,8 @@ This makes it much easier to edit text using emphasis markers correctly.
               (default-directory (f-dirname file)))
         (when (zerop level)
           (magit-call-git "rm" (magit-convert-filename-for-git file)))))
+    :custom
+    (org-roam-rewrite-rename-without-confirmation-p t)
     :config
     (setq org-roam-rewrite-extract-excluded-tags
           (seq-uniq (append
