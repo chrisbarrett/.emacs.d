@@ -3855,6 +3855,15 @@ dot).
                           "*.zip")))
 #+end_src
 
+*** Use =magit= instead of =vc=
+#+begin_src emacs-lisp
+  (use-package project
+    :after magit
+    :config
+    (define-advice project-vc-dir (:override () use-magit)
+      (magit-status (project-root (project-current t)))))
+#+end_src
+
 * Git
 
 ** =magit= - interactive commands for working with git
