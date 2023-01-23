@@ -6546,31 +6546,44 @@ while in a table.
 
 ** Create a default set of headings for all new nodes
 #+begin_src emacs-lisp
+  (defun config-org--move-headline-to-end ()
+    (cl-assert (org-at-heading-p))
+    (while (save-excursion
+             (org-get-next-sibling))
+      (org-move-subtree-down)))
+
+  (defun config-org--ensure-dblock (name &rest props)
+    (cl-assert (org-at-heading-p))
+    (save-restriction
+      (org-narrow-to-subtree)
+      (unless (search-forward-regexp (rx-to-string `(and bol (* space) "#+BEGIN:" (+ space) ,name)) nil t)
+        (goto-char (point-max))
+        (org-create-dblock (append (list :name name) props)))))
+
   (defun config-org-roam-populate-node-headings ()
     "Populate the current roam node with headings."
     (interactive)
-    (org-with-wide-buffer
-     (unless (org-roam-dailies--daily-note-p)
-       (goto-char (point-max))
-
-       (dolist (heading '("Notes" "Topics" "Related"))
-         (let ((marker (org-roam-capture-find-or-create-olp (list heading))))
-           (goto-char (marker-position marker))
-           (set-marker marker nil)))
-
-       (let ((marker (org-roam-capture-find-or-create-olp '("References"))))
-         (org-with-point-at marker
-           (save-restriction
-             (org-narrow-to-subtree)
-             (unless (search-forward-regexp (rx bol (* space) "#+BEGIN:" (+ space) "backlinks") nil t)
-               (goto-char (point-max))
-               (org-create-dblock '(:name "backlinks" :tags litnotes :only-missing t)))))
-         (set-marker marker nil)))))
+    (unless (org-roam-dailies--daily-note-p)
+      (org-with-wide-buffer
+       (let ((initial-contents (buffer-substring-no-properties (point-min) (point-max))))
+         (dolist (heading '("Notes" "Topics" "Related" "References" "Footnotes"))
+           (when-let* ((marker (if (equal heading "Footnotes")
+                                   (org-find-exact-headline-in-buffer "Footnotes")
+                                 (org-roam-capture-find-or-create-olp (list heading)))))
+             (org-with-point-at marker
+               (config-org--move-headline-to-end)
+               (when (equal heading "References")
+                 (config-org--ensure-dblock "backlinks" :tags 'litnotes :only-missing t)))
+             (set-marker marker nil)))
+         (when (equal initial-contents
+                      (buffer-substring-no-properties (point-min) (point-max)))
+           (set-buffer-modified-p nil))))))
 
   (add-hook 'org-roam-capture-new-node-hook #'config-org-roam-populate-node-headings)
 
   (define-advice org-roam-node-open (:after (&rest _) ensure-default-headlines)
-    (config-org-roam-populate-node-headings))
+    (config-org-roam-populate-node-headings)
+    (save-buffer))
 #+end_src
 
 ** =org-roam-ui= - Web browser interface to org-roam
