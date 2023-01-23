@@ -6560,8 +6560,10 @@ while in a table.
 
        (let ((marker (org-roam-capture-find-or-create-olp '("References"))))
          (org-with-point-at marker
-           (let ((has-content-p (org-element-property :contents-begin (org-element-at-point))))
-             (unless has-content-p
+           (save-restriction
+             (org-narrow-to-subtree)
+             (unless (search-forward-regexp (rx bol (* space) "#+BEGIN:" (+ space) "backlinks") nil t)
+               (goto-char (point-max))
                (org-create-dblock '(:name "backlinks" :tags litnotes :only-missing t)))))
          (set-marker marker nil)))))
 
