@@ -375,6 +375,23 @@ citar."
   (interactive (list (citar-select-ref)))
   (org-roam-ref-add (format "[cite:@%s]" key)))
 
+
+
+(defun org-funcs-move-headline-to-end ()
+  (cl-assert (org-at-heading-p))
+  (while (save-excursion (org-get-next-sibling))
+    (org-move-subtree-down)))
+
+(defun org-funcs-ensure-dblock-for-heading-at-pt (props)
+  (cl-assert (plisty-p props))
+  (cl-assert (org-at-heading-p))
+  (save-restriction
+    (org-narrow-to-subtree)
+    (let ((name (plist-get props :name)))
+      (unless (search-forward-regexp (rx-to-string `(and bol (* space) "#+BEGIN:" (+ space) ,name)) nil t)
+        (goto-char (point-max))
+        (org-create-dblock props)))))
+
 (provide 'org-funcs)
 
 ;;; org-funcs.el ends here

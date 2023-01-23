@@ -6544,45 +6544,63 @@ while in a table.
   (add-hook 'org-roam-capture-new-node-hook #'config-org-roam-set-created-timestamp)
 #+end_src
 
-** Create a default set of headings for all new nodes
+** Define a default set of headings for all new nodes
+The function below specifies the headings that nodes should contain, as well as
+their relative order.
+
 #+begin_src emacs-lisp
-  (defun config-org--move-headline-to-end ()
-    (cl-assert (org-at-heading-p))
-    (while (save-excursion
-             (org-get-next-sibling))
-      (org-move-subtree-down)))
+  (defun config-org-roam-default-headings (node)
+    (cond
+     ((org-roam-dailies--daily-note-p) nil)
+     ((seq-contains-p (org-roam-node-tags node) "litnotes")
+      '("Meta"
+        ("Topics" :ensure nil)
+        "Related"
+        ("References" :dblock (:name "backlinks" :tags 'litnotes :only-missing t))
+        "Notes"
+        ("Footnotes" :ensure nil)))
+     (t
+      '("Notes"
+        "Topics"
+        "Related"
+        ("References" :dblock (:name "backlinks" :tags 'litnotes :only-missing t))
+        ("Footnotes" :ensure nil)))))
+#+end_src
 
-  (defun config-org--ensure-dblock (name &rest props)
-    (cl-assert (org-at-heading-p))
-    (save-restriction
-      (org-narrow-to-subtree)
-      (unless (search-forward-regexp (rx-to-string `(and bol (* space) "#+BEGIN:" (+ space) ,name)) nil t)
-        (goto-char (point-max))
-        (org-create-dblock (append (list :name name) props)))))
+*** Populate roam nodes with default headings
+Write an interpreter from the headings spec defined above that populates nodes.
 
-  (defun config-org-roam-populate-node-headings ()
-    "Populate the current roam node with headings."
+#+begin_src emacs-lisp
+  (defun config-org-roam-populate-node-headings (&optional node)
+    "Populate the current roam NODE with headings."
     (interactive)
-    (unless (org-roam-dailies--daily-note-p)
+    (when-let* ((heading-specs (--map (append (-list it) (list :ensure t :dblock nil))
+                                      (config-org-roam-default-headings
+                                       (or node (org-roam-node-at-point t))))))
       (org-with-wide-buffer
        (let ((initial-contents (buffer-substring-no-properties (point-min) (point-max))))
-         (dolist (heading '("Notes" "Topics" "Related" "References" "Footnotes"))
-           (when-let* ((marker (if (equal heading "Footnotes")
-                                   (org-find-exact-headline-in-buffer "Footnotes")
-                                 (org-roam-capture-find-or-create-olp (list heading)))))
-             (org-with-point-at marker
-               (config-org--move-headline-to-end)
-               (when (equal heading "References")
-                 (config-org--ensure-dblock "backlinks" :tags 'litnotes :only-missing t)))
-             (set-marker marker nil)))
+         (-each heading-specs
+           (-lambda ((name &plist :ensure :dblock))
+             (when-let* ((marker (if ensure
+                                     (org-roam-capture-find-or-create-olp (list name))
+                                   (org-find-exact-headline-in-buffer name))))
+               (org-with-point-at marker
+                 (org-funcs-move-headline-to-end)
+                 (when dblock (org-funcs-ensure-dblock-for-heading-at-pt dblock)))
+               (set-marker marker nil))))
+
          (when (equal initial-contents
                       (buffer-substring-no-properties (point-min) (point-max)))
            (set-buffer-modified-p nil))))))
+#+end_src
 
+Automatically insert these headings into Roam nodes on creation & visit.
+
+#+begin_src emacs-lisp
   (add-hook 'org-roam-capture-new-node-hook #'config-org-roam-populate-node-headings)
 
-  (define-advice org-roam-node-open (:after (&rest _) ensure-default-headlines)
-    (config-org-roam-populate-node-headings)
+  (define-advice org-roam-node-open (:after (node &rest _) ensure-default-headlines)
+    (config-org-roam-populate-node-headings node)
     (save-buffer))
 #+end_src
 
