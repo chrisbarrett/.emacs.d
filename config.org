@@ -6568,6 +6568,9 @@ while in a table.
          (set-marker marker nil)))))
 
   (add-hook 'org-roam-capture-new-node-hook #'config-org-roam-populate-node-headings)
+
+  (define-advice org-roam-node-open (:after (&rest _) ensure-default-headlines)
+    (config-org-roam-populate-node-headings))
 #+end_src
 
 ** =org-roam-ui= - Web browser interface to org-roam
