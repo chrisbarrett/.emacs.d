@@ -6574,24 +6574,25 @@ Write an interpreter from the headings spec defined above that populates nodes.
   (defun config-org-roam-populate-node-headings (&optional node)
     "Populate the current roam NODE with headings."
     (interactive)
-    (when-let* ((heading-specs (--map (append (-list it) (list :ensure t :dblock nil))
-                                      (config-org-roam-default-headings
-                                       (or node (org-roam-node-at-point t))))))
-      (org-with-wide-buffer
-       (let ((initial-contents (buffer-substring-no-properties (point-min) (point-max))))
-         (-each heading-specs
-           (-lambda ((name &plist :ensure :dblock))
-             (when-let* ((marker (if ensure
-                                     (org-roam-capture-find-or-create-olp (list name))
-                                   (org-find-exact-headline-in-buffer name))))
-               (org-with-point-at marker
-                 (org-funcs-move-headline-to-end)
-                 (when dblock (org-funcs-ensure-dblock-for-heading-at-pt dblock)))
-               (set-marker marker nil))))
+    (when (org-roam-file-p)
+      (when-let* ((heading-specs (--map (append (-list it) (list :ensure t :dblock nil))
+                                        (config-org-roam-default-headings
+                                         (or node (org-roam-node-at-point t))))))
+        (org-with-wide-buffer
+         (let ((initial-contents (buffer-substring-no-properties (point-min) (point-max))))
+           (-each heading-specs
+             (-lambda ((name &plist :ensure :dblock))
+               (when-let* ((marker (if ensure
+                                       (org-roam-capture-find-or-create-olp (list name))
+                                     (org-find-exact-headline-in-buffer name))))
+                 (org-with-point-at marker
+                   (org-funcs-move-headline-to-end)
+                   (when dblock (org-funcs-ensure-dblock-for-heading-at-pt dblock)))
+                 (set-marker marker nil))))
 
-         (when (equal initial-contents
-                      (buffer-substring-no-properties (point-min) (point-max)))
-           (set-buffer-modified-p nil))))))
+           (when (equal initial-contents
+                        (buffer-substring-no-properties (point-min) (point-max)))
+             (set-buffer-modified-p nil)))))))
 #+end_src
 
 Automatically insert these headings into Roam nodes on creation & visit.
@@ -6601,7 +6602,14 @@ Automatically insert these headings into Roam nodes on creation & visit.
 
   (define-advice org-roam-node-open (:after (node &rest _) ensure-default-headlines)
     (config-org-roam-populate-node-headings node)
-    (save-buffer))
+    (let ((before-save-hook (remove #'config-org-roam-populate-node-headings before-save-hook)))
+      (save-buffer)))
+
+  (defun config-org-roam--ensure-headlines-on-save ()
+    (when (org-roam-file-p)
+      (add-hook 'before-save-hook #'config-org-roam-populate-node-headings nil t)))
+
+  (add-hook 'org-mode-hook #'config-org-roam--ensure-headlines-on-save)
 #+end_src
 
 ** =org-roam-ui= - Web browser interface to org-roam
