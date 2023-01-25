@@ -6562,6 +6562,7 @@ their relative order.
      (t
       '("Notes"
         "Topics"
+        ("Tasks" :ensure nil)
         "Related"
         ("References" :dblock (:name "backlinks" :tags 'litnotes :only-missing t))
         ("Footnotes" :ensure nil)))))
