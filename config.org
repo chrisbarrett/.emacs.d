@@ -6569,7 +6569,6 @@ their relative order.
         ("Footnotes" :ensure nil)))))
 #+end_src
 
-*** Populate roam nodes with default headings
 Write an interpreter from the headings spec defined above that populates nodes.
 
 #+begin_src emacs-lisp
@@ -6581,21 +6580,18 @@ Write an interpreter from the headings spec defined above that populates nodes.
                                         (config-org-roam-default-headings
                                          (or node (org-roam-node-at-point t))))))
         (org-with-wide-buffer
-         (let ((initial-contents (buffer-substring-no-properties (point-min) (point-max))))
-           (-each heading-specs
-             (-lambda ((name &plist :ensure :dblock :tags))
-               (when-let* ((marker (if ensure
-                                       (org-roam-capture-find-or-create-olp (list name))
-                                     (org-find-exact-headline-in-buffer name))))
-                 (org-with-point-at marker
-                   (org-set-tags tags)
-                   (org-funcs-move-headline-to-end)
-                   (when dblock (org-funcs-ensure-dblock-for-heading-at-pt dblock)))
-                 (set-marker marker nil))))
+         (-each heading-specs
+           (-lambda ((name &plist :ensure :dblock :tags))
+             (when-let* ((marker (if ensure
+                                     (org-roam-capture-find-or-create-olp (list name))
+                                   (org-find-exact-headline-in-buffer name))))
+               (org-with-point-at marker
+                 (org-set-tags tags)
+                 (org-funcs-move-headline-to-end)
+                 (when dblock (org-funcs-ensure-dblock-for-heading-at-pt dblock)))
+               (set-marker marker nil))))
 
-           (when (equal initial-contents
-                        (buffer-substring-no-properties (point-min) (point-max)))
-             (set-buffer-modified-p nil)))))))
+         (org-format-all-headings)))))
 #+end_src
 
 Automatically insert these headings into Roam nodes on creation & visit.
@@ -6603,16 +6599,18 @@ Automatically insert these headings into Roam nodes on creation & visit.
 #+begin_src emacs-lisp
   (add-hook 'org-roam-capture-new-node-hook #'config-org-roam-populate-node-headings)
 
-  (define-advice org-roam-node-open (:after (node &rest _) ensure-default-headlines)
-    (config-org-roam-populate-node-headings node)
-    (let ((before-save-hook (remove #'config-org-roam-populate-node-headings before-save-hook)))
-      (save-buffer)))
-
-  (defun config-org-roam--ensure-headlines-on-save ()
+  (defun config-org-roam--ensure-default-headlines ()
     (when (org-roam-file-p)
-      (add-hook 'before-save-hook #'config-org-roam-populate-node-headings nil t)))
+      (let ((initial-contents (buffer-substring-no-properties (point-min) (point-max)))
+            (updated-contents
+             (progn
+               (config-org-roam-populate-node-headings)
+               (buffer-substring-no-properties (point-min) (point-max)))))
+        (if (equal initial-contents updated-contents)
+            (set-buffer-modified-p nil)
+          (save-buffer)))))
 
-  (add-hook 'org-mode-hook #'config-org-roam--ensure-headlines-on-save)
+  (add-hook 'org-mode-hook #'config-org-roam--ensure-default-headlines)
 #+end_src
 
 ** =org-roam-ui= - Web browser interface to org-roam
