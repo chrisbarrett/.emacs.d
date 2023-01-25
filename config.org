@@ -6556,7 +6556,7 @@ their relative order.
       '("Meta"
         ("Topics" :ensure nil)
         "Related"
-        ("References" :dblock (:name "backlinks" :tags 'litnotes :only-missing t))
+        ("References" :dblock (:name "backlinks" :tags litnotes :only-missing t))
         "Notes"
         ("Footnotes" :ensure nil)))
      (t
@@ -6564,7 +6564,7 @@ their relative order.
         "Topics"
         ("Tasks" :ensure nil)
         "Related"
-        ("References" :dblock (:name "backlinks" :tags 'litnotes :only-missing t))
+        ("References" :dblock (:name "backlinks" :tags litnotes :only-missing t))
         ("Planning & Meetings" :tags ("outline") :ensure nil)
         ("Footnotes" :ensure nil)))))
 #+end_src
