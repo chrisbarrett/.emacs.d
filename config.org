@@ -6565,6 +6565,7 @@ their relative order.
         ("Tasks" :ensure nil)
         "Related"
         ("References" :dblock (:name "backlinks" :tags 'litnotes :only-missing t))
+        ("Planning & Meetings" :tags ("outline") :ensure nil)
         ("Footnotes" :ensure nil)))))
 #+end_src
 
@@ -6582,11 +6583,12 @@ Write an interpreter from the headings spec defined above that populates nodes.
         (org-with-wide-buffer
          (let ((initial-contents (buffer-substring-no-properties (point-min) (point-max))))
            (-each heading-specs
-             (-lambda ((name &plist :ensure :dblock))
+             (-lambda ((name &plist :ensure :dblock :tags))
                (when-let* ((marker (if ensure
                                        (org-roam-capture-find-or-create-olp (list name))
                                      (org-find-exact-headline-in-buffer name))))
                  (org-with-point-at marker
+                   (org-set-tags tags)
                    (org-funcs-move-headline-to-end)
                    (when dblock (org-funcs-ensure-dblock-for-heading-at-pt dblock)))
                  (set-marker marker nil))))
