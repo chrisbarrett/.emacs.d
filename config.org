@@ -6576,9 +6576,12 @@ Write an interpreter from the headings spec defined above that populates nodes.
     "Populate the current roam NODE with headings."
     (interactive)
     (when (org-roam-file-p)
-      (when-let* ((heading-specs (--map (append (-list it) (list :ensure t :dblock nil))
-                                        (config-org-roam-default-headings
-                                         (or node (org-roam-node-at-point t))))))
+      (when-let* ((node (or node
+                            (org-with-wide-buffer
+                             (goto-char (point-min))
+                             (org-roam-node-at-point))))
+                  (heading-specs (--map (append (-list it) (list :ensure t :dblock nil))
+                                        (config-org-roam-default-headings node))))
         (org-with-wide-buffer
          (-each heading-specs
            (-lambda ((name &plist :ensure :dblock :tags))
