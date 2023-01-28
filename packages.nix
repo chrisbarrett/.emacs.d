@@ -106,6 +106,7 @@ epkgs: with epkgs; [
   proof-general
   rainbow-mode
   request
+  rust-mode
   rotate
   shut-up
   simple-httpd
