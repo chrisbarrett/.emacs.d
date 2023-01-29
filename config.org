@@ -2106,8 +2106,9 @@ I sometimes want to do just-one-space. There's no nice way to do this. The hacky
 solution other is to add an inline lisp call inline to =just-one-space=.
 
 #+begin_src emacs-lisp
-  (add-to-list 'warning-suppress-types '(yasnippet))
-  (add-to-list 'warning-suppress-log-types '(yasnippet))
+  (with-eval-after-load 'warnings
+    (add-to-list 'warning-suppress-types '(yasnippet))
+    (add-to-list 'warning-suppress-log-types '(yasnippet)))
 #+end_src
 
 ** =editorconfig= - Support editorconfig files
