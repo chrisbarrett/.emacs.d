@@ -2966,10 +2966,10 @@ See:
     (interactive)
     (jump-to-file (expand-file-name "config.el" user-emacs-directory)))
 
-  (defun jump-to-packages-file ()
+  (defun jump-to-emacs-flake ()
     "Jump to the packages.nix file."
     (interactive)
-    (jump-to-file (expand-file-name "packages.nix" user-emacs-directory)))
+    (jump-to-file (expand-file-name "flake.nix" user-emacs-directory)))
 
   (defun jump-to-init-file ()
     "Open the Emacs init.el file."
@@ -3010,7 +3010,7 @@ See:
     "i" '(jump-to-init-file :wk "to init file")
     "n" '(jump-to-nix-config :wk "to Nix config")
     "S" '(jump-to-nix-system-config :wk "to system Nix config")
-    "p" '(jump-to-packages-file :wk "to packages.nix")
+    "p" '(jump-to-emacs-flake :wk "to Emacs' flake.nix")
     "?" '(jump-to-messages :wk "to messages buf")
     "S" '(jump-to-site-file :wk "to site.el")
     "s" '(magit-status :wk "magit")
