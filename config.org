@@ -2506,8 +2506,7 @@ compatibility.
     :custom
     (eglot-extend-to-xref t)
     :general
-    (:keymaps 'eglot-mode-map "C-c r" 'eglot-rename)
-    (:keymaps 'eglot-mode-map :states '(motion normal) "K" 'eldoc))
+    (:keymaps 'eglot-mode-map "C-c r" 'eglot-rename))
 #+end_src
 
 *** Set which modes have eglot enabled automatically
