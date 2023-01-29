@@ -25,30 +25,7 @@
     sha256 = "1xzmx7m1qbl3b1x6yq1db1a108xqaa64ljfv1hdw763zmy4kc6m0";
   };
 
-  citar-org-roam = github {
-    name = "citar-org-roam";
-    owner = "emacs-citar";
-    rev = "2774e20bcfcd88d3173d4d08380885f1b5c05187";
-    sha256 = "sha256-DohzykbsE4ZD2foAiAI4MhFIuACi2NWOJbdMmA9Hgeo=";
-    buildInputs = [ esuper.citar esuper.org-roam ];
-  };
-
-  citar = esuper.citar.overrideAttrs (it: {
-    src = fetchzip {
-      url = "https://github.com/emacs-citar/citar/archive/beb9ce96a083d5cbd3bd5ccdce4cd199424def1f.tar.gz";
-      sha256 = "sha256-mVfKNf01wsnwrsDavNhrC8w205L2U8ZZKgRdzYPhays=";
-    };
-  });
-
   csharp-mode = esuper.csharp-mode.overrideAttrs (it: {
     patches = [ ./patches/csharp-mode-keywords.patch ];
-  });
-
-  lsp-mode = esuper.lsp-mode.overrideAttrs (it: {
-    LSP_USE_PLISTS = true;
-  });
-
-  lsp-ui = esuper.lsp-ui.overrideAttrs (it: {
-    LSP_USE_PLISTS = true;
   });
 }
