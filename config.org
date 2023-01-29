@@ -7036,7 +7036,7 @@ slipboxes as /types/ (evergreens, stubs & nouns vs lit notes).
   (use-package org-roam
     :custom
     (org-roam-node-display-template
-     (concat (propertize "${slipbox:9}" 'face 'org-tag)
+     (concat (propertize "@${slipbox:9}" 'face 'org-tag)
              " ${icon:3} "
              " ${formatted-title:*} "
              "${tags:*}"))
