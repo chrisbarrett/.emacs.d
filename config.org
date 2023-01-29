@@ -6976,7 +6976,7 @@ slipboxes as /types/ (evergreens, stubs & nouns vs lit notes).
   (defun config-org-roam-parse-node-title (node)
     (pcase-let* ((original (org-roam-node-title node))
                  (`(,_ ,subject ,title)
-                  (s-match (rx (* space) (group (+? nonl)) (* space) ":" (+ space) (group (+ nonl)))
+                  (s-match (rx (* space) (group (+? nonl)) (* space) (any "/:") (+ space) (group (+ nonl)))
                            original)))
       (if subject
           (list :subject subject :title title)
