@@ -2,4 +2,4 @@
 # name: let-mut
 # condition: (yas-funcs-bolp)
 # --
-let mut ${1:name} = $0;
+let mut ${1:name} = $2;

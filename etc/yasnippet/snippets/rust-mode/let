@@ -2,4 +2,4 @@
 # name: let
 # condition: (yas-funcs-bolp)
 # --
-let ${1:name} = $0;
+let ${1:name} = $2;
