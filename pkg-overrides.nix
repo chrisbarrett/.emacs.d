@@ -1,4 +1,11 @@
 { emacsmirror, github, fetchzip, ... }: eself: esuper: {
+  git-gutter = github {
+    name = "git-gutter";
+    owner = "emacsorphanage";
+    rev = "1451e3149865b88de2402ce4296ee5608fadc5b2";
+    sha256 = "sha256-3obNSE47GY2zbo/iSSvfhrr51JC5B+0HFjJNwYET7AI=";
+  };
+
   org-transclusion = github {
     name = "org-transclusion";
     owner = "nobiot";
