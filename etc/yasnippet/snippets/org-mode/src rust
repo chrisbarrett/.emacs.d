@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: src rust
+# key: rs
+# condition: (yas-funcs-bolp)
+# expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 't))
+# --
+#+begin_src rust
+  $0
+#+end_src

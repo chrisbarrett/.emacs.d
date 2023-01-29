@@ -1,0 +1,7 @@
+# key: f
+# name: function
+# condition: (yas-funcs-bolp)
+# --
+fn ${1:name}(${2:params...}) -> ${3:T} {
+  $0
+}
