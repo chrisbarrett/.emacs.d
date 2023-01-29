@@ -27,6 +27,7 @@
             multimarkdown
             nixpkgs-fmt
             ripgrep
+            rustfmt
             sqlite
 
             # Language servers
