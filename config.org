@@ -2243,7 +2243,6 @@ etc.
     (evil-set-initial-state 'diff-mode 'motion)
     (evil-set-initial-state 'ert-simple-view-mode 'motion)
     (evil-set-initial-state 'eshell-mode 'insert)
-    (evil-set-initial-state 'flycheck-error-list-mode 'motion)
     (evil-set-initial-state 'grep-mode 'normal)
     (evil-set-initial-state 'haskell-debug-mode 'motion)
     (evil-set-initial-state 'helpful-mode 'motion)
@@ -3707,7 +3706,7 @@ after editing actions have changed what windows are shown.
     :commands (bufler bufler-list)
     :config
     (evil-set-initial-state 'bufler-list-mode 'motion)
-    (dolist (mode '(org-agenda-mode flycheck-error-message-mode magit-status-mode))
+    (dolist (mode '(org-agenda-mode magit-status-mode))
       (add-to-list 'bufler-filter-buffer-modes mode))
     :general
     ("C-x C-b" 'bufler-list)
@@ -4902,14 +4901,6 @@ Teach the autofill function in Latex buffers not to fill in certain contexts.
 
     :config
     (modify-syntax-entry ?_ "w" plantuml-mode-syntax-table))
-#+end_src
-
-*** Flycheck support
-#+begin_src emacs-lisp
-  (use-package flycheck-plantuml
-    :after (:all flycheck plantuml-mode)
-    :demand t
-    :config (flycheck-plantuml-setup))
 #+end_src
 
 *** Highlight arrows and important keywords
