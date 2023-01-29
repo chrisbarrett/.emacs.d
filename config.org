@@ -7044,7 +7044,7 @@ slipboxes as /types/ (evergreens, stubs & nouns vs lit notes).
     (cl-defmethod org-roam-node-formatted-title ((node org-roam-node))
       (-let [(result &as &plist :title :subject) (config-org-roam-parse-node-title node)]
         (if subject
-            (concat (propertize (concat "[" subject "]") 'face 'org-property-value) " " title)
+            (concat (propertize (concat "/" subject) 'face 'org-property-value) " " title)
           title)))
 
     (cl-defmethod org-roam-node-icon ((node org-roam-node))
