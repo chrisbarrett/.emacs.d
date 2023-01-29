@@ -17,20 +17,43 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
 
-        emacsPkg = pkgs.callPackage ./emacs-with-config.nix {
+        languageServers = with pkgs; with nodePackages; [
+          bash-language-server
+          vscode-css-languageserver-bin
+          vscode-extensions.dbaeumer.vscode-eslint
+          vscode-extensions.graphql.vscode-graphql
+          vscode-html-languageserver-bin
+          vscode-json-languageserver
+          rnix-lsp
+          yaml-language-server
+        ];
+
+        extraPrograms = with pkgs; [
+          (aspellWithDicts (ps: [ ps.en ]))
+          delta
+          multimarkdown
+          nixpkgs-fmt
+          ripgrep
+          sqlite
+        ];
+
+        package = pkgs.callPackage ./builders {
           emacs = emacs-overlay.packages.${system}.emacsNativeComp;
+          texProgram = "${pkgs.tectonic}/bin/tectonic";
+          withPrograms = languageServers ++ extraPrograms;
+          withLispPackages = import ./packages.nix;
         };
       in
       rec {
-        packages.default = emacsPkg;
+        packages.default = package;
 
         apps.default = flake-utils.lib.mkApp {
-          drv = emacsPkg;
+          drv = package;
           exePath = "/bin/emacs";
         };
 
         devShell = pkgs.mkShell {
-          buildInputs = [ emacsPkg pkgs.gnumake ];
+          buildInputs = [ package pkgs.gnumake ];
         };
       });
 }
