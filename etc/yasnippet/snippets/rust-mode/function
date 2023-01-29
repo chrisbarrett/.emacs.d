@@ -2,6 +2,6 @@
 # name: function
 # condition: (yas-funcs-bolp)
 # --
-fn ${1:name}(${2:params...}) -> ${3:T} {
+fn ${1:name}(${2:params...}) ${3:-> ${4:T} }{
   $0
 }
