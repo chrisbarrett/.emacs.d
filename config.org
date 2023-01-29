@@ -6566,6 +6566,13 @@ their relative order.
         ("References" :dblock (:name "backlinks" :tags litnotes :only-missing t))
         "Notes"
         ("Footnotes" :ensure nil)))
+     ((seq-contains-p (org-roam-node-tags node) "runbook")
+      '(("Notes" :ensure nil)
+        ("Topics" :ensure nil)
+        ("Tasks" :ensure nil)
+        ("Related" :ensure nil)
+        ("References" :ensure nil :dblock (:name "backlinks" :tags litnotes :only-missing t))
+        ("Footnotes" :ensure nil)))
      (t
       '("Notes"
         "Topics"
