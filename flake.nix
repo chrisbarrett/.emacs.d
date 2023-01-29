@@ -36,6 +36,7 @@
             nodePackages.vscode-html-languageserver-bin
             nodePackages.vscode-json-languageserver
             rnix-lsp
+            rust-analyzer
             vscode-extensions.dbaeumer.vscode-eslint
             vscode-extensions.graphql.vscode-graphql
             yaml-language-server
