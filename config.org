@@ -3610,7 +3610,7 @@ after editing actions have changed what windows are shown.
   (use-package page-break-lines
     :hook (after-init . global-page-break-lines-mode)
     :custom
-    (page-break-lines-modes '(prog-mode org-agenda-mode latex-mode help-mode)))
+    (page-break-lines-modes '(prog-mode org-agenda-mode latex-mode help-mode special-mode)))
 #+end_src
 
 ** =paren-face= - Apply a specific face to parens
@@ -4705,7 +4705,8 @@ files.
     (markdown-asymmetric-header t)
     (markdown-command "multimarkdown")
     (markdown-fontify-code-blocks-natively t)
-    (markdown-hide-urls t))
+    (markdown-hide-urls t)
+    (markdown-hr-display-char ?\^L))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -4729,6 +4730,15 @@ files.
     "o" '(markdown-preview :wk "preview")
     "p" '(markdown-live-preview-mode :wk "preview (live)")
     "e" '(markdown-export :wk "export"))
+#+end_src
+
+*** Use page-break character for horizontal rules
+#+begin_src emacs-lisp
+  (define-advice markdown-fontify-hrs (:override (last) page-break-char)
+    "Add text properties to horizontal rules from point to LAST."
+    (when (markdown-match-hr last)
+      (add-text-properties (match-beginning 0) (match-end 0) '(display ""))
+      t))
 #+end_src
 
 ** =autctex= - Tex & Latex editing
