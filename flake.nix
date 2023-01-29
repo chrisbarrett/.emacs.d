@@ -17,33 +17,167 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
 
-        languageServers = with pkgs; with nodePackages; [
-          bash-language-server
-          vscode-css-languageserver-bin
-          vscode-extensions.dbaeumer.vscode-eslint
-          vscode-extensions.graphql.vscode-graphql
-          vscode-html-languageserver-bin
-          vscode-json-languageserver
-          rnix-lsp
-          yaml-language-server
-        ];
-
-        extraPrograms = with pkgs; [
-          (aspellWithDicts (ps: [ ps.en ]))
-          delta
-          multimarkdown
-          nixpkgs-fmt
-          ripgrep
-          sqlite
-        ];
-
-        package = pkgs.callPackage ./builders {
+        package = with pkgs; callPackage ./builders {
           emacs = emacs-overlay.packages.${system}.emacsNativeComp;
-          texProgram = "${pkgs.tectonic}/bin/tectonic";
-          withPrograms = languageServers ++ extraPrograms;
-          withLispPackages = import ./packages.nix;
+          texProgram = "${tectonic}/bin/tectonic";
+
+          withPrograms = [
+            (aspellWithDicts (ps: [ ps.en ]))
+            delta
+            multimarkdown
+            nixpkgs-fmt
+            ripgrep
+            sqlite
+
+            # Language servers
+            nodePackages.bash-language-server
+            nodePackages.vscode-css-languageserver-bin
+            nodePackages.vscode-html-languageserver-bin
+            nodePackages.vscode-json-languageserver
+            rnix-lsp
+            vscode-extensions.dbaeumer.vscode-eslint
+            vscode-extensions.graphql.vscode-graphql
+            yaml-language-server
+          ];
+
+          withLispPackages = epkgs: with epkgs; [
+            all-the-icons-ivy-rich
+            applescript-mode
+            auctex
+            browse-at-remote
+            bufler
+            cape
+            cider
+            citar
+            citar-org-roam
+            clojure-mode
+            consult
+            corfu
+            corfu-doc
+            csharp-mode
+            csv-mode
+            dash
+            deadgrep
+            default-text-scale
+            delight
+            dockerfile-mode
+            dogears
+            doom-themes
+            dumb-jump
+            edit-indirect
+            editorconfig
+            eglot
+            elisp-slime-nav
+            embark
+            embark-consult
+            emojify
+            envrc
+            evil
+            evil-args
+            evil-collection
+            evil-iedit-state
+            evil-matchit
+            evil-nerd-commenter
+            evil-numbers
+            evil-org
+            evil-surround
+            f
+            fira-code-mode
+            flx
+            forge
+            format-all
+            general
+            git-auto-commit-mode
+            git-gutter
+            git-gutter-fringe
+            gnuplot
+            graphql-mode
+            groovy-mode
+            hcl-mode
+            helpful
+            hide-comnt
+            hide-mode-line
+            highlight-indent-guides
+            highlight-thing
+            historian
+            hl-todo
+            htmlize
+            info-plus
+            iscroll
+            json-mode
+            kind-icon
+            latex-preview-pane
+            link-hint
+            magit
+            magit-delta
+            magit-popup
+            marginalia
+            markdown-mode
+            memoize
+            messages-are-flowing
+            mini-frame
+            minions
+            nix-mode
+            no-littering
+            ob-http
+            orderless
+            org
+            org-appear
+            org-cliplink
+            org-contrib
+            org-download
+            org-drill
+            org-fragtog
+            org-ml
+            org-ql
+            org-roam
+            org-roam-ui
+            org-super-agenda
+            org-superstar
+            org-transclusion
+            orgtbl-aggregate
+            origami
+            ox-gfm
+            page-break-lines
+            paren-face
+            pcmpl-args
+            pcre2el
+            pdf-tools
+            plantuml-mode
+            poporg
+            proof-general
+            rainbow-mode
+            request
+            rust-mode
+            rotate
+            shut-up
+            simple-httpd
+            smartparens
+            smex
+            string-inflection
+            swift-mode
+            terraform-mode
+            tree-sitter
+            tree-sitter-indent
+            tree-sitter-langs
+            ts
+            typescript-mode
+            undo-tree
+            unfill
+            use-package
+            vertico
+            volatile-highlights
+            websocket
+            wgrep
+            which-key
+            world-time-mode
+            ws-butler
+            yaml-mode
+            yasnippet
+          ];
         };
       in
+      with pkgs;
       rec {
         packages.default = package;
 
@@ -52,8 +186,8 @@
           exePath = "/bin/emacs";
         };
 
-        devShell = pkgs.mkShell {
-          buildInputs = [ package pkgs.gnumake ];
+        devShell = mkShell {
+          buildInputs = [ package gnumake ];
         };
       });
 }
