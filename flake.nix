@@ -5,7 +5,7 @@
     nixpkgs.url = "github:nixos/nixpkgs";
 
     emacs-overlay = {
-      url = "github:nix-community/emacs-overlay/be61e5636";
+      url = "github:nix-community/emacs-overlay/1d2409e";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -18,7 +18,7 @@
         pkgs = nixpkgs.legacyPackages.${system};
 
         package = with pkgs; callPackage ./builders {
-          emacs = emacs-overlay.packages.${system}.emacsNativeComp;
+          emacs = emacs-overlay.packages.${system}.emacsGit;
           texProgram = "${tectonic}/bin/tectonic";
 
           withPrograms = [
