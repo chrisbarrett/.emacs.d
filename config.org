@@ -5201,6 +5201,11 @@ Configure =conf-mode= for use with more kinds of config files.
     (rust-format-on-save t))
 #+end_src
 
+#+begin_src emacs-lisp
+  (use-package conf-mode
+    :mode ("/Cargo\\.lock\\'" . conf-toml-mode))
+#+end_src
+
 * Applications
 
 ** =pdf-tools= - PDF reader
