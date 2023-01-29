@@ -6983,6 +6983,45 @@ slipboxes as /types/ (evergreens, stubs & nouns vs lit notes).
         (list :title original))))
 #+end_src
 
+** Fontify the topic prefix specially if present
+#+begin_src emacs-lisp
+  (defface org-roam-custom-node-topic
+    '((t
+       (:inherit org-roam-dim)))
+    "Face for node topics."
+    :group 'org-roam-faces)
+
+  (defface org-roam-custom-node-topic-separator
+    '((t
+       (:weight light :inherit org-roam-custom-node-topic)))
+    "Face for node topics."
+    :group 'org-roam-faces)
+
+  (define-advice org-fontify-meta-lines-and-blocks-1 (:after (&rest _) fontify-subject)
+    (save-excursion
+      (goto-char (point-min))
+      (when (search-forward-regexp (rx bol "#+title:" (+ space) (group (+? nonl)) (group (any "/:") (+ space)) (+ nonl)) nil t)
+        (add-text-properties (match-beginning 1) (match-end 1)
+                             '(font-lock-fontified t face org-roam-custom-node-topic))
+        (add-text-properties (match-beginning 2) (match-end 2)
+                             '(font-lock-fontified t face org-roam-custom-node-topic-separator display " > ")))))
+#+end_src
+
+** Hide the space after hidden keywords
+#+begin_src emacs-lisp
+  (define-advice org-fontify-meta-lines-and-blocks-1 (:after (&rest _) hide-space)
+    (save-excursion
+      (goto-char (point-min))
+      (when (search-forward-regexp (rx-to-string `(and bol "#+"
+                                                       (or ,@(seq-map #'symbol-name org-hidden-keywords)) ":"
+                                                       (group (+ space))
+                                                       (+ nonl))
+                                                 t)
+                                   nil t)
+        (add-text-properties (match-beginning 1) (match-end 1)
+                             '(font-lock-fontified t invisible t)))))
+#+end_src
+
 ** Insert nodes without the topic prefix if present
 #+begin_src emacs-lisp
   (use-package org-roam
