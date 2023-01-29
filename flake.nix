@@ -18,7 +18,6 @@
         pkgs = nixpkgs.legacyPackages.${system};
 
         package = with pkgs; callPackage ./builders {
-          emacs = emacs-overlay.packages.${system}.emacsGit;
           texProgram = "${tectonic}/bin/tectonic";
 
           withPrograms = [
