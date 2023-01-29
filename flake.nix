@@ -159,9 +159,6 @@
             string-inflection
             swift-mode
             terraform-mode
-            tree-sitter
-            tree-sitter-indent
-            tree-sitter-langs
             ts
             typescript-mode
             undo-tree

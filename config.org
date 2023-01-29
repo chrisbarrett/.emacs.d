@@ -1755,16 +1755,6 @@ This should really be a thing out-of-the-box.
   (define-key prog-mode-map (kbd "M-q") #'config-indent-dwim)
 #+end_src
 
-** =tree-sitter= - Tree-sitter parser support
-#+begin_src emacs-lisp
-  (use-package tree-sitter
-    :demand t
-    :config
-    (use-package tree-sitter-indent :demand t)
-    (use-package tree-sitter-langs :demand t)
-    (global-tree-sitter-mode +1))
-#+end_src
-
 ** =ws-butler= - Automatic whitespace cleanup while editing
 #+begin_src emacs-lisp
   (use-package ws-butler
