@@ -456,6 +456,7 @@ Load host-specific settings, which are not checked into version control.
                               '(compilation-warning ((t :italic nil)))
                               '(magit-header-line ((t :background nil :box nil)))
                               `(org-document-title ,title)
+                              `(org-roam-custom-node-topic ((t :height 1.5 :inherit org-roam-dim)))
                               `(org-roam-header-line ((t :inherit org-document-title)))
                               `(vertico-group-title ((t :inherit magit-section-heading)))
                               `(consult-line-number ((t :inherit font-lock-comment-face)))
