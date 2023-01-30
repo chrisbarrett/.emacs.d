@@ -5215,15 +5215,29 @@ Configure =conf-mode= for use with more kinds of config files.
     "b" '(rust-compile :wk "build")
     "l" '(rust-run-clippy :wk "clippy"))
 #+end_src
+
 #+begin_src emacs-lisp
   (use-package rust-mode
     :custom
     (rust-format-on-save t))
 #+end_src
 
+*** Use TOML mode for Cargo lockfiles
 #+begin_src emacs-lisp
   (use-package conf-mode
     :mode ("/Cargo\\.lock\\'" . conf-toml-mode))
+#+end_src
+
+*** Prevent =rust-mode= from binding ~C-c C-c~ in =rust-mode-map=
+#+begin_src emacs-lisp
+  (use-package rust-mode
+    :custom
+    (rust-load-optional-libraries nil)
+    :config
+    (require 'rust-cargo)
+    (require 'rust-compile)
+    (require 'rust-playpen)
+    (require 'rust-rustfmt))
 #+end_src
 
 * Applications
