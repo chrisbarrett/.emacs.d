@@ -2506,7 +2506,9 @@ compatibility.
     :custom
     (eglot-extend-to-xref t)
     :general
-    (:keymaps 'eglot-mode-map "C-c r" 'eglot-rename))
+    (:keymaps 'eglot-mode-map
+     "C-c C-r" 'eglot-rename
+     "C-c C-c" 'eglot-code-actions))
 #+end_src
 
 #+begin_src emacs-lisp
