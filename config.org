@@ -2534,6 +2534,14 @@ compatibility.
       (select-window (get-buffer-window eldoc--doc-buffer))))
 #+end_src
 
+*** Ensure eldoc buffers have page-break-lines
+#+begin_src emacs-lisp
+  (define-advice eldoc--format-doc-buffer (:after (&rest _) page-break-lines)
+    (when (buffer-live-p eldoc--doc-buffer)
+      (with-current-buffer eldoc--doc-buffer
+        (page-break-lines-mode +1))))
+#+end_src
+
 ** =flymake= - in-buffer syntax checking
 #+begin_src emacs-lisp
   (use-package flymake
