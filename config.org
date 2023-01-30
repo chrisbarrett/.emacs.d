@@ -5226,6 +5226,9 @@ Configure =conf-mode= for use with more kinds of config files.
 
 #+begin_src emacs-lisp
   (use-package rust-mode
+    :general
+    (:keymaps 'rust-mode-map
+     "C-c C-m" 'rust-toggle-mutability)
     :custom
     (rust-format-on-save t))
 #+end_src
