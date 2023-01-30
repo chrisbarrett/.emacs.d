@@ -1,6 +1,9 @@
 # -*- mode: snippet -*-
-# name: eprintln
-# key: ep
+# name: test
+# key: test
 # condition: (yas-funcs-bolp)
 # --
-eprintln!("$0");
+#[test]
+fn test_$1() {
+    $0
+}

@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
-# name: eprintln
-# key: ep
+# name: type
+# key: t
 # condition: (yas-funcs-bolp)
 # --
-eprintln!("$0");
+type $1 = $0;
