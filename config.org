@@ -3842,8 +3842,11 @@ dot).
 
 ** =project= - Project and repo detection
 #+begin_src emacs-lisp
+  (autoload 'project-funcs-try-known-files "project-funcs")
+
   (use-package project
     :custom
+    (project-find-functions '(project-funcs-try-known-files project-try-vc))
     (project-vc-ignores '("*.elc"
                           "*.eln"
                           "*.gz"
