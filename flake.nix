@@ -42,7 +42,6 @@
           ];
 
           withLispPackages = epkgs: with epkgs; [
-            all-the-icons-ivy-rich
             applescript-mode
             auctex
             browse-at-remote
