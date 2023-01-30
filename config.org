@@ -5208,6 +5208,14 @@ Configure =conf-mode= for use with more kinds of config files.
 
 ** =rust-mode= - Rust language support
 #+begin_src emacs-lisp
+  (mode-leader-set-key :keymaps 'rust-mode-map
+    "r" '(rust-run :wk "run")
+    "t" '(rust-test :wk "test")
+    "c" '(rust-check :wk "typecheck")
+    "b" '(rust-compile :wk "build")
+    "l" '(rust-run-clippy :wk "clippy"))
+#+end_src
+#+begin_src emacs-lisp
   (use-package rust-mode
     :custom
     (rust-format-on-save t))
