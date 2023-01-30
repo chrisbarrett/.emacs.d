@@ -23,6 +23,7 @@
           withPrograms = [
             (aspellWithDicts (ps: [ ps.en ]))
             delta
+            graphviz-nox
             multimarkdown
             nixpkgs-fmt
             ripgrep
