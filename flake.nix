@@ -32,6 +32,7 @@
 
             # Language servers
             nodePackages.bash-language-server
+            nodePackages.typescript-language-server
             nodePackages.vscode-css-languageserver-bin
             nodePackages.vscode-html-languageserver-bin
             nodePackages.vscode-json-languageserver
