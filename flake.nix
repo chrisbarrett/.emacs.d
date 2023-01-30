@@ -68,6 +68,7 @@
             edit-indirect
             editorconfig
             eglot
+            eglot-x
             elisp-slime-nav
             embark
             embark-consult

@@ -1,4 +1,12 @@
 { emacsmirror, github, fetchzip, ... }: eself: esuper: {
+  eglot-x = github {
+    name = "eglot-x";
+    owner = "nemethf";
+    rev = "08cbd4369618e60576c95c194e63403f080328ba";
+    sha256 = "sha256-cWicqHYR/XU+71a8OFgF8vc6dmT/Fy0EEgzX0xvYiDc=";
+    buildInputs = [ esuper.eglot ];
+  };
+
   git-gutter = github {
     name = "git-gutter";
     owner = "emacsorphanage";

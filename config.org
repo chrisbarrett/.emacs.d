@@ -2509,6 +2509,12 @@ compatibility.
     (:keymaps 'eglot-mode-map "C-c r" 'eglot-rename))
 #+end_src
 
+#+begin_src emacs-lisp
+  (use-package eglot-x
+    :after eglot
+    :demand t)
+#+end_src
+
 *** Set which modes have eglot enabled automatically
 #+begin_src emacs-lisp
   (use-package eglot
