@@ -406,7 +406,11 @@ Load host-specific settings, which are not checked into version control.
            (title `((t :height 1.5 :weight semibold)))
            (heading `((t :height 1.2)))
            (block-markup `((t :inherit font-lock-comment-face :background unspecified :italic nil :weight light :bold nil)))
-           (outline-heading `((t :weight semibold :foreground unspecified))))
+           (outline-heading `((t :weight semibold :foreground unspecified)))
+           (bullet '((((background light))
+                      (:foreground "#96A7A9"))
+                     (((background dark))
+                      (:foreground "#5B6268")))))
       (custom-theme-set-faces 'user
                               `(font-lock-comment-face
                                 ((((background dark))
@@ -434,11 +438,7 @@ Load host-specific settings, which are not checked into version control.
                                   (:foreground "#98be65" :background "#3e493d" :weight bold :inherit magit-diff-added-highlight))
                                  (((background light))
                                   (:foreground "#859900" :background "#e5e3b5" :weight bold :inherit magit-diff-added-highlight))))
-                              `(org-superstar-header-bullet
-                                ((((background light))
-                                  (:foreground "#96A7A9"))
-                                 (((background dark))
-                                  (:foreground "#5B6268"))))
+                              `(org-superstar-header-bullet ,bullet)
                               `(org-agenda-clocking
                                 ((((background dark))
                                   (:foreground ,dark-fg :extend t))
@@ -488,7 +488,13 @@ Load host-specific settings, which are not checked into version control.
                               `(org-transclusion-keyword ((t :inherit org-meta-line)))
                               `(org-block-begin-line ,block-markup)
                               '(org-block ((t :background unspecified)))
-                              `(org-block-end-line ,block-markup))))
+                              `(org-block-end-line ,block-markup)
+
+                              `(markdown-header-delimiter-face ,bullet)
+                              `(markdown-header-face-1 ,title)
+                              `(markdown-header-face-2 ,(append-faces outline-heading heading))
+                              `(markdown-header-face-3 ,(append-faces outline-heading '((t :italic t))))
+                              `(markdown-header-face-4 ,(append-faces outline-heading '((t :underline t)))))))
 
   (config-theme-apply-settings)
 #+end_src
