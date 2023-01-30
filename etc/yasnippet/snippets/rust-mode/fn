@@ -1,5 +1,5 @@
-# key: f
-# name: function
+# key: fn
+# name: fn
 # condition: (yas-funcs-bolp)
 # --
 fn ${1:name}(${2:params...}) ${3:-> ${4:T} }{
