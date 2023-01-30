@@ -3610,7 +3610,7 @@ after editing actions have changed what windows are shown.
   (use-package page-break-lines
     :hook (after-init . global-page-break-lines-mode)
     :custom
-    (page-break-lines-modes '(prog-mode org-agenda-mode latex-mode help-mode special-mode)))
+    (page-break-lines-modes '(prog-mode org-agenda-mode latex-mode help-mode)))
 #+end_src
 
 ** =paren-face= - Apply a specific face to parens
