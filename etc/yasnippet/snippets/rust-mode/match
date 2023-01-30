@@ -1,0 +1,6 @@
+# key: m
+# name: match
+# --
+match $1 {
+    ${2:pat} => $0,
+}
