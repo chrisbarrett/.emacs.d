@@ -491,6 +491,7 @@ Load host-specific settings, which are not checked into version control.
                               `(org-block-end-line ,block-markup)
 
                               `(markdown-header-delimiter-face ,bullet)
+                              '(markdown-table-face ((t :inherit org-table)))
                               `(markdown-header-face-1 ,title)
                               `(markdown-header-face-2 ,(append-faces outline-heading heading))
                               `(markdown-header-face-3 ,(append-faces outline-heading '((t :italic t))))
@@ -2530,7 +2531,7 @@ compatibility.
 
     (defun config-eglot-enable-if-lsp-exists-p ()
       (require 'eglot)
-      (when (alist-get major-mode (config-eglot--supported-modes))
+      (when (seq-contains-p (config-eglot--supported-modes) major-mode)
         (eglot-ensure)))
     :hook
     (prog-mode . config-eglot-enable-if-lsp-exists-p)
