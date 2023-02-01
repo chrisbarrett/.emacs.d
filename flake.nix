@@ -40,6 +40,7 @@
             nodePackages.vscode-json-languageserver
             rnix-lsp
             rust-analyzer
+            terraform-ls
             vscode-extensions.dbaeumer.vscode-eslint
             vscode-extensions.graphql.vscode-graphql
             yaml-language-server
