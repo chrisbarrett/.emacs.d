@@ -3863,8 +3863,13 @@ dot).
   (autoload 'project-funcs-try-known-files "project-funcs")
 
   (use-package project
+    :preface
+    (defun config-project-magit-status ()
+      (interactive)
+      (magit-status (project-root (project-current t))))
     :custom
     (project-find-functions '(project-funcs-try-known-files project-try-vc))
+    (project-switch-commands 'magit-status)
     (project-vc-ignores '("*.elc"
                           "*.eln"
                           "*.gz"
@@ -3872,15 +3877,6 @@ dot).
                           "*.tar"
                           "*.tgz"
                           "*.zip")))
-#+end_src
-
-*** Use =magit= instead of =vc=
-#+begin_src emacs-lisp
-  (use-package project
-    :after magit
-    :config
-    (define-advice project-vc-dir (:override () use-magit)
-      (magit-status (project-root (project-current t)))))
 #+end_src
 
 * Git
