@@ -2527,9 +2527,16 @@ compatibility.
 #+begin_src emacs-lisp
   (use-package eglot
     :preface
+    (defun config-eglot--supported-modes ()
+      (->> (bound-and-true-p eglot-server-programs)
+           (seq-map #'car)
+           (-flatten)
+           (seq-filter (lambda (it)
+                         (and (symbolp it) (not (keywordp it)))))))
+
     (defun config-eglot-enable-if-lsp-exists-p ()
       (require 'eglot)
-      (when (alist-get major-mode (bound-and-true-p eglot-server-programs))
+      (when (alist-get major-mode (config-eglot--supported-modes))
         (eglot-ensure)))
     :hook
     (prog-mode . config-eglot-enable-if-lsp-exists-p)
