@@ -2515,7 +2515,9 @@ compatibility.
     :general
     (:keymaps 'eglot-mode-map
      "C-c C-r" 'eglot-rename
-     "M-RET" 'eglot-code-actions))
+     "M-RET" 'eglot-code-actions)
+    :config
+    (add-to-list 'eglot-server-programs '(terraform-mode . ("terraform-ls" "serve"))))
 #+end_src
 
 *** Set which modes have eglot enabled automatically
