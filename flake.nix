@@ -31,6 +31,7 @@
             sqlite
 
             # Language servers
+            marksman
             nodePackages.bash-language-server
             nodePackages.typescript-language-server
             nodePackages.vscode-css-languageserver-bin
