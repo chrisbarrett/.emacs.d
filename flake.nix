@@ -26,6 +26,7 @@
             graphviz-nox
             multimarkdown
             nixpkgs-fmt
+            plantuml
             ripgrep
             rustfmt
             sqlite
