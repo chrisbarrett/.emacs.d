@@ -4659,6 +4659,8 @@ files.
     (auto-fill-mode -1))
 
   (use-package yaml-mode
+    :mode
+    ("/yarn\\.lock\\'" . yaml-mode)
     :general
     (:states '(normal insert) :keymaps 'yaml-mode-map
      [backtab] 'yaml-indent-line)
