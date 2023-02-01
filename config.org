@@ -6587,7 +6587,7 @@ their relative order.
 #+begin_src emacs-lisp
   (defun config-org-roam-default-headings (node)
     (cond
-     ((org-roam-dailies--daily-note-p) nil)
+     ((seq-intersection (org-roam-node-tags node) '("dailies" "doc")) nil)
      ((seq-contains-p (org-roam-node-tags node) "litnotes")
       '("Meta"
         ("Topics" :ensure nil)
