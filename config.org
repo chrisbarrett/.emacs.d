@@ -4445,7 +4445,9 @@ See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
      "C-c C-b" #'eval-buffer)
     (:states 'visual
      :keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map)
-     "C-c C-c" #'eval-region))
+     "C-c C-c" #'eval-region)
+    :custom
+    (elisp-flymake-byte-compile-load-path (cons "./" load-path)))
 #+end_src
 
 *** Set leader keys
