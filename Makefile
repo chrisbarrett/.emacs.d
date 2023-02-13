@@ -3,15 +3,16 @@ BUILD = .make/build
 TARGET_EL = config-autoloads.el config.el
 NIX = /run/current-system/sw/bin/nix
 
-TARGETS = $(BUILD) $(TARGET_EL)
-SRCS = config.org
+TARGETS := $(BUILD) $(TARGET_EL)
+NIX_SRCS := flake.lock $(shell find . -type f -name '*.nix')
+SRCS := config.org $(NIX_SRCS)
 
 EMACS_RUN_OPTS = -l early-init.el -l init.el --eval "(run-hooks 'after-init-hook)"
 
 .PHONY: build
 build: $(TARGETS)
 
-$(BUILD): $(shell find . -type f -name '*.nix')
+$(BUILD): $(NIX_SRCS)
 	@mkdir -p .make
 	$(NIX) build
 	@touch $(BUILD)
