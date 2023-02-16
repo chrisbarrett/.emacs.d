@@ -22,8 +22,9 @@
 
 (require 'dash)
 (require 'org-format)
-(require 'org-funcs)
 (require 'org-roam)
+(require 'plisty)
+(require 'text-property-search)
 
 (defgroup org-roam-default-headings nil
   "Create a default set of headings for all nodes."
@@ -52,6 +53,8 @@ Each item in the list may be either:
      plist."
   :group 'org-roam-default-headings
   :type 'function)
+
+
 
 (defun org-roam-default-headings-for-node (node)
   (cond
@@ -89,30 +92,90 @@ Each item in the list may be either:
           (org-insert-heading nil nil t))
         (insert heading))))
 
+(defmacro org-roam-default-headings--save-excursion-via-text-properties (&rest body)
+  "Like `save-excursion', but works using text properties.
+
+Tries a couple of heuristics to put point at least somewhere
+close to the starting point from before BODY was executed."
+  (declare (indent 0))
+  `(let ((start (point))
+         (col (current-column)))
+
+     ;; Put down some text properties at various places to see if we can restore
+     ;; any of them later.
+     (save-excursion
+       (back-to-indentation)
+       (add-text-properties (point) (1+ (point)) '(org-roam-default-headings-sentinel point)))
+
+     (save-excursion
+       (back-to-indentation)
+       (add-text-properties (point) (1+ (point)) '(org-roam-default-headings-sentinel indentation)))
+
+     (save-excursion
+       (when (org-up-heading-safe)
+         (add-text-properties (point) (1+ (point)) '(org-roam-default-headings-sentinel heading))))
+
+     ,@body
+
+     (goto-char (point-min))
+
+     (if-let* ((prop-match
+                (or
+                 (save-excursion
+                   (text-property-search-forward 'org-roam-default-headings-sentinel 'point #'equal))
+                 (save-excursion
+                   (text-property-search-forward 'org-roam-default-headings-sentinel 'indentation #'equal))
+                 (save-excursion
+                   (text-property-search-forward 'org-roam-default-headings-sentinel 'heading #'equal)))))
+         (progn
+           (goto-char (prop-match-beginning prop-match))
+           (move-to-column col))
+       ;; Being smart failed; go back to the absolute starting point.
+       (goto-char start))
+
+     (remove-text-properties (point-min) (point-max) '(org-roam-default-headings-sentinel
+                                                       ;; NB. actual value is ignored.
+                                                       _))))
+
+(defun org-roam-default-headings--ensure-dblock (props)
+  (cl-assert (plisty-p props))
+  (cl-assert (org-at-heading-p))
+  (save-restriction
+    (org-narrow-to-subtree)
+    (let ((name (plist-get props :name)))
+      (unless (search-forward-regexp (rx-to-string `(and bol (* space) "#+BEGIN:" (+ space) ,name)) nil t)
+        (goto-char (point-max))
+        (org-create-dblock props)))))
+
 ;;;###autoload
 (defun org-roam-default-headings-populate (&optional node)
   "Populate the current roam NODE with headings."
   (interactive)
   (when (org-roam-file-p)
-    (org-with-wide-buffer
-     (when-let* ((node (or node
-                           (save-excursion
-                             (goto-char (point-min))
-                             (org-roam-node-at-point))))
-                 (heading-specs (--map (append (-list it) (list :ensure t :dblock nil))
-                                       (funcall org-roam-default-headings-function node))))
-       (-each heading-specs
-         (-lambda ((name &plist :ensure :dblock :tags))
-           (when-let* ((marker (if ensure
-                                   (org-roam-default-headings--find-or-create-heading name)
-                                 (org-find-exact-headline-in-buffer name))))
-             (org-with-point-at marker
-               (org-set-tags tags)
-               (org-funcs-move-headline-to-end)
-               (when dblock (org-funcs-ensure-dblock-for-heading-at-pt dblock)))
-             (set-marker marker nil))))
+    ;; KLUDGE: Headline re-ordering breaks save-excursion. Use a hacky
+    ;; replacement that uses text properties instead.
+    (org-roam-default-headings--save-excursion-via-text-properties
+      (org-with-wide-buffer
+       (when-let* ((node (or node
+                             (save-excursion
+                               (goto-char (point-min))
+                               (org-roam-node-at-point))))
+                   (heading-specs (--map (append (-list it) (list :ensure t :dblock nil))
+                                         (funcall org-roam-default-headings-function node))))
+         (-each heading-specs
+           (-lambda ((name &plist :ensure :dblock :tags))
+             (when-let* ((marker (if ensure
+                                     (org-roam-default-headings--find-or-create-heading name)
+                                   (org-find-exact-headline-in-buffer name))))
+               (org-with-point-at marker
+                 (org-set-tags tags)
+                 (while (save-excursion (org-get-next-sibling))
+                   (org-move-subtree-down))
+                 (when dblock
+                   (org-roam-default-headings--ensure-dblock dblock)))
+               (set-marker marker nil))))
 
-       (org-format-all-headings)))))
+         (org-format-all-headings))))))
 
 ;;;###autoload
 (defun org-roam-default-headings-populate-for-find-file ()
