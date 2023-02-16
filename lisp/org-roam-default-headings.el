@@ -108,17 +108,20 @@ close to the starting point from before BODY was executed."
 
      ;; Put down some text properties at various places to see if we can restore
      ;; any of them later.
-     (save-excursion
-       (back-to-indentation)
-       (add-text-properties (point) (1+ (point)) '(org-roam-default-headings-sentinel point)))
+     ;;
+     ;; Applying these text properties will fail if the file is empty.
+     (unless (zerop (buffer-size))
+       (save-excursion
+         (back-to-indentation)
+         (add-text-properties (point) (1+ (point)) '(org-roam-default-headings-sentinel point)))
 
-     (save-excursion
-       (back-to-indentation)
-       (add-text-properties (point) (1+ (point)) '(org-roam-default-headings-sentinel indentation)))
+       (save-excursion
+         (back-to-indentation)
+         (add-text-properties (point) (1+ (point)) '(org-roam-default-headings-sentinel indentation)))
 
-     (save-excursion
-       (when (org-up-heading-safe)
-         (add-text-properties (point) (1+ (point)) '(org-roam-default-headings-sentinel heading))))
+       (save-excursion
+         (when (org-up-heading-safe)
+           (add-text-properties (point) (1+ (point)) '(org-roam-default-headings-sentinel heading)))))
 
      ,@body
 
