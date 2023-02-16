@@ -135,7 +135,9 @@ close to the starting point from before BODY was executed."
 
      (remove-text-properties (point-min) (point-max) '(org-roam-default-headings-sentinel
                                                        ;; NB. actual value is ignored.
-                                                       _))))
+                                                       _))
+     ;; Text property removal above breaks inline images. Redisplay them.
+     (org-display-inline-images)))
 
 (defun org-roam-default-headings--ensure-dblock (props)
   (cl-assert (plisty-p props))
