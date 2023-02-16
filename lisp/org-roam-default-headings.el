@@ -94,13 +94,13 @@ Each item in the list may be either:
   "Populate the current roam NODE with headings."
   (interactive)
   (when (org-roam-file-p)
-    (when-let* ((node (or node
-                          (org-with-wide-buffer
-                           (goto-char (point-min))
-                           (org-roam-node-at-point))))
-                (heading-specs (--map (append (-list it) (list :ensure t :dblock nil))
-                                      (funcall org-roam-default-headings-function node))))
-      (org-with-wide-buffer
+    (org-with-wide-buffer
+     (when-let* ((node (or node
+                           (save-excursion
+                             (goto-char (point-min))
+                             (org-roam-node-at-point))))
+                 (heading-specs (--map (append (-list it) (list :ensure t :dblock nil))
+                                       (funcall org-roam-default-headings-function node))))
        (-each heading-specs
          (-lambda ((name &plist :ensure :dblock :tags))
            (when-let* ((marker (if ensure
