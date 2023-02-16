@@ -95,6 +95,11 @@ Each item in the list may be either:
 (defmacro org-roam-default-headings--save-excursion-via-text-properties (&rest body)
   "Like `save-excursion', but works using text properties.
 
+Some destructive buffer modifications will defeat
+`save-excursion'. This approach uses text properties instead,
+which may still be preserved through structural edits to the
+buffer.
+
 Tries a couple of heuristics to put point at least somewhere
 close to the starting point from before BODY was executed."
   (declare (indent 0))
