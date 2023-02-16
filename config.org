@@ -6603,7 +6603,7 @@ while in a table.
       (org-roam-default-headings-populate-for-find-file)
       (add-hook 'before-save-hook 'org-roam-default-headings-populate nil t))
     :hook
-    (org-roam-capture-new-node . org-roam-default-headings-populate)
+    (org-roam-capture-new-node . config-org-roam-default-headings-setup)
     (org-mode . config-org-roam-default-headings-setup))
 #+end_src
 
