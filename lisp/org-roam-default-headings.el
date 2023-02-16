@@ -79,6 +79,16 @@ Each item in the list may be either:
       ("Planning & Meetings" :tags ("outline") :ensure nil)
       ("Footnotes" :ensure nil)))))
 
+(defun org-roam-default-headings--find-or-create-heading (heading)
+  (or (org-find-exact-headline-in-buffer heading)
+      (progn
+        ;; Create heading if it doesn't exist
+        (goto-char (point-max))
+        (unless (bolp) (newline))
+        (let (org-insert-heading-respect-content)
+          (org-insert-heading nil nil t))
+        (insert heading))))
+
 ;;;###autoload
 (defun org-roam-default-headings-populate (&optional node)
   "Populate the current roam NODE with headings."
@@ -94,7 +104,7 @@ Each item in the list may be either:
        (-each heading-specs
          (-lambda ((name &plist :ensure :dblock :tags))
            (when-let* ((marker (if ensure
-                                   (org-roam-capture-find-or-create-olp (list name))
+                                   (org-roam-default-headings--find-or-create-heading name)
                                  (org-find-exact-headline-in-buffer name))))
              (org-with-point-at marker
                (org-set-tags tags)
