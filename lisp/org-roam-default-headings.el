@@ -162,30 +162,31 @@ close to the starting point from before BODY was executed."
   "Populate the current roam NODE with headings."
   (interactive)
   (when (org-roam-file-p)
-    ;; KLUDGE: Headline re-ordering breaks save-excursion. Use a hacky
-    ;; replacement that uses text properties instead.
-    (org-roam-default-headings--save-excursion-via-text-properties
-      (org-with-wide-buffer
-       (when-let* ((node (or node
-                             (save-excursion
-                               (goto-char (point-min))
-                               (org-roam-node-at-point))))
-                   (heading-specs (--map (append (-list it) (list :ensure t :dblock nil))
-                                         (funcall org-roam-default-headings-function node))))
-         (-each heading-specs
-           (-lambda ((name &plist :ensure :dblock :tags))
-             (when-let* ((marker (if ensure
-                                     (org-roam-default-headings--find-or-create-heading name)
-                                   (org-find-exact-headline-in-buffer name))))
-               (org-with-point-at marker
-                 (org-set-tags tags)
-                 (while (save-excursion (org-get-next-sibling))
-                   (org-move-subtree-down))
-                 (when dblock
-                   (org-roam-default-headings--ensure-dblock dblock)))
-               (set-marker marker nil))))
+    (atomic-change-group
+      ;; KLUDGE: Headline re-ordering breaks save-excursion. Use a hacky
+      ;; replacement that uses text properties instead.
+      (org-roam-default-headings--save-excursion-via-text-properties
+        (org-with-wide-buffer
+         (when-let* ((node (or node
+                               (save-excursion
+                                 (goto-char (point-min))
+                                 (org-roam-node-at-point))))
+                     (heading-specs (--map (append (-list it) (list :ensure t :dblock nil))
+                                           (funcall org-roam-default-headings-function node))))
+           (-each heading-specs
+             (-lambda ((name &plist :ensure :dblock :tags))
+               (when-let* ((marker (if ensure
+                                       (org-roam-default-headings--find-or-create-heading name)
+                                     (org-find-exact-headline-in-buffer name))))
+                 (org-with-point-at marker
+                   (org-set-tags tags)
+                   (while (save-excursion (org-get-next-sibling))
+                     (org-move-subtree-down))
+                   (when dblock
+                     (org-roam-default-headings--ensure-dblock dblock)))
+                 (set-marker marker nil))))
 
-         (org-format-all-headings))))))
+           (org-format-all-headings)))))))
 
 ;;;###autoload
 (defun org-roam-default-headings-populate-for-find-file ()
