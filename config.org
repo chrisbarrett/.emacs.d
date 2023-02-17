@@ -6599,12 +6599,12 @@ while in a table.
   (use-package org-roam-default-headings
     :autoload (org-roam-default-headings-populate-for-find-file)
     :preface
-    (defun config-org-roam-default-headings-setup ()
-      (org-roam-default-headings-populate-for-find-file)
+    (defun config-org-roam-format-headings-on-save ()
       (add-hook 'before-save-hook 'org-roam-default-headings-populate nil t))
     :hook
-    (org-roam-capture-new-node . config-org-roam-default-headings-setup)
-    (org-mode . config-org-roam-default-headings-setup))
+    (org-roam-capture-new-node . config-org-roam-format-headings-on-save)
+    (org-mode . org-roam-default-headings-populate-for-find-file)
+    (org-mode . config-org-roam-format-headings-on-save))
 #+end_src
 
 ** =org-roam-ui= - Web browser interface to org-roam
