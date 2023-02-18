@@ -7126,9 +7126,18 @@ input is already a map. :/ Hack around this by using help:ht-merge instead.
     :demand t
     :general ("<f12>" (general-predicate-dispatch 'timekeep-start
                         (and (fboundp 'org-clocking-p) (org-clocking-p)) 'timekeep-stop))
+    :preface
+    (defun config-org--update-node-filters ()
+      (when (require 'org-roam-review nil t)
+        (org-roam-review-modify-tags (org-tags-filter-parse (if (and timekeep-mode (org-clocking-p))
+                                                                "-private"
+                                                              "")))))
+
     :config
     (timekeep-mode +1)
-    (add-hook 'timekeep-agenda-should-update-hook #'org-funcs-agenda-dwim))
+    (add-hook 'timekeep-agenda-should-update-hook #'org-funcs-agenda-dwim)
+    (add-hook 'timekeep-punched-out-hook #'config-org--update-node-filters)
+    (add-hook 'timekeep-punched-in-hook #'config-org--update-node-filters))
 #+end_src
 
 ** =org-roam-slipbox= - Teach org-roam to tag slipboxes
