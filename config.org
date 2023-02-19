@@ -1557,7 +1557,7 @@ Configure how =ediff= should display windows when started.
   (use-package password-cache
     :custom
     (password-cache t)
-    (password-cache-expiry 3600))
+    (password-cache-expiry 300))
 #+end_src
 
 ** Limit the max height of the minibuffer
@@ -2599,7 +2599,10 @@ compatibility.
      "C-n" 'eshell-next-matching-input-from-input
      "C-p" 'eshell-previous-matching-input-from-input
      "C-a" 'eshell-bol
-     "C-e" 'end-of-line))
+     "C-e" 'end-of-line)
+    :custom
+    (eshell-prefer-lisp-functions t)
+    (eshell-prefer-lisp-variables t))
 #+end_src
 
 ** Prompt
@@ -5252,6 +5255,7 @@ Configure =conf-mode= for use with more kinds of config files.
 
     :custom
     (pdf-view-display-size 'fit-page)
+    (pdf-view-use-scaling t)
 
     :init
     (use-package pdf-history
