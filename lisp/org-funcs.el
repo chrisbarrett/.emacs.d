@@ -366,9 +366,10 @@ citar."
 
 (defun org-funcs-clean-bibtex-string (s)
   "Remove quoting brackets and superfluous whitespace from string S."
-  (->> (replace-regexp-in-string "[\"{}]+" "" s)
-       (replace-regexp-in-string "[\n\t ]+" " ")
-       (string-replace "\\" "")))
+  (when s
+    (->> (replace-regexp-in-string "[\"{}]+" "" s)
+         (replace-regexp-in-string "[\n\t ]+" " ")
+         (string-replace "\\" ""))))
 
 (defun org-funcs-add-roam-cite-ref (key)
   "Add KEY as a ROAM_REFS cite entry for the current node."
