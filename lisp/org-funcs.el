@@ -12,14 +12,15 @@
 
 (require 'async)
 (require 'dash)
+(require 'dired)
 (require 'f)
-(require 'org-cliplink)
-(require 'org-roam-slipbox)
 (require 'ht)
+(require 'org-cliplink)
+(require 'org-roam-rewrite)
+(require 'org-roam-slipbox)
 (require 'seq)
 (require 'thingatpt)
-(require 'dired)
-(require 'org-roam-rewrite)
+(require 'timekeep)
 (require 'vc-git)
 
 (cl-eval-when (compile)
@@ -318,8 +319,11 @@ window."
   (org-roam-node-find other-window
                       nil
                       (lambda (node)
-                        (let ((tags (org-roam-node-tags node)))
-                          (null (seq-intersection tags '("dailies" "litnotes")))))))
+                        (let* ((tags (org-roam-node-tags node))
+                               (disallowed (flatten-list (list '("dailies" "litnotes")
+                                                               (when (and timekeep-mode (org-clocking-p))
+                                                                 "private")))))
+                          (null (seq-intersection tags disallowed))))))
 
 (defun org-funcs-read-roam-node-link ()
   (let ((node (org-roam-node-read)))
