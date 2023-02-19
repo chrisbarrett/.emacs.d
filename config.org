@@ -3917,23 +3917,6 @@ dot).
     (add-hook 'magit-blame-mode-hook #'config-git--reveal-org-buffer))
 #+end_src
 
-*** GPG verification
-Hack =magit='s commit info to show output of a GPG signature check.
-#+begin_src emacs-lisp
-  (use-package magit-gpg
-    :after (magit)
-    :demand t
-    :commands (magit-gpg-insert-revision-gpg)
-    :preface
-    (autoload 'magit-add-section-hook "magit")
-    (autoload 'magit-insert-revision-headers "magit")
-    :config
-    (magit-add-section-hook 'magit-revision-sections-hook
-                            #'magit-gpg-insert-revision-gpg
-                            #'magit-insert-revision-headers
-                            t))
-#+end_src
-
 *** Improve magit performance on macOS
 See: https://github.com/magit/magit/commit/26e064e1d78acb4d4d422a0a5743609612863caa
 #+begin_src emacs-lisp
