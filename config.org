@@ -6202,6 +6202,43 @@ This makes it much easier to edit text using emphasis markers correctly.
                              :complete #'org-link-complete-app))
 #+end_src
 
+** Add a link type for Linux headers
+#+begin_src emacs-lisp
+  (use-package org
+    :preface
+    (require 'memoize)
+    (autoload 'magit-find-file "magit")
+    (autoload 'magit-git-lines "magit")
+
+    (defvar linux-src-dir "~/src/linux")
+
+    (defun org-link-linux-src-files-for-rev (rev)
+      (magit-git-lines "ls-tree" "-r" "--name-only" rev))
+
+    (ignore-errors
+      (memoize 'org-link-linux-src-files-for-rev))
+
+    :config
+    (require 'ol)
+
+    (defun org-link-follow-linux-src (path &optional arg)
+      (pcase-let ((`(,rev ,file) (split-string path ":")))
+        (if (and linux-src-dir (file-directory-p linux-src-dir))
+            (let ((default-directory linux-src-dir))
+              (magit-find-file rev file))
+          (browse-url (format "https://github.com/torvalds/linux/blob/%s/%s" rev file)))))
+
+    (defun org-link-complete-linux-src ()
+      (let* ((default-directory linux-src-dir)
+             (rev (completing-read "Rev: " (append '("HEAD") (magit-git-lines "tag"))))
+             (norm (substring (car (magit-git-lines "rev-parse" rev)) 0 6)))
+        (concat "linux:" norm ":" (completing-read "File: " (org-link-linux-src-files-for-rev rev)))))
+
+    (org-link-set-parameters "linux"
+                             :complete #'org-link-complete-linux-src
+                             :follow #'org-link-follow-linux-src))
+#+end_src
+
 ** Add a link type for playing audio files
 #+begin_src emacs-lisp
   (use-package org
