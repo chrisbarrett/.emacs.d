@@ -58,7 +58,7 @@ Each item in the list may be either:
 
 (defun org-roam-default-headings-for-node (node)
   (cond
-   ((seq-intersection (org-roam-node-tags node) '("dailies" "doc")) nil)
+   ((seq-intersection (org-roam-node-tags node) '("dailies" "doc" "dailies")) nil)
    ((seq-contains-p (org-roam-node-tags node) "litnotes")
     '("Meta"
       ("Topics" :ensure nil)
