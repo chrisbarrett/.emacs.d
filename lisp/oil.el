@@ -61,7 +61,17 @@ not present in sh."
     (,(rx bol (* space) "module" (+ space) (group (+ (any alnum "-" "_"))))
      1 font-lock-type-face)
     (,(rx bol (+ space) (group "###" (* nonl)))
-     1 font-lock-doc-face)))
+     1 font-lock-doc-face)
+    (,(rx bol (* space) "const" (+ space) (group (+ (syntax symbol)) symbol-end))
+     1 font-lock-variable-name-face)
+    (,(rx bol (* space) "proc" (+ space) (group (+ (syntax symbol)) symbol-end))
+     1 font-lock-function-name-face)
+    (,(rx bol (* space) "use" (+ space) (group (+ (syntax symbol)) symbol-end))
+     1 font-lock-type-face)
+    (,(rx bol (* space) "module" (+ space) (group (+ (syntax symbol)) symbol-end))
+     1 font-lock-type-face)
+    (,(rx bol (* space) (or "var" "setvar") (+ space) (group (+ (syntax symbol)) symbol-end))
+     1 font-lock-warning-face)))
 
 
 
