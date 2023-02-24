@@ -5495,7 +5495,6 @@ Automatically enter insert state when inserting new headings or using
 #+begin_src emacs-lisp
   (use-package org
     :custom
-    (org-hidden-keywords '(title author))
     (org-cycle-separator-lines 0)
     (org-hide-emphasis-markers t)
     (org-startup-with-latex-preview nil)
@@ -7020,9 +7019,8 @@ slipboxes as /types/ (evergreens, stubs & nouns vs lit notes).
   (define-advice org-fontify-meta-lines-and-blocks-1 (:after (&rest _) hide-space)
     (save-excursion
       (goto-char (point-min))
-      (when (search-forward-regexp (rx-to-string `(and bol "#+"
-                                                       (or ,@(seq-map #'symbol-name org-hidden-keywords)) ":"
-                                                       (group (+ space))
+      (when (search-forward-regexp (rx-to-string `(and bol
+                                                       (group "#+" (or "title" "author") ":" (+ space))
                                                        (+ nonl))
                                                  t)
                                    nil t)
