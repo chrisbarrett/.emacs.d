@@ -83,16 +83,6 @@ Each item in the list may be either:
       ("Planning & Meetings" :tags ("outline") :ensure nil)
       ("Footnotes" :ensure nil)))))
 
-(defun org-roam-default-headings--find-or-create-heading (heading)
-  (or (org-find-exact-headline-in-buffer heading)
-      (progn
-        ;; Create heading if it doesn't exist
-        (goto-char (point-max))
-        (unless (bolp) (newline))
-        (let (org-insert-heading-respect-content)
-          (org-insert-heading nil nil t))
-        (insert heading))))
-
 (defmacro org-roam-default-headings--save-excursion-via-text-properties (&rest body)
   "Like `save-excursion', but works using text properties.
 
@@ -104,102 +94,127 @@ buffer.
 Tries a couple of heuristics to put point at least somewhere
 close to the starting point from before BODY was executed."
   (declare (indent 0))
-  `(let ((start (point))
-         (col (current-column)))
+  `(progn
+     ;; Tidy up trailing whitespace to ensure we restore to a valid column after buffer transformations.
+     (when (string-match-p (rx bol (* space) eol) (buffer-substring (point) (line-end-position)))
+       (delete-horizontal-space))
 
-     ;; Put down some text properties at various places to see if we can restore
-     ;; any of them later.
-     ;;
-     ;; Applying these text properties will fail if the file is empty.
-     (unless (zerop (buffer-size))
-       (save-excursion
-         (back-to-indentation)
-         (add-text-properties (point) (1+ (point)) '(org-roam-default-headings-sentinel point)))
+     (let ((start (point))
+           (col (current-column)))
 
-       (save-excursion
-         (back-to-indentation)
-         (add-text-properties (point) (1+ (point)) '(org-roam-default-headings-sentinel indentation)))
+       (org-with-wide-buffer
+        (back-to-indentation)
+        ;; Put down some text properties at various places to see if we can restore
+        ;; any of them later.
+        ;;
+        ;; Applying these text properties will fail if the file is empty.
+        (unless (zerop (buffer-size))
+          (ignore-errors
+            (add-text-properties (point) (1+ (point)) '(org-roam-default-headings-sentinel point)))
+          (ignore-errors
+            (add-text-properties (point) (1+ (point)) '(org-roam-default-headings-sentinel indentation)))
+          (when (org-up-heading-safe)
+            (ignore-errors
+              (add-text-properties (point) (1+ (point)) '(org-roam-default-headings-sentinel heading))))))
 
-       (save-excursion
-         (when (org-up-heading-safe)
-           (add-text-properties (point) (1+ (point)) '(org-roam-default-headings-sentinel heading)))))
+       (let ((result (progn ,@body)))
 
-     ,@body
+         (goto-char (point-min))
+         (if-let* ((prop-match
+                    (or
+                     (save-excursion
+                       (text-property-search-forward 'org-roam-default-headings-sentinel 'point #'equal))
+                     (save-excursion
+                       (text-property-search-forward 'org-roam-default-headings-sentinel 'indentation #'equal))
+                     (save-excursion
+                       (text-property-search-forward 'org-roam-default-headings-sentinel 'heading #'equal)))))
+             (progn
+               (goto-char (prop-match-beginning prop-match))
+               (move-to-column col))
+           ;; Being smart failed; go back to the absolute starting point.
+           (goto-char start))
 
-     (goto-char (point-min))
+         (remove-text-properties (point-min) (point-max) '(org-roam-default-headings-sentinel
+                                                           ;; NB. actual value is ignored.
+                                                           _))
+         ;; Text property removal above breaks inline images. Redisplay them.
+         (org-display-inline-images)
 
-     (if-let* ((prop-match
-                (or
-                 (save-excursion
-                   (text-property-search-forward 'org-roam-default-headings-sentinel 'point #'equal))
-                 (save-excursion
-                   (text-property-search-forward 'org-roam-default-headings-sentinel 'indentation #'equal))
-                 (save-excursion
-                   (text-property-search-forward 'org-roam-default-headings-sentinel 'heading #'equal)))))
-         (progn
-           (goto-char (prop-match-beginning prop-match))
-           (move-to-column col))
-       ;; Being smart failed; go back to the absolute starting point.
-       (goto-char start))
+         result))))
 
-     (remove-text-properties (point-min) (point-max) '(org-roam-default-headings-sentinel
-                                                       ;; NB. actual value is ignored.
-                                                       _))
-     ;; Text property removal above breaks inline images. Redisplay them.
-     (org-display-inline-images)))
+(defun org-roam-default-headings--sync-buffer (specs)
+  (cl-labels ((ensure-dblock
+               (props)
+               (cl-assert (plisty-p props))
+               (cl-assert (org-at-heading-p))
+               (save-restriction
+                 (org-narrow-to-subtree)
+                 (let ((name (plist-get props :name)))
+                   (unless (search-forward-regexp (rx-to-string `(and bol (* space) "#+BEGIN:" (+ space) ,name)) nil t)
+                     (goto-char (point-max))
+                     (org-create-dblock props)))))
 
-(defun org-roam-default-headings--ensure-dblock (props)
-  (cl-assert (plisty-p props))
-  (cl-assert (org-at-heading-p))
-  (save-restriction
-    (org-narrow-to-subtree)
-    (let ((name (plist-get props :name)))
-      (unless (search-forward-regexp (rx-to-string `(and bol (* space) "#+BEGIN:" (+ space) ,name)) nil t)
-        (goto-char (point-max))
-        (org-create-dblock props)))))
+              (find-or-create-heading
+               (title)
+               (cl-assert (stringp title))
+               (or (org-find-exact-headline-in-buffer title)
+                   (progn
+                     ;; Create title if it doesn't exist
+                     (goto-char (point-max))
+                     (unless (bolp) (newline))
+                     (let (org-insert-heading-respect-content)
+                       (org-insert-heading nil nil t))
+                     (insert title)
+                     (goto-char (line-beginning-position))
+                     (point-marker)))))
+
+    (-each specs
+      (-lambda ((it &as name &plist :ensure :dblock :tags))
+        (when-let* ((marker (if ensure
+                                (find-or-create-heading name)
+                              (org-find-exact-headline-in-buffer name))))
+          (org-with-point-at marker
+            (org-set-tags tags)
+            (while (save-excursion (org-get-next-sibling))
+              (org-move-subtree-down))
+            (when dblock
+              (ensure-dblock dblock)))
+          (set-marker marker nil))))))
+
+(defun org-roam-default-headings--update-p (specs)
+  (let* ((required (->> (seq-filter (lambda (it) (plist-get (cdr-safe it) :ensure)) specs)
+                        (seq-map #'car)))
+         (topmost
+          (org-element-map (org-element-parse-buffer) '(data headline)
+            (-lambda ((_ heading)) (plist-get heading :raw-value)) nil nil '(headline)))
+
+         (required-present-p (null (seq-difference required topmost)))
+
+         (all-managed-headings (seq-map #'car specs))
+         (buffer-managed-headings (seq-intersection topmost all-managed-headings))
+         (managed-headings-expected-order (seq-intersection all-managed-headings topmost)))
+
+    (not (and required-present-p
+              (equal buffer-managed-headings managed-headings-expected-order)))))
+
+(defun org-roam-default-headings--specs-for-node ()
+  (when (org-roam-file-p)
+    (when-let* ((node (save-excursion
+                        (goto-char (point-min))
+                        (org-roam-node-at-point))))
+      (--map (append (-list it) (list :ensure t :dblock nil))
+             (funcall org-roam-default-headings-function node)))))
 
 ;;;###autoload
-(defun org-roam-default-headings-populate (&optional node)
-  "Populate the current roam NODE with headings."
+(defun org-roam-default-headings-populate ()
+  "Populate the current roam node with headings."
   (interactive)
-  (when (org-roam-file-p)
-    (atomic-change-group
-      ;; KLUDGE: Headline re-ordering breaks save-excursion. Use a hacky
-      ;; replacement that uses text properties instead.
-      (org-roam-default-headings--save-excursion-via-text-properties
-        (org-with-wide-buffer
-         (when-let* ((node (or node
-                               (save-excursion
-                                 (goto-char (point-min))
-                                 (org-roam-node-at-point))))
-                     (heading-specs (--map (append (-list it) (list :ensure t :dblock nil))
-                                           (funcall org-roam-default-headings-function node))))
-           (-each heading-specs
-             (-lambda ((name &plist :ensure :dblock :tags))
-               (when-let* ((marker (if ensure
-                                       (org-roam-default-headings--find-or-create-heading name)
-                                     (org-find-exact-headline-in-buffer name))))
-                 (org-with-point-at marker
-                   (org-set-tags tags)
-                   (while (save-excursion (org-get-next-sibling))
-                     (org-move-subtree-down))
-                   (when dblock
-                     (org-roam-default-headings--ensure-dblock dblock)))
-                 (set-marker marker nil))))
-
-           (org-format-all-headings)))))))
-
-;;;###autoload
-(defun org-roam-default-headings-populate-for-find-file ()
-  (when (org-roam-file-p)
-    (let ((initial-contents (buffer-substring-no-properties (point-min) (point-max)))
-          (updated-contents
-           (progn
-             (org-roam-default-headings-populate)
-             (buffer-substring-no-properties (point-min) (point-max)))))
-      (if (equal initial-contents updated-contents)
-          (set-buffer-modified-p nil)
-        (save-buffer)))))
+  (when-let* ((specs (org-roam-default-headings--specs-for-node)))
+    (when (org-roam-default-headings--update-p specs)
+      (atomic-change-group
+        (org-roam-default-headings--save-excursion-via-text-properties
+          (org-roam-default-headings--sync-buffer specs)
+          (org-format-all-headings))))))
 
 (provide 'org-roam-default-headings)
 
