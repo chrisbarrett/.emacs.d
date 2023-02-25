@@ -74,7 +74,8 @@ Each item in the list may be either:
       ("References" :ensure nil :dblock (:name "backlinks" :tags litnotes :only-missing t))
       ("Footnotes" :ensure nil)))
    (t
-    '("Notes"
+    '(("Dates" :ensure nil)
+      "Notes"
       "Topics"
       ("Tasks" :ensure nil)
       "Related"
