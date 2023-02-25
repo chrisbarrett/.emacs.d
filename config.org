@@ -4539,6 +4539,23 @@ Like =debug=, but its interface is around source-files.
     (defvar edebug-mode-map (make-sparse-keymap)))
 #+end_src
 
+**** Temporarily hide git-gutter while debugging
+#+begin_src emacs-lisp
+  (use-package edebug
+    :after git-gutter
+    :demand t
+    :config
+    (defvar-local edebug-git-gutter-enabled-at-start-p nil)
+    (define-advice edebug-mode (:around (fn &rest args) toggle-git-gutter)
+      (unwind-protect (apply fn args)
+        (pcase `(,edebug-mode ,edebug-git-gutter-enabled-at-start-p)
+          (`(t ,_) ; edebug started - disable git-gutter
+           (setq-local edebug-git-gutter-enabled-at-start-p t)
+           (git-gutter-mode -1))
+          (`(nil t) ; edebug finished - enable git-gutter
+           (git-gutter-mode +1))))))
+#+end_src
+
 *** =elisp-slime-nav= - Code navigation                          :disabled:
 Use =elisp-slime-nav= to go to definition in Emacs Lisp.
 #+begin_src emacs-lisp
