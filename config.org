@@ -464,6 +464,9 @@ Load host-specific settings, which are not checked into version control.
                               `(org-roam-review-tags-filter ((t :inherit magit-section-heading :bold nil)))
                               `(org-roam-review-heading ,outline-heading)
 
+                              `(edebug-enabled-breakpoint ((t :bold t :inherit error)))
+                              '(edebug-disabled-breakpoint ((t :bold t :inherit font-lock-builtin-face)))
+
                               `(outline-1 ,outline-heading)
                               `(outline-2 ,outline-heading)
                               `(outline-3 ,outline-heading)
