@@ -2793,6 +2793,15 @@ See:
     "c" #'quick-calc
     "C" #'full-calc
     "e" #'eshell
+
+    "d" '(nil :wk "debugger")
+    "dd" '(edebug-where :wk "return to session")
+    "dq" '(edebug-top-level-nonstop :wk "toplevel")
+    "ds" '(edebug-stop :wk "stop")
+    "d?" '(edebug-help :wk "help")
+    "dl" '(edebug-visit-eval-list :wk "switch to eval list")
+    "dx" '(edebug-remove-instrumentation :wk "unset")
+
     "r" (general-predicate-dispatch 'profiler-start
           (and (featurep 'profiler) (profiler-running-p)) 'profiler-stop-and-report)
     "w" #'world-time-list)
@@ -4442,13 +4451,54 @@ See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
   (mode-leader-set-key :keymaps 'emacs-lisp-mode-map
     "e" '(nil :wk "eval")
     "eb" '(eval-buffer :wk "eval buf")
-    "ee" '(eval-expression :wk "eval expr")
 
     "d" '(nil :wk "debug")
-    "df" '(debug-on-entry :wk "function...")
-    "dc" '(nil :wk "cancel... (function)")
-    "dv" '(debug-on-variable-change :wk "variable...")
-    "dV" '(cancel-debug-on-variable-change :wk "cancel... (variable)")
+
+    ;; breakpoints
+    "db" '(nil :wk "breakpoints")
+    "dbb" '(edebug-set-breakpoint :wk "set")
+    "dbu" '(edebug-unset-breakpoint :wk "unset")
+    "dbU" '(edebug-unset-breakpoints :wk "unset (all)")
+    "dbn" '(edebug-next-breakpoint :wk "next")
+    "dbc" '(edebug-set-conditional-breakpoint :wk "conditional")
+    "dbC" '(edebug-set-global-break-condition :wk "conditional (global)")
+    "dbt" '(edebug-toggle-disable-breakpoint :wk "toggle")
+
+    "dc" '(edebug-continue-mode :wk "continue")
+    "dC" '(edebug-Continue-fast-mode :wk "continue (fast)")
+    "dd" '(edebug-pop-to-backtrace :wk "backtrace")
+
+    "df" '(edebug-defun :wk "instrument function (at pt)")
+    "dF" '(edebug-on-entry :wk "instrument function...")
+    "de" '(edebug-eval-top-level-form :wk "eval & step through")
+
+    "dm" '(nil :wk "mode")
+    "dmc" '(edebug-continue-mode :wk "continue")
+    "dmC" '(edebug-Continue-fast-mode :wk "continue (fast)")
+    "dms" '(edebug-step-mode :wk "step")
+    "dmn" '(edebug-next-mode :wk "next")
+    "dmg" '(edebug-go-mode :wk "go")
+    "dmG" '(edebug-Go-nonstop-mode :wk "go (non-stop)")
+    "dmt" '(edebug-trace-mode :wk "trace")
+    "dmT" '(edebug-Trace-fast-mode :wk "trace (fast)")
+
+    "dg" '(edebug-where :wk "where")
+    "dn" '(edebug-goto-here :wk "forward to stop point")
+    "dt" '(edebug-toggle-disable-breakpoint :wk "toggle")
+    "dI" '(edebug-instrument-callee :wk "instrument callee")
+    "di" '(edebug-step-in :wk "step in")
+    "do" '(edebug-step-out :wk "step out")
+
+    ;; quitting and stopping
+    "dq" '(edebug-top-level-nonstop :wk "toplevel")
+    "ds" '(edebug-stop :wk "stop")
+
+    ;; evaluation
+    "dr" '(edebug-previous-result :wk "previous result")
+    "de" '(edebug-eval-expression :wk "eval... (expression)")
+    "dl" '(edebug-visit-eval-list :wk "switch to eval list")
+
+    "d?" '(edebug-help :wk "help")
 
     "t" 'ert)
 #+end_src
