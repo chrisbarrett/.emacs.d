@@ -2174,7 +2174,8 @@ byte-compiler about them to avoid warnings.
     (evil-insert-state-cursor '("chartreuse3" bar))
     (evil-emacs-state-cursor  '("SkyBlue2" (box . t)))
     :general
-    (:states 'normal "go" #'browse-url-at-point))
+    (:states 'normal "go" #'browse-url-at-point)
+    (:states '(normal insert visual motion) "M-e" 'evil-window-next))
 #+end_src
 
 ** Prevent visual state from updating the clipboard
