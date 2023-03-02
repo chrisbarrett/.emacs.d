@@ -332,6 +332,16 @@ window."
              (org-roam-node-id node))
      (org-roam-node-formatted node))))
 
+(defun org-funcs-follow-link-other-window ()
+  "Force the link at point to open in another window."
+  (interactive)
+  (let ((org-link-frame-setup (cons '(file .
+                                           (lambda ()
+                                             (when-let* ((buf (find-file-noselect filename)))
+                                               (display-buffer-in-direction buf '((direction . rightmost))))))
+                                    org-link-frame-setup)))
+    (org-open-at-point)))
+
 
 ;; BibTeX management with Citar
 

@@ -6484,7 +6484,9 @@ This makes it much easier to edit text using emphasis markers correctly.
     (:states '(insert normal) :keymaps 'org-mode-map
      "C-c i" '(org-roam-node-insert :wk "insert org-roam link")
      "C-c TAB" (general-predicate-dispatch 'org-roam-node-insert
-                 (org-at-table-p) 'org-ctrl-c-tab))
+                 (org-at-table-p) 'org-ctrl-c-tab)
+     "S-<return>" (general-predicate-dispatch 'org-funcs-follow-link-other-window
+                 (org-at-table-p) 'org-table-copy-down))
     :config
     (org-roam-db-autosync-enable))
 #+end_src
