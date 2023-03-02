@@ -6709,17 +6709,23 @@ while in a table.
   (use-package org-roam-default-headings
     :commands (org-roam-default-headings-populate)
     :preface
-    (defun config-org-roam--format-on-open ()
-      (org-roam-default-headings-populate)
-      (when (buffer-file-name)
-        (save-buffer)))
+    (defun config-org-roam--ad-format-buffer (fn &rest args)
+      (let* ((result (apply fn args))
+             (buf (if (bufferp result) result (current-buffer))))
+        (with-current-buffer buf
+          (org-roam-default-headings-populate)
+          (save-buffer))
+        buf))
+
+    (advice-add 'org-roam-node-visit :around #'config-org-roam--ad-format-buffer)
+    (advice-add 'org-roam-preview-visit :around #'config-org-roam--ad-format-buffer)
+    (advice-add 'org-link-open :around #'config-org-roam--ad-format-buffer)
 
     (defun config-org-roam--format-on-save ()
       (add-hook 'before-save-hook 'org-roam-default-headings-populate nil t))
 
     :hook
     (org-roam-capture-new-node . config-org-roam--format-on-save)
-    (org-mode . config-org-roam--format-on-open)
     (org-mode . config-org-roam--format-on-save))
 #+end_src
 
