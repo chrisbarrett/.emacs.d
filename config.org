@@ -3453,8 +3453,9 @@ after editing actions have changed what windows are shown.
 
 #+begin_src emacs-lisp
   (use-package winner
-    :general ("<C-left>" 'winner-undo
-              "<C-right>"'winner-redo)
+    :general (:keymaps 'override :states '(normal insert emacs visual motion)
+              "C-," 'winner-undo
+              "C-."'winner-redo)
     :hook (after-init . winner-mode)
     :custom
     (winner-boring-buffers '("*Completions*"
