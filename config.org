@@ -2124,7 +2124,15 @@ solution other is to add an inline lisp call inline to =just-one-space=.
 ** =editorconfig= - Support editorconfig files
 #+begin_src emacs-lisp
   (use-package editorconfig
-    :hook (after-init . editorconfig-mode))
+    :hook (after-init . editorconfig-mode)
+    :init
+    (define-advice editorconfig--advice-insert-file-contents (:around (fn &rest args) handle-errors)
+      (condition-case err
+          (apply fn args)
+        (file-missing
+         nil)
+        (error
+         (throw (car err) (cdr err))))))
 #+end_src
 
 ** =envrc= - Support direnv files
