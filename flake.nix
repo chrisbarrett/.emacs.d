@@ -156,6 +156,7 @@
             rainbow-mode
             request
             rust-mode
+            rustic
             rotate
             shut-up
             simple-httpd
