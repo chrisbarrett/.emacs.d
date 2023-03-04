@@ -5353,6 +5353,14 @@ Configure =conf-mode= for use with more kinds of config files.
     :demand t)
 #+end_src
 
+**** HACK Fix compilation buffers missing a default hashtable of locs
+#+begin_src emacs-lisp
+  (use-package compilation
+    :init
+    (setq-default compilation-locs
+                  (make-hash-table :test 'equal :weakness 'value)))
+#+end_src
+
 * Applications
 
 ** =pdf-tools= - PDF reader
