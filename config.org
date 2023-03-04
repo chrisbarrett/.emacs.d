@@ -588,6 +588,12 @@ applications. The following functions will be invoked by those scripts over
                         (side . bottom)
                         (dedicated . t)
                         (window-height . 0.4)))
+
+  (display-buffer-set (rx bos "*rustic-babel-compilation-buffer*" eos)
+                      '((display-buffer-in-side-window)
+                        (side . bottom)
+                        (dedicated . t)
+                        (window-height . 0.4)))
 #+end_src
 
 ** org-babel errors
@@ -5331,6 +5337,20 @@ Configure =conf-mode= for use with more kinds of config files.
 #+begin_src emacs-lisp
   (use-package conf-mode
     :mode ("/Cargo\\.lock\\'" . conf-toml-mode))
+#+end_src
+
+*** =rustic= - Additional rust commands
+#+begin_src emacs-lisp
+  (use-package rustic
+    :custom
+    (rustic-lsp-client 'eglot))
+#+end_src
+
+**** Teach org-mode how to eval rust source blocks
+#+begin_src emacs-lisp
+  (use-package rustic-babel
+    :after ob
+    :demand t)
 #+end_src
 
 * Applications
