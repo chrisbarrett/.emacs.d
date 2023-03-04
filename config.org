@@ -5317,6 +5317,7 @@ Configure =conf-mode= for use with more kinds of config files.
 ** =rust-mode= - Rust language support
 #+begin_src emacs-lisp
   (mode-leader-set-key :keymaps 'rust-mode-map
+    "," '(rustic-popup :wk "rustic...")
     "r" '(rust-run :wk "run")
     "t" '(rust-test :wk "test")
     "c" '(rust-check :wk "typecheck")
@@ -5342,8 +5343,13 @@ Configure =conf-mode= for use with more kinds of config files.
 *** =rustic= - Additional rust commands
 #+begin_src emacs-lisp
   (use-package rustic
+    :init
+    (require 'inheritenv)
     :custom
-    (rustic-lsp-client 'eglot))
+    (rustic-lsp-client 'eglot)
+    :config
+    (with-eval-after-load 'evil
+      (evil-set-initial-state 'rustic-popup-mode 'emacs)))
 #+end_src
 
 **** Teach org-mode how to eval rust source blocks
