@@ -5367,6 +5367,17 @@ Configure =conf-mode= for use with more kinds of config files.
                   (make-hash-table :test 'equal :weakness 'value)))
 #+end_src
 
+**** Add a ~:profile~ header arg for specifying the build profile
+#+begin_src emacs-lisp
+  (define-advice rustic-make-process (:filter-args (args) apply-profile)
+    (setf (plist-get args :command)
+          (append
+           (plist-get args :command)
+           (when-let* ((profile (alist-get :profile rustic-babel-params)))
+             (list (format "--%s" profile)))))
+    args)
+#+end_src
+
 * Applications
 
 ** =pdf-tools= - PDF reader
