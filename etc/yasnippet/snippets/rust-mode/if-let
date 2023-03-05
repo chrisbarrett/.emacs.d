@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: if-let
+# key: il
+# condition: (yas-funcs-bolp)
+# --
+if let ${1:pat} = ${2:value} {
+  $0
+} else {
+}

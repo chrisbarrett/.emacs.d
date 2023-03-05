@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: format!
+# key: fm
+# --
+format!("$0");

@@ -1,5 +1,6 @@
 # -*- mode: snippet -*-
-# name: println
+# name: println!
 # key: p
+# condition: (yas-funcs-bolp)
 # --
 println!("$0");
