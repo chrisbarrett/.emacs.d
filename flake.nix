@@ -89,7 +89,6 @@
             evil-org
             evil-surround
             f
-            fira-code-mode
             flx
             forge
             format-all

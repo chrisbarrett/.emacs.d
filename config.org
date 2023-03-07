@@ -3742,14 +3742,6 @@ after editing actions have changed what windows are shown.
     (default-text-scale-amount 30))
 #+end_src
 
-** =fira-code-mode= - Adds ligatures to fira-code
-#+begin_src emacs-lisp
-  (use-package fira-code-mode
-    :hook (prog-mode text-mode)
-    :custom
-    (fira-code-mode-disabled-ligatures '("x")))
-#+end_src
-
 * File & Buffer management
 
 ** =bufler= - Better buffer list
