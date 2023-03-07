@@ -92,6 +92,7 @@
             flx
             forge
             format-all
+            ligature
             general
             git-auto-commit-mode
             git-gutter
