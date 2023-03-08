@@ -118,6 +118,7 @@
             magit
             magit-delta
             magit-popup
+            magit-todos
             marginalia
             markdown-mode
             memoize

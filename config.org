@@ -4089,6 +4089,15 @@ See: [[https://github.com/dandavison/magit-delta/issues/9#issuecomment-795435781
     (add-hook 'magit-post-refresh-hook #'config-magit-delta-maybe-reenable-for-refresh))
 #+end_src
 
+*** =magit-todos= -- show TODOS, FIXMEs, etc in Magit
+#+begin_src emacs-lisp
+  (use-package magit-todos
+    :after magit
+    :demand t
+    :config
+    (magit-todos-mode +1))
+#+end_src
+
 ** =vc= - Emacs' built-in version control functionality
 #+begin_src emacs-lisp
   (use-package vc-git
@@ -7265,7 +7274,7 @@ slipboxes as /types/ (evergreens, stubs & nouns vs lit notes).
   (define-advice org-fontify-meta-lines-and-blocks-1 (:after (&rest _) fontify-subject)
     (save-excursion
       (goto-char (point-min))
-      (when (search-forward-regexp (rx bol "#+title:" (+ space) (group (+? nonl)) (group (any "/:") (+ space)) (+ nonl)) nil t)
+      (when (search-forward-regexp (rx bol "#+title:" (+ space) (group (+? nonl)) (group (any ":") (+ space)) (+ nonl)) nil t)
         (add-text-properties (match-beginning 1) (match-end 1)
                              '(font-lock-fontified t face org-roam-custom-node-topic))
         (add-text-properties (match-beginning 2) (match-end 2)
