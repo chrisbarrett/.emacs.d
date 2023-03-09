@@ -2189,7 +2189,18 @@ byte-compiler about them to avoid warnings.
     (evil-emacs-state-cursor  '("SkyBlue2" (box . t)))
     :general
     (:states 'normal "go" #'browse-url-at-point)
-    (:states '(normal insert visual motion) "M-e" 'evil-window-next))
+    (:states '(normal insert visual motion) "M-e" 'evil-window-next)
+
+    :preface
+    (defun config-evil-beginning-of-defun ()
+      (interactive)
+      (beginning-of-defun)
+      (back-to-indentation))
+
+    :general
+    (:states 'normal :keymaps 'prog-mode-map
+     "(" 'config-evil-beginning-of-defun
+     ")" 'end-of-defun))
 #+end_src
 
 ** Prevent visual state from updating the clipboard
