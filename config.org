@@ -5492,6 +5492,14 @@ Configure =conf-mode= for use with more kinds of config files.
     args)
 #+end_src
 
+*** =rust-funcs= - Additional functions
+#+begin_src emacs-lisp
+  (use-package rust-funcs
+    :general
+    (:keymaps '(rust-mode-map rustic-mode-map)
+     "C-c C-p" 'rust-funcs-toggle-pub))
+#+end_src
+
 * Applications
 
 ** =pdf-tools= - PDF reader
