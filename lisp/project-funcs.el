@@ -36,9 +36,10 @@
   :type '(list string))
 
 (defun project-funcs-try-known-files (start-dir)
-  (when-let* ((dir (locate-dominating-file start-dir
-                                           (lambda (dir)
-                                             (seq-intersection project-funcs-known-files (directory-files dir))))))
+  (when-let* ((dir (and (file-directory-p start-dir)
+                        (locate-dominating-file start-dir
+                                                (lambda (dir)
+                                                  (seq-intersection project-funcs-known-files (directory-files dir)))))))
     ;; KLUDGE: use the default vc implementation.
     (cons 'vc dir)))
 
