@@ -1,4 +1,4 @@
-# key: fn
+# key: f
 # name: fn
 # condition: (yas-funcs-bolp)
 # --

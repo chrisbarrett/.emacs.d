@@ -1,0 +1,6 @@
+# -*- mode: snle
+# key: mod
+# --
+mod ${1:name} {
+    $0
+}

@@ -1,0 +1,5 @@
+# key: c
+# name: const
+# condition: (yas-funcs-bolp)
+# --
+const ${1:$$(upcase (or yas-text "NAME"))}: ${2:T} = $0;

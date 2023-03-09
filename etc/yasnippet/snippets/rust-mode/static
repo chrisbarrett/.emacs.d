@@ -1,0 +1,5 @@
+# key: s
+# name: static
+# condition: (yas-funcs-bolp)
+# --
+static ${1:$$(upcase (or yas-text "NAME"))}: ${2:T} = $0;
