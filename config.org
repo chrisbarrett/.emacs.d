@@ -7258,6 +7258,19 @@ property drawer and the title. Advise it to fix that.
     :hook (org-mode . config-org-roam-dblocks-maybe-enable-autoupdate-mode))
 #+end_src
 
+*** Refresh dblocks on link navigation
+#+begin_src emacs-lisp
+  (define-advice org-roam-id-open (:around (fn &rest args)  refresh-dblocks-on-id-open)
+    (let* ((id (car args))
+           (node (org-roam-node-from-id id))
+           (existing-buf (-some->> node (org-roam-node-file) (find-buffer-visiting))))
+      (prog1 (apply fn args)
+        (when existing-buf
+          (unless (buffer-modified-p existing-buf)
+            (with-current-buffer existing-buf
+              (org-update-all-dblocks)))))))
+#+end_src
+
 ** Define a parser for my title conventions
 I sometimes like to scope notes to a particular topic, using a ~TOPIC: NAME~
 convention. This is different from having separate slipboxes, since I use
