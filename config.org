@@ -4672,7 +4672,7 @@ Like =debug=, but its interface is around source-files.
      "C-c C-n" '(edebug-next-mode :wk "continue to next breakpoint")
      "C-c C-i" '(edebug-step-in :wk "step in")
      "C-c C-o" '(edebug-step-out :wk "step out"))
-    :preface
+    :init
     (defvar edebug-mode-map (make-sparse-keymap)))
 #+end_src
 
