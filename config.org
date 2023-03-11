@@ -6897,7 +6897,9 @@ while in a table.
              (buf (if (bufferp result) result (current-buffer))))
         (with-current-buffer buf
           (org-roam-default-headings-populate)
-          (save-buffer))
+          (let ((save-silently t)
+                (message-log-max))
+            (save-buffer)))
         buf))
 
     (advice-add 'org-roam-node-visit :around #'config-org-roam--ad-format-buffer)
