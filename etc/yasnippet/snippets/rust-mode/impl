@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: impl
+# key: im
+# condition: (yas-funcs-bolp)
+# --
+impl ${1:Type} {
+    $0
+}
