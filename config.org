@@ -403,7 +403,7 @@ Load host-specific settings, which are not checked into version control.
   (defun config-theme-apply-settings ()
     (let* ((dark-fg "#bbc2cf")
            (light-fg "#556b72")
-           (title `((t :height 1.5 :weight semibold)))
+           (title `((t :height 1.5 :weight normal)))
            (heading `((t :height 1.2)))
            (block-markup `((t :inherit font-lock-comment-face :background unspecified :italic nil :weight light :bold nil)))
            (outline-heading `((t :weight semibold :foreground unspecified)))
@@ -456,7 +456,6 @@ Load host-specific settings, which are not checked into version control.
                               '(compilation-warning ((t :italic nil)))
                               '(magit-header-line ((t :background unspecified :box nil)))
                               `(org-document-title ,title)
-                              `(org-roam-custom-node-topic ((t :height 1.5 :inherit org-roam-dim)))
                               `(org-roam-header-line ((t :inherit org-document-title)))
                               `(vertico-group-title ((t :inherit magit-section-heading)))
                               `(consult-line-number ((t :inherit font-lock-comment-face)))
@@ -466,6 +465,8 @@ Load host-specific settings, which are not checked into version control.
 
                               `(edebug-enabled-breakpoint ((t :bold t :inherit error)))
                               '(edebug-disabled-breakpoint ((t :bold t :inherit font-lock-builtin-face)))
+
+                              `(org-roam-custom-node-topic ((t :height 1.5 :weight normal :inherit font-lock-constant-face)))
 
                               `(outline-1 ,outline-heading)
                               `(outline-2 ,outline-heading)
@@ -6838,6 +6839,13 @@ slipboxes as /types/ (evergreens, stubs & nouns vs lit notes).
     (org-roam-review-ignored-tags '("dailies" "litnotes"))
     (org-roam-review-tags-ignored-for-review-buffer '("dailies" "litnotes"))
     (org-roam-review-show-instructions-p nil)
+    (org-roam-review-title-formatter (lambda (node)
+                                       (-let* (((&plist :title :subject) (config-org-roam-parse-node-title node))
+                                               (title (propertize title 'font-lock-face 'magit-section-secondary-heading))
+                                               (subject (when subject
+                                                          (propertize (concat subject ": ") 'font-lock-face
+                                                                      'font-lock-doc-face))))
+                                         (concat subject title))))
     :general
     (:states '(normal) :keymaps 'org-roam-review-mode-map
      "/" 'org-roam-review-modify-tags
@@ -7294,26 +7302,16 @@ property drawer and the title. Advise it to fix that.
 
 ** Fontify the topic prefix specially if present
 #+begin_src emacs-lisp
-  (defface org-roam-custom-node-topic
-    '((t
-       (:inherit org-roam-dim)))
-    "Face for node topics."
-    :group 'org-roam-faces)
-
-  (defface org-roam-custom-node-topic-separator
-    '((t
-       (:weight light :inherit org-roam-custom-node-topic)))
+  (defface org-roam-custom-node-topic nil
     "Face for node topics."
     :group 'org-roam-faces)
 
   (define-advice org-fontify-meta-lines-and-blocks-1 (:after (&rest _) fontify-subject)
     (save-excursion
       (goto-char (point-min))
-      (when (search-forward-regexp (rx bol "#+title:" (+ space) (group (+? nonl)) (group (any ":") (+ space)) (+ nonl)) nil t)
+      (when (search-forward-regexp (rx bol "#+title:" (+ space) (group (+? nonl) ":") (+ nonl)) nil t)
         (add-text-properties (match-beginning 1) (match-end 1)
-                             '(font-lock-fontified t face org-roam-custom-node-topic))
-        (add-text-properties (match-beginning 2) (match-end 2)
-                             '(font-lock-fontified t face org-roam-custom-node-topic-separator display " > ")))))
+                             '(font-lock-fontified t face org-roam-custom-node-topic)))))
 #+end_src
 
 ** Hide the space after hidden keywords
