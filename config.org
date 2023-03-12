@@ -3132,11 +3132,11 @@ See:
     (interactive)
     (org-roam-node-visit (org-roam-node-from-id org-roam-index-node-id)))
 
-  (defun config-org-roam-review-toggle ()
-    (interactive)
+  (defun config-org-roam-review-toggle (&optional arg)
+    (interactive "P")
     (if-let* ((win (get-buffer-window "*org-roam-review*")))
         (delete-window win)
-      (org-roam-review)))
+      (org-roam-review arg)))
 
   (leader-set-key :infix "o"
     "" '(nil :wk "org")
