@@ -6679,6 +6679,22 @@ This makes it much easier to edit text using emphasis markers correctly.
     (org-roam-db-autosync-enable))
 #+end_src
 
+** Define a parser for my title conventions
+I sometimes like to scope notes to a particular topic, using a ~TOPIC: NAME~
+convention. This is different from having separate slipboxes, since I use
+slipboxes as /types/ (evergreens, stubs & nouns vs lit notes).
+
+#+begin_src emacs-lisp
+  (defun config-org-roam-parse-node-title (node)
+    (pcase-let* ((original (org-roam-node-title node))
+                 (`(,_ ,subject ,title)
+                  (s-match (rx (* space) (group (+? nonl)) (* space) (any "/:") (+ space) (group (+ nonl)))
+                           original)))
+      (if subject
+          (list :subject subject :title title)
+        (list :title original))))
+#+end_src
+
 ** Set leader keys
 #+begin_src emacs-lisp
   (defun display-backlinks ()
@@ -7274,22 +7290,6 @@ property drawer and the title. Advise it to fix that.
           (unless (buffer-modified-p existing-buf)
             (with-current-buffer existing-buf
               (org-update-all-dblocks)))))))
-#+end_src
-
-** Define a parser for my title conventions
-I sometimes like to scope notes to a particular topic, using a ~TOPIC: NAME~
-convention. This is different from having separate slipboxes, since I use
-slipboxes as /types/ (evergreens, stubs & nouns vs lit notes).
-
-#+begin_src emacs-lisp
-  (defun config-org-roam-parse-node-title (node)
-    (pcase-let* ((original (org-roam-node-title node))
-                 (`(,_ ,subject ,title)
-                  (s-match (rx (* space) (group (+? nonl)) (* space) (any "/:") (+ space) (group (+ nonl)))
-                           original)))
-      (if subject
-          (list :subject subject :title title)
-        (list :title original))))
 #+end_src
 
 ** Fontify the topic prefix specially if present
