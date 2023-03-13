@@ -2587,7 +2587,7 @@ compatibility.
     :custom
     (eldoc-idle-delay 0.2)
     (eldoc-echo-area-display-truncation-message nil)
-    (eldoc-documentation-strategy eldoc-documentation-compose-eagerly)
+    (eldoc-documentation-strategy 'eldoc-documentation-compose-eagerly)
     :config
     (define-advice eldoc-doc-buffer (:after (&rest args) select-window)
       (select-window (get-buffer-window eldoc--doc-buffer))))
