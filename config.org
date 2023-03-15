@@ -6686,8 +6686,8 @@ convention. This is different from having separate slipboxes, since I use
 slipboxes as /types/ (evergreens, stubs & nouns vs lit notes).
 
 #+begin_src emacs-lisp
-  (defun config-org-roam-parse-node-title (node)
-    (pcase-let* ((original (org-roam-node-title node))
+  (defun config-org-roam-parse-node-title (node-or-title)
+    (pcase-let* ((original (if (stringp node-or-title) node-or-title (org-roam-node-title node-or-title)))
                  (`(,_ ,subject ,title)
                   (s-match (rx (* space) (group (+? nonl)) (* space) (any "/:") (+ space) (group (+ nonl)))
                            original)))
@@ -6812,6 +6812,7 @@ slipboxes as /types/ (evergreens, stubs & nouns vs lit notes).
               (default-directory (f-dirname file)))
         (when (zerop level)
           (magit-call-git "rm" (magit-convert-filename-for-git file)))))
+
     :custom
     (org-roam-rewrite-rename-without-confirmation-p t)
     :config
@@ -6822,6 +6823,33 @@ slipboxes as /types/ (evergreens, stubs & nouns vs lit notes).
                      ;; Note types
                      '("notes" "moc" "outline" "litnotes"))))
     (add-hook 'org-roam-rewrite-node-removed-functions #'config-org-roam--handle-deleted-node))
+#+end_src
+
+*** Ignore possibly-missing topic prefix when checking which backlinks were customised
+#+begin_src emacs-lisp
+  (use-package org-roam-rewrite
+    :preface
+    (defun config-org-roam-rewrite-backlink-transformer (args-plist)
+      (cl-labels ((normalise
+                   (node-or-title)
+                   (-let [(&plist :title) (config-org-roam-parse-node-title node-or-title)]
+                     (replace-regexp-in-string (rx (+ (any space "\n"))) "" (downcase title)))))
+
+        (-let* (((&plist :prev-node :new-id :new-desc :prev-desc)
+                 args-plist)
+
+                (norm-titles (cons (normalise (org-roam-node-title prev-node))
+                                   (seq-map 'normalise (org-roam-node-aliases prev-node))))
+
+                (desc-customised-p
+                 (not (seq-contains-p norm-titles (normalise prev-desc))))
+
+                (updated-desc
+                 (if desc-customised-p prev-desc new-desc)))
+
+          (list :id new-id :desc updated-desc))))
+    :custom
+    (org-roam-rewrite-backlink-transformer 'config-org-roam-rewrite-backlink-transformer))
 #+end_src
 
 ** =org-roam-review= - spaced-repetition implementation for org-roam notes
