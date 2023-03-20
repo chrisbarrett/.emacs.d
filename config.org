@@ -7281,7 +7281,7 @@ property drawer and the title. Advise it to fix that.
     (config-org-roam--update-links-buffer))
 #+end_src
 
-** =org-roam-refill-previews= - Refill previews to fit backlinks window
+** =org-roam-refill-previews= - Refill previews to fit backlinks window :disabled:
 #+begin_src emacs-lisp
   (use-package org-roam-refill-previews
     :after org-roam
