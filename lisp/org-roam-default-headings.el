@@ -56,32 +56,15 @@ Each item in the list may be either:
 
 
 
-(defun org-roam-default-headings-for-node (node)
-  (cond
-   ((seq-intersection (org-roam-node-tags node) '("dailies" "doc" "dailies")) nil)
-   ((seq-contains-p (org-roam-node-tags node) "litnotes")
-    '("Meta"
-      ("Topics" :ensure nil)
-      "Related"
-      ("References" :dblock (:name "backlinks" :tags litnotes :only-missing t))
-      "Notes"
-      ("Footnotes" :ensure nil)))
-   ((seq-intersection (org-roam-node-tags node) '("memo" "runbook"))
-    '(("Notes" :ensure nil)
-      ("Topics" :ensure nil)
-      ("Tasks" :ensure nil)
-      ("Related" :ensure nil)
-      ("References" :ensure nil :dblock (:name "backlinks" :tags litnotes :only-missing t))
-      ("Footnotes" :ensure nil)))
-   (t
-    '(("Dates" :ensure nil)
-      "Notes"
-      "Topics"
-      ("Tasks" :ensure nil)
-      "Related"
-      ("References" :dblock (:name "backlinks" :tags litnotes :only-missing t))
-      ("Planning & Meetings" :tags ("outline") :ensure nil)
-      ("Footnotes" :ensure nil)))))
+(defun org-roam-default-headings-for-node (_node)
+  '(("Dates" :ensure nil)
+    "Notes"
+    "Topics"
+    ("Tasks" :ensure nil)
+    "Related"
+    ("References" :dblock (:name "backlinks" :tags litnotes :only-missing t))
+    ("Planning & Meetings" :tags ("outline") :ensure nil)
+    ("Footnotes" :ensure nil)))
 
 (defmacro org-roam-default-headings--save-excursion-via-text-properties (&rest body)
   "Like `save-excursion', but works using text properties.
