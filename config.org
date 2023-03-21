@@ -6849,16 +6849,7 @@ slipboxes as /types/ (evergreens, stubs & nouns vs lit notes).
 
 ** =org-roam-review= - spaced-repetition implementation for org-roam notes
 #+begin_src emacs-lisp
-  (defvar config-org-roam-review-excluded-slipboxes '("dailies" "litnotes"))
-
-  (defun config-org-roam-maybe-set-seedling ()
-    (unless (member (org-roam-node-slipbox (org-roam-node-at-point t))
-                    config-org-roam-review-excluded-slipboxes)
-      (org-roam-review-set-seedling)))
-
   (use-package org-roam-review
-    :hook
-    (org-roam-capture-new-node . config-org-roam-maybe-set-seedling)
     :commands (org-roam-review)
     :custom
     (org-roam-review-ignored-tags '("dailies" "litnotes"))
