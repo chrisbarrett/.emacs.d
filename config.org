@@ -5897,7 +5897,11 @@ Save org buffers automatically after certain operations.
     :after org)
 
   (use-package ox-slack
-    :after org)
+    :after org
+    :preface
+    (autoload 'slack-notes-translate-names "slack-notes")
+    :custom
+    (ox-slack-postprocess-function #'slack-notes-translate-names))
 
   (use-package htmlize
     :defer t)
