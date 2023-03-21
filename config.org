@@ -671,6 +671,8 @@ applications. The following functions will be invoked by those scripts over
   (defconst config-org-roam-side-window-default-width 55)
   (defconst config-org-roam-side-window-breakpoint (+ config-org-roam-side-window-default-width 80))
 
+  (display-buffer-set (rx bos "*org-roam-review*" eos) '(display-buffer-fullframe))
+
   (cl-labels ((make-actions (&key window-height (slot 1) (side 'left))
                             `(((lambda (buf &rest args)
                                  (funcall (if (< (frame-width) config-org-roam-side-window-breakpoint)
@@ -683,7 +685,6 @@ applications. The following functions will be invoked by those scripts over
                                                          (window-width . ,config-org-roam-side-window-default-width)))))))))
     (display-buffer-set (rx bos "*org-roam" (any "*:")) (make-actions))
     (display-buffer-set (rx bos "*org-roam-links*" eos) (make-actions))
-    (display-buffer-set (rx bos "*org-roam-review*" eos) (make-actions :slot 2 :window-height 0.3))
     (display-buffer-set (rx bos "*org-roam-search*" eos) (make-actions :slot 2 :window-height 0.7)))
 #+end_src
 
