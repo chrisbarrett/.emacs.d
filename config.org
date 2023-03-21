@@ -3146,6 +3146,10 @@ See:
     (interactive)
     (org-roam-node-visit (org-roam-node-from-id org-roam-index-node-id)))
 
+  (defun jump-to-org-init ()
+    (interactive)
+    (find-file (f-join paths-org-lisp-directory "init.el")))
+
   (leader-set-key :infix "o"
     "" '(nil :wk "org")
     "SPC" '(org-roam-dailies-capture-today :wk "capture note...")
@@ -3160,6 +3164,7 @@ See:
     "c g" '(org-clock-goto :wk "goto last clock")
 
     "i" '(jump-to-index-file :wk "index file")
+    "j" '(jump-to-org-init :wk "lisp init file")
 
     "k" '(org-capture :wk "capture...")
     "K" '(org-roam-capture :wk "capture... (roam)")
