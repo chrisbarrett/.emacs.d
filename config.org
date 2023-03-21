@@ -764,23 +764,14 @@ Use a header line instead of a mode line.
   (defun advice-ignore-errors (f &rest args)
     (ignore-errors
       (apply f args)))
-
-  (defun advice-inhibit-logging (f &rest args)
-    (let ((message-log-max))
-      (apply f args)))
-
-  (defun advice-clear-minibuffer (&rest _)
-    (message ""))
 #+end_src
 
 ** Run a hook when the theme changes
 #+begin_src emacs-lisp
   (defvar after-load-theme-functions nil)
 
-  (defun config-run-after-load-theme-hook (theme &rest _)
+  (define-advice load-theme (:after (theme &rest _) run-hook)
     (run-hook-with-args 'after-load-theme-functions theme))
-
-  (advice-add 'load-theme :after #'config-run-after-load-theme-hook)
 #+end_src
 
 * Definitions needed for config
@@ -920,13 +911,11 @@ I don't use sentence-based commands that often anyway.
 #+begin_src emacs-lisp
   (autoload 'thing-at-point-looking-at "thingatpt")
 
-  (defun config--comment-insert-space (&rest _)
+  (define-advice comment-indent-new-line (:after (&rest _) insert space)
     (when (and comment-start
                (thing-at-point-looking-at (regexp-quote comment-start)))
       (unless (or (thing-at-point-looking-at (rx (+ space))))
         (just-one-space))))
-
-  (advice-add #'comment-indent-new-line :after #'config--comment-insert-space)
 #+end_src
 
 *** Bind =cycle-spacing= to ~M-SPC~
@@ -992,11 +981,9 @@ These are caused by packages and are generally not actionable by me.
 #+begin_src emacs-lisp
   (setq confirm-kill-processes nil)
 
-  (defun config--suppress-no-process-prompt (fn &rest args)
+  (define-advice save-buffers-kill-emacs (:around (fn &rest args) suppress-prompt)
     (cl-labels ((process-list () nil))
       (apply fn args)))
-
-  (advice-add #'save-buffers-kill-emacs :around #'config--suppress-no-process-prompt)
 #+end_src
 
 *** Disable suspend-frame on C-z
@@ -1008,13 +995,11 @@ These are caused by packages and are generally not actionable by me.
 #+begin_src emacs-lisp
   (autoload 'ansi-color-apply-on-region "ansi-color")
 
-  (defun config--display-ansi-codes (buf &rest _)
+  (define-advice display-message-or-buffer (:before (buf &rest _) render-ansi)
     (and (bufferp buf)
          (string= (buffer-name buf) "*Shell Command Output*")
          (with-current-buffer buf
            (ansi-color-apply-on-region (point-min) (point-max)))))
-
-  (advice-add #'display-message-or-buffer :before #'config--display-ansi-codes)
 #+end_src
 
 ** Minibuffer settings
@@ -1026,23 +1011,13 @@ These are caused by packages and are generally not actionable by me.
 
 *** Hide files with boring extensions from find-file
 #+begin_src emacs-lisp
-  (defun config--ff-hide-boring-files-in-completion (result)
-    "Filter RESULT using `completion-ignored-extensions'."
+  (define-advice completion--file-name-table (:filter-return (result) remove-boring-files)
     (if (and (listp result) (stringp (car result)) (cdr result))
-        (let ((matches-boring (rx-to-string `(and (or "."
-                                                      ".."
-                                                      ".DS_Store"
-                                                      "__pycache__/"
-                                                      ".cache/"
-                                                      ".ensime_cache/"
-                                                      ,@completion-ignored-extensions)
-                                                  eos))))
+        (let ((matches-boring (rx-to-string `(and (or "." ".." ".DS_Store" ,@completion-ignored-extensions) eos))))
           (seq-remove (lambda (it)
                         (and (stringp it) (string-match-p matches-boring it)))
                       result))
       result))
-
-  (advice-add #'completion--file-name-table :filter-return #'config--ff-hide-boring-files-in-completion)
 #+end_src
 
 *** Remove lingering =*completions*= buffer whenever we exit the minibuffer
@@ -1095,11 +1070,9 @@ Keep custom settings in a separate file. This keeps =init.el= clean.
 
 *** Clean up whitespace when inserting yanked text
 #+begin_src emacs-lisp
-  (defun config--yank-ws-cleanup (&rest _)
+  (define-advice insert-for-yank (:after (&rest _))
     (whitespace-cleanup)
     (delete-trailing-whitespace))
-
-  (advice-add #'insert-for-yank :after #'config--yank-ws-cleanup)
 #+end_src
 
 ** Smooth scrolling
@@ -1171,15 +1144,10 @@ Configure Emacs so that each paragraph may have a difference text direction.
 
 ** Large file support
 #+begin_src emacs-lisp
-  (defconst config--large-file-allowed-extensions
-    '("pdf" "png" "jpg" "jpeg"))
-
-  (defun config--dont-abort-if-allowed-extension (f &rest args)
+  (define-advice abort-if-file-too-large (:around (fn &rest args))
     (-let [(_size _op filename) args]
-      (unless (--any-p (f-ext-p filename it) config--large-file-allowed-extensions)
-        (apply f args))))
-
-  (advice-add #'abort-if-file-too-large :around #'config--dont-abort-if-allowed-extension)
+      (unless (--any-p (f-ext-p filename it) '("pdf" "png" "jpg" "jpeg"))
+        (apply fn args))))
 #+end_src
 
 ** =recentf= - Recent files
@@ -1838,15 +1806,16 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
     :after (autoinsert)
     :demand t
     :commands (autoinsert-files-populate-templates)
-    :init
+    :preface
     (defun autoinsert-maybe-enter-snippet-mode ()
-      (require 'autoinsert)
-      (when (string-prefix-p auto-insert-directory (buffer-file-name))
+      (when (and (bound-and-true-p auto-insert-directory)
+                 (string-prefix-p auto-insert-directory (buffer-file-name)))
         (snippet-mode)))
+    :init
     (add-hook 'find-file-hook #'autoinsert-maybe-enter-snippet-mode)
     :config
-    (advice-add 'auto-insert :before (lambda (&rest _)
-                                       (autoinsert-files-populate-templates))))
+    (define-advice auto-insert (:before ())
+      (autoinsert-files-populate-templates)))
 #+end_src
 
 ** =ispell= - Spellchecking commands
@@ -1881,11 +1850,10 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
   (use-package flyspell
     :after (org)
     :config
-    (defun flyspell-on-org-verify (result)
+    (define-advice org-mode-flyspell-verify (:filter-return (result))
       (and result
            (not (seq-intersection (face-at-point nil t)
-                                  '(org-link verb-header)))))
-    (advice-add 'org-mode-flyspell-verify :filter-return #'flyspell-on-org-verify))
+                                  '(org-link verb-header))))))
 #+end_src
 
 ** =undo-tree= - Visual graph for undo history
@@ -2443,13 +2411,11 @@ staging them in magit.
 
 #+begin_src emacs-lisp
   (use-package evil-surround
-    :preface
-    (defun config-evil-surround-inhibit-in-magit-section-mode (&rest args)
+    :config
+    (define-advice evil-surround-mode (:filter-args (&rest args) inhibit-in-magit-section)
       (if (derived-mode-p 'magit-section-mode)
           (list -1)
-        args))
-    :config
-    (advice-add 'evil-surround-mode :filter-args #'config-evil-surround-inhibit-in-magit-section-mode))
+        args)))
 #+end_src
 
 *** Define an extra =`sym'= pair for =emacs-lisp-mode=
@@ -3364,17 +3330,14 @@ See:
 #+begin_src emacs-lisp
   (use-package deadgrep
     :config
-    (defun config-deadgrep--on-exit-edit-mode (&rest _)
+    (define-advice deadgrep-mode (:before (&rest _))
       (when (derived-mode-p 'deadgrep-edit-mode)
         (let ((message-log-max))
           (message "Exiting edit mode."))))
 
-    (defun config-deadgrep--on-enter-edit-mode (&rest _)
+    (define-advice deadgrep-edit-mode (:after (&rest _))
       (let ((message-log-max))
-        (message "Entering edit mode. Changes will be made to underlying files as you edit.")))
-
-    (advice-add 'deadgrep-mode :before #'config-deadgrep--on-exit-edit-mode)
-    (advice-add 'deadgrep-edit-mode :after #'config-deadgrep--on-enter-edit-mode))
+        (message "Entering edit mode. Changes will be made to underlying files as you edit."))))
 #+end_src
 
 ** =wgrep= - Directly edit =grep= results
@@ -3394,12 +3357,10 @@ Enable =wgrep=, which provides editable grep buffers.
 *** Fix text encoding issues
 #+begin_src emacs-lisp
   (use-package historian
-    :init
-    (defun config-historian-force-text-encoding (f &rest args)
-      (let ((coding-system-for-write 'binary))
-        (apply f args)))
     :config
-    (advice-add 'historian-save :around #'config-historian-force-text-encoding))
+    (define-advice historian-save (:around (f &rest args) force-text-encoding)
+      (let ((coding-system-for-write 'binary))
+        (apply f args))))
 #+end_src
 
 ** =orderless= - order-insensitive matching algorithm
@@ -3978,15 +3939,12 @@ after editing actions have changed what windows are shown.
 #+begin_src emacs-lisp
   (use-package dired
     :config
-    (defun config-dired--sort-directories-first (&rest _)
-      "Sort dired listings with directories first."
+    (define-advice dired-readin (:after (&rest _) sort-dirs-first)
       (save-excursion
         (let (buffer-read-only)
           (forward-line 2) ;; beyond dir. header
           (sort-regexp-fields t "^.*$" "[ ]*." (point) (point-max)))
-        (set-buffer-modified-p nil)))
-
-    (advice-add 'dired-readin :after #'config-dired--sort-directories-first))
+        (set-buffer-modified-p nil))))
 #+end_src
 
 *** Rename files by editing =dired= buffer
@@ -4094,18 +4052,17 @@ See: [[https://github.com/dandavison/magit-delta/issues/9#issuecomment-795435781
     :preface
     (defconst config-magit-delta-max-buffer-length 50000)
 
-    (defun config-magit-delta-inhibit-for-large-diffs (fn &rest args)
-      (if (<= (point-max) config-magit-delta-max-buffer-length)
-          (apply fn args)
-        (magit-delta-mode -1)))
-
     (defun config-magit-delta-maybe-reenable-for-refresh (&rest _args)
       (when (and (not magit-delta-mode)
                  (<= (point-max) config-magit-delta-max-buffer-length))
         (magit-delta-mode +1)))
 
     :config
-    (advice-add 'magit-delta-call-delta-and-convert-ansi-escape-sequences :around #'config-magit-delta-inhibit-for-large-diffs)
+    (define-advice magit-delta-call-delta-and-convert-ansi-escape-sequences (:around (fn &rest args) inhibit-for-large-diffs)
+      (if (<= (point-max) config-magit-delta-max-buffer-length)
+          (apply fn args)
+        (magit-delta-mode -1)))
+
     (add-hook 'magit-post-refresh-hook #'config-magit-delta-maybe-reenable-for-refresh))
 #+end_src
 
@@ -4206,24 +4163,20 @@ repo, or copying the remote URL to the clipboard.
 #+begin_src emacs-lisp
   (use-package browse-at-remote
     :config
-    (defun config-browse-at-remote--message-kill (&rest _)
+    (define-advice browse-at-remote-kill (:after (&rest _) message-kill)
       (let ((message-log-max))
-        (message "Copied to kill ring: %s" (substring-no-properties (car kill-ring)))))
-
-    (advice-add 'browse-at-remote-kill :after 'config-browse-at-remote--message-kill))
+        (message "Copied to kill ring: %s" (substring-no-properties (car kill-ring))))))
 #+end_src
 
 *** Default to =master= if there's no push remote set
 #+begin_src emacs-lisp
-  (defun config-browse-at-remote--master-as-default (fn local-branch &rest args)
+  (define-advice browse-at-remote--get-remote-branch (:around (fn local-branch &rest args) default-to-master)
     (condition-case _
         (apply fn local-branch args)
       (error
        (cons (car (browse-at-remote--get-remotes))
              (seq-find (lambda (it) (seq-contains-p '("master" "main") it))
                        (vc-git-branches))))))
-
-  (advice-add 'browse-at-remote--get-remote-branch :around #'config-browse-at-remote--master-as-default)
 #+end_src
 
 ** =git-gutter= & =git-gutter-fringe= - Show git status in fringe
@@ -4253,7 +4206,7 @@ Source: [[https://ianyepan.github.io/posts/emacs-git-gutter/][Git Gutter in Emac
 #+begin_src emacs-lisp
   (use-package git-gutter-fringe
     :preface
-    (defun config-custom-git-gutter-fringe-fn (diffinfos)
+    (define-advice git-gutter-fr:view-diff-infos (:override (diffinfos) custom-fring)
       "Insert fringe bitmaps for the diffs in DIFFINFOS."
       (when git-gutter-fr:bitmap-references
         (git-gutter:clear-gutter))
@@ -4286,9 +4239,7 @@ Source: [[https://ianyepan.github.io/posts/emacs-git-gutter/][Git Gutter in Emac
                          (when (eq (overlay-get ov 'fringe-helper-parent) reference)
                            (overlay-put ov 'git-gutter t)))
                        (push reference git-gutter-fr:bitmap-references)))
-                   (setq curline end-line)))))
-    :config
-    (advice-add 'git-gutter-fr:view-diff-infos :override #'config-custom-git-gutter-fringe-fn))
+                   (setq curline end-line))))))
 #+end_src
 
 ** Git filetypes
@@ -4404,7 +4355,7 @@ See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
   (use-package smartparens
     :functions (sp-get-enclosing-sexp)
     :config
-    (defun config-smartparens-delete-horizontal-space-for-delete (f &rest args)
+    (define-advice sp-backward-delete-char (:around (f &rest args) cleanup)
       "Perform context-sensitive whitespace cleanups when deleting.
 
   For performance, only consider a subset of the buffer."
@@ -4507,9 +4458,7 @@ See: [[https://github.com/Fuco1/smartparens][Fuco1/smartparens]]
                 (forward-char -1))))
 
            (t
-            (funcall f args))))))
-
-    (advice-add 'sp-backward-delete-char :around #'config-smartparens-delete-horizontal-space-for-delete))
+            (funcall f args)))))))
 #+end_src
 
 *** Lisps
@@ -5689,11 +5638,9 @@ cookie or 'cleared', which indicates no special priority.
 
 ** Tweak flyspell verification function
 #+begin_src emacs-lisp
-  (defun config-org-ignore-formulae (result)
+  (define-advice org-mode-flyspell-verify (:filter-return (result) ignore-formulae)
     (when result
       (not (equal 'org-formula (get-text-property (point) 'face)))))
-
-  (advice-add #'org-mode-flyspell-verify :filter-return #'config-org-ignore-formulae)
 #+end_src
 
 ** =org-funcs= - org functions used throughout config
@@ -5753,9 +5700,8 @@ Automatically enter insert state when inserting new headings or using
 #+begin_src emacs-lisp
   (use-package org
     :after evil
-
     :config
-    (defun org-enter-evil-insert-state-for-capture (&rest _)
+    (define-advice org-capture (:after (&rest _) insert-state)
       (when (and (called-interactively-p nil)
                  (bound-and-true-p org-capture-mode))
         (evil-insert-state)))
@@ -5765,7 +5711,6 @@ Automatically enter insert state when inserting new headings or using
         (evil-insert-state)))
 
     (add-hook 'org-log-buffer-setup-hook #'evil-insert-state)
-    (advice-add 'org-capture :after #'org-enter-evil-insert-state-for-capture)
     (advice-add 'org-insert-heading :after #'org-enter-evil-insert-state)
     (advice-add 'org-insert-heading-respect-content :after #'org-enter-evil-insert-state)
     (advice-add 'org-insert-todo-heading-respect-content :after #'org-enter-evil-insert-state)
@@ -5877,10 +5822,8 @@ Save org buffers automatically after certain operations.
 #+begin_src emacs-lisp
   (use-package org
     :config
-    (defun org-ad-save-buffers (&rest _)
-      (org-save-all-org-buffers))
-
-    (advice-add 'org-archive-subtree :after #'org-ad-save-buffers))
+    (define-advice org-archive-subtree (:after (&rest _) save-org-buffers)
+      (org-save-all-org-buffers)))
 #+end_src
 
 ** Document formatting style
@@ -5938,13 +5881,13 @@ Completing all child TODOs will change the parent TODO to DONE.
 ** Automatically remove deleted files from agenda
 #+begin_src emacs-lisp
   (use-package org
+    :preface
+    (autoload 'org-remove-file "org")
     :config
-    (defun config-org--always-remove-missing-agenda-files (file)
+    (define-advice org-check-agenda-file (:override (file) always-remove-missing)
       (unless (file-exists-p file)
         (org-remove-file file)
-        (throw 'nextfile t)))
-
-    (advice-add 'org-check-agenda-file :override #'config-org--always-remove-missing-agenda-files))
+        (throw 'nextfile t))))
 #+end_src
 
 ** Logging & clocking
@@ -5974,11 +5917,9 @@ Exit minibuffer before adding notes.
 #+begin_src emacs-lisp
   (use-package org
     :config
-    (defun org-ad-exit-minibuffer (&rest _)
+    (define-advice org-add-log-note (:before (&rest _) exit-minibuffer)
       (when (minibufferp (window-buffer (selected-window)))
-        (other-window 1)))
-
-    (advice-add 'org-add-log-note :before #'org-ad-exit-minibuffer))
+        (other-window 1))))
 #+end_src
 
 ** =org-archive= - Archiving support for org-mode content
@@ -6040,14 +5981,13 @@ Exit minibuffer before adding notes.
 #+begin_src emacs-lisp
   (use-package org
     :config
+    (define-advice org-edit-src-exit (:before (&rest _) delete-ws)
+      (delete-trailing-whitespace))
+
     (defun org-ad-suppress-final-newline ()
       (setq-local require-final-newline nil))
 
-    (defun org-ad-delete-trailing-space-on-src-block-exit (&rest _)
-      (delete-trailing-whitespace))
-
-    (add-hook 'org-src-mode-hook 'org-ad-suppress-final-newline)
-    (advice-add 'org-edit-src-exit :before 'org-ad-delete-trailing-space-on-src-block-exit))
+    (add-hook 'org-src-mode-hook 'org-ad-suppress-final-newline))
 #+end_src
 
 *** Teach org-babel about =oil=
@@ -6646,15 +6586,14 @@ This makes it much easier to edit text using emphasis markers correctly.
 ** Prevent org-mode from following links in insert state
 #+begin_src emacs-lisp
   (use-package org
-    :init
+    :preface
     (autoload 'evil-insert-state-p "evil-states")
-    (defun config-org-inhibit-org-return-follows-link-for-insert-state (fn &rest args)
+    :config
+    (define-advice org-return (:around (fn &rest args) inhibit-follow-in-insert-state)
       (let ((org-return-follows-link (if (evil-insert-state-p)
                                          nil
                                        org-return-follows-link)))
-        (apply fn args)))
-    :config
-    (advice-add 'org-return :around #'config-org-inhibit-org-return-follows-link-for-insert-state))
+        (apply fn args))))
 #+end_src
 
 * 📓 =org-roam= - Personal wiki & research tooling
@@ -7037,11 +6976,9 @@ while in a table.
 
 *** Don't transclude if org-inhibit-startup is set
 #+begin_src emacs-lisp
-  (defun config-disable-transclusion-when-inhibited-startup-on (fn &rest args)
+  (define-advice org-transclusion-add (:around (fn &rest args) disable-on-org-inhibit-startup)
     (unless org-inhibit-startup
       (apply fn args)))
-
-  (advice-add 'org-transclusion-add :around #'config-disable-transclusion-when-inhibited-startup-on)
 #+end_src
 
 *** =evil-org= compatibility
@@ -7075,7 +7012,7 @@ There's probably a saner way to do this.
 *** Improve transclusion handling with structural editing commands.
 When using structural editing commands, I don't want to have to think about whether a headline is a transclusion or not.
 #+begin_src emacs-lisp
-  (defun config-org-transclusion-strip-subtree (&rest _)
+  (define-advice org-copy-subtree (:before (&rest _) strip-subtree)
     (when (require 'org-transclusion nil t)
       (org-with-wide-buffer
        (org-narrow-to-subtree)
@@ -7088,7 +7025,6 @@ When using structural editing commands, I don't want to have to think about whet
          (org-narrow-to-subtree)
          (org-transclusion-add-all t)))))
 
-  (advice-add 'org-copy-subtree :before #'config-org-transclusion-strip-subtree)
   (advice-add 'org-copy-subtree :after #'config-org-transclusion-restore-subtree)
   (advice-add 'org-paste-subtree :after #'config-org-transclusion-restore-subtree)
 #+end_src
@@ -7102,16 +7038,13 @@ the advice manually.
     :after org-transclusion
     :demand t
     :config
-    (defun config-org-indent-transclusion-compat (fn &rest args)
+    (define-advice org-indent-add-properties (:around (fn &rest args) transclusion-compat)
       (advice-add #'org-indent-set-line-properties
                   :override
                   #'org-transclusion-indent-set-line-properties-ad)
       (apply fn args)
       (advice-remove #'org-indent-set-line-properties
-                     #'org-transclusion-indent-set-line-properties-ad))
-
-    (advice-add #'org-indent-add-properties :around
-                #'config-org-indent-transclusion-compat))
+                     #'org-transclusion-indent-set-line-properties-ad)))
 #+end_src
 
 Additionally, org-indent is totally borked by the source block fringe. Just get
@@ -7218,7 +7151,7 @@ rid of it.
 property drawer and the title. Advise it to fix that.
 
 #+begin_src emacs-lisp
-  (defun config-org-roam-cleanup-after-promote-entire-buffer (&rest _)
+  (define-advice org-roam-promote-entire-buffer (:after (&rest _))
     (save-match-data
       (org-with-wide-buffer
        (goto-char (point-min))
@@ -7234,8 +7167,6 @@ property drawer and the title. Advise it to fix that.
              (org-forward-element))
            (newline)
            (insert str))))))
-
-  (advice-add 'org-roam-promote-entire-buffer :after 'config-org-roam-cleanup-after-promote-entire-buffer)
 #+end_src
 
 ** =org-roam-search= - a search interface for org-roam
@@ -7299,8 +7230,14 @@ property drawer and the title. Advise it to fix that.
 
 ** Silence transclusion messages
 #+begin_src emacs-lisp
-  (advice-add 'org-transclusion-add-all :around #'advice-inhibit-logging)
-  (advice-add 'org-transclusion-add-all :after #'advice-clear-minibuffer)
+  (use-package org-transclusion
+    :config
+    (define-advice org-transclusion-add-all (:around (fn &rest args) inhibit-logging)
+      (let ((message-log-max))
+        (apply fn args)))
+
+    (define-advice org-transclusion-add-all (:after (&rest _) clean-minibuffer)
+      (message "")))
 #+end_src
 
 ** Open links in the current window
