@@ -66,7 +66,7 @@ Each item in the list may be either:
       ("References" :dblock (:name "backlinks" :tags litnotes :only-missing t))
       "Notes"
       ("Footnotes" :ensure nil)))
-   ((seq-contains-p (org-roam-node-tags node) "runbook")
+   ((seq-intersection (org-roam-node-tags node) '("memo" "runbook"))
     '(("Notes" :ensure nil)
       ("Topics" :ensure nil)
       ("Tasks" :ensure nil)
