@@ -6959,7 +6959,6 @@ while in a table.
       (add-hook 'before-save-hook 'org-roam-default-headings-populate nil t))
 
     :hook
-    (org-roam-capture-new-node . config-org-roam--format-on-save)
     (org-mode . config-org-roam--format-on-save))
 #+end_src
 
