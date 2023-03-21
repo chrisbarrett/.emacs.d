@@ -1577,6 +1577,13 @@ Configure how =ediff= should display windows when started.
   (setq max-mini-window-height 0.1)
 #+end_src
 
+** Use default system mail on Darwin
+#+begin_src emacs-lisp
+  (when (equal system-type 'darwin)
+    (setq browse-url-mailto-function (lambda (link &rest _)
+                                       (start-process "open" nil "open" link))))
+#+end_src
+
 * Better eval-expression
 Define an alternative version of =eval-expression= that uses =emacs-lisp-mode= to
 provide font-locking, and handles =smartparens= better.
