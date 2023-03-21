@@ -5675,7 +5675,7 @@ Configure =conf-mode= for use with more kinds of config files.
 #+end_src
 
 ** Turn priorities into an on/off flag
-I customise priorities so that headlines are either 'prioritised' an show a
+I customise priorities so that headlines are either 'prioritised' and show a
 cookie or 'cleared', which indicates no special priority.
 
 #+begin_src emacs-lisp
