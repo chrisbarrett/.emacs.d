@@ -315,6 +315,12 @@ Define a helper function for loading files with =use-package='s timing functiona
            `((use-package-statistics-gather :config ',name nil))))))))
 #+end_src
 
+** Set load-path
+#+begin_src emacs-lisp
+  (require 'paths (ignore-errors (expand-file-name "paths.el" user-emacs-directory)))
+  (paths-initialise)
+#+end_src
+
 ** =general= - Provides a rich key-binding DSL supported by =use-package=
 See: [[https://github.com/noctuid/general.el][noctuid/general.el]]
 #+begin_src emacs-lisp
@@ -351,12 +357,8 @@ I slam all package autoloads into a single file and read them in here.
 #+end_src
 
 ** Configure paths and config layout
-#+begin_src emacs-lisp
-  (require 'paths (ignore-errors (expand-file-name "paths.el" user-emacs-directory)))
-  (paths-initialise)
-#+end_src
 
-*** Configure =no-littering= to use these paths
+*** Configure =no-littering=
 Customises many packages to create a cleaner =.emacs.d= layout.
 See: [[https://github.com/emacscollective/no-littering][emacscollective/no-littering]]
 

@@ -1,0 +1,3 @@
+[submodule "lisp/nursery"]
+	path = lisp/nursery
+	url = git@github.com:chrisbarrett/nursery.git

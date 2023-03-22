@@ -46,7 +46,10 @@
 
 (defconst paths-project-directories
   (seq-filter (-compose #'file-directory-p #'car)
-              '(("~/.config" . 1) ("~/src" . 2))))
+              '(("~/.config" . 1)
+                ("~/.config/emacs/lisp" . 1)
+                ("~/org/lisp" . 1)
+                ("~/src" . 2))))
 
 
 
@@ -56,7 +59,9 @@
 If argument INTERACTIVE-P is set, log additional information."
   (interactive "p")
   (let* ((before load-path)
-         (main-dirs (list paths-lisp-directory paths-site-lisp-directory))
+         (main-dirs (list paths-lisp-directory
+                          (expand-file-name "nursery/lisp" paths-lisp-directory)
+                          paths-site-lisp-directory))
          (subdirs (f-directories paths-lisp-directory))
          (updated-load-path
           (thread-last (append main-dirs subdirs load-path)
