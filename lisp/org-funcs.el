@@ -239,9 +239,11 @@ TAGS are the tags to use when displaying the list."
 
 (defun org-funcs-simplified-title-for-url (url)
 
-  (cl-labels ((extract (host regexp)
+  (cl-labels ((extract (host regexp &optional exclude-host-p)
                        (when-let* ((simplified (org-funcs--simplify-url regexp url)))
-                         (format "%s (%s)" simplified host))))
+                         (if exclude-host-p
+                             simplified
+                           (format "%s (%s)" simplified host)))))
     (let ((query '(? "?" (* nonl))))
       (or
        (extract "Confluence"
@@ -253,6 +255,13 @@ TAGS are the tags to use when displaying the list."
                 (rx-to-string `(and bol "https://github.com/"
                                     (group (+? nonl) (or "/issues/" "/pull/") (+ digit))
                                     ,query eol)))
+
+       ;; (org-funcs-simplified-title-for-url "https://linear.app/COMPANY/issue/KEY-0000/the-quick-brown-fox")
+       (-some->> (extract "Linear"
+                          (rx-to-string `(and bol "https://linear.app/"
+                                              (+ alnum) "/issue/" (+? nonl) "/" (group (+? nonl)) ,query eol))
+                          'no-host)
+         (s-replace "-" " "))
 
        ;; (org-funcs-simplified-title-for-url "https://trello.com/c/00000000/1000-the-quick-brown-fox")
        (-some->> (extract "Trello"
