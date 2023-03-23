@@ -18,6 +18,7 @@
         pkgs = nixpkgs.legacyPackages.${system};
 
         package = with pkgs; callPackage ./builders {
+          nodeProgram = "${nodejs}/bin/node";
           texProgram = "${tectonic}/bin/tectonic";
 
           withPrograms = [

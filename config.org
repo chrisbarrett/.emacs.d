@@ -4829,6 +4829,19 @@ files.
     (typescript-indent-level 2))
 #+end_src
 
+*** =prettier= - Add support for prettier in TS files
+#+begin_src emacs-lisp
+  (use-package prettier
+    :hook (typescript-mode . prettier-mode)
+    :config
+    (define-advice prettier--find-node (:around (fn server-id) inject-via-envvar)
+      (pcase server-id
+        ('local
+         (getenv "NIX_EMACS_NODE_PROGRAM"))
+        (_
+         (funcall fn server-id)))))
+#+end_src
+
 ** =nix-mode= Configure support for the Nix language
 #+begin_src emacs-lisp
   (use-package nix-mode

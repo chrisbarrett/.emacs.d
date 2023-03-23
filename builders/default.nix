@@ -1,4 +1,4 @@
-{ pkgs, emacs, withPrograms, withLispPackages, texProgram, ... }:
+{ pkgs, emacs, withPrograms, withLispPackages, texProgram, nodeProgram, ... }:
 let
   inherit (pkgs.lib) strings attrsets;
 
@@ -40,7 +40,8 @@ pkgs.symlinkJoin
           --prefix PATH ":" "${pathExtras}" \
           --set NIX_EMACS_DARWIN_PATH_EXTRAS "${pathExtras}:/opt/homebrew/bin" \
           --set NIX_EMACS_SRC_DIR "${emacs}/share/emacs" \
-          --set NIX_EMACS_TEX_PROGRAM "${texProgram}"
+          --set NIX_EMACS_TEX_PROGRAM "${texProgram}" \
+          --set NIX_EMACS_NODE_PROGRAM "${nodeProgram}"
       fi
     done
   '';
