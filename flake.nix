@@ -153,6 +153,7 @@
             pdf-tools
             plantuml-mode
             poporg
+            prettier
             proof-general
             rainbow-mode
             request
