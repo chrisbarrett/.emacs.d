@@ -15,7 +15,7 @@
   outputs = { self, nixpkgs, emacs-overlay, flake-utils }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        pkgs = nixpkgs.legacyPackages.${system};
+        pkgs = import nixpkgs { inherit system; };
 
         package = with pkgs; callPackage ./builders {
           nodeProgram = "${nodejs}/bin/node";
