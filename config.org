@@ -5448,6 +5448,7 @@ Configure =conf-mode= for use with more kinds of config files.
     (require 'inheritenv)
     :custom
     (rustic-lsp-client 'eglot)
+    (rustic-format-on-save t)
     :config
     (with-eval-after-load 'evil
       (evil-set-initial-state 'rustic-popup-mode 'emacs)))
