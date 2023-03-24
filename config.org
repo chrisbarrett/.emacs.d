@@ -1899,6 +1899,7 @@ Extend =auto-insert= to use the more intuitive =yasnippet= DSL.
           (goto-char (line-beginning-position))
           (or (org-at-drawer-p) (org-at-property-p)))))
 
+    (add-to-list 'emojify-inhibit-major-modes 'flymake-diagnostics-buffer-mode)
     (add-to-list 'emojify-inhibit-functions #'emojify-at-org-drawer-p))
 #+end_src
 
