@@ -150,11 +150,6 @@
 
 
 
-(defun org-funcs-goto-todos ()
-  "Switch to the general life-admin todos file."
-  (interactive)
-  (switch-to-buffer (find-file (f-join org-directory "tasks" "todos.org"))))
-
 (defun org-funcs-todo-list (tags)
   "Show the todo list for the current context.
 

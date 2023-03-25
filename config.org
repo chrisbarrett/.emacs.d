@@ -3158,7 +3158,6 @@ See:
     "rl" '(org-roam-links :wk "show links")
     "rs" '(org-roam-slipbox-list-notes :wk "list (slipbox)...")
 
-    "p" '(org-funcs-goto-todos :wk "todos")
     "g" '(org-capture-goto-last-stored :wk "last captured")
     "t" '(org-funcs-todo-list :wk "todo list")
     "v" '(org-tags-view :wk "tags")
