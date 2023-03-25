@@ -3117,6 +3117,10 @@ See:
     (interactive)
     (org-roam-node-visit (org-roam-node-from-id org-roam-index-node-id)))
 
+  (defun jump-to-notes-file ()
+    (interactive)
+    (find-file (f-join paths-org-directory "notes.org")))
+
   (defun jump-to-org-init ()
     (interactive)
     (find-file (f-join paths-org-lisp-directory "init.el")))
@@ -3127,6 +3131,8 @@ See:
     "$" '(org-funcs-goto-accounts :wk "accounts")
     "/" '(org-ql-search :wk "search...")
     "a" '(org-funcs-agenda-dwim :wk "agenda")
+
+    "n" '(jump-to-notes-file :wk "goto notes")
 
     "c" '(nil :wk "clock")
     "c i" '(timekeep-start :wk "punch in")
@@ -3142,10 +3148,6 @@ See:
     "l" '(org-store-link :wk "store link")
     "s" '(org-roam-search :wk "search...")
     "f" '(org-funcs-roam-node-find :wk "roam file...")
-    "n" '(org-funcs-goto-capture-buffer-or-daily :wk "capture buffer/today's daily")
-    "T" '(org-roam-dailies-goto-tomorrow :wk "dailies: tomorrow")
-    "y" '(org-roam-dailies-goto-yesterday :wk "dailies: yesterday")
-    "d" '(org-roam-dailies-goto-date :wk "dailies: date...")
 
     "r" '(nil :wk "review...")
     "rd" '(org-roam-review-list-recently-added :wk "recently added")
@@ -4828,6 +4830,12 @@ files.
     :mode
     ("\\.tsx?\\'" . typescript-mode)
     ("\\.ts\\.snap\\'" . typescript-mode)
+    :preface
+    (defun config-ts--readonly-if-in-node-modules ()
+      (when (string-match-p  "/node_modules/" default-directory)
+        (read-only-mode +1)))
+    :hook
+    (typescript-mode . config-ts--readonly-if-in-node-modules)
     :custom
     (typescript-indent-level 2))
 #+end_src
@@ -5106,7 +5114,13 @@ Teach the autofill function in Latex buffers not to fill in certain contexts.
     :custom
     (js-indent-level 2)
     (js-switch-indent-offset 2)
-    (js-js-tmpdir (f-join paths-cache-directory "js")))
+    (js-js-tmpdir (f-join paths-cache-directory "js"))
+    :preface
+    (defun config-js--readonly-if-in-node-modules ()
+      (when (string-match-p  "/node_modules/" default-directory)
+        (read-only-mode +1)))
+    :hook
+    (js-mode . config-js--readonly-if-in-node-modules))
 #+end_src
 
 ** =plantuml-mode= - Editing support for PlantUML diagrams
