@@ -6810,27 +6810,29 @@ slipboxes as /types/ (evergreens, stubs & nouns vs lit notes).
 
 *** Ignore possibly-missing topic prefix when checking which backlinks were customised
 #+begin_src emacs-lisp
+  (eval-when-compile
+    (require 'use-package))
+
   (use-package org-roam-rewrite
     :preface
+    (defun config-org-roam--normalise-node-title (node-or-title)
+      (-let [(&plist :title) (config-org-roam-parse-node-title node-or-title)]
+        (replace-regexp-in-string (rx (+ (any space "\n"))) "" (downcase title))))
+
     (defun config-org-roam-rewrite-backlink-transformer (args-plist)
-      (cl-labels ((normalise
-                   (node-or-title)
-                   (-let [(&plist :title) (config-org-roam-parse-node-title node-or-title)]
-                     (replace-regexp-in-string (rx (+ (any space "\n"))) "" (downcase title)))))
+      (-let* (((&plist :prev-node :new-id :new-desc :prev-desc)
+               args-plist)
 
-        (-let* (((&plist :prev-node :new-id :new-desc :prev-desc)
-                 args-plist)
+              (norm-titles (cons (config-org-roam--normalise-node-title (org-roam-node-title prev-node))
+                                 (seq-map #'config-org-roam--normalise-node-title (org-roam-node-aliases prev-node))))
 
-                (norm-titles (cons (normalise (org-roam-node-title prev-node))
-                                   (seq-map 'normalise (org-roam-node-aliases prev-node))))
+              (desc-customised-p
+               (not (seq-contains-p norm-titles (config-org-roam--normalise-node-title prev-desc))))
 
-                (desc-customised-p
-                 (not (seq-contains-p norm-titles (normalise prev-desc))))
+              (updated-desc
+               (if desc-customised-p prev-desc new-desc)))
 
-                (updated-desc
-                 (if desc-customised-p prev-desc new-desc)))
-
-          (list :id new-id :desc updated-desc))))
+        (list :id new-id :desc updated-desc)))
     :custom
     (org-roam-rewrite-backlink-transformer 'config-org-roam-rewrite-backlink-transformer))
 #+end_src
