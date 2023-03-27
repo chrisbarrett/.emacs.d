@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: fprintf
+# key: fp
+# condition: (yas-funcs-bolp)
+# --
+fprintf($0);

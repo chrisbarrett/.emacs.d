@@ -5989,6 +5989,7 @@ Exit minibuffer before adding notes.
     :custom
     (org-confirm-babel-evaluate nil)
     (org-babel-load-languages '((emacs-lisp . t)
+                                (C . t)
                                 (clojure . t)
                                 (csharp . t)
                                 (dot . t)
