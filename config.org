@@ -5504,6 +5504,16 @@ Configure =conf-mode= for use with more kinds of config files.
 
 * Applications
 
+** =chatgpt-shell=
+#+begin_src emacs-lisp
+  (use-package chatgpt-shell
+    :commands (chatgpt-shell dall-e-shell)
+    :custom
+    (chatgpt-shell-openai-key
+     (lambda ()
+       (auth-source-pick-first-password :host "api.openai.com"))))
+#+end_src
+
 ** =pdf-tools= - PDF reader
 #+begin_src emacs-lisp
   (use-package pdf-tools

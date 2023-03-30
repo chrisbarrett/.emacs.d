@@ -54,6 +54,7 @@
             browse-at-remote
             bufler
             cape
+            chatgpt-shell
             cider
             citar
             citar-org-roam
