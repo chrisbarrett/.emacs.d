@@ -2803,6 +2803,8 @@ See:
     "c" #'quick-calc
     "C" #'full-calc
     "e" #'eshell
+    "g" '(chatgpt-shell :wk "ChatGPT")
+    "p" '(dall-e-shell :wk "DALL-E")
 
     "d" '(nil :wk "debugger")
     "dd" '(edebug-where :wk "return to session")
