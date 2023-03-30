@@ -5511,6 +5511,7 @@ Configure =conf-mode= for use with more kinds of config files.
   (use-package chatgpt-shell
     :commands (chatgpt-shell dall-e-shell)
     :custom
+    (chatgpt-shell-display-function #'display-buffer)
     (chatgpt-shell-openai-key
      (lambda ()
        (auth-source-pick-first-password :host "api.openai.com"))))
