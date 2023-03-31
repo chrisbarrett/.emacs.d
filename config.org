@@ -668,6 +668,17 @@ applications. The following functions will be invoked by those scripts over
                         (window-height   . 0.4)))
 #+end_src
 
+** chatgpt
+#+begin_src emacs-lisp
+  (display-buffer-set (rx bos (or "*dall-e*" "*chatgpt*") eos)
+                      '((display-buffer-reuse-window
+                         (lambda (buffer alist)
+                           (when-let* ((win (display-buffer-pop-up-window buffer alist)))
+                             (select-window win))))
+                        (side . right)
+                        (direction . right)))
+#+end_src
+
 ** org-roam & friends
 #+begin_src emacs-lisp
   (defconst config-org-roam-side-window-default-width 55)
