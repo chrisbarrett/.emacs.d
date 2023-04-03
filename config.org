@@ -684,7 +684,9 @@ applications. The following functions will be invoked by those scripts over
   (defconst config-org-roam-side-window-default-width 55)
   (defconst config-org-roam-side-window-breakpoint (+ config-org-roam-side-window-default-width 80))
 
-  (display-buffer-set (rx bos "*org-roam-review*" eos) '(display-buffer-fullframe))
+  (display-buffer-set (rx bos "*org-roam-review*" eos)
+                      '(display-buffer-reuse-window
+                        display-buffer-fullframe))
 
   (cl-labels ((make-actions (&key window-height (slot 1) (side 'left))
                             `(((lambda (buf &rest args)
