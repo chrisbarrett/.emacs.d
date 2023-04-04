@@ -4092,6 +4092,8 @@ See: [[https://github.com/dandavison/magit-delta/issues/9#issuecomment-795435781
   (use-package magit-todos
     :after magit
     :demand t
+    :custom
+    (magit-todos-ignored-keywords '("NOTE" "DONE" "KLUDGE" "HACK"))
     :config
     (magit-todos-mode +1))
 #+end_src
