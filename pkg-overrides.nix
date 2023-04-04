@@ -2,9 +2,9 @@
   chatgpt-shell = github {
     name = "chatgpt-shell";
     owner = "xenodium";
-    rev = "079381f70fad9741df1f95ecd0f8c29aab8d50a0";
-    sha256 = "sha256-D78dwpW8f+C4s9olG6Uz7xi/HOSIVeDv4RewrYkdoRU=";
-    buildInputs = [ esuper.markdown-mode ];
+    rev = "08c199661043a8cd4e678d1a2ac1993db6f8893b";
+    sha256 = "sha256-iZZFexmB677UtJT7fxLaPA3oaoumwLzcAOmzTn5WN78=";
+    buildInputs = [ esuper.markdown-mode esuper.org ];
   };
 
   eglot-x = github {
