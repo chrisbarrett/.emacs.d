@@ -4859,7 +4859,8 @@ files.
 *** =prettier= - Add support for prettier in TS files
 #+begin_src emacs-lisp
   (use-package prettier
-    :hook (typescript-mode . prettier-mode)
+    :init
+    (add-hook 'typescript-mode-hook 'prettier-mode 10)
     :config
     (define-advice prettier--find-node (:around (fn server-id) inject-via-envvar)
       (pcase server-id
