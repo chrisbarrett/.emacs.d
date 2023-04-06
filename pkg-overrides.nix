@@ -2,8 +2,8 @@
   chatgpt-shell = github {
     name = "chatgpt-shell";
     owner = "xenodium";
-    rev = "08c199661043a8cd4e678d1a2ac1993db6f8893b";
-    sha256 = "sha256-iZZFexmB677UtJT7fxLaPA3oaoumwLzcAOmzTn5WN78=";
+    rev = "a6f0e1d98012a112ab2557a83197f1b1f34496ca";
+    sha256 = "sha256-/9o50mPWIs5rrGjNYxuLDLsYZokFyo2o5nSfI0ByJZE=";
     buildInputs = [ esuper.markdown-mode esuper.org ];
   };
 
