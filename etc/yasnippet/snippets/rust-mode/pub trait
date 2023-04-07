@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: pub trait
+# key: pt
+# condition: (yas-funcs-bolp)
+# --
+pub trait $1 {
+    $0
+}

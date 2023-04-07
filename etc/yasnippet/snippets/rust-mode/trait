@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: trait
+# key: tr
+# condition: (yas-funcs-bolp)
+# --
+trait $1 {
+    $0
+}
