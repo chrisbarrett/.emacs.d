@@ -4844,8 +4844,8 @@ files.
 #+begin_src emacs-lisp
   (use-package typescript-mode
     :mode
-    ("\\.tsx?\\'" . typescript-mode)
-    ("\\.ts\\.snap\\'" . typescript-mode)
+    ("\\.[mc]?tsx?\\'" . typescript-mode)
+    ("\\.[mc]?ts\\.snap\\'" . typescript-mode)
     :preface
     (defun config-ts--readonly-if-in-node-modules ()
       (when (string-match-p  "/node_modules/" default-directory)
