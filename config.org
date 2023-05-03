@@ -5525,11 +5525,23 @@ Configure =conf-mode= for use with more kinds of config files.
 ** =chatgpt-shell=
 #+begin_src emacs-lisp
   (use-package chatgpt-shell
-    :commands (chatgpt-shell dall-e-shell)
+    :commands (chatgpt-shell)
     :custom
     (chatgpt-shell-display-function #'display-buffer)
     (chatgpt-shell-chatgpt-streaming t)
     (chatgpt-shell-openai-key
+     (lambda ()
+       (auth-source-pick-first-password :host "api.openai.com"))))
+#+end_src
+
+** =dall-e-shell=
+#+begin_src emacs-lisp
+  (use-package dall-e-shell
+    :commands (dall-e-shell)
+    :custom
+    (dall-e-shell-display-function #'display-buffer)
+    (dall-e-shell-dall-e-streaming t)
+    (dall-e-shell-openai-key
      (lambda ()
        (auth-source-pick-first-password :host "api.openai.com"))))
 #+end_src
