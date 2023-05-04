@@ -5522,7 +5522,16 @@ Configure =conf-mode= for use with more kinds of config files.
 
 * Applications
 
-** =chatgpt-shell=
+** chatgpt & friends
+
+*** =shell-maker=
+#+begin_src emacs-lisp
+  (use-package shell-maker
+    :custom
+    (shell-maker-history-path paths-cache-directory))
+#+end_src
+
+*** =chatgpt-shell=
 #+begin_src emacs-lisp
   (use-package chatgpt-shell
     :commands (chatgpt-shell)
@@ -5534,7 +5543,7 @@ Configure =conf-mode= for use with more kinds of config files.
        (auth-source-pick-first-password :host "api.openai.com"))))
 #+end_src
 
-** =dall-e-shell=
+*** =dall-e-shell=
 #+begin_src emacs-lisp
   (use-package dall-e-shell
     :commands (dall-e-shell)
