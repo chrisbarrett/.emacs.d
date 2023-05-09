@@ -15,9 +15,13 @@
   outputs = { self, nixpkgs, emacs-overlay, flake-utils }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        pkgs = import nixpkgs { inherit system; };
+        pkgs = import nixpkgs {
+          inherit system;
+          overlays = [ emacs-overlay.overlay ];
+        };
 
         package = with pkgs; callPackage ./builders {
+          emacs = emacsUnstable;
           nodeProgram = "${nodejs}/bin/node";
           texProgram = "${tectonic}/bin/tectonic";
 
