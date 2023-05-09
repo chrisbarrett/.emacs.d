@@ -4012,6 +4012,7 @@ dot).
     (project-switch-commands 'config-project-magit-status)
     (project-vc-ignores '(".direnv"
                           "cdk.out"
+                          "node_modules"
                           "*.elc"
                           "*.eln"
                           "*.gz"
