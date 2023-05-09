@@ -4011,6 +4011,7 @@ dot).
                                      "shell.nix"))
     (project-switch-commands 'config-project-magit-status)
     (project-vc-ignores '(".direnv"
+                          "cdk.out"
                           "*.elc"
                           "*.eln"
                           "*.gz"
