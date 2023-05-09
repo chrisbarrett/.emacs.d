@@ -3999,15 +3999,16 @@ dot).
 
 ** =project= - Project and repo detection
 #+begin_src emacs-lisp
-  (autoload 'project-funcs-try-known-files "project-funcs")
-
   (use-package project
     :preface
     (defun config-project-magit-status ()
       (interactive)
       (magit-status (project-root (project-current t))))
     :custom
-    (project-find-functions '(project-funcs-try-known-files project-try-vc))
+    (project-vc-extra-root-markers '("Cargo.toml"
+                                     "package.json"
+                                     "flake.nix"
+                                     "shell.nix"))
     (project-switch-commands 'magit-status)
     (project-vc-ignores '("*.elc"
                           "*.eln"
