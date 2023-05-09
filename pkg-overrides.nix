@@ -1,12 +1,4 @@
 { emacsmirror, github, fetchzip, ... }: eself: esuper: {
-  chatgpt-shell = github {
-    name = "chatgpt-shell";
-    owner = "xenodium";
-    rev = "5fd3d107f21f51340c4580ff12a792fb3cdee2d6";
-    sha256 = "sha256-TN9Gg6HnZLtP8FD/S89nZRV5xpO5rCaei/kqc2euxdE=";
-    buildInputs = [ esuper.org ];
-  };
-
   eglot-x = github {
     name = "eglot-x";
     owner = "nemethf";
