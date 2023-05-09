@@ -4009,8 +4009,9 @@ dot).
                                      "package.json"
                                      "flake.nix"
                                      "shell.nix"))
-    (project-switch-commands 'magit-status)
-    (project-vc-ignores '("*.elc"
+    (project-switch-commands 'config-project-magit-status)
+    (project-vc-ignores '(".direnv"
+                          "*.elc"
                           "*.eln"
                           "*.gz"
                           "*.meta"
