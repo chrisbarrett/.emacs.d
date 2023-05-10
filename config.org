@@ -5350,6 +5350,7 @@ Configure =conf-mode= for use with more kinds of config files.
   (use-package conf-mode
     :mode
     ("\\.env" . conf-mode)
+    ("\\.dockerignore" . conf-unix-mode)
     ("\\.kll\\'" . conf-mode))
 #+end_src
 
