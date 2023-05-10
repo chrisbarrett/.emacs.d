@@ -4905,8 +4905,10 @@ files.
 
 ** =sh-mode= - bash, sh & friends
 #+begin_src emacs-lisp
-  (use-package sh-mode
-    :mode ("/\\.envrc")
+  (use-package sh-script
+    :mode ("/\\.envrc" . bash-ts-mode)
+    :init
+    (add-to-list 'magic-mode-alist `(,(rx "#!" (+? nonl) "bash") . bash-ts-mode))
     :custom
     (sh-basic-offset 2)
     (sh-indentation 2))
