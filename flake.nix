@@ -175,7 +175,6 @@
             swift-mode
             terraform-mode
             ts
-            typescript-mode
             undo-tree
             unfill
             use-package

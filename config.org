@@ -3690,12 +3690,12 @@ after editing actions have changed what windows are shown.
      (paren-face-regexp (rx (any "{}();,")))
      :config
      (add-to-list 'paren-face-modes 'csharp-mode)
-     (add-to-list 'paren-face-modes 'js-mode)
+     (add-to-list 'paren-face-modes 'js-base-mode)
      (add-to-list 'paren-face-modes 'lisp-data-mode)
-     (add-to-list 'paren-face-modes 'typescript-mode)
+     (add-to-list 'paren-face-modes 'typescript-base-mode)
      (add-to-list 'paren-face-modes 'yaml-mode)
-     (font-lock-add-keywords 'js-mode `((,(rx (any ":")) 0 'parenthesis)))
-     (font-lock-add-keywords 'typescript-mode `((,(rx (any ":")) 0 'parenthesis))))
+     (font-lock-add-keywords 'js-base-mode `((,(rx (any ":")) 0 'parenthesis)))
+     (font-lock-add-keywords 'typescript-base-mode `((,(rx (any ":")) 0 'parenthesis))))
  #+end_src
 
 *** Use a specific subset of parens in Clojure
@@ -4841,30 +4841,27 @@ This always fails since I don't use =package.el=.
     (advice-add 'prettify-symbols--post-command-hook :around 'advice-ignore-errors))
 #+end_src
 
-** =typescript-mode= - TypeScript language support
-=typescript-mode= adds a major mode with syntax highlighting for TypeScript
+** =typescript-ts-mode= - TypeScript language support
+=typescript-ts-mode= adds a major mode with syntax highlighting for TypeScript
 files.
 
 #+begin_src emacs-lisp
-  (use-package typescript-mode
+  (use-package typescript-ts-mode
     :mode
-    ("\\.[mc]?tsx?\\'" . typescript-mode)
-    ("\\.[mc]?ts\\.snap\\'" . typescript-mode)
+    ("\\.[cm]?ts\\'" . typescript-ts-mode)
     :preface
     (defun config-ts--readonly-if-in-node-modules ()
       (when (string-match-p  "/node_modules/" default-directory)
         (read-only-mode +1)))
     :hook
-    (typescript-mode . config-ts--readonly-if-in-node-modules)
-    :custom
-    (typescript-indent-level 2))
+    (typescript-ts-base-mode . config-ts--readonly-if-in-node-modules))
 #+end_src
 
 *** =prettier= - Add support for prettier in TS files
 #+begin_src emacs-lisp
   (use-package prettier
     :init
-    (add-hook 'typescript-mode-hook 'prettier-mode 10)
+    (add-hook 'typescript-ts-mode-hook 'prettier-mode 10)
     :config
     (define-advice prettier--find-node (:around (fn server-id) inject-via-envvar)
       (pcase server-id
@@ -4913,15 +4910,6 @@ files.
     :custom
     (sh-basic-offset 2)
     (sh-indentation 2))
-#+end_src
-
-** =json-mode= - JSON editing support
-#+begin_src emacs-lisp
-  (use-package json-mode
-    :commands (json-mode)
-    :mode ("\\.json\\'" . json-mode)
-    :custom
-    (json-reformat:indent-width 2))
 #+end_src
 
 ** =highlight-indent-guides= - show indentation level indicators
@@ -5131,17 +5119,19 @@ Teach the autofill function in Latex buffers not to fill in certain contexts.
 ** =js= - Editing support for JavaScript
 #+begin_src emacs-lisp
   (use-package js
-    :mode ("\\.[cm]?jsx?\\'" . js-mode)
+    :mode ("\\.[cm]?jsx?\\'" . js-ts-mode)
     :custom
     (js-indent-level 2)
     (js-switch-indent-offset 2)
     (js-js-tmpdir (f-join paths-cache-directory "js"))
+    :init
+    (add-to-list 'major-mode-remap-alist '(js-mode . js-ts-mode))
     :preface
     (defun config-js--readonly-if-in-node-modules ()
       (when (string-match-p  "/node_modules/" default-directory)
         (read-only-mode +1)))
     :hook
-    (js-mode . config-js--readonly-if-in-node-modules))
+    (js-base-mode . config-js--readonly-if-in-node-modules))
 #+end_src
 
 ** =plantuml-mode= - Editing support for PlantUML diagrams
