@@ -5570,6 +5570,11 @@ Overhauls dired to provide much better UX.
     :custom
     (dirvish-attributes '(vscode-icon collapse git-msg vc-state file-size))
     (dirvish-vscode-icon-size 16)
+    (dirvish-use-mode-line nil)
+    (dirvish-use-header-line t)
+    (dirvish-header-line-format '(:left (path) :right (index)))
+    (dirvish-use-mode-line nil)
+    (dirvish-path-separators '(" ~" " /" " ▸ "))
     :general
     (:keymaps 'dired-mode-map :states 'normal
      [remap quit-window] #'dirvish-quit
