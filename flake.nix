@@ -181,6 +181,7 @@
             use-package
             vertico
             volatile-highlights
+            vscode-icon
             websocket
             wgrep
             which-key
