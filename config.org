@@ -3996,7 +3996,6 @@ dot).
 #+begin_src emacs-lisp
   (use-package dired-x
     :demand t
-    :unless (featurep 'dirvish)
     :after dired
     :hook (dired-mode . dired-omit-mode)
     :general
