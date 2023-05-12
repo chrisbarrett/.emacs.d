@@ -5570,6 +5570,7 @@ Overhauls dired to provide much better UX.
     :hook (after-init . dirvish-override-dired-mode)
     :custom
     (dirvish-attributes '(vscode-icon collapse git-msg vc-state file-size))
+    (dirvish-vscode-icon-size 16)
     :general
     (:keymaps 'dired-mode-map
      [remap quit-window] #'dirvish-quit
