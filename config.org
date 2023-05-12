@@ -5552,6 +5552,16 @@ Configure =conf-mode= for use with more kinds of config files.
        (auth-source-pick-first-password :host "api.openai.com"))))
 #+end_src
 
+** =dirvish=
+Improves dired.
+
+#+begin_src emacs-lisp
+  (use-package dirvish
+    :hook (after-init . dirvish-override-dired-mode)
+    :general
+    (:keymaps 'dired-mode-map [remap quit-window] #'dirvish-quit))
+#+end_src
+
 ** =pdf-tools= - PDF reader
 #+begin_src emacs-lisp
   (use-package pdf-tools

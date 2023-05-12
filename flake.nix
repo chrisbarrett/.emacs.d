@@ -73,6 +73,7 @@
             deadgrep
             default-text-scale
             delight
+            dirvish
             dockerfile-mode
             dogears
             doom-themes
