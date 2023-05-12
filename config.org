@@ -5571,10 +5571,9 @@ Overhauls dired to provide much better UX.
     (dirvish-attributes '(vscode-icon collapse git-msg vc-state file-size))
     (dirvish-vscode-icon-size 16)
     :general
-    (:keymaps 'dired-mode-map
+    (:keymaps 'dired-mode-map :states 'normal
      [remap quit-window] #'dirvish-quit
-     :states 'normal
-     "|" #'dirvish-layout-toggle))
+     "TAB" #'dirvish-layout-toggle))
 
   (mode-leader-set-key :keymaps 'dired-mode-map
     "," '(dirvish-dispatch :wk "menu"))
