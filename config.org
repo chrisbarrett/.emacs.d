@@ -3917,6 +3917,7 @@ after editing actions have changed what windows are shown.
     :hook (dired-mode . dired-hide-details-mode)
     :custom
     (dired-listing-switches "-l --almost-all --human-readable --group-directories-first --no-group")
+    (dired-clean-confirm-killing-deleted-buffers nil)
     :general
     (:states 'normal :keymaps 'dired-mode-map
      "M-w" #'dired-copy-filename-as-kill))
