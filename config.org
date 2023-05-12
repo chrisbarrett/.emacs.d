@@ -2760,7 +2760,7 @@ See:
     "C" #'compile
     "D" '(dired-other-window :wk "dired (other)")
     "S" '(deadgrep :wk "rg (deadgrep)")
-    "d" #'dired
+    "d" '(dirvish-dwim :wk "dired")
     "i" '(consult-imenu :wk "imenu")
     "q" '(delete-window :wk "delete window")
     "s" '(evil-iedit-state/iedit-mode :wk "iedit")
