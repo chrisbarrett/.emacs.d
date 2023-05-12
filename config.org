@@ -5578,6 +5578,10 @@ Overhauls dired to provide much better UX.
 
   (mode-leader-set-key :keymaps 'dired-mode-map
     "," '(dirvish-dispatch :wk "menu"))
+
+  (use-package vscode-icon
+    :config
+    (push '("jpg" . "image") vscode-icon-file-alist))
 #+end_src
 
 ** =pdf-tools= - PDF reader
