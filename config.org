@@ -3908,6 +3908,7 @@ after editing actions have changed what windows are shown.
 #+begin_src emacs-lisp
   (use-package dired
     :hook (dired-mode . dired-hide-details-mode)
+    :unless (featurep 'dirvish)
     :general
     (:states 'normal :keymaps 'dired-mode-map
      "M-w" #'dired-copy-filename-as-kill
@@ -3988,6 +3989,7 @@ dot).
 #+begin_src emacs-lisp
   (use-package dired-x
     :demand t
+    :unless (featurep 'dirvish)
     :after dired
     :hook (dired-mode . dired-omit-mode)
     :general
