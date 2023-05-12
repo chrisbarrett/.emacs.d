@@ -6242,6 +6242,7 @@ Ensure we use dired rather than the Finder on macOS.
                                    (todo priority-down category-up scheduled-up)
                                    (tags priority-down category-up)
                                    (search category-up)))
+    (org-agenda-clock-report-header "\nClocking")
     (org-agenda-clockreport-parameter-plist '(:link t :maxlevel 3 :fileskip0 t :filetitle t))
     (org-agenda-tags-column -100)
     (org-agenda-text-search-extra-files (list (f-join org-directory "archive.org")))
