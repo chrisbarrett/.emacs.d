@@ -405,6 +405,8 @@ Load host-specific settings, which are not checked into version control.
   (defun config-theme-apply-settings ()
     (let* ((dark-fg "#bbc2cf")
            (light-fg "#556b72")
+           (dark-bg "#282c34")
+           (light-bg "#FDF6E3")
            (title `((t :height 1.5 :weight normal)))
            (heading `((t :height 1.2)))
            (block-markup `((t :inherit font-lock-comment-face :background unspecified :italic nil :weight light :bold nil)))
@@ -432,14 +434,19 @@ Load host-specific settings, which are not checked into version control.
                                   (:foreground "#9ca0a4" :italic nil :weight light :inherit nil))))
                               `(org-transclusion-fringe
                                 ((((background dark))
-                                  (:foreground ,(doom-blend "#282c34" "#51afef" 0.5) :weight bold ))
+                                  (:foreground ,(doom-blend dark-bg "#51afef" 0.5) :weight bold))
                                  (((background light))
-                                  (:foreground ,(doom-blend "#FDF6E3" "#268bd2" 0.4) :weight bold))))
+                                  (:foreground ,(doom-blend light-bg "#268bd2" 0.4) :weight bold))))
                               `(org-roam-search-highlight
                                 ((((background dark))
                                   (:foreground "#98be65" :background "#3e493d" :weight bold :inherit magit-diff-added-highlight))
                                  (((background light))
                                   (:foreground "#859900" :background "#e5e3b5" :weight bold :inherit magit-diff-added-highlight))))
+                              `(dirvish-hl-line
+                                ((((background dark))
+                                  (:background ,(doom-blend dark-bg "#51afef" 0.5) :extend t))
+                                 (((background light))
+                                  (:background ,(doom-blend light-bg "#268bd2" 0.4) :extend t))))
                               `(org-superstar-header-bullet ,bullet)
                               `(org-agenda-clocking
                                 ((((background dark))
