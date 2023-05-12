@@ -2182,6 +2182,7 @@ byte-compiler about them to avoid warnings.
     (evil-insert-state-cursor '("chartreuse3" bar))
     (evil-emacs-state-cursor  '("SkyBlue2" (box . t)))
     :general
+    (:states 'normal "C-w /" #'evil-window-vnew)
     (:states 'normal "go" #'browse-url-at-point)
     (:states '(normal insert visual motion) "M-e" 'evil-window-next)
 
