@@ -73,6 +73,7 @@
             deadgrep
             default-text-scale
             delight
+            diredfl
             dirvish
             dockerfile-mode
             dogears

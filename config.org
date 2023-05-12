@@ -3915,29 +3915,49 @@ after editing actions have changed what windows are shown.
 #+begin_src emacs-lisp
   (use-package dired
     :hook (dired-mode . dired-hide-details-mode)
-    :unless (featurep 'dirvish)
+    :custom
+    (dired-listing-switches "-l --almost-all --human-readable --group-directories-first --no-group")
     :general
     (:states 'normal :keymaps 'dired-mode-map
-     "M-w" #'dired-copy-filename-as-kill
-     "$" #'end-of-line
-     "i" nil
-     "i i" 'dired-insert-subdir
-     "i q" 'dired-kill-subdir
-     "TAB" 'dired-hide-subdir)
+     "M-w" #'dired-copy-filename-as-kill))
+#+end_src
+
+*** =dirvish= - Overhauls dired to provide much better UX
+#+begin_src emacs-lisp
+  (use-package dirvish
+    :hook (after-init . dirvish-override-dired-mode)
     :custom
-    (dired-listing-switches "-alhv")
-    (dired-dwim-target t)
-    (dired-auto-revert-buffer t)
-    (dired-hide-details-hide-symlink-targets nil)
-    (dired-omit-files (rx bol "."))
+    (dirvish-attributes '(vscode-icon collapse file-size vc-state git-msg ))
+    (dirvish-vscode-icon-size 16)
+    (dirvish-use-mode-line nil)
+    (dirvish-use-header-line t)
+    (dirvish-header-line-format '(:left (path) :right (index)))
+    (dirvish-use-mode-line nil)
+    (dirvish-path-separators '(" ~" " /" " ▸ "))
+    :general
+    (:keymaps 'dired-mode-map :states 'normal
+     [remap quit-window] #'dirvish-quit
+     "TAB" #'dirvish-layout-toggle))
+
+  (use-package vscode-icon
     :config
-    (add-hook 'dired-mode-hook #'hl-line-mode)
-    (put 'dired-find-alternate-file 'disabled nil))
+    (push '("jpg" . "image") vscode-icon-file-alist))
+#+end_src
+
+*** =diredfl= - Enrich font-lock in dired buffers
+#+begin_src emacs-lisp
+  (use-package diredfl
+    :hook
+    (dired-mode . diredfl-mode)
+    (dirvish-directory-view-mode . diredfl-mode)
+    :config
+    (set-face-attribute 'diredfl-dir-name nil :bold t))
 #+end_src
 
 *** Set leader keys
 #+begin_src emacs-lisp
   (mode-leader-set-key :keymaps 'dired-mode-map
+    "," '(dirvish-dispatch :wk "menu")
     "?" '(dired-hide-details-mode :wk "toggle details")
     "." '(dired-omit-mode :wk "toggle hidden")
     "e" '(wdired-change-to-wdired-mode :wk "wdired")
@@ -3963,18 +3983,6 @@ after editing actions have changed what windows are shown.
     "d s" '(dired-do-relsymlink :wk "symlink (relative)")
     "d S" '(dired-do-symlink :wk "symlink (absolute)")
     "d /" '(dired-do-search :wk "search"))
-#+end_src
-
-*** Put directories first in sort order
-#+begin_src emacs-lisp
-  (use-package dired
-    :config
-    (define-advice dired-readin (:after (&rest _) sort-dirs-first)
-      (save-excursion
-        (let (buffer-read-only)
-          (forward-line 2) ;; beyond dir. header
-          (sort-regexp-fields t "^.*$" "[ ]*." (point) (point-max)))
-        (set-buffer-modified-p nil))))
 #+end_src
 
 *** Rename files by editing =dired= buffer
@@ -5559,33 +5567,6 @@ Configure =conf-mode= for use with more kinds of config files.
     (dall-e-shell-openai-key
      (lambda ()
        (auth-source-pick-first-password :host "api.openai.com"))))
-#+end_src
-
-** =dirvish=
-Overhauls dired to provide much better UX.
-
-#+begin_src emacs-lisp
-  (use-package dirvish
-    :hook (after-init . dirvish-override-dired-mode)
-    :custom
-    (dirvish-attributes '(vscode-icon collapse git-msg vc-state file-size))
-    (dirvish-vscode-icon-size 16)
-    (dirvish-use-mode-line nil)
-    (dirvish-use-header-line t)
-    (dirvish-header-line-format '(:left (path) :right (index)))
-    (dirvish-use-mode-line nil)
-    (dirvish-path-separators '(" ~" " /" " ▸ "))
-    :general
-    (:keymaps 'dired-mode-map :states 'normal
-     [remap quit-window] #'dirvish-quit
-     "TAB" #'dirvish-layout-toggle))
-
-  (mode-leader-set-key :keymaps 'dired-mode-map
-    "," '(dirvish-dispatch :wk "menu"))
-
-  (use-package vscode-icon
-    :config
-    (push '("jpg" . "image") vscode-icon-file-alist))
 #+end_src
 
 ** =pdf-tools= - PDF reader
