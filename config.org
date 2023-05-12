@@ -5563,13 +5563,19 @@ Configure =conf-mode= for use with more kinds of config files.
 #+end_src
 
 ** =dirvish=
-Improves dired.
+Overhauls dired to provide much better UX.
 
 #+begin_src emacs-lisp
   (use-package dirvish
     :hook (after-init . dirvish-override-dired-mode)
     :general
-    (:keymaps 'dired-mode-map [remap quit-window] #'dirvish-quit))
+    (:keymaps 'dired-mode-map
+     [remap quit-window] #'dirvish-quit
+     :states 'normal
+     "|" #'dirvish-layout-toggle))
+
+  (mode-leader-set-key :keymaps 'dired-mode-map
+    "," '(dirvish-dispatch :wk "menu"))
 #+end_src
 
 ** =pdf-tools= - PDF reader
