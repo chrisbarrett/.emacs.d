@@ -6312,25 +6312,28 @@ property to =ignore= or =scheduled=.
                                            :min-duration 0
                                            :max-gap 0))
     (org-agenda-custom-commands
-     (let ((views '((tags-todo "-bills-outline+TODO=\"TODO\""
-                               ((org-agenda-overriding-header "Next Actions")
-                                (org-agenda-skip-function #'org-funcs-skip-items-already-in-agenda)))
-                    (tags-todo "+TODO=\"TODO\"+bills"
-                               ((org-agenda-overriding-header "Bills")
-                                (org-agenda-skip-function #'org-funcs-skip-items-already-in-agenda)))
-                    (todo "WAIT"
-                          ((org-agenda-overriding-header "Delegated")
-                           (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp)))
-                    (agenda ""
-                            ((org-agenda-overriding-header "Today")
-                             (org-agenda-use-time-grid t)))
-                    (tags-todo "-bills+outline+TODO=\"TODO\""
-                               ((org-agenda-overriding-header "Unprocessed Notes")
-                                (org-agenda-skip-function #'org-funcs-skip-items-already-in-agenda))))))
-       `(("p" "personal agenda" ,views
+     (let ((todos '(tags-todo "-bills-project-outline+TODO=\"TODO\""
+                              ((org-agenda-overriding-header "Next Actions")
+                               (org-agenda-skip-function #'org-funcs-skip-items-already-in-agenda))))
+           (bills '(tags-todo "+TODO=\"TODO\"+bills"
+                              ((org-agenda-overriding-header "Bills")
+                               (org-agenda-skip-function #'org-funcs-skip-items-already-in-agenda))))
+           (projects '(tags-todo "+TODO=\"TODO\"+project"
+                                 ((org-agenda-overriding-header "Projects"))))
+           (delegated '(todo "WAIT"
+                             ((org-agenda-overriding-header "Delegated")
+                              (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp))))
+           (today '(agenda ""
+                           ((org-agenda-overriding-header "Today")
+                            (org-agenda-use-time-grid t))))
+           (notes
+            '(tags-todo "-bills+outline+TODO=\"TODO\""
+                        ((org-agenda-overriding-header "Unprocessed Notes")
+                         (org-agenda-skip-function #'org-funcs-skip-items-already-in-agenda)))))
+       `(("p" "personal agenda" ,(list todos bills delegated today)
           ((org-agenda-tag-filter-preset '("-someday" "-ignore" "-work" "-outline"))
            (org-agenda-archives-mode t)))
-         ("w" "work agenda" ,views
+         ("w" "work agenda" ,(list todos delegated projects today notes)
           ((org-agenda-clockreport-mode t)
            (org-agenda-tag-filter-preset (list "-someday" "-ignore" (format "+%s" (timekeep-work-tag))))
            (org-agenda-archives-mode t)))))))
