@@ -66,7 +66,6 @@
             consult
             corfu
             corfu-doc
-            csharp-mode
             csv-mode
             dall-e-shell
             dash
