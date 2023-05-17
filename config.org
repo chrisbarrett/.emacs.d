@@ -4872,7 +4872,9 @@ files.
       (when (string-match-p  "/node_modules/" default-directory)
         (read-only-mode +1)))
     :hook
-    (typescript-ts-base-mode . config-ts--readonly-if-in-node-modules))
+    (typescript-ts-base-mode . config-ts--readonly-if-in-node-modules)
+    :config
+    (add-to-list 'major-mode-remap-alist '(typescript-mode . typescript-ts-mode)))
 #+end_src
 
 *** =prettier= - Add support for prettier in TS files
@@ -4896,6 +4898,15 @@ files.
     (nix-indent-function 'nix-indent-line))
 #+end_src
 
+** =python-ts-mode= - Python language support
+#+begin_src emacs-lisp
+  (use-package python-ts-mode
+    :mode
+    ("\\.py[iw]?\\'" . python-ts-mode)
+    :config
+    (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode)))
+#+end_src
+
 ** =yaml-ts-mode= - YAML editing support
 #+begin_src emacs-lisp
   (use-package yaml-ts-mode
@@ -4905,8 +4916,10 @@ files.
     :preface
     (defun config-yaml--disable-autofill ()
       (auto-fill-mode -1))
+    :hook
+    (yaml-ts-mode-hook . config-yaml--disable-autofill)
     :config
-    (add-hook 'yaml-ts-mode-hook #'config-yaml--disable-autofill))
+    (add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode)))
 #+end_src
 
 *** =origami= - code folding
@@ -4917,6 +4930,15 @@ files.
     (:states 'normal :keymaps 'origami-mode-map
      "TAB" 'origami-recursively-toggle-node
      "S-<tab>" 'origami-toggle-all-nodes))
+#+end_src
+
+** =json-ts-mode=
+#+begin_src emacs-lisp
+  (use-package json-ts-mode
+    :mode
+    ("\\.json\\'" . json-ts-mode)
+    :config
+    (add-to-list 'major-mode-remap-alist '(json-mode . json-ts-mode)))
 #+end_src
 
 ** =sh-mode= - bash, sh & friends
@@ -4934,9 +4956,9 @@ files.
 #+begin_src emacs-lisp
   (use-package highlight-indent-guides
     :hook
-    (python-mode . highlight-indent-guides-mode)
-    (yaml-mode . highlight-indent-guides-mode)
-    (json-mode . highlight-indent-guides-mode))
+    (python-ts-mode . highlight-indent-guides-mode)
+    (yaml-ts-mode . highlight-indent-guides-mode)
+    (json-ts-mode . highlight-indent-guides-mode))
 #+end_src
 
 ** =markdown-mode= - Markdown file support
