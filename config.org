@@ -4019,15 +4019,18 @@ dot).
 #+begin_src emacs-lisp
   (use-package project
     :preface
-    (defun config-project-magit-status ()
+    (defun config-project-switch ()
       (interactive)
-      (magit-status (project-root (project-current t))))
+      (let ((dir (project-root (project-current t))))
+        (if (magit-git-repo-p dir)
+            (magit-status dir)
+          (dired dir))))
     :custom
     (project-vc-extra-root-markers '("Cargo.toml"
                                      "package.json"
                                      "flake.nix"
                                      "shell.nix"))
-    (project-switch-commands 'config-project-magit-status)
+    (project-switch-commands 'config-project-switch)
     (project-vc-ignores '(".direnv"
                           "cdk.out"
                           "node_modules"
