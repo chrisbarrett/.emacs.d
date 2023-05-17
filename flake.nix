@@ -187,7 +187,6 @@
             which-key
             world-time-mode
             ws-butler
-            yaml-mode
             yasnippet
           ];
         };

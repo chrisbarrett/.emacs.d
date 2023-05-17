@@ -3701,7 +3701,7 @@ after editing actions have changed what windows are shown.
      (add-to-list 'paren-face-modes 'js-base-mode)
      (add-to-list 'paren-face-modes 'lisp-data-mode)
      (add-to-list 'paren-face-modes 'typescript-base-mode)
-     (add-to-list 'paren-face-modes 'yaml-mode)
+     (add-to-list 'paren-face-modes 'yaml-ts-mode)
      (font-lock-add-keywords 'js-base-mode `((,(rx (any ":")) 0 'parenthesis)))
      (font-lock-add-keywords 'typescript-base-mode `((,(rx (any ":")) 0 'parenthesis))))
  #+end_src
@@ -4896,25 +4896,23 @@ files.
     (nix-indent-function 'nix-indent-line))
 #+end_src
 
-** =yaml-mode= - YAML editing support
+** =yaml-ts-mode= - YAML editing support
 #+begin_src emacs-lisp
-  (defun disable-autofill ()
-    (auto-fill-mode -1))
-
-  (use-package yaml-mode
+  (use-package yaml-ts-mode
     :mode
-    ("/yarn\\.lock\\'" . yaml-mode)
-    :general
-    (:states '(normal insert) :keymaps 'yaml-mode-map
-     [backtab] 'yaml-indent-line)
+    ("\\.ya?ml\\'" . yaml-ts-mode)
+    ("/yarn\\.lock\\'" . yaml-ts-mode)
+    :preface
+    (defun config-yaml--disable-autofill ()
+      (auto-fill-mode -1))
     :config
-    (add-hook 'yaml-mode-hook #'disable-autofill))
+    (add-hook 'yaml-ts-mode-hook #'config-yaml--disable-autofill))
 #+end_src
 
 *** =origami= - code folding
 #+begin_src emacs-lisp
   (use-package origami
-    :hook (yaml-mode . origami-mode)
+    :hook (yaml-ts-mode . origami-mode)
     :general
     (:states 'normal :keymaps 'origami-mode-map
      "TAB" 'origami-recursively-toggle-node
