@@ -177,7 +177,6 @@
             ts
             undo-tree
             unfill
-            use-package
             vertico
             volatile-highlights
             vscode-icon
