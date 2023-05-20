@@ -3565,14 +3565,14 @@ after editing actions have changed what windows are shown.
           completion-category-overrides '((file (styles . (partial-completion))))))
 #+end_src
 
-*** =corfu-doc= - show quick-help & documentation in =corfu=         :disabled:
+*** =corfu-popupinfo= - show quick-help & documentation in =corfu=
 #+begin_src emacs-lisp
-  (use-package corfu-doc
-    :hook (corfu-mode . corfu-doc-mode)
+  (use-package corfu-popupinfo
+    :hook (corfu-mode . corfu-popupinfo-mode)
     :general (:keymaps 'corfu-map
-              "M-n" 'corfu-doc-scroll-up
-              "M-p" 'corfu-doc-scroll-down
-              "<f1>" 'corfu-doc-toggle))
+              "M-n" 'corfu-popupinfo-scroll-up
+              "M-p" 'corfu-popupinfo-scroll-down
+              "<f1>" 'corfu-popupinfo-toggle))
 #+end_src
 
 *** =kind-icon= - Show icons in =corfu= completion popups

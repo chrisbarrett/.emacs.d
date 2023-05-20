@@ -65,7 +65,6 @@
             clojure-mode
             consult
             corfu
-            corfu-doc
             csv-mode
             dall-e-shell
             dash
