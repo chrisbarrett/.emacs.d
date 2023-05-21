@@ -555,6 +555,9 @@ applications. The following functions will be invoked by those scripts over
 #+end_src
 
 * 🪟 display-buffer customisations
+#+begin_src emacs-lisp
+  (setq switch-to-buffer-obey-display-actions t)
+#+end_src
 
 ** Define a full-frame display-buffer action
 #+begin_src emacs-lisp
