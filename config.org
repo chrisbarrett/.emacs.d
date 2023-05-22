@@ -6372,7 +6372,7 @@ property to =ignore= or =scheduled=.
                            ((org-agenda-overriding-header "Today")
                             (org-agenda-use-time-grid t))))
            (notes
-            '(tags-todo "-bills+outline+TODO=\"TODO\""
+            '(tags-todo "-bills+outline-project+TODO=\"TODO\""
                         ((org-agenda-overriding-header "Unprocessed Notes")
                          (org-agenda-skip-function #'org-funcs-skip-items-already-in-agenda)))))
        `(("p" "personal agenda" ,(list todos bills delegated today)
