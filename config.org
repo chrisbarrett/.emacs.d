@@ -2975,7 +2975,9 @@ See:
     (interactive)
     ;; list-buffers-directory is the variable set in dired buffers
     (if-let* ((path (or (buffer-file-name) list-buffers-directory)))
-        (message (kill-new path))
+        (progn
+          (kill-new path)
+          (message "%s" path))
       (error "Buffer not visiting a file")))
 
   (defun copy-buffer-name ()
@@ -2984,14 +2986,17 @@ See:
     (let ((name (if-let* ((path (buffer-file-name)))
                     (file-name-nondirectory path)
                   (buffer-name))))
-      (message (kill-new name))))
+      (kill-new name)
+      (message "%s" name)))
 
   (defun copy-buffer-directory ()
     "Show and copy the directory of the current file in the minibuffer."
     (interactive)
     ;; list-buffers-directory is the variable set in dired buffers
     (if-let* ((path (or (ignore-errors (file-name-directory (buffer-file-name))) list-buffers-directory)))
-        (message (kill-new path))
+        (progn
+          (kill-new path)
+          (message "%s" path))
       (error "Buffer not visiting a file")))
 #+end_src
 
