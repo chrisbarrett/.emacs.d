@@ -490,6 +490,7 @@ Load host-specific settings, which are not checked into version control.
                               `(org-agenda-structure ,(append-faces outline-heading heading))
                               '(link ((t :weight unspecified)) t)
                               '(highlight ((t :inherit unspecified :foreground unspecified :background unspecified :bold t)))
+                              `(highlight-thing ((t (:inherit highlight))))
                               `(org-drawer ,block-markup)
                               '(org-list-dt ((t :italic t :foreground unspecified)))
                               '(org-agenda-done ((t :inherit org-done :bold nil)) t)
@@ -3675,9 +3676,7 @@ after editing actions have changed what windows are shown.
     (highlight-thing-what-thing 'symbol)
     (highlight-thing-delay-seconds 0.1)
     (highlight-thing-limit-to-defun nil)
-    (highlight-thing-case-sensitive-p t)
-    :config
-    (set-face-attribute 'highlight-thing nil :inherit 'highlight))
+    (highlight-thing-case-sensitive-p t))
 #+end_src
 
 *** Suppress =highlight-thing= when hovering over certain kinds of symbols
