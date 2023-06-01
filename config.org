@@ -429,9 +429,9 @@ Load host-specific settings, which are not checked into version control.
                                   (:foreground "#6c71c4" :weight semibold))))
                               `(parenthesis
                                 ((((background dark))
-                                  (:foreground "#869799" :italic nil :weight light :inherit nil))
+                                  (:foreground "#869799" :italic nil :weight light :inherit unspecified))
                                  (((background light))
-                                  (:foreground "#9ca0a4" :italic nil :weight light :inherit nil))))
+                                  (:foreground "#9ca0a4" :italic nil :weight light :inherit unspecified))))
                               `(org-transclusion-fringe
                                 ((((background dark))
                                   (:foreground ,(doom-blend dark-bg "#51afef" 0.5) :weight bold))
@@ -489,7 +489,7 @@ Load host-specific settings, which are not checked into version control.
                               `(org-roam-olp ((t :inherit magit-section-secondary-heading :italic t :bold nil)))
                               `(org-agenda-structure ,(append-faces outline-heading heading))
                               '(link ((t :weight unspecified)) t)
-                              '(highlight ((t :inherit nil :foreground unspecified :background unspecified :bold t)))
+                              '(highlight ((t :inherit unspecified :foreground unspecified :background unspecified :bold t)))
                               `(org-drawer ,block-markup)
                               '(org-list-dt ((t :italic t :foreground unspecified)))
                               '(org-agenda-done ((t :inherit org-done :bold nil)) t)
