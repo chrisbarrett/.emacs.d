@@ -134,6 +134,7 @@
             minions
             nix-mode
             no-littering
+            ob-chatgpt-shell
             ob-http
             orderless
             org
