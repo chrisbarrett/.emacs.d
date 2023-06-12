@@ -5623,6 +5623,15 @@ Configure =conf-mode= for use with more kinds of config files.
        (auth-source-pick-first-password :host "api.openai.com"))))
 #+end_src
 
+*** =ob-chatgpt-shell=
+#+begin_src emacs-lisp
+  (use-package ob-chatgpt-shell
+    :after org
+    :demand t
+    :config
+    (ob-chatgpt-shell-setup))
+#+end_src
+
 ** =pdf-tools= - PDF reader
 #+begin_src emacs-lisp
   (use-package pdf-tools
