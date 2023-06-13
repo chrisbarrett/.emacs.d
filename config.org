@@ -6313,7 +6313,6 @@ Ensure we use dired rather than the Finder on macOS.
                                    (tags priority-down category-up)
                                    (search category-up)))
     (org-agenda-clock-report-header "\nClocking")
-    (org-agenda-clockreport-parameter-plist '(:link t :maxlevel 3 :fileskip0 t :filetitle t))
     (org-agenda-tags-column -100)
     (org-agenda-text-search-extra-files (list (f-join org-directory "archive.org")))
     (org-agenda-use-time-grid nil)
@@ -6387,6 +6386,11 @@ property to =ignore= or =scheduled=.
                               (org-agenda-skip-function #'org-funcs-skip-item-if-timestamp))))
            (today '(agenda ""
                            ((org-agenda-overriding-header "Today")
+                            (org-agenda-clockreport-parameter-plist '(:compact t
+                                                                      :link t
+                                                                      :maxlevel 3
+                                                                      :fileskip0 t
+                                                                      :filetitle t))
                             (org-agenda-use-time-grid t))))
            (notes
             '(tags-todo "-bills+outline-project+TODO=\"TODO\""
