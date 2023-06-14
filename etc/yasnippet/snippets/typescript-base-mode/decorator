@@ -1,0 +1,5 @@
+# key: dec
+# name: decorator
+# condition: (yas-funcs-bolp)
+# --
+@${1:Name}($2)

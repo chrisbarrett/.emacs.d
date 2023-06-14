@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: import zod
+# key: iz
+# condition: (yas-funcs-bolp)
+# --
+import { z } from "zod";
