@@ -97,6 +97,7 @@
             evil-surround
             f
             flx
+            flymake-eslint
             forge
             format-all
             general
