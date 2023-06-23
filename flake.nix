@@ -99,13 +99,13 @@
             flx
             forge
             format-all
-            ligature
             general
             git-auto-commit-mode
             git-gutter
             git-gutter-fringe
             gnuplot
             graphql-mode
+            ligature
             groovy-mode
             hcl-mode
             helpful
