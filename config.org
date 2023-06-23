@@ -4906,14 +4906,6 @@ files.
          (funcall fn server-id)))))
 #+end_src
 
-*** =flymake-eslint= - Add ESLint checks using typescript-eslint
-#+begin_src emacs-lisp
-  (use-package flymake-eslint
-    :hook (typescript-ts-base-mode . flymake-eslint-enable)
-    :custom
-    (flymake-eslint-defer-binary-check t))
-#+end_src
-
 ** =nix-mode= Configure support for the Nix language
 #+begin_src emacs-lisp
   (use-package nix-mode
