@@ -3,5 +3,5 @@
 # condition: (yas-funcs-bolp)
 # --
 export class ${1:Name} extends VError {
-  override name = '$1';
+  override readonly name = '$1';
 }
