@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: aggregate table
-# key: agg
-# condition: (yas-funcs-bolp)
-# --
-#+BEGIN: aggregate :table "${1:ref}" :cols "$0"
-#+END:

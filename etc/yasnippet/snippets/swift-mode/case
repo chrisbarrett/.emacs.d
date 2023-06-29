@@ -1,6 +1,0 @@
-# key: c
-# name: case
-# condition: (and (yas-funcs-bolp) (cl-plusp (syntax-ppss-depth (syntax-ppss))))
-# --
-case $1:
-    $0

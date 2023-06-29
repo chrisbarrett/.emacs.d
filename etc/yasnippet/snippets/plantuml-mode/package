@@ -1,7 +1,0 @@
-# key: p
-# name: package
-# condition: (yas-funcs-bolp)
-# --
-package "${1:name}" {
-  $0
-}

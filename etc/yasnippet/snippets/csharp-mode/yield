@@ -1,5 +1,0 @@
-# key: y
-# name: yield
-# condition: (and (yas-funcs-bolp) (cl-plusp (syntax-ppss-depth (syntax-ppss))))
-# --
-yield $0;

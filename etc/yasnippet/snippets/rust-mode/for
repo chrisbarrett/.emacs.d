@@ -1,7 +1,0 @@
-# key: for
-# name: for
-# condition: (yas-funcs-bolp)
-# --
-for $1 in $2 {
-    $0
-}

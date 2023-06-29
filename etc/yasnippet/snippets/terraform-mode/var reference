@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: var reference
-# key: v
-# condition: (not (yas-funcs-bolp))
-# --
-var.$0

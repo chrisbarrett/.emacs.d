@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# name: lazy var
-# key: lv
-# condition: (yas-funcs-bolp)
-# --
-lazy var ${1:name} = {
-    $0
-}

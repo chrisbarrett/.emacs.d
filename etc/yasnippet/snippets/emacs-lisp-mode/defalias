@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: defalias
-# key: da
-# condition: (yas-funcs-bolp)
-# --
-(defalias '${1:new} #'${2:old})

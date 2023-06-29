@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# name: for...in
-# key: for
-# condition: (yas-funcs-bolp)
-# --
-for ${1:x} in ${2:iterable} {
-    $0
-}

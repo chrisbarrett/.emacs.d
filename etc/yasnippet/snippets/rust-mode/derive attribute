@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: derive attribute
-# key: der
-# condition: (yas-funcs-bolp)
-# --
-#[derive($1)]

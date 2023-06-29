@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# name: input
-# key: in
-# condition: (yas-funcs-bolp)
-# --
-input ${1:Name} {
-  $0
-}

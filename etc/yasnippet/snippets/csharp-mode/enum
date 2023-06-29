@@ -1,9 +1,0 @@
-# -*- mode: snippet -*-
-# name: enum
-# key: e
-# condition: (and (yas-funcs-bolp) (zerop (syntax-ppss-depth (syntax-ppss))))
-# --
-enum ${1:Name}
-{
-  $0
-}

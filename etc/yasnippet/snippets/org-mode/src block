@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# name: src block
-# key: src
-# condition: (yas-funcs-bolp)
-# --
-#+begin_src $1
-  $0
-#+end_src

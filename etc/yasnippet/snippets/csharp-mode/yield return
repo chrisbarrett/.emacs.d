@@ -1,5 +1,0 @@
-# key: yr
-# name: yield return
-# condition: (and (yas-funcs-bolp) (cl-plusp (syntax-ppss-depth (syntax-ppss))))
-# --
-yield return $0;

@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# name: extend type
-# key: et
-# condition: (yas-funcs-bolp)
-# --
-extend type ${1:Name} {
-  $0
-}

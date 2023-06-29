@@ -1,7 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: let-alist
-# key: la
-# binding: direct-keybinding
-# --
-(let-alist ${1:binding}
-  $0)

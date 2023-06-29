@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: assert!
-# key: as
-# condition: (yas-funcs-bolp)
-# --
-assert!($0);

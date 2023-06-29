@@ -1,7 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: defconst
-# key: dc
-# binding: direct-keybinding
-# condition: (yas-funcs-bolp)
-# --
-(defconst `(yas-funcs-el-package-prefix)`-$0)

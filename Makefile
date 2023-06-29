@@ -31,9 +31,3 @@ clean :
 .PHONY: run
 run : $(TARGETS)
 	@$(EMACS) -q $(EMACS_RUN_OPTS)
-
-.PHONY: check
-check: $(TARGETS)
-	@$(EMACS) --batch \
-		-l shut-up -f shut-up-silence-emacs -l config-tests.el $(EMACS_RUN_OPTS) \
-		-f ert-run-tests-batch-and-exit

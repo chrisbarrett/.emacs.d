@@ -1,5 +1,0 @@
-# key: a
-# name: await
-# condition: (or (yas-funcs-bolp) (config-csharp-expression-context-p a))
-# --
-await $0;

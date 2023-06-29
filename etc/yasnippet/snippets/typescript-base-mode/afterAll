@@ -1,7 +1,0 @@
-# key: aa
-# name: afterAll
-# condition: (and (yas-funcs-bolp) (yas-funcs-js-inside-describe-p))
-# --
-afterAll(async () => {
-  $0
-});

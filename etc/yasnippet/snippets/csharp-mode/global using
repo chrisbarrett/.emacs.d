@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: global using
-# key: gu
-# condition: (and (yas-funcs-bolp) (zerop (syntax-ppss-depth (syntax-ppss))))
-# --
-global using $0;

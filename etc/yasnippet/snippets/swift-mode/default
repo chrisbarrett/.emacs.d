@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: default
-# key: d
-# condition: (and (yas-funcs-bolp) (cl-plusp (syntax-ppss-depth (syntax-ppss))))
-# --
-default:
-    $0

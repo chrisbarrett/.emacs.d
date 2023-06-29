@@ -1,5 +1,0 @@
-# key: r
-# name: return
-# condition: (and (yas-funcs-bolp) (cl-plusp (syntax-ppss-depth (syntax-ppss))))
-# --
-return $0;

@@ -1,7 +1,0 @@
-# key: sub
-# name: sub
-# condition: (yas-funcs-bolp)
-# --
-!startsub ${1:NAME}
-  $0
-!endsub

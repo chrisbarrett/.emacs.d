@@ -1,5 +1,0 @@
-# key: cw
-# name: Console.WriteLine
-# condition: (or (yas-funcs-bolp) (config-csharp-expression-context-p "cw"))
-# --
-Console.WriteLine($0);

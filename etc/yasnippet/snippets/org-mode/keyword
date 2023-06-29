@@ -1,4 +1,0 @@
-# key: #
-# name: keyword
-# --
-#+${1:$$(s-downcase yas-text)}: $0

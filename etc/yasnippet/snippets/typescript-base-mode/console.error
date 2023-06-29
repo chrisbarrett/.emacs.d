@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: console.error
-# key: err
-# condition: (and (yas-funcs-bolp) (not (yas-funcs-js-buffer-imports-logger-p)))
-# --
-console.error($0)

@@ -1,6 +1,0 @@
-# key: \b
-# name: latex environment
-# --
-\begin{$1}
-$0
-\end{$1}

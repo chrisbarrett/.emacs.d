@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: eprintln
-# key: ep
-# condition: (yas-funcs-bolp)
-# --
-eprintln!("$0");

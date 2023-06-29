@@ -1,7 +1,0 @@
-# key: b
-# name: begin...
-# condition: (yas-funcs-bolp)
-# --
-#+begin_${1:type}
-  $0
-#+end_$1

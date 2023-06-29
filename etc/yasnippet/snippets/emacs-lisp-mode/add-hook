@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: add-hook
-# key: ah
-# --
-(add-hook '$0)

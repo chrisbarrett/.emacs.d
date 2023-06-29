@@ -1,8 +1,0 @@
-# -*- mode: snippet; require-final-newline: nil -*-
-# name: unwind-protect
-# key: up
-# binding: direct-keybinding
-# condition: (or (yas-funcs-bolp) (region-active-p))
-# --
-(unwind-protect
-  $0)

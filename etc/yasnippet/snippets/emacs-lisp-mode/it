@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: it
-# key: it
-# condition: (and (yas-funcs-bolp) (yas-funcs-buttercup-file-p))
-# --
-(it "$0"
-  (expect t :to-equal nil))

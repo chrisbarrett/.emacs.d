@@ -1,6 +1,0 @@
-# key: e
-# name: else
-# condition: (yas-funcs-bolp)
-# --
-else:
-    $0

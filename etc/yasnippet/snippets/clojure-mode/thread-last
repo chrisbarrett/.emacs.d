@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: thread-last
-# key: -
-# --
-(->> $0)

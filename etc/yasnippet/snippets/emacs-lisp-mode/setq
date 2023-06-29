@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: setq
-# key: s
-# condition: (yas-funcs-bolp)
-# --
-(setq $0)

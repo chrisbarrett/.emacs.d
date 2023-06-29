@@ -1,8 +1,0 @@
-# key: i
-# name: if
-# condition: (and (yas-funcs-bolp) (cl-plusp (syntax-ppss-depth (syntax-ppss))))
-# --
-if ($1)
-{
-    $0
-}

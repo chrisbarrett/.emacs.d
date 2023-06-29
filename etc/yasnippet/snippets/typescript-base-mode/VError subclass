@@ -1,7 +1,0 @@
-# key: verr
-# name: VError subclass
-# condition: (yas-funcs-bolp)
-# --
-export class ${1:Name} extends VError {
-  override readonly name = '$1';
-}

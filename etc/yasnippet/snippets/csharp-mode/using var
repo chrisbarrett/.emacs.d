@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: using var
-# key: uv
-# condition: (yas-funcs-bolp)
-# --
-using var $1 = $0;

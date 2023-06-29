@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# name: public
-# key: p
-# condition: (yas-funcs-bolp)
-# type: command
-# --
-(insert "public")
-(just-one-space)

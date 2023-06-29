@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: export const
-# key: ec
-# --
-export const ${1:ident} = $0;

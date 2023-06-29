@@ -1,9 +1,0 @@
-# -*- mode: snippet -*-
-# name: let...in
-# key: l
-# condition: (yas-funcs-bolp)
-# --
-let
-  ${1:name} = ${2:value};
-in
-$0

@@ -1,7 +1,0 @@
-# key: aa
-# name: afterEach
-# condition: (and (yas-funcs-bolp) (yas-funcs-js-inside-describe-p))
-# --
-afterEach(async () => {
-  $0
-});

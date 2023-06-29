@@ -1,8 +1,0 @@
-# key: cs
-# name: src csharp
-# condition: (yas-funcs-bolp)
-# expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 't))
-# --
-#+begin_src csharp
-  $0
-#+end_src

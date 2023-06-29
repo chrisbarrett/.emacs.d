@@ -1,5 +1,0 @@
-# key: warn
-# name: logger.warn
-# condition: (and (yas-funcs-bolp) (yas-funcs-js-buffer-imports-logger-p))
-# --
-logger.warn({ message: '$0' });

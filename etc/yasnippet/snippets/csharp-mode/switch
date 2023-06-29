@@ -1,8 +1,0 @@
-# key: sw
-# name: switch
-# expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 't))
-# --
-switch
-{
-  ${1:pat} => $0,
-}

@@ -1,9 +1,0 @@
-# -*- mode: snippet -*-
-# name: item-src
-# key: s
-# condition: (yas-funcs-line-rx-p bol (* space) "-" (* space) "s" (* space) eol)
-# --
-`(just-one-space)`Source:
-    #+begin_src ${1:lang}
-      $0
-    #+end_quote

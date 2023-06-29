@@ -1,5 +1,0 @@
-# key: l
-# name: let
-# condition: (yas-funcs-bolp)
-# --
-let ${1:name} = $2;

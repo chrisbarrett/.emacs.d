@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# name: begin_example
-# key: ex
-# condition: (yas-funcs-bolp)
-# --
-#+begin_example $0
-
-#+end_example

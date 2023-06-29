@@ -12,7 +12,7 @@ result
 .cask
 
 # Per-machine configuration
-site.el
+default.el
 
 # Internal
 elpa

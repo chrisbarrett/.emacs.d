@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: type
-# key: t
-# --
-type ${TyId} = $0;

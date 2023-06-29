@@ -1,7 +1,0 @@
-# key: st
-# name: struct
-# condition: (yas-funcs-bolp)
-# --
-struct $1 {
-    $0
-}

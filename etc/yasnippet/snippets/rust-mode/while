@@ -1,7 +1,0 @@
-# key: wh
-# name: while
-# condition: (yas-funcs-bolp)
-# --
-while ${1:pred} {
-  $0
-}

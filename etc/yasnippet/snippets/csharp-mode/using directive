@@ -1,5 +1,0 @@
-# key: u
-# name: using directive
-# condition: (and (yas-funcs-bolp) (zerop (syntax-ppss-depth (syntax-ppss))))
-# --
-using $0;

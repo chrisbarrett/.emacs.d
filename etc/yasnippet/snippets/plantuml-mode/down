@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: down
-# key: d
-# condition: (yas-funcs-bolp)
-# --
-${1:top} -down-> ${2:bottom}: ${3:label}

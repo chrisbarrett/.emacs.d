@@ -1,5 +1,0 @@
-# key: #
-# name: shebang
-# condition: (save-excursion (goto-char (line-beginning-position)) (bobp))
-# --
-#!/usr/bin/env ${1:bash}

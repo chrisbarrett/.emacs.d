@@ -1,8 +1,0 @@
-alias d dired $1
-alias ssh cd /ssh:$1:~
-alias la ls -la $*
-alias ll ls -l $*
-alias l ls $*
-alias e for i in ${eshell-flatten-list $*} {find-file $i}
-alias sudo eshell/sudo $*
-alias nix /run/current-system/sw/bin/nix $*

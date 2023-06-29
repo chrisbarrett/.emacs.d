@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: property
-# key: pp
-# condition: (and (yas-funcs-bolp) (cl-plusp (syntax-ppss-depth (syntax-ppss))))
-# --
-public ${1:Type} ${2:Name} { get; init; }

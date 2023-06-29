@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: require all
-# key: ra
-# --
-(require '[$0 :refer :all])

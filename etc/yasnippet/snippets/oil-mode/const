@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: const
-# key: c
-# condition: (yas-funcs-bolp)
-# --
-const ${1:name} = $0

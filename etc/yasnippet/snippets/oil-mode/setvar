@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: setvar
-# key: s
-# condition: (yas-funcs-bolp)
-# --
-setvar ${1:name} = $0

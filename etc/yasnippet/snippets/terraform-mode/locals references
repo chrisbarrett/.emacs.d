@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: locals references
-# key: l
-# condition: (not (yas-funcs-bolp))
-# --
-local.$0

@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: let
-# key: l
-# condition: (yas-funcs-bolp)
-# --
-let $1 = $0

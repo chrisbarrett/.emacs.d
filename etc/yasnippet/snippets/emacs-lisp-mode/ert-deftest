@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: ert-deftest
-# key: ert
-# condition: (yas-funcs-bolp)
-# --
-(ert-deftest `(yas-funcs-el-package-prefix)`${1:feature} ()
-  (should (equal $0)))
