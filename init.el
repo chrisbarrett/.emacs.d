@@ -22,4 +22,8 @@
                            (1 font-lock-keyword-face)
                            (2 font-lock-constant-face nil t))))
 
+
+
+(use-config cb-startup-profiling-and-debugging)
+
 ;;; init.el ends here
