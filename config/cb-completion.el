@@ -3,7 +3,6 @@
 ;;; Code:
 
 (eval-when-compile
-  (require 'use-package)
   (require 'no-littering))
 
 (use-package recentf

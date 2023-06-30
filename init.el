@@ -63,6 +63,7 @@
   :autoload (general-define-key)
   :config
   (general-def
+    "M-t" 'transpose-words
     "M-SPC" 'cycle-spacing
     "C-c e e" 'toggle-debug-on-error
     "C-c e q" 'toggle-debug-on-quit)
@@ -90,6 +91,8 @@
 (use-config cb-general-editing)
 
 (use-config cb-help-systems)
+
+(use-config cb-snippets)
 
 (use-package image
   :general (:keymaps 'image-mode-map :states '(normal motion)
