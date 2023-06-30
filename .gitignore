@@ -24,4 +24,4 @@ elpa
 /auto-save-list/
 /var/
 /eln-cache/
-/config-autoloads.el
+/autoloads.el
