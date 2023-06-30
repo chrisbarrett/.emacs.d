@@ -92,8 +92,11 @@
   ;; theme is loaded, according to the WM theme.
   (set-background-color (cb-theme-for-system-type :dark "#282c34" :light "#FDF6E3"))
   (set-foreground-color (cb-theme-for-system-type :dark "#bbc2cf" :light "#556b72"))
-  (cb-theme-apply-settings)
 
+  (setq-default header-line-format cb-theme-mode-or-header-line-format)
+  (setq-default mode-line-format nil)
+
+  (cb-theme-apply-settings)
   (load-theme (cb-theme-for-system-type :light cb-theme-light :dark cb-theme-dark) t)
 
   ;; KLUDGE: Something weird is clobbering settings in org-mode. Reapply the user

@@ -182,6 +182,35 @@
     (disable-theme theme))
   (load-theme 'doom-one t))
 
+
+
+;;; Header line
+
+(defvar cb-theme--selected-window-for-mode-line-format nil)
+
+(define-advice pre-redisplay-function (:before (_windows) update-selected-window-for-mode-line-format)
+  (when (not (minibuffer-window-active-p (frame-selected-window)))
+    (setq cb-theme--selected-window-for-mode-line-format (selected-window))))
+
+(defconst cb-theme--mode-line-selected-window-indicator '(:eval (if (equal (get-buffer-window) cb-theme--selected-window-for-mode-line-format)
+                                                                    "● "
+                                                                  "   ")))
+
+(defconst cb-theme-mode-or-header-line-format
+  (let ((env-info 'mode-line-modified)
+        (buffer-info '(mode-line-frame-identification mode-line-buffer-identification "   " mode-line-position))
+        (additional-info '(mode-line-modes mode-line-misc-info)))
+    `("%e" mode-line-front-space cb-theme--mode-line-selected-window-indicator ,env-info ,@buffer-info (vc-mode vc-mode) "  " ,@additional-info mode-line-end-spaces)))
+
+
+
+;;; Run a hook when the theme changes
+
+(defvar after-load-theme-functions nil)
+
+(define-advice load-theme (:after (theme &rest _) run-hook)
+  (run-hook-with-args 'after-load-theme-functions theme))
+
 (provide 'cb-theme)
 
 ;;; cb-theme.el ends here
