@@ -4,6 +4,21 @@
 
 ;;; Code:
 
+
+
+;;; Configure load-path
+
+(dolist (load-dir (list
+                   "/run/current-system/sw/share/emacs/site-lisp"
+                   "~/.nix-profile/share/emacs/site-lisp"
+                   (expand-file-name "lisp/" user-emacs-directory)
+                   (expand-file-name "lisp/nursery/lisp/" user-emacs-directory)
+                   ))
+  (when (file-directory-p load-dir)
+    (add-to-list 'load-path load-dir)))
+
+
+
 (eval-when-compile
   (require 'use-package))
 
@@ -23,6 +38,8 @@
                            (2 font-lock-constant-face nil t))))
 
 
+
+;;; Load features
 
 (use-config cb-startup-profiling-and-debugging)
 (use-config cb-gc-tuning)
