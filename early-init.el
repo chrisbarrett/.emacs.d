@@ -196,4 +196,7 @@
 ;; and are generally not actionable by me.
 (setq ad-redefinition-action 'accept)
 
+;; Write customisations applied via `custom.el' to a separate file.
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+
 ;;; early-init.el ends here
