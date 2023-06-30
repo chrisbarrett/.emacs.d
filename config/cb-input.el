@@ -6,14 +6,12 @@
 (setq-default bidi-paragraph-separate-re "^")
 (setq-default bidi-paragraph-start-re "^")
 
-;; Instantly display current keystrokes in minibuffer
-(setq echo-keystrokes 0.02)
-
 ;; Enable useful commands that are disabled by default
 (put 'narrow-to-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
 (put 'erase-buffer 'disabled nil)
+
 
 
 
@@ -58,6 +56,40 @@
 (use-package comint
   :custom
   (comint-prompt-read-only t))
+
+
+
+;;; Minibuffer
+
+;; Instantly display current keystrokes in minibuffer
+(setq echo-keystrokes 0.02)
+
+;; Limit the max height of the minibuffer
+(setq max-mini-window-height 0.1)
+
+;; Prevent cursor from entering the minibuffer prompt
+(setq minibuffer-prompt-properties
+      '(read-only t cursor-intangible t face minibuffer-prompt))
+
+(add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+
+
+
+(use-package password-cache
+  :custom
+  (password-cache t)
+  (password-cache-expiry 300))
+
+(use-package better-eval-expression
+  :general
+  ([remap eval-expression] 'better-eval-expression)
+
+  :preface
+  (defun cb-better-eval-expr-in-debugger (f exp)
+    (interactive (list (read (better-eval-expression--read "Eval (in frame): "))))
+    (funcall f exp))
+  (advice-add 'debugger-eval-expression :around #'cb-better-eval-expr-in-debugger)
+  (advice-add 'debugger-record-expression :around #'cb-better-eval-expr-in-debugger))
 
 (provide 'cb-input)
 

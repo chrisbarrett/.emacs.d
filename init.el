@@ -105,6 +105,13 @@
                       ("America/Los_Angeles" "Pacific Time")
                       ("UTC" "UTC"))))
 
+(use-package browse-url
+  ;; Use default system mail on Darwin
+  :if (equal system-type 'darwin)
+  :custom
+  (browse-url-mailto-function (lambda (link &rest _)
+                                (start-process "open" nil "open" link))))
+
 (when (file-exists-p custom-file)
   (load custom-file t t))
 
