@@ -1,0 +1,54 @@
+;;; cb-help-systems.el --- Configuration for info, help, etc.  -*- lexical-binding: t; -*-
+;;; Commentary:
+;;; Code:
+
+(use-package info
+  :general
+  (:states 'normal :keymaps 'Info-mode-map
+   "^" 'Info-up
+   "C-n" 'Info-forward-node
+   "C-p" 'Info-backward-node))
+
+(use-package info+
+  :after info
+  :disabled t ; throws error on load
+  :demand t
+  :custom
+  (Info-fontify-angle-bracketed-flag nil))
+
+(use-package info-path-from-nix
+  :after info
+  :autoload (info-path-from-nix)
+  :demand t
+  :config
+  (setq Info-directory-list (append Info-default-directory-list
+                                    (info-path-from-nix))))
+
+;; TODO: what is the difference between `man' and `woman'? Which should I
+;; generally prefer?
+
+(use-package man
+  :general (:keymaps 'Man-mode-map
+            "M-n" #'Man-next-section
+            "M-p" #'Man-previous-section))
+
+;; Use MANPATH to look up completion candidates.
+(use-package man-completing
+  :after 'man
+  :autoload (man-completing-mode)
+  :demand t
+  :config
+  (man-completing-mode +1))
+
+(use-package apropos
+  :custom
+  (apropos-do-all t))
+
+(use-package woman
+  :custom
+  (woman-fill-frame t)
+  (woman-default-indent 7))
+
+(provide 'cb-help-systems)
+
+;;; cb-help-systems.el ends here

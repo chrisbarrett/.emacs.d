@@ -34,6 +34,7 @@
 
 (defun cb-autoloads-build-and-load ()
   "Generate a consolidated autoloads file of all installed packages."
+  (interactive)
   (unless (file-exists-p cb-autoloads-file)
     (with-current-buffer (find-file-noselect cb-autoloads-file t)
       (let ((inhibit-read-only t))

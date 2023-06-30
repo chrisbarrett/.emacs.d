@@ -12,8 +12,11 @@
   (doom-themes-enable-bold t)
   (doom-themes-enable-italic t))
 
-(defconst cb-theme-light 'doom-solarized)
-(defconst cb-theme-dark 'doom-one)
+(use-package hl-line
+  :hook (after-init . global-hl-line-mode))
+
+(use-package delight
+  :demand t)
 
 
 
@@ -164,27 +167,15 @@
         dark
       light)))
 
-
+;; Set reasonable placeholder foreground and background colours until the main
+;; theme is loaded, according to the WM theme.
 
-;;; Define Lisp functions for switching theme via emacsclient
-
-;; I have `dark' and `light' scripts I execute to change theme across all my
-;; applications. The following functions will be invoked by those scripts over
-;; =emacsclient=.
-
-(defun cb-theme-light ()
-  (dolist (theme custom-enabled-themes)
-    (disable-theme theme))
-  (load-theme 'doom-solarized-light t))
-
-(defun cb-theme-dark ()
-  (dolist (theme custom-enabled-themes)
-    (disable-theme theme))
-  (load-theme 'doom-one t))
+(set-background-color (cb-theme-for-system-type :dark "#282c34" :light "#FDF6E3"))
+(set-foreground-color (cb-theme-for-system-type :dark "#bbc2cf" :light "#556b72"))
 
 
 
-;;; Header line
+;;; Header line & mode line
 
 (defvar cb-theme--selected-window-for-mode-line-format nil)
 
@@ -202,7 +193,13 @@
         (additional-info '(mode-line-modes mode-line-misc-info)))
     `("%e" mode-line-front-space cb-theme--mode-line-selected-window-indicator ,env-info ,@buffer-info (vc-mode vc-mode) "  " ,@additional-info mode-line-end-spaces)))
 
+(setq-default header-line-format cb-theme-mode-or-header-line-format)
+(setq-default mode-line-format nil)
+
 
+
+;; Disable cursor blinking.
+(blink-cursor-mode -1)
 
 ;;; Run a hook when the theme changes
 
@@ -210,6 +207,37 @@
 
 (define-advice load-theme (:after (theme &rest _) run-hook)
   (run-hook-with-args 'after-load-theme-functions theme))
+
+
+
+;;; Define Lisp functions for switching theme via emacsclient
+
+;; I have `dark' and `light' scripts I execute to change theme across all my
+;; applications. The following functions will be invoked by those scripts over
+;; =emacsclient=.
+
+(defconst cb-theme-light 'doom-solarized-light)
+(defconst cb-theme-dark 'doom-one)
+
+(defun cb-theme-light ()
+  (dolist (theme custom-enabled-themes)
+    (disable-theme theme))
+  (load-theme cb-theme-light t))
+
+(defun cb-theme-dark ()
+  (dolist (theme custom-enabled-themes)
+    (disable-theme theme))
+  (load-theme cb-theme-dark t))
+
+;; Finally, load the appropriate colour theme.
+
+(cb-theme-apply-settings)
+
+(load-theme (cb-theme-for-system-type :light cb-theme-light :dark cb-theme-dark) t)
+
+;; KLUDGE: Something weird is clobbering settings in org-mode. Reapply the user
+;; theme when starting up org-mode.
+(add-hook 'org-mode-hook #'cb-theme-apply-settings)
 
 (provide 'cb-theme)
 
