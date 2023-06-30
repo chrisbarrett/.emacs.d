@@ -75,4 +75,11 @@
                          (regexp-quote no-littering-etc-directory)
                          (regexp-quote no-littering-var-directory))))
 
+(use-package general
+  :demand t
+  :autoload (general-define-key))
+
+(use-package delight
+  :demand t)
+
 ;;; init.el ends here
