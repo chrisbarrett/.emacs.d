@@ -130,4 +130,12 @@
 
 
 
+;;; Configure use-package
+
+(with-no-warnings
+  (setq use-package-always-defer t)
+  (setq use-package-minimum-reported-time 0.05)
+  (setq use-package-compute-statistics t)
+  (setq use-package-verbose (not noninteractive)))
+
 ;;; early-init.el ends here
