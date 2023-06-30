@@ -41,6 +41,9 @@
 
 ;;; Load features
 
+(use-package no-littering
+  :demand t)
+
 (use-config cb-startup-profiling-and-debugging)
 (use-config cb-gc-tuning)
 
@@ -52,5 +55,24 @@
   (server-start))
 
 (use-config cb-native-themeing)
+
+(use-package recentf
+  :hook (after-init . recentf-mode)
+  :custom
+  (recentf-filename-handlers '(abbreviate-file-name))
+  (recentf-max-saved-items 100)
+  (recentf-exclude (list (rx "TAGS" eos)
+                         (rx ".DS_Store" eos)
+                         (rx "." (or "gz" "zip" "tar" "7z") eos)
+                         (rx bos "/sudo:root@")
+                         (rx "/.git/")
+                         (rx "/" (or "build" "dist" "target") "/")
+                         (rx (or "/var/folders/"
+                                 "/usr/local/Cellar/"
+                                 "/tmp/"
+                                 "/nix/store/"))
+                         'file-remote-p
+                         (regexp-quote no-littering-etc-directory)
+                         (regexp-quote no-littering-var-directory))))
 
 ;;; init.el ends here
