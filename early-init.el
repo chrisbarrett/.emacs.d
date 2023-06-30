@@ -157,4 +157,43 @@
   (unless (file-directory-p no-littering-var-directory)
     (make-directory no-littering-var-directory t)))
 
+
+
+;;; Set some sane defaults.
+
+(setq ring-bell-function #'ignore)
+(setq use-short-answers t)
+(setq delete-by-moving-to-trash nil)
+(setq confirm-nonexistent-file-or-buffer nil)
+(setq use-file-dialog nil)
+(setq use-dialog-box nil)
+
+;; Disable backup files, lockfiles, etc.
+(setq create-lockfiles nil)
+(setq make-backup-files nil)
+
+;; Inhibit the default startup screen.
+(setq initial-scratch-message nil)
+(setq inhibit-startup-message t)
+(setq initial-major-mode 'fundamental-mode)
+
+;; Never show the useless hello file.
+(defalias #'view-hello-file #'ignore)
+
+;; Don't nag when following symlinks to files under version control.
+(setq vc-follow-symlinks t)
+
+;; Always insert a final newline, as per the Unix convention.
+(setq require-final-newline t)
+
+;; Harden network settings.
+(with-eval-after-load 'nsm
+  (with-no-warnings
+   (setq network-security-level 'high)
+   (setq nsm-noninteractive t)))
+
+;; Disable warnings from obsolete advice system. These are caused by packages
+;; and are generally not actionable by me.
+(setq ad-redefinition-action 'accept)
+
 ;;; early-init.el ends here
