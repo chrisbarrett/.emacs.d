@@ -25,5 +25,6 @@
 
 
 (use-config cb-startup-profiling-and-debugging)
+(use-config cb-gc-tuning)
 
 ;;; init.el ends here
