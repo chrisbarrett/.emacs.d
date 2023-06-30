@@ -98,6 +98,13 @@
   :custom
   (image-use-external-converter t))
 
+(use-package time
+  :custom
+  (world-clock-list '(("Pacific/Auckland" "NZT")
+                      ("Australia/Sydney" "Sydney")
+                      ("America/Los_Angeles" "Pacific Time")
+                      ("UTC" "UTC"))))
+
 (when (file-exists-p custom-file)
   (load custom-file t t))
 
