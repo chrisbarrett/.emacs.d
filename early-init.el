@@ -8,6 +8,9 @@
 
 ;;; Code:
 
+(defconst emacs-start-time (current-time)
+  "The time at which this instance of Emacs was started.")
+
 ;; Set an environment variable so child processes can detect that they're inside
 ;; Emacs
 
