@@ -106,4 +106,6 @@
 (use-package hl-line
   :hook (after-init . global-hl-line-mode))
 
+(use-config cb-display-buffer)
+
 ;;; init.el ends here
