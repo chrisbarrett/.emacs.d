@@ -4,6 +4,8 @@
 
 ;;; Code:
 
+(defvar org-roam-index-node-id)
+
 
 
 ;;; Configure load-path
