@@ -100,4 +100,7 @@
   ;; theme when starting up org-mode.
   (add-hook 'org-mode-hook #'cb-theme-apply-settings))
 
+(use-package hl-line
+  :hook (after-init . global-hl-line-mode))
+
 ;;; init.el ends here
