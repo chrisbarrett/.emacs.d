@@ -16,6 +16,9 @@
 
 (setenv "INSIDE_EMACS" "true")
 
+;; Prefer more recent Lisp files to outdated ELC files when loading.
+(setq load-prefer-newer t)
+
 
 
 ;;; Crank up the max size of subprocess output to read.
