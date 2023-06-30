@@ -45,13 +45,17 @@
   :demand t)
 
 (use-config cb-startup-profiling-and-debugging)
+
 (use-config cb-gc-tuning)
 
 (use-config cb-autoloads
   :autoload (cb-autoloads-build-and-load)
   :config (cb-autoloads-build-and-load))
 
-(unless noninteractive
+(use-package server
+  :if (not noninteractive)
+  :demand t
+  :config
   (server-start))
 
 (use-config cb-native-themeing
