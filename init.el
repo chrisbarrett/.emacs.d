@@ -54,7 +54,13 @@
 (unless noninteractive
   (server-start))
 
-(use-config cb-native-themeing)
+(use-config cb-native-themeing
+  :commands (cb-theme-for-system-type)
+  :config
+  ;; Set reasonable placeholder foreground and background colours until the main
+  ;; theme is loaded, according to the WM theme.
+  (set-background-color (cb-theme-for-system-type :dark "#282c34" :light "#FDF6E3"))
+  (set-foreground-color (cb-theme-for-system-type :dark "#bbc2cf" :light "#556b72")))
 
 (use-package recentf
   :hook (after-init . recentf-mode)
