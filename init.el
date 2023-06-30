@@ -43,6 +43,9 @@
 
 ;;; Load features
 
+(when (file-exists-p custom-file)
+  (load custom-file t t))
+
 (use-package no-littering
   :demand t
   :autoload (no-littering-theme-backups)
