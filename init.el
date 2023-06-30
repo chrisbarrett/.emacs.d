@@ -58,14 +58,6 @@
   :config
   (server-start))
 
-(use-config cb-native-themeing
-  :commands (cb-theme-for-system-type)
-  :config
-  ;; Set reasonable placeholder foreground and background colours until the main
-  ;; theme is loaded, according to the WM theme.
-  (set-background-color (cb-theme-for-system-type :dark "#282c34" :light "#FDF6E3"))
-  (set-foreground-color (cb-theme-for-system-type :dark "#bbc2cf" :light "#556b72")))
-
 (use-package recentf
   :hook (after-init . recentf-mode)
   :custom
@@ -91,5 +83,21 @@
 
 (use-package delight
   :demand t)
+
+(use-config cb-theme
+  :autoload (cb-theme-apply-settings cb-theme-for-system-type)
+  :defines (cb-light-theme cb-dark-theme cb-theme-mode-or-header-line-format)
+  :config
+  ;; Set reasonable placeholder foreground and background colours until the main
+  ;; theme is loaded, according to the WM theme.
+  (set-background-color (cb-theme-for-system-type :dark "#282c34" :light "#FDF6E3"))
+  (set-foreground-color (cb-theme-for-system-type :dark "#bbc2cf" :light "#556b72"))
+  (cb-theme-apply-settings)
+
+  (load-theme (cb-theme-for-system-type :light cb-theme-light :dark cb-theme-dark) t)
+
+  ;; KLUDGE: Something weird is clobbering settings in org-mode. Reapply the user
+  ;; theme when starting up org-mode.
+  (add-hook 'org-mode-hook #'cb-theme-apply-settings))
 
 ;;; init.el ends here
