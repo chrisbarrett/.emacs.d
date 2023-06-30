@@ -30,4 +30,6 @@
 (unless noninteractive
   (server-start))
 
+(use-config cb-native-themeing)
+
 ;;; init.el ends here
