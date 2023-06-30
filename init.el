@@ -42,7 +42,9 @@
 ;;; Load features
 
 (use-package no-littering
-  :demand t)
+  :demand t
+  :autoload (no-littering-theme-backups)
+  :config (no-littering-theme-backups))
 
 (use-config cb-startup-profiling-and-debugging)
 
