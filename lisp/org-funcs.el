@@ -160,11 +160,6 @@ TAGS are the tags to use when displaying the list."
   (org-agenda prefix-arg "t")
   (org-agenda-filter-apply (cons "-ignore" tags) 'tag))
 
-(defun org-funcs-goto-accounts ()
-  "Goto the accounts file."
-  (interactive)
-  (org-roam-node-visit (org-roam-node-from-title-or-alias "Accounts")))
-
 
 ;; Capture template definition
 

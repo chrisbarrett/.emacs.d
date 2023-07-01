@@ -106,6 +106,8 @@
 
 (use-config cb-evil)
 
+(use-config cb-leader)
+
 (use-config cb-ide)
 
 (when (file-exists-p custom-file)
