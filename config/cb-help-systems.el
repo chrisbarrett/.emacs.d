@@ -24,6 +24,13 @@
   (setq Info-directory-list (append Info-default-directory-list
                                     (info-path-from-nix))))
 
+(use-package help-mode
+  :general
+  (:states 'motion :keymaps 'help-mode-map
+   "<escape>" 'quit-window
+   "^" 'help-go-back
+   "gh" 'help-follow-symbol))
+
 ;; TODO: what is the difference between `man' and `woman'? Which should I
 ;; generally prefer?
 

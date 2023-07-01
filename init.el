@@ -94,26 +94,9 @@
 
 (use-config cb-snippets)
 
-(use-package image
-  :general (:keymaps 'image-mode-map :states '(normal motion)
-            "-" #'image-decrease-size
-            "+" #'image-increase-size)
-  :custom
-  (image-use-external-converter t))
+(use-config cb-media)
 
-(use-package time
-  :custom
-  (world-clock-list '(("Pacific/Auckland" "NZT")
-                      ("Australia/Sydney" "Sydney")
-                      ("America/Los_Angeles" "Pacific Time")
-                      ("UTC" "UTC"))))
-
-(use-package browse-url
-  ;; Use default system mail on Darwin
-  :if (equal system-type 'darwin)
-  :custom
-  (browse-url-mailto-function (lambda (link &rest _)
-                                (start-process "open" nil "open" link))))
+(use-config cb-evil)
 
 (when (file-exists-p custom-file)
   (load custom-file t t))
