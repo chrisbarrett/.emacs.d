@@ -113,6 +113,8 @@ USE-PACKAGE-ARGS are optional additional arguments forwarded to
 
 (use-config cb-ide)
 
+(use-config cb-eshell)
+
 (when (file-exists-p custom-file)
   (load custom-file t t))
 
