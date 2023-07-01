@@ -75,6 +75,7 @@ USE-PACKAGE-ARGS are optional additional arguments forwarded to
 (use-config cb-eshell)
 (use-config cb-smartparens)
 (use-config cb-dired)
+(use-config cb-git)
 
 (load custom-file t t)
 
