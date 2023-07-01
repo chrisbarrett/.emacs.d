@@ -5,20 +5,16 @@
 (use-package pdf-tools
   :general
   (:states '(normal) :keymaps 'pdf-view-mode-map
-   "+" 'pdf-view-enlarge
-   "-" 'pdf-view-shrink
-   "0" 'pdf-view-scale-reset
-   "j" 'pdf-view-next-line-or-next-page
-   "k" 'pdf-view-previous-line-or-previous-page
    "n" 'pdf-view-next-page-command
    "p" 'pdf-view-previous-page-command
-   "gr" 'revert-buffer
-   "gg" 'pdf-view-first-page
-   "gG" 'pdf-view-last-page
-   "J" 'pdf-view-goto-page
-   "q" 'kill-this-buffer)
+   "gr" 'revert-buffer)
+  :custom
+  (pdf-view-display-size 'fit-page)
+  (pdf-view-use-scaling t)
+  :hook
+  (pdf-view-mode . pdf-view-midnight-minor-mode)
   :config
-  (evil-set-initial-state 'pdf-view-mode 'normal))
+  (pdf-tools-install))
 
 (use-package image
   :general (:keymaps 'image-mode-map :states '(normal motion)
@@ -40,6 +36,24 @@
   :custom
   (browse-url-mailto-function (lambda (link &rest _)
                                 (start-process "open" nil "open" link))))
+
+(use-package shell-maker
+  :custom
+  (shell-maker-history-path (no-littering-expand-var-file-name "shell-maker")))
+
+(use-package chatgpt-shell
+  :commands (chatgpt-shell)
+  :custom
+  (chatgpt-shell-display-function #'display-buffer)
+  (chatgpt-shell-chatgpt-streaming t)
+  (chatgpt-shell-openai-key
+   (lambda ()
+     (auth-source-pick-first-password :host "api.openai.com"))))
+
+(use-package ob-chatgpt-shell
+  :autoload (ob-chatgpt-shell-setup org-babel-execute:chatgpt-shell)
+  :config
+  (ob-chatgpt-shell-setup))
 
 (provide 'cb-media)
 
