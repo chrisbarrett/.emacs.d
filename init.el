@@ -103,6 +103,8 @@ USE-PACKAGE-ARGS are optional additional arguments forwarded to
 
 (use-config cb-help-systems)
 
+(use-config cb-search)
+
 (use-config cb-snippets)
 
 (use-config cb-media)
