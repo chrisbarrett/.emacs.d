@@ -23,10 +23,13 @@
 
 ;;; Define a helper for loading features in ./config.
 
-(eval-when-compile
-  (require 'use-package))
+(require 'cl-lib)
 
 (defmacro use-config (feature &rest use-package-args)
+  "Load FEATURE from ./config with some default `use-package' args.
+
+USE-PACKAGE-ARGS are optional additional arguments forwarded to
+`use-package'."
   (declare (indent 1))
   (cl-assert (file-exists-p (expand-file-name (format "./config/%s.el" feature)
                                               user-emacs-directory)))
@@ -60,7 +63,7 @@
 
 (use-package general
   :demand t
-  :autoload (general-define-key)
+  :autoload (general-unbind general-def general-define-key)
   :config
   (general-def
     "M-t" 'transpose-words
