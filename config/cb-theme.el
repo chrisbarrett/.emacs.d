@@ -18,6 +18,8 @@
 (use-package delight
   :demand t)
 
+(setq-default cursor-in-non-selected-windows nil)
+
 
 
 (defun cb-append-faces (&rest specs)
