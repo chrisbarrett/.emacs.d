@@ -540,6 +540,11 @@ With prefix argument ARG, prompt for a file."
   "D" '(project-dired :wk "dired")
   "/" '(consult-ripgrep :wk "search (rg)")
   "r" '(project-query-replace-regexp :wk "replace"))
+
+
+;;; r - registers & bookmarks
+
+;; TODO: remap the normal register binding to this prefix.
 
 
 
