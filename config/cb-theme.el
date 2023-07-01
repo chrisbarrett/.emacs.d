@@ -222,24 +222,64 @@
 (defconst cb-theme-dark 'doom-one)
 
 (defun cb-theme-light ()
+  "Enable light colour theme."
   (dolist (theme custom-enabled-themes)
     (disable-theme theme))
   (load-theme cb-theme-light t))
 
 (defun cb-theme-dark ()
+  "Enable dark colour theme."
   (dolist (theme custom-enabled-themes)
     (disable-theme theme))
   (load-theme cb-theme-dark t))
 
 ;; Finally, load the appropriate colour theme.
 
-(cb-theme-apply-settings)
-
-(load-theme (cb-theme-for-system-type :light cb-theme-light :dark cb-theme-dark) t)
+(with-demoted-errors "cb-theme: %s"
+  (cb-theme-apply-settings)
+  (load-theme (cb-theme-for-system-type :light cb-theme-light :dark cb-theme-dark) t))
 
 ;; KLUDGE: Something weird is clobbering settings in org-mode. Reapply the user
 ;; theme when starting up org-mode.
 (add-hook 'org-mode-hook #'cb-theme-apply-settings)
+
+
+
+(use-package page-break-lines
+  :hook (after-init . global-page-break-lines-mode)
+  :custom
+  (page-break-lines-modes '(prog-mode org-agenda-mode latex-mode help-mode)))
+
+(use-package paren-face
+  :hook (after-init . global-paren-face-mode)
+  :custom
+  (paren-face-regexp (rx (any "{}();,")))
+  :config
+  (add-to-list 'paren-face-modes 'csharp-mode)
+  (add-to-list 'paren-face-modes 'js-base-mode)
+  (add-to-list 'paren-face-modes 'lisp-data-mode)
+  (add-to-list 'paren-face-modes 'typescript-base-mode)
+  (add-to-list 'paren-face-modes 'yaml-ts-mode)
+  (font-lock-add-keywords 'js-base-mode `((,(rx (any ":")) 0 'parenthesis)))
+  (font-lock-add-keywords 'typescript-base-mode `((,(rx (any ":")) 0 'parenthesis))))
+
+(use-package hl-todo
+  :hook ((prog-mode . hl-todo-mode)
+         (text-mode . enable-hl-todo-unless-org-buffer))
+  :preface
+  (defun enable-hl-todo-unless-org-buffer ()
+    (unless (derived-mode-p 'org-mode)
+      (hl-todo-mode)))
+  :custom
+  (hl-todo-keyword-faces
+   (seq-map (lambda (it) (cons it 'hl-todo))
+            '("TODO"
+              "NEXT"
+              "HACK"
+              "FIXME"
+              "KLUDGE"
+              "PATCH"
+              "NOTE"))))
 
 (provide 'cb-theme)
 
