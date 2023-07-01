@@ -469,6 +469,18 @@
                               ;; The few not covered by the regexps.
                               "{|"  "[|"  "]#"  "(*"  "}#"  "$>"  "^="))))
 
+(use-package prog-mode
+  :hook
+  (emacs-lisp-mode . prettify-symbols-mode)
+  (prettify-symbols-mode . cb-prettify-symbols-setup)
+  :preface
+  (defun cb-prettify-symbols-setup ()
+    (cond
+     ((derived-mode-p 'emacs-lisp-mode 'lisp-mode 'scheme-mode)
+      (setq-local prettify-symbols-alist '(("lambda" . #x3bb))))))
+  :config
+  (advice-add 'prettify-symbols--post-command-hook :around 'advice-ignore-errors))
+
 (provide 'cb-theme)
 
 ;;; cb-theme.el ends here

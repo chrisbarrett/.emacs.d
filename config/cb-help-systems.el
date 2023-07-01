@@ -56,6 +56,14 @@
   (woman-fill-frame t)
   (woman-default-indent 7))
 
+(use-package helpful
+  :preface
+  (defun cb-use-helpful-for-evil-lookup ()
+    (setq-local evil-lookup-func 'helpful-at-point))
+  :hook ((emacs-lisp-mode . cb-use-helpful-for-evil-lookup)
+         (helpful-mode . cb-use-helpful-for-evil-lookup)
+         (ielm-mode . cb-use-helpful-for-evil-lookup)))
+
 (provide 'cb-help-systems)
 
 ;;; cb-help-systems.el ends here
