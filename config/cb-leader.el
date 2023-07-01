@@ -638,22 +638,6 @@ With prefix arg ARG, don't select the new window."
   "-" '(default-text-scale-decrease :wk "decrease text scale")
   "=" '(default-text-scale-reset :wk "reset text scale"))
 
-
-
-;;; Mode-specific
-
-(general-unbind :states '(normal motion) ",")
-
-(defmacro mode-leader-set-key (&rest args)
-  (declare (indent defun))
-  `(use-package general
-     :after evil
-     :demand t
-     :config
-     (general-def ,@args ,@'(:keymaps 'override :states
-                             '(normal motion visual)
-                             :prefix ","))))
-
 (provide 'cb-leader)
 
 ;;; cb-leader.el ends here
