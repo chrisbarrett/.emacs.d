@@ -12,6 +12,12 @@
   :general
   (:states '(normal motion) "SPC" nil))
 
+(use-package which-key
+  :hook (after-init . which-key-mode)
+  :custom
+  (which-key-sort-uppercase-first nil)
+  (which-key-idle-delay 0.4))
+
 (defmacro leader-set-key (&rest args)
   (declare (indent defun))
   `(use-package general
