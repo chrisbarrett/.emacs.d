@@ -23,6 +23,7 @@
 
 
 (defun cb-append-faces (&rest specs)
+  "Smash SPECS together."
   `((t ,@(ht-to-plist (seq-reduce (pcase-lambda (acc `((,_pred . ,attrs)))
                                     (ht-merge acc (ht-from-plist attrs)))
                                   specs
@@ -152,6 +153,7 @@
       'light)))
 
 (defun cb-themeing-macos ()
+  "Select a theme setting depending on the current OS theme."
   (with-temp-buffer
     (ignore-errors
       (call-process "defaults" nil t nil
@@ -161,10 +163,12 @@
       'light)))
 
 (cl-defun cb-theme-for-system-type (&key light dark)
-  (let ((theme
-         (pcase system-type
-           ('gnu/linux (cb-themeing-gtk))
-           ('darwin (cb-themeing-macos)))))
+  "Return either LIGHT or DARK value depending on current OS theme."
+  (let ((theme (pcase system-type
+                 ('gnu/linux
+                  (cb-themeing-gtk))
+                 ('darwin
+                  (cb-themeing-macos)))))
     (if (equal 'dark theme)
         dark
       light)))
@@ -197,6 +201,26 @@
 
 (setq-default header-line-format cb-theme-mode-or-header-line-format)
 (setq-default mode-line-format nil)
+
+(use-package minions
+  :demand t
+  :custom
+  (minions-mode-line-lighter "...")
+  (minions-direct '(auto-revert-mode git-auto-commit-mode flymake-mode))
+  :preface
+  (define-minor-mode minions-header-line-mode
+    "Change the display of minor modes in the header line."
+    :group 'cb-theme
+    :global t
+    (if minions-header-line-mode
+        (setq-default header-line-format
+                      (cl-subst 'minions-mode-line-modes
+                                'mode-line-modes
+                                (default-value 'header-line-format)
+                                :test #'equal))
+      (cl-nsubst 'mode-line-modes 'minions-mode-line-modes header-line-format)))
+  :config
+  (minions-header-line-mode +1))
 
 
 
@@ -252,6 +276,7 @@
 
 (use-package paren-face
   :hook (after-init . global-paren-face-mode)
+  :defines (paren-face-modes)
   :custom
   (paren-face-regexp (rx (any "{}();,")))
   :config
@@ -284,6 +309,55 @@
 (use-package default-text-scale
   :custom
   (default-text-scale-amount 30))
+
+(use-package highlight-thing
+  :hook (prog-mode . highlight-thing-mode)
+  :custom
+  (highlight-thing-what-thing 'symbol)
+  (highlight-thing-delay-seconds 0.1)
+  (highlight-thing-limit-to-defun nil)
+  (highlight-thing-case-sensitive-p t)
+
+  ;; Suppress highlight when hovering over certain kinds of symbols
+  :preface
+  (defun cb-face-ancestors (face)
+    "List all faces that FACE transitively inherits from."
+    (let (result)
+      (while (and face (not (equal face 'unspecified)))
+        (setq result (cons face result))
+        (setq face (face-attribute face :inherit)))
+      (nreverse result)))
+
+  (define-advice highlight-thing-should-highlight-p (:filter-return (res) highlight-only-some)
+    (when res
+      (let ((excluded-faces '(font-lock-string-face
+                              font-lock-keyword-face
+                              font-lock-comment-face
+                              font-lock-preprocessor-face
+                              font-lock-builtin-face))
+            (faces (seq-mapcat #'cb-face-ancestors (face-at-point nil t))))
+        (null (seq-intersection faces excluded-faces))))))
+
+;; Load vhl at compile-time so macro expansions are available
+(cl-eval-when (compile)
+  (require 'volatile-highlights))
+
+(use-package volatile-highlights
+  :hook
+  (prog-mode . (lambda () (require 'volatile-highlights)))
+  (text-mode . (lambda () (require 'volatile-highlights)))
+  :config
+  (volatile-highlights-mode)
+
+  ;; Evil compat
+  ;; TODO: Verify this even works.
+  (vhl/define-extension 'evil
+                        'evil-move
+                        'evil-paste-after
+                        'evil-paste-before
+                        'evil-paste-pop)
+  (vhl/install-extension 'evil)
+  (vhl/load-extension 'evil))
 
 (use-package ligature
   :hook (after-init . global-ligature-mode)
