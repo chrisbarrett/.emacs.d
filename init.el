@@ -67,6 +67,14 @@
     "M-SPC" 'cycle-spacing
     "C-c e e" 'toggle-debug-on-error
     "C-c e q" 'toggle-debug-on-quit)
+
+  (general-def :keymaps '(minibuffer-local-map
+                          minibuffer-local-ns-map
+                          minibuffer-local-completion-map
+                          minibuffer-local-must-match-map
+                          minibuffer-local-isearch-map)
+    "<escape>" 'keyboard-escape-quit)
+
   (general-unbind
     "<f2>" ; 2-window scrolling
     "S-<f2>" ; 2-window scrolling
