@@ -25,8 +25,9 @@
 USE-PACKAGE-ARGS are optional additional arguments forwarded to
 `use-package'."
   (declare (indent 1))
-  (cl-assert (file-exists-p (expand-file-name (format "./config/%s.el" feature)
-                                              user-emacs-directory)))
+  (let ((file (expand-file-name (format "./config/%s.el" feature)
+                                user-emacs-directory)))
+    (cl-assert (file-exists-p file) t))
   `(use-package ,feature
      :load-path "./config/" :demand t ,@use-package-args))
 
