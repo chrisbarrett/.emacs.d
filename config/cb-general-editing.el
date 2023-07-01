@@ -230,8 +230,8 @@
   :general
   ("C-x t" 'undo-tree-visualize)
   (:states 'normal :keymaps 'org-mode-map
-   "C-r" 'undo-tree-redo
-   "u" 'undo-tree-undo))
+           "C-r" 'undo-tree-redo
+           "u" 'undo-tree-undo))
 
 (use-package format-all
   :hook
@@ -299,6 +299,34 @@
   :config
   (dolist (mode '(org-agenda-mode magit-status-mode))
     (add-to-list 'bufler-filter-buffer-modes mode)))
+
+(use-package project
+  :preface
+  (autoload 'magit-git-repo-p "magit-git")
+  (autoload 'magit-status "magit-status")
+
+  (defun cb-project-switch ()
+    (interactive)
+    (let ((dir (project-root (project-current t))))
+      (if (magit-git-repo-p dir)
+          (magit-status dir)
+        (dired dir))))
+  :custom
+  (project-vc-extra-root-markers '("Cargo.toml"
+                                   "package.json"
+                                   "flake.nix"
+                                   "shell.nix"))
+  (project-switch-commands 'cb-project-switch)
+  (project-vc-ignores '(".direnv"
+                        "cdk.out"
+                        "node_modules"
+                        "*.elc"
+                        "*.eln"
+                        "*.gz"
+                        "*.meta"
+                        "*.tar"
+                        "*.tgz"
+                        "*.zip")))
 
 
 
