@@ -198,6 +198,12 @@ Expected to be set via directory variable."
   (save-excursion
     (search-backward-regexp (rx bol (* space) symbol-start "describe" symbol-end) nil t)))
 
+;; csharp
+
+(defun cb-csharp-expression-context-p (regexp)
+  (thing-at-point-looking-at (rx-to-string `(and (or "=>"
+                                                     (any ",;()=:"))
+                                                 (* space) (regexp ,regexp) (* space)))))
 
 (provide 'cb-snippets)
 
