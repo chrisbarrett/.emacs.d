@@ -50,7 +50,12 @@ USE-PACKAGE-ARGS are optional additional arguments forwarded to
 
 (use-config cb-startup-profiling-and-debugging)
 (use-config cb-gc-tuning)
-(use-config cb-autoloads)
+
+(use-config cb-autoloads
+  :config
+  (with-no-warnings
+    (cb-autoloads-build-and-load))
+  (use-package autoloads :demand t))
 
 (use-package server
   :if (not noninteractive)
