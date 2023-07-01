@@ -281,6 +281,10 @@
               "PATCH"
               "NOTE"))))
 
+(use-package default-text-scale
+  :custom
+  (default-text-scale-amount 30))
+
 (provide 'cb-theme)
 
 ;;; cb-theme.el ends here
