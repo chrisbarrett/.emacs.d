@@ -61,7 +61,7 @@ current window."
                   (f-same-p default-directory org-directory))
               'org-roam-consult)
             :wk "search...")
-  ":" '(eval-expression-interactively :wk "eval")
+  ":" '(better-eval-expression :wk "eval")
   ";" '(ielm :wk "Lisp REPL")
   "<tab>" '(cb-alternate-buffer :wk "other buf")
   "?" '(general-describe-keybindings :wk "show bindings")

@@ -47,8 +47,30 @@
          display-buffer-pop-up-window
          cb-window-management-fallback)))
 
-(defun cb-window-management-set (regexp-or-predicate actions)
+(defun cb-display-buffer-set (regexp-or-predicate actions)
   (setf (alist-get regexp-or-predicate display-buffer-alist nil nil #'equal) actions))
+
+
+
+(use-package rotate
+  :commands (rotate-layout))
+
+(use-package winner
+  :general (:keymaps 'override :states '(normal insert emacs visual motion)
+                     "C-," 'winner-undo
+                     "C-."'winner-redo)
+  :hook (after-init . winner-mode)
+  :custom
+  (winner-boring-buffers '("*Completions*"
+                           "*Compile-Log*"
+                           "*inferior-lisp*"
+                           "*Fuzzy Completions*"
+                           "*Apropos*"
+                           "*Help*"
+                           "*cvs*"
+                           "*Buffer List*"
+                           "*Bufler*"
+                           "*esh command on file*")))
 
 
 
@@ -56,7 +78,7 @@
 
 ;; Compilation
 
-(cb-window-management-set (lambda (buf _)
+(cb-display-buffer-set (lambda (buf _)
                          (with-current-buffer buf
                            (derived-mode-p 'compilation-mode)))
                        '((display-buffer-in-side-window)
@@ -66,7 +88,7 @@
 
 ;; org-babel
 
-(cb-window-management-set (rx bos "*Org-Babel Error Output*" eos)
+(cb-display-buffer-set (rx bos "*Org-Babel Error Output*" eos)
                        '((display-buffer-in-side-window)
                          (side . bottom)
                          (dedicated . t)
@@ -74,7 +96,7 @@
 
 ;; Lisp debugger
 
-(cb-window-management-set (rx bos "*Backtrace*" eos)
+(cb-display-buffer-set (rx bos "*Backtrace*" eos)
                        '((display-buffer-in-direction)
                          (inhibit-same-window . t)
                          (side . bottom)
@@ -82,7 +104,7 @@
 
 ;; Flymake
 
-(cb-window-management-set (rx bos "*Flymake diagnostics ")
+(cb-display-buffer-set (rx bos "*Flymake diagnostics ")
                        '((display-buffer-in-side-window)
                          (inhibit-same-window . t)
                          (side . bottom)
@@ -90,7 +112,7 @@
 
 ;; Help
 
-(cb-window-management-set (rx bos (or "*Help*"
+(cb-display-buffer-set (rx bos (or "*Help*"
                                    "*helpful "
                                    "*eldoc*"
                                    "*xref*"))
@@ -103,7 +125,7 @@
 
 ;; ielm
 
-(cb-window-management-set (rx bos "*ielm*" eos)
+(cb-display-buffer-set (rx bos "*ielm*" eos)
                        '((display-buffer-in-direction)
                          (inhibit-same-window . t)
                          (slot . 1)
@@ -113,7 +135,7 @@
 
 ;; cider
 
-(cb-window-management-set (rx bos "*cider-repl ")
+(cb-display-buffer-set (rx bos "*cider-repl ")
                        '((display-buffer-in-direction)
                          (inhibit-same-window . t)
                          (slot . 1)
@@ -123,14 +145,14 @@
 
 ;; nix-repl
 
-(cb-window-management-set (rx bos "*Nix-REPL*" eos)
+(cb-display-buffer-set (rx bos "*Nix-REPL*" eos)
                        '((display-buffer-at-bottom)
                          (inhibit-same-window . t)
                          (window-height   . 0.4)))
 
 ;; chatgpt
 
-(cb-window-management-set (rx bos (or "*dall-e*" "*chatgpt*") eos)
+(cb-display-buffer-set (rx bos (or "*dall-e*" "*chatgpt*") eos)
                        '((display-buffer-reuse-window
                           (lambda (buffer alist)
                             (when-let* ((win (display-buffer-pop-up-window buffer alist)))
@@ -143,27 +165,27 @@
 (defconst config-org-roam-side-window-default-width 55)
 (defconst config-org-roam-side-window-breakpoint (+ config-org-roam-side-window-default-width 80))
 
-(cb-window-management-set (rx bos "*org-roam-review*" eos)
+(cb-display-buffer-set (rx bos "*org-roam-review*" eos)
                        '(display-buffer-reuse-window
                          cb-window-management-fullframe))
 
 (cl-labels ((make-actions (&key window-height (slot 1) (side 'left))
-                          `(((lambda (buf &rest args)
-                               (funcall (if (< (frame-width) config-org-roam-side-window-breakpoint)
-                                            'display-buffer-fullframe
-                                          'display-buffer-in-side-window)
-                                        buf
-                                        (append args '((slot . ,slot)
-                                                       (side . ,side)
-                                                       (window-height . ,window-height)
-                                                       (window-width . ,config-org-roam-side-window-default-width)))))))))
-  (cb-window-management-set (rx bos "*org-roam" (any "*:")) (make-actions))
-  (cb-window-management-set (rx bos "*org-roam-links*" eos) (make-actions))
-  (cb-window-management-set (rx bos "*org-roam-search*" eos) (make-actions :slot 2 :window-height 0.7)))
+              `(((lambda (buf &rest args)
+                   (funcall (if (< (frame-width) config-org-roam-side-window-breakpoint)
+                                'display-buffer-fullframe
+                              'display-buffer-in-side-window)
+                            buf
+                            (append args '((slot . ,slot)
+                                           (side . ,side)
+                                           (window-height . ,window-height)
+                                           (window-width . ,config-org-roam-side-window-default-width)))))))))
+  (cb-display-buffer-set (rx bos "*org-roam" (any "*:")) (make-actions))
+  (cb-display-buffer-set (rx bos "*org-roam-links*" eos) (make-actions))
+  (cb-display-buffer-set (rx bos "*org-roam-search*" eos) (make-actions :slot 2 :window-height 0.7)))
 
 ;; pp
 
-(cb-window-management-set (rx bos "*Pp Eval Output*" eos)
+(cb-display-buffer-set (rx bos "*Pp Eval Output*" eos)
                        '((display-buffer-at-bottom)
                          (inhibit-same-window . t)
                          (window-height . 0.4)))
