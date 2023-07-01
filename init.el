@@ -78,7 +78,6 @@ USE-PACKAGE-ARGS are optional additional arguments forwarded to
 (use-config cb-eshell)
 (use-config cb-smartparens)
 
-(when (file-exists-p custom-file)
-  (load custom-file t t))
+(load custom-file t t)
 
 ;;; init.el ends here
