@@ -55,29 +55,6 @@ USE-PACKAGE-ARGS are optional additional arguments forwarded to
 
 (use-config cb-startup-profiling-and-debugging)
 (use-config cb-gc-tuning)
-(use-package general
-  :demand t
-  :autoload (general-unbind general-def general-define-key)
-  :config
-  (general-def
-    "M-t" 'transpose-words
-    "M-SPC" 'cycle-spacing
-    "C-c e e" 'toggle-debug-on-error
-    "C-c e q" 'toggle-debug-on-quit)
-
-  (general-def :keymaps '(minibuffer-local-map
-                          minibuffer-local-ns-map
-                          minibuffer-local-completion-map
-                          minibuffer-local-must-match-map
-                          minibuffer-local-isearch-map)
-    "<escape>" 'keyboard-escape-quit)
-
-  (general-unbind
-    "<f2>" ; 2-window scrolling
-    "S-<f2>" ; 2-window scrolling
-    "C-z" ; suspend-frame
-    "s-t" ; macOS font panel
-    ))
 (use-config cb-autoloads)
 
 (use-package server
