@@ -172,8 +172,8 @@
   :custom
   (kind-icon-use-icons nil)
   (kind-icon-default-face 'corfu-default)
+  (corfu-margin-formatters '(kind-icon-margin-formatter))
   :config
-  (add-to-list 'corfu-margin-formatters 'kind-icon-margin-formatter)
   (add-hook 'after-load-theme-functions (lambda (_)
                                           (kind-icon-reset-cache))))
 
