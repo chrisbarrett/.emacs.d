@@ -1,12 +1,6 @@
 ;;; init.el --- User init file for Emacs  -*- lexical-binding: t; -*-
-
 ;;; Commentary:
-
 ;;; Code:
-
-(defvar org-roam-index-node-id)
-
-
 
 ;;; Configure load-path
 
