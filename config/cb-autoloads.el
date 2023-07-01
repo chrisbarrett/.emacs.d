@@ -65,6 +65,8 @@
         (save-buffer))))
   (load cb-autoloads-file t))
 
+(cb-autoloads-build-and-load)
+
 (provide 'cb-autoloads)
 
 ;;; cb-autoloads.el ends here

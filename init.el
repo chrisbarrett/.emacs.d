@@ -57,10 +57,6 @@ USE-PACKAGE-ARGS are optional additional arguments forwarded to
 
 (use-config cb-gc-tuning)
 
-(use-config cb-autoloads
-  :autoload (cb-autoloads-build-and-load)
-  :config (cb-autoloads-build-and-load))
-
 (use-package general
   :demand t
   :autoload (general-unbind general-def general-define-key)
@@ -84,6 +80,7 @@ USE-PACKAGE-ARGS are optional additional arguments forwarded to
     "C-z" ; suspend-frame
     "s-t" ; macOS font panel
     ))
+(use-config cb-autoloads)
 
 (use-package server
   :if (not noninteractive)
