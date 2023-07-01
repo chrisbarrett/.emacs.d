@@ -84,6 +84,7 @@ USE-PACKAGE-ARGS are optional additional arguments forwarded to
 (use-config cb-git)
 (use-config cb-lang-elisp)
 (use-config cb-lang-typescript)
+(use-config cb-lang-rust)
 
 (load custom-file t t)
 
