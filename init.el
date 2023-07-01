@@ -78,6 +78,7 @@ USE-PACKAGE-ARGS are optional additional arguments forwarded to
 (use-config cb-dired)
 (use-config cb-git)
 (use-config cb-lang-elisp)
+(use-config cb-lang-typescript)
 
 (load custom-file t t)
 
