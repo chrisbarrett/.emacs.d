@@ -293,6 +293,13 @@
 (use-package string-inflection
   :general ("M-s" 'string-inflection-all-cycle))
 
+(use-package bufler
+  :general
+  ([remap list-buffers] 'bufler-list)
+  :config
+  (dolist (mode '(org-agenda-mode magit-status-mode))
+    (add-to-list 'bufler-filter-buffer-modes mode)))
+
 
 
 ;; Use control key to transpose lines up and down.
