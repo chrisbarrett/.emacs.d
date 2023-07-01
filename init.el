@@ -83,6 +83,7 @@ USE-PACKAGE-ARGS are optional additional arguments forwarded to
 (use-config cb-dired)
 (use-config cb-git)
 (use-config cb-langs)
+(use-config cb-lang-clojure)
 (use-config cb-lang-elisp)
 (use-config cb-lang-latex)
 (use-config cb-lang-markdown)
