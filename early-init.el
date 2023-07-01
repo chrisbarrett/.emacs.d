@@ -189,8 +189,8 @@
 ;; Harden network settings.
 (with-eval-after-load 'nsm
   (with-no-warnings
-   (setq network-security-level 'high)
-   (setq nsm-noninteractive t)))
+    (setq network-security-level 'high)
+    (setq nsm-noninteractive t)))
 
 ;; Disable warnings from obsolete advice system. These are caused by packages
 ;; and are generally not actionable by me.
