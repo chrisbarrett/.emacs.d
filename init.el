@@ -63,6 +63,9 @@ USE-PACKAGE-ARGS are optional additional arguments forwarded to
   :config
   (server-start))
 
+(use-package delight :demand t)
+(use-package general :demand t)
+
 (use-config cb-theme)
 (use-config cb-completion)
 (use-config cb-window-management)
