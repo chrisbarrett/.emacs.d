@@ -248,6 +248,29 @@
   :init
   (add-hook 'emojify-mode-hook #'cb-emojify-modify-emojis))
 
+(use-package editorconfig
+  :hook (after-init . editorconfig-mode)
+  :init
+  (define-advice editorconfig--advice-insert-file-contents (:around (fn &rest args) handle-errors)
+    (condition-case err
+        (apply fn args)
+      (file-missing
+       nil)
+      (error
+       (throw (car err) (cdr err))))))
+
+(use-package envrc
+  :hook (after-init . envrc-global-mode))
+
+(use-package rainbow-mode
+  :hook
+  (help-mode . rainbow-mode)
+  (emacs-lisp-mode . rainbow-mode)
+  (css-mode . rainbow-mode))
+
+(use-package string-inflection
+  :general ("M-s" 'string-inflection-all-cycle))
+
 
 
 ;; Use control key to transpose lines up and down.
