@@ -84,10 +84,10 @@ USE-PACKAGE-ARGS are optional additional arguments forwarded to
 (use-config cb-git)
 (use-config cb-langs)
 (use-config cb-lang-elisp)
-(use-config cb-lang-typescript)
-(use-config cb-lang-rust)
-(use-config cb-lang-markdown)
 (use-config cb-lang-latex)
+(use-config cb-lang-markdown)
+(use-config cb-lang-rust)
+(use-config cb-lang-typescript)
 
 (load custom-file t t)
 
