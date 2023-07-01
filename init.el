@@ -54,9 +54,7 @@ USE-PACKAGE-ARGS are optional additional arguments forwarded to
   :config (no-littering-theme-backups))
 
 (use-config cb-startup-profiling-and-debugging)
-
 (use-config cb-gc-tuning)
-
 (use-package general
   :demand t
   :autoload (general-unbind general-def general-define-key)
@@ -89,31 +87,18 @@ USE-PACKAGE-ARGS are optional additional arguments forwarded to
   (server-start))
 
 (use-config cb-theme)
-
 (use-config cb-completion)
-
 (use-config cb-window-management)
-
 (use-config cb-input)
-
 (use-config cb-general-editing)
-
 (use-config cb-help-systems)
-
 (use-config cb-search)
-
 (use-config cb-snippets)
-
 (use-config cb-media)
-
 (use-config cb-evil)
-
 (use-config cb-leader)
-
 (use-config cb-ide)
-
 (use-config cb-eshell)
-
 (use-config cb-smartparens)
 
 (when (file-exists-p custom-file)
