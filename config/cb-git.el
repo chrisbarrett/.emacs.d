@@ -2,6 +2,8 @@
 ;;; Commentary:
 ;;; Code:
 
+(require 'autoloads)
+
 (use-package magit
   :general
   (:keymaps 'transient-base-map

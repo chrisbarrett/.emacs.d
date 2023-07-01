@@ -2,6 +2,9 @@
 ;;; Commentary:
 ;;; Code:
 
+(require 'autoloads)
+(require 'cb-macs)
+
 (use-package dired
   :hook (dired-mode . dired-hide-details-mode)
   :custom

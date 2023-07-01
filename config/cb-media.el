@@ -2,6 +2,8 @@
 ;;; Commentary:
 ;;; Code:
 
+(require 'autoloads)
+
 (use-package pdf-tools
   :general
   (:states '(normal) :keymaps 'pdf-view-mode-map

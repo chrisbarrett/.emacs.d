@@ -2,6 +2,8 @@
 ;;; Commentary:
 ;;; Code:
 
+(require 'autoloads)
+(require 'cb-macs)
 (require 'general)
 
 (general-def
@@ -113,9 +115,6 @@
 
 (use-package hideshow
   :hook (prog-mode . hs-minor-mode)
-  :preface
-  (use-package advice-utils
-    :autoload (advice-ignore-errors))
   :config
   (advice-add 'hs-hide-all :around #'advice-ignore-errors)
   (advice-add 'hs-hide-block :around 'advice-ignore-errors)
@@ -151,7 +150,7 @@
 
   ;; Teach `ediff' how to copy contents from both buffers in a three-way merge.
 
-  :functions
+  :autoload
   (ediff-setup-windows-plain ediff-copy-diff ediff-get-region-contents)
 
   :preface
@@ -170,6 +169,8 @@
   ;; Reveal the context around the selected hunk when diffing org buffers.
 
   :preface
+  (autoload 'org-reveal "org")
+
   (defun cb--org-reveal-around-ediff-hunk (&rest _)
     (dolist (buf (list ediff-buffer-A ediff-buffer-B ediff-buffer-C))
       (when (and buf (buffer-live-p buf))
@@ -272,7 +273,7 @@
 
 (use-package editorconfig
   :hook (after-init . editorconfig-mode)
-  :init
+  :preface
   (define-advice editorconfig--advice-insert-file-contents (:around (fn &rest args) handle-errors)
     (condition-case err
         (apply fn args)

@@ -2,6 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 
+(require 'autoloads)
 (require 'cl-lib)
 
 ;; Anchor the cursor to the top or bottom of the window during scrolling, rather

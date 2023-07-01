@@ -2,6 +2,9 @@
 ;;; Commentary:
 ;;; Code:
 
+(require 'autoloads)
+(require 'cb-macs)
+
 (use-package elisp-mode
   :general
   (:keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map)

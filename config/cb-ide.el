@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 
-(require 'dash)
+(require 'autoloads)
 
 (use-package eglot
   :custom

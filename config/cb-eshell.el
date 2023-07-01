@@ -2,6 +2,9 @@
 ;;; Commentary:
 ;;; Code:
 
+(require 'autoloads)
+(require 'cl-lib)
+
 (use-package eshell
   :preface
   (defun cb-eshell-skip-prompt ()
@@ -32,8 +35,6 @@
 
 
 ;;; Custom commands
-
-(require 'cl-lib)
 
 (cl-eval-when (compile)
   (require 'project)

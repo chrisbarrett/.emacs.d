@@ -2,6 +2,8 @@
 ;;; Commentary:
 ;;; Code:
 
+(require 'autoloads)
+
 (use-package info
   :general
   (:states 'normal :keymaps 'Info-mode-map

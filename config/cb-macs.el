@@ -12,6 +12,10 @@
 
 (general-unbind :states '(normal motion) ",")
 
+(defun advice-ignore-errors (f &rest args)
+  (ignore-errors
+    (apply f args)))
+
 (provide 'cb-macs)
 
 ;;; cb-macs.el ends here

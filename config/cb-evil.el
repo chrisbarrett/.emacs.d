@@ -5,9 +5,8 @@
 ;; `evil' provides macros that I want to use in `:config' blocks, so teach the
 ;; byte-compiler about them to avoid warnings.
 
+(require 'autoloads)
 (require 'cl-lib)
-(cl-eval-when (compile)
-  (require 'evil))
 
 (use-package evil
   :hook (after-init . evil-mode)
@@ -123,9 +122,7 @@
 (use-package evil-collection
   :after evil
   :demand t
-  :autoload (evil-collection-init)
-  :config
-  (evil-collection-init))
+  :config (evil-collection-init))
 
 (use-package evil-surround
   :after evil

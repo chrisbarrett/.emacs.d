@@ -2,6 +2,10 @@
 ;;; Commentary:
 ;;; Code:
 
+(require 'autoloads)
+(require 'thingatpt)
+(require 's)
+
 (use-package autoinsert
   :preface
   (defvar auto-insert-alist nil)
@@ -131,7 +135,7 @@ Fall back to the file name sans extension."
    ((bound-and-true-p nameless-current-name)
     (format "%s-" nameless-current-name))
    (t
-    (format "%s-" (f-base (or (buffer-file-name) (buffer-name)))))))
+    (format "%s-" (file-name-base (or (buffer-file-name) (buffer-name)))))))
 
 (defun yas-funcs-buttercup-file-p ()
   (string-match-p "^test-" (file-name-nondirectory (buffer-file-name))))
@@ -178,22 +182,13 @@ Expected to be set via directory variable."
     ("lambda"
      "aws-cdk-lib/aws-lambda")
 
-    ((guard (s-contains? "{" text))
+    ((guard (string-match-p "{" text))
      "")
     (s
      (-if-let* ((match-binding (rx (* space) "*" (+ space) "as" (+ space) (group (+ (not (any space))))))
                 ((_ name) (s-match match-binding text)))
          (yas-funcs-js-module-name-for-binding name)
-       (s-downcase (s-dashed-words s))))))
-
-(defun yas-funcs-js-ctor-body (argstring)
-  (when argstring
-    (thread-last argstring
-                 (s-split (rx (or "," ".")))
-                 (-map #'s-trim)
-                 (-remove #'s-blank?)
-                 (--map (format "this.%s = %s;" it it))
-                 (s-join "\n"))))
+       (downcase (s-dashed-words s))))))
 
 (defun yas-funcs-js-buffer-imports-logger-p ()
   (let ((str (buffer-substring-no-properties (point-min) (point-max))))

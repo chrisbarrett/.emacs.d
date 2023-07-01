@@ -1,15 +1,8 @@
 ;;; cb-smartparens.el --- Configuration for smartparens.  -*- lexical-binding: t; -*-
 ;;; Commentary:
-;;; Code
+;;; Code:
 
-(require 'cl-lib)
-
-
-
-;;; Smartparens
-
-(cl-eval-when (compile)
-  (require 'smartparens))
+(require 'autoloads)
 
 (use-package smartparens
   :hook
@@ -39,12 +32,6 @@
   (sp-message-width nil)
 
   ;;; Utilities
-
-  :autoload
-  sp-pair
-  sp-local-pair sp-get-pair
-  sp--get-opening-regexp
-  sp--get-closing-regexp
 
   :preface
   (defun config-smartparens-add-space-before-sexp-insertion (id action _context)
@@ -257,6 +244,7 @@ For performance, only consider a subset of the buffer."
   :config
   (advice-remove 'python-indent-dedent-line-backspace
                  'ad-Advice-python-indent-dedent-line-backspace))
+
 (provide 'cb-smartparens)
 
 ;;; cb-smartparens.el ends here

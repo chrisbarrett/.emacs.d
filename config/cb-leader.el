@@ -2,15 +2,12 @@
 ;;; Commentary:
 ;;; Code:
 
+(require 'autoloads)
+(require 'cl-lib)
 (require 's)
 
-(require 'cl-lib)
 (cl-eval-when (compile)
   (require 'general))
-
-(use-package evil
-  :general
-  (:states '(normal motion) "SPC" nil))
 
 (use-package which-key
   :hook (after-init . which-key-mode)
@@ -29,6 +26,7 @@
                                :prefix "SPC"))))
 
 (general-unbind :keymaps 'magit-section-mode-map "SPC")
+(general-unbind :states '(normal motion) "SPC")
 
 
 

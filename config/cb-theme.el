@@ -2,12 +2,12 @@
 ;;; Commentary:
 ;;; Code:
 
+(require 'autoloads)
 (require 'cl-lib)
 (require 'ht)
 
 (use-package doom-themes
   :demand t
-  :autoload (doom-blend)
   :custom
   (doom-themes-enable-bold t)
   (doom-themes-enable-italic t))
@@ -347,17 +347,7 @@
   (prog-mode . (lambda () (require 'volatile-highlights)))
   (text-mode . (lambda () (require 'volatile-highlights)))
   :config
-  (volatile-highlights-mode)
-
-  ;; Evil compat
-  ;; TODO: Verify this even works.
-  (vhl/define-extension 'evil
-                        'evil-move
-                        'evil-paste-after
-                        'evil-paste-before
-                        'evil-paste-pop)
-  (vhl/install-extension 'evil)
-  (vhl/load-extension 'evil))
+  (volatile-highlights-mode))
 
 (use-package ligature
   :hook (after-init . global-ligature-mode)

@@ -2,8 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 
-(eval-when-compile
-  (require 'no-littering))
+(require 'autoloads)
 
 (use-package recentf
   :hook (after-init . recentf-mode)
@@ -169,6 +168,7 @@
 (use-package kind-icon
   :after corfu
   :demand t
+  :autoload (kind-icon-reset-cache)
   :custom
   (kind-icon-use-icons nil)
   (kind-icon-default-face 'corfu-default)

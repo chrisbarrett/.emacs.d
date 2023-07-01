@@ -2,6 +2,8 @@
 ;;; Commentary:
 ;;; Code:
 
+(require 'autoloads)
+
 ;; Configure Emacs so that each paragraph may have a different text direction.
 (setq-default bidi-paragraph-separate-re "^")
 (setq-default bidi-paragraph-start-re "^")
