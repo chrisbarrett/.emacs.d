@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: interface
+# key: in
+# condition: (and (cb-yas-bolp) (zerop (syntax-ppss-depth (syntax-ppss))))
+# --
+interface ${1:Name}
+{
+  $0
+}

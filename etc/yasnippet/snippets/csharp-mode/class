@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: class
+# key: cl
+# condition: (and (cb-yas-bolp) (zerop (syntax-ppss-depth (syntax-ppss))))
+# --
+class ${1:Name}
+{
+  public $1($2)
+  {
+      $0
+  }
+}

@@ -1,0 +1,7 @@
+# key: st
+# name: struct
+# condition: (cb-yas-bolp)
+# --
+struct $1 {
+    $0
+}

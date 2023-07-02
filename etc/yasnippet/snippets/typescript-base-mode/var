@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: var
+# key: v
+# condition: (cb-yas-bolp)
+# --
+var $1 = $0;

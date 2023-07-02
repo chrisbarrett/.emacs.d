@@ -1,0 +1,8 @@
+# key: el
+# name: src elisp
+# condition: (cb-yas-bolp)
+# expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 't))
+# --
+#+begin_src emacs-lisp
+  $0
+#+end_src

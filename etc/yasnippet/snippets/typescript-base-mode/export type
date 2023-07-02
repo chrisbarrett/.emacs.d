@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: export type
+# key: et
+# --
+export type ${TyId} = $0;

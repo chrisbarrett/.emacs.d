@@ -1,0 +1,8 @@
+# key: ie
+# name: if-else
+# condition: (cb-yas-bolp)
+# --
+if ${1:pred} {
+  $0
+} else {
+}

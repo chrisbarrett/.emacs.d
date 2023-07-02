@@ -1,0 +1,7 @@
+# key: for
+# name: for
+# condition: (cb-yas-bolp)
+# --
+for $1 in $2 {
+    $0
+}

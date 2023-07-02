@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: try-catch
+# key: try
+# condition: (cb-yas-bolp)
+# --
+try {
+  $0
+}
+catch(e) {
+
+}

@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: references dblock
+# key: ref
+# condition: (cb-yas-bolp)
+# --
+#+BEGIN: backlinks :tags litnotes :only-missing t
+
+#+END:

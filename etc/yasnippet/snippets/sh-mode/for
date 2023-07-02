@@ -1,0 +1,9 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: for
+# key: for
+# binding: direct-keybinding
+# condition: (cb-yas-bolp)
+# --
+for ${1:VAR} in ${2:str}; do
+    $0
+done

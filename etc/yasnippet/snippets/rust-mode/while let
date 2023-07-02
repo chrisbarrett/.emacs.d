@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: while let
+# key: wl
+# condition: (cb-yas-bolp)
+# --
+while let ${1:binding} = ${2:value} {
+    $0
+}

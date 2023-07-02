@@ -1,0 +1,7 @@
+# key: aa
+# name: afterAll
+# condition: (and (cb-yas-bolp) (yas-funcs-js-inside-describe-p))
+# --
+afterAll(async () => {
+  $0
+});

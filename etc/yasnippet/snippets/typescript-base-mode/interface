@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: interface
+# key: in
+# condition: (cb-yas-bolp)
+# --
+interface ${Name} {
+  $0
+}

@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: struct
+# key: st
+# condition: (cb-yas-bolp)
+# --
+struct ${1:Name} {
+    $0
+}

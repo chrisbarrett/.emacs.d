@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: try-catch
+# key: try
+# condition: (and (cb-yas-bolp) (cl-plusp (syntax-ppss-depth (syntax-ppss))))
+# --
+try
+{
+    $0
+}
+catch (Exception ex)
+{
+}

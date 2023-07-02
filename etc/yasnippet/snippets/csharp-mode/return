@@ -1,0 +1,5 @@
+# key: r
+# name: return
+# condition: (and (cb-yas-bolp) (cl-plusp (syntax-ppss-depth (syntax-ppss))))
+# --
+return $0;

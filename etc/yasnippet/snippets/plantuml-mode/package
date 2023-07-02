@@ -1,0 +1,7 @@
+# key: p
+# name: package
+# condition: (cb-yas-bolp)
+# --
+package "${1:name}" {
+  $0
+}

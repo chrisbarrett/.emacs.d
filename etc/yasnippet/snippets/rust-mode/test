@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: test
+# key: test
+# condition: (cb-yas-bolp)
+# --
+#[test]
+fn test_$1() {
+    $0
+}

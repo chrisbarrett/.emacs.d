@@ -1,0 +1,13 @@
+# -*- mode: snippet -*-
+# name: transclude (incl heading)
+# key: tt
+# condition: (cb-yas-bolp)
+# type: command
+# --
+(let ((link (org-funcs-read-roam-node-link))
+      ;; NB construct stars in headline manually so transclusions work
+      (stars (make-string (or (org-current-level) 1) ?*)))
+  (delete-horizontal-space)
+  (insert (concat stars  " " link "\n"
+                  "#+transclude: " link " :only-contents :exclude-elements \"section\""))
+  (org-transclusion-add)))

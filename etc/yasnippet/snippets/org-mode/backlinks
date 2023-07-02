@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: backlinks
+# key: bl
+# condition: (cb-yas-bolp)
+# --
+#+BEGIN: backlinks :only-missing t
+#+END:

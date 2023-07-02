@@ -1,0 +1,7 @@
+# key: sub
+# name: sub
+# condition: (cb-yas-bolp)
+# --
+!startsub ${1:NAME}
+  $0
+!endsub

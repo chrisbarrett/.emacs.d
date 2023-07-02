@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: case
+# key: ca
+# condition: (cb-yas-bolp)
+# --
+case ${1:pred} {
+  (${2:pattern})
+    $0
+    ;;
+  (*)
+    ;;
+}

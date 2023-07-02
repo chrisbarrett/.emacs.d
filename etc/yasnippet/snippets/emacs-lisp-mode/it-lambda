@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: it-lambda
+# key: it
+# --
+(lambda (it) $0)

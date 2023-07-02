@@ -1,0 +1,6 @@
+# key: topic
+# name: topics
+# condition: (cb-yas-bolp)
+# --
+#+BEGIN: notes :match (rx bol "${1:`(or (-some->> (org-roam-node-at-point) (org-roam-node-title)) "Topic")`}: " (group (+ nonl))) :only-missing t
+#+END:

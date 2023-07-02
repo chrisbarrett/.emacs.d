@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: mkDerivation
+# key: d
+# condition: (cb-yas-bolp)
+# --
+{ stdenv }:
+
+stdenv.mkDerivation rec {
+  name = "$0-\${version}";
+  version = "";
+}

@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: public
+# key: p
+# condition: (cb-yas-bolp)
+# type: command
+# --
+(insert "public")
+(just-one-space)

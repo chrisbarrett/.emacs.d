@@ -1,0 +1,5 @@
+# key: dec
+# name: decorator
+# condition: (cb-yas-bolp)
+# --
+@${1:Name}($2)

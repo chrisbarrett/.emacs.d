@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: enum
+# key: e
+# condition: (and (cb-yas-bolp) (zerop (syntax-ppss-depth (syntax-ppss))))
+# --
+enum ${1:Name} {
+    case $0
+}

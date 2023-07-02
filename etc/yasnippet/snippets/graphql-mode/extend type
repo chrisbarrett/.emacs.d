@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: extend type
+# key: et
+# condition: (cb-yas-bolp)
+# --
+extend type ${1:Name} {
+  $0
+}

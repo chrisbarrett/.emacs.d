@@ -1,0 +1,4 @@
+# -*- mode: snippet -*-
+# name: git root
+# --
+GIT_ROOT=$(git rev-parse --show-toplevel)

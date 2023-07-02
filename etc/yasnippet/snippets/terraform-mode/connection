@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: connection
+# key: c
+# condition: (cb-yas-bolp)
+# --
+connection {
+  type = "ssh"
+  user = "ec2-user"
+  private_key = file("TODO")
+  host = self.public_ip
+}

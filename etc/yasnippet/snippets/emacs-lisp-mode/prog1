@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: prog1
+# key: p1
+# --
+(prog1 $0)

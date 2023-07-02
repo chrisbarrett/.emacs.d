@@ -1,0 +1,7 @@
+# key: aa
+# name: afterEach
+# condition: (and (cb-yas-bolp) (yas-funcs-js-inside-describe-p))
+# --
+afterEach(async () => {
+  $0
+});

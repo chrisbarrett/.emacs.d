@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: function
+# key: f
+# condition: (cb-yas-bolp)
+# --
+${1:TReturn} ${2:Name}(${3:args...}) => $0;

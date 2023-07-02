@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: frag
+# key: frag
+# --
+#+attr_reveal: :frag `(cb-org:reveal-read-frag-style)`

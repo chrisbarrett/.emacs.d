@@ -1,0 +1,9 @@
+# key: zo
+# name: zod object
+# condition: (cb-yas-bolp)
+# --
+export const ${1:name} = z.object({
+  $0
+});
+
+export type $1 = z.infer<typeof $1>;

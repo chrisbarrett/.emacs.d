@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: for-await
+# key: fa
+# condition: (cb-yas-bolp)
+# --
+for await (const ${1:x} of ${2:xs}) {
+  $0
+}

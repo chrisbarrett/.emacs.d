@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: define
+# key: d
+# condition: (cb-yas-bolp)
+# --
+define ${1:name}
+$0
+endef

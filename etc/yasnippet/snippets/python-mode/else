@@ -1,0 +1,6 @@
+# key: e
+# name: else
+# condition: (cb-yas-bolp)
+# --
+else:
+    $0

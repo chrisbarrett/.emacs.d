@@ -1,0 +1,8 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: custom-set-variables
+# key: csv
+# binding: direct-keybinding
+# condition: (cb-yas-bolp)
+# --
+(custom-set-variables
+  '($0))

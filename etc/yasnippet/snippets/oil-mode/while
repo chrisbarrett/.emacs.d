@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: while
+# key: wh
+# condition: (cb-yas-bolp)
+# --
+while ${1:pred} {
+  $0
+}

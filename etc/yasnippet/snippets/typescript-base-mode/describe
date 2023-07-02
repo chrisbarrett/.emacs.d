@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: describe
+# key: ds
+# condition: (cb-yas-bolp)
+# --
+describe('${1:feature}', () => {
+  $0
+});

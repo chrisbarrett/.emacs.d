@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: eprintln
+# key: ep
+# condition: (cb-yas-bolp)
+# --
+eprintln!("$0");

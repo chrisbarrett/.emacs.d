@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: type
+# key: t
+# condition: (cb-yas-bolp)
+# --
+type $1 = $0;

@@ -1,0 +1,5 @@
+# key: a
+# name: await
+# condition: (or (cb-yas-bolp) (cb-csharp-expression-context-p a))
+# --
+await $0;

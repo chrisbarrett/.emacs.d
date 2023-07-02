@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: describe
+# key: ds
+# condition: (and (cb-yas-bolp) (yas-funcs-buttercup-file-p))
+# --
+(describe "$1"
+  $0)

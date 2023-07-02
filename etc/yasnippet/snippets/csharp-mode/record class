@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: record class
+# key: rc
+# condition: (and (cb-yas-bolp) (zerop (syntax-ppss-depth (syntax-ppss))))
+# --
+record ${1:Name}
+{
+  public $1($2) => $0;
+}

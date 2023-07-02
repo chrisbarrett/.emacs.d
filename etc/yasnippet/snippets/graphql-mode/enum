@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: enum
+# key: e
+# condition: (cb-yas-bolp)
+# --
+enum ${1:Name} {
+  $0
+}

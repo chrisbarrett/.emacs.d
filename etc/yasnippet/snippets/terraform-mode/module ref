@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: module ref
+# key: m
+# condition: (not (cb-yas-bolp))
+# --
+module.$0

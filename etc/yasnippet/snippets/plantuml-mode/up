@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: up
+# key: u
+# --
+${1:bottom} -up-> ${2:top}: ${3:label}

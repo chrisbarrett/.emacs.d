@@ -1,0 +1,5 @@
+# key: l
+# name: let
+# condition: (cb-yas-bolp)
+# --
+let ${1:name} = $2;

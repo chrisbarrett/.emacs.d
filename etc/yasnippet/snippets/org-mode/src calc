@@ -1,0 +1,8 @@
+# key: calc
+# name: src calc
+# condition: (cb-yas-bolp)
+# expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 't))
+# --
+#+begin_src calc
+  $0
+#+end_src

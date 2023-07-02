@@ -1,0 +1,11 @@
+# key: cl
+# name: class
+# condition: (cb-yas-bolp)
+# --
+class ${1:Name} {
+    $0
+
+    init() {
+
+    }
+}

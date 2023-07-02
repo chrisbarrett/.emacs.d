@@ -1,0 +1,5 @@
+# key: todo
+# name: it.todo
+# condition: (and (cb-yas-bolp) (yas-funcs-js-inside-describe-p))
+# --
+it.todo('$0');

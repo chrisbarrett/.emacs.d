@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: provisioner (remote)
+# key: pr
+# condition: (cb-yas-bolp)
+# --
+provisioner "remote-exec" {
+  inline = [
+    "$0"
+  ]
+}

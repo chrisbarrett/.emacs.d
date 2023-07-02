@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: pcase-exhaustive
+# key: pe
+# --
+(pcase-exhaustive ${1:form}
+  ($0))

@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: beforeAll
+# key: ba
+# condition: (and (cb-yas-bolp) (yas-funcs-js-inside-describe-p))
+# --
+beforeAll(async () => {
+  $0
+});

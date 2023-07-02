@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: defalias
+# key: da
+# condition: (cb-yas-bolp)
+# --
+(defalias '${1:new} #'${2:old})

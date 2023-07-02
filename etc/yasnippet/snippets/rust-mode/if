@@ -1,0 +1,7 @@
+# key: i
+# name: if
+# condition: (cb-yas-bolp)
+# --
+if ${1:pred} {
+  $0
+}

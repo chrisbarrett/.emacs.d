@@ -1,0 +1,6 @@
+# key: <q
+# name: begin_quote
+# --
+#+begin_quote
+$0
+#+end_quote

@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: for-loop
+# key: for
+# condition: (cb-yas-bolp)
+# --
+for (int i = ${1:start}; i < ${2:limit}; i++)
+{
+    $0
+}

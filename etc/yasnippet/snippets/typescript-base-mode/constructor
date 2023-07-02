@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: constructor
+# key: ctor
+# condition: (cb-yas-bolp)
+# --
+constructor($1) {
+  $0
+}

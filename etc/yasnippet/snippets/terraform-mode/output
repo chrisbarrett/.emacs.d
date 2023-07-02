@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: output
+# key: o
+# condition: (cb-yas-bolp)
+# --
+output "${1:name}" {
+  value = $0
+  # description = ""
+  # sensitive = true
+}

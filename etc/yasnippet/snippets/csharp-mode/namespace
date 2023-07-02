@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: namespace
+# key: ns
+# condition: (and (cb-yas-bolp) (zerop (syntax-ppss-depth (syntax-ppss))))
+# --
+namespace $0;

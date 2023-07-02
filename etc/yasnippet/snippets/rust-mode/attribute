@@ -1,0 +1,5 @@
+# key: a
+# name: attribute
+# condition: (cb-yas-bolp)
+# --
+#[$1]

@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: println
+# key: p
+# condition: (cb-yas-bolp)
+# --
+(println $0)

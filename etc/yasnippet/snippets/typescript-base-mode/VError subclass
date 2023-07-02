@@ -1,0 +1,7 @@
+# key: verr
+# name: VError subclass
+# condition: (cb-yas-bolp)
+# --
+export class ${1:Name} extends VError {
+  override readonly name = '$1';
+}

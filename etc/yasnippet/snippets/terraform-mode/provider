@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: provider
+# key: p
+# condition: (cb-yas-bolp)
+# --
+provider "${1:name}" {
+  $0
+}

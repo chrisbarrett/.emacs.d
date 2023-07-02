@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: ifeq
+# key: i
+# --
+ifeq (${1:left},${2:right})
+  $0
+else
+
+endif

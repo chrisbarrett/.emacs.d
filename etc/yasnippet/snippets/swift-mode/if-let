@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: if-let
+# key: il
+# condition: (cb-yas-bolp)
+# --
+if let ${1:ident} = ${2:value} {
+    $0
+}

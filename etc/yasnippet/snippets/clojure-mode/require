@@ -1,0 +1,5 @@
+# key: r
+# name: require
+# condition: (cb-yas-bolp)
+# --
+(require '$0)

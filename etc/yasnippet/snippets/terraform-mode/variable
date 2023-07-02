@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: variable
+# key: v
+# condition: (cb-yas-bolp)
+# --
+variable "${1:name}" {
+  type = $0
+  # default =
+  # description =
+  # validation { condition =   error_message = "" }
+}

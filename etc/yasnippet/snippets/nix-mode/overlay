@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: overlay
+# key: ov
+# condition: (cb-yas-bolp)
+# --
+self: super: {
+  ${1:pkgs} = super.pkgs.${1}.overrideAttrs (old: rec {
+    $0
+  });
+}

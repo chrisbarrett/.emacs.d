@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: export enum
+# key: ee
+# condition: (cb-yas-bolp)
+# --
+export enum ${1:Name} {
+  $0
+}

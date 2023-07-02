@@ -1,0 +1,6 @@
+# key: dd
+# name: defn
+# condition: (cb-yas-bolp)
+# --
+(defn ${1:name} [${2:arglist}]
+  $0)

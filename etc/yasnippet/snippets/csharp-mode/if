@@ -1,0 +1,8 @@
+# key: i
+# name: if
+# condition: (and (cb-yas-bolp) (cl-plusp (syntax-ppss-depth (syntax-ppss))))
+# --
+if ($1)
+{
+    $0
+}

@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: data ref
+# key: d
+# condition: (not (cb-yas-bolp))
+# --
+data.${1:type}.$0

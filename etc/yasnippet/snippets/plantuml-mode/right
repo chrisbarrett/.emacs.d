@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: right
+# key: r
+# condition: (cb-yas-bolp)
+# --
+${1:left} -right-> ${2:right}: ${3:label}

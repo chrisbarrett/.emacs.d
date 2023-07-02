@@ -1,0 +1,6 @@
+# key: dm
+# name: defmacro
+# condition: (cb-yas-bolp)
+# --
+(defmacro `(yas-funcs-el-package-prefix)`${1:name} ($2)
+  $0)

@@ -1,0 +1,8 @@
+# key: http
+# name: src http
+# condition: (cb-yas-bolp)
+# expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 't))
+# --
+#+begin_src http
+  GET https://$0
+#+end_src

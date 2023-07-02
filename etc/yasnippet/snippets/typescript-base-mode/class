@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: class
+# key: cl
+# condition: (cb-yas-bolp)
+# --
+class ${1:Name} {
+  $0
+}

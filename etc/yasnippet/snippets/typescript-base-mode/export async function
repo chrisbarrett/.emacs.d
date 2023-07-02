@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: export async function
+# key: eaf
+# condition: (cb-yas-bolp)
+# --
+export async function ${1:name}($2) {
+  $0
+}

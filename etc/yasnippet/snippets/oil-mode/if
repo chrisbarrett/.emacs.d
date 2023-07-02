@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: if
+# key: i
+# condition: (cb-yas-bolp)
+# --
+if ${1:pred} {
+  $0
+}

@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: data decl
+# key: d
+# condition: (cb-yas-bolp)
+# --
+data "${1:source}" "${2:name}" {
+  $0
+}

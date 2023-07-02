@@ -1,0 +1,7 @@
+# key: f
+# name: fn
+# condition: (cb-yas-bolp)
+# --
+fn ${1:name}(${2:params...}) ${3:-> ${4:T} }{
+  $0
+}

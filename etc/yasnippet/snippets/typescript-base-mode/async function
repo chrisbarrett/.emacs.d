@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: async function
+# key: af
+# condition: (cb-yas-bolp)
+# --
+async function ${1:name}($2): Promise<void> {
+  $0
+}

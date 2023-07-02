@@ -1,0 +1,5 @@
+# key: info
+# name: logger.info
+# condition: (and (cb-yas-bolp) (yas-funcs-js-buffer-imports-logger-p))
+# --
+logger.info({ message: '$0' });

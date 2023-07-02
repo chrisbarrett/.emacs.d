@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: item-example
+# key: e
+# condition: (cb-yas-line-rx-p bol (* space) "-" (* space) "e" (* space) eol)
+# --
+`(just-one-space)`${1:Example}:
+    #+begin_example ${2:lang}
+      $0
+    #+end_quote

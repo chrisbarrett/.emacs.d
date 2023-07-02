@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: set -e -o pipefail
+# key: set
+# condition: (cb-yas-bolp)
+# --
+set -e -o pipefail

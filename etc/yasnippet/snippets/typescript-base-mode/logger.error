@@ -1,0 +1,5 @@
+# key: err
+# name: logger.error
+# condition: (and (cb-yas-bolp) (yas-funcs-js-buffer-imports-logger-p))
+# --
+logger.error({ message: '$0' });

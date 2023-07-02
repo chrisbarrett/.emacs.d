@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: script directory variable
+# key: dir
+# --
+# shellcheck disable=SC2039
+DIR="\$( cd "\$( dirname "\${BASH_SOURCE[0]}" )" && pwd )"

@@ -1,0 +1,8 @@
+# key: u
+# name: using statement
+# condition: (and (cb-yas-bolp) (cl-plusp (syntax-ppss-depth (syntax-ppss))))
+# --
+using ($1)
+{
+  $0
+}

@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: else
+# key: e
+# condition: (and (cb-yas-bolp) (cl-plusp (syntax-ppss-depth (syntax-ppss))))
+# --
+else
+{
+  $0
+}

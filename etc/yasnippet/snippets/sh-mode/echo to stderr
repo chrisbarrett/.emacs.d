@@ -1,0 +1,5 @@
+# key: err
+# name: echo to stderr
+# condition: (cb-yas-bolp)
+# --
+>&2 echo "$0"

@@ -1,0 +1,5 @@
+# key: v
+# name: defvar
+# condition: (cb-yas-bolp)
+# --
+(defvar `(yas-funcs-el-package-prefix)`-$0)
