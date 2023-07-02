@@ -92,6 +92,7 @@ USE-PACKAGE-ARGS are optional additional arguments forwarded to
 (use-config cb-lang-rust)
 (use-config cb-lang-typescript)
 (use-config cb-org)
+(use-config cb-org-roam)
 
 (load (expand-file-name "lisp/init.el" org-directory) t t)
 (load custom-file t t)
