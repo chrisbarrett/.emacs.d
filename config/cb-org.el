@@ -4,6 +4,7 @@
 
 (require 'autoloads)
 (require 'cb-macs)
+(require 'cb-parameters)
 (require 'f)
 
 (cl-eval-when (compile)

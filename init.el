@@ -48,6 +48,7 @@ USE-PACKAGE-ARGS are optional additional arguments forwarded to
   :autoload (no-littering-theme-backups)
   :config (no-littering-theme-backups))
 
+(use-config cb-parameters)
 (use-config cb-startup-profiling-and-debugging)
 (use-config cb-gc-tuning)
 
@@ -65,8 +66,6 @@ USE-PACKAGE-ARGS are optional additional arguments forwarded to
 
 (use-package delight :demand t)
 (use-package general :demand t)
-
-(defconst org-directory "~/org")
 
 (use-config cb-theme)
 (use-config cb-completion)

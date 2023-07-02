@@ -4,6 +4,7 @@
 
 (require 'autoloads)
 (require 'cl-lib)
+(require 'cb-parameters)
 (require 's)
 
 (cl-eval-when (compile)
@@ -464,11 +465,6 @@ With prefix argument ARG, prompt for a file."
 
 (cl-eval-when (compile)
   (require 'org-roam))
-
-(defcustom org-roam-index-node-id nil
-  "ID for the main slipbox index."
-  :group 'cb-leader
-  :type 'string)
 
 (defun cb-jump-to-index-file ()
   "Jump to the slipbox index file."
