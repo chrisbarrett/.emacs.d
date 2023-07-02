@@ -618,6 +618,12 @@
                         textobjects
                         todo)))
 
+(use-package evil-org-agenda
+  :after org-agenda
+  :demand t
+  :autoload (evil-org-agenda-set-keys)
+  :config (evil-org-agenda-set-keys))
+
 (use-package org-superstar
   :preface
   (defun cb-set-superstar-mode ()
