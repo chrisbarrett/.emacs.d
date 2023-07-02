@@ -133,8 +133,15 @@
   :demand t
   :config
   (global-evil-surround-mode +1)
+  :preface
+  (defun cb-evil-surround-backtick ()
+    (cons "`"
+          (if (derived-mode-p 'emacs-lisp-mode)
+              "'"
+            "`")))
   :custom
-  (evil-surround-pairs-alist '((?\( . ("(" . ")"))
+  (evil-surround-pairs-alist '((?` . cb-evil-surround-backtick)
+                               (?\( . ("(" . ")"))
                                (?\[ . ("[" . "]"))
                                (?\{ . ("{" . "}"))
 
@@ -154,15 +161,6 @@
   (:states 'visual :keymaps 'evil-surround-mode-map
    "s" #'evil-surround-region
    "S" #'evil-substitute)
-
-  ;; Override pairs for emacs-lisp-mode.
-  :preface
-  (defun cb-elisp-evil-surround-pairs ()
-    (make-local-variable 'evil-surround-pairs-alist)
-    (push '(?\` . ("`" . "'")) evil-surround-pairs-alist))
-  :hook
-  (emacs-lisp-mode . cb-elisp-evil-surround-pairs)
-
 
   ;; Prevent evil-surround from interfering with magit hunk operations.
   :config
