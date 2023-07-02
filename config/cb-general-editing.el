@@ -217,10 +217,7 @@
   (text-mode . flyspell-mode)
   :custom
   (flyspell-issue-welcome-flag nil)
-  (flyspell-default-dictionary "en_GB")
-  :config
-  (define-advice org-mode-flyspell-verify (:filter-return (result))
-    (and result (not (equal (face-at-point nil t) 'org-link)))))
+  (flyspell-default-dictionary "en_GB"))
 
 (use-package undo-tree
   :hook (after-init . global-undo-tree-mode)

@@ -89,6 +89,7 @@ USE-PACKAGE-ARGS are optional additional arguments forwarded to
 (use-config cb-lang-markdown)
 (use-config cb-lang-rust)
 (use-config cb-lang-typescript)
+(use-config cb-org)
 
 (load custom-file t t)
 

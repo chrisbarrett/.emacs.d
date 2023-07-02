@@ -101,12 +101,13 @@
   :custom
   (proof-splash-enable nil))
 
-(use-package origami
-  :hook (yaml-ts-mode)
+(use-package iscroll
+  :hook
+  (text-mode . iscroll-mode)
   :general
-  (:states 'normal :keymaps 'origami-mode-map
-   "TAB" 'origami-recursively-toggle-node
-   "S-<tab>" 'origami-toggle-all-nodes))
+  (:keymaps 'iscroll-mode-map :states 'normal
+   "j" 'iscroll-forward-line
+   "k" 'iscroll-previous-line))
 
 (use-package dumb-jump
   :config
@@ -123,6 +124,13 @@
                '(:type "scalar"
                  :supports ("ag" "grep" "rg") :language "graphql"
                  :regex "scalar\\s+JJJ\\b")))
+
+(use-package origami
+  :hook (yaml-ts-mode)
+  :general
+  (:states 'normal :keymaps 'origami-mode-map
+   "TAB" 'origami-recursively-toggle-node
+   "S-<tab>" 'origami-toggle-all-nodes))
 
 (provide 'cb-langs)
 
