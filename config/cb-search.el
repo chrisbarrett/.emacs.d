@@ -11,6 +11,21 @@
   :config
   (setq-default deadgrep--search-type 'regexp))
 
+(use-package consult
+  :custom
+  (consult-ripgrep-args '("rg"
+                          "--follow"
+                          "--null"
+                          "--line-buffered"
+                          "--color=never"
+                          "--max-columns=1000"
+                          "--path-separator /"
+                          "--smart-case"
+                          "--no-heading"
+                          "--with-filename"
+                          "--line-number"
+                          "--search-zip")))
+
 (provide 'cb-search)
 
 ;;; cb-search.el ends here
