@@ -93,6 +93,7 @@ USE-PACKAGE-ARGS are optional additional arguments forwarded to
 (use-config cb-lang-typescript)
 (use-config cb-org)
 
+(load (expand-file-name "lisp/init.el" org-directory) t t)
 (load custom-file t t)
 
 ;;; init.el ends here
