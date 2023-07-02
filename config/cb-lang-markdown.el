@@ -6,9 +6,6 @@
 (require 'cb-macs)
 
 (use-package markdown-mode
-  :hook
-  (markdown-mode . visual-line-mode)
-
   :general
   (:states 'normal :keymaps 'markdown-mode-map
    "TAB" #'markdown-cycle

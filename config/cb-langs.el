@@ -5,6 +5,10 @@
 (require 'autoloads)
 (require 'cb-macs)
 
+(use-package simple
+  :hook
+  (text-mode . visual-line-mode))
+
 (use-package conf-mode
   :mode
   ("\\.env" . conf-mode)
