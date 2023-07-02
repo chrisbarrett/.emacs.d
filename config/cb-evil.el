@@ -122,7 +122,11 @@
 (use-package evil-collection
   :after evil
   :demand t
-  :config (evil-collection-init))
+  :preface
+  (autoload 'global-evil-collection-unimpaired-mode "evil-collection-unimpaired")
+  :config
+  (evil-collection-init)
+  (global-evil-collection-unimpaired-mode +1))
 
 (use-package evil-surround
   :after evil
