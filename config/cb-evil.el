@@ -161,7 +161,7 @@
     (make-local-variable 'evil-surround-pairs-alist)
     (push '(?\` . ("`" . "'")) evil-surround-pairs-alist))
   :hook
-  (emacs-lisp-mode-hook . cb-elisp-evil-surround-pairs)
+  (emacs-lisp-mode . cb-elisp-evil-surround-pairs)
 
 
   ;; Prevent evil-surround from interfering with magit hunk operations.
