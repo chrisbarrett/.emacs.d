@@ -561,26 +561,27 @@
   (define-advice org-download-image (:around (fn link))
     "Save image at address LINK to `org-download--dir'."
     (interactive "sUrl: ")
-    (cond
-     ((equal org-download-method 'attach)
-      (let* ((link-and-ext (org-download--parse-link link))
-             (filename
-              (cond ((eq major-mode 'org-mode)
-                     (let ((org-download-image-dir (org-attach-dir t))
-                           org-download-heading-lvl)
-                       (apply #'org-download--fullname link-and-ext)))
-                    ((fboundp org-download-method)
-                     (funcall org-download-method link))
-                    (t
-                     (apply #'org-download--fullname link-and-ext)))))
-        (setq org-download-path-last-file filename)
-        (org-download--image link filename)
-        (when (derived-mode-p 'org-mode)
-          (ignore-errors
-            (org-attach-attach filename nil 'none))
-          (org-download-insert-link link filename))))
-     (t
-      (funcall fn link)))))
+    (with-no-warnings
+      (cond
+       ((equal org-download-method 'attach)
+        (let* ((link-and-ext (org-download--parse-link link))
+               (filename
+                (cond ((eq major-mode 'org-mode)
+                       (let ((org-download-image-dir (org-attach-dir t))
+                             org-download-heading-lvl)
+                         (apply #'org-download--fullname link-and-ext)))
+                      ((fboundp org-download-method)
+                       (funcall org-download-method link))
+                      (t
+                       (apply #'org-download--fullname link-and-ext)))))
+          (setq org-download-path-last-file filename)
+          (org-download--image link filename)
+          (when (derived-mode-p 'org-mode)
+            (ignore-errors
+              (org-attach-attach filename nil 'none))
+            (org-download-insert-link link filename))))
+       (t
+        (funcall fn link))))))
 
 (use-package org-download
   :if (equal system-type 'darwin)
