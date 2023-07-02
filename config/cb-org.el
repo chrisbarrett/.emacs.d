@@ -259,6 +259,10 @@
                                      org-return-follows-link)))
       (apply fn args)))
 
+  ;; Open links in the current window
+  :config
+  (setf (alist-get 'file org-link-frame-setup) 'find-file)
+
   ;;; Link types
 
   :config
@@ -323,6 +327,19 @@
     :demand t
     :autoload org-latex-themed-previews-mode
     :config (org-latex-themed-previews-mode +1))
+
+  ;; Hide space after hidden keywords.
+  :preface
+  (define-advice org-fontify-meta-lines-and-blocks-1 (:after (&rest _) hide-space)
+    (save-excursion
+      (goto-char (point-min))
+      (when (search-forward-regexp (rx-to-string `(and bol
+                                                       (group "#+" (or "title" "author") ":" (+ space))
+                                                       (+ nonl))
+                                                 t)
+                                   nil t)
+        (add-text-properties (match-beginning 1) (match-end 1)
+                             '(font-lock-fontified t invisible t)))))
 
   ;;; Keybindings
 

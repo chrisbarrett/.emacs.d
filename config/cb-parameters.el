@@ -8,6 +8,11 @@
 
 (defvar org-roam-directory "~/org/roam")
 
+(defconst cb-org-roam-side-window-default-width 55)
+
+(defconst cb-org-roam-side-window-breakpoint
+  (+ cb-org-roam-side-window-default-width 80))
+
 (provide 'cb-parameters)
 
 ;;; cb-parameters.el ends here

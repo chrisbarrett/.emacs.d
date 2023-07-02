@@ -3,6 +3,7 @@
 ;;; Code:
 
 (require 'autoloads)
+(require 'cb-parameters)
 (require 'cl-lib)
 
 ;; Anchor the cursor to the top or bottom of the window during scrolling, rather
@@ -163,23 +164,20 @@
 
 ;; org-roam etc
 
-(defconst config-org-roam-side-window-default-width 55)
-(defconst config-org-roam-side-window-breakpoint (+ config-org-roam-side-window-default-width 80))
-
 (cb-display-buffer-set (rx bos "*org-roam-review*" eos)
                        '(display-buffer-reuse-window
                          cb-window-management-fullframe))
 
 (cl-labels ((make-actions (&key window-height (slot 1) (side 'left))
               `(((lambda (buf &rest args)
-                   (funcall (if (< (frame-width) config-org-roam-side-window-breakpoint)
+                   (funcall (if (< (frame-width) cb-org-roam-side-window-breakpoint)
                                 'display-buffer-fullframe
                               'display-buffer-in-side-window)
                             buf
                             (append args '((slot . ,slot)
                                            (side . ,side)
                                            (window-height . ,window-height)
-                                           (window-width . ,config-org-roam-side-window-default-width)))))))))
+                                           (window-width . ,cb-org-roam-side-window-default-width)))))))))
   (cb-display-buffer-set (rx bos "*org-roam" (any "*:")) (make-actions))
   (cb-display-buffer-set (rx bos "*org-roam-links*" eos) (make-actions))
   (cb-display-buffer-set (rx bos "*org-roam-search*" eos) (make-actions :slot 2 :window-height 0.7)))
