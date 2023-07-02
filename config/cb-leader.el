@@ -338,7 +338,11 @@ With prefix argument ARG, prompt for a file."
 (defun cb-jump-to-config-file ()
   "Jump to the config.org file."
   (interactive)
-  (cb-jump-to-file (expand-file-name "config.org" user-emacs-directory)))
+  (cb-jump-to-file
+   (read-file-name "Config: "
+                   (expand-file-name "config/" user-emacs-directory)
+                   nil
+                   t)))
 
 (defun cb-jump-to-tangled-config-file ()
   "Jump to the config.el file."
@@ -538,6 +542,7 @@ With prefix argument ARG, prompt for a file."
   "D" '(project-dired :wk "dired")
   "/" '(consult-ripgrep :wk "search (rg)")
   "r" '(project-query-replace-regexp :wk "replace"))
+
 
 
 ;;; r - registers & bookmarks
