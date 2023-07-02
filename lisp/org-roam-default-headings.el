@@ -197,7 +197,7 @@ close to the starting point from before BODY was executed."
       (atomic-change-group
         (org-roam-default-headings--save-excursion-via-text-properties
           (org-roam-default-headings--sync-buffer specs)
-          (org-format-all-headings))))))
+          (org-format-buffer))))))
 
 (provide 'org-roam-default-headings)
 
