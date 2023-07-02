@@ -214,9 +214,7 @@
 
 (use-package flyspell
   :hook
-  (git-commit-mode . flyspell-mode)
-  (markdown-mode . flyspell-mode)
-  (org-mode . flyspell-mode)
+  (text-mode . flyspell-mode)
   :custom
   (flyspell-issue-welcome-flag nil)
   (flyspell-default-dictionary "en_GB")
