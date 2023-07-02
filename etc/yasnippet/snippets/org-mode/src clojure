@@ -1,6 +1,6 @@
 # key: clj
 # name: src clojure
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # expand-env: ((yas-indent-line nil))
 # --
 #+begin_src clojure

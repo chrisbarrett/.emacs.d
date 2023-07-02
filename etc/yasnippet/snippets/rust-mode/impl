@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: impl
 # key: im
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 impl ${1:Type} {
     $0

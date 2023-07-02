@@ -1,5 +1,5 @@
 # key: l
 # name: lambda function
-# condition: (or (yas-funcs-bolp) (config-csharp-expression-context-p "l"))
+# condition: (or (cb-yas-bolp) (cb-csharp-expression-context-p "l"))
 # --
 (${1:params...}) => $0

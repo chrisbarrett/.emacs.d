@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: left
 # key: l
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 
 ${1:right} -left-> ${2:left}: ${3:label}

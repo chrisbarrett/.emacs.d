@@ -4,6 +4,7 @@
 
 ;;; Code:
 
+(require 'cl-lib)
 (require 'flyspell)
 (require 'ispell)
 (require 's)
@@ -78,7 +79,8 @@ With a number ARG, select the nth replacement."
       (message "No more spelling errors"))))
 
 (defun evil-ispell--error-forward-search-start-pos (pos)
-  "Wrap the search to the beginning of the buffer if there are no errors forward of POS."
+  "Wrap the search to the beginning of the buffer.
+Only do this if there are no errors forward of POS."
   (if (and (eq (current-buffer) flyspell-old-buffer-error)
            (eq pos flyspell-old-pos-error))
       (cond

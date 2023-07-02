@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: export enum
 # key: ee
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 export enum ${1:Name} {
   $0

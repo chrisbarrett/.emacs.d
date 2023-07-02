@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: locals references
 # key: l
-# condition: (not (yas-funcs-bolp))
+# condition: (not (cb-yas-bolp))
 # --
 local.$0

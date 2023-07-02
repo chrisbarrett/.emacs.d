@@ -1,6 +1,6 @@
 # key: m
 # name: module
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 module "${1:name}" {
   source = $0

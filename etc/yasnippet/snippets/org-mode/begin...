@@ -1,6 +1,6 @@
 # key: b
 # name: begin...
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 #+begin_${1:type}
   $0

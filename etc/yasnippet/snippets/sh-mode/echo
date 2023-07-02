@@ -2,6 +2,6 @@
 # name: echo
 # key: e
 # binding: direct-keybinding
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 echo $0

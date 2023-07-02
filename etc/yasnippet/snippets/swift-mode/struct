@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: struct
 # key: st
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 struct ${1:Name} {
     $0

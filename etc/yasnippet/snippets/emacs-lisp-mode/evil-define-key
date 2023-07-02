@@ -2,6 +2,6 @@
 # name: evil-define-key
 # key: edk
 # binding: direct-keybinding
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 (evil-define-key '${1:state} ${2:keymap} (kbd "${3:key}") #'${4:cmd})

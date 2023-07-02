@@ -2,6 +2,6 @@
 # name: defconst
 # key: dc
 # binding: direct-keybinding
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 (defconst `(yas-funcs-el-package-prefix)`-$0)

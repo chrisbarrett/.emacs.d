@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: if
 # key: i
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 if $1 {
     $0

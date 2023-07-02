@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: else-if
 # key: ei
-# condition: (and (yas-funcs-bolp) (cl-plusp (syntax-ppss-depth (syntax-ppss))))
+# condition: (and (cb-yas-bolp) (cl-plusp (syntax-ppss-depth (syntax-ppss))))
 # --
 else if ($1)
 {

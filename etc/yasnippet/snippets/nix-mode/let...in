@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: let...in
 # key: l
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 let
   ${1:name} = ${2:value};

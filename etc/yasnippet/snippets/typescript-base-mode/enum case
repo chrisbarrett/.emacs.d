@@ -1,5 +1,5 @@
 # key: e
 # name: enum case
-# condition: (and (yas-funcs-bolp) (save-excursion (sp-backward-up-sexp) (string-match-p "enum" (buffer-substring (line-beginning-position) (line-end-position)))))
+# condition: (and (cb-yas-bolp) (save-excursion (sp-backward-up-sexp) (string-match-p "enum" (buffer-substring (line-beginning-position) (line-end-position)))))
 # --
 ${1:Name} = '$1',

@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: await-foreach
 # key: afe
-# condition: (or (yas-funcs-bolp) (config-csharp-expression-context-p "afe"))
+# condition: (or (cb-yas-bolp) (cb-csharp-expression-context-p "afe"))
 # --
 await foreach (var ${1:value} in ${2:coll})
 {

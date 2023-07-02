@@ -1,5 +1,5 @@
 # key: e
 # name: edge
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 ${1:from} -> ${2:to}: $0

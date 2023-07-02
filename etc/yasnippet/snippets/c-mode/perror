@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: perror
 # key: pe
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 perror("$0");

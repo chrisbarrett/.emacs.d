@@ -1,166 +1,103 @@
-;;; init.el --- Init file for Emacs  -*- lexical-binding: t; -*-
+;;; init.el --- User init file for Emacs  -*- lexical-binding: t; -*-
 ;;; Commentary:
-
-;; Defines the machinery needed to load the Emacs configuration from config.org.
-
 ;;; Code:
 
-(defconst emacs-start-time (current-time)
-  "The time at which this instance of Emacs was started.")
+;;; Configure load-path
 
-(require 'cl-macs)
-(require 'f)
-(require 'thingatpt)
-(require 'subr-x)
+(dolist (load-dir (list
+                   "/run/current-system/sw/share/emacs/site-lisp"
+                   "~/.nix-profile/share/emacs/site-lisp"
+                   (expand-file-name "lisp/" user-emacs-directory)
+                   (expand-file-name "lisp/nursery/lisp/" user-emacs-directory)
+                   ))
+  (when (file-directory-p load-dir)
+    (add-to-list 'load-path load-dir)))
 
-(cl-eval-when (compile)
-  (require 'org))
+
 
-(defvar tangle-debug nil
-  "Whether to emit extra debugging information when tangling init files.")
+;;; Define a helper for loading features in ./config.
 
-(defconst init--autoloads-file-header
-  ";;; config-autoloads.el -- All package autoloads slammed into one place.  -*- lexical-binding: t; buffer-read-only: t; -*-")
+(require 'cl-lib)
 
+(defmacro use-config (feature &rest use-package-args)
+  "Load FEATURE from ./config with some default `use-package' args.
 
-(defun init--package-autoload-files ()
-  (seq-mapcat (lambda (dir)
-                (when (file-directory-p dir)
-                  (f-files dir (lambda (file) (string-match-p "-autoloads.el$" file)))))
-              load-path))
+USE-PACKAGE-ARGS are optional additional arguments forwarded to
+`use-package'."
+  (declare (indent 1))
+  (let ((file (expand-file-name (format "./config/%s.el" feature)
+                                user-emacs-directory)))
+    (cl-assert (file-exists-p file) t))
+  `(use-package ,feature
+     :load-path "./config/" :demand t ,@use-package-args))
 
-(defconst init--spurious-autoload-form
-  '(add-to-list 'load-path (directory-file-name
-                            (or (file-name-directory #$) (car load-path)))))
+(font-lock-add-keywords 'emacs-lisp-mode
+                        `((,(rx "("
+                                (group "use-config") symbol-end (* (any space))
+                                (group (+ (or (syntax word) (syntax symbol))))
+                                (? ")"))
+                           (1 font-lock-keyword-face)
+                           (2 font-lock-constant-face nil t))))
 
-(defun init--clean-autoloads-file ()
-  (let ((inhibit-read-only t))
-    (save-excursion
-      (goto-char (point-min))
-      (while (and (search-forward-regexp (rx bol "(add-to-list 'load-path") nil t))
-        (goto-char (line-beginning-position))
-        (let ((form (read (thing-at-point 'sexp))))
-          (when (equal form init--spurious-autoload-form)
-            (delete-region (point) (end-of-thing 'sexp))))
-        (goto-char (line-end-position)))
+
 
-      ;; Fix weird issue loading proof-general due to how it tries to compute its root dir.
-      (goto-char (point-min))
-      (when (search-forward "(expand-file-name \"generic/proof-site\" pg-init--pg-root)" nil t)
-        (delete-region (match-beginning 0) (match-end 0))))))
+;;; Load features
 
-(defun generate-package-autoloads ()
-  "Generate a consolidated autoloads file of all installed packages."
-  (interactive)
-  (let ((outfile (expand-file-name "config-autoloads.el")))
+(use-package no-littering
+  :demand t
+  :autoload (no-littering-theme-backups)
+  :config (no-littering-theme-backups))
 
-    (when-let* ((buf (get-buffer outfile)))
-      (kill-buffer buf))
-    (ignore-errors
-      (f-delete outfile))
+(use-config cb-parameters)
+(use-config cb-startup-profiling-and-debugging)
+(use-config cb-gc-tuning)
 
-    (f-touch outfile)
-    (f-append (concat init--autoloads-file-header "\n\n") 'utf-8 outfile)
-    (let ((reporter (make-progress-reporter "Generating autoloads file...")))
+(use-config cb-autoloads
+  :config
+  (with-no-warnings
+    (cb-autoloads-build-and-load))
+  (use-package autoloads :demand t))
 
-      (dolist (autoloads-file (init--package-autoload-files))
-        (let ((text (format ";;; %s\n%s\n\n" autoloads-file (f-read autoloads-file))))
-          (f-append text 'utf-8 outfile)
-          (progress-reporter-update reporter nil autoloads-file)))
+(use-package server
+  :if (not noninteractive)
+  :demand t
+  :config
+  (server-start))
 
-      (with-current-buffer (find-file-noselect outfile t)
-        (init--clean-autoloads-file)
-        (save-buffer))
+(use-package delight :demand t)
+(use-package general :demand t)
 
-      (progress-reporter-done reporter))))
+(use-config cb-theme)
+(use-config cb-completion)
+(use-config cb-window-management)
+(use-config cb-input)
+(use-config cb-general-editing)
+(use-config cb-help-systems)
+(use-config cb-search)
+(use-config cb-snippets)
+(use-config cb-media)
+(use-config cb-evil)
+(use-config cb-leader)
+(use-config cb-ide)
+(use-config cb-eshell)
+(use-config cb-smartparens)
+(use-config cb-dired)
+(use-config cb-git)
+(use-config cb-langs)
+(use-config cb-lang-clojure)
+(use-config cb-lang-elisp)
+(use-config cb-lang-latex)
+(use-config cb-lang-markdown)
+(use-config cb-lang-rust)
+(use-config cb-lang-typescript)
+(use-config cb-org)
 
-(defun tangle-init-files ()
-  "Create init files from `config.org'."
-  (interactive)
-  (let* ((file-to-block-list)
-         (inhibit-message noninteractive)
-         (config-org (expand-file-name "config.org" user-emacs-directory))
-         (marker (set-marker (make-marker)
-                             0
-                             (or (find-buffer-visiting config-org)
-                                 (find-file-noselect config-org)))))
-    (require 'org)
-    (message "Re-generating init files…")
-    (org-with-point-at marker
-      (let ((inhibit-message t))
-        (org-babel-map-src-blocks "config.org"
-          (when (equal lang "emacs-lisp")
-            (cond ((member "disabled" (org-get-tags))
-                   (when tangle-debug
-                     (message "Init files: Skipping:\n%s" body)))
-                  ((member (org-get-todo-state) '("CANCELLED" "TODO"))
-                   (when tangle-debug
-                     (message "Init files: Skipping todo:\n%s" body)))
-                  (t
-                   (let* ((block-info (org-babel-get-src-block-info t))
-                          (output-file (cdr (assq :tangle (nth 2 block-info)))))
-                     (push (cons output-file body) file-to-block-list)
-                     (when tangle-debug
-                       (message "Init files: Adding:\n%s" body))))))))
-      (let ((lines-by-file
-             (thread-last file-to-block-list
-                          (seq-group-by #'car)
-                          (seq-map (lambda (pair)
-                                     (let ((lines (seq-reverse (seq-map #'cdr (cdr pair)))))
-                                       (cons (car pair) (string-join lines "\n\n"))))))))
-        (dolist (pair lines-by-file)
-          (let ((file (car pair))
-                (lines (cdr pair)))
-            (with-temp-file file
-              (insert lines)
-              (indent-rigidly (point-min) (point-max) (- org-edit-src-content-indentation))
-              (message "Writing %s…" file)))))
+(use-config cb-org-roam
+  :autoload cb-org-roam-initial-buffers
+  :custom
+  (initial-buffer-choice #'cb-org-roam-initial-buffers))
 
-      ;; for GC
-      (set-marker marker nil)
-      (message "Wrote all init files."))))
-
-(defun init-tangle-and-reload ()
-  "Tangle config.org and reload config if changed."
-  (interactive)
-  (let ((config-el (expand-file-name "config.el" user-emacs-directory)))
-
-    (cl-labels ((fast-hash ()
-                           (->> (format "cksum %s" (shell-quote-argument config-el))
-                                (shell-command-to-string)
-                                (string-trim))))
-      (let ((hash-before (fast-hash))
-            (noninteractive t)
-            (ad-const-t (lambda (prompt)
-                          (message "ad-const-t: %s (y or n) -> t" prompt)
-                          t)))
-        (tangle-init-files)
-        (unless (equal hash-before (fast-hash))
-          (advice-add 'y-or-n-p :override ad-const-t)
-          (unwind-protect
-              (load config-el)
-            (advice-remove 'y-or-n-p ad-const-t))
-          (message "Reloaded config.el"))))))
-
-(let ((default-directory user-emacs-directory))
-
-  (let ((config-autoloads-file (expand-file-name "config-autoloads.el")))
-    (unless (file-exists-p config-autoloads-file)
-      (generate-package-autoloads)))
-
-  (let ((config-lisp-file (expand-file-name "config.el")))
-    (unless (file-exists-p config-lisp-file)
-      (tangle-init-files))
-
-    (unless (getenv "NIX_EMACS_BUILDING_CONFIG_P")
-      (load config-lisp-file nil t))))
-
-
-(defconst emacs-init-duration (float-time (time-subtract (current-time) emacs-start-time)))
-
-(unless (getenv "NIX_EMACS_BUILDING_CONFIG_P")
-  (message "config.el loaded (%s s)" emacs-init-duration))
-
-;; (provide 'init)
+(load (expand-file-name "lisp/init.el" org-directory) t t)
+(load custom-file t t)
 
 ;;; init.el ends here

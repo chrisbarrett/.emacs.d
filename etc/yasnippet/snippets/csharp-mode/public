@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: public
 # key: p
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # type: command
 # --
 (insert "public")

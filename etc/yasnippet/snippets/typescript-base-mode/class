@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: class
 # key: cl
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 class ${1:Name} {
   $0

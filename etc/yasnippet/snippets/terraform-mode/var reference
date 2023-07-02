@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: var reference
 # key: v
-# condition: (not (yas-funcs-bolp))
+# condition: (not (cb-yas-bolp))
 # --
 var.$0

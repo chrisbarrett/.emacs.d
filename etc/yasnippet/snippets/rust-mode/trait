@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: trait
 # key: tr
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 trait $1 {
     $0

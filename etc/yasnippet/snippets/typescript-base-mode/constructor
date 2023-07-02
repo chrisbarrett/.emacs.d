@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: constructor
 # key: ctor
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 constructor($1) {
   $0

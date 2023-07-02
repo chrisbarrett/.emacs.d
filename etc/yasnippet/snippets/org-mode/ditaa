@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: ditaa
 # key: ditaa
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 #+begin_src ditaa :file ${1:filename}.png
 $0

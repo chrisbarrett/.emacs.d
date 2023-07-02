@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: connection
 # key: c
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 connection {
   type = "ssh"

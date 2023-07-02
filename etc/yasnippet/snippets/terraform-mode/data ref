@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: data ref
 # key: d
-# condition: (not (yas-funcs-bolp))
+# condition: (not (cb-yas-bolp))
 # --
 data.${1:type}.$0

@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: begin_example
 # key: ex
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 #+begin_example $0
 

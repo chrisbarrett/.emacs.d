@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: guard
 # key: g
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 guard ${1:expr} else {
     $0

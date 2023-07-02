@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: Event
 # key: ev
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 * [[id:BBA271F7-56AA-4A88-B48A-DB2A7A979263][Event]] (${1:date}) - ${2:title}
 :PROPERTIES:

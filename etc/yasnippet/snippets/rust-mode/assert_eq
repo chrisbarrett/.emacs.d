@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: assert_eq
 # key: ae
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 assert_eq!($1, $2);

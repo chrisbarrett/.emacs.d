@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: return
 # key: r
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 return $1;

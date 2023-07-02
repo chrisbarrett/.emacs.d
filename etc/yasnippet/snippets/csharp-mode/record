@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: record
 # key: r
-# condition: (and (yas-funcs-bolp) (zerop (syntax-ppss-depth (syntax-ppss))))
+# condition: (and (cb-yas-bolp) (zerop (syntax-ppss-depth (syntax-ppss))))
 # --
 record ${1:Name}($0);

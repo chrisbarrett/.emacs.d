@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: func
 # key: f
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 func ${1:name}(${2:args...}) {
     $0

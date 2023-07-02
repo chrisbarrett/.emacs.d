@@ -1,6 +1,6 @@
 # key: chat
 # name: src chatgpt-shel
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 #+begin_src chatgpt-shell :context t
   $0

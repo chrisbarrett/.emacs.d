@@ -1,6 +1,6 @@
 # key: e
 # name: else
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 else:
     $0

@@ -1,5 +1,5 @@
 # key: ras
 # name: require as
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 (require '[${1:name} :as :${2:alias}])

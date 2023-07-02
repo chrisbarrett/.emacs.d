@@ -1,6 +1,6 @@
 # key: aa
 # name: afterAll
-# condition: (and (yas-funcs-bolp) (yas-funcs-js-inside-describe-p))
+# condition: (and (cb-yas-bolp) (yas-funcs-js-inside-describe-p))
 # --
 afterAll(async () => {
   $0

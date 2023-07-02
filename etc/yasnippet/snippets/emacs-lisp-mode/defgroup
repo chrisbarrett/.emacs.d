@@ -1,6 +1,6 @@
 # key: g
 # name: defgroup
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 (defgroup `(file-name-sans-extension (file-name-nondirectory buffer-file-name))` nil
   "$0"

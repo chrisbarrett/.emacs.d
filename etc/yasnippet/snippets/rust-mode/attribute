@@ -1,5 +1,5 @@
 # key: a
 # name: attribute
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 #[$1]

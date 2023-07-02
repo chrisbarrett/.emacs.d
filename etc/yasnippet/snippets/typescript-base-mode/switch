@@ -1,7 +1,7 @@
 # key: sw
 # name: switch
 # expand-env: ((yas-indent-line (quote fixed)) (yas-wrap-around-region (quote t)))
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 switch (${1:scrutinee}) {
   case ${2:pat}: {

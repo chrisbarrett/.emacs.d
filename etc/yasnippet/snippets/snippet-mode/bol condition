@@ -3,4 +3,4 @@
 # key: c
 # binding: direct-keybinding
 # --
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)

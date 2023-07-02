@@ -1,6 +1,6 @@
 # key: r
 # name: resource
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 resource "${1:type}" "${2:name}" {
   $0

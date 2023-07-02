@@ -1,6 +1,6 @@
 # key: it
 # name: it
-# condition: (and (yas-funcs-bolp) (yas-funcs-js-inside-describe-p))
+# condition: (and (cb-yas-bolp) (yas-funcs-js-inside-describe-p))
 # --
 it('${1:behaviour}', () => {
   $0

@@ -184,7 +184,6 @@
             websocket
             wgrep
             which-key
-            world-time-mode
             ws-butler
             yasnippet
           ];

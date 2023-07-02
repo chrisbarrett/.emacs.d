@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: zod infer
 # key: zi
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 export type ${1:name} = z.infer<typeof $1>;

@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: transclude (incl heading)
 # key: tt
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # type: command
 # --
 (let ((link (org-funcs-read-roam-node-link))

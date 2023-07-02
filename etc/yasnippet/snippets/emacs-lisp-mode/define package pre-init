@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: define package pre-init
 # key: pi
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 't))
 # --
 (defun `(yas/find-prefix-for-use-package)`/pre-init-${1:package-name} ()

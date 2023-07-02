@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: use
 # key: u
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 use $0;

@@ -1,6 +1,6 @@
 # key: p
 # name: package
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 package "${1:name}" {
   $0

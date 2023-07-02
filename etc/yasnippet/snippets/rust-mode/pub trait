@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: pub trait
 # key: pt
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 pub trait $1 {
     $0

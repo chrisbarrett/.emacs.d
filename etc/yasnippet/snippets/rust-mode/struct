@@ -1,6 +1,6 @@
 # key: st
 # name: struct
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 struct $1 {
     $0

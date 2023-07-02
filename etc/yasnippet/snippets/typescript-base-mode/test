@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: test
 # key: test
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 test('${1:behaviour}', () => {
   $0

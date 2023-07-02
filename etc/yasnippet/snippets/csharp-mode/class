@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: class
 # key: cl
-# condition: (and (yas-funcs-bolp) (zerop (syntax-ppss-depth (syntax-ppss))))
+# condition: (and (cb-yas-bolp) (zerop (syntax-ppss-depth (syntax-ppss))))
 # --
 class ${1:Name}
 {

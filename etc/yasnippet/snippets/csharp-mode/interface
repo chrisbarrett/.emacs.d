@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: interface
 # key: in
-# condition: (and (yas-funcs-bolp) (zerop (syntax-ppss-depth (syntax-ppss))))
+# condition: (and (cb-yas-bolp) (zerop (syntax-ppss-depth (syntax-ppss))))
 # --
 interface ${1:Name}
 {

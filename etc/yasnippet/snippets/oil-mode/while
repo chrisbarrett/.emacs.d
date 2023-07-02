@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: while
 # key: wh
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 while ${1:pred} {
   $0

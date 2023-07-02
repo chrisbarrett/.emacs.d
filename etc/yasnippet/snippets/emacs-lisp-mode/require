@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: require
 # key: r
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 (require '$0)

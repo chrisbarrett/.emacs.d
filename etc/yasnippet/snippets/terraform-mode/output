@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: output
 # key: o
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 output "${1:name}" {
   value = $0

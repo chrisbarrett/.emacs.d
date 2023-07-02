@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: describe
 # key: ds
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 describe('${1:feature}', () => {
   $0

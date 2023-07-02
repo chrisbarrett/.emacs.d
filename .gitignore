@@ -12,7 +12,7 @@ result
 .cask
 
 # Per-machine configuration
-site.el
+default.el
 
 # Internal
 elpa
@@ -24,4 +24,4 @@ elpa
 /auto-save-list/
 /var/
 /eln-cache/
-/config-autoloads.el
+/autoloads.el

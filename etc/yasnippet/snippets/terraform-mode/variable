@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: variable
 # key: v
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 variable "${1:name}" {
   type = $0

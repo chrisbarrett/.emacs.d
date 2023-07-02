@@ -1,6 +1,6 @@
 # key: cl
 # name: class
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 class ${1:Name} {
     $0

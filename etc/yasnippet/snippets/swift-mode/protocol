@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: protocol
 # key: pr
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 protocol ${1:Name} {
     $0

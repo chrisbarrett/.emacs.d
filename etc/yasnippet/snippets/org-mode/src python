@@ -1,6 +1,6 @@
 # key: py
 # name: src python
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 #+begin_src python
   $0

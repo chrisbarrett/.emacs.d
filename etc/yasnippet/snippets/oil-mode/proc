@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: proc
 # key: p
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 proc ${1:name}(${2:args...}) {
   ### Doc

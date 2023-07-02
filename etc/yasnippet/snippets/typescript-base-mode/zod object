@@ -1,6 +1,6 @@
 # key: zo
 # name: zod object
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 export const ${1:name} = z.object({
   $0

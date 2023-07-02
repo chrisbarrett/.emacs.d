@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: struct
 # key: st
-# condition: (and (yas-funcs-bolp) (zerop (syntax-ppss-depth (syntax-ppss))))
+# condition: (and (cb-yas-bolp) (zerop (syntax-ppss-depth (syntax-ppss))))
 # --
 struct ${1:Name}
 {

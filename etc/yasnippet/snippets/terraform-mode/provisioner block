@@ -1,6 +1,6 @@
 # key: pr
 # name: provisioner (local)
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 provisioner "local_exec" {
   command = "$0"

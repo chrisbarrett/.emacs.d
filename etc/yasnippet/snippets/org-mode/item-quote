@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: item-quote
 # key: q
-# condition: (yas-funcs-line-rx-p bol (* space) "-" (* space) "q" (* space) eol)
+# condition: (cb-yas-line-rx-p bol (* space) "-" (* space) "q" (* space) eol)
 # --
 `(just-one-space)`Quote:
     #+begin_quote

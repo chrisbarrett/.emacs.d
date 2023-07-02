@@ -1,6 +1,6 @@
 # key: d
 # name: defun
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 (defun `(yas-funcs-el-package-prefix)`${1:name} ($2)
   $0)

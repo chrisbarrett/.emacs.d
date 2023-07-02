@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: transclude (content)
 # key: tc
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 #+transclude: `(org-funcs-read-roam-node-link)` :only-contents :exclude-elements "section"

@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
 # name: extension
 # key: ex
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 extension ${1:Name} {
   $0

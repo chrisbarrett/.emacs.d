@@ -1,5 +1,5 @@
 # key: lm
 # name: let-mut
-# condition: (yas-funcs-bolp)
+# condition: (cb-yas-bolp)
 # --
 let mut ${1:name} = $2;
