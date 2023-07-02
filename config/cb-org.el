@@ -28,7 +28,6 @@
   ;;; General settings
 
   :custom
-  (org-directory "~/org")
   (org-bookmark-names-plist nil)
   (org-imenu-depth 4)
   (org-indirect-buffer-display 'current-window)

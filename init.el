@@ -66,6 +66,8 @@ USE-PACKAGE-ARGS are optional additional arguments forwarded to
 (use-package delight :demand t)
 (use-package general :demand t)
 
+(defconst org-directory "~/org")
+
 (use-config cb-theme)
 (use-config cb-completion)
 (use-config cb-window-management)
