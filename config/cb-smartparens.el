@@ -133,13 +133,26 @@
   :autoload
   sp-get-enclosing-sexp
   :preface
+  (defun cb-bounds-of-surrounding-lines (lines-before lines-after)
+    (let ((start
+           (save-excursion
+             (ignore-errors
+               (forward-line (- lines-before)))
+             (line-beginning-position)))
+          (end
+           (save-excursion
+             (ignore-errors
+               (forward-line lines-after))
+             (line-end-position))))
+      (list start end)))
+
   (define-advice sp-backward-delete-char (:around (f &rest args) cleanup)
     "Perform context-sensitive whitespace cleanups when deleting.
 
 For performance, only consider a subset of the buffer."
     (save-restriction
       (unless (derived-mode-p 'emacs-lisp-mode)
-        (apply #'narrow-to-region (bounds-of-surrounding-lines 500 500)))
+        (apply #'narrow-to-region (cb-bounds-of-surrounding-lines 500 500)))
 
       (-let* ((line-before-pt (buffer-substring (line-beginning-position) (point)))
               (line-after-pt (buffer-substring (point) (line-end-position)))
