@@ -1,11 +1,11 @@
 EMACS = $(PWD)/result/bin/emacs
 BUILD = .make/build
-TARGET_EL = config-autoloads.el config.el
+TARGET_EL = config/autoloads.el
 NIX = /run/current-system/sw/bin/nix
 
 TARGETS := $(BUILD) $(TARGET_EL)
 NIX_SRCS := flake.lock $(shell find . -type f -name '*.nix')
-SRCS := config.org $(NIX_SRCS)
+SRCS := early-init.el init.el ./config/ $(NIX_SRCS)
 
 EMACS_RUN_OPTS = -l early-init.el -l init.el --eval "(run-hooks 'after-init-hook)"
 
