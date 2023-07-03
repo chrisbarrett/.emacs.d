@@ -15,11 +15,11 @@
 
   :general
   (:keymaps 'smartparens-strict-mode-map
-            [remap c-electric-backspace] #'sp-backward-delete-char)
+   [remap c-electric-backspace] #'sp-backward-delete-char)
   (:states 'insert
-           ")" #'sp-up-sexp)
+   ")" #'sp-up-sexp)
   (:states 'normal
-           "D" #'sp-kill-hybrid-sexp)
+   "D" #'sp-kill-hybrid-sexp)
 
   :custom
   (sp-show-pair-delay 0.2)
