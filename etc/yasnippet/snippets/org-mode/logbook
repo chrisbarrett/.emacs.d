@@ -1,0 +1,7 @@
+# key: lb
+# name: logbook
+# condition: (cb-yas-bolp)
+# --
+:LOGBOOK:
+$0
+:END:
