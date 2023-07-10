@@ -61,11 +61,15 @@ current window."
         (derived-mode-p 'org-mode) 'org-edit-special
         (and (derived-mode-p 'markdown-mode) (markdown-code-block-at-point-p)) 'markdown-edit-code-block
         (bound-and-true-p org-src-mode) 'org-edit-src-exit)
-  "/" (list (general-predicate-dispatch 'consult-ripgrep
-              (or (f-descendant-of-p default-directory org-directory)
-                  (f-same-p default-directory org-directory))
-              'org-roam-consult)
-            :wk "search...")
+
+  ;; TODO: Fix org-roam-consult
+  ;; "/" (list (general-predicate-dispatch 'consult-ripgrep
+  ;;             (or (f-descendant-of-p default-directory org-directory)
+  ;;                 (f-same-p default-directory org-directory))
+  ;;             'org-roam-consult)
+  ;;           :wk "search...")
+  "/" '(consult-ripgrep :wk "search...")
+
   ":" '(better-eval-expression :wk "eval")
   ";" '(ielm :wk "Lisp REPL")
   "<tab>" '(cb-alternate-buffer :wk "other buf")
