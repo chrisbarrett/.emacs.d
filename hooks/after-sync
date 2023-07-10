@@ -1,2 +1,0 @@
-#!/usr/bin/env oil
-~/.nix-profile/bin/emacsclient -a true -e '(init-tangle-and-reload)'
