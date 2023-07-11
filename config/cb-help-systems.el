@@ -8,7 +8,15 @@
   :general
   (:states 'normal :keymaps 'Info-mode-map
    "^" 'Info-up
+   "<" 'Info-history-back
+   ">" 'Info-history-forward
+   "<left>" 'Info-prev
+   "<right>" 'Info-next
+   "[" 'Info-prev
+   "]" 'Info-next
+   "L" 'Info-forward-node
    "C-n" 'Info-forward-node
+   "H" 'Info-backward-node
    "C-p" 'Info-backward-node))
 
 (use-package info+
