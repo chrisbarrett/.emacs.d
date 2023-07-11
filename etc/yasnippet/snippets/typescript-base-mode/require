@@ -2,4 +2,4 @@
 # name: require
 # key: req
 # --
-const ${1:Module} = require('${2:${1:$(yas-funcs-js-module-name-for-binding)}}');
+const ${1:Module} = require('${2:${1:$(cb-yas-js-module-name-for-binding)}}');

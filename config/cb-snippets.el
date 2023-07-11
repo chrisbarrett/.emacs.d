@@ -140,64 +140,6 @@ Fall back to the file name sans extension."
 (defun yas-funcs-buttercup-file-p ()
   (string-match-p "^test-" (file-name-nondirectory (buffer-file-name))))
 
-;;  TypeScript/JavaScript
-
-(defcustom yas-funcs-js-import-to-module-alist '()
-  "Map the name of a default import to a module.
-
-Expected to be set via directory variable."
-  :type '(alist :key-type string :value-type string)
-  :group 'yas-funcs
-  :safe (lambda (it)
-          (and (listp it)
-               (seq-every-p #'car #'stringp)
-               (seq-every-p #'cdr #'stringp))))
-
-(require 'dash)
-
-(cl-defun yas-funcs-js-module-name-for-binding (&optional (text yas-text))
-  (pcase text
-    ('nil      "")
-    (""        "")
-    ((guard (assoc (string-trim text) yas-funcs-js-import-to-module-alist))
-     (cdr (assoc (string-trim text) yas-funcs-js-import-to-module-alist)))
-    ("VError"
-     "verror")
-    ("memoize"
-     "promise-memoize")
-    ((or "aws" "AWS")
-     "aws-sdk")
-    ("_"
-     "lodash")
-    ("rt"
-     "runtypes")
-    ("z"
-     "zod")
-    ("thunk"
-     "thunky/promise")
-    ("cdk"
-     "aws-cdk-lib")
-    ("dynamodb"
-     "aws-cdk-lib/aws-dynamodb")
-    ("lambda"
-     "aws-cdk-lib/aws-lambda")
-
-    ((guard (string-match-p "{" text))
-     "")
-    (s
-     (-if-let* ((match-binding (rx (* space) "*" (+ space) "as" (+ space) (group (+ (not (any space))))))
-                ((_ name) (s-match match-binding text)))
-         (yas-funcs-js-module-name-for-binding name)
-       (downcase (s-dashed-words s))))))
-
-(defun yas-funcs-js-buffer-imports-logger-p ()
-  (let ((str (buffer-substring-no-properties (point-min) (point-max))))
-    (string-match-p (rx bol "import" (+ space) symbol-start "logger" symbol-end) str)))
-
-(defun yas-funcs-js-inside-describe-p ()
-  (save-excursion
-    (search-backward-regexp (rx bol (* space) symbol-start "describe" symbol-end) nil t)))
-
 ;; csharp
 
 (defun cb-csharp-expression-context-p (regexp)

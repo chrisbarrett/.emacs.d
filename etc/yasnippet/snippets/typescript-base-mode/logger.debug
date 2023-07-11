@@ -1,5 +1,5 @@
 # key: log
 # name: logger.debug
-# condition: (and (cb-yas-bolp) (yas-funcs-js-buffer-imports-logger-p))
+# condition: (and (cb-yas-bolp) (cb-yas-js-buffer-imports-logger-p))
 # --
 logger.debug({ message: '$0' });
