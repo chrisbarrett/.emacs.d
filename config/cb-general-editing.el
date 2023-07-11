@@ -226,8 +226,8 @@
   :general
   ("C-x t" 'undo-tree-visualize)
   (:states 'normal :keymaps 'org-mode-map
-           "C-r" 'undo-tree-redo
-           "u" 'undo-tree-undo))
+   "C-r" 'undo-tree-redo
+   "u" 'undo-tree-undo))
 
 (use-package format-all
   :hook
