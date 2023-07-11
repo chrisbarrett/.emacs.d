@@ -122,12 +122,9 @@
 (use-package evil-collection
   :after evil
   :demand t
-  :preface
-  (autoload 'global-evil-collection-unimpaired-mode "evil-collection-unimpaired")
   :config
   (delete 'elisp-slime-nav evil-collection-mode-list)
-  (evil-collection-init)
-  (global-evil-collection-unimpaired-mode +1))
+  (evil-collection-init))
 
 (use-package evil-surround
   :after evil
