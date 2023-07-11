@@ -292,6 +292,10 @@
 (use-package bufler
   :general
   ([remap list-buffers] 'bufler-list)
+  (:keymaps 'bufler-list-mode-map :states 'normal
+   "d" 'bufler-list-buffer-kill
+   "s" 'bufler-list-buffer-save
+   "RET" 'bufler-list-buffer-switch)
   :config
   (dolist (mode '(org-agenda-mode magit-status-mode))
     (add-to-list 'bufler-filter-buffer-modes mode)))
