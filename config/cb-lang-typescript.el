@@ -82,7 +82,7 @@ Expected to be set via directory variable."
 
 (defun cb-yas-js-buffer-imports-logger-p ()
   (let ((str (buffer-substring-no-properties (point-min) (point-max))))
-    (string-match-p (rx bol "import" (+ space) symbol-start "logger" symbol-end) str)))
+    (string-match-p (rx bol "import" symbol-end (+? nonl) (or "winston" "logger")) str)))
 
 (defun cb-yas-js-inside-describe-p ()
   (save-excursion
