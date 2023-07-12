@@ -15,11 +15,6 @@
   (eglot-confirm-server-initiated-edits nil)
   :config
   (add-to-list 'eglot-server-programs '(terraform-mode . ("terraform-ls" "serve")))
-  (add-to-list 'eglot-server-programs '((yaml-ts-mode yaml-mode)
-                                        "yaml-language-server" "--stdio"
-                                        :initializationOptions
-                                        (:keyOrdering :json-false)))
-
 
   ;; Set which modes have eglot enabled automatically
   :preface

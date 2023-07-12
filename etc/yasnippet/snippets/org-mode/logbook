@@ -1,5 +1,6 @@
-# key: lb
+# -*- mode: snippet -*-
 # name: logbook
+# key: lb
 # condition: (cb-yas-bolp)
 # --
 :LOGBOOK:
