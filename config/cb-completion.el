@@ -35,16 +35,6 @@
 
 (setq history-length 1000)
 
-;; Hide boring files from find-file completion candidates.
-
-(define-advice completion--file-name-table (:filter-return (result) remove-boring-files)
-  (if (and (listp result) (stringp (car result)) (cdr result))
-      (let ((matches-boring (rx-to-string `(and (or "." ".." ".DS_Store" ,@completion-ignored-extensions) eos))))
-        (seq-remove (lambda (it)
-                      (and (stringp it) (string-match-p matches-boring it)))
-                    result))
-    result))
-
 ;; Remove any lingering *completions* buffer on minibuffer exit
 (defun cb--cleanup-completions-buffer ()
   (when-let* ((buf (get-buffer "*Completions*")))
