@@ -21,7 +21,7 @@
         };
 
         package = with pkgs; callPackage ./builders {
-          emacs = emacsUnstable;
+          emacs = emacs-unstable;
           nodeProgram = "${nodejs}/bin/node";
           texProgram = "${tectonic}/bin/tectonic";
 
