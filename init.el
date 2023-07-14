@@ -47,7 +47,7 @@ USE-PACKAGE-ARGS are optional additional arguments forwarded to
   :demand t
   :autoload (no-littering-theme-backups)
   :custom
-  (no-littering-var-directory "~/.cache/emacs")
+  (no-littering-var-directory "~/.cache/emacs/")
   :config (no-littering-theme-backups))
 
 (use-config cb-parameters)
