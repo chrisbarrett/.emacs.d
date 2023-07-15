@@ -5,10 +5,12 @@
 (require 'autoloads)
 (require 'cb-macs)
 (require 'cb-parameters)
-(require 'thingatpt)
 (require 's)
+(require 'thingatpt)
 
 (cl-eval-when (compile)
+  (require 'all-the-icons)
+  (require 'org-funcs)
   (require 'org-roam))
 
 (defface org-roam-custom-node-topic nil
@@ -351,6 +353,8 @@
   :general ("<f12>" (general-predicate-dispatch 'timekeep-start
                       (and (fboundp 'org-clocking-p) (org-clocking-p)) 'timekeep-stop))
   :preface
+  (autoload 'org-tags-filter-parse "org-tags-filter")
+
   (defun config-org--update-node-filters ()
     (when (require 'org-roam-review nil t)
       (org-roam-review-modify-tags (org-tags-filter-parse (if (and timekeep-mode (org-clocking-p))
