@@ -16,9 +16,14 @@
           config = ./init.el;
           alwaysEnsure = false; # suppress warning
 
-          extraEmacsPackages = epkgs: with epkgs; [
-            shut-up
-          ] ++ (map (name: builtins.getAttr name epkgs) (builtins.fromJSON (builtins.readFile ./ensured-packages.json)));
+          extraEmacsPackages = epkgs:
+            let
+              ensured = builtins.fromJSON (builtins.readFile ./ensured-packages.json);
+              extras = with epkgs; [
+                shut-up
+              ];
+            in
+            extras ++ map (name: builtins.getAttr name epkgs) ensured;
 
           override = final: prev: with lib.fetchers; {
             eglot-x = fromGithub {
