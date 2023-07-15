@@ -40,7 +40,7 @@ similar.
             home-manager.darwinModules.home-manager
           ];
 
-          nixpkgs.overlays = [emacs.overlay];
+          nixpkgs.overlays = [ emacs.overlay."${system}".default ];
 
           home-manager = {
             users.hello = { pkgs, ... }: {
