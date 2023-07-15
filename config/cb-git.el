@@ -7,14 +7,14 @@
 (use-package magit :ensure t
   :general
   (:keymaps 'transient-base-map
-            "<escape>" #'transient-quit-one)
+   "<escape>" #'transient-quit-one)
   (:states 'normal :keymaps 'magit-refs-mode-map
-           "." #'magit-branch-and-checkout)
+   "." #'magit-branch-and-checkout)
   (:states '(motion normalm) :keymaps '(magit-section-mode-map magit-status-mode-map)
-           [remap evil-next-line] 'next-line
-           [remap evil-previous-line] 'previous-line
-           [remap evil-next-visual-line] 'next-line
-           [remap evil-previous-visual-line] 'previous-line)
+   [remap evil-next-line] 'next-line
+   [remap evil-previous-line] 'previous-line
+   [remap evil-next-visual-line] 'next-line
+   [remap evil-previous-visual-line] 'previous-line)
   :custom
   (magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1)
   (magit-log-section-commit-count 0)
