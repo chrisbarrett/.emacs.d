@@ -202,6 +202,7 @@
   (defun cb-cape-text-mode-setup ()
     (make-local-variable 'completion-at-point-functions)
     (cb-cape-default-setup)
+    (add-to-list 'completion-at-point-functions 'cape-symbol)
     (add-to-list 'completion-at-point-functions 'cape-ispell))
 
   :hook
