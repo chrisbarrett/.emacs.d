@@ -188,6 +188,8 @@
    "P" 'evil-iedit-state/paste-replace
    "p" nil))
 
+(use-package evil-nerd-commenter :ensure t)
+
 (provide 'cb-evil)
 
 ;;; cb-evil.el ends here

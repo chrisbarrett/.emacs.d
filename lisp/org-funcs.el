@@ -10,6 +10,12 @@
 
 ;;; Code:
 
+(use-package async :ensure t)
+(use-package dash :ensure t)
+(use-package f :ensure t)
+(use-package ht :ensure t)
+(use-package org-cliplink :ensure t)
+
 (require 'async)
 (require 'dash)
 (require 'dired)

@@ -19,7 +19,7 @@
    "H" 'Info-backward-node
    "C-p" 'Info-backward-node))
 
-(use-package info+ :ensure t :after info :demand t :disabled t ; throws error on load
+(use-package info+ :ensure info-plus :after info :demand t
   :custom
   (Info-fontify-angle-bracketed-flag nil))
 

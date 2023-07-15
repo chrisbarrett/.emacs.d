@@ -11,9 +11,15 @@
   (doom-themes-enable-bold t)
   (doom-themes-enable-italic t))
 
+(use-package all-the-icons :ensure t)
+
 (use-package hl-line :hook (after-init . global-hl-line-mode))
 
 (use-package delight :ensure t :demand t)
+
+(use-package mini-frame :ensure t :hook (after-init . mini-frame-mode))
+
+(use-package hide-mode-line :ensure t)
 
 (setq-default cursor-in-non-selected-windows nil)
 

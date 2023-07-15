@@ -5,6 +5,8 @@
 (require 'autoloads)
 (require 'cb-macs)
 
+(use-package clojure-mode :ensure t)
+
 (use-package cider :ensure t
   :general
   (:states '(normal insert) :keymaps 'cider-mode-map

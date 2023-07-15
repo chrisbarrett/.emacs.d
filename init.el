@@ -6,6 +6,17 @@
 
 ;;; Code:
 
+;; Declare some utility packages this config depends on.
+
+(use-package dash :ensure t)
+(use-package delight :ensure t :demand t)
+(use-package f :ensure t)
+(use-package general :ensure t :demand t)
+(use-package ht :ensure t)
+(use-package memoize :ensure t)
+(use-package s :ensure t)
+(use-package ts :ensure t)
+
 ;;; Configure load-path
 
 (dolist (load-dir (list
@@ -54,60 +65,45 @@ USE-PACKAGE-ARGS are optional additional arguments forwarded to
 (use-config cb-gc-tuning)
 
 (use-config cb-ensured-packages
-  :autoload cb-ensured-packages-record
-  :custom
-  (use-package-ensure-function #'cb-ensured-packages-record)
-  ;; :hook (after-init . cb-ensured-packages-write)
+  :hook (after-init . cb-ensured-packages-write))
+
+(use-config cb-autoloads
   :config
+  (with-no-warnings
+    (cb-autoloads-build-and-load))
+  (use-package autoloads :demand t))
 
-  ;; Declare some utility packages this config depends on.
+(use-config cb-theme)
+(use-config cb-completion)
+(use-config cb-window-management)
+(use-config cb-input)
+(use-config cb-general-editing)
+(use-config cb-help-systems)
+(use-config cb-search)
+(use-config cb-snippets)
+(use-config cb-media)
+(use-config cb-evil)
+(use-config cb-leader)
+(use-config cb-ide)
+(use-config cb-eshell)
+(use-config cb-smartparens)
+(use-config cb-dired)
+(use-config cb-git)
+(use-config cb-langs)
+(use-config cb-lang-clojure)
+(use-config cb-lang-elisp)
+(use-config cb-lang-latex)
+(use-config cb-lang-markdown)
+(use-config cb-lang-rust)
+(use-config cb-lang-typescript)
+(use-config cb-org)
 
-  (use-package general :ensure t :demand t)
-  (use-package delight :ensure t :demand t)
+(use-config cb-org-roam
+  :autoload cb-org-roam-initial-buffers
+  :custom
+  (initial-buffer-choice #'cb-org-roam-initial-buffers))
 
-  (use-package dash :ensure t)
-  (use-package f :ensure t)
-  (use-package ht :ensure t)
-  (use-package memoize :ensure t)
-  (use-package s :ensure t)
-  (use-package ts :ensure t)
-
-  (use-config cb-autoloads
-    :config
-    (with-no-warnings
-      (cb-autoloads-build-and-load))
-    (use-package autoloads :demand t))
-
-  (use-config cb-theme)
-  (use-config cb-completion)
-  (use-config cb-window-management)
-  (use-config cb-input)
-  (use-config cb-general-editing)
-  (use-config cb-help-systems)
-  (use-config cb-search)
-  (use-config cb-snippets)
-  (use-config cb-media)
-  (use-config cb-evil)
-  (use-config cb-leader)
-  (use-config cb-ide)
-  (use-config cb-eshell)
-  (use-config cb-smartparens)
-  (use-config cb-dired)
-  (use-config cb-git)
-  (use-config cb-langs)
-  (use-config cb-lang-clojure)
-  (use-config cb-lang-elisp)
-  (use-config cb-lang-latex)
-  (use-config cb-lang-markdown)
-  (use-config cb-lang-rust)
-  (use-config cb-lang-typescript)
-
-  (use-config cb-org-roam
-    :autoload cb-org-roam-initial-buffers
-    :custom
-    (initial-buffer-choice #'cb-org-roam-initial-buffers))
-
-  (load (expand-file-name "lisp/init.el" org-directory) t t))
+(load (expand-file-name "lisp/init.el" org-directory) t t)
 
 (load custom-file t t)
 

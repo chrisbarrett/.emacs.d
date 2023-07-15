@@ -24,8 +24,7 @@
   (:keymaps 'org-agenda-mode-map :states 'motion
    "C-c !" 'org-funcs-agenda-toggle-priority))
 
-(use-package org
-  :ensure t
+(use-package org :ensure t
 
   ;;; General settings
 
@@ -554,23 +553,17 @@
 
 
 
-(use-package org-fragtog
-  :ensure t
-  :hook (org-mode . org-fragtog-mode))
+(use-package org-ql :ensure t)
 
-(use-package orgtbl-aggregate
-  :ensure t
-  :after org
-  :demand t)
+(use-package org-ml :ensure t)
 
-(use-package ox-koma-letter
-  :ensure t
-  :demand t
-  :after ox)
+(use-package org-fragtog :ensure t :hook (org-mode . org-fragtog-mode))
 
-(use-package org-download
-  :ensure t
-  :hook (org-mode . org-download-enable)
+(use-package orgtbl-aggregate :ensure t :demand t :after org)
+
+(use-package ox-koma-letter :ensure org-contrib :demand t :after ox)
+
+(use-package org-download :ensure t :hook (org-mode . org-download-enable)
   :custom
   (org-download-method 'attach)
   (org-download-image-org-width 650)
@@ -605,9 +598,7 @@
        (t
         (funcall fn link))))))
 
-(use-package org-download
-  :ensure t
-  :if (equal system-type 'darwin)
+(use-package org-download :ensure t :if (equal system-type 'darwin)
   :custom
   (org-download-screenshot-method "/opt/homebrew/bin/pngpaste %s")
   :general
@@ -616,9 +607,7 @@
 ;; Automatically reveal hidden org elements at point. This makes it much easier
 ;; to edit text using emphasis markers correctly.
 
-(use-package org-appear
-  :ensure t
-  :hook (org-mode . org-appear-mode)
+(use-package org-appear :ensure t :hook (org-mode . org-appear-mode)
   :custom
   (org-appear-autoemphasis t)
   (org-appear-autokeywords t)
@@ -631,12 +620,9 @@
 
 
 
-(use-package org-format
-  :hook (org-mode . org-format-on-save-mode))
+(use-package org-format :hook (org-mode . org-format-on-save-mode))
 
-(use-package evil-org
-  :ensure t
-  :hook (org-mode . evil-org-mode)
+(use-package evil-org :ensure t :hook (org-mode . evil-org-mode)
   :custom
   (evil-org-key-theme '(additional
                         return
@@ -645,19 +631,14 @@
                         textobjects
                         todo)))
 
-(use-package evil-org-agenda
-  :after org-agenda
-  :demand t
+(use-package evil-org-agenda :demand t :after org-agenda
   :autoload (evil-org-agenda-set-keys)
   :config (evil-org-agenda-set-keys))
 
-(use-package org-superstar
-  :ensure t
+(use-package org-superstar :ensure t :hook (org-indent-mode . cb-set-superstar-mode)
   :preface
   (defun cb-set-superstar-mode ()
     (org-superstar-mode (if (bound-and-true-p org-indent-mode) +1 -1)))
-  :hook
-  (org-indent-mode . cb-set-superstar-mode)
   :custom
   (org-superstar-headline-bullets-list '(?*))
   (org-superstar-leading-bullet ?\s)
@@ -669,25 +650,19 @@
   :config
   (setf (alist-get 45 org-superstar-item-bullet-alist) #x2022)) ; •
 
-(use-package org-attach-git
-  :ensure t
-  :demand t
-  :after org-attach)
+(use-package org-attach-git :demand t :after org-attach)
 
-(use-package ox-gfm
-  :ensure t
-  :after org)
+(use-package ox-gfm :ensure t :after org)
 
-(use-package ox-slack
-  :after org
+(use-package ox-slack :after org
   :preface
   (autoload 'slack-notes-translate-names "slack-notes")
   :custom
   (ox-slack-postprocess-function #'slack-notes-translate-names))
 
-(use-package htmlize
-  :ensure t
-  :defer t)
+(use-package htmlize :ensure t :defer t)
+
+(use-package org-drill :ensure t)
 
 
 

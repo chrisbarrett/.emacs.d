@@ -15,16 +15,17 @@
 ;; Extend `auto-insert' to use the more intuitive `yasnippet' DSL.
 
 (use-package autoinsert-files :demand t :after autoinsert
+  :disabled t
   :autoload (autoinsert-files-populate-templates)
   :preface
   (autoload 'snippet-mode "yasnippet")
 
-  (defun autoinsert-maybe-enter-snippet-mode ()
+  (defun cb-autoinsert-maybe-enter-snippet-mode ()
     (when (and (bound-and-true-p auto-insert-directory)
                (string-prefix-p auto-insert-directory (buffer-file-name)))
       (snippet-mode)))
   :hook
-  (find-file . #'autoinsert-maybe-enter-snippet-mode)
+  (find-file . #'cb-autoinsert-maybe-enter-snippet-mode)
   :config
   (define-advice auto-insert (:before ())
     (autoinsert-files-populate-templates)))

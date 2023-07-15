@@ -26,8 +26,9 @@
 
 (defvar cb-ensured-packages nil)
 
-(defun cb-ensured-packages-record (package &rest _)
-  (add-to-list 'cb-ensured-packages package)
+(defun cb-ensured-packages-record (package args &rest _)
+  (let ((name-override (seq-find (lambda (it) (not (booleanp it))) args)))
+    (add-to-list 'cb-ensured-packages (or name-override package)))
   t)
 
 (defun cb-ensured-packages-write ()

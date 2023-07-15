@@ -9,11 +9,19 @@
   :hook
   (text-mode . visual-line-mode))
 
-(use-package conf-mode
-  :mode
-  ("\\.env" . conf-mode)
-  ("\\.dockerignore" . conf-unix-mode)
-  ("\\.kll\\'" . conf-mode))
+(use-package conf-mode :mode (rx "." (or "env" "kll" "dockerignore") eos))
+
+(use-package graphql-mode :ensure t :mode (rx "." (or "gql" "graphql") eos))
+
+(use-package terraform-mode :ensure t :mode (rx ".tf" (? "vars") eos))
+
+(use-package hcl-mode :ensure t :mode (rx "." (or "hcl" "nomad") eos))
+
+(use-package swift-mode :ensure t :mode (rx ".swift" eos))
+
+(use-package gnuplot :ensure t)
+
+(use-package plantuml-mode :ensure t :mode (rx "." (or "plantuml" "pum" "plu") eos))
 
 (use-package hexl
   :general
@@ -28,7 +36,7 @@
    "^" #'hexl-beginning-of-line
    "0" #'hexl-beginning-of-line))
 
-(use-package sh-script :mode ("/\\.envrc" . bash-ts-mode)
+(use-package sh-script :mode ((rx "/.envrc") . bash-ts-mode)
   :custom
   (sh-basic-offset 2)
   (sh-indentation 2)
@@ -46,6 +54,8 @@
   :custom
   (css-indent-offset 2))
 
+(use-package nix-mode :ensure t :mode (rx ".nix" eos))
+
 (use-package format-all :ensure t
   :config
   ;; KLUDGE: Dynamically eval to avoid macroexpansion error
@@ -58,12 +68,12 @@
       (:format (format-all--buffer-easy executable "fmt" "-no-color" "-"))))
   (add-to-list 'format-all-default-formatters 'terragrunt-fmt))
 
-(use-package csharp-mode :mode ("\\.cs\\'" . csharp-ts-mode)
+(use-package csharp-mode :mode ((rx ".cs" eos) . csharp-ts-mode)
   :init
   (add-to-list 'auto-mode-alist '("\\.csproj$" . nxml-mode))
   (add-to-list 'major-mode-remap-alist '(csharp-mode . csharp-ts-mode)))
 
-(use-package python :mode ("\\.py[iw]?\\'" . python-ts-mode)
+(use-package python :mode ((rx ".py" (? (any "iw")) eos) . python-ts-mode)
   :config
   (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode)))
 
@@ -71,29 +81,30 @@
   :config
   (add-to-list 'major-mode-remap-alist '(dockerfile-mode . dockerfile-ts-mode)))
 
-(use-package yaml-ts-mode :mode ("\\.ya?ml\\'" "/yarn\\.lock\\'")
+(use-package yaml-ts-mode :mode ((rx "." (or "yaml" "yml") eos) (rx "/yarn.lock" eos))
   :hook
   (yaml-ts-mode-hook . (lambda () (auto-fill-mode -1)))
   :config
   (add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode)))
 
-(use-package json-ts-mode :mode ("\\.json\\'")
+(use-package json-ts-mode :mode (rx ".json" eos)
   :config
   (add-to-list 'major-mode-remap-alist '(json-mode . json-ts-mode)))
 
 (use-package highlight-indent-guides :ensure t :hook (python-ts-mode yaml-ts-mode json-ts-mode))
 
-(use-package oil
+(use-package oil :mode ((rx ".oil" eos) . oil-mode)
   :magic
   ("#!/.*?/env oil" . oil-mode)
-  ("#!/.*?/oil" . oil-mode)
-  :mode ("\\.oil\\'" . oil-mode))
+  ("#!/.*?/oil" . oil-mode))
 
 (use-package proof-general :ensure t
   :custom
   (proof-splash-enable nil))
 
-(use-package iscroll :hook (text-mode . iscroll-mode)
+(use-package csv-mode :ensure t :mode (rx ".csv" eos))
+
+(use-package iscroll :ensure t :hook (text-mode . iscroll-mode)
   :general
   (:keymaps 'iscroll-mode-map :states 'normal
    "j" 'iscroll-forward-line
@@ -120,6 +131,10 @@
   (:states 'normal :keymaps 'origami-mode-map
    "TAB" 'origami-recursively-toggle-node
    "S-<tab>" 'origami-toggle-all-nodes))
+
+(use-package edit-indirect :ensure t)
+
+(use-package poporg :ensure t)
 
 (provide 'cb-langs)
 

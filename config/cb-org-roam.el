@@ -129,6 +129,8 @@
    (general-predicate-dispatch 'org-funcs-follow-link-other-window
      (org-at-table-p) 'org-table-copy-down)))
 
+(use-package org-roam-ui :ensure t)
+
 
 
 (use-package org-roam-review
@@ -280,6 +282,10 @@
           (unless (buffer-modified-p existing-buf)
             (with-current-buffer existing-buf
               (org-update-all-dblocks))))))))
+
+(use-package org-roam-consult
+  :init
+  (use-package pcre2el :ensure t))
 
 
 

@@ -138,7 +138,10 @@
 
 ;;; Configure use-package
 
+(require 'cb-ensured-packages (expand-file-name "config/cb-ensured-packages" user-emacs-directory))
+
 (with-no-warnings
+  (setq use-package-ensure-function #'cb-ensured-packages-record)
   (setq use-package-always-defer t)
   (setq use-package-minimum-reported-time 0.05)
   (setq use-package-compute-statistics t)
@@ -148,8 +151,7 @@
 
 ;;; Never ever create files in undesireable places.
 
-(use-package no-littering
-  :demand t
+(use-package no-littering :ensure t :demand t
   :custom
   (no-littering-var-directory (expand-file-name "~/.cache/emacs"))
   :autoload

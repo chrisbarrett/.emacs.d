@@ -86,6 +86,7 @@
   :general
   ([remap eval-expression] 'better-eval-expression)
 
+  :autoload (better-eval-expression--read)
   :preface
   (defun cb-better-eval-expr-in-debugger (f exp)
     (interactive (list (read (better-eval-expression--read "Eval (in frame): "))))

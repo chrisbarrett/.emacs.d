@@ -50,7 +50,7 @@
 
 (use-package dirvish :ensure t :hook (after-init . dirvish-override-dired-mode)
   :custom
-  (dirvish-attributes '(vscode-icon collapse file-size vc-state git-msg ))
+  (dirvish-attributes '(vscode-icon collapse file-size vc-state git-msg))
   (dirvish-vscode-icon-size 16)
   (dirvish-use-mode-line nil)
   (dirvish-use-header-line t)
@@ -63,7 +63,7 @@
             "TAB" #'dirvish-layout-toggle)
 
   :init
-  (use-package vscode-icon
+  (use-package vscode-icon :ensure t
     :defines (vscode-icon-file-alist)
     :config
     (push '("jpg" . "image") vscode-icon-file-alist)))

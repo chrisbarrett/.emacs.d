@@ -7,6 +7,8 @@
 
 ;;; Code:
 
+(use-package org-ml :ensure t)
+
 (require 'dash)
 (require 'ht)
 (require 'interpolate)
