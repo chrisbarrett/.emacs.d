@@ -14,6 +14,7 @@
         emacsFromOverlay = pkgs.emacsWithPackagesFromUsePackage {
           package = emacs;
           config = ./init.el;
+          alwaysEnsure = false; # suppress warning
 
           extraEmacsPackages = epkgs: with epkgs; [
             shut-up
