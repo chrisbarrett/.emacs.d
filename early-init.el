@@ -151,7 +151,6 @@
 (use-package no-littering
   :demand t
   :custom
-  (no-littering-etc-directory (expand-file-name "etc/" user-emacs-directory))
   (no-littering-var-directory (expand-file-name "~/.cache/emacs"))
   :config
   (unless (file-directory-p no-littering-var-directory)
