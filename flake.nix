@@ -1,5 +1,5 @@
 {
-  outputs = { self, nixpkgs, emacs-overlay, flake-utils }:
+  outputs = { nixpkgs, emacs-overlay, flake-utils, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {
@@ -96,6 +96,9 @@
         apps.default = flake-utils.lib.mkApp {
           drv = package;
           exePath = "/bin/emacs";
+        };
+        overlays.default = final: prev: {
+          emacsCustom = package;
         };
         devShell = pkgs.mkShell {
           buildInputs = [ package pkgs.gnumake ];

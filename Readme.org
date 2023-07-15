@@ -25,40 +25,22 @@ similar.
   {
     description = "Example flake using custom Emacs build";
 
-    inputs = {
-      nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-22.05-darwin";
-      darwin = {
-        url = "github:lnl7/nix-darwin/master";
-        inputs.nixpkgs.follows = "nixpkgs";
-      };
-      emacs = {
-        # NB. You could use a local checkout instead: "dir:/path/to/checkout"
-        url = "github:chrisbarrett/.emacs.d";
-        inputs.nixpkgs.follows = "nixpkgs";
-      };
-      home-manager = {
-        url = "github:nix-community/home-manager";
-        inputs.nixpkgs.follows = "nixpkgs";
-      };
+    # NB. You could use a local checkout instead: "dir:/path/to/checkout"
+    inputs.emacs.url = "github:chrisbarrett/.emacs.d";
 
-    };
-    outputs = { self, emacs, home-manager, darwin }: {
+    outputs = { self, emacs, home-manager, nix-darwin }: {
       # e.g. ...
       darwinConfiguration.testMachine =
         let system = "aarch64-darwin";
         in
-        darwin.lib.darwinSystem {
+        nix-darwin.lib.darwinSystem {
           inherit system;
 
           modules = [
             home-manager.darwinModules.home-manager
           ];
 
-          nixpkgs.overlays = [
-            (self: super: {
-              emacsCustom = emacs.packages.${system}.default;
-            })
-          ];
+          nixpkgs.overlays = [emacs.overlay];
 
           home-manager = {
             users.hello = { pkgs, ... }: {
