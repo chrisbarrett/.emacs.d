@@ -104,6 +104,12 @@
                          (side . bottom)
                          (window-height . 0.4)))
 
+(cb-display-buffer-set (rx bos "*Warnings*" eos)
+                       '((display-buffer-in-direction)
+                         (inhibit-same-window . t)
+                         (side . bottom)
+                         (window-height . 0.4)))
+
 ;; Flymake
 
 (cb-display-buffer-set (rx bos "*Flymake diagnostics ")
