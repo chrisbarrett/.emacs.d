@@ -314,24 +314,13 @@
   (citar-notes-paths '("~/org/roam/litnotes"))
   (citar-open-note-function 'org-funcs-go-to-litnote-for-key)
   (citar-bibliography config-bibfiles)
-  (citar-symbol-separator "  ")
+  (citar-symbol-separator "  "))
 
-  ;; :preface
-  ;; (define-advice citar-cache--entries (:override (bibs) fix-missing-method)
-  ;;   (apply #'ht-merge (nreverse (mapcar #'citar-cache--bibliography-entries bibs))))
-
-  ;; (define-advice citar-cache--preformatted (:override (bibs) fix-missing-method)
-  ;;   "Return hash table containing pre-formatted strings from BIBS."
-  ;;   (apply #'ht-merge
-  ;;          (nreverse (mapcar #'citar-cache--bibliography-preformatted bibs))))
-  )
-
-(use-package citar :demand t :after all-the-icons
+(use-package all-the-icons :ensure t :demand t :after citar
   :config
-  (setq citar-symbols
-        `((file ,(all-the-icons-faicon "file-o" :face 'all-the-icons-green :v-adjust -0.1) . " ")
-          (note ,(all-the-icons-material "speaker_notes" :face 'all-the-icons-blue :v-adjust -0.3) . " ")
-          (link ,(all-the-icons-octicon "link" :face 'all-the-icons-orange :v-adjust 0.01) . " "))))
+  (setf (citar-indicator-symbol citar-indicator-files) (all-the-icons-faicon "file-o" :face 'all-the-icons-green :v-adjust -0.1))
+  (setf (citar-indicator-symbol citar-indicator-notes) (all-the-icons-material "speaker_notes" :face 'all-the-icons-blue :v-adjust -0.3))
+  (setf (citar-indicator-symbol citar-indicator-links) (all-the-icons-octicon "link" :face 'all-the-icons-orange :v-adjust 0.01)))
 
 (use-package citar-org-roam :ensure t :demand t :after (:all org-roam citar)
   :config
