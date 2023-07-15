@@ -3,8 +3,4 @@
 # expand-env: ((yas-indent-line (quote fixed)) (yas-wrap-around-region (quote t)))
 # condition: (cb-yas-bolp)
 # --
-(use-package ${1:name}
-  :config
-  (progn
-    $0
-    ))
+(use-package $0)

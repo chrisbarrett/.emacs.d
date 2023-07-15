@@ -138,7 +138,10 @@
 
 ;;; Configure use-package
 
+(defun cb-use-package-const-t (&rest _) t)
+
 (with-no-warnings
+  (setq use-package-ensure-function #'cb-use-package-const-t)
   (setq use-package-always-defer t)
   (setq use-package-minimum-reported-time 0.05)
   (setq use-package-compute-statistics t)
@@ -152,9 +155,10 @@
   :demand t
   :custom
   (no-littering-var-directory (expand-file-name "~/.cache/emacs"))
+  :autoload
+  (no-littering-theme-backups)
   :config
-  (unless (file-directory-p no-littering-var-directory)
-    (make-directory no-littering-var-directory t)))
+  (no-littering-theme-backups))
 
 
 

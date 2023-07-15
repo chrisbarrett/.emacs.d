@@ -1,203 +1,104 @@
 {
-  description = "Chris Barrett's Emacs configuration";
-
-  inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs";
-
-    emacs-overlay = {
-      url = "github:nix-community/emacs-overlay";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    flake-utils.url = "github:numtide/flake-utils";
-  };
-
   outputs = { self, nixpkgs, emacs-overlay, flake-utils }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {
           inherit system;
-          overlays = [ emacs-overlay.overlay ];
+          overlays = [ emacs-overlay.overlay (import ./lib.nix) ];
         };
+        emacs = pkgs.emacs-unstable;
+        lisp = pkgs.mkLispFetcher emacs;
 
-        package = with pkgs; callPackage ./builders {
-          emacs = emacs-unstable;
-          nodeProgram = "${nodejs}/bin/node";
-          texProgram = "${tectonic}/bin/tectonic";
+        emacsFromOverlay = pkgs.emacsWithPackagesFromUsePackage {
+          package = emacs;
+          config = ./init.el;
 
-          withPrograms = [
-            (aspellWithDicts (ps: [ ps.en ]))
-            delta
-            graphviz-nox
-            multimarkdown
-            nixpkgs-fmt
-            plantuml
-            ripgrep
-            rustfmt
-            sqlite
-
-            # Language servers
-            marksman
-            nodePackages.bash-language-server
-            nodePackages.typescript-language-server
-            nodePackages.vscode-css-languageserver-bin
-            nodePackages.vscode-html-languageserver-bin
-            nodePackages.vscode-json-languageserver
-            rnix-lsp
-            rust-analyzer
-            terraform-ls
-            vscode-extensions.dbaeumer.vscode-eslint
-            vscode-extensions.graphql.vscode-graphql
-            yaml-language-server
-          ];
-
-          withLispPackages = epkgs: with epkgs; [
-            all-the-icons
-            applescript-mode
-            auctex
-            browse-at-remote
-            bufler
-            cape
-            chatgpt-shell
-            cider
-            citar
-            citar-org-roam
-            clojure-mode
-            consult
-            corfu
-            csv-mode
-            dall-e-shell
+          extraEmacsPackages = epkgs: with epkgs; [
             dash
-            deadgrep
-            default-text-scale
-            delight
-            diredfl
-            dirvish
-            dockerfile-mode
-            dogears
-            doom-themes
-            dumb-jump
-            edit-indirect
-            editorconfig
-            eglot
-            eglot-x
-            elisp-slime-nav
-            embark
-            embark-consult
-            emojify
-            envrc
-            evil
-            evil-args
-            evil-collection
-            evil-iedit-state
-            evil-matchit
-            evil-nerd-commenter
-            evil-numbers
-            evil-org
-            evil-surround
             f
-            flx
-            forge
-            format-all
-            general
-            git-auto-commit-mode
-            git-gutter
-            git-gutter-fringe
-            gnuplot
-            graphql-mode
-            ligature
-            groovy-mode
-            hcl-mode
-            helpful
-            hide-comnt
-            hide-mode-line
-            highlight-indent-guides
-            highlight-thing
-            historian
-            hl-todo
-            htmlize
-            info-plus
-            iscroll
-            json-mode
-            kind-icon
-            latex-preview-pane
-            link-hint
-            magit
-            magit-delta
-            magit-popup
-            magit-todos
-            marginalia
-            markdown-mode
+            ht
             memoize
-            messages-are-flowing
-            mini-frame
-            minions
-            nix-mode
-            no-littering
-            ob-chatgpt-shell
-            ob-http
-            orderless
-            org
-            org-appear
-            org-cliplink
-            org-contrib
-            org-download
-            org-drill
-            org-fragtog
             org-ml
             org-ql
-            org-roam
-            org-roam-ui
-            org-super-agenda
-            org-superstar
-            org-transclusion
-            orgtbl-aggregate
-            origami
-            ox-gfm
-            page-break-lines
-            paren-face
-            pcmpl-args
-            pcre2el
-            pdf-tools
-            plantuml-mode
-            poporg
-            prettier
-            proof-general
-            rainbow-mode
-            request
-            rust-mode
-            rustic
-            rotate
             shut-up
-            simple-httpd
-            smartparens
-            smex
-            string-inflection
-            swift-mode
-            terraform-mode
+            s
             ts
-            undo-tree
-            unfill
-            vertico
-            volatile-highlights
-            vscode-icon
-            websocket
-            wgrep
-            which-key
-            ws-butler
-            yasnippet
           ];
+
+          override = eself: esuper: {
+            eglot-x = lisp.fromGithub {
+              name = "eglot-x";
+              owner = "nemethf";
+              rev = "08cbd4369618e60576c95c194e63403f080328ba";
+              sha256 = "sha256-cWicqHYR/XU+71a8OFgF8vc6dmT/Fy0EEgzX0xvYiDc=";
+              buildInputs = [ esuper.eglot ];
+            };
+
+            hide-comnt = lisp.fromEmacsmirror {
+              name = "hide-comnt";
+              rev = "d1e94f5152f20b2dc7b0d42898c1db37e5be57a6";
+              sha256 = "002i9f97sq3jfknrw2nim1bhvj7xz3icviw7iffqmpmww4g1hq9l";
+            };
+
+            info-plus = lisp.fromEmacsmirror {
+              name = "info-plus";
+              rev = "4a6b93c170169594e1e8ea60cd799a1a88a969da";
+              sha256 = "1xzmx7m1qbl3b1x6yq1db1a108xqaa64ljfv1hdw763zmy4kc6m0";
+            };
+
+          };
+        };
+
+        pathExtras = with pkgs; pkgsToPathString [
+          (aspellWithDicts (ps: [ ps.en ]))
+          graphviz-nox
+          multimarkdown
+          nixpkgs-fmt
+          plantuml
+          ripgrep
+          rustfmt
+          sqlite
+
+          # Language servers
+          marksman
+          nodePackages.bash-language-server
+          nodePackages.typescript-language-server
+          nodePackages.vscode-css-languageserver-bin
+          nodePackages.vscode-html-languageserver-bin
+          nodePackages.vscode-json-languageserver
+          rnix-lsp
+          rust-analyzer
+          terraform-ls
+          vscode-extensions.dbaeumer.vscode-eslint
+          vscode-extensions.graphql.vscode-graphql
+          yaml-language-server
+        ];
+
+        package = with pkgs; symlinkJoin {
+          name = "emacs-wrapped";
+          buildInputs = [ makeWrapper ];
+          paths = [ emacsFromOverlay ];
+          postBuild = ''
+            for program in "$out/Applications/Emacs.app/Contents/MacOS/Emacs" "$out/bin/emacs"; do
+              if [ -f "$program" ]; then
+                wrapProgram "$program" \
+                  --prefix PATH ":" "${pathExtras}" \
+                  --set NIX_EMACS_DARWIN_PATH_EXTRAS "${pathExtras}:/opt/homebrew/bin" \
+                  --set NIX_EMACS_SRC_DIR "${emacs}/share/emacs" \
+                  --set NIX_EMACS_TEX_PROGRAM "${tectonic}/bin/tectonic" \
+                  --set NIX_EMACS_NODE_PROGRAM "${nodejs}/bin/node"
+              fi
+            done
+          '';
         };
       in
       with pkgs;
       rec {
         packages.default = package;
-
         apps.default = flake-utils.lib.mkApp {
           drv = package;
           exePath = "/bin/emacs";
         };
-
         devShell = mkShell {
           buildInputs = [ package gnumake ];
         };
