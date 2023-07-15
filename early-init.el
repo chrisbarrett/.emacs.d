@@ -138,10 +138,14 @@
 
 ;;; Configure use-package
 
-(defun cb-use-package-const-t (&rest _) t)
+(defvar cb-ensured-packages nil)
+
+(defun cb-use-package-record-ensure (package &rest _)
+  (add-to-list 'cb-ensured-packages package)
+  t)
 
 (with-no-warnings
-  (setq use-package-ensure-function #'cb-use-package-const-t)
+  (setq use-package-ensure-function #'cb-use-package-record-ensure)
   (setq use-package-always-defer t)
   (setq use-package-minimum-reported-time 0.05)
   (setq use-package-compute-statistics t)
