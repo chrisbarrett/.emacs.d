@@ -17,7 +17,7 @@
 
           extraEmacsPackages = epkgs: with epkgs; [
             shut-up
-          ];
+          ] ++ (map (name: builtins.getAttr name epkgs) (builtins.fromJSON (builtins.readFile ./ensured-packages.json)));
 
           override = final: prev: with lib.fetchers; {
             eglot-x = fromGithub {

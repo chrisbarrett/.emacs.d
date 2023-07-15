@@ -3,7 +3,7 @@ BUILD = .make/build
 TARGET_EL = config/autoloads.el
 NIX = /run/current-system/sw/bin/nix
 
-TARGETS := $(BUILD) $(TARGET_EL)
+TARGETS := $(BUILD) $(TARGET_EL) packages.json
 NIX_SRCS := flake.lock $(shell find . -type f -name '*.nix')
 SRCS := early-init.el init.el ./config/ $(NIX_SRCS)
 
@@ -17,12 +17,13 @@ $(BUILD): $(NIX_SRCS)
 	$(NIX) build
 	@touch $(BUILD)
 
-$(TARGET_EL) : $(BUILD) $(SRCS)
+$(TARGET_EL) packages.json : $(BUILD) $(SRCS)
 	@rm -f $(TARGET_EL)
 	@NIX_EMACS_BUILDING_CONFIG_P=1 $(EMACS) --batch -l shut-up -f shut-up-silence-emacs \
 		--eval '(setq make-backup-files nil)' \
 		--eval '(setq-default indent-tabs-mode nil)' \
-		-l early-init.el -l init.el
+		-l early-init.el -l init.el \
+		-f cb-ensured-packages-write
 
 .PHONY: clean
 clean :
