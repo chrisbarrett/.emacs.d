@@ -111,7 +111,7 @@
 (add-to-list 'auto-mode-alist '("/\\.gitignore\\'" . gitignore-mode))
 
 (define-derived-mode gitmodules-mode conf-unix-mode "Gitmodules")
-(add-to-list 'auto-mode-alist '("/\\.gitmodules\\'" . gitignore-mode))
+(add-to-list 'auto-mode-alist '("/\\.gitmodules\\'" . gitmodules-mode))
 
 (provide 'cb-git)
 
