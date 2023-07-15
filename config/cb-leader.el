@@ -3,12 +3,10 @@
 ;;; Code:
 
 (require 'autoloads)
-(require 'cl-lib)
 (require 'cb-parameters)
+(require 'cl-lib)
+(require 'general)
 (require 's)
-
-(cl-eval-when (compile)
-  (require 'general))
 
 (use-package which-key
   :hook (after-init . which-key-mode)
