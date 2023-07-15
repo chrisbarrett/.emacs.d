@@ -4,52 +4,45 @@
       let
         pkgs = import nixpkgs {
           inherit system;
-          overlays = [ emacs-overlay.overlay (import ./lib.nix) ];
+          overlays = [ emacs-overlay.overlay ];
         };
+
         emacs = pkgs.emacs-unstable;
-        lisp = pkgs.mkLispFetcher emacs;
+
+        lib = import ./lib.nix { inherit pkgs emacs; };
 
         emacsFromOverlay = pkgs.emacsWithPackagesFromUsePackage {
           package = emacs;
           config = ./init.el;
 
           extraEmacsPackages = epkgs: with epkgs; [
-            dash
-            f
-            ht
-            memoize
-            org-ml
-            org-ql
             shut-up
-            s
-            ts
           ];
 
-          override = eself: esuper: {
-            eglot-x = lisp.fromGithub {
+          override = final: prev: with lib.fetchers; {
+            eglot-x = fromGithub {
               name = "eglot-x";
               owner = "nemethf";
               rev = "08cbd4369618e60576c95c194e63403f080328ba";
               sha256 = "sha256-cWicqHYR/XU+71a8OFgF8vc6dmT/Fy0EEgzX0xvYiDc=";
-              buildInputs = [ esuper.eglot ];
+              buildInputs = [ final.eglot ];
             };
 
-            hide-comnt = lisp.fromEmacsmirror {
+            hide-comnt = fromEmacsmirror {
               name = "hide-comnt";
               rev = "d1e94f5152f20b2dc7b0d42898c1db37e5be57a6";
               sha256 = "002i9f97sq3jfknrw2nim1bhvj7xz3icviw7iffqmpmww4g1hq9l";
             };
 
-            info-plus = lisp.fromEmacsmirror {
+            info-plus = fromEmacsmirror {
               name = "info-plus";
               rev = "4a6b93c170169594e1e8ea60cd799a1a88a969da";
               sha256 = "1xzmx7m1qbl3b1x6yq1db1a108xqaa64ljfv1hdw763zmy4kc6m0";
             };
-
           };
         };
 
-        pathExtras = with pkgs; pkgsToPathString [
+        pathExtras = with pkgs; lib.pkgsToPathString [
           (aspellWithDicts (ps: [ ps.en ]))
           graphviz-nox
           multimarkdown
@@ -92,15 +85,14 @@
           '';
         };
       in
-      with pkgs;
       rec {
         packages.default = package;
         apps.default = flake-utils.lib.mkApp {
           drv = package;
           exePath = "/bin/emacs";
         };
-        devShell = mkShell {
-          buildInputs = [ package gnumake ];
+        devShell = pkgs.mkShell {
+          buildInputs = [ package pkgs.gnumake ];
         };
       });
 }

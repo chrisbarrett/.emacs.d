@@ -7,6 +7,13 @@
 ;; Any package with :ensure will be automatically installed via Nix using the
 ;; Emacs overlay.
 
+(use-package dash :ensure t)
+(use-package f :ensure t)
+(use-package ht :ensure t)
+(use-package memoize :ensure t)
+(use-package s :ensure t)
+(use-package ts :ensure t)
+
 (use-package all-the-icons :ensure t)
 (use-package auctex :ensure t)
 (use-package browse-at-remote :ensure t)
@@ -94,6 +101,8 @@
 (use-package org-download :ensure t)
 (use-package org-drill :ensure t)
 (use-package org-fragtog :ensure t)
+(use-package org-ml :ensure t)
+(use-package org-ql :ensure t)
 (use-package org-roam :ensure t)
 (use-package org-roam-ui :ensure t)
 (use-package org-super-agenda :ensure t)
