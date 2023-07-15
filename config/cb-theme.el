@@ -17,7 +17,14 @@
 
 (use-package delight :ensure t :demand t)
 
-(use-package mini-frame :ensure t :hook (after-init . mini-frame-mode))
+(use-package mini-frame :ensure t :hook (after-init . mini-frame-mode)
+  :custom
+  (mini-frame-color-shift-step 10)
+  (mini-frame-show-parameters
+   '((top . 30)
+     (height . 0.25)
+     (width . 0.8)
+     (left . 0.4))))
 
 (use-package hide-mode-line :ensure t)
 
@@ -140,8 +147,16 @@
       (markdown-header-face-3 ,(cb-append-faces outline-heading '((t :italic t))))
       (markdown-header-face-4 ,(cb-append-faces outline-heading '((t :underline t)))))))
 
+(defun cb-theme-update-child-frame-settings ()
+  (setq mini-frame-internal-border-color (face-attribute 'parenthesis :foreground))
+
+  (when mini-frame-frame
+    (set-face-background 'child-frame-border mini-frame-internal-border-color mini-frame-frame)
+    (set-face-background 'internal-border mini-frame-internal-border-color mini-frame-frame)))
+
 (defun cb-theme-apply-settings ()
-  (apply 'custom-theme-set-faces 'user cb-theme-settings))
+  (apply 'custom-theme-set-faces 'user cb-theme-settings)
+  (cb-theme-update-child-frame-settings))
 
 
 
@@ -251,13 +266,15 @@
   "Enable light colour theme."
   (dolist (theme custom-enabled-themes)
     (disable-theme theme))
-  (load-theme cb-theme-light t))
+  (load-theme cb-theme-light t)
+  (cb-theme-update-child-frame-settings))
 
 (defun cb-theme-dark ()
   "Enable dark colour theme."
   (dolist (theme custom-enabled-themes)
     (disable-theme theme))
-  (load-theme cb-theme-dark t))
+  (load-theme cb-theme-dark t)
+  (cb-theme-update-child-frame-settings))
 
 ;; Finally, load the appropriate colour theme.
 
