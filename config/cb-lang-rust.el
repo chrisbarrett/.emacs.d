@@ -5,7 +5,7 @@
 (require 'autoloads)
 (require 'cb-macs)
 
-(use-package rust-mode
+(use-package rust-mode :ensure t
   :general
   (:keymaps 'rust-mode-map
    "C-c C-m" 'rust-toggle-mutability)
@@ -20,14 +20,13 @@
   "b" '(rust-compile :wk "build")
   "l" '(rust-run-clippy :wk "clippy"))
 
-(use-package toml-ts-mode
-  :mode ("/Cargo\\.lock\\'")
+(use-package toml-ts-mode :mode ("/Cargo\\.lock\\'")
   :init
   (add-to-list 'major-mode-remap-alist '(conf-toml-mode . toml-ts-mode)))
 
-(use-package rustic
+(use-package rustic :ensure t
   :init
-  (use-package inheritenv :demand t)
+  (use-package inheritenv :demand t :ensure t)
   (use-package evil
     :autoload (evil-set-initial-state)
     :config
@@ -36,9 +35,7 @@
   (rustic-lsp-client 'eglot)
   (rustic-format-on-save t))
 
-(use-package rustic-babel
-  :after ob
-  :demand t
+(use-package rustic-babel :demand t :after ob
   :preface
   ;; Add a `:profile' header arg for specifying the build profile.
   (define-advice rustic-make-process (:filter-args (args) apply-profile)

@@ -8,8 +8,7 @@
 (require 'general)
 (require 's)
 
-(use-package which-key
-  :hook (after-init . which-key-mode)
+(use-package which-key :ensure t :hook (after-init . which-key-mode)
   :custom
   (which-key-sort-uppercase-first nil)
   (which-key-idle-delay 0.4))

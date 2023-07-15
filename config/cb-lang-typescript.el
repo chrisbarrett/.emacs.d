@@ -12,14 +12,11 @@
 
 (add-hook 'find-file-hook #'cb-readonly-if-in-node-modules)
 
-(use-package typescript-ts-mode
-  :mode
-  ("\\.[cm]?ts\\'" . typescript-ts-mode)
+(use-package typescript-ts-mode :mode ("\\.[cm]?ts\\'")
   :config
   (add-to-list 'major-mode-remap-alist '(typescript-mode . typescript-ts-mode)))
 
-(use-package js
-  :mode ("\\.[cm]?jsx?\\'" . js-ts-mode)
+(use-package js :mode ("\\.[cm]?jsx?\\'" . js-ts-mode)
   :custom
   (js-indent-level 2)
   (js-switch-indent-offset 2)
@@ -27,7 +24,7 @@
   :init
   (add-to-list 'major-mode-remap-alist '(js-mode . js-ts-mode)))
 
-(use-package prettier
+(use-package prettier :ensure t
   :init
   (add-hook 'typescript-ts-mode-hook 'prettier-mode 10)
   :preface

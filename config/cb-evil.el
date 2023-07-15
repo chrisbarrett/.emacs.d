@@ -8,8 +8,7 @@
 (require 'autoloads)
 (require 'cl-lib)
 
-(use-package evil
-  :hook (after-init . evil-mode)
+(use-package evil :ensure t :hook (after-init . evil-mode)
 
   ;; Initial states
   :config
@@ -119,16 +118,12 @@
   ;; selection key. But a nice way to insert Unicode chars would be good.
   :general ("C-x SPC" #'insert-char))
 
-(use-package evil-collection
-  :after evil
-  :demand t
+(use-package evil-collection :ensure t :demand t :after evil
   :config
   (delete 'elisp-slime-nav evil-collection-mode-list)
   (evil-collection-init))
 
-(use-package evil-surround
-  :after evil
-  :demand t
+(use-package evil-surround :ensure t :demand t :after evil
   :config
   (global-evil-surround-mode +1)
   :preface
@@ -167,10 +162,8 @@
         (list -1)
       args)))
 
-(use-package evil-matchit
-  :after evil
+(use-package evil-matchit :ensure t :demand t :after evil
   :commands (global-evil-matchit-mode)
-  :demand t
   :config
   (global-evil-matchit-mode +1))
 
@@ -183,15 +176,17 @@
             "zn" #'evil-ispell-next-spelling-error
             "zp" #'evil-ispell-previous-spelling-error))
 
-(use-package evil-numbers
-  :after evil
-  :demand t
+(use-package evil-numbers :ensure t :demand t :after evil
   :general (:states 'normal
             "+" #'evil-numbers/inc-at-pt
             "-" #'evil-numbers/dec-at-pt))
 
-(use-package evil-iedit-state
-  :commands (evil-iedit-state/iedit-mode))
+(use-package evil-iedit-state :ensure t
+  :commands (evil-iedit-state/iedit-mode)
+  :general
+  (:keymaps 'evil-iedit-state-map
+   "P" 'evil-iedit-state/paste-replace
+   "p" nil))
 
 (provide 'cb-evil)
 

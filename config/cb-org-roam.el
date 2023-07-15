@@ -15,9 +15,7 @@
   "Face for node topics."
   :group 'cb-org-roam)
 
-(use-package org-roam
-  :after org
-  :demand t
+(use-package org-roam :ensure t :demand t :after org
   :custom
   (org-roam-verbose nil)
   (org-roam-extract-new-file-path "notes/%<%Y-%m-%d--%H-%M-%S>.org")
@@ -175,9 +173,7 @@
   :config
   (add-hook 'org-roam-review-next-node-selected-hook 'org-roam-buffer--redisplay-h 91))
 
-(use-package org-roam-rewrite
-  :after (org-roam-review)
-  :demand t
+(use-package org-roam-rewrite :demand t :after org-roam-review
   :custom
   (org-roam-rewrite-rename-without-confirmation-p t)
   :config
@@ -250,9 +246,7 @@
   (:keymaps 'org-roam-mode-map :states '(normal motion)
    "s" 'org-roam-search))
 
-(use-package org-roam-lazy-previews
-  :after org-roam
-  :demand t)
+(use-package org-roam-lazy-previews :demand t :after org-roam)
 
 (use-package org-roam-links
   :commands (org-roam-links)
@@ -300,10 +294,9 @@
   (org-cite-csl-styles-dir (expand-file-name "~/Documents/Zotero/styles/"))
   (org-cite-global-bibliography config-bibfiles))
 
-(use-package citar
+(use-package citar :ensure t
   :general
   (:keymaps 'org-mode-map "C-c b" '(citar-insert-citation :wk "Insert citation"))
-  :preface
   :custom
   (org-cite-insert-processor 'citar)
   (org-cite-follow-processor 'citar)
@@ -314,12 +307,6 @@
   (citar-open-note-function 'org-funcs-go-to-litnote-for-key)
   (citar-bibliography config-bibfiles)
   (citar-symbol-separator "  ")
-  :config
-  (require 'all-the-icons)
-  (setq citar-symbols
-        `((file ,(all-the-icons-faicon "file-o" :face 'all-the-icons-green :v-adjust -0.1) . " ")
-          (note ,(all-the-icons-material "speaker_notes" :face 'all-the-icons-blue :v-adjust -0.3) . " ")
-          (link ,(all-the-icons-octicon "link" :face 'all-the-icons-orange :v-adjust 0.01) . " ")))
 
   ;; :preface
   ;; (define-advice citar-cache--entries (:override (bibs) fix-missing-method)
@@ -329,32 +316,32 @@
   ;;   "Return hash table containing pre-formatted strings from BIBS."
   ;;   (apply #'ht-merge
   ;;          (nreverse (mapcar #'citar-cache--bibliography-preformatted bibs))))
-
   )
 
-(use-package citar-org-roam
-  :after (:all org-roam citar)
-  :demand t
+(use-package citar :demand t :after all-the-icons
+  :config
+  (setq citar-symbols
+        `((file ,(all-the-icons-faicon "file-o" :face 'all-the-icons-green :v-adjust -0.1) . " ")
+          (note ,(all-the-icons-material "speaker_notes" :face 'all-the-icons-blue :v-adjust -0.3) . " ")
+          (link ,(all-the-icons-octicon "link" :face 'all-the-icons-orange :v-adjust 0.01) . " "))))
+
+(use-package citar-org-roam :ensure t :demand t :after (:all org-roam citar)
   :config
   (setf (plist-get citar-org-roam-notes-config :create) #'org-funcs-go-to-litnote-for-key)
   (citar-org-roam-mode))
 
-(use-package org-collapse-citations
-  :hook (org-mode . cursor-sensor-mode)
-  :after (:all org citar-org)
-  :demand t
+(use-package org-collapse-citations :demand t :after (:all org citar-org)
+  :init (add-hook 'org-mode-hook 'cursor-sensor-mode)
   :config
   (add-to-list 'citar-org-activation-functions #'org-collapse-citations-activation-function t))
 
 
 
-(use-package timekeep
+(use-package timekeep :demand t :after org
   :commands (timekeep-start
              timekeep-stop
              timekeep-mode
              timekeep-visit-node)
-  :after org
-  :demand t
   :general ("<f12>" (general-predicate-dispatch 'timekeep-start
                       (and (fboundp 'org-clocking-p) (org-clocking-p)) 'timekeep-stop))
   :preface
@@ -370,9 +357,7 @@
   (add-hook 'timekeep-punched-out-hook #'config-org--update-node-filters)
   (add-hook 'timekeep-punched-in-hook #'config-org--update-node-filters))
 
-(use-package org-roam-slipbox
-  :after org-roam
-  :demand t
+(use-package org-roam-slipbox :demand t :after org-roam
   :config
   (org-roam-slipbox-tag-mode +1)
   (org-roam-slipbox-buffer-identification-mode +1))

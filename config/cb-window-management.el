@@ -54,14 +54,13 @@
 
 
 
-(use-package rotate
+(use-package rotate :ensure t
   :commands (rotate-layout))
 
-(use-package winner
+(use-package winner :hook (after-init . winner-mode)
   :general (:keymaps 'override :states '(normal insert emacs visual motion)
                      "C-," 'winner-undo
                      "C-."'winner-redo)
-  :hook (after-init . winner-mode)
   :custom
   (winner-boring-buffers '("*Completions*"
                            "*Compile-Log*"

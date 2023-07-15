@@ -5,7 +5,7 @@
 (require 'autoloads)
 (require 'cb-macs)
 
-(use-package cider
+(use-package cider :ensure t
   :general
   (:states '(normal insert) :keymaps 'cider-mode-map
    "M-." 'cider-find-dwim)
@@ -13,7 +13,7 @@
   (cider-repl-display-help-banner nil)
   (cider-allow-jack-in-without-project t))
 
-(use-package smartparens
+(use-package smartparens :ensure t
   :general
   ;; Fix mysteriously shadowed binding
   (:keymaps '(clojure-mode-map cider-repl-mode-map) :states 'insert

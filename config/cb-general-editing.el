@@ -86,16 +86,13 @@
   (eval-expression-print-length nil)
   (eval-expression-print-level nil))
 
-(use-package pixel-scroll
-  :demand t
+(use-package pixel-scroll :demand t
   :config (pixel-scroll-mode +1))
 
-(use-package saveplace
-  :demand t
+(use-package saveplace :demand t
   :config (save-place-mode +1))
 
-(use-package savehist
-  :demand t
+(use-package savehist :demand t
   :config (savehist-mode +1)
   :custom
   (savehist-additional-variables '(kill-ring
@@ -103,18 +100,15 @@
                                    search-ring
                                    regexp-search-ring)))
 
-(use-package autorevert
+(use-package autorevert :hook (after-init . global-auto-revert-mode)
   :delight (auto-revert-mode " auto-revert")
-  :hook (after-init . global-auto-revert-mode)
   :custom
   (auto-revert-verbose nil))
 
 ;; Turns URLs and mailto links into clickable buttons
-(use-package goto-addr
-  :hook (prog-mode . goto-address-prog-mode))
+(use-package goto-addr :hook (prog-mode . goto-address-prog-mode))
 
-(use-package hideshow
-  :hook (prog-mode . hs-minor-mode)
+(use-package hideshow :hook (prog-mode . hs-minor-mode)
   :config
   (advice-add 'hs-hide-all :around #'advice-ignore-errors)
   (advice-add 'hs-hide-block :around 'advice-ignore-errors)
@@ -181,21 +175,18 @@
   (advice-add 'ediff-next-difference :after #'cb--org-reveal-around-ediff-hunk)
   (advice-add 'ediff-previous-difference :after #'cb--org-reveal-around-ediff-hunk))
 
-(use-package ws-butler
-  :hook
-  (prog-mode . ws-butler-mode)
-  (text-mode . ws-butler-mode))
+(use-package ws-butler :ensure t :hook ((prog-mode text-mode) . ws-butler-mode))
 
-(use-package unfill
+(use-package unfill :ensure t
   :commands (unfill-region unfill-paragraph unfill-toggle))
 
 (use-package align
   :general ("C-x a a" #'align-regexp))
 
-(use-package hide-comnt
+(use-package hide-comnt :ensure t
   :commands (hide/show-comments-toggle))
 
-(use-package dumb-jump
+(use-package dumb-jump :ensure t
   :autoload (dumb-jump-xref-activate)
   :custom
   (dumb-jump-selector 'completing-read)
@@ -212,15 +203,12 @@
   (ispell-check-version)
   (setq ispell-dictionary-alist (ispell-find-aspell-dictionaries)))
 
-(use-package flyspell
-  :hook
-  (text-mode . flyspell-mode)
+(use-package flyspell :hook (text-mode . flyspell-mode)
   :custom
   (flyspell-issue-welcome-flag nil)
   (flyspell-default-dictionary "en_GB"))
 
-(use-package undo-tree
-  :hook (after-init . global-undo-tree-mode)
+(use-package undo-tree :ensure t :hook (after-init . global-undo-tree-mode)
   :custom
   (undo-tree-auto-save-history nil)
   :general
@@ -229,17 +217,14 @@
    "C-r" 'undo-tree-redo
    "u" 'undo-tree-undo))
 
-(use-package format-all
+(use-package format-all :ensure t
   :hook
-  (nix-mode . format-all-mode)
-  (nix-mode . format-all-ensure-formatter)
-  (terraform-mode . format-all-mode)
-  (terraform-mode . format-all-ensure-formatter)
+  ((nix-mode terraform-mode) . format-all-mode)
+  ((nix-mode terraform-mode) . format-all-ensure-formatter)
   :custom
   (format-all-show-errors 'never))
 
-(use-package emojify
-  :hook (after-init . global-emojify-mode)
+(use-package emojify :ensure t :hook (after-init . global-emojify-mode)
   :custom
   (emojify-display-style 'image)
   (emojify-emoji-styles '(github))
@@ -266,8 +251,7 @@
   :init
   (add-hook 'emojify-mode-hook #'cb-emojify-modify-emojis))
 
-(use-package editorconfig
-  :hook (after-init . editorconfig-mode)
+(use-package editorconfig :ensure t :hook (after-init . editorconfig-mode)
   :preface
   (define-advice editorconfig--advice-insert-file-contents (:around (fn &rest args) handle-errors)
     (condition-case err
@@ -277,19 +261,14 @@
       (error
        (throw (car err) (cdr err))))))
 
-(use-package envrc
-  :hook (after-init . envrc-global-mode))
+(use-package envrc :ensure t :hook (after-init . envrc-global-mode))
 
-(use-package rainbow-mode
-  :hook
-  (help-mode . rainbow-mode)
-  (emacs-lisp-mode . rainbow-mode)
-  (css-mode . rainbow-mode))
+(use-package rainbow-mode :ensure t :hook ((help-mode emacs-lisp-mode css-mode)))
 
-(use-package string-inflection
+(use-package string-inflection :ensure t
   :general ("M-s" 'string-inflection-all-cycle))
 
-(use-package bufler
+(use-package bufler :ensure t
   :general
   ([remap list-buffers] 'bufler-list)
   (:keymaps 'bufler-list-mode-map :states 'normal

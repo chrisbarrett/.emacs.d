@@ -6,17 +6,14 @@
 (require 'cl-lib)
 (require 'ht)
 
-(use-package doom-themes
-  :demand t
+(use-package doom-themes :ensure t :demand t
   :custom
   (doom-themes-enable-bold t)
   (doom-themes-enable-italic t))
 
-(use-package hl-line
-  :hook (after-init . global-hl-line-mode))
+(use-package hl-line :hook (after-init . global-hl-line-mode))
 
-(use-package delight
-  :demand t)
+(use-package delight :ensure t :demand t)
 
 (setq-default cursor-in-non-selected-windows nil)
 
@@ -202,8 +199,7 @@
 (setq-default header-line-format cb-theme-mode-or-header-line-format)
 (setq-default mode-line-format nil)
 
-(use-package minions
-  :demand t
+(use-package minions :ensure t :demand t
   :custom
   (minions-mode-line-lighter "...")
   (minions-direct '(auto-revert-mode git-auto-commit-mode flymake-mode))
@@ -269,13 +265,11 @@
 
 
 
-(use-package page-break-lines
-  :hook (after-init . global-page-break-lines-mode)
+(use-package page-break-lines :ensure t :hook (after-init . global-page-break-lines-mode)
   :custom
   (page-break-lines-modes '(prog-mode org-agenda-mode latex-mode help-mode)))
 
-(use-package paren-face
-  :hook (after-init . global-paren-face-mode)
+(use-package paren-face :ensure t :hook (after-init . global-paren-face-mode)
   :defines (paren-face-modes)
   :custom
   (paren-face-regexp (rx (any "{}();,")))
@@ -288,13 +282,7 @@
   (font-lock-add-keywords 'js-base-mode `((,(rx (any ":")) 0 'parenthesis)))
   (font-lock-add-keywords 'typescript-base-mode `((,(rx (any ":")) 0 'parenthesis))))
 
-(use-package hl-todo
-  :hook ((prog-mode . hl-todo-mode)
-         (text-mode . enable-hl-todo-unless-org-buffer))
-  :preface
-  (defun enable-hl-todo-unless-org-buffer ()
-    (unless (derived-mode-p 'org-mode)
-      (hl-todo-mode)))
+(use-package hl-todo :ensure t :hook (after-init . global-hl-todo-mode)
   :custom
   (hl-todo-keyword-faces
    (seq-map (lambda (it) (cons it 'hl-todo))
@@ -306,12 +294,11 @@
               "PATCH"
               "NOTE"))))
 
-(use-package default-text-scale
+(use-package default-text-scale :ensure t
   :custom
   (default-text-scale-amount 30))
 
-(use-package highlight-thing
-  :hook (prog-mode . highlight-thing-mode)
+(use-package highlight-thing :ensure t :hook (prog-mode . highlight-thing-mode)
   :custom
   (highlight-thing-what-thing 'symbol)
   (highlight-thing-delay-seconds 0.1)
@@ -342,15 +329,11 @@
 (cl-eval-when (compile)
   (require 'volatile-highlights))
 
-(use-package volatile-highlights
-  :hook
-  (prog-mode . (lambda () (require 'volatile-highlights)))
-  (text-mode . (lambda () (require 'volatile-highlights)))
+(use-package volatile-highlights :ensure t :demand t
   :config
   (volatile-highlights-mode))
 
-(use-package ligature
-  :hook (after-init . global-ligature-mode)
+(use-package ligature :ensure t :hook (after-init . global-ligature-mode)
   :config
   (ligature-set-ligatures 't '("www"))
   (ligature-set-ligatures 'org-mode '(
@@ -461,13 +444,11 @@
 
 (use-package prog-mode
   :hook
-  (emacs-lisp-mode . prettify-symbols-mode)
-  (prettify-symbols-mode . cb-prettify-symbols-setup)
+  ((lisp-data-mode scheme-mode) . cb-prettify-symbols-lisp-setup)
   :preface
-  (defun cb-prettify-symbols-setup ()
-    (cond
-     ((derived-mode-p 'emacs-lisp-mode 'lisp-mode 'scheme-mode)
-      (setq-local prettify-symbols-alist '(("lambda" . #x3bb))))))
+  (defun cb-prettify-symbols-lisp-setup ()
+    (setq-local prettify-symbols-alist '(("lambda" . #x3bb)))
+    (prettify-symbols-mode +1))
   :config
   (advice-add 'prettify-symbols--post-command-hook :around 'advice-ignore-errors))
 

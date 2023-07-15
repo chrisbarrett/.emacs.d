@@ -4,8 +4,7 @@
 
 (require 'autoloads)
 
-(use-package recentf
-  :hook (after-init . recentf-mode)
+(use-package recentf :hook (after-init . recentf-mode)
   :custom
   (recentf-filename-handlers '(abbreviate-file-name))
   (recentf-max-saved-items 100)
@@ -92,8 +91,7 @@
                   (car args))
           (cdr args))))
 
-(use-package corfu
-  :hook (after-init . global-corfu-mode)
+(use-package corfu :ensure t :hook (after-init . global-corfu-mode)
   :custom
   (corfu-auto t)
   (corfu-auto-delay 0.3)
@@ -120,9 +118,7 @@
    [remap corfu-quit] 'config-corfu-quit-and-enter-normal-state))
 
 ;; Use a less aggressive completion configuration in =eshell=
-(use-package eshell
-  :after corfu
-  :demand t
+(use-package eshell :demand t :after corfu
   :init
   (defun cb-config-corfu-eshell-setup ()
     (setq-local corfu-auto nil)
@@ -133,14 +129,13 @@
   :custom
   (dabbrev-ignored-buffer-regexps '("\\.\\(?:pdf\\|jpe?g\\|png\\)\\'")))
 
-(use-package orderless
+(use-package orderless :ensure t
   :custom
   (completion-styles '(orderless basic))
   (completion-category-defaults nil)
   (completion-category-overrides '((file (styles . (partial-completion))))))
 
-(use-package vertico
-  :hook (after-init . vertico-mode)
+(use-package vertico :ensure t :hook (after-init . vertico-mode)
   :general (:keymaps 'vertico-map
             "C-<return>" 'vertico-exit-input
             "M-<return>" 'minibuffer-force-complete-and-exit)
@@ -151,9 +146,7 @@
     (ignore-errors
       (apply fn args))))
 
-(use-package vertico-directory
-  :after vertico
-  :demand t
+(use-package vertico-directory :demand t :after vertico
   :general (:keymaps 'vertico-map
             "RET" 'vertico-directory-enter
             "DEL" 'vertico-directory-delete-char
@@ -161,19 +154,15 @@
   :config
   (add-hook 'rfn-eshadow-update-overlay-hook 'vertico-directory-tidy))
 
-(use-package marginalia
-  :hook (after-init . marginalia-mode))
+(use-package marginalia :ensure t :hook (after-init . marginalia-mode))
 
-(use-package corfu-popupinfo
-  :hook (corfu-mode . corfu-popupinfo-mode)
+(use-package corfu-popupinfo :hook (corfu-mode . corfu-popupinfo-mode)
   :general (:keymaps 'corfu-map
             "M-n" 'corfu-popupinfo-scroll-up
             "M-p" 'corfu-popupinfo-scroll-down
             "<f1>" 'corfu-popupinfo-toggle))
 
-(use-package kind-icon
-  :after corfu
-  :demand t
+(use-package kind-icon :ensure t :demand t :after corfu
   :autoload (kind-icon-reset-cache)
   :custom
   (kind-icon-use-icons nil)
@@ -183,9 +172,8 @@
   (add-hook 'after-load-theme-functions (lambda (_)
                                           (kind-icon-reset-cache))))
 
-(use-package cape
+(use-package cape :ensure t :demand t
   :general ("M-/" 'completion-at-point)
-  :demand t
   :preface
   (defun cb-cape-default-setup ()
     (add-to-list 'completion-at-point-functions 'cape-file)
@@ -206,16 +194,13 @@
     (add-to-list 'completion-at-point-functions 'cape-ispell))
 
   :hook
-  (emacs-lisp-mode . cb-cape-lisp-setup)
-  (lisp-data-mode . cb-cape-lisp-setup)
-  (ielm-mode . cb-cape-lisp-setup)
+  ((emacs-lisp-mode lisp-data-mode ielm-mode) . cb-cape-lisp-setup)
   (text-mode .  cb-cape-text-mode-setup)
 
   :init
   (cb-cape-default-setup))
 
-(use-package historian
-  :hook (after-init . historian-mode)
+(use-package historian :ensure t :hook (after-init . historian-mode)
   :preface
   (define-advice historian-save (:around (f &rest args) force-text-encoding)
     "Fix text encoding issues."

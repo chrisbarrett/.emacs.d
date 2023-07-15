@@ -4,7 +4,7 @@
 
 (require 'autoloads)
 
-(use-package magit
+(use-package magit :ensure t
   :general
   (:keymaps 'transient-base-map
             "<escape>" #'transient-quit-one)
@@ -31,9 +31,7 @@
   (add-hook 'magit-diff-visit-file-hook 'cb-git-reveal-org-buffer)
   (add-hook 'magit-blame-mode-hook #'cb-git-reveal-org-buffer))
 
-(use-package magit-todos
-  :after magit
-  :demand t
+(use-package magit-todos :ensure t :demand t :after magit
   :commands (magit-todos-mode)
   :custom
   (magit-todos-ignored-keywords '("NOTE" "DONE" "KLUDGE" "HACK"))
@@ -44,9 +42,7 @@
   :custom
   (vc-git-program (executable-find "git")))
 
-(use-package forge
-  :after magit
-  :demand t
+(use-package forge :ensure t :demand t :after magit
   :custom
   (forge-add-default-bindings nil)
   :config
@@ -54,7 +50,7 @@
   (add-hook 'magit-status-sections-hook 'forge-insert-requested-reviews 90)
   (add-hook 'magit-status-sections-hook 'forge-insert-assigned-issues 90))
 
-(use-package git-auto-commit-mode
+(use-package git-auto-commit-mode :ensure t
   :delight " auto-commit"
   :custom
   (gac-debounce-interval 10)
@@ -67,41 +63,36 @@
 (use-package vc-annotate
   :general
   (:states 'normal :keymaps 'vc-annotate-mode-map
-           "<return>" 'vc-annotate-find-revision-at-line
-           "<tab>" 'vc-annotate-goto-line
-           "n" 'vc-annotate-next-revision
-           "f" 'vc-annotate-next-revision
-           "l" 'vc-annotate-show-log-revision-at-line
-           "p" 'vc-annotate-prev-revision
-           "b" 'vc-annotate-prev-revision
-           "d" 'vc-annotate-show-diff-revision-at-line
-           "D" 'vc-annotate-show-changeset-diff-revision-at-line
-           "." 'vc-annotate-working-revision))
+   "<return>" 'vc-annotate-find-revision-at-line
+   "<tab>" 'vc-annotate-goto-line
+   "n" 'vc-annotate-next-revision
+   "f" 'vc-annotate-next-revision
+   "l" 'vc-annotate-show-log-revision-at-line
+   "p" 'vc-annotate-prev-revision
+   "b" 'vc-annotate-prev-revision
+   "d" 'vc-annotate-show-diff-revision-at-line
+   "D" 'vc-annotate-show-changeset-diff-revision-at-line
+   "." 'vc-annotate-working-revision))
 
-(use-package git-commit-mode
+(use-package git-commit :ensure t
   :preface
   (defun cb-configure-git-commit-mode ()
     (setq-local fill-column 72))
   :init
   (add-hook 'git-commit-mode-hook 'cb-configure-git-commit-mode))
 
-(use-package browse-at-remote
+(use-package browse-at-remote :ensure t
   :general
   ("C-x v o" 'browse-at-remote
    "C-x v y" 'browse-at-remote-kill)
   :custom
   (browse-at-remote-add-line-number-if-no-region-selected nil))
 
-(use-package git-gutter
-  :hook
-  (text-mode . git-gutter-mode)
-  (prog-mode . git-gutter-mode)
+(use-package git-gutter :ensure t :hook ((text-mode prog-mode) . git-gutter-mode)
   :custom
   (git-gutter:update-interval 0.02))
 
-(use-package git-gutter-fringe
-  :after git-gutter
-  :demand t
+(use-package git-gutter-fringe :ensure t :demand t :after git-gutter
   :config
   (define-fringe-bitmap 'git-gutter-fr:added [224] nil nil '(center repeated))
   (define-fringe-bitmap 'git-gutter-fr:modified [224] nil nil '(center repeated))

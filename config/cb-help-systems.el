@@ -19,17 +19,12 @@
    "H" 'Info-backward-node
    "C-p" 'Info-backward-node))
 
-(use-package info+
-  :after info
-  :disabled t ; throws error on load
-  :demand t
+(use-package info+ :ensure t :after info :demand t :disabled t ; throws error on load
   :custom
   (Info-fontify-angle-bracketed-flag nil))
 
-(use-package info-path-from-nix
-  :after info
+(use-package info-path-from-nix :demand t :after info
   :autoload (info-path-from-nix)
-  :demand t
   :config
   (setq Info-directory-list (append Info-default-directory-list
                                     (info-path-from-nix))))
@@ -50,10 +45,8 @@
             "M-p" #'Man-previous-section))
 
 ;; Use MANPATH to look up completion candidates.
-(use-package man-completing
-  :after 'man
+(use-package man-completing :demand t :after man
   :autoload (man-completing-mode)
-  :demand t
   :config
   (man-completing-mode +1))
 
@@ -66,13 +59,11 @@
   (woman-fill-frame t)
   (woman-default-indent 7))
 
-(use-package helpful
+(use-package helpful :ensure t
   :preface
   (defun cb-use-helpful-for-evil-lookup ()
     (setq-local evil-lookup-func 'helpful-at-point))
-  :hook ((emacs-lisp-mode . cb-use-helpful-for-evil-lookup)
-         (helpful-mode . cb-use-helpful-for-evil-lookup)
-         (ielm-mode . cb-use-helpful-for-evil-lookup)))
+  :hook ((emacs-lisp-mode helpful-mode ielm-mode) . cb-use-helpful-for-evil-lookup))
 
 (provide 'cb-help-systems)
 

@@ -5,7 +5,7 @@
 (require 'autoloads)
 (require 'cb-macs)
 
-(use-package markdown-mode
+(use-package markdown-mode :ensure t
   :general
   (:states 'normal :keymaps 'markdown-mode-map
    "TAB" #'markdown-cycle

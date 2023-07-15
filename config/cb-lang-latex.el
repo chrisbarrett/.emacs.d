@@ -18,6 +18,8 @@
 
 
 
+(use-package auctex :ensure t)
+
 (use-package tex
   :preface
   (defvar-local TeX-syntactic-comments t)
@@ -87,11 +89,9 @@
   :init
   (add-hook 'LaTeX-mode-hook 'cb-configure-latex-autofill))
 
-(use-package tex-fold
-  :after tex
-  :demand t)
+(use-package tex-fold :demand t :after tex)
 
-(use-package latex-preview-pane
+(use-package latex-preview-pane :ensure t
   :general (:keymaps 'LaTeX-mode-map "C-c p" #'latex-preview-pane))
 
 (provide 'cb-lang-latex)

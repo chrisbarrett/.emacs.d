@@ -6,18 +6,15 @@
 (require 'thingatpt)
 (require 's)
 
-(use-package autoinsert
+(use-package autoinsert :hook (find-file . auto-insert)
   :preface
   (defvar auto-insert-alist nil)
-  :hook (find-file . auto-insert)
   :custom
   (auto-insert-query nil))
 
 ;; Extend `auto-insert' to use the more intuitive `yasnippet' DSL.
 
-(use-package autoinsert-files
-  :after (autoinsert)
-  :demand t
+(use-package autoinsert-files :demand t :after autoinsert
   :autoload (autoinsert-files-populate-templates)
   :preface
   (autoload 'snippet-mode "yasnippet")
@@ -26,18 +23,15 @@
     (when (and (bound-and-true-p auto-insert-directory)
                (string-prefix-p auto-insert-directory (buffer-file-name)))
       (snippet-mode)))
-  :init
-  (add-hook 'find-file-hook #'autoinsert-maybe-enter-snippet-mode)
+  :hook
+  (find-file . #'autoinsert-maybe-enter-snippet-mode)
   :config
   (define-advice auto-insert (:before ())
     (autoinsert-files-populate-templates)))
 
 
 
-(use-package yasnippet
-  :hook
-  (prog-mode . (lambda () (require 'yasnippet)))
-  (text-mode . (lambda () (require 'yasnippet)))
+(use-package yasnippet :ensure t :demand t
   :config
   (yas-global-mode +1)
 

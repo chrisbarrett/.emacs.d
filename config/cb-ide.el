@@ -6,13 +6,12 @@
 
 (use-package eglot
   :custom
+  (eglot-confirm-server-initiated-edits nil)
   (eglot-extend-to-xref t)
   :general
   (:keymaps 'eglot-mode-map
    "C-c C-r" 'eglot-rename
    "M-RET" 'eglot-code-actions)
-  :custom
-  (eglot-confirm-server-initiated-edits nil)
   :config
   (add-to-list 'eglot-server-programs '(terraform-mode . ("terraform-ls" "serve")))
 
@@ -30,17 +29,13 @@
     (when (seq-contains-p (config-eglot--supported-modes) major-mode)
       (eglot-ensure)))
   :hook
-  (prog-mode . config-eglot-enable-if-lsp-exists-p)
-  (text-mode . config-eglot-enable-if-lsp-exists-p))
+  ((prog-mode text-mode) . config-eglot-enable-if-lsp-exists-p))
 
-(use-package eglot-x
-  :after eglot
-  :demand t
+(use-package eglot-x :ensure t :demand t :after eglot
   :general
   (:keymaps 'eglot-mode-map "C-c ?" 'eglot-x-find-refs))
 
-(use-package eldoc
-  :hook (emacs-lisp-mode . eldoc-mode)
+(use-package eldoc :hook (emacs-lisp-mode . eldoc-mode)
   :custom
   (eldoc-idle-delay 0.2)
   (eldoc-echo-area-display-truncation-message nil)
@@ -54,10 +49,7 @@
       (with-current-buffer eldoc--doc-buffer
         (page-break-lines-mode +1)))))
 
-(use-package flymake
-  :hook
-  (prog-mode . flymake-mode)
-  (text-mode . flymake-mode)
+(use-package flymake :hook ((prog-mode text-mode) . flymake-mode)
   :general
   (:keymaps 'flymake-mode-map
    "M-p" 'flymake-goto-prev-error

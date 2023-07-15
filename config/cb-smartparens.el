@@ -4,10 +4,7 @@
 
 (require 'autoloads)
 
-(use-package smartparens
-  :hook
-  (prog-mode . smartparens-strict-mode)
-  (text-mode . smartparens-strict-mode)
+(use-package smartparens :ensure t :demand t
   :config
   (require 'smartparens-config)
   (smartparens-global-strict-mode +1)

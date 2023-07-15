@@ -4,7 +4,7 @@
 
 (require 'autoloads)
 
-(use-package pdf-tools
+(use-package pdf-tools :ensure t
   :general
   (:states '(normal) :keymaps 'pdf-view-mode-map
    "n" 'pdf-view-next-page-command
@@ -39,11 +39,11 @@
   (browse-url-mailto-function (lambda (link &rest _)
                                 (start-process "open" nil "open" link))))
 
-(use-package shell-maker
+(use-package shell-maker :ensure t
   :custom
   (shell-maker-history-path (no-littering-expand-var-file-name "shell-maker")))
 
-(use-package chatgpt-shell
+(use-package chatgpt-shell :ensure t
   :commands (chatgpt-shell)
   :custom
   (chatgpt-shell-display-function #'display-buffer)
@@ -52,7 +52,7 @@
    (lambda ()
      (auth-source-pick-first-password :host "api.openai.com"))))
 
-(use-package ob-chatgpt-shell
+(use-package ob-chatgpt-shell :ensure t
   :autoload (ob-chatgpt-shell-setup org-babel-execute:chatgpt-shell)
   :config
   (ob-chatgpt-shell-setup))

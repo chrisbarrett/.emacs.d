@@ -106,8 +106,7 @@
    "C-c <return>" 'pp-eval-last-sexp
    "C-c C-e" 'pp-macroexpand-last-sexp))
 
-(use-package elisp-slime-nav
-  :hook (emacs-lisp-mode . elisp-slime-nav-mode)
+(use-package elisp-slime-nav :ensure t :hook (emacs-lisp-mode . elisp-slime-nav-mode)
   :general
   (:keymaps 'elisp-slime-nav-mode-map :states 'normal
    "M-." #'elisp-slime-nav-find-elisp-thing-at-point))

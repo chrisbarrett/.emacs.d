@@ -5,13 +5,18 @@
 (require 'autoloads)
 
 (use-package deadgrep
+  :ensure t
   :general (:keymaps 'deadgrep-mode-map "C-c C-w" #'deadgrep-edit-mode)
   :init
   (defalias 'rg #'deadgrep)
   :config
   (setq-default deadgrep--search-type 'regexp))
 
+(use-package wgrep
+  :ensure t)
+
 (use-package consult
+  :ensure t
   :custom
   (consult-ripgrep-args '("rg"
                           "--follow"

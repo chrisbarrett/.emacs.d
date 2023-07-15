@@ -48,8 +48,7 @@
 
 ;; Overhauls dired to provide much better UX
 
-(use-package dirvish
-  :hook (after-init . dirvish-override-dired-mode)
+(use-package dirvish :ensure t :hook (after-init . dirvish-override-dired-mode)
   :custom
   (dirvish-attributes '(vscode-icon collapse file-size vc-state git-msg ))
   (dirvish-vscode-icon-size 16)
@@ -69,10 +68,9 @@
     :config
     (push '("jpg" . "image") vscode-icon-file-alist)))
 
-(use-package diredfl
+(use-package diredfl :ensure t
   :hook
-  (dired-mode . diredfl-mode)
-  (dirvish-directory-view-mode . diredfl-mode)
+  ((dired-mode dirvish-directory-view-mode) . diredfl-mode)
   :config
   (set-face-attribute 'diredfl-dir-name nil :bold t))
 
@@ -82,9 +80,7 @@
            :keymaps 'wdired-mode-map "^" #'evil-first-non-blank
            :keymaps 'dired-mode-map "C-c C-e" #'wdired-change-to-wdired-mode))
 
-(use-package dired-x
-  :demand t
-  :after dired
+(use-package dired-x :demand t :after dired
   :hook (dired-mode . dired-omit-mode)
   :general
   (:states 'normal :keymaps 'dired-mode-map "h" #'dired-omit-mode)
