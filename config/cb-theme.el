@@ -32,6 +32,11 @@
 
 
 
+(defface cb-mini-frame-border
+  nil
+  "Face for background of mini frame."
+  :group 'cb-theme)
+
 (defun cb-append-faces (&rest specs)
   "Smash SPECS together."
   `((t ,@(ht-to-plist (seq-reduce (pcase-lambda (acc `((,_pred . ,attrs)))
@@ -68,6 +73,11 @@
          (:foreground "#869799" :italic nil :weight light :inherit unspecified))
         (((background light))
          (:foreground "#9ca0a4" :italic nil :weight light :inherit unspecified))))
+      (cb-mini-frame-border
+       ((((background dark))
+         (:foreground ,(doom-blend dark-bg "#51afef" 0.5) :weight bold))
+        (((background light))
+         (:foreground ,(doom-blend light-bg "#268bd2" 0.4) :weight bold))))
       (org-transclusion-fringe
        ((((background dark))
          (:foreground ,(doom-blend dark-bg "#51afef" 0.5) :weight bold))
@@ -148,7 +158,7 @@
       (markdown-header-face-4 ,(cb-append-faces outline-heading '((t :underline t)))))))
 
 (defun cb-theme-update-child-frame-settings ()
-  (setq mini-frame-internal-border-color (face-attribute 'parenthesis :foreground))
+  (setq mini-frame-internal-border-color (face-attribute 'cb-mini-frame-border :foreground))
 
   (when mini-frame-frame
     (set-face-background 'child-frame-border mini-frame-internal-border-color mini-frame-frame)
