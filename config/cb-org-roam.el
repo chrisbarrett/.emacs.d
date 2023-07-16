@@ -318,9 +318,10 @@
 
 (use-package all-the-icons :ensure t :demand t :after citar
   :config
-  (setf (citar-indicator-symbol citar-indicator-files) (all-the-icons-faicon "file-o" :face 'all-the-icons-green :v-adjust -0.1))
-  (setf (citar-indicator-symbol citar-indicator-notes) (all-the-icons-material "speaker_notes" :face 'all-the-icons-blue :v-adjust -0.3))
-  (setf (citar-indicator-symbol citar-indicator-links) (all-the-icons-octicon "link" :face 'all-the-icons-orange :v-adjust 0.01)))
+  (eval `(progn
+           (setf (citar-indicator-symbol citar-indicator-files) (all-the-icons-faicon "file-o" :face 'all-the-icons-green :v-adjust -0.1))
+           (setf (citar-indicator-symbol citar-indicator-notes) (all-the-icons-material "speaker_notes" :face 'all-the-icons-blue :v-adjust -0.3))
+           (setf (citar-indicator-symbol citar-indicator-links) (all-the-icons-octicon "link" :face 'all-the-icons-orange :v-adjust 0.01)))))
 
 (use-package citar-org-roam :ensure t :demand t :after (:all org-roam citar)
   :config
