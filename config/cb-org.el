@@ -36,11 +36,9 @@
   (org-image-actual-width nil)
   (org-return-follows-link t)
   (org-use-property-inheritance t)
-  (abbrev-file-name (expand-file-name "abbrev.el") org-directory)
 
   :config
   (add-hook 'org-mode-hook #'auto-fill-mode)
-  (add-hook 'org-mode-hook #'abbrev-mode)
 
   ;;; Archive
 
@@ -552,6 +550,11 @@
 (add-hook 'after-save-hook #'cb-setup-org-agenda-file-updates)
 
 
+
+(use-package abbrev
+  :hook (org-mode . abbrev-mode)
+  :custom
+  (abbrev-file-name (expand-file-name "abbrev.el" org-directory)))
 
 (use-package org-ql :ensure t)
 
