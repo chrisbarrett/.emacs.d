@@ -160,7 +160,7 @@
 (defun cb-theme-update-child-frame-settings ()
   (setq mini-frame-internal-border-color (face-attribute 'cb-mini-frame-border :foreground))
 
-  (when mini-frame-frame
+  (when (bound-and-true-p mini-frame-frame)
     (set-face-background 'child-frame-border mini-frame-internal-border-color mini-frame-frame)
     (set-face-background 'internal-border mini-frame-internal-border-color mini-frame-frame)))
 
