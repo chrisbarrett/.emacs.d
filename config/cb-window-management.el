@@ -59,8 +59,8 @@
 
 (use-package winner :hook (after-init . winner-mode)
   :general (:keymaps 'override :states '(normal insert emacs visual motion)
-                     "C-," 'winner-undo
-                     "C-."'winner-redo)
+            "C-," 'winner-undo
+            "C-."'winner-redo)
   :custom
   (winner-boring-buffers '("*Completions*"
                            "*Compile-Log*"
@@ -173,16 +173,17 @@
                        '(display-buffer-reuse-window
                          cb-window-management-fullframe))
 
-(cl-labels ((make-actions (&key window-height (slot 1) (side 'left))
-              `(((lambda (buf &rest args)
-                   (funcall (if (< (frame-width) cb-org-roam-side-window-breakpoint)
-                                'display-buffer-fullframe
-                              'display-buffer-in-side-window)
-                            buf
-                            (append args '((slot . ,slot)
-                                           (side . ,side)
-                                           (window-height . ,window-height)
-                                           (window-width . ,cb-org-roam-side-window-default-width)))))))))
+(cl-labels ((make-actions
+             (&key window-height (slot 1) (side 'left))
+             `(((lambda (buf &rest args)
+                  (funcall (if (< (frame-width) cb-org-roam-side-window-breakpoint)
+                               'display-buffer-fullframe
+                             'display-buffer-in-side-window)
+                           buf
+                           (append args '((slot . ,slot)
+                                          (side . ,side)
+                                          (window-height . ,window-height)
+                                          (window-width . ,cb-org-roam-side-window-default-width)))))))))
   (cb-display-buffer-set (rx bos "*org-roam" (any "*:")) (make-actions))
   (cb-display-buffer-set (rx bos "*org-roam-links*" eos) (make-actions))
   (cb-display-buffer-set (rx bos "*org-roam-search*" eos) (make-actions :slot 2 :window-height 0.7)))
