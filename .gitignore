@@ -25,3 +25,4 @@ elpa
 /var/
 /eln-cache/
 /autoloads.el
+/tree-sitter/

@@ -84,7 +84,6 @@
               if [ -f "$program" ]; then
                 wrapProgram "$program" \
                   --prefix PATH ":" "${pathExtras}" \
-                  --set NIX_TREE_SITTER_GRAMMARS_PATH "${tree-sitter.withPlugins (_: tree-sitter.allGrammars)}" \
                   --set NIX_EMACS_DARWIN_PATH_EXTRAS "${pathExtras}:/opt/homebrew/bin" \
                   --set NIX_EMACS_SRC_DIR "${emacs}/share/emacs" \
                   --set NIX_EMACS_TEX_PROGRAM "${tectonic}/bin/tectonic" \
