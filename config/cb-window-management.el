@@ -173,11 +173,19 @@
                        '(display-buffer-reuse-window
                          cb-window-management-fullframe))
 
+(defun cb-display-buffer-fullframe (buffer alist)
+  (when-let* ((window (or (display-buffer-reuse-window buffer alist)
+                          (display-buffer-same-window buffer alist)
+                          (display-buffer-pop-up-window buffer alist)
+                          (display-buffer-use-some-window buffer alist))))
+    (delete-other-windows window)
+    window))
+
 (cl-labels ((make-actions
              (&key window-height (slot 1) (side 'left))
              `(((lambda (buf &rest args)
                   (funcall (if (< (frame-width) cb-org-roam-side-window-breakpoint)
-                               'display-buffer-fullframe
+                               'cb-display-buffer-fullframe
                              'display-buffer-in-side-window)
                            buf
                            (append args '((slot . ,slot)
