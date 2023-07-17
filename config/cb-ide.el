@@ -60,6 +60,10 @@
   (:keymaps '(prog-mode-map ielm-map) :states '(normal visual insert)
    "M-." 'xref-find-definitions))
 
+(use-package treesit
+  :custom
+  (treesit-extra-load-path (list (getenv "NIX_TREE_SITTER_GRAMMARS_PATH"))))
+
 (provide 'cb-ide)
 
 ;;; cb-ide.el ends here

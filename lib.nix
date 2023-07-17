@@ -4,7 +4,8 @@ let
 in
 {
   pkgsToPathString = ps:
-    strings.concatStringsSep ":" (map (pkg: "${pkg}/bin") ps);
+    strings.concatStringsSep ":"
+      (map (pkg: "${pkg}/bin") ps);
 
   fetchers = rec {
     fromGithub =
