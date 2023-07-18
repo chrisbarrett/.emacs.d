@@ -9,7 +9,10 @@
 
         inherit (pkgs.lib) attrsets;
 
-        emacs = pkgs.emacs-unstable;
+        emacs = pkgs.emacs-unstable.overrideAttrs (old: {
+          # Related: https://github.com/nix-community/emacs-overlay/issues/312#issuecomment-1554141967
+          passthru = old.passthru // { treeSitter = true; };
+        });
 
         lib = import ./lib.nix { inherit pkgs emacs; };
 
@@ -23,6 +26,7 @@
               ensured = builtins.fromJSON (builtins.readFile ./ensured-packages.json);
               extras = with epkgs; [
                 shut-up
+                treesit-grammars.with-all-grammars
               ];
             in
             extras ++ map (name: builtins.getAttr name epkgs) ensured;
