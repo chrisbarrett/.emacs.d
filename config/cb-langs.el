@@ -92,7 +92,7 @@
   (add-to-list 'major-mode-remap-alist '(json-mode . json-ts-mode)))
 
 (use-package highlight-indent-guides :ensure t
-  :hook ((python-ts-mode yaml-ts-mode json-ts-mode) . highlight-indent-guides-mode))
+  :hook ((python-ts-mode yaml-ts-mode json-ts-mode markdown-mode) . highlight-indent-guides-mode))
 
 (use-package oil :mode ((rx ".oil" eos) . oil-mode)
   :magic
