@@ -191,9 +191,13 @@
 (use-package evil-nerd-commenter :ensure t)
 
 (use-package evil-goggles :ensure t :demand t :after evil
+  :autoload
+  (evil-goggles-use-magit-faces)
+  :custom
+  (evil-goggles-duration 0.3)
   :config
   (evil-goggles-mode)
-  (evil-goggles-use-diff-faces))
+  (evil-goggles-use-magit-faces))
 
 (provide 'cb-evil)
 
