@@ -316,16 +316,28 @@
   (font-lock-add-keywords 'typescript-base-mode `((,(rx (any ":")) 0 'parenthesis))))
 
 (use-package hl-todo :ensure t :hook (after-init . global-hl-todo-mode)
+  :preface
+  (defface cb-hl-todo-warning
+    '((t
+       (:bold t :inherit magit-diff-removed)))
+    "Face for warning-level comments."
+    :group 'cb-theme)
+
+  (defface cb-hl-todo-info
+    '((t
+       (:bold t :inherit magit-diff-added)))
+    "Face for info-level comments."
+    :group 'cb-theme)
+
   :custom
   (hl-todo-keyword-faces
-   (seq-map (lambda (it) (cons it 'hl-todo))
-            '("TODO"
-              "NEXT"
-              "HACK"
-              "FIXME"
-              "KLUDGE"
-              "PATCH"
-              "NOTE"))))
+   '(("TODO" . cb-hl-todo-warning)
+     ("NEXT" . cb-hl-todo-warning)
+     ("HACK" . cb-hl-todo-warning)
+     ("FIXME" . cb-hl-todo-warning)
+     ("PATCH" . cb-hl-todo-info)
+     ("KLUDGE" . cb-hl-todo-info)
+     ("NOTE" . cb-hl-todo-info))))
 
 (use-package default-text-scale :ensure t
   :custom
