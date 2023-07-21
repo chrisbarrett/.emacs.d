@@ -498,16 +498,6 @@
          (org-agenda-tag-filter-preset (list "-someday" "-ignore" (format "+%s" (timekeep-work-tag))))
          (org-agenda-archives-mode t))))))
 
-  ;; Use page-break-lines to draw separator
-  :custom
-  (org-agenda-block-separator (char-to-string ?\f))
-  :preface
-  (autoload 'page-break-lines--update-display-tables "page-break-lines")
-  (define-advice org-agenda (:after (&rest _) draw-separator)
-    (page-break-lines--update-display-tables))
-  (define-advice org-agenda-redo (:after (&rest _) draw-separator)
-    (page-break-lines--update-display-tables))
-
   ;; Reveal context around item on TAB
   :config
   (add-hook 'org-agenda-after-show-hook
@@ -532,6 +522,20 @@
         (cb-org-inherited-priority (org-get-heading))))))
   :custom
   (org-priority-get-priority-function #'cb-org-inherited-priority))
+
+;; Use page-break-lines to draw separator in org-agenda.
+
+(use-package page-break-lines
+  :ensure t
+  :autoload (page-break-lines--update-display-tables)
+  :custom
+  (org-agenda-block-separator (char-to-string ?\f))
+  :preface
+  (define-advice org-agenda (:after (&rest _) draw-separator)
+    (page-break-lines--update-display-tables))
+
+  (define-advice org-agenda-redo (:after (&rest _) draw-separator)
+    (page-break-lines--update-display-tables)))
 
 ;; Search for and update agenda files automatically
 
