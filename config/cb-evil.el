@@ -190,6 +190,11 @@
 
 (use-package evil-nerd-commenter :ensure t)
 
+(use-package evil-goggles :ensure t :demand t :after evil
+  :config
+  (evil-goggles-mode)
+  (evil-goggles-use-diff-faces))
+
 (provide 'cb-evil)
 
 ;;; cb-evil.el ends here
