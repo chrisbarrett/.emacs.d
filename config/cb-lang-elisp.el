@@ -14,7 +14,18 @@
    :keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map)
    "C-c C-c" #'eval-region)
   :custom
-  (elisp-flymake-byte-compile-load-path (cons "./" load-path)))
+  (elisp-flymake-byte-compile-load-path (cons "./" load-path))
+
+  :preface
+  (defface cb-emacs-triple-semi-comment-text
+    '((t
+       (:inherit magit-section-secondary-heading :italic nil)))
+    "Face for the content of ;;; comments."
+    :group 'cb-lang-elisp)
+  :config
+  (font-lock-add-keywords 'emacs-lisp-mode
+                          `((,(rx bol (* space) ";;;" (* ";") (+ space) (group (* nonl)))
+                             1 'cb-emacs-triple-semi-comment-text prepend))))
 
 (mode-leader-set-key :keymaps 'emacs-lisp-mode-map
   "e" '(nil :wk "eval")
