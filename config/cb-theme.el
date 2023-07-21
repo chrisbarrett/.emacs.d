@@ -358,14 +358,6 @@
             (faces (seq-mapcat #'cb-face-ancestors (face-at-point nil t))))
         (null (seq-intersection faces excluded-faces))))))
 
-;; Load vhl at compile-time so macro expansions are available
-(cl-eval-when (compile)
-  (require 'volatile-highlights))
-
-(use-package volatile-highlights :ensure t :demand t
-  :config
-  (volatile-highlights-mode))
-
 (use-package ligature :ensure t :hook (after-init . global-ligature-mode)
   :config
   (ligature-set-ligatures 't '("www"))
